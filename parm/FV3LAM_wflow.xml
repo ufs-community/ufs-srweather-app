@@ -76,21 +76,21 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
 {%- endif %}
-{%- if run_task_add_aqm_ics %}
-<!ENTITY ADD_AQM_EXTRN_ICS_TN      "{{ add_aqm_ics_tn }}_ext">
-<!ENTITY ADD_AQM_ICS_TN            "{{ add_aqm_ics_tn }}">
+{%- if run_task_aqm_ics %}
+<!ENTITY AQM_EXTRN_ICS_TN      "{{ aqm_ics_tn }}_ext">
+<!ENTITY AQM_ICS_TN            "{{ aqm_ics_tn }}">
 {%- endif %}
-{%- if run_task_add_aqm_lbcs %}
-<!ENTITY ADD_AQM_LBCS_TN           "{{ add_aqm_lbcs_tn }}">
+{%- if run_task_aqm_lbcs %}
+<!ENTITY AQM_LBCS_TN           "{{ aqm_lbcs_tn }}">
 {%- endif %}
-{%- if run_task_run_nexus %}
-<!ENTITY RUN_NEXUS_TN              "{{ run_nexus_tn }}">
+{%- if run_task_nexus_emission %}
+<!ENTITY NEXUS_EMISSION_TN              "{{ nexus_emission_tn }}">
 {%- endif %}
-{%- if run_task_run_pt_source %}
-<!ENTITY RUN_PT_SOURCE_TN              "{{ run_pt_source_tn }}">
+{%- if run_task_point_source %}
+<!ENTITY POINT_SOURCE_TN              "{{ point_source_tn }}">
 {%- endif %}
-{%- if run_task_run_post_stat %}
-<!ENTITY RUN_POST_STAT_TN              "{{ run_post_stat_tn }}">
+{%- if run_task_post_stat %}
+<!ENTITY POST_STAT_TN              "{{ post_stat_tn }}">
 {%- endif %}
 
 <!--
@@ -332,28 +332,28 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_run_nexus %}
+{%- if run_task_nexus_emission %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&RUN_NEXUS_TN;" cycledefs="forecast" maxtries="{{ maxtries_run_nexus }}">
+  <task name="&NEXUS_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_NEXUS_TN;" "&JOBSdir;/JREGIONAL_RUN_NEXUS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
   {%- if machine in ["HERA"]  %}
-    <nodes>{{ nnodes_run_nexus }}:ppn={{ ppn_run_nexus }}</nodes>
-    <native>{{ native_run_nexus }}</native>
+    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
+    <native>{{ native_nexus_emission }}</native>
   {%- elif machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_run_nexus }}:ppn={{ ppn_run_nexus }}:tpp={{ omp_num_threads_run_nexus }}</nodes>
+    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
   {%- else %}
-    <nodes>{{ nnodes_run_nexus }}:ppn={{ ppn_run_nexus }}</nodes>    
+    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
   {%- endif %}
-    <walltime>{{ wtime_run_nexus }}</walltime>
+    <walltime>{{ wtime_nexus_emission }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&RUN_NEXUS_TN;</jobname>
-    <join>&LOGDIR;/&RUN_NEXUS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&NEXUS_EMISSION_TN;</jobname>
+    <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -364,25 +364,25 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_run_pt_source %}
+{%- if run_task_point_source %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&RUN_PT_SOURCE_TN;" cycledefs="forecast" maxtries="{{ maxtries_run_pt_source }}">
+  <task name="&POINT_SOURCE_TN;" cycledefs="forecast" maxtries="{{ maxtries_point_source }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_PT_SOURCE_TN;" "&JOBSdir;/JREGIONAL_RUN_PT_SOURCE"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&POINT_SOURCE_TN;" "&JOBSdir;/JREGIONAL_POINT_SOURCE"</command>
   {%- if machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_run_pt_source }}:ppn={{ ppn_run_pt_source }}:tpp={{ omp_num_threads_run_pt_source }}</nodes>
+    <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}:tpp={{ omp_num_threads_point_source }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
   {%- else %}
-    <nodes>{{ nnodes_run_pt_source }}:ppn={{ ppn_run_pt_source }}</nodes>    
+    <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}</nodes>    
   {%- endif %}
-    <walltime>{{ wtime_run_pt_source }}</walltime>
+    <walltime>{{ wtime_point_source }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&RUN_PT_SOURCE_TN;</jobname>
-    <join>&LOGDIR;/&RUN_PT_SOURCE_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&POINT_SOURCE_TN;</jobname>
+    <join>&LOGDIR;/&POINT_SOURCE_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -563,21 +563,21 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_add_aqm_ics %}
+{%- if run_task_aqm_ics %}
   {%- if not coldstart %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&ADD_AQM_EXTRN_ICS_TN;" cycledefs="at_start" maxtries="{{ maxtries_add_aqm_ics }}">
+  <task name="&AQM_EXTRN_ICS_TN;" cycledefs="at_start" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&ADD_AQM_ICS_TN;" "&JOBSdir;/JREGIONAL_ADD_AQM_ICS"</command>
-    <nodes>{{ nnodes_add_aqm_ics }}:ppn={{ ppn_add_aqm_ics }}</nodes>
-    <walltime>{{ wtime_add_aqm_ics }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&AQM_ICS_TN;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+    <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&ADD_AQM_EXTRN_ICS_TN;</jobname>
-    <join>&LOGDIR;/&ADD_AQM_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&AQM_EXTRN_ICS_TN;</jobname>
+    <join>&LOGDIR;/&AQM_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -603,15 +603,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&ADD_AQM_ICS_TN;" cycledefs="cycled" maxtries="{{ maxtries_add_aqm_ics }}">
+  <task name="&AQM_ICS_TN;" cycledefs="cycled" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&ADD_AQM_ICS_TN;" "&JOBSdir;/JREGIONAL_ADD_AQM_ICS"</command>
-    <nodes>{{ nnodes_add_aqm_ics }}:ppn={{ ppn_add_aqm_ics }}</nodes>
-    <walltime>{{ wtime_add_aqm_ics }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&AQM_ICS_TN;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+    <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&ADD_AQM_ICS_TN;</jobname>
-    <join>&LOGDIR;/&ADD_AQM_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&AQM_ICS_TN;</jobname>
+    <join>&LOGDIR;/&AQM_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -633,20 +633,20 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_add_aqm_lbcs %}
+{%- if run_task_aqm_lbcs %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&ADD_AQM_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_add_aqm_lbcs }}">
+  <task name="&AQM_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_aqm_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&ADD_AQM_LBCS_TN;" "&JOBSdir;/JREGIONAL_ADD_AQM_LBCS"</command>
-    <nodes>{{ nnodes_add_aqm_lbcs }}:ppn={{ ppn_add_aqm_lbcs }}</nodes>
-    <walltime>{{ wtime_add_aqm_lbcs }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&AQM_LBCS_TN;" "&JOBSdir;/JREGIONAL_AQM_LBCS"</command>
+    <nodes>{{ nnodes_aqm_lbcs }}:ppn={{ ppn_aqm_lbcs }}</nodes>
+    <walltime>{{ wtime_aqm_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&ADD_AQM_LBCS_TN;</jobname>
-    <join>&LOGDIR;/&ADD_AQM_LBCS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&AQM_LBCS_TN;</jobname>
+    <join>&LOGDIR;/&AQM_LBCS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -700,27 +700,27 @@ MODULES_RUN_TASK_FP script.
       <and>
         <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
         <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
-{%- if run_task_run_nexus %}
-        <taskdep task="&RUN_NEXUS_TN;"/>
+{%- if run_task_nexus_emission %}
+        <taskdep task="&NEXUS_EMISSION_TN;"/>
 {%- endif %}
-{%- if run_task_run_pt_source %}
-        <taskdep task="&RUN_PT_SOURCE_TN;"/>
+{%- if run_task_point_source %}
+        <taskdep task="&POINT_SOURCE_TN;"/>
 {%- endif %}
-{%- if run_task_add_aqm_ics %}
+{%- if run_task_aqm_ics %}
         <or>
-          <taskdep task="&ADD_AQM_ICS_TN;"/>
+          <taskdep task="&AQM_ICS_TN;"/>
 {%- if not coldstart %}
           <and>
             <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
-            <taskdep task="&ADD_AQM_EXTRN_ICS_TN;"/>
+            <taskdep task="&AQM_EXTRN_ICS_TN;"/>
           </and>
 {%- else %}
           <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
 {%- endif %}
         </or>
 {%- endif %}
-{%- if run_task_add_aqm_lbcs %}
-        <taskdep task="&ADD_AQM_LBCS_TN;"/>
+{%- if run_task_aqm_lbcs %}
+        <taskdep task="&AQM_LBCS_TN;"/>
 {%- endif %}
       </and>
     </dependency>
@@ -982,19 +982,19 @@ the <task> tag to be identical to the ones above for other output times.
   </metatask>
   {%- endif %}
 {%- endif %}
-{%- if run_task_run_post_stat %}
+{%- if run_task_post_stat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&RUN_POST_STAT_TN;" cycledefs="forecast" maxtries="{{ maxtries_run_post_stat }}">
+  <task name="&POST_STAT_TN;" cycledefs="forecast" maxtries="{{ maxtries_post_stat }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_STAT_TN;" "&JOBSdir;/JREGIONAL_RUN_POST_STAT"</command>
-    <nodes>{{ nnodes_run_post_stat }}:ppn={{ ppn_run_post_stat }}</nodes>
-    <walltime>{{ wtime_run_post_stat }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_TN;" "&JOBSdir;/JREGIONAL_POST_STAT"</command>
+    <nodes>{{ nnodes_post_stat }}:ppn={{ ppn_post_stat }}</nodes>
+    <walltime>{{ wtime_post_stat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&RUN_POST_STAT_TN;</jobname>
-    <join>&LOGDIR;/&RUN_POST_STAT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&POST_STAT_TN;</jobname>
+    <join>&LOGDIR;/&POST_STAT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>

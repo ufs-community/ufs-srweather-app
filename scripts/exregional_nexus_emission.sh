@@ -51,9 +51,9 @@ This is the ex-script for the task that runs NEXUS.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_RUN_NEXUS}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_NEXUS}
-export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_NEXUS}
+export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_EMISSION}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_EMISSION}
+export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 #
 #-----------------------------------------------------------------------
 #
@@ -63,9 +63,9 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_NEXUS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_RUN_NEXUS*PPN_RUN_NEXUS ))
-ppn_run_aqm="${PPN_RUN_NEXUS}"
-omp_num_threads_run_aqm="${OMP_NUM_THREADS_RUN_NEXUS}"
+nprocs=$(( NNODES_NEXUS_EMISSION*PPN_NEXUS_EMISSION ))
+ppn_run_aqm="${PPN_NEXUS_EMISSION}"
+omp_num_threads_run_aqm="${OMP_NUM_THREADS_NEXUS_EMISSION}"
 
 if [ -z "${RUN_CMD_AQM:-}" ] ; then
   print_err_msg_exit "\

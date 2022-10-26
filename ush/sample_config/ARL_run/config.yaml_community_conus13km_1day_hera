@@ -49,13 +49,13 @@ global:
   HALO_BLEND: 0
 cpl_aqm_parm:
   CPL_AQM: true
-  RUN_TASK_ADD_AQM_ICS: true
-  RUN_TASK_ADD_AQM_LBCS: true
-  RUN_TASK_RUN_NEXUS: true
-  RUN_TASK_RUN_PT_SOURCE: true
-  RUN_TASK_RUN_POST_STAT: true
-  RUN_ADD_AQM_CHEM_LBCS: true
-  RUN_ADD_AQM_GEFS_LBCS: true
+  RUN_TASK_AQM_ICS: true
+  RUN_TASK_AQM_LBCS: true
+  RUN_TASK_NEXUS_EMISSION: true
+  RUN_TASK_POINT_SOURCE: true
+  RUN_TASK_POST_STAT: true
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: true
   AQM_GEFS_CYC: 0
   AQM_RC_TMPL_FN: aqm.rc
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data

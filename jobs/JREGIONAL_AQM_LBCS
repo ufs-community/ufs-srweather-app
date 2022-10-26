@@ -87,7 +87,7 @@ mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_add_aqm_lbcs.sh || \
+$SCRIPTSdir/exregional_aqm_lbcs.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

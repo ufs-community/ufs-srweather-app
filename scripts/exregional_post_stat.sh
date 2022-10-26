@@ -51,9 +51,9 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_RUN_POST_STAT}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_POST_STAT}
-export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST_STAT}
+export KMP_AFFINITY=${KMP_AFFINITY_POST_STAT}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_POST_STAT}
+export OMP_STACKSIZE=${OMP_STACKSIZE_POST_STAT}
 #
 #-----------------------------------------------------------------------
 #

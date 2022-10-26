@@ -51,9 +51,9 @@ This is the ex-script for the task that runs PT_SOURCE.
 #
 #-----------------------------------------------------------------------
 #
-export KMP_AFFINITY=${KMP_AFFINITY_RUN_PT_SOURCE}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_PT_SOURCE}
-export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_PT_SOURCE}
+export KMP_AFFINITY=${KMP_AFFINITY_POINT_SOURCE}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_POINT_SOURCE}
+export OMP_STACKSIZE=${OMP_STACKSIZE_POINT_SOURCE}
 #
 #-----------------------------------------------------------------------
 #
@@ -64,8 +64,8 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_PT_SOURCE}
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( LAYOUT_X*LAYOUT_Y ))
-ppn_run_aqm="${PPN_RUN_PT_SOURCE}"
-omp_num_threads_run_aqm="${OMP_NUM_THREADS_RUN_PT_SOURCE}"
+ppn_run_aqm="${PPN_POINT_SOURCE}"
+omp_num_threads_run_aqm="${OMP_NUM_THREADS_POINT_SOURCE}"
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"
 

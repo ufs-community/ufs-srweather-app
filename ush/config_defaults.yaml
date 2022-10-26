@@ -2272,50 +2272,50 @@ cpl_aqm_parm:
   #
   #-----------------------------------------------------------------------
   #
-  RUN_TASK_ADD_AQM_ICS: false
-  RUN_TASK_ADD_AQM_LBCS: false
-  RUN_TASK_RUN_NEXUS: false
-  RUN_TASK_RUN_PT_SOURCE: false
-  RUN_TASK_RUN_POST_STAT: false
+  RUN_TASK_AQM_ICS: false
+  RUN_TASK_AQM_LBCS: false
+  RUN_TASK_NEXUS_EMISSION: false
+  RUN_TASK_POINT_SOURCE: false
+  RUN_TASK_POST_STAT: false
 
-  ADD_AQM_ICS_TN: "add_aqm_ics"
-  NNODES_ADD_AQM_ICS: 1
-  PPN_ADD_AQM_ICS: 1
-  WTIME_ADD_AQM_ICS: 00:30:00
-  MAXTRIES_ADD_AQM_ICS: 2
+  AQM_ICS_TN: "aqm_ics"
+  NNODES_AQM_ICS: 1
+  PPN_AQM_ICS: 1
+  WTIME_AQM_ICS: 00:30:00
+  MAXTRIES_AQM_ICS: 2
 
-  ADD_AQM_LBCS_TN: "add_aqm_lbcs"
-  NNODES_ADD_AQM_LBCS: 1
-  PPN_ADD_AQM_LBCS: 24
-  WTIME_ADD_AQM_LBCS: 00:30:00
-  MAXTRIES_ADD_AQM_LBCS: 2
+  AQM_LBCS_TN: "aqm_lbcs"
+  NNODES_AQM_LBCS: 1
+  PPN_AQM_LBCS: 24
+  WTIME_AQM_LBCS: 00:30:00
+  MAXTRIES_AQM_LBCS: 2
 
-  RUN_NEXUS_TN: "run_nexus"
-  NNODES_RUN_NEXUS: 4
-  PPN_RUN_NEXUS: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
-  WTIME_RUN_NEXUS: 00:30:00
-  MAXTRIES_RUN_NEXUS: 2
-  KMP_AFFINITY_RUN_NEXUS: "scatter"
-  OMP_NUM_THREADS_RUN_NEXUS: 2
-  OMP_STACKSIZE_RUN_NEXUS: "1024m"
+  NEXUS_EMISSION_TN: "nexus_emission"
+  NNODES_NEXUS_EMISSION: 4
+  PPN_NEXUS_EMISSION: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
+  WTIME_NEXUS_EMISSION: 00:30:00
+  MAXTRIES_NEXUS_EMISSION: 2
+  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+  OMP_NUM_THREADS_NEXUS_EMISSION: 2
+  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
 
-  RUN_PT_SOURCE_TN: "run_pt_source"
-  NNODES_RUN_PT_SOURCE: ""  # will be calculated in the workflow generation scripts 
-  PPN_RUN_PT_SOURCE: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
-  WTIME_RUN_PT_SOURCE: 00:30:00
-  MAXTRIES_RUN_PT_SOURCE: 2
-  KMP_AFFINITY_RUN_PT_SOURCE: "scatter"
-  OMP_NUM_THREADS_RUN_PT_SOURCE: 2
-  OMP_STACKSIZE_RUN_PT_SOURCE: "1024m"
+  POINT_SOURCE_TN: "point_source"
+  NNODES_POINT_SOURCE: ""  # will be calculated in the workflow generation scripts 
+  PPN_POINT_SOURCE: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
+  WTIME_POINT_SOURCE: 00:30:00
+  MAXTRIES_POINT_SOURCE: 2
+  KMP_AFFINITY_POINT_SOURCE: "scatter"
+  OMP_NUM_THREADS_POINT_SOURCE: 2
+  OMP_STACKSIZE_POINT_SOURCE: "1024m"
 
-  RUN_POST_STAT_TN: "run_post_stat"
-  NNODES_RUN_POST_STAT: 1
-  PPN_RUN_POST_STAT: 1
-  WTIME_RUN_POST_STAT: 00:30:00
-  MAXTRIES_RUN_POST_STAT: 2
-  KMP_AFFINITY_RUN_POST_STAT: "scatter"
-  OMP_NUM_THREADS_RUN_POST_STAT: 1
-  OMP_STACKSIZE_RUN_POST_STAT: "2056M"
+  POST_STAT_TN: "post_stat"
+  NNODES_POST_STAT: 1
+  PPN_POST_STAT: 1
+  WTIME_POST_STAT: 00:30:00
+  MAXTRIES_POST_STAT: 2
+  KMP_AFFINITY_POST_STAT: "scatter"
+  OMP_NUM_THREADS_POST_STAT: 1
+  OMP_STACKSIZE_POST_STAT: "2056M"
 
 #
 #-----------------------------------------------------------------------
@@ -2382,7 +2382,10 @@ cpl_aqm_parm:
 # AQM_GEFS_CYC:
 # Cycle of the GEFS aerosol LBC files
 # 
-# RUN_ADD_AQM_GEFS_LBCS:
+# DO_AQM_CHEM_LBCS:
+# Add chemical LBCs to chemical LBCs
+# 
+# DO_AQM_GEFS_LBCS:
 # Add GEFS aerosol LBCs to chemical LBCs
 # 
 # NEXUS_INPUT_DIR:
@@ -2433,8 +2436,8 @@ cpl_aqm_parm:
   AQM_GEFS_DIR: ""
   AQM_GEFS_CYC: 0
 
-  RUN_ADD_AQM_CHEM_LBCS: true
-  RUN_ADD_AQM_GEFS_LBCS: false
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: false
 
   NEXUS_INPUT_DIR: ""
   NEXUS_FIX_DIR: ""
