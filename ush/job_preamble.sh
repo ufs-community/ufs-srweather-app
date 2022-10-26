@@ -25,11 +25,9 @@ fi
 #-----------------------------------------------------------------------
 #
 export DATA=
-export DATA_SHARED=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    export DATA_SHARED=${DATAROOT}/${RUN}.${PDY}.${WORKFLOW_ID}
-    mkdir_vrfy -p $DATA $DATA_SHARED
+    mkdir_vrfy -p $DATA
     cd $DATA
 fi
 #
@@ -46,6 +44,17 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     fi
 fi
 export CDATE=${PDY}${cyc}
+#
+#-----------------------------------------------------------------------
+#
+# Create symlink to $DATA direcory if requested for it
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ] && [ ${1:-"FALSE"} = "TRUE" ]; then
+    DATASYM=${DATAROOT}/prev_task.${PDY}${cyc}${dot_ensmem}.${WORKFLOW_ID}
+    ln_vrfy -sf $DATA $DATASYM
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -108,6 +117,23 @@ else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
 fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Create symlinks to log files in the experiment directory. Makes viewing
+# log files easier in NCO mode, as well as make CIs work
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    __EXPTLOG=${EXPTDIR}/log
+    mkdir_vrfy -p ${__EXPTLOG}
+    for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
+        __LOGB=$(basename $i .${WORKFLOW_ID}.log)
+        ln_vrfy -sf $i ${__EXPTLOG}/${__LOGB}.log
+    done
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -117,19 +143,10 @@ fi
 #
 function job_postamble() {
 
-    if [ "${RUN_ENVIR}" = "nco" ]; then
-
-        # Remove temp directory
+    # Remove temp directory
+    if [ "${RUN_ENVIR}" = "nco" ] && [ ${1:-"FALSE"} != "TRUE" ]; then
         cd ${DATAROOT}
-        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA $DATA_SHARED
-
-        # Create symlinks to log files
-        local EXPTLOG=${EXPTDIR}/log
-        mkdir_vrfy -p ${EXPTLOG}
-        for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
-            local LOGB=$(basename $i .${WORKFLOW_ID}.log)
-            ln_vrfy -sf $i ${EXPTLOG}/${LOGB}.log
-        done
+        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 
     # Print exit message

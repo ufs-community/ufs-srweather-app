@@ -166,13 +166,13 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
-    dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    DATAFCST=prev_task.${PDY}${cyc}${dot_ensmem}.${WORKFLOW_ID}
 else
-    dyn_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+    DATAFCST=$DATA
 fi
+dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.

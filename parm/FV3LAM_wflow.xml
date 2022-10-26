@@ -90,25 +90,26 @@ specifies the number of processes per node being used (the PPN_... entities).
 <!--
 Directories and files.
 -->
-<!ENTITY JOBSdir                 "{{ jobsdir }}">
-<!ENTITY SCRIPTSdir              "{{ scriptsdir }}">
+<!ENTITY JOBSdir                  "{{ jobsdir }}">
+<!ENTITY SCRIPTSdir               "{{ scriptsdir }}">
 <!ENTITY COMIN_BASEDIR            "{{ comin_basedir }}">
 <!ENTITY COMOUT_BASEDIR           "{{ comout_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
 <!ENTITY EXPTDIR                  "{{ exptdir }}">
 
+
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id}}/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{workflow_id}}/phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ dataroot }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{workflow_id}}/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/prev_task.<cyclestr>@Y@m@d@H</cyclestr>.{{workflow_id}}/phy">
 {%- endif %}
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/phy">
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
