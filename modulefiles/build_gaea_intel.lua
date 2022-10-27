@@ -7,6 +7,9 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Gaea ]===])
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
 
+prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+
 prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/hpc-stack/intel-2021.3.0/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("intel", os.getenv("intel_ver") or "2021.3.0"))
