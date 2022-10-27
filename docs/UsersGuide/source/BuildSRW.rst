@@ -192,7 +192,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss2``
 
 .. note::
-   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacDetails>`. It is recommended that users on these systems build the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
+   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
 
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
@@ -373,7 +373,7 @@ Set Up the Build Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. attention::
-   * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Step %s <Data>`.
+   * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Chapter %s <RunSRW>`.
    * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Section %s <MacDetails>` and follow the approach there.  
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users can run one of the following two commands depending on whether they have a bash or csh shell, respectively:
@@ -436,7 +436,7 @@ Additional Details for Building on MacOS
 ------------------------------------------
 
 .. note::
-    Users who are **not** building the SRW App on a MacOS machine may skip to the :ref:`next section <BuildExecutables>`. 
+    Users who are **not** building the SRW App on a MacOS machine may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
 
 The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The following two options have been tested:
 
@@ -454,19 +454,21 @@ The ``build_macos_gnu`` modulefile initializes the module environment, lists the
    # This path should point to your SRW Application directory
    setenv SRW "/Users/username/ufs-srweather-app"
    
-An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the modulefile. 
+An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 (using a double hyphen) and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the modulefile. 
 
 .. code-block:: console
 
-   # Option 1 compiler paths: 
-   setenv CC "/opt/homebrew/bin/gcc"
-   setenv FC "/opt/homebrew/bin/gfortran"
-   setenv CXX "/opt/homebrew/bin/g++"
+   -- Option 1 compiler paths:
+   setenv("CC", "/opt/homebrew/bin/gcc")
+   setenv("FC", "/opt/homebrew/bin/gfortran")
+   setenv("CXX", "/opt/homebrew/bin/g++")
 
-   # Option 2 compiler paths:
-   #setenv CC "/usr/local/bin/gcc"
-   #setenv FC "/usr/local/bin/gfortran"
-   #setenv CXX "/usr/local/bin/g++"
+   -- Option 2 compiler paths:
+   --[[
+   setenv("CC", "/usr/local/bin/gcc")
+   setenv("FC", "/usr/local/bin/gfortran")
+   setenv("CXX", "/usr/local/bin/g++")
+   --]]
 
 Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App:
 

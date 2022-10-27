@@ -632,8 +632,8 @@ For :ref:`Option 1 <MacDetails>`, add the following information to ``config.yaml
 .. code-block:: console
 
    task_run_fcst:
-      LAYOUT_X: ${LAYOUT_X:-3}
-      LAYOUT_Y: ${LAYOUT_Y:-2}
+      LAYOUT_X: 3
+      LAYOUT_Y: 2
       WRTCMP_write_groups: 1
       WRTCMP_write_tasks_per_group: 2
 
@@ -642,8 +642,8 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.yaml
 .. code-block:: console
 
    task_run_fcst:
-      LAYOUT_X: ${LAYOUT_X:-3}
-      LAYOUT_Y: ${LAYOUT_Y:-1}
+      LAYOUT_X: 3
+      LAYOUT_Y: 1
       WRTCMP_write_groups: 1
       WRTCMP_write_tasks_per_group: 1
 
@@ -751,7 +751,7 @@ Run the following command from the ``ufs-srweather-app/ush`` directory to genera
 
 The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.py`` runs the ``setup.py`` script to set the configuration parameters. Second, it copies the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). Third, it copies the Weather Model executable (``ufs_model``) from the ``exec`` directory to ``$EXPTDIR`` and creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.py`` runs the ``setup.py`` script to set the configuration parameters. Second, it symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). Third, it creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
 The ``setup.py`` script reads three other configuration scripts in order: (1) ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.py``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
