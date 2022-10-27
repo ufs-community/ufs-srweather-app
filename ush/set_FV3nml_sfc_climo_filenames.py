@@ -17,6 +17,7 @@ from python_utils import (
     rm_vrfy,
     import_vars,
     set_env_var,
+    load_config_file,
     load_shell_config,
     flatten_dict,
     define_macos_utilities,
@@ -45,6 +46,11 @@ def set_FV3nml_sfc_climo_filenames():
 
     # import all environment variables
     import_vars()
+
+    # fixed file mapping variables
+    fixed_cfg = load_config_file(os.path.join(PARMdir, "fixed_files_mapping.yaml"))
+    IMPORTS = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
+    import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=IMPORTS)
 
     # The regular expression regex_search set below will be used to extract
     # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING
@@ -82,9 +88,9 @@ def set_FV3nml_sfc_climo_filenames():
     print_info_msg(
         dedent(
             f"""
-        The variable \"settings\" specifying values of the namelist variables
-        has been set as follows:\n
-        settings =\n\n"""
+            The variable 'settings' specifying values of the namelist variables
+            has been set as follows:\n
+            settings =\n\n"""
         )
         + settings_str,
         verbose=VERBOSE,
@@ -102,15 +108,15 @@ def set_FV3nml_sfc_climo_filenames():
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script set_namelist.py to set the variables in the FV3
-            namelist file that specify the paths to the surface climatology files
-            failed.  Parameters passed to this script are:
-              Full path to base namelist file:
-                fv3_nml_base_fp = \"{fv3_nml_base_fp}\"
-              Full path to output namelist file:
-                FV3_NML_FP = \"{FV3_NML_FP}\"
-              Namelist settings specified on command line (these have highest precedence):\n
-                settings =\n\n"""
+                Call to python script set_namelist.py to set the variables in the FV3
+                namelist file that specify the paths to the surface climatology files
+                failed.  Parameters passed to this script are:
+                  Full path to base namelist file:
+                    fv3_nml_base_fp = '{fv3_nml_base_fp}'
+                  Full path to output namelist file:
+                    FV3_NML_FP = '{FV3_NML_FP}'
+                  Namelist settings specified on command line (these have highest precedence):\n
+                    settings =\n\n"""
             )
             + settings_str
         )
@@ -159,38 +165,10 @@ class Testing(unittest.TestCase):
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
-        set_env_var("USHdir", USHdir)
+        set_env_var("PARMdir", PARMdir)
         set_env_var("EXPTDIR", EXPTDIR)
         set_env_var("FIXlam", FIXlam)
         set_env_var("DO_ENSEMBLE", False)
         set_env_var("CRES", "C3357")
         set_env_var("RUN_ENVIR", "nco")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
-
-        FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING = [
-            "FNALBC  | snowfree_albedo",
-            "FNALBC2 | facsf",
-            "FNTG3C  | substrate_temperature",
-            "FNVEGC  | vegetation_greenness",
-            "FNVETC  | vegetation_type",
-            "FNSOTC  | soil_type",
-            "FNVMNC  | vegetation_greenness",
-            "FNVMXC  | vegetation_greenness",
-            "FNSLPC  | slope_type",
-            "FNABSC  | maximum_snow_albedo",
-        ]
-        SFC_CLIMO_FIELDS = [
-            "facsf",
-            "maximum_snow_albedo",
-            "slope_type",
-            "snowfree_albedo",
-            "soil_type",
-            "substrate_temperature",
-            "vegetation_greenness",
-            "vegetation_type",
-        ]
-        set_env_var(
-            "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING",
-            FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,
-        )
-        set_env_var("SFC_CLIMO_FIELDS", SFC_CLIMO_FIELDS)

@@ -32,7 +32,6 @@ from python_utils import (
 from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_ozone_param import set_ozone_param
-from set_extrn_mdl_params import set_extrn_mdl_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
@@ -69,7 +68,7 @@ def setup():
     log_info(
         f"""
         ========================================================================
-        Starting function setup() in \"{os.path.basename(__file__)}\"...
+        Starting function setup() in '{os.path.basename(__file__)}'...
         ========================================================================"""
     )
     #
@@ -83,42 +82,64 @@ def setup():
     #
     EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
     cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
-    import_vars(dictionary=flatten_dict(cfg_d),
-        env_vars=["EXPT_CONFIG_FN",
-                  "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                  "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
-
+    import_vars(
+        dictionary=flatten_dict(cfg_d),
+        env_vars=[
+            "EXPT_CONFIG_FN",
+            "EXTRN_MDL_NAME_ICS",
+            "EXTRN_MDL_NAME_LBCS",
+            "FV3GFS_FILE_FMT_ICS",
+            "FV3GFS_FILE_FMT_LBCS",
+        ],
+    )
 
     # Load the user config file, then ensure all user-specified
-    # variables correspond to a default value. 
+    # variables correspond to a default value.
     if not os.path.exists(EXPT_CONFIG_FN):
-        raise FileNotFoundError(f'User config file not found: EXPT_CONFIG_FN = {EXPT_CONFIG_FN}')
+        raise FileNotFoundError(
+            f"User config file not found: EXPT_CONFIG_FN = {EXPT_CONFIG_FN}"
+        )
 
     try:
         cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
     except:
-        errmsg = dedent(f'''\n
-                        Could not load YAML config file:  {EXPT_CONFIG_FN}
-                        Reference the above traceback for more information.
-                        ''')
+        errmsg = dedent(
+            f"""\n
+            Could not load YAML config file:  {EXPT_CONFIG_FN}
+            Reference the above traceback for more information.
+            """
+        )
         raise Exception(errmsg)
 
     cfg_u = flatten_dict(cfg_u)
     for key in cfg_u:
         if key not in flatten_dict(cfg_d):
-            raise Exception(dedent(f'''
-                            User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid.
-                            Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables.\n'''))
+            raise Exception(
+                dedent(
+                    f"""
+                    User-specified variable "{key}" in {EXPT_CONFIG_FN} is not valid.
+                    Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables.\n"""
+                )
+            )
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
-    mandatory = ['MACHINE']
+    mandatory = ["MACHINE"]
     for val in mandatory:
         if val not in cfg_u:
-            raise Exception(f'Mandatory variable "{val}" not found in user config file {EXPT_CONFIG_FN}')
+            raise Exception(
+                f"Mandatory variable '{val}' not found in user config file {EXPT_CONFIG_FN}"
+            )
 
-    import_vars(dictionary=cfg_u, env_vars=["MACHINE",
-                   "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                   "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
+    import_vars(
+        dictionary=cfg_u,
+        env_vars=[
+            "MACHINE",
+            "EXTRN_MDL_NAME_ICS",
+            "EXTRN_MDL_NAME_LBCS",
+            "FV3GFS_FILE_FMT_ICS",
+            "FV3GFS_FILE_FMT_LBCS",
+        ],
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -131,23 +152,25 @@ def setup():
     global MACHINE, EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
     MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
     if not os.path.exists(MACHINE_FILE):
-        raise FileNotFoundError(dedent(
-            f"""
-            The machine file {MACHINE_FILE} does not exist.
-            Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
-        ))
+        raise FileNotFoundError(
+            dedent(
+                f"""
+                The machine file {MACHINE_FILE} does not exist.
+                Check that you have specified the correct machine ({MACHINE}) in your config file {EXPT_CONFIG_FN}"""
+            )
+        )
     machine_cfg = load_config_file(MACHINE_FILE)
 
     # ics and lbcs
-    def get_location(xcs,fmt):
-       if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
-          v = machine_cfg["data"][xcs]
-          if not isinstance(v,dict):
-             return v
-          else:
-             return v[fmt]
-       else:
-          return ""
+    def get_location(xcs, fmt):
+        if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
+            v = machine_cfg["data"][xcs]
+            if not isinstance(v, dict):
+                return v
+            else:
+                return v[fmt]
+        else:
+            return ""
 
     EXTRN_MDL_SYSBASEDIR_ICS = get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
     EXTRN_MDL_SYSBASEDIR_LBCS = get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
@@ -155,10 +178,12 @@ def setup():
     # remove the data key and provide machine specific default values for cfg_d
     if "data" in machine_cfg:
         machine_cfg.pop("data")
-    machine_cfg.update({
-       "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
-       "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
-    })
+    machine_cfg.update(
+        {
+            "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
+            "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
+        }
+    )
     machine_cfg = flatten_dict(machine_cfg)
     update_dict(machine_cfg, cfg_d)
 
@@ -180,6 +205,12 @@ def setup():
     # make machine name uppercase
     MACHINE = uppercase(MACHINE)
 
+    # Load fixed-files mapping file
+    cfg_f = load_config_file(
+        os.path.join(USHdir, os.pardir, "parm", "fixed_files_mapping.yaml")
+    )
+    import_vars(dictionary=flatten_dict(cfg_f))
+
     # Load constants file and save its contents to a variable for later
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=flatten_dict(cfg_c))
@@ -194,6 +225,7 @@ def setup():
     #
     global WORKFLOW_ID
     WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
+    cfg_d["workflow"]["WORKFLOW_ID"] = WORKFLOW_ID
     log_info(f"""WORKFLOW ID = {WORKFLOW_ID}""")
 
     #
@@ -223,7 +255,7 @@ def setup():
     if DEBUG and not VERBOSE:
         log_info(
             """
-            Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
+            Resetting VERBOSE to 'TRUE' because DEBUG has been set to 'TRUE'..."""
         )
         VERBOSE = True
 
@@ -303,7 +335,7 @@ def setup():
             or (len(ISEED_SPP) != N_VAR_SPP)
         ):
             raise Exception(
-                f'''
+                f"""
                 All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
                 variables set in {EXPT_CONFIG_FN} must be equal in number of entries to what is
                 found in SPP_VAR_LIST:
@@ -315,7 +347,7 @@ def setup():
                   SPP_SIGTOP2 (length {len(SPP_SIGTOP2)})
                   SPP_STDDEV_CUTOFF (length {len(SPP_STDDEV_CUTOFF)})
                   ISEED_SPP (length {len(ISEED_SPP)})
-                '''
+                """
             )
     #
     # -----------------------------------------------------------------------
@@ -333,7 +365,7 @@ def setup():
             or (len(LSM_SPP_TSCALE) != N_VAR_LNDP)
         ):
             raise Exception(
-                f'''
+                f"""
                 All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
                 set in {EXPT_CONFIG_FN} must be equal in number of entries to what is found in
                 SPP_VAR_LIST:
@@ -341,16 +373,14 @@ def setup():
                   LSM_SPP_MAG_LIST (length {len(LSM_SPP_MAG_LIST)})
                   LSM_SPP_LSCALE (length {len(LSM_SPP_LSCALE)})
                   LSM_SPP_TSCALE (length {len(LSM_SPP_TSCALE)})
-                  '''
+                """
             )
     #
     # The current script should be located in the ush subdirectory of the
     # workflow directory.  Thus, the workflow directory is the one above the
     # directory of the current script.
     #
-    HOMEdir = os.path.abspath(
-        os.path.dirname(__file__) + os.sep + os.pardir
-    )
+    HOMEdir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
 
     #
     # -----------------------------------------------------------------------
@@ -381,22 +411,25 @@ def setup():
     try:
         UFS_WTHR_MDL_DIR = get_ini_value(cfg, external_name, property_name)
     except KeyError:
-        errmsg = dedent(f'''
-                        Externals configuration file {mng_extrns_cfg_fn}
-                        does not contain "{external_name}".''')
+        errmsg = dedent(
+            f"""
+            Externals configuration file {mng_extrns_cfg_fn}
+            does not contain '{external_name}'."""
+        )
         raise Exception(errmsg) from None
-        
 
     UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
     if not os.path.exists(UFS_WTHR_MDL_DIR):
-        raise FileNotFoundError(dedent(
-            f"""
-            The base directory in which the FV3 source code should be located
-            (UFS_WTHR_MDL_DIR) does not exist:
-              UFS_WTHR_MDL_DIR = \"{UFS_WTHR_MDL_DIR}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
-        ))
+        raise FileNotFoundError(
+            dedent(
+                f"""
+                The base directory in which the FV3 source code should be located
+                (UFS_WTHR_MDL_DIR) does not exist:
+                  UFS_WTHR_MDL_DIR = '{UFS_WTHR_MDL_DIR}'
+                Please clone the external repository containing the code in this directory,
+                build the executable, and then rerun the workflow."""
+            )
+        )
     #
     # Define some other useful paths
     #
@@ -429,17 +462,28 @@ def setup():
     RELATIVE_LINK_FLAG = "--relative"
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
-    mandatory = ['NCORES_PER_NODE', 'FIXgsm', 'FIXaer', 'FIXlut', 'TOPO_DIR', 'SFC_CLIMO_INPUT_DIR']
+    mandatory = [
+        "NCORES_PER_NODE",
+        "FIXgsm",
+        "FIXaer",
+        "FIXlut",
+        "TOPO_DIR",
+        "SFC_CLIMO_INPUT_DIR",
+    ]
     globalvars = globals()
     for val in mandatory:
         # globals() returns dictionary of global variables
         if not globalvars[val]:
-            raise Exception(dedent(f'''
-                            Mandatory variable "{val}" not found in:
-                            user config file {EXPT_CONFIG_FN}
-                                          OR
-                            machine file {MACHINE_FILE} 
-                            '''))
+            raise Exception(
+                dedent(
+                    f"""
+                    Mandatory variable '{val}' not found in:
+                    user config file {EXPT_CONFIG_FN}
+                                  OR
+                    machine file {MACHINE_FILE} 
+                    """
+                )
+            )
 
     #
     # -----------------------------------------------------------------------
@@ -485,10 +529,13 @@ def setup():
     #
     if WORKFLOW_MANAGER is not None:
         if not ACCOUNT:
-            raise Exception(dedent(f'''
-                  ACCOUNT must be specified in config or machine file if using a workflow manager.
-                  WORKFLOW_MANAGER = {WORKFLOW_MANAGER}\n'''
-            ))
+            raise Exception(
+                dedent(
+                    f"""
+                    ACCOUNT must be specified in config or machine file if using a workflow manager.
+                    WORKFLOW_MANAGER = {WORKFLOW_MANAGER}\n"""
+                )
+            )
     #
     # -----------------------------------------------------------------------
     #
@@ -513,49 +560,59 @@ def setup():
     # Make sure RESTART_INTERVAL is set to an integer value
 
     if not isinstance(RESTART_INTERVAL, int):
-        raise Exception(f"\nRESTART_INTERVAL = {RESTART_INTERVAL}, must be an integer value\n")
+        raise Exception(
+            f"\nRESTART_INTERVAL = {RESTART_INTERVAL}, must be an integer value\n"
+        )
 
     # Check that input dates are in a date format
     # get dictionary of all variables
     allvars = dict(globals())
     allvars.update(locals())
-    dates = ['DATE_FIRST_CYCL', 'DATE_LAST_CYCL']
+    dates = ["DATE_FIRST_CYCL", "DATE_LAST_CYCL"]
     for val in dates:
         if not isinstance(allvars[val], datetime.date):
-            raise Exception(dedent(f'''
-                            Date variable {val}={allvars[val]} is not in a valid date format
+            raise Exception(
+                dedent(
+                    f"""
+                    Date variable {val}={allvars[val]} is not in a valid date format
 
-                            For examples of valid formats, see the users guide.
-                            '''))
+                    For examples of valid formats, see the users guide.
+                    """
+                )
+            )
 
     # If using a custom post configuration file, make sure that it exists.
     if USE_CUSTOM_POST_CONFIG_FILE:
         try:
-            #os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
+            # os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
             if not os.path.exists(CUSTOM_POST_CONFIG_FP):
                 raise
         except:
-            raise FileNotFoundError(dedent(
-                f'''
-                USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
-                CUSTOM_POST_CONFIG_FP = {CUSTOM_POST_CONFIG_FP}
-                could not be found.'''
-            )) from None
+            raise FileNotFoundError(
+                dedent(
+                    f"""
+                    USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
+                    CUSTOM_POST_CONFIG_FP = {CUSTOM_POST_CONFIG_FP}
+                    could not be found."""
+                )
+            ) from None
 
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
     if USE_CRTM:
         try:
-            #os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
+            # os.path.exists returns exception if passed an empty string or None, so use "try/except" as a 2-for-1 error catch
             if not os.path.exists(CRTM_DIR):
                 raise
         except:
-            raise FileNotFoundError(dedent(
-                f'''
-                USE_CRTM has been set, but the external CRTM fix file directory:
-                CRTM_DIR = {CRTM_DIR}
-                could not be found.'''
-            )) from None
+            raise FileNotFoundError(
+                dedent(
+                    f"""
+                    USE_CRTM has been set, but the external CRTM fix file directory:
+                    CRTM_DIR = {CRTM_DIR}
+                    could not be found."""
+                )
+            ) from None
 
     # The forecast length (in integer hours) cannot contain more than 3 characters.
     # Thus, its maximum value is 999.
@@ -571,7 +628,7 @@ def setup():
     # -----------------------------------------------------------------------
     #
     # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
-    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an 
+    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
     # array of forecast hours at which the boundary values will be updated.
     #
     # -----------------------------------------------------------------------
@@ -603,6 +660,7 @@ def setup():
             LBC_SPEC_INTVL_HRS, LBC_SPEC_INTVL_HRS + FCST_LEN_HRS, LBC_SPEC_INTVL_HRS
         )
     ]
+    cfg_d["task_make_lbcs"]["LBC_SPEC_FCST_HRS"] = LBC_SPEC_FCST_HRS
     #
     # -----------------------------------------------------------------------
     #
@@ -616,11 +674,7 @@ def setup():
     # get dictionary of all variables
     allvars = dict(globals())
     allvars.update(locals())
-    vlist = ['DT_ATMOS', 
-             'LAYOUT_X',
-             'LAYOUT_Y',
-             'BLOCKSIZE',
-             'EXPT_SUBDIR']
+    vlist = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE", "EXPT_SUBDIR"]
     for val in vlist:
         if not allvars[val]:
             raise Exception(f"\nMandatory variable '{val}' has not been set\n")
@@ -642,12 +696,12 @@ def setup():
         #
         if DT_SUBHOURLY_POST_MNTS < 0 or DT_SUBHOURLY_POST_MNTS > 59:
             raise ValueError(
-                f'''
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                f"""
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 DT_SUBHOURLY_POST_MNTS must be set to an integer between 0 and 59,
                 inclusive but in this case is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"'''
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'"""
             )
         #
         # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
@@ -657,14 +711,14 @@ def setup():
         if rem != 0:
             raise ValueError(
                 f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 the time interval specified by DT_SUBHOURLY_POST_MNTS (after converting
                 to seconds) must be evenly divisible by the time step DT_ATMOS used in
                 the forecast model, i.e. the remainder (rem) must be zero.  In this case,
                 it is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                  DT_ATMOS = \"{DT_ATMOS}\"
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'
+                  DT_ATMOS = '{DT_ATMOS}'
                   rem = (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS = {rem}
                 Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that this remainder
                 is zero."""
@@ -678,12 +732,12 @@ def setup():
         if DT_SUBHOURLY_POST_MNTS == 0:
             logger.warning(
                 f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to 'TRUE'),
                 DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
                 sub-hourly output is not really being performed:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you
+                  SUB_HOURLY_POST = '{SUB_HOURLY_POST}'
+                  DT_SUBHOURLY_POST_MNTS = '{DT_SUBHOURLY_POST_MNTS}'
+                Resetting SUB_HOURLY_POST to 'FALSE'.  If you do not want this, you
                 must set DT_SUBHOURLY_POST_MNTS to something other than zero."""
             )
             SUB_HOURLY_POST = False
@@ -714,7 +768,7 @@ def setup():
         pass
     EXPT_BASEDIR = os.path.abspath(EXPT_BASEDIR)
 
-    mkdir_vrfy(f' -p "{EXPT_BASEDIR}"')
+    mkdir_vrfy(f" -p '{EXPT_BASEDIR}'")
 
     #
     # -----------------------------------------------------------------------
@@ -729,21 +783,25 @@ def setup():
     try:
         check_for_preexist_dir_file(EXPTDIR, PREEXISTING_DIR_METHOD)
     except ValueError:
-        logger.exception(f'''
-                        Check that the following values are valid:
-                        EXPTDIR {EXPTDIR}
-                        PREEXISTING_DIR_METHOD {PREEXISTING_DIR_METHOD}
-                        ''')
+        logger.exception(
+            f"""
+            Check that the following values are valid:
+            EXPTDIR {EXPTDIR}
+            PREEXISTING_DIR_METHOD {PREEXISTING_DIR_METHOD}
+            """
+        )
         raise
     except FileExistsError:
-        errmsg = dedent(f'''
-                        EXPTDIR ({EXPTDIR}) already exists, and PREEXISTING_DIR_METHOD = {PREEXISTING_DIR_METHOD}
+        errmsg = dedent(
+            f"""
+            EXPTDIR ({EXPTDIR}) already exists, and PREEXISTING_DIR_METHOD = {PREEXISTING_DIR_METHOD}
 
-                        To ignore this error, delete the directory, or set 
-                        PREEXISTING_DIR_METHOD = delete, or
-                        PREEXISTING_DIR_METHOD = rename
-                        in your config file.
-                        ''')
+            To ignore this error, delete the directory, or set 
+            PREEXISTING_DIR_METHOD = delete, or
+            PREEXISTING_DIR_METHOD = rename
+            in your config file.
+            """
+        )
         raise FileExistsError(errmsg) from None
     #
     # -----------------------------------------------------------------------
@@ -785,22 +843,35 @@ def setup():
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try: OPSROOT = os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs") \
-                       if OPSROOT is None else OPSROOT
-        except NameError: OPSROOT = EXPTDIR
-        try: COMROOT
-        except NameError: COMROOT = os.path.join(OPSROOT, "com")
-        try: PACKAGEROOT
-        except NameError: PACKAGEROOT = os.path.join(OPSROOT, "packages")
-        try: DATAROOT
-        except NameError: DATAROOT = os.path.join(OPSROOT, "tmp")
-        try: DCOMROOT
-        except NameError: DCOMROOT = os.path.join(OPSROOT, "dcom")
+        try:
+            OPSROOT = (
+                os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs")
+                if OPSROOT is None
+                else OPSROOT
+            )
+        except NameError:
+            OPSROOT = EXPTDIR
+        try:
+            COMROOT
+        except NameError:
+            COMROOT = os.path.join(OPSROOT, "com")
+        try:
+            PACKAGEROOT
+        except NameError:
+            PACKAGEROOT = os.path.join(OPSROOT, "packages")
+        try:
+            DATAROOT
+        except NameError:
+            DATAROOT = os.path.join(OPSROOT, "tmp")
+        try:
+            DCOMROOT
+        except NameError:
+            DCOMROOT = os.path.join(OPSROOT, "dcom")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
 
-        LOGDIR = os.path.join(OPSROOT,"output")
+        LOGDIR = os.path.join(OPSROOT, "output")
 
     else:
 
@@ -814,34 +885,52 @@ def setup():
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
-    try: DBNROOT
-    except NameError: DBNROOT = None
-    try: SENDECF
-    except NameError: SENDECF = False
-    try: SENDDBN
-    except NameError: SENDDBN = False
-    try: SENDDBN_NTC
-    except NameError: SENDDBN_NTC = False
-    try: SENDCOM
-    except NameError: SENDCOM = False
-    try: SENDWEB
-    except NameError: SENDWEB = False
-    try: KEEPDATA
-    except NameError: KEEPDATA = True
-    try: MAILTO
-    except NameError: MAILTO = None
-    try: MAILCC
-    except NameError: MAILCC = None
+    try:
+        DBNROOT
+    except NameError:
+        DBNROOT = None
+    try:
+        SENDECF
+    except NameError:
+        SENDECF = False
+    try:
+        SENDDBN
+    except NameError:
+        SENDDBN = False
+    try:
+        SENDDBN_NTC
+    except NameError:
+        SENDDBN_NTC = False
+    try:
+        SENDCOM
+    except NameError:
+        SENDCOM = False
+    try:
+        SENDWEB
+    except NameError:
+        SENDWEB = False
+    try:
+        KEEPDATA
+    except NameError:
+        KEEPDATA = True
+    try:
+        MAILTO
+    except NameError:
+        MAILTO = None
+    try:
+        MAILCC
+    except NameError:
+        MAILCC = None
 
     # create NCO directories
     if RUN_ENVIR == "nco":
-        mkdir_vrfy(f' -p "{OPSROOT}"')
-        mkdir_vrfy(f' -p "{COMROOT}"')
-        mkdir_vrfy(f' -p "{PACKAGEROOT}"')
-        mkdir_vrfy(f' -p "{DATAROOT}"')
-        mkdir_vrfy(f' -p "{DCOMROOT}"')
+        mkdir_vrfy(f" -p '{OPSROOT}'")
+        mkdir_vrfy(f" -p '{COMROOT}'")
+        mkdir_vrfy(f" -p '{PACKAGEROOT}'")
+        mkdir_vrfy(f" -p '{DATAROOT}'")
+        mkdir_vrfy(f" -p '{DCOMROOT}'")
     if DBNROOT is not None:
-        mkdir_vrfy(f' -p "{DBNROOT}"')
+        mkdir_vrfy(f" -p '{DBNROOT}'")
 
     #
     # -----------------------------------------------------------------------
@@ -857,7 +946,7 @@ def setup():
     POST_OUTPUT_DOMAIN_NAME = POST_OUTPUT_DOMAIN_NAME or PREDEF_GRID_NAME
 
     if type(POST_OUTPUT_DOMAIN_NAME) != int:
-      POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
+        POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
 
     if POST_OUTPUT_DOMAIN_NAME is None:
         if PREDEF_GRID_NAME is None:
@@ -865,10 +954,10 @@ def setup():
                 f"""
                 The domain name used in naming the run_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
-                POST_OUTPUT_DOMAIN_NAME = \"{POST_OUTPUT_DOMAIN_NAME}\"
+                POST_OUTPUT_DOMAIN_NAME = '{POST_OUTPUT_DOMAIN_NAME}'
                 If this experiment is not using a predefined grid (i.e. if
                 PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME
-                must be set in the configuration file (\"{EXPT_CONFIG_FN}\"). """
+                must be set in the configuration file ('{EXPT_CONFIG_FN}'). """
             )
     #
     # -----------------------------------------------------------------------
@@ -974,10 +1063,10 @@ def setup():
     CCPP_PHYS_SUITE_FP = os.path.join(EXPTDIR, CCPP_PHYS_SUITE_FN)
     if not os.path.exists(CCPP_PHYS_SUITE_IN_CCPP_FP):
         raise FileNotFoundError(
-            f'''
+            f"""
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
-              CCPP_PHYS_SUITE_IN_CCPP_FP = \"{CCPP_PHYS_SUITE_IN_CCPP_FP}\"'''
+              CCPP_PHYS_SUITE_IN_CCPP_FP = '{CCPP_PHYS_SUITE_IN_CCPP_FP}'"""
         )
     #
     # -----------------------------------------------------------------------
@@ -1001,10 +1090,10 @@ def setup():
     FIELD_DICT_FP = os.path.join(EXPTDIR, FIELD_DICT_FN)
     if not os.path.exists(FIELD_DICT_IN_UWM_FP):
         raise FileNotFoundError(
-            f'''
+            f"""
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
-              FIELD_DICT_IN_UWM_FP = \"{FIELD_DICT_IN_UWM_FP}\"'''
+              FIELD_DICT_IN_UWM_FP = '{FIELD_DICT_IN_UWM_FP}'"""
         )
     #
     # -----------------------------------------------------------------------
@@ -1015,13 +1104,13 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
-    # export env vars before calling another module
-    export_vars()
+    OZONE_PARAM = set_ozone_param(
+        CCPP_PHYS_SUITE_IN_CCPP_FP,
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+        FIXgsm_FILES_TO_COPY_TO_FIXam,
+        VERBOSE=VERBOSE,
+    )
 
-    OZONE_PARAM = set_ozone_param(CCPP_PHYS_SUITE_IN_CCPP_FP)
-
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
     #
     # -----------------------------------------------------------------------
     #
@@ -1077,10 +1166,10 @@ def setup():
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS[:idx]):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged
                 external model files for generating ICs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_ICS = \"{EXTRN_MDL_SOURCE_BASEDIR_ICS}\"'''
+                  EXTRN_MDL_SOURCE_BASEDIR_ICS = '{EXTRN_MDL_SOURCE_BASEDIR_ICS}'"""
             )
 
         idx = EXTRN_MDL_SOURCE_BASEDIR_LBCS.find("$")
@@ -1089,10 +1178,10 @@ def setup():
 
         if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS[:idx]):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged
                 external model files for generating LBCs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_LBCS = \"{EXTRN_MDL_SOURCE_BASEDIR_LBCS}\"'''
+                  EXTRN_MDL_SOURCE_BASEDIR_LBCS = '{EXTRN_MDL_SOURCE_BASEDIR_LBCS}'"""
             )
     #
     # -----------------------------------------------------------------------
@@ -1167,11 +1256,11 @@ def setup():
     # Ensemble verification can only be run in ensemble mode
     if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
         raise Exception(
-            f'''
+            f"""
             Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
+               DO_ENSEMBLE = '{DO_ENSEMBLE}'
+               RUN_TASK_VX_ENSGRID = '{RUN_TASK_VX_ENSGRID}'
+               RUN_TASK_VX_ENSPOINT = '{RUN_TASK_VX_ENSPOINT}'"""
         )
 
     #
@@ -1212,21 +1301,23 @@ def setup():
     # experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_GRID:
-        if (GRID_DIR is None):
+        if GRID_DIR is None:
             GRID_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = dedent(f"""
-               GRID_DIR not specified!
-               Setting GRID_DIR = {GRID_DIR}
-            """)
+            msg = dedent(
+                f"""
+                GRID_DIR not specified!
+                Setting GRID_DIR = {GRID_DIR}
+                """
+            )
             logger.warning(msg)
 
-        if not os.path.exists(GRID_DIR): 
+        if not os.path.exists(GRID_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (GRID_DIR) that should contain the pregenerated grid files
                 does not exist:
-                  GRID_DIR = \"{GRID_DIR}\"'''
+                  GRID_DIR = '{GRID_DIR}'"""
             )
     else:
         GRID_DIR = os.path.join(EXPTDIR, "grid")
@@ -1237,21 +1328,23 @@ def setup():
     # the experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_OROG:
-        if (OROG_DIR is None):
+        if OROG_DIR is None:
             OROG_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = dedent(f"""
-               OROG_DIR not specified!
-               Setting OROG_DIR = {OROG_DIR}
-            """)
+            msg = dedent(
+                f"""
+                OROG_DIR not specified!
+                Setting OROG_DIR = {OROG_DIR}
+                """
+            )
             logger.warning(msg)
 
         if not os.path.exists(OROG_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (OROG_DIR) that should contain the pregenerated orography
                 files does not exist:
-                  OROG_DIR = \"{OROG_DIR}\"'''
+                  OROG_DIR = '{OROG_DIR}'"""
             )
     else:
         OROG_DIR = os.path.join(EXPTDIR, "orog")
@@ -1262,40 +1355,42 @@ def setup():
     # a predefined location under the experiment directory (EXPTDIR).
     #
     if not RUN_TASK_MAKE_SFC_CLIMO:
-        if (SFC_CLIMO_DIR is None):
+        if SFC_CLIMO_DIR is None:
             SFC_CLIMO_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
 
-            msg = dedent(f"""
-               SFC_CLIMO_DIR not specified!
-               Setting SFC_CLIMO_DIR ={SFC_CLIMO_DIR}
-            """)
+            msg = dedent(
+                f"""
+                SFC_CLIMO_DIR not specified!
+                Setting SFC_CLIMO_DIR ={SFC_CLIMO_DIR}
+                """
+            )
             logger.warning(msg)
 
         if not os.path.exists(SFC_CLIMO_DIR):
             raise FileNotFoundError(
-                f'''
+                f"""
                 The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
                 climatology files does not exist:
-                  SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
+                  SFC_CLIMO_DIR = '{SFC_CLIMO_DIR}'"""
             )
     else:
         SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
 
-    # -----------------------------------------------------------------------
-    #
-    # Set cycle-independent parameters associated with the external models
-    # from which we will obtain the ICs and LBCs.
     #
     # -----------------------------------------------------------------------
     #
+    # Set EXTRN_MDL_LBCS_OFFSET_HRS, which is the number of hours to shift
+    # the starting time of the external model that provides lateral boundary
+    # conditions.
+    #
+    # -----------------------------------------------------------------------
+    #
+    global EXTRN_MDL_LBCS_OFFSET_HRS
+    if EXTRN_MDL_NAME_LBCS == "RAP":
+        EXTRN_MDL_LBCS_OFFSET_HRS = EXTRN_MDL_LBCS_OFFSET_HRS or "3"
+    else:
+        EXTRN_MDL_LBCS_OFFSET_HRS = EXTRN_MDL_LBCS_OFFSET_HRS or "0"
 
-    # export env vars before calling another module
-    export_vars()
-
-    set_extrn_mdl_params()
-
-    IMPORTS = ["EXTRN_MDL_LBCS_OFFSET_HRS"]
-    import_vars(env_vars=IMPORTS)
     #
     # -----------------------------------------------------------------------
     #
@@ -1354,7 +1449,6 @@ def setup():
             "STRETCH_FAC": STRETCH_FAC,
         }
 
-
     # Extract the basic grid params from the dictionary
     (LON_CTR, LAT_CTR, NX, NY, NHW, STRETCH_FAC) = (
         grid_params[k] for k in ["LON_CTR", "LAT_CTR", "NX", "NY", "NHW", "STRETCH_FAC"]
@@ -1363,14 +1457,14 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # Create a new experiment directory. For platforms with no workflow 
+    # Create a new experiment directory. For platforms with no workflow
     # manager we need to create LOGDIR as well, since it won't be created
     # later at runtime.
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{EXPTDIR}"')
-    mkdir_vrfy(f' -p "{LOGDIR}"')
+    mkdir_vrfy(f" -p '{EXPTDIR}'")
+    mkdir_vrfy(f" -p '{LOGDIR}'")
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
@@ -1383,7 +1477,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXlam}"')
+    mkdir_vrfy(f" -p '{FIXlam}'")
     RES_IN_FIXLAM_FILENAMES = ""
     #
     # -----------------------------------------------------------------------
@@ -1474,10 +1568,14 @@ def setup():
     if WRITE_DOPOST:
         # Turn off run_post
         if RUN_TASK_RUN_POST:
-            logger.warning(dedent(f"""
-                           Inline post is turned on, deactivating post-processing tasks:
-                           RUN_TASK_RUN_POST = False
-                           """))
+            logger.warning(
+                dedent(
+                    f"""
+                    Inline post is turned on, deactivating post-processing tasks:
+                    RUN_TASK_RUN_POST = False
+                    """
+                )
+            )
             RUN_TASK_RUN_POST = False
 
         # Check if SUB_HOURLY_POST is on
@@ -1502,12 +1600,12 @@ def setup():
 
     if VERBOSE:
         log_info(
-        f"""
-        The number of MPI tasks for the forecast (including those for the write
-        component if it is being used) are:
-          PE_MEMBER01 = {PE_MEMBER01}""",
-        verbose=VERBOSE,
-    )
+            f"""
+            The number of MPI tasks for the forecast (including those for the write
+            component if it is being used) are:
+              PE_MEMBER01 = {PE_MEMBER01}""",
+            verbose=VERBOSE,
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -1573,47 +1671,18 @@ def setup():
     # -----------------------------------------------------------------------
     #
     SDF_USES_THOMPSON_MP = set_thompson_mp_fix_files(
-        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP,
-        thompson_mp_climo_fn=THOMPSON_MP_CLIMO_FN,
+        CCPP_PHYS_SUITE_IN_CCPP_FP,
+        THOMPSON_MP_CLIMO_FN,
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+        FIXgsm_FILES_TO_COPY_TO_FIXam,
     )
-
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate the shell script that will appear in the experiment directory
-    # (EXPTDIR) and will contain definitions of variables needed by the va-
-    # rious scripts in the workflow.  We refer to this as the experiment/
-    # workflow global variable definitions file.  We will create this file
-    # by:
-    #
-    # 1) Copying the default workflow/experiment configuration file (speci-
-    #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHdir) to the experiment directory and rena-
-    #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
-    #
-    # 2) Resetting the default variable values in this file to their current
-    #    values.  This is necessary because these variables may have been
-    #    reset by the user-specified configuration file (if one exists in
-    #    USHdir) and/or by this setup script, e.g. because predef_domain is
-    #    set to a valid non-empty value.
-    #
-    # 3) Appending to the variable definitions file any new variables intro-
-    #    duced in this setup script that may be needed by the scripts that
-    #    perform the various tasks in the workflow (and which source the va-
-    #    riable defintions file).
-    #
-    # First, set the full path to the variable definitions file and copy the
-    # default configuration script into it.
-    #
-    # -----------------------------------------------------------------------
-    #
 
     # global variable definition file path
     global GLOBAL_VAR_DEFNS_FP
     GLOBAL_VAR_DEFNS_FP = os.path.join(EXPTDIR, GLOBAL_VAR_DEFNS_FN)
+
+    # fixed files section
+    cfg_d.update(cfg_f)
 
     # update dictionary with globals() values
     update_dict(globals(), cfg_d)
@@ -1640,7 +1709,7 @@ def setup():
         #
         # Full path to workflow (re)launch script, its log file, and the line
         # that gets added to the cron table to launch this script if the flag
-        # USE_CRON_TO_RELAUNCH is set to \"TRUE\".
+        # USE_CRON_TO_RELAUNCH is set to 'TRUE'.
         #
         # -----------------------------------------------------------------------
         #
@@ -1845,11 +1914,11 @@ def setup():
         f"""
         Generating the global experiment variable definitions file specified by
         GLOBAL_VAR_DEFNS_FN:
-          GLOBAL_VAR_DEFNS_FN = \"{GLOBAL_VAR_DEFNS_FN}\"
+          GLOBAL_VAR_DEFNS_FN = '{GLOBAL_VAR_DEFNS_FN}'
         Full path to this file is:
-          GLOBAL_VAR_DEFNS_FP = \"{GLOBAL_VAR_DEFNS_FP}\"
-        For more detailed information, set DEBUG to \"TRUE\" in the experiment
-        configuration file (\"{EXPT_CONFIG_FN}\")."""
+          GLOBAL_VAR_DEFNS_FP = '{GLOBAL_VAR_DEFNS_FP}'
+        For more detailed information, set DEBUG to 'TRUE' in the experiment
+        configuration file ('{EXPT_CONFIG_FN}')."""
     )
 
     with open(GLOBAL_VAR_DEFNS_FP, "a") as f:

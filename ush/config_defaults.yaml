@@ -38,7 +38,6 @@ user:
   #
   #-----------------------------------------------------------------------
   #
-  # mach_doc_start
   # Set machine and queue parameters.  Definitions:
   #
   # MACHINE:
@@ -46,7 +45,7 @@ user:
   # supported platform, and you want to use the Rocoto workflow manager,
   # you will need set MACHINE: "linux" and WORKFLOW_MANAGER: "rocoto". This
   # combination will assume a Slurm batch manager when generating the XML.
-  # Please see ush/valid_param_vals.sh for a full list of supported
+  # Please see ush/valid_param_vals.yaml for a full list of supported
   # platforms.
   #
   # ACCOUNT:
@@ -72,13 +71,8 @@ platform:
   # the XML. Valid options: "rocoto" or "none"
   #
   # NCORES_PER_NODE:
-  # The number of cores available per node on the compute platform. Set
-  # for supported platforms in setup.sh, but is now also configurable for
-  # all platforms.
-  #
-  # LMOD_PATH:
-  # Path to the LMOD sh file on your Linux system. Is set automatically
-  # for supported machines.
+  # The number of cores available per node on the compute platform, now 
+  # configurable for all platforms.
   #
   # BUILD_MOD_FN:
   # Name of alternative build module file to use if using an
@@ -147,13 +141,10 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
-  # mach_doc_end
-  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
-  LMOD_PATH: ""
   BUILD_MOD_FN: ""
   WFLOW_MOD_FN: ""
   BUILD_VER_FN: ""
@@ -177,16 +168,17 @@ platform:
   # will run without MPI.
   #
   # RUN_CMD_FCST:
-  # The run command for the model forecast step. This will be appended to 
-  # the end of the variable definitions file, so it can reference other 
-  # variables.
+  # The run command for the model forecast step. 
   #
   # RUN_CMD_POST:
   # The run command for post-processing (UPP). Can be left blank for smaller 
   # domains, in which case UPP will run without MPI.
   #
+  # RUN_CMD_SERIAL:
+  # The run command for some serial jobs 
+  #
   # RUN_CMD_AQM:
-  # The run command for ARL-NEXUS.
+  # The run command for some AQM tasks.
   #
   #-----------------------------------------------------------------------
   #
@@ -214,6 +206,9 @@ platform:
   #
   # MET_INSTALL_DIR:
   # Location to top-level directory of MET installation.
+  #
+  # MET_BIN_EXEC:
+  # Subdirectory containing MET binaries e.g. "bin"
   #
   # METPLUS_PATH:
   # Location to top-level directory of METplus installation.
@@ -332,7 +327,7 @@ platform:
   PRE_TASK_CMDS: ""
   #
   #-----------------------------------------------------------------------
-  # Test directories
+  # Test directories used in run_WE2E script
   #-----------------------------------------------------------------------
   #
   TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
@@ -344,14 +339,6 @@ platform:
 # WORKFLOW config parameters
 #-----------------------------
 workflow:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Unique ID for workflow run that will be set in setup.py
-  #
-  #-----------------------------------------------------------------------
-  #
-  WORKFLOW_ID: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -374,7 +361,6 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # dir_doc_start
   # Set directories.  Definitions:
   #
   # EXPT_BASEDIR:
@@ -391,8 +377,6 @@ workflow:
   #
   # This cannot be empty.  If set to a null string here, it must be set to
   # a (non-empty) value in the user-defined experiment configuration file.
-  #
-  # dir_doc_end
   #
   # EXEC_SUBDIR:
   # The name of the subdirectory of ufs-srweather-app where executables are
@@ -1046,7 +1030,7 @@ task_make_grid:
   # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
   # they are not needed by the forecast model.  
   # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
-  #       variable.  Just set it in the function set_gridparams_ESGgrid.sh.
+  #       variable.  Just set it in the function set_gridparams_ESGgrid.py.
   #
   # Note that:
   #
@@ -1267,8 +1251,7 @@ task_get_extrn_lbcs:
   # should start. For example, the forecast should use lateral boundary
   # conditions from the GFS started 6 hours earlier, then
   # EXTRN_MDL_LBCS_OFFSET_HRS=6.
-  # Note: the default value is model-dependent and set in
-  # set_extrn_mdl_params.sh
+  # Note: the default value is model-dependent and set in setup.py
   #
   # FV3GFS_FILE_FMT_LBCS:
   # If using the FV3GFS model as the source of the LBCs (i.e. if 
@@ -1383,7 +1366,6 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: []
 
 #----------------------------
 # FORECAST config parameters
@@ -1391,7 +1373,7 @@ task_make_lbcs:
 task_run_fcst:
   RUN_FCST_TN: "run_fcst"
   NNODES_RUN_FCST: ""  # This is calculated in the workflow generation scripts, so no need to set here.
-  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.sh
+  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
   WTIME_RUN_FCST: 04:30:00
   MAXTRIES_RUN_FCST: 1
   #
@@ -1580,7 +1562,7 @@ task_run_fcst:
   # commonly used set of grid-dependent parameters.  The predefined grid 
   # parameters are specified in the script 
   #
-  #   $HOMEdir/ush/set_predef_grid_params.sh
+  #   $HOMEdir/ush/set_predef_grid_params.py
   #
   #-----------------------------------------------------------------------
   #
@@ -1617,6 +1599,9 @@ task_run_fcst:
   #
   # Set parameters associated with the fixed (i.e. static) files.  Definitions:
   #
+  # SYMLINK_FIX_FILES:
+  # Symlink fix files to experiment directory if true, otherwise copy the files
+  #
   # FIXgsm:
   # System directory in which the majority of fixed (i.e. time-independent) 
   # files that are needed to run the FV3-LAM model are located
@@ -1627,158 +1612,12 @@ task_run_fcst:
   # FIXlut:
   # System directory where the lookup tables for optics properties are located
   #
-  # FNGLAC, ..., FNMSKH:
-  # Names of (some of the) global data files that are assumed to exist in 
-  # a system directory specified (this directory is machine-dependent; 
-  # the experiment generation scripts will set it and store it in the 
-  # variable FIXgsm).  These file names also appear directly in the forecast 
-  # model's input namelist file.
-  #
-  # FIXgsm_FILES_TO_COPY_TO_FIXam:
-  # If not running in NCO mode, this array contains the names of the files
-  # to copy from the FIXgsm system directory to the FIXam directory under
-  # the experiment directory.  Note that the last element has a dummy value.
-  # This last element will get reset by the workflow generation scripts to
-  # the name of the ozone production/loss file to copy from FIXgsm.  The
-  # name of this file depends on the ozone parameterization being used, 
-  # and that in turn depends on the CCPP physics suite specified for the 
-  # experiment.  Thus, the CCPP physics suite XML must first be read in to
-  # determine the ozone parameterizaton and then the name of the ozone 
-  # production/loss file.  These steps are carried out elsewhere (in one 
-  # of the workflow generation scripts/functions).
-  #
-  # FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
-  # This array is used to set some of the namelist variables in the forecast 
-  # model's namelist file that represent the relative or absolute paths of 
-  # various fixed files (the first column of the array, where columns are 
-  # delineated by the pipe symbol "|") to the full paths to these files in 
-  # the FIXam directory derived from the corresponding workflow variables 
-  # containing file names (the second column of the array).
-  #
-  # FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-  # This array is used to set some of the namelist variables in the forecast 
-  # model's namelist file that represent the relative or absolute paths of 
-  # various fixed files (the first column of the array, where columns are 
-  # delineated by the pipe symbol "|") to the full paths to surface climatology 
-  # files (on the native FV3-LAM grid) in the FIXlam directory derived from 
-  # the corresponding surface climatology fields (the second column of the 
-  # array).
-  #
-  # CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
-  # This array specifies the mapping to use between the symlinks that need
-  # to be created in each cycle directory (these are the "files" that FV3
-  # looks for) and their targets in the FIXam directory.  The first column
-  # of the array specifies the symlink to be created, and the second column
-  # specifies its target file in FIXam (where columns are delineated by the
-  # pipe symbol "|").
-  #
   #-----------------------------------------------------------------------
-  #
-  # Because the default values are dependent on the platform, we set these
-  # to a null string which will then be overwritten in setup.sh unless the
-  # user has specified a different value in config.sh
   #
   SYMLINK_FIX_FILES: true
   FIXgsm: ""
   FIXaer: ""
   FIXlut: ""
-  
-  FNGLAC: &FNGLAC "global_glacier.2x2.grb"
-  FNMXIC: &FNMXIC "global_maxice.2x2.grb"
-  FNTSFC: &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
-  FNSNOC: &FNSNOC "global_snoclim.1.875.grb"
-  FNZORC: &FNZORC "igbp"
-  FNAISC: &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
-  FNSMCC: &FNSMCC "global_soilmgldas.t126.384.190.grb"
-  FNMSKH: &FNMSKH "seaice_newland.grb"
-  
-  FIXgsm_FILES_TO_COPY_TO_FIXam: [
-  *FNGLAC,
-  *FNMXIC,
-  *FNTSFC,
-  *FNSNOC,
-  *FNAISC,
-  *FNSMCC,
-  *FNMSKH,
-  "global_climaeropac_global.txt",
-  "fix_co2_proj/global_co2historicaldata_2010.txt",
-  "fix_co2_proj/global_co2historicaldata_2011.txt",
-  "fix_co2_proj/global_co2historicaldata_2012.txt",
-  "fix_co2_proj/global_co2historicaldata_2013.txt",
-  "fix_co2_proj/global_co2historicaldata_2014.txt",
-  "fix_co2_proj/global_co2historicaldata_2015.txt",
-  "fix_co2_proj/global_co2historicaldata_2016.txt",
-  "fix_co2_proj/global_co2historicaldata_2017.txt",
-  "fix_co2_proj/global_co2historicaldata_2018.txt",
-  "fix_co2_proj/global_co2historicaldata_2019.txt",
-  "fix_co2_proj/global_co2historicaldata_2020.txt",
-  "fix_co2_proj/global_co2historicaldata_2021.txt",
-  "global_co2historicaldata_glob.txt",
-  "co2monthlycyc.txt",
-  "global_h2o_pltc.f77",
-  "global_hyblev.l65.txt",
-  "global_zorclim.1x1.grb",
-  "global_sfc_emissivity_idx.txt",
-  "global_tg3clim.2.6x1.5.grb",
-  "global_solarconstant_noaa_an.txt",
-  "global_albedo4.1x1.grb",
-  "geo_em.d01.lat-lon.2.5m.HGT_M.nc",
-  "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
-  "replace_with_FIXgsm_ozone_prodloss_filename"
-  ]
-  
-  #
-  # It is possible to remove this as a workflow variable and make it only
-  # a local one since it is used in only one script.
-  #
-  FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING: [
-  !join_str ["FNGLAC | ",*FNGLAC],
-  !join_str ["FNMXIC | ",*FNMXIC],
-  !join_str ["FNTSFC | ",*FNTSFC],
-  !join_str ["FNSNOC | ",*FNSNOC],
-  !join_str ["FNAISC | ",*FNAISC],
-  !join_str ["FNSMCC | ",*FNSMCC],
-  !join_str ["FNMSKH | ",*FNMSKH]
-  ]
-  #"FNZORC | $FNZORC",
-  
-  FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING: [
-  "FNALBC  | snowfree_albedo",
-  "FNALBC2 | facsf",
-  "FNTG3C  | substrate_temperature",
-  "FNVEGC  | vegetation_greenness",
-  "FNVETC  | vegetation_type",
-  "FNSOTC  | soil_type",
-  "FNVMNC  | vegetation_greenness",
-  "FNVMXC  | vegetation_greenness",
-  "FNSLPC  | slope_type",
-  "FNABSC  | maximum_snow_albedo"
-  ]
-  
-  CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING: [
-  "aerosol.dat                | global_climaeropac_global.txt",
-  "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
-  "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt",
-  "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt",
-  "co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt",
-  "co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt",
-  "co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt",
-  "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt",
-  "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt",
-  "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt",
-  "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt",
-  "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt",
-  "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt",
-  "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt",
-  "co2monthlycyc.txt          | co2monthlycyc.txt",
-  "global_h2oprdlos.f77       | global_h2o_pltc.f77",
-  "global_albedo4.1x1.grb     | global_albedo4.1x1.grb",
-  "global_zorclim.1x1.grb     | global_zorclim.1x1.grb",
-  "global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb",
-  "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
-  "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-  "global_o3prdlos.f77        | "
-  ]
 
 #----------------------------
 # POST config parameters
@@ -2188,7 +2027,7 @@ global:
   #
   # Set default SPP stochastic physics options. Each SPP option is an array, 
   # applicable (in order) to the scheme/parameter listed in SPP_VAR_LIST. 
-  # Enter each value of the array in config.sh as shown below without commas
+  # Enter each value of the array in config.yaml as shown below without commas
   # or single quotes (e.g., SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd" ). 
   # Both commas and single quotes will be added by Jinja when creating the
   # namelist.
