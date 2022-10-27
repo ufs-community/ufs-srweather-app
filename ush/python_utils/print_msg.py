@@ -41,6 +41,7 @@ def print_info_msg(info_msg, verbose=True):
         return True
     return False
 
+
 def log_info(info_msg, verbose=True, dedent_=True):
     """Function to print information message using the logging module. This function
     should not be used if python logging has not been initialized.
@@ -54,11 +55,10 @@ def log_info(info_msg, verbose=True, dedent_=True):
     """
 
     # "sys._getframe().f_back.f_code.co_name" returns the name of the calling function
-    logger=getLogger(sys._getframe().f_back.f_code.co_name)
+    logger = getLogger(sys._getframe().f_back.f_code.co_name)
 
     if verbose:
         if dedent_:
-            logger.info(indent(dedent(info_msg), '  '))
+            logger.info(indent(dedent(info_msg), "  "))
         else:
             logger.info(info_msg)
-

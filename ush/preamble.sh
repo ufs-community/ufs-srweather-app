@@ -91,7 +91,7 @@ TRACE=${DEBUG:-"FALSE"}
 
 if [[ $STRICT == "TRUE" ]]; then
     # Exit on error and undefined variable
-    set -eu
+    set -euo pipefail
 fi
 if [[ $TRACE == "TRUE" ]]; then
     # Turn on debugging

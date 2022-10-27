@@ -290,7 +290,7 @@ static) files in the FIXam directory:
 # isn't really an advantage to using relative symlinks, so we use symlinks 
 # with absolute paths.
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${SYMLINK_FIX_FILES}" == "FALSE" ]; then
   relative_link_flag="TRUE"
 else
   relative_link_flag="FALSE"

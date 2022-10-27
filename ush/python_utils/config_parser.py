@@ -60,8 +60,8 @@ try:
 
     def str_presenter(dumper, data):
         if len(data.splitlines()) > 1:
-          return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+            return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
     yaml.add_representer(str, str_presenter)
 
@@ -214,10 +214,13 @@ def load_ini_config(config_file, return_string=0):
     """Load a config file with a format similar to Microsoft's INI files"""
 
     if not os.path.exists(config_file):
-        raise FileNotFoundError(dedent(f'''
-                                The specified configuration file does not exist:
-                                "{config_file}"'''
-        ))
+        raise FileNotFoundError(
+            dedent(
+                f"""
+                The specified configuration file does not exist:
+                '{config_file}'"""
+            )
+        )
 
     config = configparser.RawConfigParser()
     config.optionxform = str
@@ -233,7 +236,7 @@ def get_ini_value(config, section, key):
     """Finds the value of a property in a given section"""
 
     if not section in config:
-        raise KeyError(f'Section not found: {section}')
+        raise KeyError(f"Section not found: {section}")
     else:
         return config[section][key]
 
