@@ -33,23 +33,23 @@ def print_input_args(valid_args):
 
     if num_valid_args == 0:
         msg = dedent(
-            f'''
+            f"""
             No arguments have been passed to function {function} in script {filename_base} located
 
-                \"{filename}\"'''
+                '{filename}'"""
         )
     else:
         msg = dedent(
             f"""
             The arguments to function {function} in script {filename_base} located
 
-                \"{filename}\"
+                '{filename}'
 
             have been set as follows:\n\n"""
         )
 
         for k, v in valid_arg_names.items():
-            msg = msg + f'  {k}="{v}"\n'
+            msg = msg + f"  {k}='{v}'\n"
 
     print_info_msg(msg, verbose=DEBUG)
     return num_valid_args

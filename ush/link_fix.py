@@ -230,7 +230,7 @@ def link_fix(verbose, file_group):
                     f"""
                     The resolution could not be extracted from the current file's name.  The
                     full path to the file (fp) is:
-                      fp = \"{fp}\"
+                      fp = '{fp}'
                     This may be because fp contains the * globbing character, which would
                     imply that no files were found that match the globbing pattern specified
                     in fp."""
@@ -243,8 +243,8 @@ def link_fix(verbose, file_group):
                     f"""
                     The resolutions (as obtained from the file names) of the previous and
                     current file (fp_prev and fp, respectively) are different:
-                      fp_prev = \"{fp_prev}\"
-                      fp      = \"{fp}\"
+                      fp_prev = '{fp_prev}'
+                      fp      = '{fp}'
                     Please ensure that all files have the same resolution."""
                 )
 

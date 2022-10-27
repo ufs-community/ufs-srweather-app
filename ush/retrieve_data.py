@@ -47,7 +47,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     unavailable = {}
     # Check to make sure the files exist on disk
     for file_path in source_paths:
-        local_file_path = os.path.join( os.getcwd(), file_path.lstrip("/") )
+        local_file_path = os.path.join(os.getcwd(), file_path.lstrip("/"))
         if not os.path.exists(local_file_path):
             logging.info(f"File does not exist: {local_file_path}")
             unavailable["hpss"] = source_paths
@@ -492,7 +492,6 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
     archive_internal_dirs = store_specs.get("archive_internal_dir", [""])
     if isinstance(archive_internal_dirs, dict):
         archive_internal_dirs = archive_internal_dirs.get(cla.anl_or_fcst, [""])
-
 
     # which_archive matters for choosing the correct file names within,
     # but we can safely just try all options for the
