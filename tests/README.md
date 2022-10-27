@@ -32,8 +32,8 @@ To run the tests, specify the machine name on the command line, for example:
 On cheyenne:
 
 ```
-cd test
+cd tests
 ./build.sh cheyenne >& build.out &
 ```
 
-Check the ``${HOMEdir}/test/build_test$PID.out`` file for PASS/FAIL.
+Check the ``${HOMEdir}/tests/build_test$PID.out`` file for PASS/FAIL.

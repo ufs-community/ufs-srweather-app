@@ -5,11 +5,11 @@ import unittest
 from datetime import datetime, timedelta
 
 from python_utils import (
-     import_vars,
-     set_env_var,
-     print_input_args,
-     load_config_file,
-     flatten_dict,
+    import_vars,
+    set_env_var,
+    print_input_args,
+    load_config_file,
+    flatten_dict,
 )
 
 
@@ -35,7 +35,7 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
     # get constants
     IMPORTS = ["RADIUS_EARTH", "DEGS_PER_RADIAN"]
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
+    constants_cfg = load_config_file(os.path.join(USHdir, "constants.yaml"))
     import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
 
     #

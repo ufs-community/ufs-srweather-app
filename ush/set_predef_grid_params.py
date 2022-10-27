@@ -41,11 +41,12 @@ def set_predef_grid_params():
     try:
         params_dict = params_dict[PREDEF_GRID_NAME]
     except KeyError:
-        errmsg = dedent(f'''
-                        PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
-                        Check your config file settings.''')
+        errmsg = dedent(
+            f"""
+            PREDEF_GRID_NAME = {PREDEF_GRID_NAME} not found in predef_grid_params.yaml
+            Check your config file settings."""
+        )
         raise Exception(errmsg) from None
-
 
     # if QUILTING = False, remove key
     if not QUILTING:
