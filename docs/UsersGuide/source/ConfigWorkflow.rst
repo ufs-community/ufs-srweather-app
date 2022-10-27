@@ -54,9 +54,6 @@ If non-default parameters are selected for the variables in this section, they s
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
-``LMOD_PATH``: (Default: "")
-   Path to the LMOD shell file on the user's Linux system. It is set automatically for supported machines.
-
 ``BUILD_MOD_FN``: (Default: "")
    Name of an alternative build module file to use if running on an unsupported platform. It is set automatically for supported machines.
 
@@ -1162,126 +1159,6 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 
 ``SYMLINK_FIX_FILES``: (Default: true)
    Flag that indicates whether to symlink or copy fix files to the experiment directory. 
-
-``FNGLAC, ..., FNMSKH``: (Default: see below)
-
-    | ``FNGLAC:`` &FNGLAC "global_glacier.2x2.grb"
-    | ``FNMXIC:`` &FNMXIC "global_maxice.2x2.grb"
-    | ``FNTSFC:`` &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
-    | ``FNSNOC:`` &FNSNOC "global_snoclim.1.875.grb"
-    | ``FNZORC:`` &FNZORC "igbp"
-    | ``FNAISC:`` &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
-    | ``FNSMCC:`` &FNSMCC "global_soilmgldas.t126.384.190.grb"
-    | ``FNMSKH:`` &FNMSKH "seaice_newland.grb"
-
-   Names and default locations of (some of the) global data files that are assumed to exist in a system directory. (This directory is machine-dependent; the experiment generation scripts will set it and store it in the variable ``FIXgsm``.) These file names also appear directly in the forecast model's input :term:`namelist` file.
-
-``FIXgsm_FILES_TO_COPY_TO_FIXam``: (Default: see below)
-
-   .. code-block:: console
-
-     [*FNGLAC,
-      *FNMXIC,
-      *FNTSFC,
-      *FNSNOC,
-      *FNAISC,
-      *FNSMCC,
-      *FNMSKH,
-      "global_climaeropac_global.txt",
-      "fix_co2_proj/global_co2historicaldata_2010.txt",
-      "fix_co2_proj/global_co2historicaldata_2011.txt",
-      "fix_co2_proj/global_co2historicaldata_2012.txt",
-      "fix_co2_proj/global_co2historicaldata_2013.txt",
-      "fix_co2_proj/global_co2historicaldata_2014.txt",
-      "fix_co2_proj/global_co2historicaldata_2015.txt",
-      "fix_co2_proj/global_co2historicaldata_2016.txt",
-      "fix_co2_proj/global_co2historicaldata_2017.txt",
-      "fix_co2_proj/global_co2historicaldata_2018.txt",
-      "fix_co2_proj/global_co2historicaldata_2019.txt",
-      "fix_co2_proj/global_co2historicaldata_2020.txt",
-      "fix_co2_proj/global_co2historicaldata_2021.txt",
-      "global_co2historicaldata_glob.txt",
-      "co2monthlycyc.txt",
-      "global_h2o_pltc.f77",
-      "global_hyblev.l65.txt",
-      "global_zorclim.1x1.grb",
-      "global_sfc_emissivity_idx.txt",
-      "global_tg3clim.2.6x1.5.grb",
-      "global_solarconstant_noaa_an.txt",
-      "global_albedo4.1x1.grb",
-      "geo_em.d01.lat-lon.2.5m.HGT_M.nc",
-      "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
-      "replace_with_FIXgsm_ozone_prodloss_filename"
-      ]
-
-   If not running in NCO mode, this array contains the names of the files to copy from the ``FIXgsm`` system directory to the ``FIXam`` directory under the experiment directory. 
-   
-   .. note::
-      The last element in the list above contains a dummy value. This value will be reset by the workflow generation scripts to the name of the ozone production/loss file that needs to be copied from ``FIXgsm``. The name of this file depends on the ozone parameterization scheme, and that, in turn, depends on the :term:`CCPP` physics suite specified for the experiment. 
-
-``FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING``: (Default: see below)
-
-   .. code-block:: console
-
-      [!join_str ["FNGLAC | ",*FNGLAC],
-      !join_str ["FNMXIC | ",*FNMXIC],
-      !join_str ["FNTSFC | ",*FNTSFC],
-      !join_str ["FNSNOC | ",*FNSNOC],
-      !join_str ["FNAISC | ",*FNAISC],
-      !join_str ["FNSMCC | ",*FNSMCC],
-      !join_str ["FNMSKH | ",*FNMSKH]
-      ]
-
-   This array is used to set some of the :term:`namelist` variables in the forecast model's namelist file. It maps file symlinks to the actual fixed file locations in the ``FIXam`` directory. The symlink names appear in the first column (to the left of the "|" symbol), and the paths to these files (in the ``FIXam`` directory) are held in workflow variables, which appear to the right of the "|" symbol. It is possible to remove ``FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING`` as a workflow variable and make it only a local one since it is used in only one script.
-
-``FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING``: (Default: see below)
-   .. code-block:: console
-
-      [
-      "FNALBC  | snowfree_albedo",
-      "FNALBC2 | facsf",
-      "FNTG3C  | substrate_temperature",
-      "FNVEGC  | vegetation_greenness",
-      "FNVETC  | vegetation_type",
-      "FNSOTC  | soil_type",
-      "FNVMNC  | vegetation_greenness",
-      "FNVMXC  | vegetation_greenness",
-      "FNSLPC  | slope_type",
-      "FNABSC  | maximum_snow_albedo"
-      ]
-
-   This array is used to set some of the :term:`namelist` variables in the forecast model's namelist file. The variable names appear in the first column (to the left of the "|" symbol), and the paths to these surface climatology files on the native FV3-LAM grid (in the ``FIXLAM`` directory) are derived from the corresponding surface climatology fields (the second column of the array).
-
-``CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING``: (Default: see below)
-   .. code-block:: console
-
-      [
-      "aerosol.dat                | global_climaeropac_global.txt",
-      "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
-      "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt",
-      "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt",
-      "co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt",
-      "co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt",
-      "co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt",
-      "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt",
-      "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt",
-      "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt",
-      "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt",
-      "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt",
-      "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt",
-      "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt",
-      "co2monthlycyc.txt          | co2monthlycyc.txt",
-      "global_h2oprdlos.f77       | global_h2o_pltc.f77",
-      "global_albedo4.1x1.grb     | global_albedo4.1x1.grb",
-      "global_zorclim.1x1.grb     | global_zorclim.1x1.grb",
-      "global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb",
-      "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
-      "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-      "global_o3prdlos.f77        | "
-      ]
-
-   This array specifies the mapping to use between the symlinks that need to be created in each cycle directory (these are the "files" that :term:`FV3` looks for) and their targets in the ``FIXam`` directory. The first column of the array specifies the symlink to be created, and the second column specifies its target file in ``FIXam`` (where columns are delineated by the pipe symbol "|").
-
 
 RUN_POST Configuration Parameters
 =====================================
