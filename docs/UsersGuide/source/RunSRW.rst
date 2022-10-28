@@ -677,7 +677,7 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/
       FIXgsm: /path/to/FIXgsm/files
       FIXlut: /path/to/FIXlut/files
    data:
-      FV3GFS: /Users/username/DATA/UFS/FV3GFS # (used to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS)
+      FV3GFS: /Users/username/DATA/UFS/FV3GFS # (used by setup.py to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS)
 
 The ``data:`` section can point to various data sources that the user has pre-staged on disk. For example:
 
