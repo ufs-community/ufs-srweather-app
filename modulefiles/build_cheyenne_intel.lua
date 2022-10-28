@@ -23,7 +23,6 @@ load("srw_common")
 
 load(pathJoin("g2", os.getenv("g2_ver") or "3.4.5"))
 load(pathJoin("esmf", os.getenv("esmf_ver") or "8.3.0b09"))
-load(pathJoin("mapl", os.getenv("mapl_ver") or "2.11.0-esmf-8.3.0b09"))
 load(pathJoin("netcdf", os.getenv("netcdf_ver") or "4.7.4"))
 load(pathJoin("libpng", os.getenv("libpng_ver") or "1.6.37"))
 load(pathJoin("pio", os.getenv("pio_ver") or "2.5.3"))
