@@ -1117,26 +1117,6 @@ Aerosol Climatology Parameter
 
    .. COMMENT: When would it be appropriate to obtain these files?
 
-Surface Climatology Parameter
----------------------------------
-
-``SFC_CLIMO_FIELDS``: (Default: see below)
-
-   .. code-block:: console 
-
-      [
-         "facsf",
-         "maximum_snow_albedo",
-         "slope_type",
-         "snowfree_albedo",
-         "soil_type",
-         "substrate_temperature",
-         "vegetation_greenness",
-         "vegetation_type"
-      ] 
-   
-   Array containing the names of all the fields that the ``MAKE_SFC_CLIMO_TN`` task generates on the native FV3-LAM grid.
-
 Fixed File Parameters
 -------------------------
 

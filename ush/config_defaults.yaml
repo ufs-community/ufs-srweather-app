@@ -864,7 +864,7 @@ task_make_grid:
   # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
   # they are not needed by the forecast model.  
   # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
-  #       variable.  Just set it in the function set_gridparams_ESGgrid.sh.
+  #       variable.  Just set it in the function set_gridparams_ESGgrid.py.
   #
   # Note that:
   #
@@ -1665,24 +1665,6 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set the array parameter containing the names of all the fields that the
-  # MAKE_SFC_CLIMO_TN task generates on the native FV3-LAM grid.
-  #
-  #-----------------------------------------------------------------------
-  #
-  SFC_CLIMO_FIELDS: [
-  "facsf",
-  "maximum_snow_albedo",
-  "slope_type",
-  "snowfree_albedo",
-  "soil_type",
-  "substrate_temperature",
-  "vegetation_greenness",
-  "vegetation_type"
-  ]
   #
   #-----------------------------------------------------------------------
   #
