@@ -17,7 +17,13 @@ from python_utils import (
     find_pattern_in_str,
 )
 
-def set_ozone_param(ccpp_phys_suite_fp):
+
+def set_ozone_param(
+    ccpp_phys_suite_fp,
+    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+    FIXgsm_FILES_TO_COPY_TO_FIXam,
+    VERBOSE,
+):
     """Function that does the following:
     (1) Determines the ozone parameterization being used by checking in the
         CCPP physics suite XML.
@@ -41,14 +47,13 @@ def set_ozone_param(ccpp_phys_suite_fp):
 
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
+        FIXgsm_FILES_TO_COPY_TO_FIXam
     Returns:
         ozone_param: a string
     """
 
     print_input_args(locals())
-
-    # import all environment variables
-    import_vars()
 
     #
     # -----------------------------------------------------------------------
@@ -90,8 +95,10 @@ def set_ozone_param(ccpp_phys_suite_fp):
         fixgsm_ozone_fn = "global_o3prdlos.f77"
         ozone_param = "ozphys"
     else:
-        raise KeyError(f'Unknown or no ozone parameterization specified in the '
-                        'CCPP physics suite file "{ccpp_phys_suite_fp}"')
+        raise KeyError(
+            f"Unknown or no ozone parameterization specified in the "
+            "CCPP physics suite file '{ccpp_phys_suite_fp}'"
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -151,23 +158,26 @@ def set_ozone_param(ccpp_phys_suite_fp):
             CCPP suite definition file), the array specifying the mapping between
             the symlinks that need to be created in the cycle directories and the
             files in the FIXam directory is:
-            """, verbose=VERBOSE)
-        log_info(f"""
+            """,
+            verbose=VERBOSE,
+        )
+        log_info(
+            f"""
               CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """, verbose=VERBOSE, dedent_=False)
+            """,
+            verbose=VERBOSE,
+            dedent_=False,
+        )
 
     else:
 
         raise Exception(
-            f'''
+            f"""
             Unable to set name of the ozone production/loss file in the FIXgsm directory
             in the array that specifies the mapping between the symlinks that need to
             be created in the cycle directories and the files in the FIXgsm directory:
-              fixgsm_ozone_fn_is_set = \"{fixgsm_ozone_fn_is_set}\"'''
+              fixgsm_ozone_fn_is_set = '{fixgsm_ozone_fn_is_set}'"""
         )
-
-    EXPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    export_vars(env_vars=EXPORTS)
 
     return ozone_param
 
@@ -178,15 +188,15 @@ class Testing(unittest.TestCase):
         self.assertEqual(
             "ozphys_2015",
             set_ozone_param(
-                ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml"
+                f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
+                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
+                FIXgsm_FILES_TO_COPY_TO_FIXam,
+                VERBOSE=True,
             ),
         )
 
     def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-
+        global CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
             "aerosol.dat                | global_climaeropac_global.txt",
             "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
@@ -209,6 +219,7 @@ class Testing(unittest.TestCase):
             "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
             "global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
         ]
+        global FIXgsm_FILES_TO_COPY_TO_FIXam
         FIXgsm_FILES_TO_COPY_TO_FIXam = [
             "global_glacier.2x2.grb",
             "global_maxice.2x2.grb",
@@ -241,9 +252,3 @@ class Testing(unittest.TestCase):
             "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
             "ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
         ]
-
-        set_env_var(
-            "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-        )
-        set_env_var("FIXgsm_FILES_TO_COPY_TO_FIXam", FIXgsm_FILES_TO_COPY_TO_FIXam)

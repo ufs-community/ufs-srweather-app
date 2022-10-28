@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 def check_var_valid_value(var, values):
     """Check if specified variable has a valid value
 

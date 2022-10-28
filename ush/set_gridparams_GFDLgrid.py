@@ -63,7 +63,7 @@ def set_gridparams_GFDLgrid(
     import_vars(env_vars=IMPORTS)
     IMPORTS = ["NH4"]
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
+    constants_cfg = load_config_file(os.path.join(USHdir, "constants.yaml"))
     import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
 
     #

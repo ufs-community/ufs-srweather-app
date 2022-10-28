@@ -17,7 +17,7 @@ def cmd_vrfy(cmd, *args):
     cmd += " " + " ".join([str(a) for a in args])
     ret = os.system(cmd)
     if ret != 0:
-        print_err_msg_exit(f'System call "{cmd}" failed.')
+        print_err_msg_exit(f"System call '{cmd}' failed.")
     return ret
 
 
