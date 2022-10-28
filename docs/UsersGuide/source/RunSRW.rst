@@ -652,15 +652,15 @@ For :ref:`Option 2 <MacDetails>`, add the following information to ``config.yaml
 
 **Configure the Machine File**
 
-Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/`` based on the number of CPUs (``<ncores>``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``<sched>``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
+Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
    platform:
       # Architecture information
       WORKFLOW_MANAGER: none
-      NCORES_PER_NODE: ${NCORES_PER_NODE:-<ncores>}
-      SCHED: ${SCHED:-"<sched>"}
+      NCORES_PER_NODE: 8
+      SCHED: none
       # Run commands for executables
       RUN_CMD_FCST: 'mpirun -np ${PE_MEMBER01}'
       RUN_CMD_POST: 'mpirun -np 4'
@@ -677,9 +677,21 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``$SRW/ush/machine/
       FIXgsm: /path/to/FIXgsm/files
       FIXlut: /path/to/FIXlut/files
    data:
-      FV3GFS: /Users/username/DATA/UFS/FV3GFS
+      FV3GFS: /Users/username/DATA/UFS/FV3GFS # (used to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS)
 
-.. COMMENT: what is this "data:" section used for?!
+The ``data:`` section can point to various data sources that the user has pre-staged on disk. For example:
+
+.. code-block:: console
+
+   data:
+      FV3GFS:
+         nemsio: /Users/username/DATA/UFS/FV3GFS/nemsio
+         grib2: /Users/username/DATA/UFS/FV3GFS/grib2
+         netcdf: /Users/username/DATA/UFS/FV3GFS/netcdf
+      RAP: /Users/username/DATA/UFS/RAP/grib2
+      HRRR: /Users/username/DATA/UFS/HRRR/grib2
+
+This can be helpful when conducting a multiple experiments with different types of data. 
 
 .. _VXConfig:
 
