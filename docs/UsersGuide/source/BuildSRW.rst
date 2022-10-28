@@ -204,13 +204,14 @@ where valid values are ``intel`` or ``gnu``.
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-If users want to build the optional ``GSI`` and ``rrfs_utl`` components for :term:`RRFS`, they can pass the ``gsi`` and ``rrfs_utils`` arguments to ``devbuild.sh`` (NOTE: These components are not currently available for use at runtime). For example:
-
-.. COMMENT: What does the runtime note mean?
+If users want to build the optional ``GSI`` and ``rrfs_utl`` components for :term:`RRFS`, they can pass the ``gsi`` and ``rrfs_utils`` arguments to ``devbuild.sh``. For example:
 
 .. code-block:: console
 
    ./devbuild.sh -p=hera gsi rrfs_utils
+
+.. note:: 
+   RRFS capabilities are currently build-only features. They are not yet available for use at runtime. 
 
 The last few lines of the RRFS console output should be: 
 

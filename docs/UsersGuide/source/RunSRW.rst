@@ -806,7 +806,7 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: _static/FV3LAM_wflow_flowchart_v2.png
+.. figure:: _static/SRW_wflow_flowchart.png
    :alt: Flowchart of the workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
    *Flowchart of the workflow tasks*
