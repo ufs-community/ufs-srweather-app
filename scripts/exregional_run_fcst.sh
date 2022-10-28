@@ -492,6 +492,9 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
     ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
   done
+
+  # create an intermediate symlink to RESTART
+  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -509,6 +512,21 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
+#
+#-----------------------------------------------------------------------
+#
+# Move RESTART directory to COMIN and create symlink in DATA only for
+# NCO mode and when it is not empty.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  rm_vrfy -rf "${COMIN}/RESTART"
+  if [ "$(ls -A RESTART)" ]; then
+    mv_vrfy RESTART ${COMIN}
+    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
