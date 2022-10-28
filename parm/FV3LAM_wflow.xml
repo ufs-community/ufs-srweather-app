@@ -22,7 +22,11 @@ Parameters needed by the job scheduler.
 <!--
 Workflow task names.
 -->
+{%- if sched_native_cmd  %}
 <!ENTITY SCHED_NATIVE_CMD          "{{ sched_native_cmd }}">
+{%- else %}
+<!ENTITY SCHED_NATIVE_CMD          "">
+{%- endif %}
 <!ENTITY MAKE_GRID_TN              "{{ make_grid_tn }}">
 <!ENTITY MAKE_OROG_TN              "{{ make_orog_tn }}">
 <!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
