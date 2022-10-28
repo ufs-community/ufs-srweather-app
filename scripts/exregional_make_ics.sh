@@ -597,7 +597,7 @@ mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TI
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy  ${extrn_mdl_staging_dir}
+  rm_vrfy -rf ${extrn_mdl_staging_dir}
 fi
 #
 #-----------------------------------------------------------------------
