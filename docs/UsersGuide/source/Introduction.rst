@@ -8,7 +8,7 @@ The Unified Forecast System (:term:`UFS`) is a community-based, coupled, compreh
 
 The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.0.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`__. New and improved capabilities for this release include the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
-This documentation provides a :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. It also provides a :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container and a :ref:`detailed guide <RunSRW>` for running the SRW App on any supported platform. Additionally, this User's Guide provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
+This documentation provides a :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. It also provides a :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container and detailed chapters on :ref:`building <BuildSRW>` and :ref:`running <RunSRW>` the SRW App on any supported platform. Additionally, this User's Guide provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
@@ -18,14 +18,14 @@ UFS Development Team. (2022, June 23). Unified Forecast System (UFS) Short-Range
 How to Use This Document
 ========================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS Forum <https://forums.ufscommunity.org/forum/short-range-weatherconvection-allowing-application>`__.
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum.
 
 .. code-block:: console
 
    Throughout the guide, this presentation style indicates shell commands and options, 
    code examples, etc.
 
-Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, and directories.
+Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, or directories.
 
 File paths or code that include angle brackets (e.g., ``build_<platform>_<compiler>``) indicate that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel``). 
 
@@ -34,7 +34,7 @@ File paths or code that include angle brackets (e.g., ``build_<platform>_<compil
 
       #. View :numref:`Chapter %s <NCQuickstart>` for a quick overview of the workflow steps. 
       #. To build the application in a container, which provides a more uniform work environment, users can refer to the :ref:`Container-Based Quick Start Guide <QuickstartC>`. 
-      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s Running the SRW App <RunSRW>`. 
+      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. 
 
    * For background information on the SRW App code repositories and directory structure, see :numref:`Section %s <SRWStructure>` below. 
    * For an outline of SRW App components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
@@ -75,11 +75,11 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * >82 GB disk space
 
-   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database) for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS`` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
    * 3 GB for ``ufs-srweather-app`` installation
-   * 1 GB for boundary conditions for a short 12-h test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`
-   * 17 GB for a 12-h test forecast on the CONUS 25km domain, with model output saved hourly, see :numref:`Section %s <GridSpecificConfig>`
+   * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
 
 * Fortran compiler released since 2018
 
@@ -112,10 +112,10 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :ref:`Chapter %s <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :numref:`Chapter %s <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
-* GNU compiler suite v.11 or higher with gfortran
+* GNU compiler suite v11 or higher with gfortran
 * cmake
 * make
 * coreutils
