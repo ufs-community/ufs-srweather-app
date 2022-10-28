@@ -538,6 +538,9 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
     ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
   done
+
+  # create symlink to RESTART
+  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -574,13 +577,21 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 # Move RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode.
+# NCO mode and when it is not empty.
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  mv_vrfy RESTART ${COMIN}
-  ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+if [ "${RUN_ENVIR}" = "nco" ]; then     	
+  rm_vrfy -rf "${COMIN}/RESTART"
+  if [ "$(ls -A RESTART)" ]; then
+    mv_vrfy RESTART ${COMIN}
+    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+  fi
+
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    cp_vrfy ${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f*.nc ${COMOUT}
+    cp_vrfy ${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f*.nc ${COMOUT}
+  fi
 fi
 #
 #-----------------------------------------------------------------------

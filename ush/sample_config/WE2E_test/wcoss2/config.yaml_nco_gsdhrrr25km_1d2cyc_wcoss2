@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode, 6hr forecast, 4cycles a day, on WCOSS2
+  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode, 6hr forecast, 2cycles a day, on WCOSS2
 user:
   RUN_ENVIR: nco
   MACHINE: wcoss2
@@ -8,12 +8,12 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
-  EXPT_SUBDIR: aqm_nco_hrrr25_1d4cyc
+  EXPT_SUBDIR: aqm_nco_hrrr25_1d2cyc
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   DATE_FIRST_CYCL: '2019080500'
-  DATE_LAST_CYCL: '2019080518'
+  DATE_LAST_CYCL: '2019080506'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 6
+  FCST_LEN_HRS: 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
