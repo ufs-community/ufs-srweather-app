@@ -1575,24 +1575,6 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  # Set the array parameter containing the names of all the fields that the
-  # MAKE_SFC_CLIMO_TN task generates on the native FV3-LAM grid.
-  #
-  #-----------------------------------------------------------------------
-  #
-  SFC_CLIMO_FIELDS: [
-  "facsf",
-  "maximum_snow_albedo",
-  "slope_type",
-  "snowfree_albedo",
-  "soil_type",
-  "substrate_temperature",
-  "vegetation_greenness",
-  "vegetation_type"
-  ]
-  #
-  #-----------------------------------------------------------------------
-  #
   # Set parameters associated with the fixed (i.e. static) files.  Definitions:
   #
   # SYMLINK_FIX_FILES:
