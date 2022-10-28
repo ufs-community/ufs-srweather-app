@@ -513,11 +513,11 @@ POST_STEP
 #-----------------------------------------------------------------------
 #
 # Move RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode.
+# NCO mode and when it is not empty.
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "$(ls -A RESTART)" ]; then
   mv_vrfy RESTART ${COMIN}
   ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
 fi
