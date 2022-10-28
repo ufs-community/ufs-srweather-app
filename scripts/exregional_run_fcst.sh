@@ -512,6 +512,18 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
+# Move RESTART directory to COMIN and create symlink in DATA only for
+# NCO mode.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  mv_vrfy RESTART ${COMIN}
+  ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+fi
+#
+#-----------------------------------------------------------------------
+#
 # If doing inline post, create the directory in which the post-processing 
 # output will be stored (postprd_dir).
 #
