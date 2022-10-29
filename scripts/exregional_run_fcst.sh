@@ -471,16 +471,6 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-# Create an intermediate symlink to RESTART
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -494,21 +484,6 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# Move RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode and when it is not empty.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy -rf "${COMIN}/RESTART"
-  if [ "$(ls -A RESTART)" ]; then
-    mv_vrfy RESTART ${COMIN}
-    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
-  fi
-fi
 #
 #-----------------------------------------------------------------------
 #
