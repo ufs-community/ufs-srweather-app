@@ -39,6 +39,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'fcst',
                 '--config', self.config,
@@ -50,6 +51,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--debug',
                 '--file_type', 'grib2',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -69,6 +71,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'fcst',
                 '--config', self.config,
@@ -80,6 +83,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--debug',
                 '--file_type', 'netcdf',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -99,6 +103,7 @@ class FunctionalTesting(unittest.TestCase):
 
             out_path_tmpl = f"mem{{mem:03d}}"
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'anl',
                 '--config', self.config,
@@ -111,6 +116,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--file_type', 'netcdf',
                 '--members', '9', '10',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -132,6 +138,7 @@ class FunctionalTesting(unittest.TestCase):
 
             out_path_tmpl = f"mem{{mem:03d}}"
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'anl',
                 '--config', self.config,
@@ -144,6 +151,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--file_type', 'netcdf',
                 '--members', '1', '2',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -163,6 +171,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'anl',
                 '--config', self.config,
@@ -173,6 +182,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -190,6 +200,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'fcst',
                 '--config', self.config,
@@ -200,6 +211,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -216,6 +228,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'anl',
                 '--config', self.config,
@@ -226,6 +239,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -242,6 +256,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'fcst',
                 '--config', self.config,
@@ -252,6 +267,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -269,6 +285,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'anl',
                 '--config', self.config,
@@ -279,6 +296,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
@@ -296,6 +314,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
+            # fmt: off
             args = [
                 '--anl_or_fcst', 'fcst',
                 '--config', self.config,
@@ -306,6 +325,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--output_path', tmp_dir,
                 '--debug',
             ]
+            # fmt: on
 
             retrieve_data.main(args)
 
