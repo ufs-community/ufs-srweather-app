@@ -14,5 +14,3 @@ load("stack-intel-oneapi-mpi")
 load("cmake/3.22.1") 
 
 load("srw_common_spack")
---prepend_path("MODULEPATH","/contrib/EPIC/miniconda3/modulefiles")
---load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
