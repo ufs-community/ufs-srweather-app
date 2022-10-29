@@ -9,7 +9,9 @@ load("contrib")
 load("noaatools")
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.1"))
-load(pathJoin("python", os.getenv("python_ver") or "3.9.2"))
+
+append_path("MODULEPATH","/work/noaa/epic-ps/role-epic-ps/miniconda3/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
 
 prepend_path("MODULEPATH","/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))

@@ -10,6 +10,9 @@ load("sutils")
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
 
+prepend_path("MODULEPATH","/mnt/lfs4/HFIP/hfv3gfs/role.epic/miniconda3/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+
 prepend_path("MODULEPATH","/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1.2"))
