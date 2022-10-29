@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -173,8 +173,9 @@ if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
     modules_dir = \"${modules_dir}\""    
 fi
 
+set -x
 module list
-
+#source /contrib/EPIC/miniconda3/4.12.0/etc/profile.d/conda.sh 
 
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
@@ -187,6 +188,7 @@ if [ -n "${SRW_ENV:-}" ] ; then
   set -u
 fi
 
+ldd /apps/oneapi/mpi/2021.3.0/bin/mpiexec.hydra
 #
 #-----------------------------------------------------------------------
 #
