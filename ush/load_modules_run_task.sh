@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 #
 #-----------------------------------------------------------------------
 #
@@ -172,10 +172,6 @@ if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
     modulefile_local = \"${modulefile_local}\"
     modules_dir = \"${modules_dir}\""    
 fi
-
-set -x
-module list
-#source /contrib/EPIC/miniconda3/4.12.0/etc/profile.d/conda.sh 
 
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
