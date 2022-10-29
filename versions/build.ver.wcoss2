@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export module_ver=8.5.2
-export gfs_ver=v16.2 
 
 export envvar_ver=1.0
 export PrgEnv_intel_ver=8.1.0
