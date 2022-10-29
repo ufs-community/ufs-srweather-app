@@ -173,6 +173,9 @@ if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
     modules_dir = \"${modules_dir}\""    
 fi
 
+module list
+
+
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
