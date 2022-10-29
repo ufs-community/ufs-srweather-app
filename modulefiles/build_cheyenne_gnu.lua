@@ -13,9 +13,6 @@ setenv("MKLROOT", "/glade/u/apps/opt/intel/2022.1/mkl/latest")
 load(pathJoin("ncarcompilers", os.getenv("ncarcompilers_ver") or "0.5.0"))
 unload("netcdf")
 
-prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
-
 prepend_path("MODULEPATH","/glade/work/epicufsrt/GMTB/tools/gnu/11.2.0/hpc-stack-v1.2.0/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-gnu", os.getenv("hpc_gnu_ver") or "11.2.0"))

@@ -13,9 +13,6 @@ load(pathJoin("mkl", os.getenv("mkl_ver") or "2022.1"))
 load(pathJoin("ncarcompilers", os.getenv("ncarcompilers_ver") or "0.5.0"))
 unload("netcdf")
 
-prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
-
 prepend_path("MODULEPATH","/glade/work/epicufsrt/GMTB/tools/intel/2022.1/hpc-stack-v1.2.0_6eb6/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1"))
