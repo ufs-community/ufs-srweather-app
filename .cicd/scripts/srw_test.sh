@@ -28,6 +28,7 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
+nco_dir="${workspace}/nco_dirs"
 
 # Run the end-to-end tests.
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
@@ -37,7 +38,7 @@ else
 fi
 
 cd ${we2e_test_dir}
-./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} ${we2e_experiment_base_dir}
+./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} ${we2e_experiment_base_dir} ${nco_dir}
 
 # Allow the tests to start before checking for status.
 # TODO: Create a parameter that sets the initial start delay.
