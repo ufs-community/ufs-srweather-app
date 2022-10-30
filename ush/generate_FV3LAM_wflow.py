@@ -269,6 +269,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             "wtime_vx_enspoint_mean": WTIME_VX_ENSPOINT_MEAN,
             "wtime_vx_enspoint_prob": WTIME_VX_ENSPOINT_PROB,
             #
+            # Minimum memory needed by a task
+            #
+            "mem_get_extrn_ics": MEM_GET_EXTRN_ICS,
+            "mem_get_extrn_lbcs": MEM_GET_EXTRN_LBCS,
+            #
             # Maximum number of tries for each task.
             #
             "maxtries_make_grid": MAXTRIES_MAKE_GRID,

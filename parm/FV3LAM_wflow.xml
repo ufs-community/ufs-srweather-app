@@ -302,6 +302,7 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
+    <memory>{{ mem_get_extrn_ics }}</memory>
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -327,6 +328,7 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
+    <memory>{{ mem_get_extrn_lbcs }}</memory>
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
