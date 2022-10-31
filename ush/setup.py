@@ -236,13 +236,16 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # export env vars before calling another module
-    export_vars()
-
     if PREDEF_GRID_NAME:
-        set_predef_grid_params()
-
-    import_vars()
+        params_dict = set_predef_grid_params(
+            PREDEF_GRID_NAME,
+            QUILTING,
+            DT_ATMOS,
+            LAYOUT_X,
+            LAYOUT_Y,
+            BLOCKSIZE,
+        )
+        import_vars(dictionary=params_dict)
 
     #
     # -----------------------------------------------------------------------
