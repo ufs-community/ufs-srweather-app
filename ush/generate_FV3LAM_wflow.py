@@ -269,10 +269,21 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             "wtime_vx_enspoint_mean": WTIME_VX_ENSPOINT_MEAN,
             "wtime_vx_enspoint_prob": WTIME_VX_ENSPOINT_PROB,
             #
-            # Minimum memory needed by a task
+            # Minimum memory needed by each serial task
             #
             "mem_get_extrn_ics": MEM_GET_EXTRN_ICS,
             "mem_get_extrn_lbcs": MEM_GET_EXTRN_LBCS,
+            "mem_get_obs_ccpa": MEM_GET_OBS_CCPA,
+            "mem_get_obs_mrms": MEM_GET_OBS_MRMS,
+            "mem_get_obs_ndas": MEM_GET_OBS_NDAS,
+            "mem_vx_gridstat": MEM_VX_GRIDSTAT,
+            "mem_vx_pointstat": MEM_VX_POINTSTAT,
+            "mem_vx_ensgrid": MEM_VX_ENSGRID,
+            "mem_vx_ensgrid_mean": MEM_VX_ENSGRID_MEAN,
+            "mem_vx_ensgrid_prob": MEM_VX_ENSGRID_PROB,
+            "mem_vx_enspoint": MEM_VX_ENSPOINT,
+            "mem_vx_enspoint_mean": MEM_VX_ENSPOINT_MEAN,
+            "mem_vx_enspoint_prob": MEM_VX_ENSPOINT_PROB,
             #
             # Maximum number of tries for each task.
             #
