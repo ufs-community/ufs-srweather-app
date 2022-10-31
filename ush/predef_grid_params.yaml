@@ -863,7 +863,7 @@
   BLOCKSIZE: 16
   # if QUILTING = True
   WRTCMP_write_groups: 2
-  WRTCMP_write_tasks_per_group: 34
+  WRTCMP_write_tasks_per_group: 46
   WRTCMP_output_grid: "rotated_latlon"
   WRTCMP_cen_lon: -118.0
   WRTCMP_cen_lat: 50.0
