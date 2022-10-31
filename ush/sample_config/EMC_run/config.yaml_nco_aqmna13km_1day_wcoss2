@@ -2,12 +2,12 @@ metadata:
   description: config for Online-CMAQ, AQM_NA_13km, NCO mode, 1cycle a day
 user:
   RUN_ENVIR: nco
-  MACHINE: hera
-  ACCOUNT: naqfc
+  MACHINE: wcoss2
+  ACCOUNT: AQM-DEV
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
-#  EXPT_BASEDIR: /scratch2/NCEPDEV/stmp3/Chan-hoo.Jeon/expt_dirs
+#  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
   EXPT_SUBDIR: aqm.v7
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   DATE_FIRST_CYCL: '2022102212'
@@ -23,18 +23,18 @@ nco:
   NET: aqm
   model_ver: v7.0
   RUN: aqm_test
-  OPSROOT: /scratch2/NCEPDEV/stmp3/Chan-hoo.Jeon/NCO_OUTPUT
+  OPSROOT: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/NCO_OUTPUT_aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
   RUN_TASK_RUN_POST: true
 task_make_grid:
-  GRID_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
-  OROG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  OROG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_sfc_climo:
-  SFC_CLIMO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  SFC_CLIMO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
@@ -69,29 +69,29 @@ cpl_aqm_parm:
   DO_AQM_GEFS_LBCS: true
   AQM_GEFS_CYC: 0
   AQM_RC_TMPL_FN: aqm.rc
-  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
+  AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
+  AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
   DO_AQM_FENGSHA: true
-  AQM_FENGSHA_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
+  AQM_FENGSHA_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/emissions/nexus/Dust
   AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_FENGSHA_FILE_SUFFIX: .nc
-  DO_AQM_CANOPY: false
-  AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  AQM_CANOPY_FILE: gfs.t12z.geo
-  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
-  AQM_FIRE_DIR: /scratch2/NCEPDEV/naqfc/Jianping.Huang/Data/emissions/GSCE/RAVE.in.793/RAVE_RT
+#  DO_AQM_CANOPY: false
+#  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
+#  AQM_CANOPY_FILE: gfs.t12z.geo
+#  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
+  AQM_FIRE_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/RRFS_CMAQ/emissions/GSCE/RAVE.in.C793/RAVE_RT
   AQM_FIRE_FILE: Hourly_Emissions_regrid_NA_13km
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
-  AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ_NA13km/LBCS/RRFS_NA13km_GEOS5_v2
+  AQM_LBCS_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/UFSAQM_NA13km_GEOS5_LBC_v2
   AQM_LBCS_FILES: geos5_bndy_v2.c793.2013<MM>.nc
-  AQM_GEFS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_aerosol
-  NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/Jianping.Huang/emissions/nexus
-  NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
+  AQM_GEFS_DIR: /lfs/h1/ops/prod/com/gefs/v12.3
+  NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
+  NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_793.nc
-  PT_SRC_BASE_DIR_CONUS: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt/12US1
-  PT_SRC_BASE_DIR_HI: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt/3HI1
-  PT_SRC_BASE_DIR_AK: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt/9AK1
-#  RESTART_WORKFLOW: true
-#  RESTART_CYCLE_DIR: /scratch2/NCEPDEV/stmp3/Jianping.Huang/NCO_OUTPUT/stmp/tmpnwprd/aqm_test_a/2020091412
+  PT_SRC_BASE_DIR_CONUS: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/12US1
+  PT_SRC_BASE_DIR_HI: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/3HI1
+  PT_SRC_BASE_DIR_AK: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/9AK1
+#  COLDSTART: false
+#  WARMSTART_CYCLE_DIR: /lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.c3/2022102118

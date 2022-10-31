@@ -200,12 +200,18 @@ FV3_GFS_v15p2:
     fv_debug: False
     fv_sg_adj: 600
     k_split: 1
+    hord_dp: -5 
+    hord_mt: 5
+    hord_tm: 5
+    hord_tr: 8
+    hord_vt: 5    
     kord_mt: 9
     kord_tm: -9
     kord_tr: 9
     kord_wz: 9
     n_split: 8
     n_sponge: 30
+    nord: 2
     nord_zs_filter: !!python/none
     nudge_qv: True
     range_warn: False
