@@ -12,6 +12,9 @@ Glossary
    advection
       According to the American Meteorological Society (AMS) `definition <https://glossary.ametsoc.org/wiki/Advection>`__, advection is "The process of transport of an atmospheric property solely by the mass motion (velocity field) of the atmosphere." In common parlance, advection is movement of atmospheric substances that are carried around by the wind.
 
+   AQM
+      The `Air Quality Model <https://github.com/NOAA-EMC/AQM>`__ (AQM) is a UFS Application that dynamically couples the Community Multiscale Air Quality (:term:`CMAQ`) model with the UFS Weather Model through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS Weather Model as :term:`tracers<tracer>`.
+
    CAPE
       Convective Available Potential Energy. 
 
@@ -27,6 +30,9 @@ Glossary
 
    CIN
       Convective Inhibition.
+
+   CMAQ
+      The `Community Multiscale Air Quality Model <https://www.epa.gov/cmaq/cmaq-models-0>`__ (CMAQ, pronounced "cee-mak") is a numerical air quality model that predicts the concentration of airborne gases and particles and the deposition of these pollutants back to Earth's surface. The purpose of CMAQ is to provide fast, technically sound estimates of ozone, particulates, toxics, and acid deposition. CMAQ is an active open-source development project of the U.S. Environmental Protection Agency (EPA). Code is publicly availably at https://github.com/USEPA/CMAQ. 
 
    cron
    crontab
@@ -92,6 +98,12 @@ Glossary
 
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
+
+   GSI
+      `Gridpoint Statistical Interpolation <https://dtcenter.org/community-code/gridpoint-statistical-interpolation-gsi>`__ (GSI) is a variational data assimilation system, designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. It supports :term:`RRFS` features. GSI code is publicly available `on GitHub <https://github.com/NOAA-EMC/GSI>`__, and fix file data is publicly available `here <https://ftp.emc.ncep.noaa.gov/jcsda/WDQMS/NCEP/GSI-FIX/>`__. 
+
+   GSL
+      NOAA `Global Systems Laboratory <https://gsl.noaa.gov/>`__ is one of ten NOAA Research laboratories and is located in Boulder, Colorado. Its research improves environmental prediction models, develops state-of-the-science decision support tools and visualization systems, and uses high-performance computing technology to support a Weather-Ready Nation. 
 
    halo
       A strip of cells on the edge of the regional grid. The :ref:`wide halo <WideHalo>` surrounds the regional grid and is used to feed the lateral boundary conditions into the grid. The :ref:`HALO_BLEND <HaloBlend>` parameter refers to a strip of cells *inside* the boundary of the native grid. This halo smooths out mismatches between the external and internal solutions. 
@@ -167,6 +179,9 @@ Glossary
    netCDF
       NetCDF (`Network Common Data Form <https://www.unidata.ucar.edu/software/netcdf/>`__) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.
 
+   NSSL
+      The `National Severe Storms Laboratory <https://www.nssl.noaa.gov/>`__. 
+
    NUOPC
       The `National Unified Operational Prediction Capability <https://earthsystemmodeling.org/nuopc/>`__ Layer "defines conventions and a set of generic components for building coupled models using the Earth System Modeling Framework (:term:`ESMF`)." 
 
@@ -184,6 +199,9 @@ Glossary
 
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
+
+   RRFS
+      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain. 
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.

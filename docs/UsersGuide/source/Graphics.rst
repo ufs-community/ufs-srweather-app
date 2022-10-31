@@ -17,7 +17,7 @@ output over the :term:`CONUS` for a number of variables, including:
 * Max/Min 2-5 km updraft helicity
 * Sea level pressure (SLP)
 
-The Python scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python``.
+The Python scripts are located under ``ufs-srweather-app/ush/Python``.
 The script ``plot_allvars.py`` plots the output from a single cycle within an experiment, while 
 the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different
 experiments (e.g., the experiments may differ in some aspect such as the physics suite used). If 
@@ -126,7 +126,7 @@ scripts:
 
 .. code-block:: console
 
-   cd ufs-srweather-app/regional_workflow/ush/Python
+   cd ufs-srweather-app/ush/Python
 
 Plotting Output from One Experiment
 --------------------------------------
@@ -146,7 +146,7 @@ following command line arguments:
    If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
 An example of plotting output from a cycle generated using the sample experiment/workflow 
-configuration in the ``config.community.sh`` script (which uses the GFSv16 suite definition file)
+configuration in the ``config.community.yaml`` script (which uses the GFSv16 suite definition file)
 is as follows: 
 
 .. code-block:: console
@@ -185,7 +185,7 @@ In this case, the output ``.png`` files will be located in the directory ``$EXPT
 Submitting Plotting Scripts Through a Batch System
 ======================================================
 
-If users plan to create plots of multiple forecast lead times and forecast variables, then they may need to submit the Python scripts to the batch system. Sample scripts are provided for use on a platform such as Hera that uses the Slurm job scheduler: ``sq_job.sh`` and ``sq_job_diff.sh``. Equivalent sample scripts are provided for use on a platform such as Cheyenne that uses PBS as the job scheduler: ``qsub_job.sh`` and ``qsub_job_diff.sh``. Examples of these scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as a starting point to create a batch script for the user's specific platform/job scheduler. 
+If users plan to create plots of multiple forecast lead times and forecast variables, then they may need to submit the Python scripts to the batch system. Sample scripts are provided for use on a platform such as Hera that uses the Slurm job scheduler: ``sq_job.sh`` and ``sq_job_diff.sh``. Equivalent sample scripts are provided for use on a platform such as Cheyenne that uses PBS as the job scheduler: ``qsub_job.sh`` and ``qsub_job_diff.sh``. Examples of these scripts are located under ``ufs-srweather-app/ush/Python`` and can be used as a starting point to create a batch script for the user's specific platform/job scheduler. 
 
 At a minimum, the account should be set appropriately prior to job submission:
 
@@ -201,14 +201,14 @@ If the user's login shell is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app
    export EXPTDIR=/path-to/experiment/directory
 
 If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app
    setenv EXPTDIR /path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
@@ -217,7 +217,7 @@ is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app
    export EXPTDIR1=/path-to/experiment/directory1
    export EXPTDIR2=/path-to/experiment/directory2
 
@@ -225,7 +225,7 @@ If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app
    setenv EXPTDIR1 /path-to/experiment/directory1
    setenv EXPTDIR2 /path-to/experiment/directory2
 

@@ -4,14 +4,14 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run across multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container approach <BuildRunSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
+This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPI`'s, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run across multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container build approach <BuildSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
 
 The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide or :numref:`Chapter %s <BuildRunSRW>` for a detailed guide to building the SRW App **without** a container. 
+   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide or :numref:`Chapter %s <BuildSRW>` for a detailed guide to building the SRW App **without** a container. 
 
 .. _DownloadCodeC:
 
@@ -247,7 +247,7 @@ To activate the regional workflow, run the following commands:
 where: 
 
    * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's system (often ``$PWD/modulefiles``), and 
-   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <PlatEnv>`). 
+   * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
@@ -273,7 +273,7 @@ where:
 
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
-   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <PlatEnv>` for a full list of options. 
+   * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
    * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
 For example, on Hera, the command would be:
@@ -299,7 +299,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
       The default settings include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <PlatEnv>` for details on valid values. 
+   #. Edit the ``MACHINE`` and ``ACCOUNT`` variables in the ``user:`` section of ``config.yaml``. See :numref:`Section %s <user>` for details on valid values. 
 
       .. note::
 
@@ -326,7 +326,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
-      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <SystemData>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
+      On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
    #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
 
