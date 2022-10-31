@@ -44,11 +44,11 @@ Documentation for the UPP input files can be found in the `UPP User's Guide
 Workflow
 ---------
 The SRW Application uses a series of template files, combined with user-selected settings,
-to create the required namelists and parameter files needed by the Application workflow. (See :numref:`Figure %s <WorkflowGeneration>` for a visual summary of the workflow generation process, including template use.) These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.sh`` file are assigned.
+to create the required namelists and parameter files needed by the Application workflow. (See :numref:`Figure %s <WorkflowGeneration>` for a visual summary of the workflow generation process, including template use.) These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.yaml`` file are assigned.
 
 List of Template Files
 ^^^^^^^^^^^^^^^^^^^^^^^^
-The template files for the SRW Application are located in ``regional_workflow/ush/templates``
+The template files for the SRW Application are located in ``parm``
 and are shown in :numref:`Table %s <TemplateFiles>`.
 
 .. _TemplateFiles:
@@ -80,7 +80,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    +-----------------------------+--------------------------------------------------------------+
    | FV3LAM_wflow.xml            | Rocoto XML file to run the workflow. It is filled in using   |
    |                             | the ``fill_template.py`` python script that is called in     |
-   |                             | ``generate_FV3LAM_wflow.sh``.                                |
+   |                             | ``generate_FV3LAM_wflow.py``.                                |
    +-----------------------------+--------------------------------------------------------------+
    | input.nml.FV3               | Namelist file for the Weather Model.                         |
    +-----------------------------+--------------------------------------------------------------+
@@ -101,7 +101,9 @@ Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``,
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/regional_workflow/ush/templates/``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``templates`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
+:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/parm``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table_[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``parm`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
+
+.. COMMENT: Update image!
 
 .. _MigratoryRoute:
 
@@ -115,7 +117,7 @@ Migratory Route of the Input Files in the Workflow
 Output Files
 ==============
 
-Output files from each workflow task are written to a subdirectory within the experiment directory (``$EXPTDIR/YYYYMMDDHH``), named based on the settings in ``config.sh``. 
+Output files from each workflow task are written to a subdirectory within the experiment directory (``$EXPTDIR/YYYYMMDDHH``), named based on the settings in ``config.yaml``. 
 
 Initial and boundary condition files
 ------------------------------------
@@ -168,7 +170,7 @@ For the SRW Application, the weather model netCDF output files are written to ``
 * ``NATLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.natlevf{fhr}.tmXX.grib2``
 * ``PRSLEV_{YY}{JJJ}{hh}{mm}f{fhr}00 -> {domain}.t{cyc}z.prslevf{fhr}.tmXX.grib2``
 
-The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.sh`` settings.
+The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.yaml`` settings.
 
 Modifying the UPP Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -184,7 +186,7 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
-After creating the new flat text file to reflect the changes, users will need to modify their ``config.sh`` to point the workflow to the new text file. In ``config.sh``, set the following:
+After creating the new flat text file to reflect the changes, users will need to modify their ``config.yaml`` to point the workflow to the new text file. In ``config.yaml``, set the following:
 
 .. code-block:: console
 
@@ -210,7 +212,7 @@ Download and unpack the external files:
    wget https://github.com/NOAA-EMC/EMC_post/releases/download/upp_v10.1.0/fix.tar.gz
    tar -xzf fix.tar.gz
 
-Modify the ``config.sh`` file to include the following lines:
+Modify the ``config.yaml`` file to include the following lines:
 
 .. code-block:: console
 
@@ -227,7 +229,7 @@ By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``C
 
 Downloading and Staging Input Data
 ==================================
-A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <BuildRunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``regional_workflow/ush/setup.sh``. Users on Level 3 & 4 systems can find the most recent SRW App release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
+A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`IC/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <RunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``ush/setup.sh``. Users on Level 3 & 4 systems can find the most recent SRW App release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 .. _StaticFixFiles:
 
@@ -243,7 +245,7 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
 
 Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.0.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.sh``. Add the following code to the ``config.sh`` file, and alter the variable paths accordingly:
+The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``config.yaml`` file, and alter the variable paths accordingly:
 
 .. code-block:: console
 
@@ -257,7 +259,7 @@ Initial Condition/Lateral Boundary Condition File Formats and Source
 -----------------------------------------------------------------------
 The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 
-To download the model input data for the 12-hour "out-of-the-box" experiment configuration in ``config.community.sh`` file, run:
+To download the model input data for the 12-hour "out-of-the-box" experiment configuration in ``config.community.yaml`` file, run:
 
 .. code-block:: console
 
@@ -269,7 +271,7 @@ To download data for different dates, model types, and formats, users can explor
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
 
-The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` must be set in the ``config.sh`` file as follows: 
+The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` must be set in the ``config.yaml`` file as follows: 
 
 .. code-block:: console
 
@@ -277,7 +279,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
    EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
 
-These last two variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.sh`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+These last two variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
@@ -295,7 +297,7 @@ where:
    * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
    * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
 
-For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. An example ``config.sh`` setting using HRRR and RAP data appears below: 
+For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. An example ``config.yaml`` setting using HRRR and RAP data appears below: 
 
 .. code-block:: console
 
@@ -313,7 +315,7 @@ from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file forma
 
 Running the App for Different Dates
 -----------------------------------
-If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to modify the ``config.sh`` settings, including the ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
+If users want to run the SRW Application for dates other than June 15-16, 2019, they will need to modify the ``config.yaml`` settings, including the ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` variables. The forecast length can be modified by changing the ``FCST_LEN_HRS``. In addition, the lateral boundary interval can be specified using the ``LBC_SPEC_INTVL_HRS`` variable.
 
 Users will need to ensure that the initial and lateral boundary condition files are available
 in the specified path for their new date, cycle, and forecast length.
@@ -322,7 +324,7 @@ Staging Initial Conditions Manually
 -----------------------------------
 If users want to run the SRW Application with raw model files for dates other than those that
 are currently available on the preconfigured platforms, they need to stage the data manually.
-The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.sh`` file. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
+The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.yaml`` file. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 

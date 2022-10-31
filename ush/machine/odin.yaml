@@ -9,10 +9,11 @@ platform:
   QUEUE_FCST: workq
   PARTITION_HPSS: workq
   QUEUE_HPSS: workq
-  RUN_CMD_FCST: srun -n ${PE_MEMBER01}
-  RUN_CMD_POST: srun -n 1
-  RUN_CMD_SERIAL: srun -n 1
-  RUN_CMD_UTILS: srun -n $nprocs
+  RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --export=ALL -n 1
+  RUN_CMD_SERIAL: srun --export=ALL -n 1
+  RUN_CMD_UTILS: srun --export=ALL -n $nprocs
+  SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch/ywang/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /scratch/ywang/UFS_SRW_App/develop/FV3LAM_pregen

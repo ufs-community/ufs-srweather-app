@@ -10,7 +10,7 @@ system as the task dependencies allow and runs one instance of the workflow for 
 :term:`cycles <cycle>`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
-which resides in the ``regional_workflow/ush/templates`` directory. When the ``generate_FV3LAM_wflow.sh``
+which resides in the ``parm`` directory. When the ``generate_FV3LAM_wflow.py``
 script is run, the ``fill_jinja_template.py`` script is called, and the parameters in the template file
 are filled in. The completed file contains the workflow task names, parameters needed by the job scheduler,
 and task interdependencies. The generated XML file is then copied to the experiment directory:
@@ -143,7 +143,7 @@ from the ``$EXPTDIR`` directory as follows:
 where 
 
 * ``-c`` is the cycle to query in YYYYMMDDHHmm format
-* ``-t`` is the task name (see default task names in :numref:`Chapter %s <WFTasks>`)
+* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst``). See :numref:`Chapter %s <ConfigWorkflow>` for the default values for task name variables, which end in ``_TN``.
 
 The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. 
 
@@ -160,7 +160,7 @@ Running ``rocotocheck`` will result in output similar to the following:
 
    Task: run_fcst
       account: gsd-fv3
-      command: /scratch2/BMC/det/$USER/ufs-srweather-app/regional_workflow/ush/load_modules_run_task.sh "run_fcst" "/scratch2/BMC/det/$USER/ufs-srweather-app/regional_workflow/jobs/JREGIONAL_RUN_FCST"
+      command: /scratch2/BMC/det/$USER/ufs-srweather-app/ush/load_modules_run_task.sh "run_fcst" "/scratch2/BMC/det/$USER/ufs-srweather-app/jobs/JREGIONAL_RUN_FCST"
       cores: 24
       final: false
       jobname: run_FV3

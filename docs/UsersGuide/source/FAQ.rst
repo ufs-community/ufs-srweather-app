@@ -22,7 +22,7 @@ grid, orography, and surface climatology files that these tasks generate are alr
 available (e.g., from a previous experiment that used the same grid as the current experiment), then
 these tasks can be skipped, and the workflow can use those pre-generated files. This 
 can be done by adding the following lines to the ``config.sh`` script before running 
-the ``generate_FV3LAM_wflow.sh`` script:
+the ``generate_FV3LAM_wflow.py`` script:
 
 .. code-block:: console
 
@@ -57,7 +57,7 @@ How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
 The SDF is set in the ``config.sh`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
-``generate_FV3LAM_wflow.sh`` script, the SDF file is copied from its location in the forecast
+``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`
 
 .. _RestartTask:

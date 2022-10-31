@@ -4,7 +4,7 @@
 Quick Start Guide
 ====================
 
-This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildRunSRW>`, for additional explanations regarding each step. 
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s <BuildSRW>` and :numref:`Chapter %s <RunSRW>`, for additional explanations regarding each step. 
 
 
 Install the HPC-Stack
@@ -17,7 +17,7 @@ Once the HPC-Stack has been successfully installed, users can move on to buildin
 Building and Running the UFS SRW Application 
 ===============================================
 
-For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s <BuildRunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
+For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail. 
 
    #. Clone the SRW App from GitHub:
 
@@ -68,6 +68,26 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a Level 2-4 system).
 
+   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
+
+      .. code-block:: console
+         
+         source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
+         module use <path/to/modulefiles>
+         module load wflow_<platform>
+
+      where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
+
+      .. code-block:: console
+
+         Please do the following to activate conda:
+            > conda activate regional_workflow
+      
+      then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
+
+      .. note::
+         If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
+
    #. Configure the experiment parameters.
 
       .. code-block:: console
@@ -87,22 +107,6 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
          FAILURE
-
-   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
-
-      .. code-block:: console
-
-         module use <path/to/modulefiles>
-         module load wflow_<platform>
-
-      After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
-
-      .. code-block:: console
-
-         Please do the following to activate conda:
-            > conda activate regional_workflow
-      
-      then the user should run ``conda activate regional_workflow`` to activate the ``regional_workflow`` environment. 
 
    #. Generate the experiment workflow. 
 
