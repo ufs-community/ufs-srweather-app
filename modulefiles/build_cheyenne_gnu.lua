@@ -6,10 +6,10 @@ the CISL machine Cheyenne using GNU
 whatis([===[Loads libraries needed for building the UFS SRW App on Cheyenne ]===])
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.0"))
-load(pathJoin("python", os.getenv("python_ver") or "3.7.9"))
 load(pathJoin("ncarenv", os.getenv("ncarenv_ver") or "1.3"))
 load(pathJoin("gnu", os.getenv("gnu_ver") or "11.2.0"))
 load(pathJoin("mpt", os.getenv("mpt_ver") or "2.25"))
+load(pathJoin("python", os.getenv("python_ver") or "3.7.9"))
 setenv("MKLROOT", "/glade/u/apps/opt/intel/2022.1/mkl/latest")
 load(pathJoin("ncarcompilers", os.getenv("ncarcompilers_ver") or "0.5.0"))
 unload("netcdf")

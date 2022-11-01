@@ -6,11 +6,11 @@ the CISL machine Cheyenne using Intel-2022.1
 whatis([===[Loads libraries needed for building the UFS SRW App on Cheyenne ]===])
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.0"))
-load(pathJoin("python", os.getenv("python_ver") or "3.7.9"))
 load(pathJoin("ncarenv", os.getenv("ncarenv_ver") or "1.3"))
 load(pathJoin("intel", os.getenv("intel_ver") or "2022.1"))
 load(pathJoin("mpt", os.getenv("mpt_ver") or "2.25"))
 load(pathJoin("mkl", os.getenv("mkl_ver") or "2022.1"))
+load(pathJoin("python", os.getenv("python_ver") or "3.7.9"))
 load(pathJoin("ncarcompilers", os.getenv("ncarcompilers_ver") or "0.5.0"))
 unload("netcdf")
 
