@@ -209,10 +209,12 @@ def setup():
         os.path.join(USHdir, os.pardir, "parm", "fixed_files_mapping.yaml")
     )
     import_vars(dictionary=flatten_dict(cfg_f))
+    cfg_d.update(cfg_f)
 
     # Load constants file and save its contents to a variable for later
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=flatten_dict(cfg_c))
+    cfg_d.update(cfg_c)
 
     #
     # -----------------------------------------------------------------------
@@ -235,6 +237,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
+
     if PREDEF_GRID_NAME:
         params_dict = set_predef_grid_params(
             PREDEF_GRID_NAME,
@@ -1422,6 +1425,8 @@ def setup():
             iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
             jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
             jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
+            RUN_ENVIR=RUN_ENVIR,
+            VERBOSE=VERBOSE,
         )
     #
     # -----------------------------------------------------------------------
@@ -1462,6 +1467,9 @@ def setup():
     (LON_CTR, LAT_CTR, NX, NY, NHW, STRETCH_FAC) = (
         grid_params[k] for k in ["LON_CTR", "LAT_CTR", "NX", "NY", "NHW", "STRETCH_FAC"]
     )
+
+    # grid params
+    cfg_d["grid_params"] = grid_params
 
     #
     # -----------------------------------------------------------------------
@@ -1676,6 +1684,9 @@ def setup():
     # -----------------------------------------------------------------------
     #
     SDF_USES_THOMPSON_MP = set_thompson_mp_fix_files(
+        EXTRN_MDL_NAME_ICS,
+        EXTRN_MDL_NAME_LBCS,
+        CCPP_PHYS_SUITE,
         CCPP_PHYS_SUITE_IN_CCPP_FP,
         THOMPSON_MP_CLIMO_FN,
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
@@ -1685,18 +1696,6 @@ def setup():
     # global variable definition file path
     global GLOBAL_VAR_DEFNS_FP
     GLOBAL_VAR_DEFNS_FP = os.path.join(EXPTDIR, GLOBAL_VAR_DEFNS_FN)
-
-    # fixed files section
-    cfg_d.update(cfg_f)
-
-    # update dictionary with globals() values
-    update_dict(globals(), cfg_d)
-
-    # constants section
-    cfg_d.update(cfg_c)
-
-    # grid params
-    cfg_d["grid_params"] = grid_params
 
     #
     # -----------------------------------------------------------------------
@@ -1914,6 +1913,9 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
+
+    # update dictionary with globals() values
+    update_dict(globals(), cfg_d)
 
     # print content of var_defns if DEBUG=True
     all_lines = cfg_to_yaml_str(cfg_d)

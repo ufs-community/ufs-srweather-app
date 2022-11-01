@@ -38,6 +38,8 @@ def set_gridparams_GFDLgrid(
     iend_of_t7_on_t6g,
     jstart_of_t7_on_t6g,
     jend_of_t7_on_t6g,
+    RUN_ENVIR,
+    VERBOSE,
 ):
     """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
@@ -59,8 +61,6 @@ def set_gridparams_GFDLgrid(
     print_input_args(locals())
 
     # get needed environment variables
-    IMPORTS = ["VERBOSE", "RUN_ENVIR"]
-    import_vars(env_vars=IMPORTS)
     IMPORTS = ["NH4"]
     USHdir = os.path.dirname(os.path.abspath(__file__))
     constants_cfg = load_config_file(os.path.join(USHdir, "constants.yaml"))
@@ -493,6 +493,8 @@ class Testing(unittest.TestCase):
             iend_of_t7_on_t6g=84,
             jstart_of_t7_on_t6g=17,
             jend_of_t7_on_t6g=80,
+            RUN_ENVIR="community",
+            VERBOSE=False,
         )
 
         self.assertEqual(

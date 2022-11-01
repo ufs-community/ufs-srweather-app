@@ -14,6 +14,7 @@ from python_utils import (
     print_err_msg_exit,
     log_info,
     import_vars,
+    export_vars,
     cp_vrfy,
     cd_vrfy,
     rm_vrfy,
@@ -69,7 +70,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # non-user-specified values from config_defaults.yaml
     var_defs_dict = setup()
 
-    # import all environment variables
+    # export/import all environment variables
+    export_vars(source_dict=var_defs_dict)
     import_vars(dictionary=var_defs_dict)
 
     #

@@ -51,6 +51,8 @@ def calculate_cost(config_fn):
             iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
             jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
             jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
+            RUN_ENVIR=RUN_ENVIR,
+            VERBOSE=VERBOSE,
         )
 
     elif GRID_GEN_METHOD == "ESGgrid":
