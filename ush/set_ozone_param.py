@@ -6,12 +6,8 @@ from textwrap import dedent
 
 from python_utils import (
     log_info,
-    import_vars,
-    export_vars,
-    set_env_var,
     list_to_str,
     print_input_args,
-    define_macos_utilities,
     load_xml_file,
     has_tag_with_value,
     find_pattern_in_str,

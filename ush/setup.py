@@ -53,7 +53,7 @@ def setup():
     Args:
       None
     Returns:
-      None
+      Dictionary of settings
     """
 
     logger = getLogger(__name__)
@@ -1963,6 +1963,10 @@ def setup():
                 does not have a valid value. Possible values are:
                     {k} = {cfg_v[vkey]}"""
             )
+
+    # add LOGDIR and return flat dict
+    cfg_d.update({"LOGDIR": LOGDIR})
+    return cfg_d
 
 
 #
