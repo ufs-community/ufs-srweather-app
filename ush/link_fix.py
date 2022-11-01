@@ -8,7 +8,6 @@ import glob
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     print_info_msg,
     print_err_msg_exit,
@@ -23,10 +22,10 @@ from python_utils import (
 )
 
 
-def link_fix(verbose, file_group):
+def link_fix(cfg_d, file_group):
     """This file defines a function that ...
     Args:
-        verbose: True or False
+        cfg_d: dictionary of settings
         file_group: could be on of ["grid", "orog", "sfc_climo"]
     Returns:
         a string: resolution
@@ -38,7 +37,7 @@ def link_fix(verbose, file_group):
     check_var_valid_value(file_group, valid_vals_file_group)
 
     # import all environement variables
-    import_vars()
+    import_vars(dictionary=flatten_dict(cfg_d))
 
     #
     # -----------------------------------------------------------------------
@@ -55,7 +54,7 @@ def link_fix(verbose, file_group):
     # -----------------------------------------------------------------------
     #
     print_info_msg(
-        f"Creating links in the FIXlam directory to the grid files...", verbose=verbose
+        f"Creating links in the FIXlam directory to the grid files...", verbose=VERBOSE
     )
     #
     # -----------------------------------------------------------------------
@@ -400,32 +399,33 @@ def parse_args(argv):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
-    link_fix(VERBOSE, args.file_group)
+    link_fix(cfg, args.file_group)
 
 
 class Testing(unittest.TestCase):
     def test_link_fix(self):
-        res = link_fix(verbose=True, file_group="grid")
-        self.assertTrue(res == "3357")
-
-    def setUp(self):
         define_macos_utilities()
         TEST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
         FIXlam = os.path.join(TEST_DIR, "expt", "fix_lam")
         mkdir_vrfy("-p", FIXlam)
-        set_env_var("FIXlam", FIXlam)
-        set_env_var("DOT_OR_USCORE", "_")
-        set_env_var("TILE_RGNL", 7)
-        set_env_var("NH0", 0)
-        set_env_var("NHW", 6)
-        set_env_var("NH4", 4)
-        set_env_var("NH3", 3)
-        set_env_var("GRID_DIR", TEST_DIR + os.sep + "RRFS_CONUS_3km")
-        set_env_var("RUN_TASK_MAKE_GRID", "FALSE")
-        set_env_var("OROG_DIR", TEST_DIR + os.sep + "RRFS_CONUS_3km")
-        set_env_var("RUN_TASK_MAKE_OROG", "FALSE")
-        set_env_var("SFC_CLIMO_DIR", TEST_DIR + os.sep + "RRFS_CONUS_3km")
-        set_env_var("RUN_TASK_MAKE_SFC_CLIMO", "FALSE")
-        set_env_var("CCPP_PHYS_SUITE", "FV3_GSD_SAR")
+
+        cfg_d = {
+            "FIXlam": FIXlam,
+            "DOT_OR_USCORE": "_",
+            "TILE_RGNL": 7,
+            "NH0": 0,
+            "NHW": 6,
+            "NH4": 4,
+            "NH3": 3,
+            "GRID_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
+            "RUN_TASK_MAKE_GRID": "FALSE",
+            "OROG_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
+            "RUN_TASK_MAKE_OROG": "FALSE",
+            "SFC_CLIMO_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
+            "RUN_TASK_MAKE_SFC_CLIMO": "FALSE",
+            "CCPP_PHYS_SUITE": "FV3_GSD_SAR",
+            "VERBOSE": False,
+        }
+
+        res = link_fix(cfg_d, file_group="grid")
+        self.assertTrue(res == "3357")

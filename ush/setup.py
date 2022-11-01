@@ -19,7 +19,6 @@ from python_utils import (
     flatten_dict,
     update_dict,
     import_vars,
-    export_vars,
     get_env_var,
     load_config_file,
     cfg_to_shell_str,
@@ -1499,14 +1498,11 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
-    # export env vars
-    export_vars()
-
     # link fix files
     res_in_grid_fns = ""
     if not RUN_TASK_MAKE_GRID:
 
-        res_in_grid_fns = link_fix(verbose=VERBOSE, file_group="grid")
+        res_in_grid_fns = link_fix(globals(), file_group="grid")
 
         RES_IN_FIXLAM_FILENAMES = res_in_grid_fns
     #
@@ -1521,7 +1517,7 @@ def setup():
     res_in_orog_fns = ""
     if not RUN_TASK_MAKE_OROG:
 
-        res_in_orog_fns = link_fix(verbose=VERBOSE, file_group="orog")
+        res_in_orog_fns = link_fix(globals(), file_group="orog")
 
         if not RES_IN_FIXLAM_FILENAMES and (res_in_orog_fns != RES_IN_FIXLAM_FILENAMES):
             raise Exception(
@@ -1547,7 +1543,7 @@ def setup():
     res_in_sfc_climo_fns = ""
     if not RUN_TASK_MAKE_SFC_CLIMO:
 
-        res_in_sfc_climo_fns = link_fix(verbose=VERBOSE, file_group="sfc_climo")
+        res_in_sfc_climo_fns = link_fix(globals(), file_group="sfc_climo")
 
         if RES_IN_FIXLAM_FILENAMES and res_in_sfc_climo_fns != RES_IN_FIXLAM_FILENAMES:
             raise Exception(
@@ -1937,9 +1933,6 @@ def setup():
 
     with open(GLOBAL_VAR_DEFNS_FP, "a") as f:
         f.write(cfg_to_shell_str(cfg_d))
-
-    # export all global variables back to the environment
-    export_vars()
 
     #
     # -----------------------------------------------------------------------
