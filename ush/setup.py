@@ -60,9 +60,6 @@ def setup():
     USHdir = os.path.dirname(os.path.abspath(__file__))
     cd_vrfy(USHdir)
 
-    # import all environment variables
-    import_vars()
-
     # print message
     log_info(
         f"""
@@ -856,32 +853,40 @@ def setup():
     global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
     global KEEPDATA, MAILTO, MAILCC
 
+    # Stuff to import from parent shell environment
+    IMPORTS = [
+        "OPSROOT",
+        "COMROOT",
+        "PACKAGEROOT",
+        "DATAROOT",
+        "DCOMROOT",
+        "DBNROOT",
+        "SENDECF",
+        "SENDDBN",
+        "SENDDBN_NTC",
+        "SENDCOM",
+        "SENDWEB",
+        "KEEPDATA",
+        "MAILTO",
+        "MAILCC",
+    ]
+    import_vars(env_vars=IMPORTS)
+
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try:
-            OPSROOT = (
-                os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs")
-                if OPSROOT is None
-                else OPSROOT
-            )
-        except NameError:
-            OPSROOT = EXPTDIR
-        try:
-            COMROOT
-        except NameError:
+        OPSROOT = (
+            os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs")
+            if OPSROOT is None
+            else OPSROOT
+        )
+        if COMROOT is None:
             COMROOT = os.path.join(OPSROOT, "com")
-        try:
-            PACKAGEROOT
-        except NameError:
+        if PACKAGEROOT is None:
             PACKAGEROOT = os.path.join(OPSROOT, "packages")
-        try:
-            DATAROOT
-        except NameError:
+        if DATAROOT is None:
             DATAROOT = os.path.join(OPSROOT, "tmp")
-        try:
-            DCOMROOT
-        except NameError:
+        if DCOMROOT is None:
             DCOMROOT = os.path.join(OPSROOT, "dcom")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
@@ -901,41 +906,23 @@ def setup():
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
-    try:
-        DBNROOT
-    except NameError:
+    if DBNROOT is None:
         DBNROOT = None
-    try:
-        SENDECF
-    except NameError:
+    if SENDECF is None:
         SENDECF = False
-    try:
-        SENDDBN
-    except NameError:
+    if SENDDBN is None:
         SENDDBN = False
-    try:
-        SENDDBN_NTC
-    except NameError:
+    if SENDDBN_NTC is None:
         SENDDBN_NTC = False
-    try:
-        SENDCOM
-    except NameError:
+    if SENDCOM is None:
         SENDCOM = False
-    try:
-        SENDWEB
-    except NameError:
+    if SENDWEB is None:
         SENDWEB = False
-    try:
-        KEEPDATA
-    except NameError:
+    if KEEPDATA is None:
         KEEPDATA = True
-    try:
-        MAILTO
-    except NameError:
+    if MAILTO is None:
         MAILTO = None
-    try:
-        MAILCC
-    except NameError:
+    if MAILCC is None:
         MAILCC = None
 
     # create NCO directories
