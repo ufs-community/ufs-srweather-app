@@ -129,8 +129,6 @@ fi
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 
-  cp_vrfy ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.???.nc $DATA
-
   RUN_CYC="${cyc}"
 
   GEFS_CYC_DIFF=$( printf "%02d" "$(( ${RUN_CYC} - ${AQM_GEFS_CYC} ))" )

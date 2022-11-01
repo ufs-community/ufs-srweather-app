@@ -144,45 +144,31 @@ anthro_species::
     TOLU
 ::
 
-{%- if do_aqm_fengsha %}
 #
 # FENGSHA
 #
-fengsha_yn: true
-
+fengsha_yn: {{ do_aqm_fengsha | lower }}
 fengsha_type: fengsha
-
 fengsha_format: netcdf
-
 fengsha_file: {{ aqm_rc_fengsha_file_fp }}
-
 fengsha_frequency: monthly
-
 fengsha_species::
     CLAYF       1.00000   clayfrac     1
     SANDF       1.00000   sandfrac     1
     DRAG        1.00000   albedo_drag  1
     UTHR        1.00000   uthres       1
 ::
-{%- endif %}
 
 #
 #  Biogenic
 #
 bio_type: biogenic
-
 bio_format: netcdf
-
 bio_file: {{ aqm_rc_bio_file_fp }}
-
 bio_frequency: static
-
 bio_period: summer
-
 bio_speciation_file: {{ aqm_bio_dir }}/gspro_biogenics_1mar2017.txt
-
 bio_speciation_profile: B10C6
-
 bio_species::
     AVG_NOAG_GROW        1.00000  AVG_NOAG_GROW     gmN/hr
     AVG_NOAG_NONGROWNB3  1.00000  AVG_NOAG_NONGROW  gmN/hr
@@ -263,20 +249,14 @@ bio_species::
     LAI_METHW            1.00000  LAI_METHW         1
 ::
 
-{%- if do_aqm_canopy %}
 #
 # Inline Canopy Effects
 #
-canopy_yn: true
-
+canopy_yn: {{ do_aqm_canopy | lower }}
 canopy_type: canopy
-
 canopy_format: netcdf
-
 canopy_file: {{ aqm_rc_canopy_file_fp }}
-
 canopy_frequency: static
-
 canopy_species::
     FCH        1.00000   FCH      m
     FRT        1.00000   FRT      1
@@ -288,19 +268,14 @@ canopy_species::
     C3R        1.00000   C3R      1
     C4R        1.00000   C4R      1
 ::
-{%- endif %}
 
 #
 #  Fire emissions from GBBEPx
 #
 fire_type: gbbepx
-
 fire_file: {{ aqm_rc_fire_file_fp }}
-
 fire_frequency: {{ aqm_rc_fire_frequency }}
-
 fire_plume_rise: sofiev
-
 fire_species::
     PAL     0.0006     PM2.5       KG/M2/S
     PCA     0.0039     PM2.5       KG/M2/S
