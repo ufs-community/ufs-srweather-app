@@ -1,1 +1,1 @@
-load("conda_regional_workflow")
+load("miniconda_regional_workflow")
