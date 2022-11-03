@@ -30,13 +30,13 @@ To build the SRW App, users will complete the following steps:
 
 .. _HPCstackInfo:
 
-Install the HPC-Stack
-========================
+Install the Prerequisite Software Stack
+=========================================
+
+Currently, installation of the prerequisite software stack is supported via HPC-Stack. :term:`HPC-Stack` is a repository that provides a unified, shell script-based system to build the software stack required for `UFS <https://ufscommunity.org/>`__ applications such as the SRW App. 
 
 .. Attention::
    Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion, NOAA Cloud).
-
-**Definition:** :term:`HPC-Stack` is a repository that provides a unified, shell script-based build system to build the software stack required for `UFS <https://ufscommunity.org/>`_ applications such as the SRW App. 
 
 Background
 ----------------
@@ -56,6 +56,9 @@ Users working on systems that fall under `Support Levels 2-4 <https://github.com
    ulimit -S -s unlimited
 
 For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
+
+.. attention::
+   Although HPC-Stack is the fully-supported option for this release, UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. The spack-stack is currently used on NOAA Cloud platforms and in containers, while HPC-Stack is still used on other Level 1 systems and is the software stack currently validated by the UFS Weather Model. Users are encouraged to check out spack-stack to prepare for the upcoming shift in support from HPC-Stack to spack-stack. However, the HPC-Stack is still the go-to method for this release. 
 
 After completing installation, continue to the next section (:numref:`Section %s: Download the UFS SRW Application Code <DownloadSRWApp>`). 
 
