@@ -13,7 +13,7 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
    * Improved container support, including the option to run across compute nodes using Rocoto
    * Updates to :term:`CCPP` that target the top of ``develop`` (which is ahead of CCPP v6.0.0)
    * Support for the :term:`UPP` inline post option
-   * Addition of a code clean-up script (``devclean.sh``)
+   * Addition of a multi-purpose code clean-up script (``devclean.sh``)
    * Documentation updates to reflect the changes above
 
 .. COMMENT: Link to details (e.g., for devclean script) and/or add details (e.g., about METplus bugs) in appropriate sections. 
@@ -24,11 +24,15 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 
 Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
-This documentation provides a :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. It also provides a :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container and detailed chapters on :ref:`building <BuildSRW>` and :ref:`running <RunSRW>` the SRW App on any supported platform. Additionally, this User's Guide provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
+This documentation provides: 
+   * A :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. 
+   * A :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container 
+   * Detailed chapters on :ref:`building <BuildSRW>` and :ref:`running <RunSRW>` the SRW App on any supported platform. 
+   * An overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
-The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
+The SRW App v2.1.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, June 23). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.6505854
+UFS Development Team. (2022, Nov. 16). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.1.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
 
 
 How to Use This Document
