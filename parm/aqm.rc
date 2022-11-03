@@ -29,11 +29,9 @@ ctm_pmdiag: true
 #
 #  Input emissions
 #
-{%- if do_aqm_canopy %}
-emission_sources: anthro fire canopy
-{%- else %}
 emission_sources: anthro fire
-{%- endif %}
+{%- if do_aqm_canopy %} canopy{% endif %}
+{%- if do_aqm_fengsha %} fengsha{% endif %}
 
 #
 #  Anthropogenic
