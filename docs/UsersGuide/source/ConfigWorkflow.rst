@@ -1001,6 +1001,8 @@ Write-Component (Quilting) Parameters
 .. note::
    The :term:`UPP` (called by the ``RUN_POST_TN`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
 
+   .. COMMENT: Update link!
+
 ``QUILTING``: (Default: true)
 
    .. attention::
@@ -1758,6 +1760,8 @@ Stochastic Physics Parameters
 ----------------------------------
 
 Set default ad-hoc stochastic physics options. For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
+
+.. COMMENT: Update link!
 
 ``NEW_LSCALE``: (Default: true) 
    Use correct formula for converting a spatial legnth scale into spectral space. 

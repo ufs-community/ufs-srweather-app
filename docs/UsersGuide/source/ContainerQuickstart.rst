@@ -21,14 +21,12 @@ Download the Container
 Prerequisites: 
 -------------------
 
-Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
-
-.. COMMENT: Remove "for the develop branch"?
+Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``release/public-v2.1.0`` branch assumes that Rocoto is pre-installed. 
 
 Install Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
+To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://docs.sylabs.io/guides/3.2/user-guide/installation.html>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
    Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
@@ -72,6 +70,8 @@ Level 1 Systems
 
 On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.img`` has already been built at the following locations:
 
+.. COMMENT: update name of container!
+
 .. table:: Locations of pre-built containers
 
    +--------------+--------------------------------------------------------+
@@ -97,11 +97,15 @@ Users can simply copy the container to their local working directory. For exampl
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
 
+.. COMMENT: Update path to container!
+
 Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
    singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-develop.img
+
+.. COMMENT: Update name of container!
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
@@ -112,6 +116,8 @@ When making a writable sandbox on Level 1 systems, the following warnings common
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
+.. COMMENT: Update name of container!
+
 Level 2-4 Systems
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -120,6 +126,8 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 .. code-block:: console
 
    sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
+
+.. COMMENT: Update :develop to release-public-v2.1.0 (or similar)
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
@@ -194,6 +202,8 @@ To explore the container and view available directories, users can either ``cd``
    singularity shell ./ubuntu20.04-intel-srwapp-develop.img
    cd /
    ls 
+
+.. COMMENT: Update name of container!
 
 The list of directories printed will be similar to this: 
 
@@ -276,11 +286,15 @@ where:
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
    * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
+.. COMMENT: Update name of container!
+
 For example, on Hera, the command would be:
 
 .. code-block:: console
 
    ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-develop.img
+
+.. COMMENT: Update name of container!
 
 .. attention::
 
@@ -326,6 +340,8 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
+      .. COMMENT: Update name of container!
+
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
    #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
@@ -337,6 +353,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
 
+.. COMMENT: Update name of container!
 
 .. _GenerateWorkflowC: 
 

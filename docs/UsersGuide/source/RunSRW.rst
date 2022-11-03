@@ -44,19 +44,19 @@ The SRW App requires input files to run. These include static datasets, initial 
    +--------------+-----------------------------------------------------------------+
    | Machine      | File location                                                   |
    +==============+=================================================================+
-   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/         |
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/v2p1/input_model_data/            |
    +--------------+-----------------------------------------------------------------+
-   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/     |
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/input_model_data/        |
    +--------------+-----------------------------------------------------------------+
-   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/         |
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/            |
    +--------------+-----------------------------------------------------------------+
-   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/      |
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/input_model_data/         |
    +--------------+-----------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/input_model_data/             |
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/                |
    +--------------+-----------------------------------------------------------------+
-   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/        |
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/v2p1/input_model_data/           |
    +--------------+-----------------------------------------------------------------+
-   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/   |
+   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/v2p1/input_model_data/      |
    +--------------+-----------------------------------------------------------------+ 
     
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
@@ -490,10 +490,10 @@ On Level 1 systems, the following fields will need to be updated or added to the
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/v2p1/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/v2p1/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -520,10 +520,10 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
          EXPT_SUBDIR: run_basic_srw
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/2019061518
 
 To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
@@ -734,9 +734,9 @@ Users who have already staged the observation data needed for METplus (i.e., the
 .. code-block:: console
 
    platform:
-      CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
+      CCPA_OBS_DIR: /path/to/UFS_SRW_App/v2p1/obs_data/ccpa/proc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_App/v2p1/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/UFS_SRW_App/v2p1/obs_data/ndas/proc
    workflow_switches:
       RUN_TASK_GET_OBS_CCPA: false
       RUN_TASK_GET_OBS_MRMS: false
