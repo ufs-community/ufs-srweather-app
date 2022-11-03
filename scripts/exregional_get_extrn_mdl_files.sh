@@ -129,7 +129,7 @@ if [ -n "${input_file_path:-}" ] ; then
   --input_file_path ${input_file_path}"
 fi
 
-if [ $RUN_ENVIR = "nco" ]; then
+if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   additional_flags="$additional_flags \
   --symlink"
 fi
