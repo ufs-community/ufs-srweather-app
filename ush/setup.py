@@ -849,7 +849,7 @@ def setup():
     global POST_OUTPUT_DOMAIN_NAME
     global COMIN_BASEDIR, COMOUT_BASEDIR
 
-    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
+    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT, AWSROOT
     global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
     global KEEPDATA, MAILTO, MAILCC
 
@@ -888,6 +888,7 @@ def setup():
             DATAROOT = os.path.join(OPSROOT, "tmp")
         if DCOMROOT is None:
             DCOMROOT = os.path.join(OPSROOT, "dcom")
+        AWSROOT = os.path.join(OPSROOT, "aws")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
@@ -903,6 +904,7 @@ def setup():
         PACKAGEROOT = EXPTDIR
         DATAROOT = EXPTDIR
         DCOMROOT = EXPTDIR
+        AWSROOT = EXPTDIR
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
@@ -932,6 +934,7 @@ def setup():
         mkdir_vrfy(f" -p '{PACKAGEROOT}'")
         mkdir_vrfy(f" -p '{DATAROOT}'")
         mkdir_vrfy(f" -p '{DCOMROOT}'")
+        mkdir_vrfy(f" -p '{AWSROOT}'")
     if DBNROOT is not None:
         mkdir_vrfy(f" -p '{DBNROOT}'")
 
@@ -1882,6 +1885,7 @@ def setup():
         "DATAROOT": DATAROOT,
         "DCOMROOT": DCOMROOT,
         "DBNROOT": DBNROOT,
+        "AWSROOT": AWSROOT,
         "SENDECF": SENDECF,
         "SENDDBN": SENDDBN,
         "SENDDBN_NTC": SENDDBN_NTC,
