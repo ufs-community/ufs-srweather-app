@@ -76,7 +76,7 @@ cpl_aqm_parm:
   AQM_FENGSHA_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
   AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_FENGSHA_FILE_SUFFIX: .nc
-  DO_AQM_CANOPY: true
+  DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
   AQM_CANOPY_FILE: gfs.t12z.geo
   AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
