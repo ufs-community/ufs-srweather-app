@@ -114,11 +114,11 @@ export -f POST_STEP
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMINaws="${AWSROOT}/${RUN}.${PDY}/${cyc}"
+    export COMINext="${EXTROOT}/${RUN}.${PDY}/${cyc}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-    export COMINaws="${AWSROOT}/${PDY}${cyc}"
+    export COMINext="${EXTROOT}/${PDY}${cyc}"
 fi
 
 #
