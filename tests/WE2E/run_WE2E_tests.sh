@@ -436,9 +436,12 @@ elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
     if [ ! -f ${user_spec_tests_fp} ]; then
         user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.com
         if [ ! -f ${user_spec_tests_fp} ]; then
-            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
             if [ ! -f ${user_spec_tests_fp} ]; then
-                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+                if [ ! -f ${user_spec_tests_fp} ]; then
+                    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                fi
             fi
         else
             run_envir=${run_envir:-"community"}
