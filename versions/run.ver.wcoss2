@@ -9,3 +9,4 @@ export nam_ver=v4.2
 export rap_ver=v5.1
 export gsmgfs_ver=v16.2 
 export hrrr_ver=v3
+export prod_util_ver=2.0.14
