@@ -37,3 +37,5 @@ task_run_fcst:
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
+data:
+  FV3GFS: /scratch1/NCEPDEV/nems/role.epic/SRW_Data/FV3GFS/gfs.${yyyymmdd}/${hh}
