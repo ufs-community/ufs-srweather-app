@@ -240,7 +240,7 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
     """Given an equal-length set of archive paths and archive file
     names, and a cycle date, check HPSS via hsi to make sure at least
     one set exists. Return a dict of the paths of the existing archive, along with
-    the item in set of paths that was found."""
+    the item in set of paths that was found."""  
 
     zipped_archive_file_paths = zip(paths, file_names)
 
@@ -289,6 +289,13 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
+
+    # Remove sfc files from fcst in file_names of FV3GFS for LBCs
+    # sfc files needed in fcst when time_offset is not zero.
+    if cla.external_model == "FV3GFS" and cla.ics_or_lbcs == "LBCS":
+        del file_templates['nemsio']['fcst'][1]
+        del file_templates['netcdf']['fcst'][1]
+
     if use_cla_tmpl:
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
@@ -942,6 +949,12 @@ def parse_args(argv):
         help="Path to a location on disk. Path is expected to exist.",
         required=True,
         type=os.path.abspath,
+    )
+    parser.add_argument(
+        "--ics_or_lbcs",
+        choices=("ICS", "LBCS"),
+        help="Flag for whether ICS or LBCS.",
+        required=True,
     )
 
     # Optional
