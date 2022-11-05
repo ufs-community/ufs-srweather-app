@@ -240,7 +240,7 @@ def find_archive_files(paths, file_names, cycle_date, ens_group):
     """Given an equal-length set of archive paths and archive file
     names, and a cycle date, check HPSS via hsi to make sure at least
     one set exists. Return a dict of the paths of the existing archive, along with
-    the item in set of paths that was found."""  
+    the item in set of paths that was found."""
 
     zipped_archive_file_paths = zip(paths, file_names)
 
