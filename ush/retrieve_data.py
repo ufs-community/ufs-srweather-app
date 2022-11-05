@@ -70,7 +70,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     return unavailable
 
 
-def copy_file(source, destination):
+def copy_file(source, destination, copy_cmd):
 
     """
     Copy a file from a source and place it in the destination location.
@@ -85,7 +85,7 @@ def copy_file(source, destination):
 
     # Using subprocess here because system copy is much faster than
     # python copy options.
-    cmd = f"cp {source} {destination}"
+    cmd = f"{copy_cmd} {source} {destination}"
     logging.info(f"Running command: \n {cmd}")
     try:
         subprocess.run(
@@ -388,7 +388,10 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                     logging.debug(f"Full file path: {input_loc}")
 
                     if method == "disk":
-                        retrieved = copy_file(input_loc, target_path)
+                        if cla.symlink:
+                            retrieved = copy_file(input_loc, target_path, "ln -sf")
+                        else:
+                            retrieved = copy_file(input_loc, target_path, "cp")
 
                     if method == "download":
                         retrieved = download_file(input_loc)
@@ -958,6 +961,11 @@ def parse_args(argv):
     )
 
     # Optional
+    parser.add_argument(
+        "--symlink",
+        action="store_true",
+        help="Symlink data files when source is disk",
+    )
     parser.add_argument(
         "--debug",
         action="store_true",
