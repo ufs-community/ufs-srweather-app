@@ -48,6 +48,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'FV3GFS',
                 '--fcst_hrs', '6', '12', '3',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_type', 'grib2',
             ]
@@ -80,6 +81,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'FV3GFS',
                 '--fcst_hrs', '24', '48', '24',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_type', 'netcdf',
             ]
@@ -112,6 +114,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'GDAS',
                 '--fcst_hrs', '6', '9', '3',
                 '--output_path', out_path_tmpl,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_type', 'netcdf',
                 '--members', '9', '10',
@@ -147,6 +150,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'GEFS',
                 '--fcst_hrs', '6',
                 '--output_path', out_path_tmpl,
+                '--ics_or_lbcs', 'ICS',
                 '--debug',
                 '--file_type', 'netcdf',
                 '--members', '1', '2',
@@ -180,6 +184,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'HRRR',
                 '--fcst_hrs', '0',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'ICS',
                 '--debug',
             ]
             # fmt: on
@@ -209,6 +214,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'HRRR',
                 '--fcst_hrs', '3', '24', '3',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
             ]
             # fmt: on
@@ -237,6 +243,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'HRRR',
                 '--fcst_hrs', '0',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'ICS',
                 '--debug',
             ]
             # fmt: on
@@ -265,6 +272,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'HRRR',
                 '--fcst_hrs', '3', '24', '3',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
             ]
             # fmt: on
@@ -294,6 +302,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'RAP',
                 '--fcst_hrs', '3',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'ICS',
                 '--debug',
             ]
             # fmt: on
@@ -323,6 +332,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--external_model', 'RAP',
                 '--fcst_hrs', '3', '30', '6',
                 '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
                 '--debug',
             ]
             # fmt: on
