@@ -33,6 +33,8 @@ OPTIONS
       does a "make clean"
   --build
       does a "make" (build only)
+  --move
+      move binaries to final location.
   --build-dir=BUILD_DIR
       build directory
   --install-dir=INSTALL_DIR
@@ -125,6 +127,7 @@ BUILD_RRFS_UTILS="off"
 # Make options
 CLEAN=false
 BUILD=false
+MOVE=false
 USE_SUB_MODULES=false #change default to true later
 
 # process required arguments
@@ -155,6 +158,7 @@ while :; do
     --continue=?*|--continue=) usage_error "$1 argument ignored." ;;
     --clean) CLEAN=true ;;
     --build) BUILD=true ;;
+    --move) MOVE=true ;;
     --build-dir=?*) BUILD_DIR=${1#*=} ;;
     --build-dir|--build-dir=) usage_error "$1 requires argument." ;;
     --install-dir=?*) INSTALL_DIR=${1#*=} ;;
@@ -398,18 +402,31 @@ module list
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
-printf "... Generate CMAKE configuration ...\n"
-cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
-
 if [ "${CLEAN}" = true ]; then
-    printf "... Clean executables ...\n"
-    make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
+    if [ -f $PWD/Makefile ]; then
+       printf "... Clean executables ...\n"
+       make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
+    fi
 elif [ "${BUILD}" = true ]; then
+    printf "... Generate CMAKE configuration ...\n"
+    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
+
     printf "... Compile executables ...\n"
     make ${MAKE_SETTINGS} build 2>&1 | tee log.make
 else
+    printf "... Generate CMAKE configuration ...\n"
+    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
+
     printf "... Compile and install executables ...\n"
     make ${MAKE_SETTINGS} install 2>&1 | tee log.make
+
+    if [ "${MOVE}" = true ]; then
+       if [[ ! ${SRW_DIR} -ef ${INSTALL_DIR} ]]; then
+           printf "... Moving executables to final locations ...\n"
+           mkdir -p ${SRW_DIR}/${BIN_DIR}
+           mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
+       fi
+    fi
 fi
 
 exit 0

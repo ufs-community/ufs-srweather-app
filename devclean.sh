@@ -119,9 +119,11 @@ elif [ "${CLEAN}" = true ]; then
   printf '%s\n' " from the installation directory = ${INSTALL_DIR} "
   [[ -d "${BUILD_DIR}" ]] && rm -rf ${BUILD_DIR}  && printf '%s\n' "rm -rf ${BUILD_DIR}"
   [[ -d "${INSTALL_DIR}/${BIN_DIR}" ]] && ( rm -rf ${INSTALL_DIR}/${BIN_DIR}  && printf '%s\n' "rm -rf ${INSTALL_DIR}/${BIN_DIR}" )
-  [[ -d "${INSTALL_DIR}/lib" ]] && ( rm -rf ${INSTALL_DIR}/share  && printf '%s\n' "rm -rf ${INSTALL_DIR}/share" )
+  [[ -d "${SRW_DIR}/${BIN_DIR}" ]] && ( rm -rf ${SRW_DIR}/${BIN_DIR}  && printf '%s\n' "rm -rf ${SRW_DIR}/${BIN_DIR}" )
+  [[ -d "${INSTALL_DIR}/share" ]] && ( rm -rf ${INSTALL_DIR}/share  && printf '%s\n' "rm -rf ${INSTALL_DIR}/share" )
   [[ -d "${INSTALL_DIR}/include" ]] && ( rm -rf ${INSTALL_DIR}/include  && printf '%s\n' "rm -rf ${INSTALL_DIR}/include" )
   [[ -d "${INSTALL_DIR}/lib" ]] && rm -rf ${INSTALL_DIR}/lib  && printf '%s\n' "rm -rf ${INSTALL_DIR}/lib"
+  [[ -d "${INSTALL_DIR}/lib64" ]] && rm -rf ${INSTALL_DIR}/lib  && printf '%s\n' "rm -rf ${INSTALL_DIR}/lib64"
   [[ -d "${SRW_DIR}/manage_externals/manic" ]] && rm -f ${SRW_DIR}/manage_externals/manic/*.pyc  && printf '%s\n' "rm -f ${SRW_DIR}/manage_externals/manic/*.pyc"
   echo " "
 fi

@@ -86,7 +86,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMIN}/for_ICS"
+    extrn_mdl_staging_dir="${COMINext}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS"
@@ -589,16 +589,6 @@ mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
 mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
 
 mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
-#
-#-----------------------------------------------------------------------
-#
-# Clean up the external model data files in NCO mode
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy -rf ${extrn_mdl_staging_dir}
-fi
 #
 #-----------------------------------------------------------------------
 #

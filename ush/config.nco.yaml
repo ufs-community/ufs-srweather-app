@@ -6,8 +6,6 @@ user:
   MACHINE: hera
   ACCOUNT: an_account
 workflow:
-  USE_CRON_TO_RELAUNCH: true
-  CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: test_nco
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2022040700'

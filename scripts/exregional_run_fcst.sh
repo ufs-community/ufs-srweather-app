@@ -471,34 +471,6 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlinks to forecast output in DATA pointing to DATA_SHARED
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-
-  # first set suffix for minutes and seconds of forecast time
-  mnts_secs_str=""
-  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-    if [ ${fhr}${fmn} = "00000" ]; then
-      mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" "+%M:%S" )
-    else
-      mnts_secs_str=":${fmn}:00"
-    fi
-  fi
-
-  # create the symlinks
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
-    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
-  done
-
-  # create an intermediate symlink to RESTART
-  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -512,21 +484,6 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# Move RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode and when it is not empty.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy -rf "${COMIN}/RESTART"
-  if [ "$(ls -A RESTART)" ]; then
-    mv_vrfy RESTART ${COMIN}
-    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
-  fi
-fi
 #
 #-----------------------------------------------------------------------
 #
