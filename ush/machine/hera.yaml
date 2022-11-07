@@ -38,3 +38,5 @@ task_run_fcst:
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
+cpl_aqm_parm:
+  COMINgfs_BASEDIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/test/dir

@@ -162,6 +162,9 @@ Directories and files.
 <!ENTITY NDAS_OBS_DIR "{{ ndas_obs_dir }}">
 
 <!ENTITY WARMSTART_CYCLE_DIR  "{{ warmstart_cycle_dir }}">
+{%- if do_real_time %}
+<!ENTITY COMINgfs_BASEDIR         "{{ comingfs_basedir }}">
+{%- endif %}
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -421,7 +424,11 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
-
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs_BASEDIR;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
   </task>
 {%- endif %}
 {%- if run_task_get_extrn_lbcs %}
@@ -446,6 +453,12 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs_BASEDIR;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
 
   </task>
 {%- endif %}

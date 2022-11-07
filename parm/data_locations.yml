@@ -64,15 +64,18 @@ FV3GFS:
           - gfs.t{hh}z.sfcanl.nemsio
         fcst:
           - gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio
+          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio
       netcdf:
         anl:
           - gfs.t{hh}z.atmanl.nc
           - gfs.t{hh}z.sfcanl.nc
         fcst:
           - gfs.t{hh}z.atmf{fcst_hr:03d}.nc
+          - gfs.t{hh}z.sfcf{fcst_hr:03d}.nc
   hpss:
     protocol: htar
     archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
@@ -83,9 +86,11 @@ FV3GFS:
         anl:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+          - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
         fcst:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+          - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
       nemsio:
         anl:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar
@@ -97,9 +102,11 @@ FV3GFS:
         anl:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar
+          - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_nca.tar
         fcst:
           - ['gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
           - ['com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
+          - ['com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
     file_names:
       <<: *gfs_file_names
   aws:

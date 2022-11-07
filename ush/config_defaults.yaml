@@ -2158,6 +2158,13 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+  # DO_REAL_TIME_RUN:
+  # switch for real-time run
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_REAL_TIME: false
+  #
 #----------------------------
 # CPL_AQM config parameters
 #-----------------------------
@@ -2357,3 +2364,5 @@ cpl_aqm_parm:
 
   COLDSTART: true
   WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
+
+  COMINgfs_BASEDIR: ""

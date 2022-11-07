@@ -8,10 +8,10 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
-  EXPT_SUBDIR: aqm_hrrr25_1d4cyc
+  EXPT_SUBDIR: aqm_hrrr25_realtime
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
-  DATE_FIRST_CYCL: '2019080500'
-  DATE_LAST_CYCL: '2019080518'
+  DATE_FIRST_CYCL: '2022110312'
+  DATE_LAST_CYCL: '2022110312'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
@@ -28,13 +28,20 @@ workflow_switches:
   RUN_TASK_RUN_POST: true
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
-#  FV3GFS_FILE_FMT_ICS: grib2
-  EXTRN_MDL_ICS_OFFSET_HRS: 0
+  FV3GFS_FILE_FMT_ICS: netcdf
+  EXTRN_MDL_ICS_OFFSET_HRS: 6
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /lfs/h1/ops/prod/com/gfs/v16.3/gfs.${yyyymmdd}/${hh}/atmos
+  EXTRN_MDL_FILES_ICS: []
+  EXTRN_MDL_DATA_STORES: disk
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
-#  FV3GFS_FILE_FMT_LBCS: grib2
-  EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  FV3GFS_FILE_FMT_LBCS: netcdf
+  EXTRN_MDL_LBCS_OFFSET_HRS: 6
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lfs/h1/ops/prod/com/gfs/v16.3/gfs.${yyyymmdd}/${hh}/atmos
+  EXTRN_MDL_FILES_LBCS: []
+  EXTRN_MDL_DATA_STORES: disk
 task_run_fcst:
   RESTART_INTERVAL: 6
   WTIME_RUN_FCST: 00:30:00
@@ -45,7 +52,7 @@ global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
   HALO_BLEND: 0
-  DO_REAL_TIME: false
+  DO_REAL_TIME: true
 cpl_aqm_parm:
   CPL_AQM: true
   RUN_TASK_AQM_ICS: true
@@ -70,7 +77,7 @@ cpl_aqm_parm:
   AQM_RC_FIRE_FREQUENCY: static
   AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/boundary_conditions_v4
   AQM_LBCS_FILES: gfs_bndy_chem_<MM>.tile7.000.nc
-  AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_aerosol
+  AQM_GEFS_DIR: /lfs/h1/ops/prod/com/gefs/v12.3
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_GSD_HRRR_25km.nc

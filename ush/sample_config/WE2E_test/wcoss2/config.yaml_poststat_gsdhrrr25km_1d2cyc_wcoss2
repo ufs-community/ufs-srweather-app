@@ -48,6 +48,7 @@ global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
   HALO_BLEND: 0
+  DO_REAL_TIME: false
 cpl_aqm_parm:
   CPL_AQM: true
   RUN_TASK_AQM_ICS: true

@@ -90,8 +90,19 @@ mm=${yyyymmddhh:4:2}
 dd=${yyyymmddhh:6:2}
 hh=${yyyymmddhh:8:2}
 
-
+#
+#-----------------------------------------------------------------------
+#
+# if path has space in between it is a command, otherwise
+# treat it as a template path
+#
+#-----------------------------------------------------------------------
+#
 input_file_path=$(eval echo ${input_file_path})
+if [[ $input_file_path = *" "* ]]; then
+  input_file_path=$(eval ${input_file_path})
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -118,6 +129,10 @@ if [ -n "${input_file_path:-}" ] ; then
   --input_file_path ${input_file_path}"
 fi
 
+if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+  additional_flags="$additional_flags \
+  --symlink"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -139,6 +154,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --data_stores ${data_stores} \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
+  --ics_or_lbcs ${ICS_OR_LBCS} \
   --output_path ${EXTRN_MDL_STAGING_DIR} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"

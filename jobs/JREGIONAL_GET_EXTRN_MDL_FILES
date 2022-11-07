@@ -93,10 +93,11 @@ check_var_valid_value "ICS_OR_LBCS" "valid_vals_ICS_OR_LBCS"
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   export TIME_OFFSET_HRS=${EXTRN_MDL_ICS_OFFSET_HRS:-0}
   export EXTRN_MDL_NAME=${EXTRN_MDL_NAME_ICS}
-
+  GFS_FILE_FMT=${FV3GFS_FILE_FMT_ICS}
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   export TIME_OFFSET_HRS=${EXTRN_MDL_LBCS_OFFSET_HRS:-0}
   export EXTRN_MDL_NAME=${EXTRN_MDL_NAME_LBCS}
+  GFS_FILE_FMT=${FV3GFS_FILE_FMT_LBCS}
 fi
 
 #
@@ -159,10 +160,10 @@ case ${EXTRN_MDL_NAME} in
 # The transition date from the GSMGFS to the FV3GFS was 2019061212, i.e.
 # this was the first official forecast with the FV3GFS.  So we set the
 # last CDATE for the GSMGFS to the one 6 hours before this.
-  cdate_max="2019061206"
-  if [ "$EXTRN_MDL_CDATE" -gt "$cdate_max" ]; then
+  CDATE_max="2019061206"
+  if [ "$EXTRN_MDL_CDATE" -gt "$CDATE_max" ]; then
     print_err_msg_exit "\
-      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $cdate_max max)"
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_max max)"
   fi
   ;;
 
@@ -171,11 +172,20 @@ case ${EXTRN_MDL_NAME} in
 # this was the first official forecast with the FV3GFS.  However, paral-
 # lel runs with the FV3GFS go back to 2018121500.  So we set the first 
 # EXTRN_MDL_CDATE for the FV3GFS to this date and time.
-#  CDATE_min="2019061212"
   CDATE_min="2018121500"
+  CDATE_min_netcdf="2021032100"
+  CDATE_max_nemsio="2021032018"
   if [ "$EXTRN_MDL_CDATE" -lt "$CDATE_min" ]; then
     print_err_msg_exit "\
-      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $cdate_min min)"
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_min min)"
+  elif [ "${GFS_FILE_FMT}" = "netcdf" ] && [ "${EXTRN_MDL_CDATE}" -lt "${CDATE_min_netcdf}" ]; then
+    print_err_msg_exit "\
+      NETCDF is not available for this date:: However, NEMSIO is available:: \
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_min_netcdf min)"
+  elif [ "${GFS_FILE_FMT}" = "nemsio" ] && [ "${EXTRN_MDL_CDATE}" -gt "${CDATE_max_nemsio}" ]; then
+    print_err_msg_exit "\
+      NEMSIO is not available for this date:: However, NETCDF is available::  \
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_max_nemsio max)"
   fi
   ;;
 
@@ -185,7 +195,7 @@ case ${EXTRN_MDL_NAME} in
   CDATE_min="2015070100"
   if [ "$EXTRN_MDL_CDATE" -lt "$CDATE_min" ]; then
     print_err_msg_exit "\
-      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $cdate_min min)"
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_min min)"
   fi
   ;;
 
@@ -196,7 +206,7 @@ case ${EXTRN_MDL_NAME} in
   CDATE_min="2014103000"
   if [ "$EXTRN_MDL_CDATE" -lt "$CDATE_min" ]; then
     print_err_msg_exit "\
-      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $cdate_min min)"
+      $(data_unavailable $EXTRN_MDL_NAME $EXTRN_MDL_CDATE $CDATE_min min)"
   fi
   ;;
 
@@ -209,7 +219,7 @@ esac
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export EXTRN_MDL_STAGING_DIR="${COMIN}/for_${ICS_OR_LBCS}"
+    export EXTRN_MDL_STAGING_DIR="${COMINext}"
     mkdir_vrfy -p "${EXTRN_MDL_STAGING_DIR}"
 else
     export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"

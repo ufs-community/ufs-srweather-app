@@ -372,6 +372,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             #
             "write_dopost": WRITE_DOPOST,
             #
+            # Switch for real-time run
+            "do_real_time": DO_REAL_TIME,
+            # 
+            # Base dir of FV3GFS data
+            #
+            "comingfs_basedir": COMINgfs_BASEDIR,
+            #
             # METPlus-specific information
             #
             "model": MODEL,
@@ -387,39 +394,39 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             #
             # AQM parameters
             #
- 	      'aqm_ics_tn': AQM_ICS_TN,
-              'aqm_lbcs_tn': AQM_LBCS_TN,
-              'nexus_emission_tn': NEXUS_EMISSION_TN,
-              'point_source_tn': POINT_SOURCE_TN,
-              'post_stat_tn': POST_STAT_TN,
-              'coldstart': COLDSTART,
-              'warmstart_cycle_dir': WARMSTART_CYCLE_DIR,
-              'cycl_next': CYCL_NEXT,
-              'run_task_aqm_ics': RUN_TASK_AQM_ICS,
-              'run_task_aqm_lbcs': RUN_TASK_AQM_LBCS,
-              'run_task_nexus_emission': RUN_TASK_NEXUS_EMISSION,
-              'run_task_point_source': RUN_TASK_POINT_SOURCE,
-              'run_task_post_stat': RUN_TASK_POST_STAT,
-              'nnodes_aqm_ics': NNODES_AQM_ICS,
-              'nnodes_aqm_lbcs': NNODES_AQM_LBCS,
-              'nnodes_nexus_emission': NNODES_NEXUS_EMISSION,
-              'nnodes_point_source': NNODES_POINT_SOURCE,
-              'nnodes_post_stat': NNODES_POST_STAT,
-              'ppn_aqm_ics': PPN_AQM_ICS,
-              'ppn_aqm_lbcs': PPN_AQM_LBCS,
-              'ppn_nexus_emission': PPN_NEXUS_EMISSION,
-              'ppn_point_source': PPN_POINT_SOURCE,
-              'ppn_post_stat': PPN_POST_STAT,
-              'wtime_aqm_ics': WTIME_AQM_ICS,
-              'wtime_aqm_lbcs': WTIME_AQM_LBCS,
-              'wtime_nexus_emission': WTIME_NEXUS_EMISSION,
-              'wtime_point_source': WTIME_POINT_SOURCE,
-              'wtime_post_stat': WTIME_POST_STAT,
-              'maxtries_aqm_ics': MAXTRIES_AQM_ICS,
-              'maxtries_aqm_lbcs': MAXTRIES_AQM_LBCS,
-              'maxtries_nexus_emission': MAXTRIES_NEXUS_EMISSION,
-              'maxtries_point_source': MAXTRIES_POINT_SOURCE,
-              'maxtries_post_stat': MAXTRIES_POST_STAT,
+ 	    "aqm_ics_tn": AQM_ICS_TN,
+            "aqm_lbcs_tn": AQM_LBCS_TN,
+            "nexus_emission_tn": NEXUS_EMISSION_TN,
+            "point_source_tn": POINT_SOURCE_TN,
+            "post_stat_tn": POST_STAT_TN,
+            "coldstart": COLDSTART,
+            "warmstart_cycle_dir": WARMSTART_CYCLE_DIR,
+            "cycl_next": CYCL_NEXT,
+            "run_task_aqm_ics": RUN_TASK_AQM_ICS,
+            "run_task_aqm_lbcs": RUN_TASK_AQM_LBCS,
+            "run_task_nexus_emission": RUN_TASK_NEXUS_EMISSION,
+            "run_task_point_source": RUN_TASK_POINT_SOURCE,
+            "run_task_post_stat": RUN_TASK_POST_STAT,
+            "nnodes_aqm_ics": NNODES_AQM_ICS,
+            "nnodes_aqm_lbcs": NNODES_AQM_LBCS,
+            "nnodes_nexus_emission": NNODES_NEXUS_EMISSION,
+            "nnodes_point_source": NNODES_POINT_SOURCE,
+            "nnodes_post_stat": NNODES_POST_STAT,
+            "ppn_aqm_ics": PPN_AQM_ICS,
+            "ppn_aqm_lbcs": PPN_AQM_LBCS,
+            "ppn_nexus_emission": PPN_NEXUS_EMISSION,
+            "ppn_point_source": PPN_POINT_SOURCE,
+            "ppn_post_stat": PPN_POST_STAT,
+            "wtime_aqm_ics": WTIME_AQM_ICS,
+            "wtime_aqm_lbcs": WTIME_AQM_LBCS,
+            "wtime_nexus_emission": WTIME_NEXUS_EMISSION,
+            "wtime_point_source": WTIME_POINT_SOURCE,
+            "wtime_post_stat": WTIME_POST_STAT,
+            "maxtries_aqm_ics": MAXTRIES_AQM_ICS,
+            "maxtries_aqm_lbcs": MAXTRIES_AQM_LBCS,
+            "maxtries_nexus_emission": MAXTRIES_NEXUS_EMISSION,
+            "maxtries_point_source": MAXTRIES_POINT_SOURCE,
+            "maxtries_post_stat": MAXTRIES_POST_STAT,
             #
             # Ensemble-related parameters.
             #

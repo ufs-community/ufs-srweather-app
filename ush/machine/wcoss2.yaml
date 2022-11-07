@@ -33,3 +33,5 @@ task_run_fcst:
   FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
+cpl_aqm_parm:
+  COMINgfs_BASEDIR: /lfs/h1/ops/prod/com/gfs/v16.3
