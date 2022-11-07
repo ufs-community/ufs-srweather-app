@@ -658,7 +658,7 @@ workflow:
   VX_TN: "run_vx"
   VX_ENSGRID_TN: "run_ensgridvx"
   VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
+  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
 
 #----------------------------
 # NCO specific variables
@@ -1803,7 +1803,7 @@ task_run_vx_gridstat:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 1
+  MAXTRIES_VX_GRIDSTAT: 2
 
 #----------------------------
 # VX_GRIDSTAT_REFC config parameters
@@ -1813,7 +1813,7 @@ task_run_vx_gridstat_refc:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 1
+  MAXTRIES_VX_GRIDSTAT_REFC: 2
 
 #----------------------------
 # VX_GRIDSTAT_RETOP config parameters
@@ -1823,7 +1823,7 @@ task_run_vx_gridstat_retop:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 1
+  MAXTRIES_VX_GRIDSTAT_RETOP: 2
 
 #----------------------------
 # VX_GRIDSTAT_03h config parameters
@@ -1833,7 +1833,7 @@ task_run_vx_gridstat_03h:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 1
+  MAXTRIES_VX_GRIDSTAT_03h: 2
 
 #----------------------------
 # VX_GRIDSTAT_06h config parameters
@@ -1843,7 +1843,7 @@ task_run_vx_gridstat_06h:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 1
+  MAXTRIES_VX_GRIDSTAT_06h: 2
 
 #----------------------------
 # VX_GRIDSTAT_24h config parameters
@@ -1853,7 +1853,7 @@ task_run_vx_gridstat_24h:
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 1
+  MAXTRIES_VX_GRIDSTAT_24h: 2
 
 #----------------------------
 # VX_POINTSTAT config parameters
@@ -1863,26 +1863,26 @@ task_run_vx_pointstat:
   NNODES_VX_POINTSTAT: 1
   PPN_VX_POINTSTAT: 1
   WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 1
+  MAXTRIES_VX_POINTSTAT: 2
 
 #----------------------------
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
   VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 1
+  MAXTRIES_VX_ENSGRID_03h: 2
   VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 1
+  MAXTRIES_VX_ENSGRID_06h: 2
   VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 1
+  MAXTRIES_VX_ENSGRID_24h: 2
   VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 1
+  MAXTRIES_VX_ENSGRID_RETOP: 2
   VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
+  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID: 1
+  MAXTRIES_VX_ENSGRID: 2
 
 
 #----------------------------
@@ -1893,7 +1893,7 @@ task_run_vx_ensgrid_refc:
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 1
+  MAXTRIES_VX_ENSGRID_REFC: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN config parameters
@@ -1903,7 +1903,7 @@ task_run_vx_ensgrid_mean:
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 1
+  MAXTRIES_VX_ENSGRID_MEAN: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_03h config parameters
@@ -1913,7 +1913,7 @@ task_run_vx_ensgrid_mean_03h:
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_06h config parameters
@@ -1923,7 +1923,7 @@ task_run_vx_ensgrid_mean_06h:
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_24h config parameters
@@ -1933,7 +1933,7 @@ task_run_vx_ensgrid_mean_24h:
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB config parameters
@@ -1943,7 +1943,7 @@ task_run_vx_ensgrid_prob:
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 1
+  MAXTRIES_VX_ENSGRID_PROB: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_03h config parameters
@@ -1953,7 +1953,7 @@ task_run_vx_ensgrid_prob_03h:
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 1
+  MAXTRIES_VX_ENSGRID_PROB_03h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_06h config parameters
@@ -1963,7 +1963,7 @@ task_run_vx_ensgrid_prob_06h:
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 1
+  MAXTRIES_VX_ENSGRID_PROB_06h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_24h config parameters
@@ -1973,7 +1973,7 @@ task_run_vx_ensgrid_prob_24h:
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 1
+  MAXTRIES_VX_ENSGRID_PROB_24h: 2
 
 #----------------------------
 # VX_ENSPOINT config parameters
@@ -1983,7 +1983,7 @@ task_run_vx_enspoint:
   NNODES_VX_ENSPOINT: 1
   PPN_VX_ENSPOINT: 1
   WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 1
+  MAXTRIES_VX_ENSPOINT: 2
 
 #----------------------------
 # VX_ENSPOINT_MEAN config parameters
@@ -1993,7 +1993,7 @@ task_run_vx_enspoint_mean:
   NNODES_VX_ENSPOINT_MEAN: 1
   PPN_VX_ENSPOINT_MEAN: 1
   WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 1
+  MAXTRIES_VX_ENSPOINT_MEAN: 2
 
 #----------------------------
 # VX_ENSPOINT_PROB config parameters
@@ -2003,7 +2003,7 @@ task_run_vx_enspoint_prob:
   NNODES_VX_ENSPOINT_PROB: 1
   PPN_VX_ENSPOINT_PROB: 1
   WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 1
+  MAXTRIES_VX_ENSPOINT_PROB: 2
 
 
 #----------------------------
