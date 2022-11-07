@@ -20,6 +20,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm
   FIELD_TABLE_TMPL_FN: field_table_aqm
 nco:
+  envir: prod
   NET: aqm
   model_ver: v7.0
   RUN: aqm_test

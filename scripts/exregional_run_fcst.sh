@@ -577,8 +577,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   fi
 
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp_vrfy dyn.f*.nc ${COMOUT}
-    cp_vrfy phy.f*.nc ${COMOUT}
+    cp_vrfy ${DATA}/dynf*.nc ${COMOUT}
+    cp_vrfy ${DATA}/phyf*.nc ${COMOUT}
   fi
 fi
 #

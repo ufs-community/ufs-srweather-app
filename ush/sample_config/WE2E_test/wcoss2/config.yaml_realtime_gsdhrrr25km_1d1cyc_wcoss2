@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, GSD_HRRR_25km, 6hr forecast, 4cycles a day, on WCOSS2
+  description: config for Online-CMAQ, GSD_HRRR_25km, 6hr forecast, real-time run, on WCOSS2
 user:
   RUN_ENVIR: community
   MACHINE: wcoss2
@@ -20,6 +20,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm
   FIELD_TABLE_TMPL_FN: field_table_aqm
 nco:
+  envir: prod
   NET: aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: true
@@ -30,18 +31,10 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
   EXTRN_MDL_ICS_OFFSET_HRS: 6
-  USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: /lfs/h1/ops/prod/com/gfs/v16.3/gfs.${yyyymmdd}/${hh}/atmos
-  EXTRN_MDL_FILES_ICS: []
-  EXTRN_MDL_DATA_STORES: disk
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
-  EXTRN_MDL_LBCS_OFFSET_HRS: 6
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lfs/h1/ops/prod/com/gfs/v16.3/gfs.${yyyymmdd}/${hh}/atmos
-  EXTRN_MDL_FILES_LBCS: []
-  EXTRN_MDL_DATA_STORES: disk
 task_run_fcst:
   RESTART_INTERVAL: 6
   WTIME_RUN_FCST: 00:30:00

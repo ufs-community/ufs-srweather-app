@@ -12,7 +12,7 @@ workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   DATE_FIRST_CYCL: '2019080612'
   DATE_LAST_CYCL: '2019080612'
-  INCR_CYCL_FREQ: 24
+  INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
@@ -20,6 +20,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm
   FIELD_TABLE_TMPL_FN: field_table_aqm
 nco:
+  envir: prod
   NET: aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: true

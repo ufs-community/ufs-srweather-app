@@ -89,7 +89,7 @@ yyyymmdd=${yyyymmddhh:0:8}
 mm=${yyyymmddhh:4:2}
 dd=${yyyymmddhh:6:2}
 hh=${yyyymmddhh:8:2}
-
+cyc=${hh}
 #
 #-----------------------------------------------------------------------
 #

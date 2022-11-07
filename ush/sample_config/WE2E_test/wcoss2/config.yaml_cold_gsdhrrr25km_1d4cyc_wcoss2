@@ -20,6 +20,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm
   FIELD_TABLE_TMPL_FN: field_table_aqm
 nco:
+  envir: prod
   NET: aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: true
