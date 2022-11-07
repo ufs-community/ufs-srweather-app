@@ -34,8 +34,8 @@ task_run_fcst:
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
 data:
   GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDY}
-  FV3GFS: compath.py ${envir}/gfs/${gfs_ver}/gfs.${PDY}
+  FV3GFS: compath.py ${envir}/gfs/${gfs_ver}/gfs.${PDY}/${cyc}/atmos
   RAP: compath.py ${envir}/rap/${rap_ver}/rap.${PDY}
   NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDY}
-  HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDY}
+  HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDY}/conus
 
