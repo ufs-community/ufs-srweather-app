@@ -13,8 +13,9 @@ from python_utils import (
 )
 
 
-def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx,
-        dely, pazi, constants):
+def set_gridparams_ESGgrid(
+    lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, pazi, constants
+):
     """Sets the parameters for a grid that is to be generated using the "ESGgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
 
@@ -35,8 +36,8 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx,
     print_input_args(locals())
 
     # get constants
-    RADIUS_EARTH = constants['RADIUS_EARTH']
-    DEGS_PER_RADIAN = constants['DEGS_PER_RADIAN']
+    RADIUS_EARTH = constants["RADIUS_EARTH"]
+    DEGS_PER_RADIAN = constants["DEGS_PER_RADIAN"]
 
     #
     # -----------------------------------------------------------------------
@@ -90,7 +91,7 @@ class Testing(unittest.TestCase):
             constants=dict(
                 RADIUS_EARTH=6371200.0,
                 DEGS_PER_RADIAN=57.2957795131,
-                )
+            ),
         )
 
         self.assertEqual(

@@ -14,8 +14,9 @@ from python_utils import (
 )
 
 
-def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn,
-        link_thompson_climo):
+def set_thompson_mp_fix_files(
+    ccpp_phys_suite_fp, thompson_mp_climo_fn, link_thompson_climo
+):
     """Function that first checks whether the Thompson
     microphysics parameterization is being called by the selected physics
     suite.  If not, it sets the output variable whose name is specified by
@@ -87,7 +88,7 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn,
 class Testing(unittest.TestCase):
     def test_set_thompson_mp_fix_files(self):
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        uses_thompson, _, _ =  set_thompson_mp_fix_files(
+        uses_thompson, _, _ = set_thompson_mp_fix_files(
             f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
             "Thompson_MP_MONTHLY_CLIMO.nc",
             False,

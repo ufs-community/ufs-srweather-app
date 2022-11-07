@@ -14,6 +14,7 @@ from python_utils import (
     find_pattern_in_str,
 )
 
+
 def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
     """Function that does the following:
     (1) Determines the ozone parameterization being used by checking in the
@@ -110,7 +111,7 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
 
     ozone_link_mappings = copy.deepcopy(link_mappings)
     for i, mapping in enumerate(ozone_link_mappings):
-        symlink = mapping.split('|')[0]
+        symlink = mapping.split("|")[0]
         if symlink.strip() == ozone_symlink:
             ozone_link_mappings[i] = f"{symlink}| {fixgsm_ozone_fn}"
             fixgsm_ozone_fn_is_set = True
@@ -136,7 +137,7 @@ class Testing(unittest.TestCase):
         self.assertEqual(
             "ozphys_2015",
             set_ozone_param(
-                ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml"
+                f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
                 self.CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
             ),
         )

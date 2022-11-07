@@ -41,7 +41,7 @@ from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 
 def load_config_for_setup(ushdir, default_config, user_config):
-    """ Load in the default, machine, and user configuration files into
+    """Load in the default, machine, and user configuration files into
     Python dictionaries. Return the combined experiment dictionary.
 
     Args:
@@ -59,45 +59,60 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Load the user config file, then ensure all user-specified
     # variables correspond to a default value.
     if not os.path.exists(user_config):
-        raise FileNotFoundError(f'User config file not found:
-                user_config = {user_config}')
+        raise FileNotFoundError(
+            f"""
+            User config file not found:
+            user_config = {user_config}
+            """
+        )
 
     try:
         cfg_u = load_config_file(user_config)
     except:
-        errmsg = dedent(f'''\n
-                        Could not load YAML config file:  {user_config}
-                        Reference the above traceback for more information.
-                        ''')
+        errmsg = dedent(
+            f"""\n
+            Could not load YAML config file:  {user_config}
+            Reference the above traceback for more information.
+            """
+        )
         raise Exception(errmsg)
 
     # Make sure the keys in user config match those in the default
     # config.
     if not check_structure_dict(cfg_u, cfg_d):
-        raise Exception(dedent(f'''
-                        User-specified variable "{key}" in {user_config} is not valid
-                        Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n'''))
+        raise Exception(
+            dedent(
+                f"""
+                User-specified variable "{key}" in {user_config} is not valid
+                Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n
+                """
+            )
+        )
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
-    mandatory = ['user.MACHINE']
+    mandatory = ["user.MACHINE"]
     for val in mandatory:
-        sect, key = val.split('.')
+        sect, key = val.split(".")
         user_setting = cfg_u.get(sect, {}).get(key)
         if user_setting is None:
-            raise Exception(f'Mandatory variable "{val}" not found in
-            user config file {user_config}')
+            raise Exception(
+                f"""Mandatory variable "{val}" not found in
+            user config file {user_config}"""
+            )
 
     # Load the machine config file
-    machine = cfg_u.get('user').get('MACHINE')
+    machine = cfg_u.get("user").get("MACHINE")
     machine_file = os.path.join(ushdir, "machine", f"{lowercase(machine)}.yaml")
 
     if not os.path.exists(machine_file):
-        raise FileNotFoundError(dedent(
-            f"""
+        raise FileNotFoundError(
+            dedent(
+                f"""
             The machine file {machine_file} does not exist.
             Check that you have specified the correct machine
             ({machine}) in your config file {user_config}"""
-        ))
+            )
+        )
     machine_cfg = load_config_file(machine_file)
 
     # Load the constants file
@@ -126,48 +141,56 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
-        'NCORES_PER_NODE',
-        'FIXgsm',
-        'FIXaer',
-        'FIXlut',
-        'TOPO_DIR',
-        'SFC_CLIMO_INPUT_DIR',
+        "NCORES_PER_NODE",
+        "FIXgsm",
+        "FIXaer",
+        "FIXlut",
+        "TOPO_DIR",
+        "SFC_CLIMO_INPUT_DIR",
     ]
     for val in mandatory:
-        if not cfg_d.get('task_run_fcst', {}).get('val'):
-            raise Exception(dedent(f'''
+        if not cfg_d.get("task_run_fcst", {}).get("val"):
+            raise Exception(
+                dedent(
+                    f"""
                             Mandatory variable "{val}" not found in:
                             user config file {user_config}
                                           OR
                             machine file {machine_file} 
-                            '''))
+                            """
+                )
+            )
 
     # Check that input dates are in a date format
-    dates = ['DATE_FIRST_CYCL', 'DATE_LAST_CYCL']
+    dates = ["DATE_FIRST_CYCL", "DATE_LAST_CYCL"]
     for val in dates:
-        if not isinstance(cfg_d['user'][val], datetime.date):
-            raise Exception(dedent(f'''
+        if not isinstance(cfg_d["user"][val], datetime.date):
+            raise Exception(
+                dedent(
+                    f"""
                             Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
 
                             For examples of valid formats, see the Users' Guide.
-                            '''))
+                            """
+                )
+            )
 
     # Check to make sure mandatory workflow variables are set.
-    vlist = ['EXPT_SUBDIR']
+    vlist = ["EXPT_SUBDIR"]
     for val in vlist:
-        if not cfg_d['task_run_fcst'].get('val')
+        if not cfg_d["task_run_fcst"].get("val"):
             raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     # Check to make sure that mandatory forecast variables are set.
-    vlist = ['DT_ATMOS',
-             'LAYOUT_X',
-             'LAYOUT_Y',
-             'BLOCKSIZE',
-             ]
+    vlist = [
+        "DT_ATMOS",
+        "LAYOUT_X",
+        "LAYOUT_Y",
+        "BLOCKSIZE",
+    ]
     for val in vlist:
-        if not cfg_d['task_run_fcst'].get('val')
+        if not cfg_d["task_run_fcst"].get("val"):
             raise Exception(f"\nMandatory variable '{val}' has not been set\n")
-
 
     return cfg_d
 
@@ -185,16 +208,14 @@ def set_srw_paths(ushdir, expt_config):
        ushdir:      (str) path to the system location of the ush/ directory
                      under the SRW clone
        expt_config: (dict) contains the configuration settings for the
-                     user-defined experiment 
+                     user-defined experiment
 
     Returns:
        dictionary of config settings and system paths as keys/values
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
-    home_dir = os.path.abspath(
-        os.path.dirname(__file__) + os.sep + os.pardir
-    )
+    home_dir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
 
     # Read Externals.cfg
     mng_extrns_cfg_fn = os.path.join(home_dir, "Externals.cfg")
@@ -205,7 +226,7 @@ def set_srw_paths(ushdir, expt_config):
     cfg = load_ini_config(mng_extrns_cfg_fn)
 
     # Get the base directory of the FV3 forecast model code.
-    external_name = expt_config.get('workflow', {}).get('FCST_MODEL')
+    external_name = expt_config.get("workflow", {}).get("FCST_MODEL")
     property_name = "local_path"
 
     try:
@@ -233,10 +254,11 @@ def set_srw_paths(ushdir, expt_config):
         )
 
     return dict(
-        HOMEdir = home_dir,
-        USHdir = ushdir,
-        UFS_WTHR_MDL_DIR = ufs_wthr_mdl_dir,
-        )
+        HOMEdir=home_dir,
+        USHdir=ushdir,
+        UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
+    )
+
 
 def setup(USHdir, user_config_fn="config.yaml"):
     """Function that validates user-provided configuration, and derives
@@ -276,8 +298,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     expt_config = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
 
     # Set up some paths relative to the SRW clone
-    expt_config['user'].update(set_srw_paths(USHdir, expt_config))
-
+    expt_config["user"].update(set_srw_paths(USHdir, expt_config))
 
     #
     # -----------------------------------------------------------------------
@@ -297,20 +318,20 @@ def setup(USHdir, user_config_fn="config.yaml"):
     workflow_config["WORKFLOW_ID"] = workflow_id
     log_info(f"""WORKFLOW ID = {workflow_id}""")
 
-    debug = workflow_config.get('DEBUG')
+    debug = workflow_config.get("DEBUG")
     if debug:
         log_info(
             """
             Setting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
-        workflow_config['VERBOSE'] = True
+        workflow_config["VERBOSE"] = True
 
-    verbose = workflow_config['VERBOSE']
+    verbose = workflow_config["VERBOSE"]
 
     # The forecast length (in integer hours) cannot contain more than 3 characters.
     # Thus, its maximum value is 999.
     fcst_len_hrs_max = 999
-    fcst_len_hrs = workflow_config.get('FCST_LEN_HRS')
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
     if fcst_len_hrs > fcst_len_hrs_max:
         raise ValueError(
             f"""
@@ -335,7 +356,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    expt_basedir = workflow_config.get('EXPT_BASEDIR')
+    expt_basedir = workflow_config.get("EXPT_BASEDIR")
     if (not expt_basedir) or (expt_basedir[0] != "/"):
         if not expt_basedir:
             expt_basedir = ""
@@ -347,7 +368,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     expt_basedir = os.path.abspath(expt_basedir)
 
     mkdir_vrfy(f' -p "{expt_basedir}"')
-    workflow_config['EXPT_BASEDIR'] = expt_basedir
+    workflow_config["EXPT_BASEDIR"] = expt_basedir
 
     #
     # -----------------------------------------------------------------------
@@ -358,29 +379,32 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    expt_subdir = workflow_config.get('EXPT_SUBDIR', '')
-    exptdir = workflow_config['EXPTDIR']
-    preexisting_dir_method = workflow_config.get('PREEXISTING_DIR_METHOD', '')
+    expt_subdir = workflow_config.get("EXPT_SUBDIR", "")
+    exptdir = workflow_config["EXPTDIR"]
+    preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
     try:
         check_for_preexist_dir_file(exptdir, preexisting_dir_method)
     except ValueError:
-        logger.exception(f'''
+        logger.exception(
+            f"""
                         Check that the following values are valid:
                         EXPTDIR {exptdir}
                         PREEXISTING_DIR_METHOD {preexisting_dir_method}
-                        ''')
+                        """
+        )
         raise
     except FileExistsError:
-        errmsg = dedent(f'''
+        errmsg = dedent(
+            f"""
                         EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
 
                         To ignore this error, delete the directory, or set 
                         PREEXISTING_DIR_METHOD = delete, or
                         PREEXISTING_DIR_METHOD = rename
                         in your config file.
-                        ''')
+                        """
+        )
         raise FileExistsError(errmsg) from None
-
 
     #
     # -----------------------------------------------------------------------
@@ -390,11 +414,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    if workflow_config.get('USE_CRON_TO_RELAUNCH'):
-        intvl_mnts = workflow_config.get('CRON_RELAUNCH_INTVL_MNTS')
-        launch_script_fn = workflow_config.get('WFLOW_LAUNCH_SCRIPT_FN')
-        launch_log_fn = workflow_config.get('WFLOW_LAUNCH_LOG_FN')
-        workflow_config['CRONTAB_LINE'] = (
+    if workflow_config.get("USE_CRON_TO_RELAUNCH"):
+        intvl_mnts = workflow_config.get("CRON_RELAUNCH_INTVL_MNTS")
+        launch_script_fn = workflow_config.get("WFLOW_LAUNCH_SCRIPT_FN")
+        launch_log_fn = workflow_config.get("WFLOW_LAUNCH_LOG_FN")
+        workflow_config["CRONTAB_LINE"] = (
             f"""*/{intvl_mnts} * * * * cd {exptdir} && """
             f"""./{launch_script_fn} called_from_cron="TRUE" >> ./{launch_log_fn} 2>&1"""
         )
@@ -407,9 +431,10 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # Necessary tasks are turned on
-    pregen_basedir = expt_config['platform'].get('DOMAIN_PREGEN_BASEDIR')
-    if pregen_basedir is None and not \
-            (run_task_make_grid and run_task_make_orog and run_task_make_sfc_climo):
+    pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
+    if pregen_basedir is None and not (
+        run_task_make_grid and run_task_make_orog and run_task_make_sfc_climo
+    ):
         raise Exception(
             f"""
             DOMAIN_PREGEN_BASEDIR must be set when any of the following
@@ -420,12 +445,15 @@ def setup(USHdir, user_config_fn="config.yaml"):
         )
 
     # A batch system account is specified
-    if expt_config['platform'].get('WORKFLOW_MANAGER') is not None:
-        if not expt.get('user').get('ACCOUNT'):
-            raise Exception(dedent(f'''
+    if expt_config["platform"].get("WORKFLOW_MANAGER") is not None:
+        if not expt.get("user").get("ACCOUNT"):
+            raise Exception(
+                dedent(
+                    f"""
                   ACCOUNT must be specified in config or machine file if using a workflow manager.
-                  WORKFLOW_MANAGER = {expt_config["platform"].get("WORKFLOW_MANAGER")}\n'''
-            ))
+                  WORKFLOW_MANAGER = {expt_config["platform"].get("WORKFLOW_MANAGER")}\n"""
+                )
+            )
 
     #
     # -----------------------------------------------------------------------
@@ -436,29 +464,29 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     def get_location(xcs, fmt, expt_cfg):
         if ("data" in expt_cfg) and (xcs in expt_cfg["data"]):
-           v = expt_cfg["data"][xcs]
-           if not isinstance(v,dict):
-              return v
-           else:
-              return v[fmt]
+            v = expt_cfg["data"][xcs]
+            if not isinstance(v, dict):
+                return v
+            else:
+                return v[fmt]
         else:
-           return ""
+            return ""
 
     # Get the paths to any platform-supported data streams
-    get_extrn_ics = expt_config.get('task_get_extrn_ics', {})
+    get_extrn_ics = expt_config.get("task_get_extrn_ics", {})
     extrn_mdl_sysbasedir_ics = get_location(
-            get_extrn_ics.get('EXTRN_MDL_NAME_ICS'),
-            get_extrn_ics.get('FV3GFS_FILE_FMT_ICS'),
-            expt_config,
-            )
+        get_extrn_ics.get("EXTRN_MDL_NAME_ICS"),
+        get_extrn_ics.get("FV3GFS_FILE_FMT_ICS"),
+        expt_config,
+    )
     get_extrn_ics["EXTRN_MDL_SYSBASEDIR_ICS"] = extrn_mdl_sysbasedir_ics
 
-    get_extrn_lbcs = expt_config.get('task_get_extrn_lbcs', {})
+    get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {})
     extrn_mdl_sysbasedir_lbcs = get_location(
-            get_extrn_lbcs.get('EXTRN_MDL_NAME_LBCS'),
-            get_extrn_lbcs.get('FV3GFS_FILE_FMT_LBCS'),
-            expt_config,
-            )
+        get_extrn_lbcs.get("EXTRN_MDL_NAME_LBCS"),
+        get_extrn_lbcs.get("FV3GFS_FILE_FMT_LBCS"),
+        expt_config,
+    )
     get_extrn_lbcs["EXTRN_MDL_SYSBASEDIR_LBCS"] = extrn_mdl_sysbasedir_lbcs
 
     # remove the data key -- it's not needed beyond this point
@@ -469,11 +497,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # USE_USER_STAGED_EXTRN_FILES is set to TRUE
     task_keys = zip(
         [get_extrn_ics, get_extrn_lbcs],
-        ['EXTRN_MDL_SOURCE_BASEDIR_ICS', 'EXTRN_MDL_SOURCE_BASEDIR_LBCS'],
-        )
+        ["EXTRN_MDL_SOURCE_BASEDIR_ICS", "EXTRN_MDL_SOURCE_BASEDIR_LBCS"],
+    )
 
     for task, data_key in task_keys:
-        use_staged_extrn_files = task.get('USE_USER_STAGED_EXTRN_FILES')
+        use_staged_extrn_files = task.get("USE_USER_STAGED_EXTRN_FILES")
         if use_staged_extrn_files:
             basedir = task[data_key]
             # Check for the base directory up to the first templated field.
@@ -499,18 +527,17 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # Gather the pre-defined grid parameters, if needed
-    fcst_config = expt_config['task_run_fcst']
-    grid_config = expt_confg['task_make_grid']
-    if fcst_config.get('PREDEF_GRID_NAME'):
+    fcst_config = expt_config["task_run_fcst"]
+    grid_config = expt_confg["task_make_grid"]
+    if fcst_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(USHdir, fcst_config)
 
         # Users like to change these variables, so don't overwrite them
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
-            if param in special_vars and
-                fcst_config.get(param) is not None:
+            if param in special_vars and fcst_config.get(param) is not None:
                 continue
-            elif param.startswith('WRTCMP'):
+            elif param.startswith("WRTCMP"):
                 fcst_config[param] = value
             else:
                 grid_config[param] = value
@@ -523,33 +550,33 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    grid_gen_method = workflow_config['GRID_GEN_METHOD']
+    grid_gen_method = workflow_config["GRID_GEN_METHOD"]
     if grid_gen_method == "GFDLgrid":
         grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=grid_config['GFDLgrid_LON_T6_CTR'],
-            lat_of_t6_ctr=grid_config['GFDLgrid_LAT_T6_CTR'],
-            res_of_t6g=grid_config['GFDLgrid_NUM_CELLS'],
-            stretch_factor=grid_config['GFDLgrid_STRETCH_FAC'],
-            refine_ratio_t6g_to_t7g=grid_config['GFDLgrid_REFINE_RATIO'],
-            istart_of_t7_on_t6g=grid_config['GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G'],
-            iend_of_t7_on_t6g=grid_config['GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G'],
-            jstart_of_t7_on_t6g=grid_config['GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G'],
-            jend_of_t7_on_t6g=grid_config['GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G'],
+            lon_of_t6_ctr=grid_config["GFDLgrid_LON_T6_CTR"],
+            lat_of_t6_ctr=grid_config["GFDLgrid_LAT_T6_CTR"],
+            res_of_t6g=grid_config["GFDLgrid_NUM_CELLS"],
+            stretch_factor=grid_config["GFDLgrid_STRETCH_FAC"],
+            refine_ratio_t6g_to_t7g=grid_config["GFDLgrid_REFINE_RATIO"],
+            istart_of_t7_on_t6g=grid_config["GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G"],
+            iend_of_t7_on_t6g=grid_config["GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G"],
+            jstart_of_t7_on_t6g=grid_config["GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G"],
+            jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
             verbose=verbose,
-            nh4=expt_config['constants']['NH4'],
+            nh4=expt_config["constants"]["NH4"],
             run_envir=run_envir,
         )
     elif grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(
-            lon_ctr=grid_config['ESGgrid_LON_CTR'],
-            lat_ctr=grid_config['ESGgrid_LAT_CTR'],
-            nx=grid_config['ESGgrid_NX'],
-            ny=grid_config['ESGgrid_NY'],
-            pazi=grid_config['ESGgrid_PAZI'],
-            halo_width=grid_config['ESGgrid_WIDE_HALO_WIDTH'],
-            delx=grid_config['ESGgrid_DELX'],
-            dely=grid_config['ESGgrid_DELY'],
-            constants=expt_config['constants'],
+            lon_ctr=grid_config["ESGgrid_LON_CTR"],
+            lat_ctr=grid_config["ESGgrid_LAT_CTR"],
+            nx=grid_config["ESGgrid_NX"],
+            ny=grid_config["ESGgrid_NY"],
+            pazi=grid_config["ESGgrid_PAZI"],
+            halo_width=grid_config["ESGgrid_WIDE_HALO_WIDTH"],
+            delx=grid_config["ESGgrid_DELX"],
+            dely=grid_config["ESGgrid_DELY"],
+            constants=expt_config["constants"],
         )
     else:
         grid_params = {
@@ -578,13 +605,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    global_sect = expt_config['global']
-    if not global_sect.get('DO_SHUM'):
-        global_sect['SHUM_MAG'] = -999.0
-    if not global_sect.get('DO_SKEB'):
-        global_sect['SKEB_MAG'] = -999.0
-    if not global_sect.get('DO_SPPT'):
-        global_sect['SPPT_MAG'] = -999.0
+    global_sect = expt_config["global"]
+    if not global_sect.get("DO_SHUM"):
+        global_sect["SHUM_MAG"] = -999.0
+    if not global_sect.get("DO_SKEB"):
+        global_sect["SKEB_MAG"] = -999.0
+    if not global_sect.get("DO_SPPT"):
+        global_sect["SPPT_MAG"] = -999.0
     #
     # -----------------------------------------------------------------------
     #
@@ -594,10 +621,10 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    if global_sect.get('DO_SPP'):
-        global_sect['N_VAR_SPP'] = len(global_sect['SPP_VAR_LIST'])
+    if global_sect.get("DO_SPP"):
+        global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
     else:
-        global_sect['N_VAR_SPP'] = 0
+        global_sect["N_VAR_SPP"] = 0
     #
     # -----------------------------------------------------------------------
     #
@@ -607,25 +634,26 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    spp_vars = ['SPP_MAG_LIST',
-                'SPP_LSCALE',
-                'SPP_TSCALE',
-                'SPP_SIGTOP1',
-                'SPP_SIGTOP2',
-                'SPP_STDDEV_CUTOFF',
-                'ISEED_SPP',
-                ]
+    spp_vars = [
+        "SPP_MAG_LIST",
+        "SPP_LSCALE",
+        "SPP_TSCALE",
+        "SPP_SIGTOP1",
+        "SPP_SIGTOP2",
+        "SPP_STDDEV_CUTOFF",
+        "ISEED_SPP",
+    ]
 
-    if global_sect.get('DO_SPP'):
+    if global_sect.get("DO_SPP"):
         for spp_var in spp_vars:
-            if len(global_sect[spp_var]) != global_sect['N_VAR_SPP']:
+            if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
                 raise Exception(
-                    f'''
+                    f"""
                     All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
                     variables must be of equal length to SPP_VAR_LIST:
                       SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
                       {spp_var} (length {len(global_sect[spp_var])})
-                    '''
+                    """
                 )
     #
     # -----------------------------------------------------------------------
@@ -642,16 +670,16 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    if global_sect.get('DO_LSM_SPP'):
-        global_sect['N_VAR_LNDP'] = len(global_sect['LSM_SPP_VAR_LIST'])
-        global_sect['LNDP_TYPE'] = 2
-        global_sect['LNDP_MODEL_TYPE'] = 2
-        global_sect['FHCYC_LSM_SPP_OR_NOT'] = 999
-    else
-        global_sect['N_VAR_LNDP'] = 0
-        global_sect['LNDP_TYPE'] = 0
-        global_sect['LNDP_MODEL_TYPE'] = 0
-        global_sect['FHCYC_LSM_SPP_OR_NOT'] = 0
+    if global_sect.get("DO_LSM_SPP"):
+        global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
+        global_sect["LNDP_TYPE"] = 2
+        global_sect["LNDP_MODEL_TYPE"] = 2
+        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 999
+    else:
+        global_sect["N_VAR_LNDP"] = 0
+        global_sect["LNDP_TYPE"] = 0
+        global_sect["LNDP_MODEL_TYPE"] = 0
+        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 0
     #
     # -----------------------------------------------------------------------
     #
@@ -661,38 +689,40 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    lsm_spp_vars = ['LSM_SPP_MAG_LIST',
-                    'LSM_SPP_LSCALE',
-                    'LSM_SPP_TSCALE',
-                    ]
-    if global_sect.get('DO_LSM_SPP'):
+    lsm_spp_vars = [
+        "LSM_SPP_MAG_LIST",
+        "LSM_SPP_LSCALE",
+        "LSM_SPP_TSCALE",
+    ]
+    if global_sect.get("DO_LSM_SPP"):
         for lsm_spp_var in lsm_spp_vars:
-            if len(global_sect[lsm_spp_var]) != global_sect['N_VAR_LNDP']:
+            if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
                 raise Exception(
-                    f'''
+                    f"""
                     All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
                     variables must be of equal length to SPP_VAR_LIST:
                     All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
                     must be equal of equal length to LSM_SPP_VAR_LIST:
                       LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
                       {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
-                      '''
+                      """
                 )
 
-
     # Make sure RESTART_INTERVAL is set to an integer value
-    restart_interval = fcst_config.get('RESTART_INTERVAL')
+    restart_interval = fcst_config.get("RESTART_INTERVAL")
     if not isinstance(restart_interval, int):
         try:
-            fcst_config['RESTART_INTERVAL'] = int(restart_interval)
+            fcst_config["RESTART_INTERVAL"] = int(restart_interval)
         except ValueError:
-            raise ValueError(f"\nRESTART_INTERVAL = {restart_interval}, must be an integer value\n")
+            raise ValueError(
+                f"\nRESTART_INTERVAL = {restart_interval}, must be an integer value\n"
+            )
 
     # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
-    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an 
+    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
     # array of forecast hours at which the boundary values will be updated.
 
-    lbc_spec_intvl_hrs = get_extrn_lbcs.get('LBC_SPEC_INTVL_HRS')
+    lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
     rem = fcst_len_hrs % lbc_spec_intvl_hrs
     if rem != 0:
         raise Exception(
@@ -713,63 +743,72 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # If using a custom post configuration file, make sure that it exists.
-    post_config = expt_config('task_run_post')
-    if post_config.get('USE_CUSTOM_POST_CONFIG_FILE'):
-        custom_post_config_fp = post_config.get('CUSTOM_POST_CONFIG_FP')
+    post_config = expt_config("task_run_post")
+    if post_config.get("USE_CUSTOM_POST_CONFIG_FILE"):
+        custom_post_config_fp = post_config.get("CUSTOM_POST_CONFIG_FP")
         try:
             # os.path.exists returns exception if passed None, so use
             # "try/except" to catch it and the non-existence of a
             # provided path
             if not os.path.exists(custom_post_config_fp):
-                raise FileNotFoundError(dedent(
-                    f'''
+                raise FileNotFoundError(
+                    dedent(
+                        f"""
                     USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
                     CUSTOM_POST_CONFIG_FP = {custom_post_config_fp}
-                    could not be found.'''
-                )) from None
+                    could not be found."""
+                    )
+                ) from None
         except TypeError:
-            raise TypeError(dedent(
-                f"""
+            raise TypeError(
+                dedent(
+                    f"""
                 USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom
                 post configuration file path (CUSTOM_POST_CONFIG_FP) is
                 None.
-                """)) from None
+                """
+                )
+            ) from None
         except FileNotFoundError:
             raise
 
-
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
-    if global_sect.get('USE_CRTM'):
-        crtm_dir = global_sect.get('CRTM_DIR')
+    if global_sect.get("USE_CRTM"):
+        crtm_dir = global_sect.get("CRTM_DIR")
         try:
             # os.path.exists returns exception if passed None, so use
             # "try/except" to catch it and the non-existence of a
             # provided path
             if not os.path.exists(crtm_dir):
-                raise FileNotFoundError(dedent(
-                    f'''
+                raise FileNotFoundError(
+                    dedent(
+                        f"""
                     USE_CRTM has been set, but the external CRTM fix file directory:
                     CRTM_DIR = {crtm_dir}
-                    could not be found.'''
-                )) from None
+                    could not be found."""
+                    )
+                ) from None
         except TypeError:
-            raise TypeError(dedent(
-                f"""
+            raise TypeError(
+                dedent(
+                    f"""
                 USE_CRTM has been set, but the external CRTM fix file
                 directory (CRTM_DIR) is None.
-                """)) from None
+                """
+                )
+            ) from None
         except FileNotFoundError:
             raise
 
     # If performing sub-hourly model output and post-processing, check that
     # the output interval DT_SUBHOURLY_POST_MNTS (in minutes) is specified
     # correctly.
-    if post_config.get('SUB_HOURLY_POST'):
+    if post_config.get("SUB_HOURLY_POST"):
 
         # Subhourly post should be set with minutes between 1 and 59 for
         # real subhourly post to be performed.
-        dt_subhourly_post_mnts = post_config.get('DT_SUBHOURLY_POST_MNTS')
+        dt_subhourly_post_mnts = post_config.get("DT_SUBHOURLY_POST_MNTS")
         if dt_subhourly_post_mnts == 0:
             logger.warning(
                 f"""
@@ -780,7 +819,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you
                 must set DT_SUBHOURLY_POST_MNTS to something other than zero."""
             )
-            post_config['SUB_HOURLY_POST'] = False
+            post_config["SUB_HOURLY_POST"] = False
 
         if dt_subhourly_post_mnts < 1 or dt_subhourly_post_mnts > 59:
             raise ValueError(
@@ -793,7 +832,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
         # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
         # evenly divisible by the forecast model's main time step DT_ATMOS.
-        dt_atmos = fcst_config['DT_ATMOS']
+        dt_atmos = fcst_config["DT_ATMOS"]
         rem = dt_subhourly_post_mnts * 60 % dt_atmos
         if rem != 0:
             raise ValueError(
@@ -813,8 +852,8 @@ def setup(USHdir, user_config_fn="config.yaml"):
             )
 
     # Make sure the post output domain is set
-    predef_grid_name = fcst_config.get('PREDEF_GRID_NAME')
-    post_output_domain_name = post_config.get('POST_OUTPUT_DOMAIN_NAME')
+    predef_grid_name = fcst_config.get("PREDEF_GRID_NAME")
+    post_output_domain_name = post_config.get("POST_OUTPUT_DOMAIN_NAME")
 
     if not post_output_domain_name:
         if not predef_grid_name:
@@ -839,24 +878,24 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    run_envir = expt_config['user'].get('RUN_ENVIR', "")
+    run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
     # These NCO variables need to be set based on the user's specificed
     # run environment. The default is set in config_defaults for nco. If
     # running in community mode, we set these paths to the experiment
     # directory.
     nco_vars = [
-        'opsroot',
-        'comroot',
-        'packageroot',
-        'dataroot',
-        'dcomroot',
-        'comin_basedir',
-        'comout_basedir',
-        ]
+        "opsroot",
+        "comroot",
+        "packageroot",
+        "dataroot",
+        "dcomroot",
+        "comin_basedir",
+        "comout_basedir",
+    ]
 
-    nco_config = expt_config['nco']
-    if run_envir =! "nco":
+    nco_config = expt_config["nco"]
+    if run_envir != "nco":
         # Put the variables in config dict.
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
@@ -869,12 +908,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("LOGDIR")}"')
-    if nco_config['DBNROOT']:
+    if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
 
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
-
 
     # -----------------------------------------------------------------------
     #
@@ -915,7 +953,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # Check for the CCPP_PHYSICS suite xml file
-    ccpp_phys_suite_in_ccpp_fp = workflow_config['CCPP_PHYS_SUITE_IN_CCPP_FP']
+    ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
     if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
         raise FileNotFoundError(
             f'''
@@ -925,7 +963,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         )
 
     # Check for the field dict file
-    field_dict_in_uwm_fp = workflow_config['FIELD_DICT_IN_UWM_FP']
+    field_dict_in_uwm_fp = workflow_config["FIELD_DICT_IN_UWM_FP"]
     if not os.path.exists(field_dict_in_uwm_fp):
         raise FileNotFoundError(
             f'''
@@ -936,16 +974,16 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # Set the appropriate ozone production/loss file paths and symlinks
     ozone_param, fixgsm_ozone_fn, ozone_link_mappings = set_ozone_param(
-            ccpp_phys_suite_in_ccpp_fp,
-            fcst_config['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'],
-            )
+        ccpp_phys_suite_in_ccpp_fp,
+        fcst_config["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
+    )
 
     # Reset the dummy value saved in the last list item to the ozone
     # file name
-    fcst_config['FIXgsm_FILES_TO_COPY_TO_FIXam'][-1] = fixgsm_ozone_fn
+    fcst_config["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
 
     # Reset the experiment config list with the update list
-    fcst_config['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'] = ozone_link_mappings
+    fcst_config["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
 
     log_info(
         f"""
@@ -978,12 +1016,12 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config['workflow_switches']
+    workflow_switches = expt_config["workflow_switches"]
 
     # Ensemble verification can only be run in ensemble mode
-    do_ensemble = global_sect['DO_ENSEMBLE']
-    run_task_vx_ensgrid = workflow_switches['RUN_TASK_VX_ENSGRID']
-    run_task_vx_enspoint = workflow_switches['RUN_TASK_VX_ENSPOINT']
+    do_ensemble = global_sect["DO_ENSEMBLE"]
+    run_task_vx_ensgrid = workflow_switches["RUN_TASK_VX_ENSGRID"]
+    run_task_vx_enspoint = workflow_switches["RUN_TASK_VX_ENSPOINT"]
     if (not do_ensemble) and (run_task_vx_ensgrid or run_task_vx_enspoint):
         raise Exception(
             f'''
@@ -998,11 +1036,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # turned off. Link the files, and check that they all contain the
     # same resolution input.
     #
-    prep_tasks = ['GRID', 'OROG', 'SFC_CLIMO']
+    prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        switch = f'RUN_TASK_MAKE_{prep_task}'
+        switch = f"RUN_TASK_MAKE_{prep_task}"
         # If the user doesn't want to run the given task, link the fix
         # file
         if not workflow_switches[switch]:
@@ -1011,10 +1049,12 @@ def setup(USHdir, user_config_fn="config.yaml"):
             dir_key = f"{prep_task}_DIR"
             expt_config[sect_key][dir_key] = task_dir
 
-            msg = dedent(f"""
+            msg = dedent(
+                f"""
                {dir_key} not specified!
                Setting {dir_key} = {task_dir}
-            """)
+            """
+            )
             logger.warning(msg)
 
             # Link the fix files and check that their resolution is
@@ -1023,20 +1063,21 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 verbose=verbose,
                 file_group=prep_task.lower(),
                 source_dir=task_dir,
-                target_dir=workflow_config['FIXlam'],
-                ccpp_phys_suite=workflow_config['CCPP_PHYS_SUITE'],
-                constants=expt_config['constants']
-                dot_or_underscore=workflow_config['DOT_OR_USCORE'],
-                nhw=grid_params['NHW'],
+                target_dir=workflow_config["FIXlam"],
+                ccpp_phys_suite=workflow_config["CCPP_PHYS_SUITE"],
+                constants=expt_config["constants"],
+                dot_or_underscore=workflow_config["DOT_OR_USCORE"],
+                nhw=grid_params["NHW"],
                 run_task=False,
-                sfc_climo_fields=expt_config['task_run_fcst']['SFC_CLIMO_FIELDS'],
-                )
+                sfc_climo_fields=expt_config["task_run_fcst"]["SFC_CLIMO_FIELDS"],
+            )
             if res_in_fixlam_filenames is None:
                 res_in_fixlam_filenames = res_in_fns
             else:
                 if res_in_fixlam_filesnames != res_in_fns:
-                    raise Exception(dedent(
-                        f"""
+                    raise Exception(
+                        dedent(
+                            f"""
                         The resolution of the pregenerated files for
                         {prep_task} do not match those that were alread
                         set:
@@ -1044,10 +1085,10 @@ def setup(USHdir, user_config_fn="config.yaml"):
                         Resolution in {prep_task}: {res_in_fns}
                         Resolution expected: {res_in_fixlam_filesnames}
                         """
-                        ))
+                        )
+                    )
 
-
-        if not os.path.exists(task_dir): 
+        if not os.path.exists(task_dir):
             raise FileNotFoundError(
                 f'''
                 The directory ({dir_key}) that should contain the pregenerated
@@ -1055,8 +1096,8 @@ def setup(USHdir, user_config_fn="config.yaml"):
                   {dir_key} = \"{task_dir}\"'''
             )
 
-    workflow_config['RES_IN_FIXLAM_FILENAMES'] = res_in_fixlam_filesnames
-    workflow_config['CRES'] = f"C{res_in_fixlam_filenames}"
+    workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filesnames
+    workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
     #
     # -----------------------------------------------------------------------
@@ -1077,17 +1118,21 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    if fcst_config['WRITE_DOPOST']:
+    if fcst_config["WRITE_DOPOST"]:
         # Turn off run_post
-        if workflow_switches['RUN_TASK_RUN_POST']:
-            logger.warning(dedent(f"""
+        if workflow_switches["RUN_TASK_RUN_POST"]:
+            logger.warning(
+                dedent(
+                    f"""
                            Inline post is turned on, deactivating post-processing tasks:
                            RUN_TASK_RUN_POST = False
-                           """))
-            workflow_switches['RUN_TASK_RUN_POST'] = False
+                           """
+                )
+            )
+            workflow_switches["RUN_TASK_RUN_POST"] = False
 
         # Check if SUB_HOURLY_POST is on
-        if expt_config['task_run_post']['SUB_HOURLY_POST']:
+        if expt_config["task_run_post"]["SUB_HOURLY_POST"]:
             raise Exception(
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""
@@ -1101,9 +1146,9 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_config['SDF_USES_RUC_LSM'] = check_ruc_lsm(
-            ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP
-            )
+    workflow_config["SDF_USES_RUC_LSM"] = check_ruc_lsm(
+        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -1118,19 +1163,22 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    link_thompson_climo = (get_extrn_ics['EXTRN_MDL_NAME_ICS'] not in ["HRRR", "RAP"]) \
-                           or (get_extrn_lbcs['EXTRN_MDL_NAME_LBCS'] not in ["HRRR", "RAP"])
+    link_thompson_climo = (
+        get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"]
+    ) or (get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"])
     use_thompson, mapping, fix_files = set_thompson_mp_fix_files(
         ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP,
         thompson_mp_climo_fn=THOMPSON_MP_CLIMO_FN,
         link_thompson_climo=link_thompson_climo,
     )
 
-    workflow_config['SDF_USES_THOMPSON_MP'] = use_thompson
+    workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
     if use_thompson:
-        expt_config['task_run_fcst']['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'].append(mapping)
-        expt_config['task_run_fcst']['FIXgsm_FILES_TO_COPY_TO_FIXam'].append(fix_files)
+        expt_config["task_run_fcst"]["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
+            mapping
+        )
+        expt_config["task_run_fcst"]["FIXgsm_FILES_TO_COPY_TO_FIXam"].append(fix_files)
 
         log_info(
             f"""
@@ -1168,7 +1216,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     all_lines = cfg_to_yaml_str(expt_config)
     log_info(all_lines, verbose=debug)
 
-    global_var_defns_fp = workflow_config['GLOBAL_VAR_DEFNS_FP']
+    global_var_defns_fp = workflow_config["GLOBAL_VAR_DEFNS_FP"]
     # print info message
     log_info(
         f"""
@@ -1204,6 +1252,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
             )
 
     return expt_config
+
 
 #
 # -----------------------------------------------------------------------

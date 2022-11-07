@@ -23,17 +23,19 @@ from python_utils import (
 )
 
 
-def link_fix(verbose,
-             file_group,
-             source_dir,
-             target_dir,
-             ccpp_phys_suite,
-             constants,
-             dot_or_underscore,
-             nhw,
-             run_task,
-             sfc_climo_fields,
-             **kwargs):
+def link_fix(
+    verbose,
+    file_group,
+    source_dir,
+    target_dir,
+    ccpp_phys_suite,
+    constants,
+    dot_or_underscore,
+    nhw,
+    run_task,
+    sfc_climo_fields,
+    **kwargs,
+):
     """This file defines a function that links fix files to the target
     directory for a given SRW experiment. Only links files for one group
     at a time.
@@ -61,10 +63,10 @@ def link_fix(verbose,
     check_var_valid_value(file_group, valid_vals_file_group)
 
     # Decompress the constants needed below.
-    nh0 = constants['NH0']
-    nh3 = constants['NH3']
-    nh4 = constants['NH4']
-    tile_rgnl = constants['TILE_RGNL']
+    nh0 = constants["NH0"]
+    nh3 = constants["NH3"]
+    nh4 = constants["NH4"]
+    tile_rgnl = constants["TILE_RGNL"]
 
     #
     # -----------------------------------------------------------------------
@@ -81,7 +83,8 @@ def link_fix(verbose,
     # -----------------------------------------------------------------------
     #
     print_info_msg(
-        f"Creating links in the {target_dir} directory to the grid files...", verbose=verbose
+        f"Creating links in the {target_dir} directory to the grid files...",
+        verbose=verbose,
     )
     #
     # -----------------------------------------------------------------------
@@ -343,7 +346,7 @@ def link_fix(verbose,
     # These are needed by the make_ics task.
     #
     # The forecat model needs sfc climo files to be named without the
-    # tile7 and halo references, and with only "tile1" in the name. 
+    # tile7 and halo references, and with only "tile1" in the name.
     #
     # -----------------------------------------------------------------------
     #
@@ -383,7 +386,7 @@ def parse_args(argv):
     parser.add_argument(
         "-p",
         "--path-to-defns",
-        dest="path_to_defns"
+        dest="path_to_defns",
         required=True,
         help="Path to var_defns file.",
     )
@@ -394,32 +397,34 @@ def parse_args(argv):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
-    link_fix(verbose=cfg['workflow']['VERBOSE'],
-             file_group=args.file_group,
-             source_dir=cfg['task_make_{args.file_group.upper()}'][f"{args.file_group}_DIR"],
-             target_dir=cfg['workflow']['FIXlam'],
-             ccpp_phys_suite=cfg['workflow']['CCPP_PHYS_SUITE'],
-             constants=cfg['constants']
-             dot_or_underscore=cfg['workflow']['DOT_OR_USCORE'],
-             nhw=cfg['grid_params']['NHW'],
-             run_task=True,
-             sfc_climo_fields=cfg['task_run_fcst']['SFC_CLIMO_FIELDS'],
-            )
+    link_fix(
+        verbose=cfg["workflow"]["VERBOSE"],
+        file_group=args.file_group,
+        source_dir=cfg["task_make_{args.file_group.upper()}"][f"{args.file_group}_DIR"],
+        target_dir=cfg["workflow"]["FIXlam"],
+        ccpp_phys_suite=cfg["workflow"]["CCPP_PHYS_SUITE"],
+        constants=cfg["constants"],
+        dot_or_underscore=cfg["workflow"]["DOT_OR_USCORE"],
+        nhw=cfg["grid_params"]["NHW"],
+        run_task=True,
+        sfc_climo_fields=cfg["task_run_fcst"]["SFC_CLIMO_FIELDS"],
+    )
 
 
 class Testing(unittest.TestCase):
     def test_link_fix(self):
-        res = link_fix(verbose=True,
-                       file_group="grid",
-                       source_dir=self.task_dir,
-                       target_dir=self.FIXlam,
-                       ccpp_phys_suite=self.cfg['CCPP_PHYS_SUITE'],
-                       constants=self.cfg['constants']
-                       dot_or_underscore=self.cfg['DOT_OR_USCORE'],
-                       nhw=self.cfg['NHW'],
-                       run_task=False,
-                       sfc_climo_fields=['foo', 'bar']
-                       )
+        res = link_fix(
+            verbose=True,
+            file_group="grid",
+            source_dir=self.task_dir,
+            target_dir=self.FIXlam,
+            ccpp_phys_suite=self.cfg["CCPP_PHYS_SUITE"],
+            constants=self.cfg["constants"],
+            dot_or_underscore=self.cfg["DOT_OR_USCORE"],
+            nhw=self.cfg["NHW"],
+            run_task=False,
+            sfc_climo_fields=["foo", "bar"],
+        )
         self.assertTrue(res == "3357")
 
     def setUp(self):
@@ -439,4 +444,4 @@ class Testing(unittest.TestCase):
                 "NH3": 3,
                 "TILE_RGNL": 7,
             },
-            }
+        }

@@ -79,11 +79,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    wflow_xml_fn = expt_config['workflow']['WFLOW_XML_FN']
+    wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
     wflow_xml_fp = os.path.join(
-         expt_config['workflow']['EXPTDIR'],
-         wflow_xml_fn,
-         )
+        expt_config["workflow"]["EXPTDIR"],
+        wflow_xml_fn,
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -95,12 +95,12 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    if expt_config['platform']['WORKFLOW_MANAGER'] == "rocoto":
+    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
 
         template_xml_fp = os.path.join(
-            expt_config['user']['PARMdir'],
+            expt_config["user"]["PARMdir"],
             wflow_xml_fn,
-            )
+        )
 
         log_info(
             f"""
@@ -120,7 +120,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         ensmem_indx_name = ""
         uscore_ensmem_name = ""
         slash_ensmem_subdir = ""
-        if expt_config['global']['DO_ENSEMBLE']:
+        if expt_config["global"]["DO_ENSEMBLE"]:
             ensmem_indx_name = "mem"
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"

@@ -19,8 +19,8 @@ def set_predef_grid_params(USHdir, fcst_config):
     Returns:
         Dictionary of grid parameters
     """
-    predef_grid_name = fcst_config['PREDEF_GRID_NAME']
-    quilting = fcst_config['QUILTING']
+    predef_grid_name = fcst_config["PREDEF_GRID_NAME"]
+    quilting = fcst_config["QUILTING"]
 
     params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
     try:
@@ -72,5 +72,3 @@ class Testing(unittest.TestCase):
             fcst_config,
         )
         self.assertEqual(params_dict["WRTCMP_nx"], 1799)
-
-    def setUp(self):
