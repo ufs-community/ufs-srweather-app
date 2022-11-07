@@ -9,7 +9,6 @@ import glob
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     print_info_msg,
     print_err_msg_exit,
@@ -40,7 +39,7 @@ def link_fix(verbose,
     at a time.
 
     Args:
-        verbose: True or False
+        cfg_d: dictionary of settings
         file_group: could be on of ["grid", "orog", "sfc_climo"]
         source_dir: the path to directory where the file_group fix files
                     are linked from
@@ -250,7 +249,7 @@ def link_fix(verbose,
                     f"""
                     The resolution could not be extracted from the current file's name.  The
                     full path to the file (fp) is:
-                      fp = \"{fp}\"
+                      fp = '{fp}'
                     This may be because fp contains the * globbing character, which would
                     imply that no files were found that match the globbing pattern specified
                     in fp."""
@@ -263,8 +262,8 @@ def link_fix(verbose,
                     f"""
                     The resolutions (as obtained from the file names) of the previous and
                     current file (fp_prev and fp, respectively) are different:
-                      fp_prev = \"{fp_prev}\"
-                      fp      = \"{fp}\"
+                      fp_prev = '{fp_prev}'
+                      fp      = '{fp}'
                     Please ensure that all files have the same resolution."""
                 )
 

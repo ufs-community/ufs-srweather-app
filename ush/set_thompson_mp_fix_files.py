@@ -6,9 +6,6 @@ from textwrap import dedent
 
 from python_utils import (
     log_info,
-    import_vars,
-    export_vars,
-    set_env_var,
     list_to_str,
     print_input_args,
     define_macos_utilities,
@@ -90,80 +87,9 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn,
 class Testing(unittest.TestCase):
     def test_set_thompson_mp_fix_files(self):
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        self.assertEqual(
-            True,
-            set_thompson_mp_fix_files(
-                ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
-                thompson_mp_climo_fn="Thompson_MP_MONTHLY_CLIMO.nc",
-            ),
+        uses_thompson, _, _ =  set_thompson_mp_fix_files(
+            f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
+            "Thompson_MP_MONTHLY_CLIMO.nc",
+            False,
         )
-
-    def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("EXTRN_MDL_NAME_ICS", "FV3GFS")
-        set_env_var("EXTRN_MDL_NAME_LBCS", "FV3GFS")
-        set_env_var("CCPP_PHYS_SUITE", "FV3_GSD_SAR")
-
-        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
-            "aerosol.dat                | global_climaeropac_global.txt",
-            "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
-            "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt",
-            "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt",
-            "co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt",
-            "co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt",
-            "co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt",
-            "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt",
-            "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt",
-            "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt",
-            "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt",
-            "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt",
-            "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt",
-            "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt",
-            "co2monthlycyc.txt          | co2monthlycyc.txt",
-            "global_h2oprdlos.f77       | global_h2o_pltc.f77",
-            "global_zorclim.1x1.grb     | global_zorclim.1x1.grb",
-            "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
-            "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-            "global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
-        ]
-
-        FIXgsm_FILES_TO_COPY_TO_FIXam = [
-            "global_glacier.2x2.grb",
-            "global_maxice.2x2.grb",
-            "RTGSST.1982.2012.monthly.clim.grb",
-            "global_snoclim.1.875.grb",
-            "CFSR.SEAICE.1982.2012.monthly.clim.grb",
-            "global_soilmgldas.t126.384.190.grb",
-            "seaice_newland.grb",
-            "global_climaeropac_global.txt",
-            "fix_co2_proj/global_co2historicaldata_2010.txt",
-            "fix_co2_proj/global_co2historicaldata_2011.txt",
-            "fix_co2_proj/global_co2historicaldata_2012.txt",
-            "fix_co2_proj/global_co2historicaldata_2013.txt",
-            "fix_co2_proj/global_co2historicaldata_2014.txt",
-            "fix_co2_proj/global_co2historicaldata_2015.txt",
-            "fix_co2_proj/global_co2historicaldata_2016.txt",
-            "fix_co2_proj/global_co2historicaldata_2017.txt",
-            "fix_co2_proj/global_co2historicaldata_2018.txt",
-            "fix_co2_proj/global_co2historicaldata_2019.txt",
-            "fix_co2_proj/global_co2historicaldata_2020.txt",
-            "fix_co2_proj/global_co2historicaldata_2021.txt",
-            "global_co2historicaldata_glob.txt",
-            "co2monthlycyc.txt",
-            "global_h2o_pltc.f77",
-            "global_hyblev.l65.txt",
-            "global_zorclim.1x1.grb",
-            "global_sfc_emissivity_idx.txt",
-            "global_solarconstant_noaa_an.txt",
-            "geo_em.d01.lat-lon.2.5m.HGT_M.nc",
-            "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
-            "ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
-        ]
-
-        set_env_var(
-            "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-        )
-        set_env_var("FIXgsm_FILES_TO_COPY_TO_FIXam", FIXgsm_FILES_TO_COPY_TO_FIXam)
+        self.assertEqual(True, uses_thompson)

@@ -11,11 +11,11 @@ platform:
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
-  RUN_CMD_FCST: srun --mpi=pmi2 -n ${PE_MEMBER01}
-  RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
+  RUN_CMD_FCST: srun --export=ALL --mpi=pmi2 -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --export=ALL --mpi=pmi2 -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
-  SCHED_NATIVE_CMD: -M c3
+  RUN_CMD_UTILS: srun --export=ALL --mpi=pmi2 -n $nprocs
+  SCHED_NATIVE_CMD: -M c3 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen

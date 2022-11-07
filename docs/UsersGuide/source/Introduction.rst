@@ -8,7 +8,7 @@ The Unified Forecast System (:term:`UFS`) is a community-based, coupled, compreh
 
 The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.0.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through a `community forum <https://forums.ufscommunity.org/>`__. New and improved capabilities for this release include the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
-This documentation provides a :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. It also provides a :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container and a :ref:`detailed guide <BuildRunSRW>` for running the SRW App on any supported platform. Additionally, this User's Guide provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
+This documentation provides a :ref:`Quick Start Guide <NCQuickstart>` designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow. It also provides a :ref:`Container-Based Quick Start Guide <QuickstartC>` for running the SRW Application in a container and detailed chapters on :ref:`building <BuildSRW>` and :ref:`running <RunSRW>` the SRW App on any supported platform. Additionally, this User's Guide provides an overview of the :ref:`release components <Components>` and details on how to customize or modify different portions of the workflow.
 
 The SRW App v2.0.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
@@ -18,19 +18,24 @@ UFS Development Team. (2022, June 23). Unified Forecast System (UFS) Short-Range
 How to Use This Document
 ========================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `UFS Forum <https://forums.ufscommunity.org/forum/short-range-weatherconvection-allowing-application>`__.
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum.
 
 .. code-block:: console
 
    Throughout the guide, this presentation style indicates shell commands and options, 
    code examples, etc.
 
-Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, and directories.
+Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, or directories.
 
 File paths or code that include angle brackets (e.g., ``build_<platform>_<compiler>``) indicate that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel``). 
 
 .. hint:: 
-   * To get started running the SRW App, users can view :numref:`Chapter %s <NCQuickstart>` for a quick overview of the workflow steps. For more detailed explanations, users can refer to the :ref:`Container-Based Quick Start Guide <QuickstartC>` or the in-depth chapter on :ref:`Building and Running the Short-Range Weather Application <BuildRunSRW>`. 
+   * To get started with the SRW App, users have a few options: 
+
+      #. View :numref:`Chapter %s <NCQuickstart>` for a quick overview of the workflow steps. 
+      #. To build the application in a container, which provides a more uniform work environment, users can refer to the :ref:`Container-Based Quick Start Guide <QuickstartC>`. 
+      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. 
+
    * For background information on the SRW App code repositories and directory structure, see :numref:`Section %s <SRWStructure>` below. 
    * For an outline of SRW App components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
 
@@ -70,11 +75,11 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * >82 GB disk space
 
-   * 53 GB input data for a standard collection of global database, or "fix" data (topography, climatology, observational database) for a short 12-hour test forecast on CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 8 GB for :term:`HPC-Stack` full installation
    * 3 GB for ``ufs-srweather-app`` installation
-   * 1 GB for boundary conditions for a short 12-h test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`
-   * 17 GB for a 12-h test forecast on the CONUS 25km domain, with model output saved hourly, see :numref:`Section %s <GridSpecificConfig>`
+   * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
+   * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
 
 * Fortran compiler released since 2018
 
@@ -107,10 +112,10 @@ The following software is also required to run the SRW Application, but the :ter
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :ref:`Chapter %s <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :ref:`Chapter 3 <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
-* GNU compiler suite v.11 or higher with gfortran
+* GNU compiler suite v11 or higher with gfortran
 * cmake
 * make
 * coreutils
@@ -175,7 +180,7 @@ The SRW Application has a portable CMake-based build system that packages togeth
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. More information on how to do this is available in :numref:`Section %s <UserSpecificConfig>`.
 
-The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildRunSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 
@@ -203,9 +208,6 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    | Repository for                  | https://github.com/ufs-community/ufs-weather-model      |
    | the UFS Weather Model           |                                                         |
    +---------------------------------+---------------------------------------------------------+
-   | Repository for the regional     | https://github.com/ufs-community/regional_workflow      |
-   | workflow                        |                                                         |
-   +---------------------------------+---------------------------------------------------------+
    | Repository for UFS utilities,   | https://github.com/ufs-community/UFS_UTILS              |
    | including pre-processing,       |                                                         |
    | chgres_cube, and more           |                                                         |
@@ -229,33 +231,28 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
 .. code-block:: console
 
    ufs-srweather-app
-   ├── (bin)
    ├── (build)
    ├── docs  
    │     └── UsersGuide
    ├── etc
+   ├── (exec)
    ├── (include)
+   ├── jobs
    ├── (lib)
    ├── manage_externals
    ├── modulefiles
-   ├── regional_workflow
-   │     ├── (fix)
-   │     ├── jobs
-   │     ├── modulefiles
-   │     ├── scripts
-   │     ├── tests
-   │     └── ush
-   │          ├── machine
-   │          ├── Python
-   │          ├── templates
-   │          └── wrappers
+   ├── parm
    ├── (share)
-   ├── src
-   │    ├── UPP
+   ├── scripts
+   ├── sorc
+   │    ├── CMakeLists.txt
+   │    ├── (gsi)
+   │    ├── (rrfs_utl)
+   │    ├── (UPP)
    │    │     ├── parm
    │    │     └── sorc
    │    │          └── ncep_post.fd
-   │    ├── UFS_UTILS
+   │    ├── (UFS_UTILS)
    │    │     ├── sorc
    │    │     │    ├── chgres_cube.fd
    │    │     │    ├── fre-nctools.fd
@@ -263,15 +260,23 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │    │     │    ├── orog_mask_tools.fd
    │    │     │    └── sfc_climo_gen.fd
    │    │     └── ush
-   │    └── ufs-weather-model
+   │    └── (ufs-weather-model)
    │	     └── FV3
    │              ├── atmos_cubed_sphere
    │              └── ccpp
-   └── test
+   ├── tests/WE2E
+   ├── ush
+   │     ├── bash_utils
+   │     ├── machine
+   │     ├── Python
+   │     ├── python_utils
+   │     ├── test_data
+   │     └── wrappers
+   └── versions
 
-Regional Workflow Sub-Directories
+SRW App Sub-Directories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A number of sub-directories are created under the ``regional_workflow`` directory when the regional workflow is cloned (see directory diagram :ref:`above <TopLevelDirStructure>`). :numref:`Table %s <Subdirectories>` describes the contents of these sub-directories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important sub-directories. :numref:`Table %s <FilesAndSubDirs>` provides and in-depth explanation of the ``ufs-srweather-app`` directories. 
 
 .. _Subdirectories:
 
@@ -296,7 +301,7 @@ A number of sub-directories are created under the ``regional_workflow`` director
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``$EXPTDIR``) is created based on information specified in the ``config.sh`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``$EXPTDIR``) is created based on information specified in the ``config.yaml`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
 
 .. _ExptDirStructure:
 
@@ -306,7 +311,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | **File Name**             | **Description**                                                                                              |
    +===========================+==============================================================================================================+
-   | config.sh                 | User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`                             |
+   | config.yaml               | User-specified configuration file, see :numref:`Section %s <UserSpecificConfig>`                             |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -319,13 +324,13 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.sh`` scr
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__           | 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
-   |                           | ``ufs-srweather-app/regional_workflow/ush/launch_FV3LAM_wflow.sh``,                                          |
+   |                           | ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh``,                                                            |
    |                           | which can be used to (re)launch the Rocoto workflow.                                                         |
    |                           | Each time this script is called, it appends to a log                                                         |
    |                           | file named ``log.launch_FV3LAM_wflow``.                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
-   |                           | (``generate_FV3LAM_wflow.sh``)                                                                               |
+   |                           | (``generate_FV3LAM_wflow.py``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
    |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__               |
@@ -378,7 +383,7 @@ Once the Rocoto workflow is launched, several files and directories are generate
    |                           | simultaneously for each cycle in the experiment. Cycle directories |
    |                           | are created to contain cycle-specific files for each cycle that    |
    |                           | the experiment runs. If ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` |
-   |                           | are different in the ``config.sh`` file, more than one cycle       |
+   |                           | are different in the ``config.yaml`` file, more than one cycle     |
    |                           | directory will be created under the experiment directory.          |
    +---------------------------+--------------------------------------------------------------------+
    | grid                      | Directory generated by the ``make_grid`` task to store grid files  |
@@ -456,7 +461,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
 
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository or the `regional_workflow <https://github.com/ufs-community/regional_workflow>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
+utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
 
 Future Direction
 =================

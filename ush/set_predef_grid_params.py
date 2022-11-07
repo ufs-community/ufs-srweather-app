@@ -5,14 +5,7 @@ import os
 from textwrap import dedent
 
 from python_utils import (
-    import_vars,
-    export_vars,
-    set_env_var,
-    get_env_var,
-    print_input_args,
-    define_macos_utilities,
     load_config_file,
-    cfg_to_yaml_str,
     flatten_dict,
 )
 
@@ -21,9 +14,10 @@ def set_predef_grid_params(USHdir, fcst_config):
     """Sets grid parameters for the specified predfined grid
 
     Args:
-        None
+        USHdir:      path to the SRW ush directory
+        fcst_config: dict containing grid settings
     Returns:
-        None
+        Dictionary of grid parameters
     """
     predef_grid_name = fcst_config['PREDEF_GRID_NAME']
     quilting = fcst_config['QUILTING']
@@ -32,9 +26,11 @@ def set_predef_grid_params(USHdir, fcst_config):
     try:
         params_dict = params_dict[predef_grid_name]
     except KeyError:
-        errmsg = dedent(f'''
-                        PREDEF_GRID_NAME = {predef_grid_name} not found in predef_grid_params.yaml
-                        Check your config file settings.''')
+        errmsg = dedent(
+            f"""
+            PREDEF_GRID_NAME = {predef_grid_name} not found in predef_grid_params.yaml
+            Check your config file settings."""
+        )
         raise Exception(errmsg) from None
 
     # We don't need the quilting section if user wants it turned off
@@ -46,26 +42,35 @@ def set_predef_grid_params(USHdir, fcst_config):
     return params_dict
 
 
-if __name__ == "__main__":
-    params_dict = set_predef_grid_params()
-    print(cfg_to_shell_str(params_dict), end="")
-
-
 class Testing(unittest.TestCase):
     def test_set_predef_grid_params(self):
-        set_predef_grid_params()
-        self.assertEqual(get_env_var("GRID_GEN_METHOD"), "ESGgrid")
-        self.assertEqual(get_env_var("ESGgrid_LON_CTR"), -97.5)
-        set_env_var("QUILTING", True)
-        set_predef_grid_params()
-        self.assertEqual(get_env_var("WRTCMP_nx"), 1799)
+        ushdir = os.path.dirname(os.path.abspath(__file__))
+        fcst_config = dict(
+            PREDEF_GRID_NAME="RRFS_CONUS_3km",
+            QUILTING=False,
+            DT_ATMOS=36,
+            LAYOUT_X=18,
+            LAYOUT_Y=36,
+            BLOCKSIZE=28,
+        )
+        params_dict = set_predef_grid_params(
+            ushdir,
+            fcst_config,
+        )
+        self.assertEqual(params_dict["GRID_GEN_METHOD"], "ESGgrid")
+        self.assertEqual(params_dict["ESGgrid_LON_CTR"], -97.5)
+        fcst_config = dict(
+            PREDEF_GRID_NAME="RRFS_CONUS_3km",
+            QUILTING=True,
+            DT_ATMOS=36,
+            LAYOUT_X=18,
+            LAYOUT_Y=36,
+            BLOCKSIZE=28,
+        )
+        params_dict = set_predef_grid_params(
+            ushdir,
+            fcst_config,
+        )
+        self.assertEqual(params_dict["WRTCMP_nx"], 1799)
 
     def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", False)
-        set_env_var("PREDEF_GRID_NAME", "RRFS_CONUS_3km")
-        set_env_var("DT_ATMOS", 36)
-        set_env_var("LAYOUT_X", 18)
-        set_env_var("LAYOUT_Y", 36)
-        set_env_var("BLOCKSIZE", 28)
-        set_env_var("QUILTING", False)

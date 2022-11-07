@@ -72,7 +72,7 @@ A Python script is provided to create basic visualizations of the model output. 
 is designed to output graphics in PNG format for 14 standard meteorological variables
 when using the pre-defined :term:`CONUS` domain. A difference plotting script is also included to visually compare two runs for the same domain and resolution. These scripts are provided only as an example for users familiar with Python. They may be used to perform a visual check to verify that the application is producing reasonable results. 
 
-After running ``manage_externals/checkout_externals``, the visualization scripts will be available in the ``ufs-srweather-app/regional_workflow/ush/Python`` directory. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
+After running ``manage_externals/checkout_externals``, the visualization scripts will be available in the ``ufs-srweather-app/ush/Python`` directory. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of the script. 
 
 Build System and Workflow
 =========================

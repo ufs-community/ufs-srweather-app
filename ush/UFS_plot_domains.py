@@ -128,7 +128,6 @@ ax1.add_patch(patch)
 
 
 def get_lambert_points(gnomonic_map, lambert_map, pps):
-    #print("Hello from a function")
 
     # This function takes the lambert domain we have defined, lambert_map, as well as
     # pps (the number of points to interpolate and draw for each side of the lambert "rectangle"),
@@ -186,9 +185,6 @@ def get_lambert_points(gnomonic_map, lambert_map, pps):
 
     # Need to replace final instruction with Path.CLOSEPOLY
     instructions[-1] = Path.CLOSEPOLY
-
-    #print("vertices=", vertices)
-    #print("instructions=", instructions)
 
     return vertices, instructions
 

@@ -20,7 +20,6 @@ from python_utils import (
     check_strcuture_dict,
     update_dict,
     import_vars,
-    export_vars,
     get_env_var,
     load_config_file,
     cfg_to_shell_str,
@@ -34,7 +33,6 @@ from python_utils import (
 from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_ozone_param import set_ozone_param
-from set_extrn_mdl_params import set_extrn_mdl_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
@@ -127,7 +125,14 @@ def load_config_for_setup(ushdir, default_config, user_config):
                 cfg_d[sect][k] = str_to_list(v)
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
-    mandatory = ['NCORES_PER_NODE', 'FIXgsm', 'FIXaer', 'FIXlut', 'TOPO_DIR', 'SFC_CLIMO_INPUT_DIR']
+    mandatory = [
+        'NCORES_PER_NODE',
+        'FIXgsm',
+        'FIXaer',
+        'FIXlut',
+        'TOPO_DIR',
+        'SFC_CLIMO_INPUT_DIR',
+    ]
     for val in mandatory:
         if not cfg_d.get('task_run_fcst', {}).get('val'):
             raise Exception(dedent(f'''
@@ -154,7 +159,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     # Check to make sure that mandatory forecast variables are set.
-    vlist = ['DT_ATMOS', 
+    vlist = ['DT_ATMOS',
              'LAYOUT_X',
              'LAYOUT_Y',
              'BLOCKSIZE',
@@ -206,23 +211,26 @@ def set_srw_paths(ushdir, expt_config):
     try:
         ufs_wthr_mdl_dir = get_ini_value(cfg, external_name, property_name)
     except KeyError:
-        errmsg = dedent(f'''
-                        Externals configuration file {mng_extrns_cfg_fn}
-                        does not contain "{external_name}".''')
+        errmsg = dedent(
+            f"""
+            Externals configuration file {mng_extrns_cfg_fn}
+            does not contain '{external_name}'."""
+        )
         raise Exception(errmsg) from None
-
 
     # Check that the model code has been downloaded
     ufs_wthr_mdl_dir = os.path.join(home_dir, ufs_wthr_mdl_dir)
     if not os.path.exists(ufs_wthr_mdl_dir):
-        raise FileNotFoundError(dedent(
-            f"""
-            The base directory in which the FV3 source code should be located
-            (UFS_WTHR_MDL_DIR) does not exist:
-              UFS_WTHR_MDL_DIR = \"{ufs_wthr_mdl_dir}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
-        ))
+        raise FileNotFoundError(
+            dedent(
+                f"""
+                The base directory in which the FV3 source code should be located
+                (UFS_WTHR_MDL_DIR) does not exist:
+                  UFS_WTHR_MDL_DIR = '{ufs_wthr_mdl_dir}'
+                Please clone the external repository containing the code in this directory,
+                build the executable, and then rerun the workflow."""
+            )
+        )
 
     return dict(
         HOMEdir = home_dir,
@@ -279,7 +287,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-
 
     # Workflow
     workflow_config = expt_config["workflow"]
@@ -420,8 +427,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
                   WORKFLOW_MANAGER = {expt_config["platform"].get("WORKFLOW_MANAGER")}\n'''
             ))
 
-
-
     #
     # -----------------------------------------------------------------------
     #
@@ -558,6 +563,9 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # Add a grid parameter section to the experiment config
     expt_config["grid_params"] = grid_params
+
+    # grid params
+    cfg_d["grid_params"] = grid_params
 
     #
     # -----------------------------------------------------------------------
@@ -868,7 +876,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     mkdir_vrfy(f' -p "{exptdir}"')
 
 
-    #
     # -----------------------------------------------------------------------
     #
     # The FV3 forecast model needs the following input files in the run di-
@@ -950,12 +957,18 @@ def setup(USHdir, user_config_fn="config.yaml"):
         f"""
         The list that sets the mapping between symlinks in the cycle
         directory, and the files in the FIXam directory has been updated
-        to include the ozone production/loss file.""", verbose=verbose)
+        to include the ozone production/loss file.
+        """,
+        verbose=verbose,
+    )
 
     log_info(
         f"""
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(ozone_link_mappings)}
-        """, verbose=verbose, _dedent=False)
+        """,
+        verbose=verbose,
+        _dedent=False,
+    )
 
     #
     # -----------------------------------------------------------------------
@@ -1151,14 +1164,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Now write everything to var_defns.sh file
-    #
-    # -----------------------------------------------------------------------
-    #
-
     # print content of var_defns if DEBUG=True
     all_lines = cfg_to_yaml_str(expt_config)
     log_info(all_lines, verbose=debug)
@@ -1168,16 +1173,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
     log_info(
         f"""
         Generating the global experiment variable definitions file here:
-          GLOBAL_VAR_DEFNS_FP = \"{global_var_defns_fp}\"
-        For more detailed information, set DEBUG to \"TRUE\" in the experiment
-        configuration file (\"{user_config}\")."""
+          GLOBAL_VAR_DEFNS_FP = '{global_var_defns_fp}'
+        For more detailed information, set DEBUG to 'TRUE' in the experiment
+        configuration file ('{user_config}')."""
     )
 
     with open(global_var_defns_fp, "a") as f:
         f.write(cfg_to_shell_str(expt_config))
-
-    # export all global variables back to the environment
-    export_vars()
 
     #
     # -----------------------------------------------------------------------

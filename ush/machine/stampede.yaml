@@ -13,6 +13,7 @@ platform:
   RUN_CMD_POST: ibrun -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: ibrun -np $nprocs
+  SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/FV3LAM_pregen

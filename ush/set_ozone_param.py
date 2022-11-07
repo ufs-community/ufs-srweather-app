@@ -7,12 +7,8 @@ from textwrap import dedent
 
 from python_utils import (
     log_info,
-    import_vars,
-    export_vars,
-    set_env_var,
     list_to_str,
     print_input_args,
-    define_macos_utilities,
     load_xml_file,
     has_tag_with_value,
     find_pattern_in_str,
@@ -84,8 +80,10 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
         fixgsm_ozone_fn = "global_o3prdlos.f77"
         ozone_param = "ozphys"
     else:
-        raise KeyError(f'Unknown or no ozone parameterization specified in the '
-                        'CCPP physics suite file "{ccpp_phys_suite_fp}"')
+        raise KeyError(
+            f"Unknown or no ozone parameterization specified in the "
+            "CCPP physics suite file '{ccpp_phys_suite_fp}'"
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -122,11 +120,11 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
     if not fixgsm_ozone_fn_is_set:
 
         raise Exception(
-            f'''
+            f"""
             Unable to set name of the ozone production/loss file in the FIXgsm directory
             in the array that specifies the mapping between the symlinks that need to
             be created in the cycle directories and the files in the FIXgsm directory:
-              fixgsm_ozone_fn_is_set = \"{fixgsm_ozone_fn_is_set}\"'''
+              fixgsm_ozone_fn_is_set = '{fixgsm_ozone_fn_is_set}'"""
         )
 
     return ozone_param, fixgsm_ozone_fn, ozone_link_mappings
@@ -144,8 +142,6 @@ class Testing(unittest.TestCase):
         )
 
     def setUp(self):
-        define_macos_utilities()
-
         self.CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
             "aerosol.dat                | global_climaeropac_global.txt",
             "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
