@@ -138,6 +138,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 #
                 "ncores_run_fcst": PE_MEMBER01,
                 "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
+                "native_nexus_emission": f"--cpus-per-task {OMP_NUM_THREADS_NEXUS_EMISSION}",
                 #
                 # Parameters that determine the set of cycles to run.
                 #
