@@ -82,7 +82,7 @@ if (BUILD_UFS)
     endforeach()
   endif()
 
-  ExternalProject_Add(ufs-weather-model
+  ExternalProject_Add(UFS
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ufs-weather-model
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
