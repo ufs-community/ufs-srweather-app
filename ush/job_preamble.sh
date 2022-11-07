@@ -3,6 +3,18 @@
 #
 #-----------------------------------------------------------------------
 #
+# If requested to share data with next task, override jobid
+#
+#-----------------------------------------------------------------------
+#
+export share_pid=${WORKFLOW_ID}_${PDY}${cyc}
+if [ $# -ne 0 ]; then
+    export pid=$share_pid
+    export jobid=${job}.${pid}
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set cycle and ensemble member names in file/diectory names
 #
 #-----------------------------------------------------------------------
@@ -25,11 +37,9 @@ fi
 #-----------------------------------------------------------------------
 #
 export DATA=
-export DATA_SHARED=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    export DATA_SHARED=${DATAROOT}/${RUN}.${PDY}.${WORKFLOW_ID}
-    mkdir_vrfy -p $DATA $DATA_SHARED
+    mkdir_vrfy -p $DATA
     cd $DATA
 fi
 #
@@ -41,7 +51,7 @@ fi
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ ! -z $(command -v setpdy.sh) ]; then
-        setpdy.sh
+        COMROOT=$COMROOT setpdy.sh
         . ./PDY
     fi
 fi
@@ -104,9 +114,28 @@ export -f POST_STEP
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
+    export COMINext="${EXTROOT}/${RUN}.${PDY}/${cyc}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
+    export COMINext="${EXTROOT}/${PDY}${cyc}"
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Create symlinks to log files in the experiment directory. Makes viewing
+# log files easier in NCO mode, as well as make CIs work
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    __EXPTLOG=${EXPTDIR}/log
+    mkdir_vrfy -p ${__EXPTLOG}
+    for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
+        __LOGB=$(basename $i .${WORKFLOW_ID}.log)
+        ln_vrfy -sf $i ${__EXPTLOG}/${__LOGB}.log
+    done
 fi
 #
 #-----------------------------------------------------------------------
@@ -117,19 +146,10 @@ fi
 #
 function job_postamble() {
 
-    if [ "${RUN_ENVIR}" = "nco" ]; then
-
-        # Remove temp directory
+    # Remove temp directory
+    if [ "${RUN_ENVIR}" = "nco" ] && [ $# -eq 0 ]; then
         cd ${DATAROOT}
-        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA $DATA_SHARED
-
-        # Create symlinks to log files
-        local EXPTLOG=${EXPTDIR}/log
-        mkdir_vrfy -p ${EXPTLOG}
-        for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
-            local LOGB=$(basename $i .${WORKFLOW_ID}.log)
-            ln_vrfy -sf $i ${EXPTLOG}/${LOGB}.log
-        done
+        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
     fi
 
     # Print exit message

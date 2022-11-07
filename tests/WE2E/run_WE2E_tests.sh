@@ -430,10 +430,24 @@ elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
   # one managed in the repo
 
   if [ -n "${test_type}" ] ; then
-    # Check for a pre-defined set. It could be machine dependent or not.
-    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+    # Check for a pre-defined set. It could be machine dependent or has the mode
+    # (community or nco), or default
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.nco
     if [ ! -f ${user_spec_tests_fp} ]; then
-        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.com
+        if [ ! -f ${user_spec_tests_fp} ]; then
+            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
+            if [ ! -f ${user_spec_tests_fp} ]; then
+                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+                if [ ! -f ${user_spec_tests_fp} ]; then
+                    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                fi
+            fi
+        else
+            run_envir=${run_envir:-"community"}
+        fi
+    else
+        run_envir=${run_envir:-"nco"}
     fi
   elif [ -n "${tests_file}" ] ; then
     user_spec_tests_fp=$( readlink -f "${tests_file}" )

@@ -166,13 +166,13 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
-    dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
 else
-    dyn_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+    DATAFCST=$DATA
 fi
+dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -295,6 +295,11 @@ for fid in "${fids[@]}"; do
 done
 
 rm_vrfy -rf ${DATA_FHR}
+
+# Delete the forecast directory
+if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
+   rm -rf $DATAFCST
+fi
 #
 #-----------------------------------------------------------------------
 #

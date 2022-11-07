@@ -19,7 +19,6 @@ from python_utils import (
     flatten_dict,
     update_dict,
     import_vars,
-    export_vars,
     get_env_var,
     load_config_file,
     cfg_to_shell_str,
@@ -53,16 +52,13 @@ def setup():
     Args:
       None
     Returns:
-      None
+      Dictionary of settings
     """
 
     logger = getLogger(__name__)
     global USHdir
     USHdir = os.path.dirname(os.path.abspath(__file__))
     cd_vrfy(USHdir)
-
-    # import all environment variables
-    import_vars()
 
     # print message
     log_info(
@@ -210,10 +206,12 @@ def setup():
         os.path.join(USHdir, os.pardir, "parm", "fixed_files_mapping.yaml")
     )
     import_vars(dictionary=flatten_dict(cfg_f))
+    cfg_d.update(cfg_f)
 
     # Load constants file and save its contents to a variable for later
     cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
     import_vars(dictionary=flatten_dict(cfg_c))
+    cfg_d.update(cfg_c)
 
     #
     # -----------------------------------------------------------------------
@@ -236,13 +234,17 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    # export env vars before calling another module
-    export_vars()
 
     if PREDEF_GRID_NAME:
-        set_predef_grid_params()
-
-    import_vars()
+        params_dict = set_predef_grid_params(
+            PREDEF_GRID_NAME,
+            QUILTING,
+            DT_ATMOS,
+            LAYOUT_X,
+            LAYOUT_Y,
+            BLOCKSIZE,
+        )
+        import_vars(dictionary=params_dict)
 
     #
     # -----------------------------------------------------------------------
@@ -836,37 +838,46 @@ def setup():
     global POST_OUTPUT_DOMAIN_NAME
     global COMIN_BASEDIR, COMOUT_BASEDIR
 
-    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
+    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT, EXTROOT
     global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
     global KEEPDATA, MAILTO, MAILCC
+
+    # Stuff to import from parent shell environment
+    IMPORTS = [
+        "OPSROOT",
+        "COMROOT",
+        "PACKAGEROOT",
+        "DATAROOT",
+        "DCOMROOT",
+        "DBNROOT",
+        "SENDECF",
+        "SENDDBN",
+        "SENDDBN_NTC",
+        "SENDCOM",
+        "SENDWEB",
+        "KEEPDATA",
+        "MAILTO",
+        "MAILCC",
+    ]
+    import_vars(env_vars=IMPORTS)
 
     # Main directory locations
     if RUN_ENVIR == "nco":
 
-        try:
-            OPSROOT = (
-                os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs")
-                if OPSROOT is None
-                else OPSROOT
-            )
-        except NameError:
-            OPSROOT = EXPTDIR
-        try:
-            COMROOT
-        except NameError:
+        OPSROOT = (
+            os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs")
+            if OPSROOT is None
+            else OPSROOT
+        )
+        if COMROOT is None:
             COMROOT = os.path.join(OPSROOT, "com")
-        try:
-            PACKAGEROOT
-        except NameError:
+        if PACKAGEROOT is None:
             PACKAGEROOT = os.path.join(OPSROOT, "packages")
-        try:
-            DATAROOT
-        except NameError:
+        if DATAROOT is None:
             DATAROOT = os.path.join(OPSROOT, "tmp")
-        try:
-            DCOMROOT
-        except NameError:
+        if DCOMROOT is None:
             DCOMROOT = os.path.join(OPSROOT, "dcom")
+        EXTROOT = os.path.join(OPSROOT, "ext")
 
         COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
         COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
@@ -882,45 +893,24 @@ def setup():
         PACKAGEROOT = EXPTDIR
         DATAROOT = EXPTDIR
         DCOMROOT = EXPTDIR
+        EXTROOT = EXPTDIR
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
-    try:
-        DBNROOT
-    except NameError:
+    if DBNROOT is None:
         DBNROOT = None
-    try:
-        SENDECF
-    except NameError:
+    if SENDECF is None:
         SENDECF = False
-    try:
-        SENDDBN
-    except NameError:
+    if SENDDBN is None:
         SENDDBN = False
-    try:
-        SENDDBN_NTC
-    except NameError:
+    if SENDDBN_NTC is None:
         SENDDBN_NTC = False
-    try:
-        SENDCOM
-    except NameError:
+    if SENDCOM is None:
         SENDCOM = False
-    try:
-        SENDWEB
-    except NameError:
+    if SENDWEB is None:
         SENDWEB = False
-    try:
-        KEEPDATA
-    except NameError:
+    if KEEPDATA is None:
         KEEPDATA = True
-    try:
-        MAILTO
-    except NameError:
-        MAILTO = None
-    try:
-        MAILCC
-    except NameError:
-        MAILCC = None
 
     # create NCO directories
     if RUN_ENVIR == "nco":
@@ -929,6 +919,7 @@ def setup():
         mkdir_vrfy(f" -p '{PACKAGEROOT}'")
         mkdir_vrfy(f" -p '{DATAROOT}'")
         mkdir_vrfy(f" -p '{DCOMROOT}'")
+        mkdir_vrfy(f" -p '{EXTROOT}'")
     if DBNROOT is not None:
         mkdir_vrfy(f" -p '{DBNROOT}'")
 
@@ -1413,6 +1404,8 @@ def setup():
             iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
             jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
             jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
+            RUN_ENVIR=RUN_ENVIR,
+            VERBOSE=VERBOSE,
         )
     #
     # -----------------------------------------------------------------------
@@ -1454,6 +1447,9 @@ def setup():
         grid_params[k] for k in ["LON_CTR", "LAT_CTR", "NX", "NY", "NHW", "STRETCH_FAC"]
     )
 
+    # grid params
+    cfg_d["grid_params"] = grid_params
+
     #
     # -----------------------------------------------------------------------
     #
@@ -1489,14 +1485,11 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
-    # export env vars
-    export_vars()
-
     # link fix files
     res_in_grid_fns = ""
     if not RUN_TASK_MAKE_GRID:
 
-        res_in_grid_fns = link_fix(verbose=VERBOSE, file_group="grid")
+        res_in_grid_fns = link_fix(globals(), file_group="grid")
 
         RES_IN_FIXLAM_FILENAMES = res_in_grid_fns
     #
@@ -1511,7 +1504,7 @@ def setup():
     res_in_orog_fns = ""
     if not RUN_TASK_MAKE_OROG:
 
-        res_in_orog_fns = link_fix(verbose=VERBOSE, file_group="orog")
+        res_in_orog_fns = link_fix(globals(), file_group="orog")
 
         if not RES_IN_FIXLAM_FILENAMES and (res_in_orog_fns != RES_IN_FIXLAM_FILENAMES):
             raise Exception(
@@ -1537,7 +1530,7 @@ def setup():
     res_in_sfc_climo_fns = ""
     if not RUN_TASK_MAKE_SFC_CLIMO:
 
-        res_in_sfc_climo_fns = link_fix(verbose=VERBOSE, file_group="sfc_climo")
+        res_in_sfc_climo_fns = link_fix(globals(), file_group="sfc_climo")
 
         if RES_IN_FIXLAM_FILENAMES and res_in_sfc_climo_fns != RES_IN_FIXLAM_FILENAMES:
             raise Exception(
@@ -1671,6 +1664,9 @@ def setup():
     # -----------------------------------------------------------------------
     #
     SDF_USES_THOMPSON_MP = set_thompson_mp_fix_files(
+        EXTRN_MDL_NAME_ICS,
+        EXTRN_MDL_NAME_LBCS,
+        CCPP_PHYS_SUITE,
         CCPP_PHYS_SUITE_IN_CCPP_FP,
         THOMPSON_MP_CLIMO_FN,
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
@@ -1680,18 +1676,6 @@ def setup():
     # global variable definition file path
     global GLOBAL_VAR_DEFNS_FP
     GLOBAL_VAR_DEFNS_FP = os.path.join(EXPTDIR, GLOBAL_VAR_DEFNS_FN)
-
-    # fixed files section
-    cfg_d.update(cfg_f)
-
-    # update dictionary with globals() values
-    update_dict(globals(), cfg_d)
-
-    # constants section
-    cfg_d.update(cfg_c)
-
-    # grid params
-    cfg_d["grid_params"] = grid_params
 
     #
     # -----------------------------------------------------------------------
@@ -1886,6 +1870,7 @@ def setup():
         "DATAROOT": DATAROOT,
         "DCOMROOT": DCOMROOT,
         "DBNROOT": DBNROOT,
+        "EXTROOT": EXTROOT,
         "SENDECF": SENDECF,
         "SENDDBN": SENDDBN,
         "SENDDBN_NTC": SENDDBN_NTC,
@@ -1905,6 +1890,9 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
+    # update dictionary with globals() values
+    update_dict(globals(), cfg_d)
+
     # print content of var_defns if DEBUG=True
     all_lines = cfg_to_yaml_str(cfg_d)
     log_info(all_lines, verbose=DEBUG)
@@ -1923,9 +1911,6 @@ def setup():
 
     with open(GLOBAL_VAR_DEFNS_FP, "a") as f:
         f.write(cfg_to_shell_str(cfg_d))
-
-    # export all global variables back to the environment
-    export_vars()
 
     #
     # -----------------------------------------------------------------------
@@ -1949,6 +1934,10 @@ def setup():
                 does not have a valid value. Possible values are:
                     {k} = {cfg_v[vkey]}"""
             )
+
+    # add LOGDIR and return flat dict
+    cfg_d.update({"LOGDIR": LOGDIR})
+    return cfg_d
 
 
 #
