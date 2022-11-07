@@ -56,6 +56,19 @@ user:
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
 
+  HOMEdir: '{{ HOMEdir }}'
+  USHdir: '{{ USHdir }}'
+  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
+  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
+  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
+  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
+  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
+  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
+  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
+  UFS_WTHR_MDL_DIR: '{{ UFS_WTHR_MDL_DIR }}'
+
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -154,10 +167,10 @@ platform:
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
   LMOD_PATH: ""
-  BUILD_MOD_FN: ""
-  WFLOW_MOD_FN: ""
-  BUILD_VER_FN: ""
-  RUN_VER_FN: ""
+  BUILD_MOD_FN: "build_{{ user.MAACHINE|lower() }}_{{ workflow.COMPILER }}"
+  WFLOW_MOD_FN: "wflow_{{ user.MACHINE|lower() }}"
+  BUILD_VER_FN: "build.ver.{{ user.MAACHINE|lower() }}"
+  RUN_VER_FN: "run.ver.{{ user.MAACHINE|lower() }}"
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -315,7 +328,7 @@ platform:
   # that will point to a subdirectory (having the name of the grid being
   # used) under this directory.  This variable should be set to a null 
   # string in this file, but it can be specified in the user-specified 
-  # workflow configuration file (EXPT_CONFIG_FN).
+  : workflow configuration file (EXPT_CONFIG_FN).
   #
   #-----------------------------------------------------------------------
   #
@@ -351,6 +364,25 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # How to make links. Relative links by default. Empty string for
+  # absolute paths in links.
+  #
+  #-----------------------------------------------------------------------
+  #
+  RELATIVE_LINK_FLAG: "--relative"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # CPL:
+  # Flag indicating whether another component should run in coupled mode
+  # with the forecast.
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL: "{{ eq(workflow.FCST_MODEL, 'fv3gfs_aqm', /) }}"
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:
@@ -367,6 +399,9 @@ workflow:
   #
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
+  CRONTAB_LINE: ""
+  LOAD_MODULES_RUN_TASK_FP: "{{ [user.USHdir, 'load_modules_run_task.sh']|path_join}}"
+
   #
   #-----------------------------------------------------------------------
   #
@@ -398,6 +433,7 @@ workflow:
   EXPT_BASEDIR: ""
   EXPT_SUBDIR: ""
   EXEC_SUBDIR: "exec"
+  EXPTDIR: "{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join}}"
   #
   #-----------------------------------------------------------------------
   #
@@ -448,9 +484,10 @@ workflow:
   # directory (EXECDIR; this is set during experiment generation).
   #
   # DIAG_TABLE_TMPL_FN:
-  # Name of a template file that specifies the output fields of the forecast 
-  # model (ufs-weather-model: diag_table) followed by [dot_ccpp_phys_suite]. 
-  # Its default value is the name of the file that the ufs weather model 
+  # Name of a template file that specifies the output fields of the
+  # forecast model (ufs-weather-model: diag_table) followed by the name
+  # of the ccpp_phys_suite.  Its default value is the name of the file
+  # that the ufs weather model 
   # expects to read in.
   #
   # FIELD_TABLE_TMPL_FN:
@@ -511,20 +548,77 @@ workflow:
   FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
   FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
+  FV3_NML_FN: "input.nml"
   FV3_EXEC_FN: "ufs_model"
   
-  DATA_TABLE_TMPL_FN: ""
-  DIAG_TABLE_TMPL_FN: ""
-  FIELD_TABLE_TMPL_FN: ""
-  MODEL_CONFIG_TMPL_FN: ""
-  NEMS_CONFIG_TMPL_FN: ""
-  
+  DATA_TABLE_FN: "data_table"
+  DIAG_TABLE_FN: "diag_table.{{ CCPP_PHYS_SUITE }}"
+  FIELD_TABLE_FN: "field_table.{{ CCPP_PHYS_SUITE }}"
+  MODEL_CONFIG_FN: "model_configure"
+  NEMS_CONFIG_FN: "nems.configure"
+
+  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join}}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join}}'
+  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join}}'
+  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join}}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_FN]|path_join}}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_FN]|path_join}}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join}}'
+  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join}}'
+
+  # These are staged in the exptdir at configuration time
+  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join}}'
+  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join}}'
+  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join}}'
+  FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
   GLOBAL_VAR_DEFNS_FN: "var_defns.sh"
   EXTRN_MDL_VAR_DEFNS_FN: "extrn_mdl_var_defns"
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
+
+  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join}}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join}}'
+  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join}}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the fix file paths
+  #
+  # FIXdir:
+  # Location where fix files will be stored for a given experiment
+  #
+  # FIXam:
+  # Directory containing the fixed files (or symlinks) for various fields on
+  # global grids (which are usually much coarser than the native FV3-LAM grid).
+  #
+  # FIXclim:
+  # Directory containing the MERRA2 aerosol climatology data file and
+  # lookup tables for optics properties
+  #
+  # FIXlam:
+  # Directory containing the fixed files (or symlinks) for the grid,
+  # orography, and surface climatology on the native FV3-LAM grid.
+  #
+  # THOMPSON_MP_CLIMO_FN and _FP:
+  # Name and path of file that contains aerosol climatology data. It can
+  # be used to generate approximate versions of the aerosol fields
+  # needed by Thompson microphysics.  This file will be used to
+  # generate such approximate aerosol fields in the ICs and LBCs if
+  # Thompson MP is included in the physics suite and if the exteranl
+  # model for ICs or LBCs does not already provide these fields.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXdir: "{% EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else path_join([user.HOMEdir, 'fix']) %}"
+  FIXam: "{{ [FIXdir, 'fix_am']|path_join}}"
+  FIXclim: "{{ [FIXdir, 'fix_clim']|path_join}}"
+  FIXlam: "{{ [FIXdir, 'fix_lam']|path_join}}"
+
+  THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
+  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join}}'
   #
   #-----------------------------------------------------------------------
   #
@@ -537,9 +631,24 @@ workflow:
   # the XML physics suite definition file that are staged in the experiment 
   # directory or the cycle directories under it.
   #
+  # *_FN and *_FP variables set the name and paths to the suite
+  # definition files used for the experiment
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
+  CCPP_PHYS_SUITE_FN: "suite_{{ CCPP_PHYS_SUITE }}.xml"
+  CCPP_PHYS_SUITE_IN_CCPP_FP: "{{ [user.UFS_WTHR_MDL_DIR, 'FV3', 'ccpp', 'suites', CCPP_PHYS_SUITE_FN] |path_join}}"
+  CCPP_PHYS_SUITE_FP: "{{ [EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join}}"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the field dictionary file name and paths.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIELD_DICT_FN: "fd_nems.yaml"
+  FIELD_DICT_IN_UWM_FP: "{{ [user.FIELD_DICT_IN_UWM_FP, 'tests', 'parm', FIELD_DICT_FN]|path_join}}"
+  FIELD_DICT_FP: "{{ [EXPTDIR, FIELD_DICT_FN]|path_join}}"
   #
   #-----------------------------------------------------------------------
   #
@@ -701,6 +810,9 @@ nco:
   #
   # OPSROOT:
   # The operations root directory in NCO mode.
+  #
+  # LOGDIR:
+  # Directory in which the log files from the workflow tasks will be placed.
   # 
   # For more information on NCO standards
   #   
@@ -712,7 +824,32 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
-  OPSROOT: ""
+  OPSROOT: "{{ workflow.EXPT_BASEDIR }}/../nco_dirs"
+  COMROOT: "{{ OPSROOT }}/com"
+  PACKAGEROOT: "{{ OPSROOT }}/packages"
+  DATAROOT: "{{ OPSROOT }}/tmp"
+  DCOMROOT: "{{ OPSROOT }}/dcom"
+  LOGDIR: "{{ OPSROOT }}/output"
+  COMIN_BASEDIR: "{{ COMROOT }}/{{ NET }}/{{ model_ver }}"
+  COMOUT_BASEDIR: "{{ COMROOT }}/{{ NET }}/{{ model_ver }}"
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # The following are also described in the NCO doc above
+  #
+  #-----------------------------------------------------------------------
+  #
+  DBNROOT: ""
+  SENDECF: false
+  SENDDBN: false
+  SENDDBN_NTC: false
+  SENDCOM: false
+  SENDWEB: false
+  KEEPDATA: true
+  MAILTO: ""
+  MAILCC: ""
+
 
 #----------------------------
 # WORKFLOW SWITCHES config parameters
@@ -814,7 +951,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: ""
+  GRID_DIR: "{{ [workflow.EXPTDIR, 'grid']|path_join}}"
   #
   #-----------------------------------------------------------------------
   #
@@ -1095,7 +1232,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: ""
+  OROG_DIR: "{{ [workflow.EXPTDIR, 'orog']|path_join}}"
   TOPO_DIR: ""
 
 #----------------------------
@@ -1110,7 +1247,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: ""
+  SFC_CLIMO_DIR: "{{ [wokflow.EXPTDIR, 'sfc_climo']|path_join}}"
   SFC_CLIMO_INPUT_DIR: ""
 
 #----------------------------
@@ -1262,9 +1399,8 @@ task_get_extrn_lbcs:
   # the external model started than when the FV3 forecast configured here
   # should start. For example, the forecast should use lateral boundary
   # conditions from the GFS started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS=6.
-  # Note: the default value is model-dependent and set in
-  # set_extrn_mdl_params.sh
+  # EXTRN_MDL_LBCS_OFFSET_HRS=6. Defaults to 0 except for RAP, which
+  # uses a 3 hour offset.
   #
   # FV3GFS_FILE_FMT_LBCS:
   # If using the FV3GFS model as the source of the LBCs (i.e. if 
@@ -1275,7 +1411,7 @@ task_get_extrn_lbcs:
   #
   EXTRN_MDL_NAME_LBCS: "FV3GFS"
   LBC_SPEC_INTVL_HRS: 6
-  EXTRN_MDL_LBCS_OFFSET_HRS: ""
+  EXTRN_MDL_LBCS_OFFSET_HRS: "{{ 3 if EXTRN_MDL_NAME_LBCS == 'RAP' else 0 }}"
   FV3GFS_FILE_FMT_LBCS: "nemsio"
   #-----------------------------------------------------------------------
   #
@@ -1379,17 +1515,18 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: []
+  LBC_SPEC_FCST_HRS: "{% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS %}{{ h }}{% endfor %}"
 
 #----------------------------
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
   RUN_FCST_TN: "run_fcst"
-  NNODES_RUN_FCST: ""  # This is calculated in the workflow generation scripts, so no need to set here.
-  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.sh
+  NNODES_RUN_FCST: "{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}"
+  PPN_RUN_FCST: "{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}"
   WTIME_RUN_FCST: 04:30:00
   MAXTRIES_RUN_FCST: 1
+  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join}}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1520,6 +1657,8 @@ task_run_fcst:
   #
   QUILTING: true
   PRINT_ESMF: false
+
+  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
   
   WRTCMP_write_groups: 1
   WRTCMP_write_tasks_per_group: 20
@@ -1580,7 +1719,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  PREDEF_GRID_NAME: ""
+ PREDEF_GRID_NAME: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1589,7 +1728,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: false
+  USE_MERRA_CLIMO: "{{ eq(workflow.CCPP_PHYS_SUITE, 'FV3_GFS_v15_thompson_mynn_lam3km', /) }}"
   #
   #-----------------------------------------------------------------------
   #
@@ -1849,7 +1988,7 @@ task_run_post:
   #
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
-  POST_OUTPUT_DOMAIN_NAME: ""
+  POST_OUTPUT_DOMAIN_NAME: "{{ task_run_fcst.PREDEF_GRID_NAME }}"
 
 #----------------------------
 # GET OBS CCPA config parameters
@@ -2131,21 +2270,21 @@ global:
   #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
-  # This variable also controls the naming of the ensemble member directories.  
-  # For example, if this is set to "8", the member directories will be named 
-  # mem1, mem2, ..., mem8.  If it is set to "08" (note the leading zero), 
-  # the member directories will be named mem01, mem02, ..., mem08.  Note, 
-  # however, that after reading in the number of characters in this string
-  # (in order to determine how many leading zeros, if any, should be placed
-  # in the names of the member directories), the workflow generation scripts
-  # strip away those leading zeros.  Thus, in the variable definitions file 
-  # (GLOBAL_VAR_DEFNS_FN), this variable appear with its leading zeros 
-  # stripped.  This variable is not used if DO_ENSEMBLE is not set to true.
-  # 
+  #
+  # ENSMEM_NAMES:
+  # A list of names for the ensemble member names following the format
+  # mem001, mem002, etc.
+  #
+  # FV3_NML_ENSMEM_FPS:
+  # Paths to the ensemble member corresponding namelists in the
+  # experiment directory
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 1
+  NUM_ENS_MEMBERS: 0
+  ENSMEM_NAMES: "{% for m in range(NUM_ENS_MEMBERS) %}{{ 'mem%03d, ' % m }}{% endfor %}"
+  FV3_NML_ENSMEM_FPS: "{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, '%s_%s' % FV3_NML_FN, mem}}{% endfor %}"
+
   #
   #-----------------------------------------------------------------------
   #

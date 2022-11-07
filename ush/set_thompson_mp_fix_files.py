@@ -17,7 +17,8 @@ from python_utils import (
 )
 
 
-def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
+def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn,
+        link_thompson_climo):
     """Function that first checks whether the Thompson
     microphysics parameterization is being called by the selected physics
     suite.  If not, it sets the output variable whose name is specified by
@@ -31,14 +32,12 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
         thompson_mp_climo_fn: netcdf file for thompson microphysics
+        link_thompson_climo: whether to use the thompson climo file
     Returns:
         boolean: sdf_uses_thompson_mp
     """
 
     print_input_args(locals())
-
-    # import all environment variables
-    import_vars()
 
     #
     # -----------------------------------------------------------------------
@@ -78,48 +77,14 @@ def set_thompson_mp_fix_files(ccpp_phys_suite_fp, thompson_mp_climo_fn):
             "qr_acr_qsV2.dat",
         ]
 
-        if (EXTRN_MDL_NAME_ICS != "HRRR" and EXTRN_MDL_NAME_ICS != "RAP") or (
-            EXTRN_MDL_NAME_LBCS != "HRRR" and EXTRN_MDL_NAME_LBCS != "RAP"
-        ):
+        if link_thompson_climo:
             thompson_mp_fix_files.append(thompson_mp_climo_fn)
 
-        FIXgsm_FILES_TO_COPY_TO_FIXam.extend(thompson_mp_fix_files)
-
+        mapping = []
         for fix_file in thompson_mp_fix_files:
-            mapping = f"{fix_file} | {fix_file}"
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.append(mapping)
+            mapping.append(f"{fix_file} | {fix_file}")
 
-        log_info(
-            f"""
-            Since the Thompson microphysics parameterization is being used by this
-            physics suite (CCPP_PHYS_SUITE), the names of the fixed files needed by
-            this scheme have been appended to the array FIXgsm_FILES_TO_COPY_TO_FIXam,
-            and the mappings between these files and the symlinks that need to be
-            created in the cycle directories have been appended to the array
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
-            values of these parameters are as follows:
-
-            CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
-            """
-        )
-        log_info(
-            f"""
-                FIXgsm_FILES_TO_COPY_TO_FIXam = {list_to_str(FIXgsm_FILES_TO_COPY_TO_FIXam)}
-            """
-        )
-        log_info(
-            f"""
-                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """
-        )
-
-        EXPORTS = [
-            "CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING",
-            "FIXgsm_FILES_TO_COPY_TO_FIXam",
-        ]
-        export_vars(env_vars=EXPORTS)
-
-    return sdf_uses_thompson_mp
+    return sdf_uses_thompson_mp, mapping, thompson_mp_fix_files
 
 
 class Testing(unittest.TestCase):

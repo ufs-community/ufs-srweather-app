@@ -38,6 +38,9 @@ def set_gridparams_GFDLgrid(
     iend_of_t7_on_t6g,
     jstart_of_t7_on_t6g,
     jend_of_t7_on_t6g,
+    verbose,
+    nh4,
+    run_envir,
 ):
     """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
@@ -51,20 +54,15 @@ def set_gridparams_GFDLgrid(
          istart_of_t7_on_t6g
          iend_of_t7_on_t6g
          jstart_of_t7_on_t6g
-         jend_of_t7_on_t6g):
+         jend_of_t7_on_t6g
+         verbose
+         nh4
+         run_envir
     Returns:
         Tuple of inputs and outputs (see return statement)
     """
 
     print_input_args(locals())
-
-    # get needed environment variables
-    IMPORTS = ["VERBOSE", "RUN_ENVIR"]
-    import_vars(env_vars=IMPORTS)
-    IMPORTS = ["NH4"]
-    USHdir = os.path.dirname(os.path.abspath(__file__))
-    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
-    import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
 
     #
     # -----------------------------------------------------------------------
@@ -94,7 +92,7 @@ def set_gridparams_GFDLgrid(
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if RUN_ENVIR != "nco":
+    if run_envir != "nco":
         if num_left_margin_cells_on_t6g != num_right_margin_cells_on_t6g:
             print_err_msg_exit(
                 f"""
@@ -120,7 +118,7 @@ def set_gridparams_GFDLgrid(
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if RUN_ENVIR != "nco":
+    if run_envir != "nco":
         if num_bot_margin_cells_on_t6g != num_top_margin_cells_on_t6g:
             print_err_msg_exit(
                 f"""
@@ -259,7 +257,7 @@ def set_gridparams_GFDLgrid(
     #
     # -----------------------------------------------------------------------
     #
-    halo_width_on_t7g = NH4 + 1
+    halo_width_on_t7g = nh4 + 1
     halo_width_on_t6sg = (
         2 * halo_width_on_t7g + refine_ratio_t6g_to_t7g - 1
     ) / refine_ratio_t6g_to_t7g
@@ -335,7 +333,7 @@ def set_gridparams_GFDLgrid(
         tile 7 grid are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
           halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
 
     halo_width_on_t6sg = istart_of_t7_on_t6sg - istart_of_t7_with_halo_on_t6sg
@@ -348,7 +346,7 @@ def set_gridparams_GFDLgrid(
         AFTER adjustments are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
           halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     #
     # -----------------------------------------------------------------------
@@ -421,7 +419,7 @@ def set_gridparams_GFDLgrid(
         determining an MPI task layout):
           prime_factors_nx_of_t7_on_t7g: {prime_factors_nx_of_t7_on_t7g}
           prime_factors_ny_of_t7_on_t7g: {prime_factors_ny_of_t7_on_t7g}""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     #
     # -----------------------------------------------------------------------
@@ -450,7 +448,7 @@ def set_gridparams_GFDLgrid(
         nx_of_t7_with_halo_on_t7g = {nx_of_t7_with_halo_on_t7g}
         (istart_of_t7_with_halo_on_t6sg = {istart_of_t7_with_halo_on_t6sg},
         iend_of_t7_with_halo_on_t6sg = {iend_of_t7_with_halo_on_t6sg})""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
 
     print_info_msg(
@@ -458,7 +456,7 @@ def set_gridparams_GFDLgrid(
         ny_of_t7_with_halo_on_t7g = {ny_of_t7_with_halo_on_t7g}
         (jstart_of_t7_with_halo_on_t6sg = {jstart_of_t7_with_halo_on_t6sg},
         jend_of_t7_with_halo_on_t6sg = {jend_of_t7_with_halo_on_t6sg})""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     #
     # -----------------------------------------------------------------------
@@ -493,6 +491,9 @@ class Testing(unittest.TestCase):
             iend_of_t7_on_t6g=84,
             jstart_of_t7_on_t6g=17,
             jend_of_t7_on_t6g=80,
+            run_env="community",
+            verbose=True,
+            nh4=4,
         )
 
         self.assertEqual(
@@ -501,6 +502,4 @@ class Testing(unittest.TestCase):
         )
 
     def setUp(self):
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("NH4", 4)
+        pass

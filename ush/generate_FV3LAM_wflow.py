@@ -100,10 +100,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
 
     # The setup function reads the user configuration file and fills in 
     # non-user-specified values from config_defaults.yaml
-    setup(USHdir)
-
-    # import all environment variables
-    import_vars()
+    expt_config = setup(USHdir)
 
     #
     # -----------------------------------------------------------------------
@@ -114,8 +111,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     # -----------------------------------------------------------------------
     #
-    WFLOW_XML_FP = os.path.join(EXPTDIR, WFLOW_XML_FN)
-
+    wflow_xml_fn = expt_config['workflow']['WFLOW_XML_FN']
+    wflow_xml_fp = os.path.join(
+         expt_config['workflow']['EXPTDIR'],
+         wflow_xml_fn,
+         )
     #
     # -----------------------------------------------------------------------
     #
@@ -127,22 +127,25 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = 'log.generate_FV3LAM_wflow') ->
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER == "rocoto":
+    if expt_config['platform']['WORKFLOW_MANAGER'] == "rocoto":
 
-        template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
+        template_xml_fp = os.path.join(
+            expt_config['user']['PARMdir'],
+            wflow_xml_fn,
+            )
 
         log_info(
             f'''
             Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
             file (template_xml_fp):
               template_xml_fp = \"{template_xml_fp}\"
-              WFLOW_XML_FP = \"{WFLOW_XML_FP}\"'''
+              WFLOW_XML_FP = \"{wflow_xml_fp}\"'''
         )
 
         ensmem_indx_name = ""
         uscore_ensmem_name = ""
         slash_ensmem_subdir = ""
-        if DO_ENSEMBLE:
+        if expt_config['global']['DO_ENSEMBLE']:
             ensmem_indx_name = "mem"
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"

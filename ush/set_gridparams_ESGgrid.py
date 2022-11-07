@@ -13,7 +13,8 @@ from python_utils import (
 )
 
 
-def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, pazi):
+def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx,
+        dely, pazi, constants):
     """Sets the parameters for a grid that is to be generated using the "ESGgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
 
@@ -26,6 +27,7 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
         delx
         dely
         pazi
+        constants: dictionary of SRW constants
     Returns:
         Tuple of inputs, and 4 outputs (see return statement)
     """
@@ -33,10 +35,8 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
     print_input_args(locals())
 
     # get constants
-    IMPORTS = ["RADIUS_EARTH", "DEGS_PER_RADIAN"]
-    USHdir = os.path.dirname(os.path.abspath(__file__))
-    constants_cfg = load_config_file(os.path.join(USHdir,"constants.yaml"))
-    import_vars(dictionary=flatten_dict(constants_cfg), env_vars=IMPORTS)
+    RADIUS_EARTH = constants['RADIUS_EARTH']
+    DEGS_PER_RADIAN = constants['DEGS_PER_RADIAN']
 
     #
     # -----------------------------------------------------------------------
@@ -60,28 +60,6 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
     # It turns out that the program will work if we set stretch_factor to a
     # value that is not exactly 1.  This is what we do below.
     #
-    # -----------------------------------------------------------------------
-    #
-    stretch_factor = 0.999  # Check whether the orography program has been fixed so that we can set this to 1...
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set parameters needed as inputs to the regional_grid grid generation
-    # code.
-    #
-    # -----------------------------------------------------------------------
-    #
-    del_angle_x_sg = (delx / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN
-    del_angle_y_sg = (dely / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN
-    neg_nx_of_dom_with_wide_halo = -(nx + 2 * halo_width)
-    neg_ny_of_dom_with_wide_halo = -(ny + 2 * halo_width)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # return output variables.
-    #
-    # -----------------------------------------------------------------------
-    #
     return {
         "LON_CTR": lon_ctr,
         "LAT_CTR": lat_ctr,
@@ -89,11 +67,11 @@ def set_gridparams_ESGgrid(lon_ctr, lat_ctr, nx, ny, halo_width, delx, dely, paz
         "NY": ny,
         "PAZI": pazi,
         "NHW": halo_width,
-        "STRETCH_FAC": stretch_factor,
-        "DEL_ANGLE_X_SG": del_angle_x_sg,
-        "DEL_ANGLE_Y_SG": del_angle_y_sg,
-        "NEG_NX_OF_DOM_WITH_WIDE_HALO": int(neg_nx_of_dom_with_wide_halo),
-        "NEG_NY_OF_DOM_WITH_WIDE_HALO": int(neg_ny_of_dom_with_wide_halo),
+        "STRETCH_FAC": 0.999,
+        "DEL_ANGLE_X_SG": (delx / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN,
+        "DEL_ANGLE_Y_SG": (dely / (2.0 * RADIUS_EARTH)) * DEGS_PER_RADIAN,
+        "NEG_NX_OF_DOM_WITH_WIDE_HALO": int(-(nx + 2 * halo_width)),
+        "NEG_NY_OF_DOM_WITH_WIDE_HALO": int(-(ny + 2 * halo_width)),
     }
 
 
@@ -109,6 +87,10 @@ class Testing(unittest.TestCase):
             halo_width=6,
             delx=3000.0,
             dely=3000.0,
+            constants=dict(
+                RADIUS_EARTH=6371200.0,
+                DEGS_PER_RADIAN=57.2957795131,
+                )
         )
 
         self.assertEqual(

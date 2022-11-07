@@ -88,6 +88,69 @@ try:
 except NameError:
     pass
 
+def extend_yaml(yaml_dict, full_dict=None):
+
+    '''
+    Updates yaml_dict inplace by rendering any existing Jinja2 templates
+    that exist in a value.
+    '''
+
+    if full_dict is None:
+        full_dict = yaml_dict
+
+    if not isinstance(yaml_dict, dict):
+        return
+
+    for k, v in yaml_dict.items():
+
+        if isinstance(v, dict):
+            extend_yaml(v, full_dict)
+        else:
+
+          # Save a bit of compute and only do this part for strings that
+          # contain the jinja double brackets.
+          v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
+          is_a_template = any((ele for ele in ['{{', '{%'] if ele in v_str))
+          if is_a_template:
+
+              # Find expressions first, and process them as a single template
+              # if they exist
+              # Find individual double curly brace template in the string
+              # otherwise. We need one substitution template at a time so that
+              # we can opt to leave some un-filled when they are not yet set.
+              # For example, we can save cycle-dependent templates to fill in
+              # at run time.
+              if '{%' in v:
+                  templates = [v_str]
+              else:
+                  templates = re.findall(r'{{[^}]*}}|\S', v_str)
+              data = []
+              for template in templates:
+                  j2env = jinja2.Environment(loader=jinja2.BaseLoader,
+                          undefined=jinja2.StrictUndefined)
+                  j2env.filters['path_join'] = path_join
+                  j2tmpl = j2env.from_string(template)
+                  try:
+                      # Fill in a template that has the appropriate variables
+                      # set.
+                      template = j2tmpl.render(env=os.environ, **full_dict)
+                  except jinja2.exceptions.UndefinedError as e:
+                      # Leave a templated field as-is in the resulting dict
+                      print(f'Error: {e}')
+                      print(f'Preserved template: {k}: {template}')
+                      for a, b in full_dict.items():
+                          print(f'    {a}: {b}')
+
+                  data.append(template)
+
+              if isinstance(v, ET.Element):
+                  v.text = ''.join(data)
+              else:
+                  # Put the full template line back together as it was,
+                  # filled or not
+                  yaml_dict[k] = ''.join(data)
+
+
 ##########
 # JSON
 ##########
