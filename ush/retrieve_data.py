@@ -34,6 +34,7 @@ import subprocess
 import sys
 from textwrap import dedent
 import time
+from copy import deepcopy
 
 import yaml
 
@@ -289,6 +290,7 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
+    file_templates = deepcopy(file_templates)
 
     # Remove sfc files from fcst in file_names of FV3GFS for LBCs
     # sfc files needed in fcst when time_offset is not zero.
