@@ -31,6 +31,7 @@ from python_utils import (
     set_env_var,
     get_env_var,
     lowercase,
+    flatten_dict,
 )
 
 from setup import setup
@@ -41,12 +42,12 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
+def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
     Args:
-        USHdir  (str): The full path of the ush/ directory where this script is located
+        ushdir  (str): The full path of the ush/ directory where this script is located
         logfile (str): The name of the file where logging is written
     Returns:
         None
@@ -68,7 +69,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(USHdir)
+    expt_config = setup(ushdir)
 
     #
     # -----------------------------------------------------------------------
@@ -114,7 +115,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         # Dictionary of settings to pass to fill_jinja
         #
         settings = {}
-        for k, v in var_defs_dict.items():
+        for k, v in flatten_dict(expt_config).items():
             settings[lowercase(k)] = v
 
         ensmem_indx_name = ""
@@ -125,23 +126,27 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
 
-        d = DATE_FIRST_CYCL + timedelta(seconds=DT_ATMOS)
-        time_str = d.strftime("%M:%S")
+
+        dt_atmos = expt_config['task_run_fcst']['DT_ATMOS']
+        date_first_cycl = expt_config['workflow']['DATE_FIRST_CYCL']
+        date_last_cycl = expt_config['workflow']['DATE_LAST_CYCL']
+        first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
+        fcst_threads = expt_config['task_run_fcst']['OMP_NUM_THREADS_RUN_FCST']
 
         settings.update(
             {
                 #
                 # Number of cores used for a task
                 #
-                "ncores_run_fcst": PE_MEMBER01,
-                "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
+                "ncores_run_fcst": expt_config['task_run_fcst']['PE_MEMBER01'],
+                "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
                 #
                 # Parameters that determine the set of cycles to run.
                 #
-                "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
-                "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
-                "cdate_first_cycl": DATE_FIRST_CYCL,
-                "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
+                "date_first_cycl": date_to_str(date_first_cycl, format="%Y%m%d%H00"),
+                "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
+                "cdate_first_cycl": date_first_cycl,
+                "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
                 #
                 # Ensemble-related parameters.
                 #
@@ -151,13 +156,15 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 #
                 # Parameters associated with subhourly post-processed output
                 #
-                "delta_min": DT_SUBHOURLY_POST_MNTS,
-                "first_fv3_file_tstr": f"000:{time_str}",
+                "delta_min": expt_config['task_run_post']['DT_SUBHOURLY_POST_MNTS'],
+                "first_fv3_file_tstr": first_file_time.strftime("000:%M:%S"),
             }
         )
 
         # Log "settings" variable.
         settings_str = cfg_to_yaml_str(settings)
+
+        verbose = expt_config['workflow']['VERBOSE']
 
         log_info(
             f"""
@@ -165,9 +172,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             has been set as follows:
             #-----------------------------------------------------------------------
             settings =\n\n""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
-        log_info(settings_str, verbose=VERBOSE)
+        log_info(settings_str, verbose=verbose)
 
         #
         # Call the python script to generate the experiment's actual XML file
@@ -175,7 +182,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         #
         try:
             fill_jinja_template(
-                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", WFLOW_XML_FP]
+                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
             )
         except:
             logging.exception(
@@ -187,7 +194,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                       Full path to template rocoto XML file:
                         template_xml_fp = '{template_xml_fp}'
                       Full path to output rocoto XML file:
-                        WFLOW_XML_FP = '{WFLOW_XML_FP}'
+                        WFLOW_XML_FP = '{wflow_xml_fp}'
                       Namelist settings specified on command line:\n
                         settings =\n\n"""
                 )
@@ -201,17 +208,21 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
+    exptdir = expt_config['workflow']['EXPTDIR']
+    wflow_launch_script_fp = expt_config['workflow']['WFLOW_LAUNCH_SCRIPT_FP']
     log_info(
         f"""
         Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
-          EXPTDIR = '{EXPTDIR}'
-          WFLOW_LAUNCH_SCRIPT_FP = '{WFLOW_LAUNCH_SCRIPT_FP}'""",
-        verbose=VERBOSE,
+          EXPTDIR = '{exptdir}'
+          WFLOW_LAUNCH_SCRIPT_FP = '{wflow_launch_script_fp}'""",
+        verbose=verbose,
     )
 
     create_symlink_to_file(
-        WFLOW_LAUNCH_SCRIPT_FP, os.path.join(EXPTDIR, WFLOW_LAUNCH_SCRIPT_FN), False
+        wflow_launch_script_fp,
+        os.path.join(exptdir, wflow_launch_script_fn),
+        False
     )
     #
     # -----------------------------------------------------------------------
@@ -222,6 +233,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
+    # From here on out, going back to setting variables for everything
+    # in the flattened expt_config dictionary
+    # TODO: Reference all these variables in their respective
+    # dictionaries, instead.
+    import_vars(dictionary=flatten_dict(expt_config),
+            target_dict=locals())
+
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
 
@@ -235,7 +253,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
@@ -246,7 +264,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         check_for_preexist_dir_file(FIXam, "delete")
@@ -272,7 +290,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
               FIXaer = '{FIXaer}'
               FIXlut = '{FIXlut}'
               FIXclim = '{FIXclim}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         check_for_preexist_dir_file(FIXclim, "delete")
@@ -294,27 +312,27 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying templates of various input files to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
 
     log_info(
         f"""
         Copying the template data table file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
         f"""
         Copying the template field table file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
     log_info(
         f"""
         Copying the template NEMS configuration file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
@@ -326,7 +344,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         f"""
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory sturcture to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
     #
@@ -338,7 +356,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         f"""
         Copying the field dictionary file from its location in the forecast
         model directory sturcture to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
     #
@@ -584,9 +602,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         f"""
         The variable 'settings' specifying values of the weather model's
         namelist variables has been set as follows:\n""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
-    log_info("\nsettings =\n\n" + settings_str, verbose=VERBOSE)
+    log_info("\nsettings =\n\n" + settings_str, verbose=verbose)
     #
     # -----------------------------------------------------------------------
     #
@@ -657,7 +675,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         # get_nomads_data(
         #     NOMADS_file_type,
         #     EXPTDIR,
-        #     USHdir,
+        #     ushdir,
         #     DATE_FIRST_CYCL,
         #     CYCL_HRS,
         #     FCST_LEN_HRS,
@@ -673,7 +691,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(USHdir, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
 
     # Note workflow generation completion
     log_info(
@@ -700,9 +718,10 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # -----------------------------------------------------------------------
     #
     if WORKFLOW_MANAGER == "rocoto":
-        wflow_db_fn = f"{os.path.splitext(WFLOW_XML_FN)[0]}.db"
-        rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
-        rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
+        wflow_xml_fn = settings['WFLOW_XML_FN']
+        wflow_db_fn = f"{os.path.splitext(wflow_xml_fn)[0]}.db"
+        rocotorun_cmd = f"rocotorun -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
+        rocotostat_cmd = f"rocotostat -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
 
         log_info(
             f"""
@@ -742,7 +761,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 def get_nomads_data(
     NOMADS_file_type,
     EXPTDIR,
-    USHdir,
+    ushdir,
     DATE_FIRST_CYCL,
     CYCL_HRS,
     FCST_LEN_HRS,
@@ -751,7 +770,7 @@ def get_nomads_data(
     print("Getting NOMADS online data")
     print(f"NOMADS_file_type= {NOMADS_file_type}")
     cd_vrfy(EXPTDIR)
-    NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
+    NOMADS_script = os.path.join(ushdir, "NOMADS_get_extrn_mdl_files.sh")
     run_command(
         f"""{NOMADS_script} \
             {date_to_str(DATE_FIRST_CYCL,format='%Y%m%d')} \
@@ -783,12 +802,12 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
 if __name__ == "__main__":
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
+    wflow_logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
 
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        generate_FV3LAM_wflow(USHdir, logfile)
+        generate_FV3LAM_wflow(USHdir, wflow_logfile)
     except:
         logging.exception(
             dedent(
@@ -797,7 +816,7 @@ if __name__ == "__main__":
                 FATAL ERROR:
                 Experiment generation failed. See the error message(s) printed below.
                 For more detailed information, check the log file from the workflow
-                generation script: {logfile}
+                generation script: {wflow_logfile}
                 *********************************************************************\n
                 """
             )
