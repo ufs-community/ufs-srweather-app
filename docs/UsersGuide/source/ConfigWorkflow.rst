@@ -920,7 +920,7 @@ Non-default parameters for the ``make_lbcs`` task are set in the ``task_make_lbc
 FORECAST Configuration Parameters
 =====================================
 
-Non-default parameters for the ``run_fcst`` task are set in the ``task_run_fcst`` section of the ``config.yaml`` file. 
+Non-default parameters for the ``run_fcst`` task are set in the ``task_run_fcst:`` section of the ``config.yaml`` file. 
 
 Basic Task Parameters
 ---------------------------------

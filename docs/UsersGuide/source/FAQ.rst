@@ -39,7 +39,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 How do I define an experiment name?
 ====================================
 
-The name of the experiment is set in the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
+The name of the experiment is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
 See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirParams>` for more details.
 
 
@@ -49,9 +49,9 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
 ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
-model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`
+model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
 
 .. _ChangeGrid:
 
@@ -59,7 +59,7 @@ model directory to the experiment directory ``EXPTDIR``. For more information on
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
 
 .. code-block:: console
 
@@ -106,7 +106,7 @@ run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
 How do I restart a DEAD task?
 =============================
 
-On platforms that utilize Rocoto workflow software (such as NCAR’s Cheyenne machine), if
+On platforms that utilize Rocoto workflow software (such as NCAR's Cheyenne machine), if
 something goes wrong with the workflow, a task may end up in the DEAD state:
 
 .. code-block:: console
@@ -148,7 +148,7 @@ To remove the ``build`` directory, run:
 
    ./devclean.sh --remove
 
-To remove all build artifacts (including ``build``, ``bin``, ``lib``, and ``share``), run: 
+To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``share``), run: 
 
 .. code-block:: console
 
