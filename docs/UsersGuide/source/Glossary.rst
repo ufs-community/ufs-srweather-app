@@ -26,21 +26,21 @@ Glossary
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
-       “coldstart” the forecast model.
+       “coldstart” the forecast model. It is part of :term:`UFS_UTILS`.
 
    CIN
       Convective Inhibition.
 
    CMAQ
-      The `Community Multiscale Air Quality Model <https://www.epa.gov/cmaq/cmaq-models-0>`__ (CMAQ, pronounced "cee-mak") is a numerical air quality model that predicts the concentration of airborne gases and particles and the deposition of these pollutants back to Earth's surface. The purpose of CMAQ is to provide fast, technically sound estimates of ozone, particulates, toxics, and acid deposition. CMAQ is an active open-source development project of the U.S. Environmental Protection Agency (EPA). Code is publicly availably at https://github.com/USEPA/CMAQ. 
+      The `Community Multiscale Air Quality Model <https://www.epa.gov/cmaq/cmaq-models-0>`__ (CMAQ, pronounced "cee-mak") is a numerical air quality model that predicts the concentration of airborne gases and particles and the deposition of these pollutants back to Earth's surface. The purpose of CMAQ is to provide fast, technically sound estimates of ozone, particulates, toxics, and acid deposition. CMAQ is an active open-source development project of the U.S. Environmental Protection Agency (EPA). Code is publicly available at https://github.com/USEPA/CMAQ. 
 
    cron
    crontab
    cron table
-      Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App. Cron periodically checks a cron table (aka crontab) to see if any tasks are are ready to execute. If so, it runs them. 
+      Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App (see :numref:`Chapter %s <RocotoInfo>` for details). Cron periodically checks a cron table (aka crontab) to see if any tasks are are ready to execute. If so, it runs them. 
 
    CRTM
-      `Community Radiative Transfer Model <https://www.jcsda.org/jcsda-project-community-radiative-transfer-model>`__. CRTM is a fast and accurate radiative transfer model developed at the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__ (JCSDA) in the United States. It is a sensor-based radiative transfer model and supports more than 100 sensors, including sensors on most meteorological satellites and some from other remote sensing satellites. 
+      The `Community Radiative Transfer Model <https://www.jcsda.org/jcsda-project-community-radiative-transfer-model>`__ (CRTM) is a fast and accurate radiative transfer model developed at the `Joint Center for Satellite Data Assimilation <https://www.jcsda.org/>`__ (JCSDA) in the United States. It is a sensor-based radiative transfer model and supports more than 100 sensors, including sensors on most meteorological satellites and some from other remote sensing satellites. 
 
    Component
       A software element that has a clear function and interface. In Earth system models, components are often single portions of the Earth system (e.g. atmosphere, ocean, or land surface) that are assembled to form a whole.
@@ -52,7 +52,7 @@ Glossary
       `Docker <https://www.docker.com/resources/what-container>`__ describes a container as "a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another."
 
    CONUS
-      Continental United States
+      Continental United States.
 
    CAM
    convection-allowing models
@@ -94,7 +94,7 @@ Glossary
       `Finite Volume Community Ocean Model <http://fvcom.smast.umassd.edu/fvcom/>`__. FVCOM is used in modeling work for the `Great Lakes Coastal Forecasting System (next-gen FVCOM) <https://www.glerl.noaa.gov/res/glcfs/>`__ conducted by the `Great Lakes Environmental Research Laboratory <https://www.glerl.noaa.gov/>`__. 
 
    GFS
-      `Global Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast>`_. The GFS is a National Centers for Environmental Prediction (NCEP) weather forecast model that generates data for dozens of atmospheric and land-soil variables, including temperatures, winds, precipitation, soil moisture, and atmospheric ozone concentration. The system couples four separate models (atmosphere, ocean, land/soil, and sea ice) that work together to accurately depict weather conditions.
+      `Global Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast>`_. The GFS is a National Centers for Environmental Prediction (:term:`NCEP`) weather forecast model that generates data for dozens of atmospheric and land-soil variables, including temperatures, winds, precipitation, soil moisture, and atmospheric ozone concentration. The system couples four separate models (atmosphere, ocean, land/soil, and sea ice) that work together to accurately depict weather conditions.
 
    GRIB2 
       The second version of the World Meterological Organization's (WMO) standard for distributing gridded data.  
@@ -121,22 +121,22 @@ Glossary
       `High Resolution Rapid Refresh <https://rapidrefresh.noaa.gov/hrrr/>`__. The HRRR is a NOAA real-time 3-km resolution, hourly updated, cloud-resolving, convection-allowing atmospheric model initialized by 3km grids with 3km radar assimilation. Radar data is assimilated in the HRRR every 15 min over a 1-h period adding further detail to that provided by the hourly data assimilation from the 13km radar-enhanced Rapid Refresh.
 
    IC/LBCs
-      Initial conditions/lateral boundary conditions
+      Initial conditions/lateral boundary conditions.
 
    ICs
-      Initial conditions
+      Initial conditions.
 
    LAM
       Limited Area Model (grid type), formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the :term:`FV3` :term:`dynamical core`. 
 
    LBCs
-      Lateral boundary conditions
+      Lateral boundary conditions.
 
    MERRA2
       The `Modern-Era Retrospective analysis for Research and Applications, Version 2 <https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/>`__ provides satellite observation data back to 1980. According to NASA, "It was introduced to replace the original MERRA dataset because of the advances made in the assimilation system that enable assimilation of modern hyperspectral radiance and microwave observations, along with GPS-Radio Occultation datasets. It also uses NASA's ozone profile observations that began in late 2004. Additional advances in both the GEOS model and the GSI assimilation system are included in MERRA-2. Spatial resolution remains about the same (about 50 km in the latitudinal direction) as in MERRA."
 
    MPI
-      MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC).
+      MPI stands for Message Passing Interface. An MPI is a standardized communication system used in parallel programming. It establishes portable and efficient syntax for the exchange of messages and data between multiple processors that are used by a single computer program. An MPI is required for high-performance computing (HPC) systems.
 
    MRMS
       Multi-Radar/Multi-Sensor (MRMS) System Analysis data. This data is required for METplus composite reflectivity or :term:`echo top` verification tasks within the SRW App. A two-day archive of precipitation, radar, and aviation and severe weather fields is publicly available and can be accessed `here <https://mrms.ncep.noaa.gov/data/>`__.
@@ -145,7 +145,7 @@ Glossary
       `North American Mesoscale Forecast System <https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale>`_. NAM generates multiple grids (or domains) of weather forecasts over the North American continent at various horizontal resolutions. Each grid contains data for dozens of weather parameters, including temperature, precipitation, lightning, and turbulent kinetic energy. NAM uses additional numerical weather models to generate high-resolution forecasts over fixed regions, and occasionally to follow significant weather events like hurricanes.
 
    namelist
-      A namelist defines a group of variables or arrays. Namelists are an I/O feature for format-free input and output of variables by key-value assignments in FORTRAN compilers. Fortran variables can be read from and written to plain-text files in a standardised format, usually with a ``.nml`` file ending.
+      A namelist defines a group of variables or arrays. Namelists are an I/O feature for format-free input and output of variables by key-value assignments in Fortran compilers. Fortran variables can be read from and written to plain-text files in a standardised format, usually with a ``.nml`` file ending.
 
    NCAR
       The `National Center for Atmospheric Research <https://ncar.ucar.edu/>`__. 
@@ -156,7 +156,7 @@ Glossary
 
    NCEPLIBS
       The software libraries created and maintained by :term:`NCEP` that are required for running 
-      :term:`chgres_cube`, the UFS Weather Model, and :term:`UPP`. They are included in the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__. 
+      :term:`chgres_cube`, the UFS Weather Model, and the :term:`UPP`. They are included in the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__. 
 
    NCEPLIBS-external
       A collection of third-party libraries required to build :term:`NCEPLIBS`, :term:`chgres_cube`, 
@@ -195,13 +195,13 @@ Glossary
       Simplified functions that approximate the effects of small-scale processes (e.g., microphysics, gravity wave drag) that cannot be explicitly resolved by a model grid’s representation of the earth.
 
    RAP
-      `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at NCEP. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (:term:`HRRR`) model.
+      `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at :term:`NCEP`. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (:term:`HRRR`) model.
 
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
 
    RRFS
-      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain. 
+      The `Rapid Refresh Forecast System <https://gsl.noaa.gov/focus-areas/unified_forecast_system/rrfs>`__ (RRFS) is NOAA's next-generation convection-allowing, rapidly-updated, ensemble-based data assimilation and forecasting system currently scheduled for operational implementation in 2024. It is designed to run forecasts on a 3-km :term:`CONUS` domain. 
 
    SDF
       Suite Definition File. An external file containing information about the construction of a physics suite. It describes the schemes that are called, in which order they are called, whether they are subcycled, and whether they are assembled into groups to be called together.
@@ -224,7 +224,7 @@ Glossary
       A collection of code used by multiple :term:`UFS` apps (e.g., the UFS Short-Range Weather App,
       the UFS Medium-Range Weather App). The grid, orography, surface climatology, and initial 
       and boundary condition generation codes used by the UFS Short-Range Weather App are all 
-      part of this collection.
+      part of this collection. The code is `publicly available <https://github.com/ufs-community/UFS_UTILS>`__ on Github. 
 
    Umbrella repository
       A repository that houses external code, or "externals," from additional repositories.
@@ -239,7 +239,7 @@ Glossary
    Weather Model
       A prognostic model that can be used for short- and medium-range research and
       operational forecasts. It can be an atmosphere-only model or an atmospheric
-      model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the fully-coupled `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model>`__.
+      model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model>`__.
 
    Workflow
       The sequence of steps required to run an experiment from start to finish. 
