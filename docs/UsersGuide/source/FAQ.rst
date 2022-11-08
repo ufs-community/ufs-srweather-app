@@ -23,7 +23,7 @@ are :term:`cycle-independent`, meaning that they only need to be run once per ex
 grid, orography, and surface climatology files that these tasks generate are already 
 available (e.g., from a previous experiment that used the same grid as the current experiment), then
 these tasks can be skipped, and the workflow can use those pre-generated files. This 
-can be done by adding the following lines to the ``config.sh`` script before running 
+can be done by adding the following lines to the ``config.yaml`` script before running 
 the ``generate_FV3LAM_wflow.py`` script:
 
 .. code-block:: console
@@ -39,7 +39,7 @@ The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIM
 disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
 specify the directories where pre-generated grid, orography, and surface climatology files are located (all
 three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
-flags are set to ``TRUE`` in ``config_defaults.sh``. This means that the workflow will
+flags are set to ``TRUE`` in ``config_defaults.yaml``. This means that the workflow will
 run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
 
 .. _DefineExptName:
@@ -48,7 +48,7 @@ run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
 How do I define an experiment name?
 ===================================
 
-The name of the experiment is set in the ``config.sh`` file using the variable ``EXPT_SUBDIR``.
+The name of the experiment is set in the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
 See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirParams>` for more details.
 
 
@@ -58,7 +58,7 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``config.sh`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
+The SDF is set in the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
 ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`
 
@@ -98,7 +98,7 @@ advance the workflow, the job will be resubmitted.
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.sh`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.sh`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
 
 .. code-block:: console
 
@@ -126,7 +126,7 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
 
 Follow any instructions output by the console. 
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, regenerate the experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
 
 .. _CleanUp:
