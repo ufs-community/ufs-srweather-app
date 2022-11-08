@@ -4,6 +4,7 @@
 FAQ
 ****
 
+* :ref:`How do I know if I correctly modified config.yaml? <CorrectConfig>`
 * :ref:`How do I define an experiment name? <DefineExptName>`
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
 * :ref:`How do I change the grid? <ChangeGrid>`
@@ -12,11 +13,31 @@ FAQ
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
 
+.. _CorrectConfig:
+
+=========================================================
+How do I know if I correctly modified ``config.yaml``?
+=========================================================
+
+To determine whether ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory after loading the regional workflow:
+
+.. code-block:: console
+
+   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+
+A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+
+.. code-block:: console
+
+   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+   FAILURE
+
+
 .. _DefineExptName:
 
-===================================
+====================================
 How do I define an experiment name?
-===================================
+====================================
 
 The name of the experiment is set in the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
 See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirParams>` for more details.
@@ -115,25 +136,35 @@ advance the workflow, the job will be resubmitted.
 How can I clean up the SRW App code if something went wrong?
 ===============================================================
 
-The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals, building the app, or running the app. For complete usage instructions, run:
+The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals or building the application. To view usage instructions and to get help, run with the ``-h`` flag:
 
 .. code-block:: console
 
    ./devclean.sh -h
 
-To remove externals, run: 
+Basic options allow removing the build directory, all build artifacts (build, bin, lib, share, and more), and removing all the submodules/subcomponents.
+
+To remove the ``build`` directory, run:
 
 .. code-block:: console
 
-   ./devclean.sh --sub-modules
+   ./devclean.sh --remove
 
-To remove all build artifacts, run: 
+To remove all build artifacts (including ``build``, ``bin``, ``lib``, and ``share``), run: 
 
 .. code-block:: console
 
    ./devclean.sh --clean
    OR
    ./devclean.sh -a
+
+To remove external submodules, run: 
+
+.. code-block:: console
+
+   ./devclean.sh --sub-modules
+
+Users will need to check out the external submodules again before building the application. 
 
 .. _NewExpt:
 
