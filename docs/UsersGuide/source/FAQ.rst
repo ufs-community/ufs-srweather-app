@@ -142,8 +142,6 @@ The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience scri
 
    ./devclean.sh -h
 
-Basic options allow removing the build directory, all build artifacts (build, bin, lib, share, and more), and removing all the submodules/subcomponents.
-
 To remove the ``build`` directory, run:
 
 .. code-block:: console
