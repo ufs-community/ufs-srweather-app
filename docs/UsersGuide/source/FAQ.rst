@@ -9,6 +9,8 @@ FAQ
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
 * :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How do I change the grid? <ChangeGrid>`
+* :ref:`How do I run a new experiment? <NewExpt>`
+* :ref:`How can I clean up the SRW App code if something went wrong during the check out, build, or run processes? <CleanUp>`
 
 .. _CycleInd:
 
@@ -107,3 +109,48 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
 
 However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
 
+
+.. _NewExpt:
+
+==================================
+How do I run a new experiment?
+==================================
+
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the regional workflow python environment: 
+
+.. code-block:: console
+
+   source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
+   module use <path/to/modulefiles>
+   module load wflow_<platform>
+
+Follow any instructions output by the console. 
+
+Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, regenerate the experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+
+
+.. _CleanUp:
+
+===============================================================
+How can I clean up the SRW App code if something went wrong?
+===============================================================
+
+The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals, building the app, or running the app. For complete usage instructions, run:
+
+.. code-block:: console
+
+   ./devclean.sh -h
+
+To remove externals, run: 
+
+.. code-block:: console
+
+   ./devclean.sh --sub-modules
+
+To remove all build artifacts, run: 
+
+.. code-block:: console
+
+   ./devclean.sh --clean
+   OR
+   ./devclean.sh -a

@@ -499,9 +499,9 @@ where:
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
    * ``ACCOUNT`` refers to a valid account name. Not all systems require a valid account name, but most do. 
 
-      .. hint::
+   .. hint::
 
-         To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+      To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
    * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
    * ``</path/to/>`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>`). 

@@ -11,7 +11,7 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
    * Bug fixes since the v2.0.0 release
    * Conversion to a Python workflow (from the former shell workflow)
    * Improved container support, including the option to run across compute nodes using Rocoto
-   * Updates to :term:`CCPP` that target the top of ``develop`` (which is ahead of CCPP v6.0.0)
+   * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0)
    * Support for the :term:`UPP` inline post option
    * Addition of a multi-purpose code clean-up script (``devclean.sh``)
    * Documentation updates to reflect the changes above
