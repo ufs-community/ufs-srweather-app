@@ -4,13 +4,50 @@
 FAQ
 ****
 
-* :ref:`How do I turn on/off the cycle-independent workflow tasks? <CycleInd>`
 * :ref:`How do I define an experiment name? <DefineExptName>`
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
-* :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How do I change the grid? <ChangeGrid>`
+* :ref:`How do I turn on/off the cycle-independent workflow tasks? <CycleInd>`
+* :ref:`How do I restart a DEAD task? <RestartTask>`
+* :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
-* :ref:`How can I clean up the SRW App code if something went wrong during the check out, build, or run processes? <CleanUp>`
+
+.. _DefineExptName:
+
+===================================
+How do I define an experiment name?
+===================================
+
+The name of the experiment is set in the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
+See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirParams>` for more details.
+
+
+.. _ChangePhysics:
+
+=========================================================
+How do I change the Physics Suite Definition File (SDF)?
+=========================================================
+
+The SDF is set in the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
+``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
+model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`
+
+.. _ChangeGrid:
+
+===========================
+How do I change the grid?
+===========================
+
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
+
+.. code-block:: console
+
+   RRFS_CONUS_3km
+   RRFS_CONUS_13km
+   RRFS_CONUS_25km
+   SUBCONUS_Ind_3km
+
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
 
 .. _CycleInd:
 
@@ -42,26 +79,6 @@ three sets of files *may* be placed in the same directory location). By default,
 flags are set to ``TRUE`` in ``config_defaults.yaml``. This means that the workflow will
 run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
 
-.. _DefineExptName:
-
-===================================
-How do I define an experiment name?
-===================================
-
-The name of the experiment is set in the ``config.yaml`` file using the variable ``EXPT_SUBDIR``.
-See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirParams>` for more details.
-
-
-.. _ChangePhysics:
-
-=========================================================
-How do I change the Physics Suite Definition File (SDF)?
-=========================================================
-
-The SDF is set in the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
-``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
-model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`
-
 .. _RestartTask:
 
 =============================
@@ -92,43 +109,6 @@ where ``-c`` specifies the cycle date (first column of rocotostat output) and ``
 (second column of rocotostat output). After using ``rocotorewind``, the next time ``rocotorun`` is used to
 advance the workflow, the job will be resubmitted.
 
-.. _ChangeGrid:
-
-===========================
-How do I change the grid?
-===========================
-
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
-
-.. code-block:: console
-
-   RRFS_CONUS_3km
-   RRFS_CONUS_13km
-   RRFS_CONUS_25km
-   SUBCONUS_Ind_3km
-
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
-
-
-.. _NewExpt:
-
-==================================
-How do I run a new experiment?
-==================================
-
-To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the regional workflow python environment: 
-
-.. code-block:: console
-
-   source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
-   module use <path/to/modulefiles>
-   module load wflow_<platform>
-
-Follow any instructions output by the console. 
-
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
-
-
 .. _CleanUp:
 
 ===============================================================
@@ -154,3 +134,22 @@ To remove all build artifacts, run:
    ./devclean.sh --clean
    OR
    ./devclean.sh -a
+
+.. _NewExpt:
+
+==================================
+How can I run a new experiment?
+==================================
+
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the regional workflow python environment: 
+
+.. code-block:: console
+
+   source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
+   module use <path/to/modulefiles>
+   module load wflow_<platform>
+
+Follow any instructions output by the console. 
+
+Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+
