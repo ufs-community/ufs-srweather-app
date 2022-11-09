@@ -2,9 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 32
   SCHED: slurm
-  CCPA_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ndas/proc
+  CCPA_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/obs_data/mrms/proc
+  NDAS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/obs_data/ndas/proc
   METPLUS_PATH: /usw/met/METplus/METplus-4.1.3
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /usw/met/10.1.2
@@ -17,17 +17,17 @@ platform:
   RUN_CMD_UTILS: srun --export=ALL --mpi=pmi2 -n $nprocs
   SCHED_NATIVE_CMD: -M c3 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/input_model_data
-  TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/input_model_data
+  TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
 task_make_orog:
-  TOPO_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_orog
+  TOPO_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/fix/fix_orog
 task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_sfc_climo
+  SFC_CLIMO_INPUT_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/fix/fix_sfc_climo
 task_run_fcst:
-  FIXaer: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_lut
+  FIXaer: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/fix/fix_aer
+  FIXgsm: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/fix/fix_am
+  FIXlut: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/fix/fix_lut
 data:
-  FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
+  FV3GFS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/v2p1/FV3GFS/gfs.${yyyymmdd}/${hh}
