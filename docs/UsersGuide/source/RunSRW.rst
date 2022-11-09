@@ -460,7 +460,7 @@ The default settings in this file include a predefined 25-km :term:`CONUS` grid 
 
 .. note::
 
-   Users who are accustomed to the former shell script workflow can reuse and old ``config.sh`` file by setting ``EXPT_CONFIG_FN: "config.sh"`` in ``config_defaults.yaml``. Alternatively, users can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
+   Users who are accustomed to the former shell script workflow can reuse an old ``config.sh`` file by setting ``EXPT_CONFIG_FN: "config.sh"`` in ``config_defaults.yaml``. Alternatively, users can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
 
    .. code-block:: console
 
@@ -477,7 +477,7 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
 
    Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment and python environment. 
 
-Sample ``config.yaml`` settings are indicated below for Level 1 platforms. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Sample ``config.yaml`` settings are indicated below for Level 1 platforms. At a minimum, users need to modify the ``MACHINE`` and ``ACCOUNT`` parameters. In most cases, users will need to specify the location of the experiment data. Detailed guidance applicable to all systems can be found in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`, which discusses each variable and the options available. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 On Level 1 systems, the following fields will need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case: 
 
@@ -508,7 +508,11 @@ where:
    * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Chapter %s <ConfigWorkflow>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
-   
+
+.. note::
+
+   On ``JET``, users must also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
+
 For example, to run the out-of-the-box experiment on Gaea, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
 
    .. code-block::
