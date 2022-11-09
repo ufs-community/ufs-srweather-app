@@ -35,7 +35,7 @@ endif()
 
 # Build UFS weather model
 if (BUILD_UFS)
-  list(APPEND TARGET_LIST UFS)
+  list(APPEND TARGET_LIST ufs-weather-model)
 
   if(NOT CCPP_SUITES)
     set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km")
@@ -82,7 +82,7 @@ if (BUILD_UFS)
     endforeach()
   endif()
 
-  ExternalProject_Add(UFS
+  ExternalProject_Add(ufs-weather-model
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ufs-weather-model
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ufs-weather-model
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
