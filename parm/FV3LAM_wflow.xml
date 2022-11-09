@@ -451,7 +451,7 @@ MODULES_RUN_TASK_FP script.
     <memory>{{ mem_get_extrn_lbcs }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize> 
+    <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
