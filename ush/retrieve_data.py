@@ -34,6 +34,7 @@ import subprocess
 import sys
 from textwrap import dedent
 import time
+from copy import deepcopy
 
 import yaml
 
@@ -289,6 +290,16 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
+    file_templates = deepcopy(file_templates)
+
+    # Remove sfc files from fcst in file_names of external models for LBCs
+    # sfc files needed in fcst when time_offset is not zero.
+    if cla.ics_or_lbcs == "LBCS":
+        for format in ['netcdf', 'nemsio']:
+            for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
+                if "sfc" in tmpl:
+                    del file_templates[format]['fcst'][i]
+
     if use_cla_tmpl:
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
@@ -945,6 +956,12 @@ def parse_args(argv):
         help="Path to a location on disk. Path is expected to exist.",
         required=True,
         type=os.path.abspath,
+    )
+    parser.add_argument(
+        "--ics_or_lbcs",
+        choices=("ICS", "LBCS"),
+        help="Flag for whether ICS or LBCS.",
+        required=True,
     )
 
     # Optional

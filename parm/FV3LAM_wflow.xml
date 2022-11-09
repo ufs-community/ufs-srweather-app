@@ -307,7 +307,9 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
     <jobname>&GET_EXTRN_ICS_TN;</jobname>
     <join>&LOGDIR;/&GET_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
@@ -335,7 +337,9 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
     <jobname>&GET_EXTRN_LBCS_TN;</jobname>
     <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 

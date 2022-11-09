@@ -154,6 +154,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --data_stores ${data_stores} \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
+  --ics_or_lbcs ${ICS_OR_LBCS} \
   --output_path ${EXTRN_MDL_STAGING_DIR} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
