@@ -368,7 +368,7 @@ Run the following command to generate the workflow:
 
 .. code-block:: console
 
-   python generate_FV3LAM_wflow.py
+   ./generate_FV3LAM_wflow.py
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/3 * * * *`` (or similar). 
 
@@ -394,8 +394,6 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
    :wq
    enter
 
-.. COMMENT: Check the crontab command to reflect python workflow.s
-
 where: 
 
    * ``<path/to>`` is replaced by the actual path to the user's experiment directory, and 
@@ -404,7 +402,7 @@ where:
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``python generate_FV3LAM_wflow.py``.
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
 
 Plot the Output
 ===============

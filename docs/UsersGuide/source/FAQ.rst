@@ -107,7 +107,7 @@ can be done by adding the following parameters to the appropriate sections of th
 The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
 specify the directories where pre-generated grid, orography, and surface climatology files are located (all
 three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
-flags are set to ``TRUE`` in ``config_defaults.yaml``. This means that the workflow will
+flags are set to true in ``config_defaults.yaml``. This means that the workflow will
 run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
 
 .. _RestartTask:
@@ -130,7 +130,7 @@ something goes wrong with the workflow, a task may end up in the DEAD state:
    201905200000   get_extrn_ics      9443293     DEAD            256      3      5.0
 
 This means that the dead task has not completed successfully, so the workflow has stopped. Once the issue
-has been identified and fixed (by referencing the log files), users can re-run the failed task using the ``rocotorewind`` command:
+has been identified and fixed (by referencing the log files in ``$EXPTDIR/log``), users can re-run the failed task using the ``rocotorewind`` command:
 
 .. code-block:: console
 
@@ -190,5 +190,5 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
 
 Follow any instructions output by the console. 
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running python ``generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
