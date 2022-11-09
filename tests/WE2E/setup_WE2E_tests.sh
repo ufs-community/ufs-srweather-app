@@ -1,4 +1,5 @@
-#!/bin/bash -l
+#!/usr/bin/env bash
+[ -n "$HOME" ] && exec -c "$0" "$@"
 
 #----------------------------------------------------------------------
 #  Wrapper for the automation of UFS Short Range Weather App Workflow

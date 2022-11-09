@@ -908,8 +908,6 @@ def setup():
 
         LOGDIR = os.path.join(EXPTDIR, "log")
 
-    if DBNROOT is None:
-        DBNROOT = None
     if SENDECF is None:
         SENDECF = False
     if SENDDBN is None:
