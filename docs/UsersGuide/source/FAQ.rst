@@ -76,7 +76,7 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
 
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully-supported for this release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported for this release and is provided for informational purposes only. 
 
 .. _CycleInd:
 
@@ -92,6 +92,7 @@ these tasks can be skipped, and the workflow can use those pre-generated files. 
 can be done by adding the following parameters to the appropriate sections of the ``config.yaml`` script before running ``generate_FV3LAM_wflow.py``:
 
 .. code-block:: console
+   
    workflow_switches:
       RUN_TASK_MAKE_GRID: false
       RUN_TASK_MAKE_OROG: false
@@ -103,9 +104,7 @@ can be done by adding the following parameters to the appropriate sections of th
    task_make_sfc_climo:
       SFC_CLIMO_DIR: /path/to/directory/containing/surface/climatology/files
    
-
-The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags
-disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
+The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
 specify the directories where pre-generated grid, orography, and surface climatology files are located (all
 three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
 flags are set to ``TRUE`` in ``config_defaults.yaml``. This means that the workflow will
