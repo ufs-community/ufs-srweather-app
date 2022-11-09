@@ -39,6 +39,7 @@ Download and Stage the Data
 
 The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available in the following locations: 
 
+.. _DataLocations:
 .. table:: Data locations for Level 1 systems
 
    +--------------+-----------------------------------------------------------------+
@@ -511,7 +512,7 @@ where:
 
 .. note::
 
-   On ``JET``, users must also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
+   On ``JET``, users should also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file. 
 
 For example, to run the out-of-the-box experiment on Gaea, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
 

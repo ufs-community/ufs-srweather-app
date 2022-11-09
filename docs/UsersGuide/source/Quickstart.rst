@@ -40,9 +40,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
 
-      See :numref:`Section %s <DevBuild>` for additional details or try the CMake build approach in :numref:`Section %s <CMakeApproach>` if this does not work. 
+      For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach. 
 
-   #. Download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>` (if on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system).
+   #. If on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system), download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
 
    #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. 
 
