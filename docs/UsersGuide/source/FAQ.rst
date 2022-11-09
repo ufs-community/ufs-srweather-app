@@ -49,9 +49,17 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``.  When users run the
-``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
-model directory to the experiment directory ``EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The four supported physics suites for the SRW Application v2.1.0 release are:
+
+.. code-block:: console
+
+   FV3_GFS_v16
+   FV3_RRFS_v1beta
+   FV3_HRRR
+   FV3_WoFS_v0
+
+When users run the ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
+model directory to the experiment directory ``$EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
 
 .. _ChangeGrid:
 
@@ -59,7 +67,7 @@ model directory to the experiment directory ``EXPTDIR``. For more information on
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.0.0 release were:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids for the SRW Application v2.1.0 release are:
 
 .. code-block:: console
 
@@ -81,17 +89,20 @@ are :term:`cycle-independent`, meaning that they only need to be run once per ex
 grid, orography, and surface climatology files that these tasks generate are already 
 available (e.g., from a previous experiment that used the same grid as the current experiment), then
 these tasks can be skipped, and the workflow can use those pre-generated files. This 
-can be done by adding the following lines to the ``config.yaml`` script before running 
-the ``generate_FV3LAM_wflow.py`` script:
+can be done by adding the following parameters to the appropriate sections of the ``config.yaml`` script before running ``generate_FV3LAM_wflow.py``:
 
 .. code-block:: console
-
-   RUN_TASK_MAKE_GRID="FALSE"
-   GRID_DIR="/path/to/directory/containing/grid/files"
-   RUN_TASK_MAKE_OROG="FALSE"
-   OROG_DIR="/path/to/directory/containing/orography/files"
-   RUN_TASK_MAKE_SFC_CLIMO="FALSE"
-   SFC_CLIMO_DIR="/path/to/directory/containing/surface/climatology/files"
+   workflow_switches:
+      RUN_TASK_MAKE_GRID: false
+      RUN_TASK_MAKE_OROG: false
+      RUN_TASK_MAKE_SFC_CLIMO: false
+   task_make_grid:
+      GRID_DIR: /path/to/directory/containing/grid/files
+   task_make_orog:
+      OROG_DIR: /path/to/directory/containing/orography/files
+   task_make_sfc_climo:
+      SFC_CLIMO_DIR: /path/to/directory/containing/surface/climatology/files
+   
 
 The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags
 disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
