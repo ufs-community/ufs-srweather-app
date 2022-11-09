@@ -162,7 +162,7 @@ Atmospheric Model
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User's Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/latest>`__. 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User's Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/>`__. 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -233,7 +233,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    | Processor (UPP)                 |                                                         |
    +---------------------------------+---------------------------------------------------------+
 
-The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/latest/CodeOverview.html>`__.
+The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/CodeOverview.html>`__.
 
 .. note::
    The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`HPC-Stack Documentation <hpc-stack:index>` for details on installing the HPC-Stack. 
@@ -333,12 +333,12 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | field_table               | :term:`Tracers <tracer>` in the `forecast model                                                              |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#field-table-file>`__          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | input.nml                 | :term:`Namelist` for the `UFS Weather Model                                                                  |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__           | 
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#namelist-file-input-nml>`__   | 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
    |                           | ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh``,                                                            |
@@ -350,7 +350,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    |                           | (``generate_FV3LAM_wflow.py``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__               |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#nems-configure-file>`__               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | suite_{CCPP}.xml          | :term:`CCPP` suite definition file used by the forecast model                                                |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -451,7 +451,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS_UTILS Scientific       | https://ufs-community.github.io/UFS_UTILS/ver-1.8.0/index.html                  |
    | Documentation              |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/latest                              |
+   | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/                     |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/release-srw-public-v2/                      |
@@ -478,7 +478,6 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
 
 .. COMMENT: Pre-release, check whether CCPP tech doc link works. 
    HPC-Stack: https://hpc-stack.readthedocs.io/en/release-srw-public-v2/ ???
-   WM: https://ufs-weather-model.readthedocs.io/en/latest ???
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.

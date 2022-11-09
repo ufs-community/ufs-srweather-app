@@ -31,9 +31,7 @@ Forecast Model
 ==============
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (:term:`LAM`) capability :cite:`BlackEtAl2021`. The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User’s Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/latest/>`__. 
-
-.. COMMENT: Update link!
+(:term:`FV3`) dynamical core configured with a Limited Area Model (:term:`LAM`) capability :cite:`BlackEtAl2021`. The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User's Guide for the UFS :term:`Weather Model` is `here <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/>`__. 
 
 Supported model resolutions in this release include 3-, 13-, and 25-km predefined contiguous U.S. (:term:`CONUS`) domains, each with 127 vertical levels. Preliminary tools for users to define their own domain are also available in the release with full, formal support of these tools to be provided in future releases. The Extended Schmidt Gnomonic (ESG) grid is used with the FV3-LAM, which features relatively uniform grid cells across the entirety of the domain. Additional information about the FV3 dynamical core can be found in the `scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__, the `technical documentation <https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html>`__, and on the `NOAA Geophysical Fluid Dynamics Laboratory website <https://www.gfdl.noaa.gov/fv3/>`__.
 
