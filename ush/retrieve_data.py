@@ -292,11 +292,13 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     file_templates = known_data_info.get(data_store, {}).get("file_names")
     file_templates = deepcopy(file_templates)
 
-    # Remove sfc files from fcst in file_names of FV3GFS for LBCs
+    # Remove sfc files from fcst in file_names of external models for LBCs
     # sfc files needed in fcst when time_offset is not zero.
-    if cla.external_model == "FV3GFS" and cla.ics_or_lbcs == "LBCS":
-        del file_templates['nemsio']['fcst'][1]
-        del file_templates['netcdf']['fcst'][1]
+    if cla.ics_or_lbcs == "LBCS":
+        for format in ['netcdf', 'nemsio']:
+            for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
+                if "sfc" in tmpl:
+                    del file_templates[format]['fcst'][i]
 
     if use_cla_tmpl:
         file_templates = cla.file_templates if cla.file_templates else file_templates
