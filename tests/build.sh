@@ -28,7 +28,6 @@ machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud 
 #-----------------------------------------------------------------------
 # Set some directories
 #-----------------------------------------------------------------------
-PID=$$
 TEST_DIR=$( pwd )                   # Directory with this script
 TOP_DIR=${TEST_DIR}/..              # Top level (umbrella repo) directory
 TEST_OUTPUT=${TEST_DIR}/build_test${PID}.out

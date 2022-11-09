@@ -26,6 +26,7 @@ fi
 
 # Build and install
 cd ${workspace}/tests
+export PID=$$
 ./build.sh ${platform} ${SRW_COMPILER}
 cd -
 
@@ -34,3 +35,7 @@ build_dir="${workspace}/build_${SRW_COMPILER}"
 cat ${build_dir}/log.cmake ${build_dir}/log.make \
     >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log
 
+TEST_OUTPUT="${workspace}/tests/build_test${PID}.out"
+
+failures=$(grep "FAIL:" ${TEST_OUTPUT} | wc -l)
+exit $failures
