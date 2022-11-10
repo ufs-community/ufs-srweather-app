@@ -19,11 +19,11 @@ class SRWTest:
   def __init__(self, exptdir):
     self.exptdir=exptdir
     # Get a list of test directories 
-    cmdstring="find . -maxdepth 1 -type d | tail -n+2"
+    cmdstring="find {} -maxdepth 1 -type d | tail -n+2".format(self.exptdir)
     status= subprocess.check_output(cmdstring,shell=True).strip().decode('utf-8')
     # Turn the stdout from the shell command into a list
     self.testDirectories = status.split("\n")
-    self.launchcmd = "./launch_FV3LAM_wflow.sh"
+    self.launchcmd = "./launch_FV3LAM_wflow.sh >& /dev/null"
     # Loop through each of the test directories and launch the initial jobs in the workflow
     for testD in self.testDirectories:
       print("starting {} workflow".format(testD))
