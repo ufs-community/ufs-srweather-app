@@ -6,14 +6,14 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`Weather Enterprise` (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum. New and improved capabilities for the v2.1.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. New and improved capabilities for the v2.1.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
 
    * Bug fixes since the v2.0.0 release
    * Conversion to a Python workflow (from the former shell workflow)
-   * Improved container support, including the option to run across compute nodes using Rocoto
+   * Improved container support, including the option to run across compute nodes using Rocoto (see :numref:`Chapter %s <QuickstartC>`)
    * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0)
-   * Support for the :term:`UPP` inline post option
-   * Addition of a multi-purpose code clean-up script (``devclean.sh``)
+   * Support for the :term:`UPP` inline post option (see :ref:`here <InlinePost>`)
+   * Addition of a multi-purpose code clean-up script (``devclean.sh``) (see :numref:`Section %s <CleanUp>`)
    * Documentation updates to reflect the changes above
 
 .. COMMENT: Link to details (e.g., for devclean script) and/or add details (e.g., about METplus bugs) in appropriate sections. 
@@ -36,7 +36,7 @@ UFS Development Team. (2022, Nov. 16). Unified Forecast System (UFS) Short-Range
 How to Use This Document
 ========================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum.
+This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum.
 
 .. code-block:: console
 
@@ -297,7 +297,7 @@ SRW App Subdirectories
 
 .. _Subdirectories:
 
-.. table::  Sub-directories of the regional workflow
+.. table::  Subdirectories of the regional workflow
 
    +-------------------------+----------------------------------------------------+
    | **Directory Name**      | **Description**                                    |
@@ -318,11 +318,11 @@ SRW App Subdirectories
 
 Experiment Directory Structure
 --------------------------------
-When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experimental directory (``$EXPTDIR``) is created based on information specified in the ``config.yaml`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
+When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` script (:numref:`Step %s <GenerateWorkflow>`), a user-defined experiment directory (``$EXPTDIR``) is created based on information specified in the ``config.yaml`` file. :numref:`Table %s <ExptDirStructure>` shows the contents of the experiment directory before running the experiment workflow.
 
 .. _ExptDirStructure:
 
-.. table::  Files and sub-directory initially created in the experimental directory 
+.. table::  Files and subdirectory initially created in the experiment directory 
    :widths: 33 67 
 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -340,10 +340,9 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | input.nml                 | :term:`Namelist` for the `UFS Weather Model                                                                  |
    |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#namelist-file-input-nml>`__   | 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | launch_FV3LAM_wflow.sh    | Symlink to the shell script of                                                                               |
-   |                           | ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh``,                                                            |
+   | launch_FV3LAM_wflow.sh    | Symlink to the ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh`` shell script,                                |
    |                           | which can be used to (re)launch the Rocoto workflow.                                                         |
-   |                           | Each time this script is called, it appends to a log                                                         |
+   |                           | Each time this script is called, it appends information to a log                                             |
    |                           | file named ``log.launch_FV3LAM_wflow``.                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
@@ -352,7 +351,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | nems.configure            | See `NEMS configuration file                                                                                 |
    |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#nems-configure-file>`__       |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | suite_{CCPP}.xml          | :term:`CCPP` suite definition file used by the forecast model                                                |
+   | suite_{CCPP}.xml          | :term:`CCPP` suite definition file (:term:`SDF`) used by the forecast model                                  |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | var_defns.sh              | Shell script defining the experiment parameters. It contains all                                             |
    |                           | of the primary parameters specified in the default and                                                       |
@@ -375,7 +374,7 @@ In addition, running the SRW App in *community* mode creates the ``fix_am`` and 
    | **Directory Name**      | **Description**                                          |
    +=========================+==========================================================+
    | fix_am                  | Directory containing the global fix (time-independent)   |
-   |                         | data files. The experiment generation script copies      |
+   |                         | data files. The experiment generation script symlinks    |
    |                         | these files from a machine-dependent system directory.   |
    +-------------------------+----------------------------------------------------------+
    | fix_lam                 | Directory containing the regional fix (time-independent) |
@@ -384,7 +383,7 @@ In addition, running the SRW App in *community* mode creates the ``fix_am`` and 
    |                         | symlinks to pre-generated files.                         |
    +-------------------------+----------------------------------------------------------+
 
-Once the Rocoto workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbc``) are preprocessing tasks, and these tasks also result in the creation of new files and sub-directories, described in :numref:`Table %s <CreatedByWorkflow>`.
+Once the Rocoto workflow is launched, several files and directories are generated. A log file named ``log.launch_FV3LAM_wflow`` will be created (unless it already exists) in ``$EXPTDIR``. The first several workflow tasks (i.e., ``make_grid``, ``make_orog``, ``make_sfc_climo``, ``get_extrn_ics``, and ``get_extrn_lbcs``) are preprocessing tasks, and these tasks also result in the creation of new files and subdirectories, described in :numref:`Table %s <CreatedByWorkflow>`.
 
 .. _CreatedByWorkflow:
 
@@ -407,8 +406,8 @@ Once the Rocoto workflow is launched, several files and directories are generate
    |                           | for the experiment                                                 |
    +---------------------------+--------------------------------------------------------------------+
    | log                       | Contains log files generated by the overall workflow and by its    |
-   |                           | various tasks. Look in these files to determine why a task may     |
-   |                           | have failed.                                                       |
+   |                           | various tasks. View the files in this directory to determine why   |
+   |                           | a task may have failed.                                            |
    +---------------------------+--------------------------------------------------------------------+
    | orog                      | Directory generated by the ``make_orog`` task containing the       |
    |                           | orography files for the experiment                                 |
@@ -417,10 +416,10 @@ Once the Rocoto workflow is launched, several files and directories are generate
    |                           | surface climatology files for the experiment                       |
    +---------------------------+--------------------------------------------------------------------+
    | FV3LAM_wflow.db           | Database files that are generated when Rocoto is called (by the    |
-   | FV3LAM_wflow_lock.db      | launch script) to launch the workflow.                             |
+   | FV3LAM_wflow_lock.db      | launch script) to launch the workflow                              |
    +---------------------------+--------------------------------------------------------------------+
    | log.launch_FV3LAM_wflow   | The ``launch_FV3LAM_wflow.sh`` script appends its output to this   |
-   |                           | log file each time it is called. Take a look at the last 30–50     |
+   |                           | log file each time it is called. View the last several             |
    |                           | lines of this file to check the status of the workflow.            |
    +---------------------------+--------------------------------------------------------------------+
 
@@ -431,7 +430,7 @@ The workflow tasks are described in :numref:`Section %s <WorkflowTaskDescription
 User Support, Documentation, and Contributions to Development
 ===============================================================
 
-A forum-based, online `support system <https://forums.ufscommunity.org>`_ organized by topic provides a centralized location for UFS users and developers to post questions and exchange information. 
+The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum provides online support for UFS users and developers to post questions and exchange information. 
 
 A list of available documentation is shown in :numref:`Table %s <list_of_documentation>`.
 
@@ -480,7 +479,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    HPC-Stack: https://hpc-stack.readthedocs.io/en/release-srw-public-v2/ ???
 
 The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted in the authoritative repositories, users must follow the code management rules of each UFS component repository, which are outlined in the respective User's Guides listed in :numref:`Table %s <list_of_documentation>`. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the :ref:`SRW App Contributor's Guide <ContributorsGuide>`.
+utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted into the authoritative repositories, users must follow the code management rules of each UFS component repository. These rules are usually outlined in the User's Guide (see :numref:`Table %s <list_of_documentation>`) or wiki for each respective repository (see :numref:`Table %s <top_level_repos>`). Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the `SRW App Contributor's Guide <https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide>`__.
 
 Future Direction
 =================
