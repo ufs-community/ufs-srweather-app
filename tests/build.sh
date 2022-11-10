@@ -159,3 +159,6 @@ else
   msg="PASS"
 fi
 echo "$msg" >> ${TEST_OUTPUT}
+if [[ $n_fail -gt 0 ]]; then
+  exit 1
+fi
