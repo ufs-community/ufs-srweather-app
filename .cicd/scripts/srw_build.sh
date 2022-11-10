@@ -26,8 +26,10 @@ fi
 
 # Build and install
 cd ${workspace}/tests
-export PID=$$
+set +e
 ./build.sh ${platform} ${SRW_COMPILER}
+build_exit=$?
+set -e
 cd -
 
 # Create combined log file for upload to s3
@@ -35,7 +37,4 @@ build_dir="${workspace}/build_${SRW_COMPILER}"
 cat ${build_dir}/log.cmake ${build_dir}/log.make \
     >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log
 
-TEST_OUTPUT="${workspace}/tests/build_test${PID}.out"
-
-failures=$(grep "FAIL:" ${TEST_OUTPUT} | wc -l)
-exit $failures
+exit $build_exit
