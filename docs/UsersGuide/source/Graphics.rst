@@ -81,7 +81,7 @@ The Python plotting scripts also require a path to the directory where the Carto
 The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
 
-.. _DataLocations:
+.. _CartopyData:
 .. table:: Cartopy shapefile locations for Level 1 systems
 
    +--------------+-----------------------------------------------------------------+
@@ -137,7 +137,7 @@ is as follows:
 
 .. code-block:: console
 
-   python plot_allvars.py 2019061518 0 12 3 /path-to/expt_dirs/test_community /path-to/NaturalEarth RRFS_CONUS_25km
+   python plot_allvars.py 2019061518 0 12 6 /path-to/expt_dirs/test_community /path-to/NaturalEarth RRFS_CONUS_25km
 
 The output files (in ``.png`` format) will be located in the directory ``$EXPTDIR/CDATE/postprd``,
 where in this case ``$EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv16`` and ``$CDATE`` 
@@ -158,7 +158,7 @@ command line arguments:
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
 
-An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
+An example of plotting differences from two experiments for the same date and predefined domain where one uses the ``FV3_GFS_v16`` suite definition file (SDF) and one uses the ``FV3_RRFS_v1beta`` SDF is as follows:
 
 .. code-block:: console
 

@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`Weather Enterprise` (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum. New and improved capabilities for the v2.0.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum. New and improved capabilities for the v2.1.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
 
    * Bug fixes since the v2.0.0 release
    * Conversion to a Python workflow (from the former shell workflow)
@@ -75,7 +75,7 @@ The instructions in this documentation assume that users have certain background
 
 Additional background knowledge in the following areas could be helpful:
 
-* High-Performance Computing (HPC) Systems for those running the SRW App on an HPC system
+* High-Performance Computing (HPC) Systems (for those running the SRW App on an HPC system)
 * Programming (particularly Python) for those interested in contributing to the SRW App code
 * Creating an SSH Tunnel to access HPC systems from the command line
 * Containerization
@@ -93,7 +93,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 * >82 GB disk space
 
    * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * 8 GB for :term:`HPC-Stack` full installation
+   * 8 GB for full :term:`HPC-Stack` installation
    * 3 GB for ``ufs-srweather-app`` installation
    * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
@@ -106,7 +106,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
    * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang, LLVM clang, GNU) have been tested
 
-* Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml`` and ``f90nml``
+* Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml``, and ``f90nml``
    
    * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts.
 
@@ -125,11 +125,11 @@ The following software is also required to run the SRW Application, but the :ter
 
 * CMake v3.20+
 
-* MPI (MPICH, OpenMPI, or other implementation)
+* :term:`MPI` (MPICH, OpenMPI, or other implementation)
 
    * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
 
-For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :ref:`Chapter 3 <hpc-stack:MacInstall>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
+For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :doc:`HPC-Stack Documentation: Chapter 3 <hpc-stack:mac-install>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
 * bash v4.x
 * GNU compiler suite v11 or higher with gfortran
@@ -153,7 +153,7 @@ SRW App Components Overview
 Pre-Processor Utilities and Initial Conditions
 ------------------------------------------------
 
-The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. One pre-processing utility converts the raw external model data into initial and lateral boundary condition files in netCDF format. Later, these files are used as input to the atmospheric model (FV3-LAM). Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>`, in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/>`__, and in the `UFS_UTILS Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.8.0/index.html>`__.
+The SRW Application includes a number of pre-processing utilities that initialize and prepare the model. Tasks include generating a regional grid along with :term:`orography` and surface climatology files for that grid. Additional information about the pre-processor utilities can be found in :numref:`Chapter %s <Utils>`, in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/>`__, and in the `UFS_UTILS Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.8.0/index.html>`__.
 
 Forecast Model
 -----------------
@@ -162,12 +162,12 @@ Atmospheric Model
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The prognostic atmospheric model in the UFS SRW Application is the Finite-Volume Cubed-Sphere
-(:term:`FV3`) dynamical core configured with a Limited Area Model (LAM) capability (:cite:t:`BlackEtAl2021`). The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User's Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/>`__. 
+(:term:`FV3`) dynamical core configured with a Limited Area Model (:term:`LAM`) capability (:cite:t:`BlackEtAl2021`). The :term:`dynamical core` is the computational part of a model that solves the equations of fluid motion. A User's Guide for the UFS :term:`Weather Model` can be found `here <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/>`__. 
 
 Common Community Physics Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`__ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The most recent release includes four supported physics suites. 
+The `Common Community Physics Package <https://dtcenter.org/community-code/common-community-physics-package-ccpp>`__ (:term:`CCPP`) supports interoperable atmospheric physics and land surface model options. Atmospheric physics are a set of numerical methods describing small-scale processes such as clouds, turbulence, radiation, and their interactions. The most recent SRW App release includes four supported physics suites. 
 
 Data Format
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -197,7 +197,7 @@ The SRW Application has a portable CMake-based build system that packages togeth
 
 The SRW Application allows for configuration of various elements of the workflow. For example, users can modify the parameters of the atmospheric model, such as start and end dates, duration, time step, and the physics suite used for the simulation. More information on how to do this is available in :numref:`Section %s <UserSpecificConfig>`.
 
-The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the HPC-Stack, or the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
+The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Orion), cloud environments, and generic Linux and MacOS systems. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application. Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites. On other platforms (Levels 2-4), the SRW App can be :ref:`run within a container <QuickstartC>` that includes the prerequisite software; otherwise, the required libraries will need to be installed as part of the :ref:`SRW Application build <BuildSRW>` process. Once these prerequisite libraries are installed, applications and models should build and run successfully. However, users may need to perform additional troubleshooting on Level 3 or 4 systems since little or no pre-release testing has been conducted on these systems. 
 
 
 
@@ -262,25 +262,25 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    ├── (share)
    ├── scripts
    ├── sorc
-   │    ├── CMakeLists.txt
-   │    ├── (gsi)
-   │    ├── (rrfs_utl)
-   │    ├── (UPP)
-   │    │     ├── parm
-   │    │     └── sorc
-   │    │          └── ncep_post.fd
-   │    ├── (UFS_UTILS)
-   │    │     ├── sorc
-   │    │     │    ├── chgres_cube.fd
-   │    │     │    ├── fre-nctools.fd
-   │    │     │    ├── grid_tools.fd
-   │    │     │    ├── orog_mask_tools.fd
-   │    │     │    └── sfc_climo_gen.fd
-   │    │     └── ush
-   │    └── (ufs-weather-model)
-   │	     └── FV3
-   │              ├── atmos_cubed_sphere
-   │              └── ccpp
+   │     ├── CMakeLists.txt
+   │     ├── (gsi)
+   │     ├── (rrfs_utl)
+   │     ├── (UPP)
+   │     │     ├── parm
+   │     │     └── sorc
+   │     │          └── ncep_post.fd
+   │     ├── (UFS_UTILS)
+   │     │     ├── sorc
+   │     │     │    ├── chgres_cube.fd
+   │     │     │    ├── fre-nctools.fd
+   │     │     │    ├── grid_tools.fd
+   │     │     │    ├── orog_mask_tools.fd
+   │     │     │    └── sfc_climo_gen.fd
+   │     │     └── ush
+   │     └── (ufs-weather-model)
+   │	         └── FV3
+   │                ├── atmos_cubed_sphere
+   │                └── ccpp
    ├── tests/WE2E
    ├── ush
    │     ├── bash_utils
@@ -291,28 +291,28 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │     └── wrappers
    └── versions
 
-SRW App Sub-Directories
+SRW App Subdirectories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Table %s <Subdirectories>` describes the contents of the most important sub-directories. :numref:`Table %s <FilesAndSubDirs>` provides and in-depth explanation of the ``ufs-srweather-app`` directories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides an in-depth explanation of the ``ufs-srweather-app`` directories. 
 
 .. _Subdirectories:
 
 .. table::  Sub-directories of the regional workflow
 
-   +-------------------------+---------------------------------------------------------+
-   | **Directory Name**      | **Description**                                         |
-   +=========================+=========================================================+
-   | jobs                    | J-job scripts launched by Rocoto                        |
-   +-------------------------+---------------------------------------------------------+
-   | modulefiles             | Files used to load modules needed for building and      |
-   |                         | running the workflow                                    |
-   +-------------------------+---------------------------------------------------------+
-   | scripts                 | Run scripts launched by the J-jobs                      |
-   +-------------------------+---------------------------------------------------------+
-   | tests                   | Baseline experiment configuration                       |
-   +-------------------------+---------------------------------------------------------+
-   | ush                     | Utility scripts used by the workflow                    |
-   +-------------------------+---------------------------------------------------------+
+   +-------------------------+----------------------------------------------------+
+   | **Directory Name**      | **Description**                                    |
+   +=========================+====================================================+
+   | jobs                    | J-job scripts launched by Rocoto                   |
+   +-------------------------+----------------------------------------------------+
+   | modulefiles             | Files used to load modules needed for building and |
+   |                         | running the workflow                               |
+   +-------------------------+----------------------------------------------------+
+   | scripts                 | Scripts launched by the J-jobs                     |
+   +-------------------------+----------------------------------------------------+
+   | tests                   | Tests for baseline experiment configurations       |
+   +-------------------------+----------------------------------------------------+
+   | ush                     | Utility scripts used by the workflow               |
+   +-------------------------+----------------------------------------------------+
 
 .. _ExperimentDirSection:
 
@@ -350,7 +350,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    |                           | (``generate_FV3LAM_wflow.py``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | nems.configure            | See `NEMS configuration file                                                                                 |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#nems-configure-file>`__               |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#nems-configure-file>`__       |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | suite_{CCPP}.xml          | :term:`CCPP` suite definition file used by the forecast model                                                |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
