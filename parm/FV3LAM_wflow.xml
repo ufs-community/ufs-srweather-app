@@ -90,6 +90,7 @@ specifies the number of processes per node being used (the PPN_... entities).
 <!--
 Directories and files.
 -->
+<!ENTITY USHdir                   "{{ ushdir }}">
 <!ENTITY JOBSdir                  "{{ jobsdir }}">
 <!ENTITY SCRIPTSdir               "{{ scriptsdir }}">
 <!ENTITY COMIN_BASEDIR            "{{ comin_basedir }}">
@@ -214,6 +215,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&MAKE_GRID_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -238,6 +240,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&MAKE_OROG_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -270,6 +273,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&MAKE_SFC_CLIMO_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -314,6 +318,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&GET_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -344,6 +349,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -379,6 +385,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&MAKE_ICS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -426,6 +433,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&MAKE_LBCS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -482,6 +490,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&RUN_FCST_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -534,6 +543,7 @@ later below for other output times.
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -590,6 +600,7 @@ for other output times.
 	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
         <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -656,6 +667,7 @@ always zero).
         {%- endif %}
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
         <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
         <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -721,6 +733,7 @@ the <task> tag to be identical to the ones above for other output times.
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
       <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
       <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
       <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -766,6 +779,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&GET_OBS_CCPA_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -797,6 +811,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&GET_OBS_MRMS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -829,6 +844,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&GET_OBS_NDAS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -859,6 +875,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -914,6 +931,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -968,6 +986,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1022,6 +1041,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1062,6 +1082,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1102,6 +1123,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1142,6 +1164,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1199,6 +1222,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1235,6 +1259,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1271,6 +1296,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1307,6 +1333,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1342,6 +1369,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1376,6 +1404,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1409,6 +1438,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1444,6 +1474,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1479,6 +1510,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1514,6 +1546,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1550,6 +1583,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1585,6 +1619,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1621,6 +1656,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1656,6 +1692,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1691,6 +1728,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1725,6 +1763,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSGRID_PROB_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1760,6 +1799,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSPOINT_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1792,6 +1832,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSPOINT_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -1824,6 +1865,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&VX_ENSPOINT_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>

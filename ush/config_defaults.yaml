@@ -649,9 +649,13 @@ workflow:
   # be set manually; it is not inherited from the build system in the 
   # ufs-srweather-app directory.
   #
+  # SYMLINK_FIX_FILES:
+  # Symlink fix files to experiment directory if true; otherwise copy the files.
+  #
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
+  SYMLINK_FIX_FILES: true
 
   #is this the right place?
   GET_OBS: "get_obs"
@@ -1672,9 +1676,6 @@ task_run_fcst:
   #
   # Set parameters associated with the fixed (i.e. static) files.  Definitions:
   #
-  # SYMLINK_FIX_FILES:
-  # Symlink fix files to experiment directory if true; otherwise copy the files.
-  #
   # FIXgsm:
   # System directory in which the majority of fixed (i.e. time-independent) 
   # files that are needed to run the FV3-LAM model are located
@@ -1687,7 +1688,6 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  SYMLINK_FIX_FILES: true
   FIXgsm: ""
   FIXaer: ""
   FIXlut: ""
