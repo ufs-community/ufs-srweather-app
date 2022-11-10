@@ -3,7 +3,7 @@
 import os
 import sys
 import glob
-import unittest
+import argparse
 import logging
 from textwrap import dedent
 from datetime import datetime, timedelta
@@ -36,11 +36,12 @@ from python_utils import (
 from check_python_version import check_python_version
 
 
-def run_we2e_tests() -> None:
+def run_we2e_tests(HOMEdir, args) -> None:
     """Function to run the WE2E tests selected by the user
 
     Args:
-        None
+        HOMEdir  (str): The full path of the top-level app directory
+        args : The argparse.Namespace object containing command-line arguments
     Returns:
         None
     """
@@ -64,7 +65,7 @@ def run_we2e_tests() -> None:
         test_config='config.' + test.rstrip() + '.yaml'
         for testfile in testfiles:
             if test_config in testfile:
-                log_info(f"found test {test}",False)
+                log_info(f"found test {test}",args.debug)
                 match=True
                 tests_to_run.append(testfile)
         if not match:
@@ -72,6 +73,7 @@ def run_we2e_tests() -> None:
 
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     log_info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
+
 
     log_info("calling script that monitors rocoto jobs, prints summary")
 
@@ -96,9 +98,18 @@ def setup_logging(logfile: str = "log.run_WE2E_tests") -> None:
 
 if __name__ == "__main__":
 
+    #Get the "Home" directory, two levels above this one
+    HOMEdir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     logfile='log.run_WE2E_tests'
+
+    #Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+    parser.add_argument('--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
+
+    args = parser.parse_args()
     try:
-        run_we2e_tests()
+        run_we2e_tests(HOMEdir,args)
     except:
         logging.exception(
             dedent(
