@@ -278,7 +278,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
    │     │     │    └── sfc_climo_gen.fd
    │     │     └── ush
    │     └── (ufs-weather-model)
-   │	         └── FV3
+   │           └── FV3
    │                ├── atmos_cubed_sphere
    │                └── ccpp
    ├── tests/WE2E
