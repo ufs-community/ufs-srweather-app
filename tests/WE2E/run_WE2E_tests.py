@@ -13,8 +13,6 @@ sys.path.append("../../ush")
 from python_utils import (
     print_err_msg_exit,
     log_info,
-    import_vars,
-    export_vars,
     cp_vrfy,
     cd_vrfy,
     rm_vrfy,
@@ -31,6 +29,8 @@ from python_utils import (
     set_env_var,
     get_env_var,
     lowercase,
+    load_config_file,
+    cfg_to_yaml_str
 )
 
 from check_python_version import check_python_version
@@ -52,7 +52,10 @@ def run_we2e_tests(HOMEdir, args) -> None:
     # Check python version and presence of some non-standard packages
     check_python_version()
 
-    testfilename='machine_suites/comprehensive'
+    # Set some important directories
+    USHdir=HOMEdir + '/ush'
+
+    testfilename='machine_suites/test'
     log_info(f"reading test file name {testfilename}")
     user_spec_tests = list(open(testfilename))
 
@@ -74,6 +77,24 @@ def run_we2e_tests(HOMEdir, args) -> None:
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     log_info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
+    #Load default and machine-specific values
+    config_defaults = load_config_file(USHdir + '/config_defaults.yaml')
+    machine_defaults = load_config_file(USHdir + '/machine/' + args.machine + '.yaml')
+
+    for test in tests_to_run:
+        #Starting with test yaml template, fill in user-specified and machine- and 
+        # test-specific options, then write resulting complete config.yaml
+        test_cfg = load_config_file(test)
+
+        test_cfg['user'].update({"machine": args.machine})
+        test_cfg['user'].update({"account": args.account})
+        test_cfg['user'].update({"compiler": args.compiler})
+        test_cfg['user'].update({"BUILD_MOD_FN": args.modulefile})
+
+
+        print(cfg_to_yaml_str(test_cfg))
+        with open(USHdir + "/config.yaml","w+") as f:
+            f.writelines(cfg_to_yaml_str(test_cfg))
 
     log_info("calling script that monitors rocoto jobs, prints summary")
 
@@ -104,10 +125,25 @@ if __name__ == "__main__":
 
     #Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
-    parser.add_argument('--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
+    optional = parser._action_groups.pop() # Edited this line
+    required = parser.add_argument_group('required arguments')
+
+    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+    required.add_argument('-m', '--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
+    required.add_argument('-a', '--account', type=str, help='Account name for running submitted jobs', required=True)
+    parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
+    parser.add_argument('-mf', '--modulefile', type=str, help='Modulefile used for building the app')
+
+    parser._action_groups.append(optional)
 
     args = parser.parse_args()
+
+    #Set defaults that need other argument values
+    if args.modulefile is None:
+        args.modulefile = f'build_{args.machine}_{args.compiler}'
+
+    #Call main function
+
     try:
         run_we2e_tests(HOMEdir,args)
     except:
