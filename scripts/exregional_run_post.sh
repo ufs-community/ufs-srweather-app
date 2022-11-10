@@ -297,7 +297,8 @@ done
 rm_vrfy -rf ${DATA_FHR}
 
 # Delete the forecast directory
-if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
+fhr_l=$(printf "%03d" $FCST_LEN_HRS)
+if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ] && [ $fhr = $fhr_l ]; then
    rm -rf $DATAFCST
 fi
 #
