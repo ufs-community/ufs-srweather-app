@@ -38,7 +38,7 @@ if (BUILD_UFS)
   list(APPEND TARGET_LIST ufs-weather-model)
 
   if(NOT CCPP_SUITES)
-    set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km")
+    set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
   endif()
   
   if(NOT APP)
