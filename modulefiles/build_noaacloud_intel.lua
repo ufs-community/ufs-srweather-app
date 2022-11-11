@@ -7,6 +7,7 @@ whatis([===[Loads libraries needed for building the UFS SRW App on NOAA cloud ]=
 
 prepend_path("MODULEPATH", "/contrib/EPIC/spack-stack/envs/srw-develop-intel/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/apps/modules/modulefiles")
+prepend_path("PATH", "/contrib/EPIC/bin")
 load("intel/2021.3.0")
 load("impi/2021.3.0")
 load("stack-intel")
