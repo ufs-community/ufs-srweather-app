@@ -1,11 +1,11 @@
 help([[
-This module activates python environement for running the UFS SRW App on general macOS
+This module set a path needed to activate conda environement for running UFS SRW App on general macOS
 ]])
 
-whatis([===[This module activates python environment for running the UFS SRW App on macOS]===])
+whatis([===[This module activates conda environment for running the UFS SRW App on macOS]===])
 
 setenv("CMAKE_Platform", "macos")
-setenv("VENV", pathJoin(os.getenv("HOME"), "venv/regional_workflow"))
+setenv("VENV", pathJoin(os.getenv("HOME"), "condaenv/envs/regional_workflow"))
 
 --[[
 local ROCOTOmod="/Users/username/modules"
@@ -14,13 +14,8 @@ load(rocoto)
 --]]
 
 if mode() == "load" then
-   LmodMsgRaw([===[Verify the Python virtual environment path \$VENV shown below is correct, "
-set to the correct path otherwise: "
-VENV=$env(VENV) "
-Please do the following to activate python virtual environment:
-       > source \$VENV/bin/activate "
+   LmodMsgRaw([===[Please do the following to activate conda virtual environment:
+       > conda activate $VENV "
 ]===])
 end
-if mode() == "unload" then
-   execute{cmd="deactivate", modeA={"unload"}}
-end
+
