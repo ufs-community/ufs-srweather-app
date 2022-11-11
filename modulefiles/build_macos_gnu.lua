@@ -23,12 +23,6 @@ load("hpc-openmpi")
 
 load("srw_common")
 
-
--- Option 1 compiler paths: 
-setenv("CC", "/opt/homebrew/bin/gcc")
-setenv("FC", "/opt/homebrew/bin/gfortran")
-setenv("CXX", "/opt/homebrew/bin/g++")
-
 -- MacOS with arm64 architecture: `uname -m` expands to arm64
 -- MacOS with Intel architecture: `uname -m` expands to x86_64
 local arch = 'eval $(uname -m)'
