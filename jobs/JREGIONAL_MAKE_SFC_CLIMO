@@ -64,8 +64,10 @@ mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${SFC_CLIMO_DIR}/tmp}"
-check_for_preexist_dir_file "$DATA" "delete"
-mkdir_vrfy $DATA
+if [ $RUN_ENVIR != "nco" ]; then
+    check_for_preexist_dir_file "$DATA" "delete"
+    mkdir_vrfy $DATA
+fi
 #
 #-----------------------------------------------------------------------
 #

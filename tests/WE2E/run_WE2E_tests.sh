@@ -43,7 +43,7 @@ HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-USHdir="$HOMEdir/ush"
+export USHdir="$HOMEdir/ush"
 TESTSdir="$HOMEdir/tests"
 WE2Edir="$TESTSdir/WE2E"
 #
