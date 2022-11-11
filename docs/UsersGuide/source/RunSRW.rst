@@ -19,8 +19,8 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    #. :ref:`Optional: Configure a new grid <GridSpecificConfig>`
    #. :ref:`Generate a regional workflow experiment <GenerateForecast>`
 
-      * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
+      * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
 
    #. :ref:`Run the regional workflow <Run>` 
    #. :ref:`Optional: Plot the output <PlotOutput>`
@@ -67,7 +67,7 @@ For Level 2-4 systems, the data must be added to the user's system. Detailed ins
 Grid Configuration
 =======================
 
-The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new custom domain should refer to :numref:`Section %s <UserDefinedGrid>` for instructions. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` script and add the corresponding grid-specific parameters in the ``set_predef_grid_params.py`` script. 
+The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new custom domain should refer to :numref:`Section %s <UserDefinedGrid>` for instructions. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file. 
 
 .. _PredefinedGrids:
 
