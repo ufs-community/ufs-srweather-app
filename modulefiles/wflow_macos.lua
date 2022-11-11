@@ -14,12 +14,8 @@ load(rocoto)
 --]]
 
 if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate python virtual environment:
+   LmodMsgRaw([===[Please do the following to activate conda virtual environment:
        > conda activate $VENV "
 ]===])
 end
 
---[[if mode() == "unload" then
-   execute{cmd="deactivate", modeA={"unload"}}
-end
---]]
