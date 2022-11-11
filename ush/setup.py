@@ -23,7 +23,6 @@ from python_utils import (
     load_config_file,
     cfg_to_shell_str,
     cfg_to_yaml_str,
-    load_shell_config,
     load_ini_config,
     get_ini_value,
 )
