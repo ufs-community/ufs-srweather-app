@@ -353,7 +353,7 @@ for fhr in fhours:
   cin = data1.select(name='Convective inhibition',typeOfLevel='surface')[0].values
 
 # 500 mb height, wind, vorticity
-  z500 = data1.select(name='Geopotential Height',level=500)[0].values * 0.1
+  z500 = data1.select(name='Geopotential height',level=500)[0].values * 0.1
   z500 = ndimage.filters.gaussian_filter(z500, 6.89)
   vort500 = data1.select(name='Absolute vorticity',level=500)[0].values * 100000
   vort500 = ndimage.filters.gaussian_filter(vort500,1.7225)
