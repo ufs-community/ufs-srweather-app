@@ -1257,21 +1257,6 @@ task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
   EXTRN_MDL_FILES_ICS: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set NOMADS online data associated parameters. Definitions:
-  #
-  # NOMADS:
-  # Flag controlling whether or not using NOMADS online data.
-  #
-  # NOMADS_file_type:
-  # Flag controlling the format of data.
-  #
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
 
 #----------------------------
 # EXTRN LBCS config parameters
@@ -1353,14 +1338,6 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
   EXTRN_MDL_FILES_LBCS: ""
-  #
-  #-----------------------------------------------------------------------
-  # Analogus to NOMADS for ICSs
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
-
 
 #----------------------------
 # MAKE ICS config parameters
