@@ -38,7 +38,9 @@ else
 fi
 
 cd ${we2e_test_dir}
-./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} ${we2e_experiment_base_dir} ${nco_dir}
+./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
+    expt_basedir=${we2e_experiment_base_dir} \
+    opsroot=${nco_dir}
 
 # Allow the tests to start before checking for status.
 # TODO: Create a parameter that sets the initial start delay.
