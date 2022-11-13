@@ -36,6 +36,7 @@ Workflow task names.
 <!ENTITY MAKE_LBCS_TN              "{{ make_lbcs_tn }}">
 <!ENTITY RUN_FCST_TN               "{{ run_fcst_tn }}">
 <!ENTITY RUN_POST_TN               "{{ run_post_tn }}">
+<!ENTITY GET_OBS                   "{{ get_obs }}">
 <!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
 <!ENTITY GET_OBS_NDAS_TN           "{{ get_obs_ndas_tn }}">
 <!ENTITY GET_OBS_MRMS_TN           "{{ get_obs_mrms_tn }}">
@@ -66,11 +67,6 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_TN            "{{ vx_enspoint_tn }}">
 <!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
-
-<!--
-Entity used to load the module file for each GET_OBS_* task.
--->
-<!ENTITY GET_OBS            "{{ get_obs }}">
 
 <!--
 Flags that specify whether to run the preprocessing and/or verification tasks.
