@@ -25,6 +25,9 @@ platform:
   TEST_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
 task_make_orog:
   TOPO_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
 task_make_sfc_climo:
@@ -33,10 +36,6 @@ task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-task_run_fcst:
-  FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
 data:
   FV3GFS:
     nemsio: /public/data/grids/gfs/nemsio

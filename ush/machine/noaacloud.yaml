@@ -18,6 +18,9 @@ platform:
   TEST_PREGEN_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  FIXaer: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
 task_make_orog:
   TOPO_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
 task_make_sfc_climo:
@@ -26,9 +29,5 @@ task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: aws nomads
 task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: aws nomads
-task_run_fcst:
-  FIXaer: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
 data:
   FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}

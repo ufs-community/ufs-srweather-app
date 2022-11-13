@@ -3,8 +3,8 @@
 #----------------------------
 metadata:
   description: >-
-    Default configuration for an experiment. The valid values each parameter
-    takes are specified in valid_param_vals.yaml
+    Default configuration for an experiment. The valid values for most of the
+    parameters are specified in valid_param_vals.yaml
   version: !!str '1.0'
 #----------------------------
 # USER config parameters
@@ -333,6 +333,26 @@ platform:
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
+  #
+  # FIXgsm:
+  # System directory in which the majority of fixed (i.e. time-independent) 
+  # files that are needed to run the FV3-LAM model are located
+  #
+  # FIXaer:
+  # System directory where MERRA2 aerosol climatology files are located
+  #
+  # FIXlut:
+  # System directory where the lookup tables for optics properties are located
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXgsm: ""
+  FIXaer: ""
+  FIXlut: ""
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -911,7 +931,7 @@ task_make_grid:
   ESGgrid_WIDE_HALO_WIDTH: ""
   ESGgrid_PAZI: ""
 
-#-----------------------------------------------------------------------
+  #-----------------------------------------------------------------------
   #
   # Set parameters specific to the "GFDLgrid" method of generating a regional
   # grid (i.e. for GRID_GEN_METHOD set to "GFDLgrid").  The following 
@@ -1673,26 +1693,6 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
-  #
-  # FIXgsm:
-  # System directory in which the majority of fixed (i.e. time-independent) 
-  # files that are needed to run the FV3-LAM model are located
-  #
-  # FIXaer:
-  # System directory where MERRA2 aerosol climatology files are located
-  #
-  # FIXlut:
-  # System directory where the lookup tables for optics properties are located
-  #
-  #-----------------------------------------------------------------------
-  #
-  FIXgsm: ""
-  FIXaer: ""
-  FIXlut: ""
 
 #----------------------------
 # POST config parameters

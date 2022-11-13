@@ -20,6 +20,9 @@ platform:
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/FV3LAM_pregen
+  FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
 task_make_orog:
   TOPO_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
 task_make_sfc_climo:
@@ -28,10 +31,6 @@ task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-task_run_fcst:
-  FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
 data:
   GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDY}
   FV3GFS: compath.py ${envir}/gfs/${gfs_ver}/gfs.${PDY}/${hh}/atmos
