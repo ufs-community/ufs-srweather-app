@@ -22,10 +22,8 @@ platform:
   FIXaer: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
   GSMGFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/GFS
   FV3GFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/FV3GFS

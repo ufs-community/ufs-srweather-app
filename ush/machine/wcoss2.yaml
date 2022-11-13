@@ -23,10 +23,8 @@ platform:
   FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:

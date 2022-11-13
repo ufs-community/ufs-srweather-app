@@ -24,9 +24,7 @@ platform:
   FIXaer: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
   FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}

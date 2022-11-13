@@ -348,11 +348,19 @@ platform:
   # FIXlut:
   # System directory where the lookup tables for optics properties are located
   #
+  # FIXorog:
+  # System directory where orography data is located
+  #
+  # FIXsfc:
+  # System directory where surface climatology data is located
+  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
   FIXaer: ""
   FIXlut: ""
+  FIXorog: ""
+  FIXsfc: ""
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -1123,7 +1131,6 @@ task_make_orog:
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
   OROG_DIR: ""
-  TOPO_DIR: ""
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1138,7 +1145,6 @@ task_make_sfc_climo:
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
   SFC_CLIMO_DIR: ""
-  SFC_CLIMO_INPUT_DIR: ""
 
 #----------------------------
 # EXTRN ICS config parameters

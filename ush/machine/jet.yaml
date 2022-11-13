@@ -28,10 +28,8 @@ platform:
   FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:

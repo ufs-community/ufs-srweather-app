@@ -455,7 +455,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR
+    global FIXgsm, FIXaer, FIXlut, FIXorg, FIXsfc, DOMAIN_PREGEN_BASEDIR
     global RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, QUEUE_DEFAULT
     global QUEUE_HPSS, QUEUE_FCST, PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
 
@@ -467,8 +467,8 @@ def setup():
         "FIXgsm",
         "FIXaer",
         "FIXlut",
-        "TOPO_DIR",
-        "SFC_CLIMO_INPUT_DIR",
+        "FIXorg",
+        "FIXsfc",
     ]
     globalvars = globals()
     for val in mandatory:
@@ -1726,8 +1726,6 @@ def setup():
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,
         "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
-        "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
-        "TOPO_DIR": TOPO_DIR,
         "EXPTDIR": EXPTDIR,
         "GRID_DIR": GRID_DIR,
         "OROG_DIR": OROG_DIR,

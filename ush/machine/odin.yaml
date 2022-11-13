@@ -22,10 +22,8 @@ platform:
   FIXaer: /scratch/ywang/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch/ywang/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch/ywang/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /scratch/ywang/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /scratch/ywang/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /scratch/ywang/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /scratch/ywang/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
   GSMGFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/GFS
   FV3GFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/FV3GFS

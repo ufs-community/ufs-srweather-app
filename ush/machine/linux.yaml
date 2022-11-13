@@ -10,9 +10,7 @@ platform:
   FIXaer: /home/username/DATA/UFS/fix/fix_aer
   FIXgsm: /home/username/DATA/UFS/fix/fix_am
   FIXlut: /home/username/DATA/UFS/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /home/username/DATA/UFS/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /home/username/DATA/UFS/fix/fix_sfc_climo
+  FIXorg: /home/username/DATA/UFS/fix/fix_orog
+  FIXsfc: /home/username/DATA/UFS/fix/fix_sfc_climo
 data:
   FV3GFS: /home/username/DATA/UFS/FV3GFS

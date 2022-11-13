@@ -21,10 +21,8 @@ platform:
   FIXaer: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
-task_make_orog:
-  TOPO_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXorg: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: aws nomads
 task_get_extrn_lbcs:
