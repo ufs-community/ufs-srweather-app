@@ -20,7 +20,4 @@ platform:
   FIXlut: /contrib/global/glopara/fix/fix_lut
   FIXorg: /contrib/global/glopara/fix/fix_orog
   FIXsfc: /contrib/global/glopara/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: aws nomads

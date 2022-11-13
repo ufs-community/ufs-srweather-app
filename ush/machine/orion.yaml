@@ -28,7 +28,4 @@ platform:
   FIXlut: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: aws nomads

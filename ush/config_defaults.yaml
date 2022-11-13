@@ -348,7 +348,7 @@ platform:
   # FIXlut:
   # System directory where the lookup tables for optics properties are located
   #
-  # FIXorog:
+  # FIXorg:
   # System directory where orography data is located
   #
   # FIXsfc:
@@ -359,8 +359,21 @@ platform:
   FIXgsm: ""
   FIXaer: ""
   FIXlut: ""
-  FIXorog: ""
+  FIXorg: ""
   FIXsfc: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # EXTRN_MDL_DATA_STORES:
+  # A list of data stores where the scripts should look for external model
+  # data. The list is in priority order. If disk information is provided
+  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
+  # the disk location will be highest priority. Options are disk, hpss,
+  # aws, and nomads.
+  #
+  #-----------------------------------------------------------------------
+  #
+  EXTRN_MDL_DATA_STORES: ""
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -1239,19 +1252,11 @@ task_get_extrn_ics:
   # Or for FV3GFS grib files:
   #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
   #
-  # EXTRN_MDL_DATA_STORES:
-  # A list of data stores where the scripts should look for external model
-  # data. The list is in priority order. If disk information is provided
-  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
-  # the disk location will be highest priority. Options are disk, hpss,
-  # aws, and nomads.
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
   EXTRN_MDL_FILES_ICS: ""
-  EXTRN_MDL_DATA_STORES: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1343,15 +1348,11 @@ task_get_extrn_lbcs:
   # EXTRN_MDL_FILES_LBCS:
   # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
   #
-  # EXTRN_MDL_DATA_STORES:
-  # Analogous to EXTRN_MDL_DATA_STORES in ICS but for LBCs
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
   EXTRN_MDL_FILES_LBCS: ""
-  EXTRN_MDL_DATA_STORES: ""
   #
   #-----------------------------------------------------------------------
   # Analogus to NOMADS for ICSs

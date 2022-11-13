@@ -23,9 +23,6 @@ platform:
   FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
   FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}

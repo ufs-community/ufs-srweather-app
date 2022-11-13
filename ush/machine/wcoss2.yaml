@@ -25,9 +25,6 @@ platform:
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: hpss aws nomads
-task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDY}

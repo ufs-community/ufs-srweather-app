@@ -30,7 +30,4 @@ platform:
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: hpss aws nomads
-task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
