@@ -77,6 +77,7 @@ source ../../ush/load_modules_wflow.sh ${machine}
 ./run_WE2E_tests.sh \
   machine=${machine} \
   account=${account} \
+  compiler=${compiler} \
   test_type=${test_type} \
   ${opts} \
   "${@:5}"

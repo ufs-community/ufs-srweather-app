@@ -69,8 +69,13 @@ def str_to_type(s, return_string=0):
             if return_string == 2:
                 return s
             return v
-        if s.isnumeric():
-            return int(s)
+        # int
+        try:
+            v = int(s)
+            return v
+        except:
+            pass
+        # float
         try:
             v = float(s)
             return v
