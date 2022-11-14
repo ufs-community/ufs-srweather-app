@@ -5,6 +5,10 @@
 SRW App Contributor's Guide
 ==============================
 
+.. attention::
+
+   The most updated version of the SRW App Contributor's Guide is maintained in the `Contributor's Guide <https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide>`__ page of the ``ufs-srweather-app`` wiki. 
+
 .. _Background:
 
 Background
@@ -13,7 +17,7 @@ Background
 Authoritative branch
 -----------------------
 
-The ``ufs-srweather-app`` repository maintains a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components. Pull requests (PRs) will be merged to ``develop``. 
+The ``ufs-srweather-app`` repository maintains a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual subcomponents. Pull requests (PRs) will be merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
     #. Pull requests for this branch require approval by at least two code reviewers.
@@ -52,7 +56,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
     | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation                  |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
-    |                  | Gerard Ketefian (@gsketefian)                  | regional workflow scripts, jinja templates, and verification tasks                          |
+    |                  | Gerard Ketefian (@gsketefian)                  | Workflow scripts, jinja templates, and verification tasks                                   |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Linlin Pan (@panll)                            | Workflow, CCPP/physics, verification                                                        |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -62,7 +66,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Daniel Abdi (@danielabdi-noaa)                 | Workflow generation, testing RRFS on the cloud, environment modules                         |
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
-    | NCAR             | Mike Kavulich (@mkavulich)                     | CCPP/physics                                                                                |
+    | NCAR             | Mike Kavulich (@mkavulich)                     | Workflow, CCPP/physics, code management, WE2E testing                                       |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Will Mayfield (@willmayfield)                  | Verification/METplus tasks, regional workflow (esp. on Cheyenne)                            |
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -431,7 +435,7 @@ Before opening a PR, a minimum set of tests should be run:
     
       * In some cases, it may be possible to modify a current test instead of creating a completely new test. Code developers introducing new capabilities should work with code managers to provide the proper configuration files, data, and other information necessary to create new tests for these capabilities.
 
-    * **Coming Soon:** When the above tests are complete, a code manager will add the ``run_we2e_comprehensive_tests`` to initiate fundamental testing on all Level 1 platforms via Jenkins (see :ref:`below <jenkins>`).
+    * When the above tests are complete and the PR has been approved by at least one code manager, a code manager will add the ``run_we2e_fundamental_tests`` label to initiate fundamental testing on all Level 1 platforms via Jenkins (see :ref:`below <jenkins>`).
 
 
 .. _jenkins:
@@ -439,12 +443,11 @@ Before opening a PR, a minimum set of tests should be run:
 Automated Testing on Jenkins
 -------------------------------
 
-`Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that allows users to automate code testing. In the SRW App, developers with write, maintain, or admin `roles <https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization>`__ on the SRW App repository can add labels to their PR that automatically initiate particular test suites. 
+`Jenkins <https://www.jenkins.io/>`__ is an "open source automation server" that allows users to automate code testing. For the Jenkins automated testing labels, it should be noted that **ONLY** code managers should apply these labels and only after at least one code manager has given approval to the PR. The PR will not be merged until all Jenkins-based builds and testing have successfully passed.
 
 The following automated testing labels are available (or will be soon) for the SRW App:
-   * ``run_ci`` 
+   * ``run_we2e_fundamental_tests``
    * *Coming Soon:* ``run_we2e_comprehensive_tests``
-   * *Coming Soon:* ``run_we2e_fundamental_tests``
 
 Once a testing label is added to the PR and the tests are run, the results of the tests can be viewed by anyone on GitHub. Users must scroll down to the bottom of the PR, where PR approvals, checks, and conflicts are listed. Under checks, GitHub will list which checks have passed and which have failed. Users can click on "Details" beside each check to see the Jenkins log files (see :numref:`Figure %s <JenkinsCheck>`). This will take users to the Jenkins page with information on their PR's tests.
 
@@ -455,9 +458,8 @@ Once a testing label is added to the PR and the tests are run, the results of th
 
    *Sample of Jenkins Test Results*
 
-Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>`__ page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the left navigation menu, they can click on *S3 Artifacts* and download any files listed there for in-depth review.
+Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>`__ page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the lefthand navigation menu, they can click on *S3 Artifacts* and download any files listed there for in-depth review.
 
-
-
+If the Jenkins tests fail, then the developer will need to make the necessary corrections to their PR. Unfortunately, removing and adding the label back will not initiate the Jenkins tests. For re-runs, the job will need to be manually re-run through Jenkins.
 
 

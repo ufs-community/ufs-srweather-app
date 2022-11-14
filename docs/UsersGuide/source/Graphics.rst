@@ -125,7 +125,7 @@ following command line arguments:
 #. Ending forecast hour
 #. Forecast hour increment
 #. The top level of the experiment directory ``$EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``$EXPTDIR/CDATE/postprd``.
-#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``. See :numref:`Table %s <CartopyData>` for the correct ``$CARTOPY_DIR`` locations on Level 1 systems. 
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecast
 
 .. note::

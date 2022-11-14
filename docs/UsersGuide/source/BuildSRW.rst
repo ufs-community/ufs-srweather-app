@@ -192,7 +192,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
    ./devbuild.sh --platform=<machine_name>
 
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values are: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``odin`` | ``orion`` | ``singularity`` | ``wcoss2``
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion``
 
 .. note::
    Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
