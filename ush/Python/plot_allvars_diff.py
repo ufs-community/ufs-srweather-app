@@ -383,9 +383,9 @@ for fhr in fhours:
   cin_diff = cin_2 - cin_1
 
 # 500 mb height, wind, vorticity
-  z500_1 = data1.select(name='Geopotential Height',level=500)[0].values * 0.1
+  z500_1 = data1.select(name='Geopotential height',level=500)[0].values * 0.1
   z500_1 = ndimage.filters.gaussian_filter(z500_1, 6.89)
-  z500_2 = data2.select(name='Geopotential Height',level=500)[0].values * 0.1
+  z500_2 = data2.select(name='Geopotential height',level=500)[0].values * 0.1
   z500_2 = ndimage.filters.gaussian_filter(z500_2, 6.89)
   z500_diff = z500_2 - z500_1
   vort500_1 = data1.select(name='Absolute vorticity',level=500)[0].values * 100000
