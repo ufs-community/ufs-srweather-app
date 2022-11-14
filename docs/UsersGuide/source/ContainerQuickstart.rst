@@ -132,7 +132,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
-   Users can choose to build a release version of the container (SRW App v2.0.0) using a similar command:
+   Users can choose to build a release version of the container (SRW App v2.1.0) using a similar command:
 
    .. code-block:: console
 

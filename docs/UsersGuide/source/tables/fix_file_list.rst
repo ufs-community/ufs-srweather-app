@@ -3,7 +3,7 @@
 .. _StaticFilesList:
 
 
-Static Files for SRW App Release v2.0.0
+Static Files for SRW App Release v2.1.0
 ==========================================
 
 ``fix_aer`` Files
