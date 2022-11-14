@@ -6,9 +6,10 @@ metadata:
 user:
   RUN_ENVIR: community
 platform:
-  EXTRN_MDL_DATA_STORES: nomads hpss aws # Test nomads first
+  EXTRN_MDL_DATA_STORES: nomads hpss aws
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2022111000'
   DATE_LAST_CYCL: '2022111000'
   FCST_LEN_HRS: 6
@@ -18,7 +19,5 @@ task_get_extrn_ics:
   FV3GFS_FILE_FMT_ICS: netcdf
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
-  FV3GFS_FILE_FMT_LBCS: netcdf
   LBC_SPEC_INTVL_HRS: 3
-task_run_fcst:
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  FV3GFS_FILE_FMT_LBCS: netcdf

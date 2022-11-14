@@ -610,6 +610,40 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
+  # grid, as follows:
+  #
+  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
+  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
+  #   the write-component grid parameters are set to predefined values for 
+  #   the specified grid, overwriting any settings of these parameters in 
+  #   the user-specified experiment configuration file.  In addition, if 
+  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
+  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
+  #   they are also set to predefined values for the specified grid.
+  #
+  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
+  #   is providing the native grid parameters in the user-specified 
+  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
+  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
+  #   and the write-component grid parameters as well as the time step 
+  #   forecast model's main time step DT_ATMOS and the computational 
+  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
+  #   configuration file; otherwise, the values of all of these parameters 
+  #   in this default experiment configuration file will be used.
+  #
+  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
+  # commonly used set of grid-dependent parameters.  The predefined grid 
+  # parameters are specified in the script 
+  #
+  #   $HOMEdir/ush/set_predef_grid_params.py
+  #
+  #-----------------------------------------------------------------------
+  #
+  PREDEF_GRID_NAME: ""
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set forecast parameters.  Definitions:
   #
   # DATE_FIRST_CYCL:
@@ -1634,40 +1668,6 @@ task_run_fcst:
   WRTCMP_ny: ""
   WRTCMP_dx: ""
   WRTCMP_dy: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
-  # grid, as follows:
-  #
-  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
-  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
-  #   the write-component grid parameters are set to predefined values for 
-  #   the specified grid, overwriting any settings of these parameters in 
-  #   the user-specified experiment configuration file.  In addition, if 
-  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
-  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
-  #   they are also set to predefined values for the specified grid.
-  #
-  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   is providing the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
-  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
-  #   and the write-component grid parameters as well as the time step 
-  #   forecast model's main time step DT_ATMOS and the computational 
-  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
-  #   configuration file; otherwise, the values of all of these parameters 
-  #   in this default experiment configuration file will be used.
-  #
-  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
-  # commonly used set of grid-dependent parameters.  The predefined grid 
-  # parameters are specified in the script 
-  #
-  #   $HOMEdir/ush/set_predef_grid_params.py
-  #
-  #-----------------------------------------------------------------------
-  #
-  PREDEF_GRID_NAME: ""
   #
   #-----------------------------------------------------------------------
   #

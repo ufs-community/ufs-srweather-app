@@ -15,6 +15,7 @@ platform:
 workflow:
   EXPT_SUBDIR: test_community
   CCPP_PHYS_SUITE: FV3_GFS_v16
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019061518'
   DATE_LAST_CYCL: '2019061518'
   FCST_LEN_HRS: 12
@@ -42,7 +43,6 @@ task_get_extrn_lbcs:
 task_run_fcst:
   WTIME_RUN_FCST: 02:00:00
   QUILTING: true
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
