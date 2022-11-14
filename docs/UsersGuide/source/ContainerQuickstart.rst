@@ -68,7 +68,7 @@ Build the Container
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` has already been built at the following locations:
 
 .. COMMENT: update name of container!
 
@@ -95,7 +95,7 @@ Users can simply copy the container to their local working directory. For exampl
 
 .. code-block:: console
 
-   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
+   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-release-public-v2.1.0.img .
 
 .. COMMENT: Update path to container!
 
@@ -103,7 +103,7 @@ Users may convert the container ``.img`` file to a writable sandbox. This step i
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-develop.img
+   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
 
 .. COMMENT: Update name of container!
 
@@ -112,7 +112,7 @@ When making a writable sandbox on Level 1 systems, the following warnings common
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-develop.img
+   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -125,7 +125,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
+   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.1.0
 
 .. COMMENT: Update :develop to release-public-v2.1.0 (or similar)
 
@@ -199,7 +199,7 @@ To explore the container and view available directories, users can either ``cd``
 
 .. code-block:: console
 
-   singularity shell ./ubuntu20.04-intel-srwapp-develop.img
+   singularity shell ./ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
    cd /
    ls 
 
@@ -284,7 +284,7 @@ where:
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
-   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
+   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` by default).
 
 .. COMMENT: Update name of container!
 
@@ -292,7 +292,7 @@ For example, on Hera, the command would be:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-develop.img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
 
 .. COMMENT: Update name of container!
 
@@ -336,7 +336,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
@@ -349,7 +349,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
 

@@ -4,14 +4,14 @@
 Input and Output Files
 =======================
 This chapter provides an overview of the input and output files needed by the components
-of the UFS SRW Application. Links to more detailed documentation for each of the components (e.g., UFS_UTILS, the UFS Weather Model, and the UPP) are provided in the sections below. For SRW App users who want to jump straight to downloading and staging the files, see :numref:`Section %s <DownloadingStagingInput>`. 
+of the UFS SRW Application. Links to more detailed documentation for each of the components (e.g., UFS_UTILS, the UFS Weather Model, and the UPP) are provided in the sections below. For SRW App users who want to jump straight to downloading and staging the required files, see :numref:`Section %s <DownloadingStagingInput>`. 
 
 .. _Input:
 
 Input Files
 ===========
 The SRW Application requires numerous input files to run: static datasets (fix files
-containing climatological information, terrain and land use data), initial and boundary
+containing climatological information, terrain, and land use data), initial and boundary
 conditions files, and model configuration files (such as namelists).
 
 Initial and Boundary Condition Files
@@ -27,11 +27,11 @@ The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More inf
 
 Pre-processing (UFS_UTILS)
 ---------------------------
-When a user generates the regional workflow, as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS `Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/>`__ and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.8.0/index.html>`__.
+When a user generates the regional workflow as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS `Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/>`__ and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.8.0/index.html>`__.
 
 UFS Weather Model
 -----------------
-The input files for the Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix files
+The input files for the UFS Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix(ed) files
 must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on their machine. See :numref:`Section %s <StaticFixFiles>` for instructions. The workflow scripts link the static, grid, and date-specific files in the experiment directory. An extensive description of the input files for the Weather Model can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#input-files>`__. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
@@ -44,11 +44,11 @@ Documentation for the UPP input files can be found in the `UPP User's Guide
 Workflow
 ---------
 The SRW Application uses a series of template files, combined with user-selected settings,
-to create the required namelists and parameter files needed by the Application workflow. (See :numref:`Figure %s <WorkflowGeneration>` for a visual summary of the workflow generation process, including template use.) These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.yaml`` file are assigned.
+to create the required namelists and parameter files needed by the SRW Application workflow. (See :numref:`Figure %s <WorkflowGeneration>` for a visual summary of the workflow generation process, including template use.) These templates can be reviewed to see which defaults are used and where configuration parameters from the ``config.yaml`` file are assigned.
 
 List of Template Files
 ^^^^^^^^^^^^^^^^^^^^^^^^
-The template files for the SRW Application are located in ``parm``
+The template files for the SRW Application are located in the ``parm`` directory
 and are shown in :numref:`Table %s <TemplateFiles>`.
 
 .. _TemplateFiles:
@@ -62,11 +62,11 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    |                             | reads in at the start of each forecast. It is an empty file. |
    |                             | No need to change.                                           |
    +-----------------------------+--------------------------------------------------------------+
-   | diag_table_[CCPP]           | File specifying the output fields of the forecast model.     |
+   | diag_table.[CCPP]           | File specifying the output fields of the forecast model.     |
    |                             | A different ``diag_table`` may be configured for different   |
    |                             | :term:`CCPP` suites.                                         |
    +-----------------------------+--------------------------------------------------------------+
-   | field_table_[CCPP]          | :term:`Cycle-independent` file that the forecast model       |
+   | field_table.[CCPP]          | :term:`Cycle-independent` file that the forecast model       |
    |                             | reads in at the start of each forecast. It specifies the     |
    |                             | :term:`tracers <tracer>` that the forecast model will        |
    |                             | :term:`advect`. A different ``field_table`` may be needed    |
@@ -97,7 +97,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    | README.xml_templating.md    | Instructions for Rocoto XML templating with Jinja.           |
    +-----------------------------+--------------------------------------------------------------+
 
-Additional information related to ``diag_table_[CCPP]``, ``field_table_[CCPP]``, ``input.nml.FV3``, ``model_conigure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#model-configuration-files>`__, while information on ``regional_grid.nml`` options can be found in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/ufs_utils.html#regional-esg-grid>`__.
+Additional information related to ``diag_table.[CCPP]``, ``field_table.[CCPP]``, ``input.nml.FV3``, ``model_configure``, and ``nems.configure`` can be found in the `UFS Weather Model User's Guide <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#model-configuration-files>`__, while information on ``regional_grid.nml`` options can be found in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_8_0/ufs_utils.html#regional-esg-grid>`__.
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
