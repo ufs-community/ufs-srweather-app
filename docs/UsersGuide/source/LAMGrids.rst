@@ -126,15 +126,15 @@ The steps to add such a grid to the workflow are as follows:
 
 #. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/ush/valid_param_vals.yaml`` file.
 
-#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>` along with comments describing the variables that need to be set.
+#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>`. For descriptions of the variables that need to be set, see Sections :numref:`%s <ESGgrid>` and :numref:`%s <FcstConfigParams>`.
 
-To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` in the ``task_run_fcst:`` section to ``NEW_GRID``:
+To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.community.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` in the ``task_run_fcst:`` section to ``NEW_GRID``:
 
 .. code-block:: console
 
    PREDEF_GRID_NAME: "NEW_GRID"
 
-Then, load the regional workflow python environment, specify the other experiment parameters in ``config.yaml``, and generate a new experiment/workflow using the ``generate_FV3LAM_wflow.py`` script (see :numref:`Chapter %s <RunSRW>` for details).
+Then, load the regional workflow python environment, specify the other experiment parameters in ``config.community.yaml``, and generate a new experiment/workflow using the ``generate_FV3LAM_wflow.py`` script (see :numref:`Chapter %s <RunSRW>` for details).
 
 Code Example
 ---------------
@@ -148,133 +148,52 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    #
    #---------------------------------------------------------------------
    #
-   # Stanza for NEW_GRID.  This grid covers [provide a description of the
-   # domain that NEW_GRID covers, its grid cell size, etc].
+   # Stanza for NEW_GRID. This grid covers [description of the
+   # domain] with ~[size]-km cells.
    #
    #---------------------------------------------------------------------
    #
    "NEW_GRID":
-   
-   # The method used to generate the grid.  This example is specifically
+
+   # The method used to generate the grid. This example is specifically
    # for the "ESGgrid" method.
 
      GRID_GEN_METHOD: "ESGgrid"
-     
-   # The longitude and latitude of the center of the grid, in degrees.
+   
+   # ESGgrid parameters:
 
      ESGgrid_LON_CTR: -97.5
      ESGgrid_LAT_CTR: 38.5
-   
-   # The grid cell sizes in the x and y directions, where x and y are the 
-   # native coordinates of any ESG grid. The units of x and y are in
-   # meters. These should be set to the nominal resolution we want the 
-   # grid to have. The cells will have exactly these sizes in xy-space 
-   # (computational space) but will have varying size in physical space.
-   # The advantage of the ESGgrid generation method over the GFDLgrid 
-   # method is that an ESGgrid will have a much smaller variation in grid
-   # size in physical space than a GFDLgrid.
-
      ESGgrid_DELX: 25000.0
      ESGgrid_DELY: 25000.0
-   
-   # The number of cells along the x and y axes.
-
      ESGgrid_NX: 200
      ESGgrid_NY: 112
-
-   # The rotational parameter for the “ESGgrid” (in degrees).
-
      ESGgrid_PAZI: 0.0
-
-   # The width of the halo (in units of grid cells) that the temporary 
-   # wide-halo grid created during the grid generation task (make_grid) 
-   # will have. This wide-halo grid gets "shaved" down to obtain the 
-   # 4-cell-wide halo and 3-cell-wide halo grids that the forecast model
-   # (as well as other codes) will actually use. Recall that the halo is
-   # needed to provide lateral boundary conditions to the forecast model.
-   # Usually, there is no need to modify this parameter.
-
      ESGgrid_WIDE_HALO_WIDTH: 6
-   
-   # The default physics time step that the forecast model will use. This
-   # is the (inverse) frequency with which (most of) the physics suite is 
-   # called. The smaller the grid cell size is, the smaller this value 
-   # needs to be in order to avoid numerical instabilities during the 
-   # forecast. The values specified below are used only if DT_ATMOS is 
-   # not explicitly set in the user-specified experiment configuration 
-   # file config.yaml. Note that this parameter may be suite dependent.
+
+   # Forecast configuration parameters:
 
      DT_ATMOS: 40
-   
-   # Default MPI task layout (decomposition) along the x and y directions and
-   # blocksize. The values specified below are used only if they are not explicitly
-   # set in the user-specified experiment configuration file config.yaml.
-
      LAYOUT_X: 5
      LAYOUT_Y: 2
      BLOCKSIZE: 40
 
-   # The parameters for the write-component (aka "quilting") grid. 
+   # Parameters for the write-component (aka "quilting") grid. 
 
      QUILTING:
-
-   # The number of "groups" of MPI tasks that may be running at any given 
-   # time to write out the output. Each write group will be writing to 
-   # one set of output files (a dynf${fhr}.nc and a phyf${fhr}.nc file, 
-   # where $fhr is the forecast hour). Each write group contains 
-   # WRTCMP_write_tasks_per_group tasks. Usually, it is sufficient to 
-   # have just one write group. This may need to be increased if the 
-   # forecast is proceeding so quickly that a single write group cannot 
-   # complete writing to its set of files before there is a need/request
-   # to start writing the next set of files at the next output time (this
-   # can happen, for instance, if the forecast model is trying to write 
-   # output at every time step).
-
         WRTCMP_write_groups: 1
-   
-   # The number of MPI tasks to allocate to each write group.
-
         WRTCMP_write_tasks_per_group: 2
-
-   # The coordinate system for the write-component grid 
-   # See the array valid_vals_WRTCMP_output_grid (defined in 
-   # the script valid_param_vals.yaml) for the values this can take on.  
-   # The following example is specifically for the Lambert conformal 
-   # coordinate system.
-
         WRTCMP_output_grid: "lambert_conformal"
-   
-   # The longitude and latitude of the center of the write-component 
-   # grid.
-
         WRTCMP_cen_lon: -97.5
         WRTCMP_cen_lat: 38.5
-   
-   # The first and second standard latitudes needed for the Lambert 
-   # conformal coordinate mapping.
-
-        WRTCMP_stdlat1: 38.5
-        WRTCMP_stdlat2: 38.5
-   
-   # The number of grid points in the x and y directions of the 
-   # write-component grid. Note that this xy coordinate system is that of
-   # the write-component grid (which in this case is Lambert conformal).
-   # Thus, it is in general different than the xy coordinate system of 
-   # the native ESG grid.
-
-        WRTCMP_nx: 197
-        WRTCMP_ny: 107
-   
-   # The longitude and latitude of the lower-left corner of the 
-   # write-component grid, in degrees.
-
         WRTCMP_lon_lwr_left: -121.12455072
         WRTCMP_lat_lwr_left: 23.89394570
 
-   # The grid cell sizes along the x and y directions of the 
-   # write-component grid. Units depend on the coordinate system used by
-   # the grid (i.e., the value of WRTCMP_output_grid). For a Lambert 
-   # conformal write-component grid, the units are in meters.
+   # Parameters required for the Lambert conformal grid mapping.
 
+        WRTCMP_stdlat1: 38.5
+        WRTCMP_stdlat2: 38.5
+        WRTCMP_nx: 197
+        WRTCMP_ny: 107
         WRTCMP_dx: 25000.0
         WRTCMP_dy: 25000.0
