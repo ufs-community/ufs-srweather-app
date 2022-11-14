@@ -998,13 +998,11 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
-
     expt_config_str=${expt_config_str}"
 #
 # Set NCO mode OPSROOT
 #
-OPSROOT=\"${OPSROOT}\""
+OPSROOT=\"${opsroot}\""
 
   fi
 #
