@@ -5,8 +5,6 @@ metadata:
     suite with time-offset ICs/LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: nco
-nco:
-  envir: prod
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2022081012'
