@@ -70,8 +70,6 @@ Level 1 Systems
 
 On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` has already been built at the following locations:
 
-.. COMMENT: update name of container!
-
 .. table:: Locations of pre-built containers
 
    +--------------+--------------------------------------------------------+
@@ -97,15 +95,11 @@ Users can simply copy the container to their local working directory. For exampl
 
    cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-release-public-v2.1.0.img .
 
-.. COMMENT: Update path to container!
-
 Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
    singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
-
-.. COMMENT: Update name of container!
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
@@ -116,8 +110,6 @@ When making a writable sandbox on Level 1 systems, the following warnings common
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
-.. COMMENT: Update name of container!
-
 Level 2-4 Systems
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -127,17 +119,8 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
    sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.1.0
 
-.. COMMENT: Update :develop to release-public-v2.1.0 (or similar)
-
-Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
-
 .. note::
-   Users can choose to build a release version of the container (SRW App v2.1.0) using a similar command:
-
-   .. code-block:: console
-
-      sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
-
+   Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. _WorkOnHPC:
 
@@ -203,8 +186,6 @@ To explore the container and view available directories, users can either ``cd``
    cd /
    ls 
 
-.. COMMENT: Update name of container!
-
 The list of directories printed will be similar to this: 
 
 .. code-block:: console
@@ -220,7 +201,7 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -256,7 +237,7 @@ To activate the regional workflow, run the following commands:
 
 where: 
 
-   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's system (often ``$PWD/modulefiles``), and 
+   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
    * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
@@ -286,15 +267,11 @@ where:
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
    * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` by default).
 
-.. COMMENT: Update name of container!
-
 For example, on Hera, the command would be:
 
 .. code-block:: console
 
    ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
-
-.. COMMENT: Update name of container!
 
 .. attention::
 
@@ -324,7 +301,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_CRON_TO_RELAUNCH: TRUE
-         CRON_RELAUNCH_INTVL_MNTS: 02
+         CRON_RELAUNCH_INTVL_MNTS: 2
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, this technique (automation via :term:`crontab`) is the simplest option. 
 
@@ -340,8 +317,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
-      .. COMMENT: Update name of container!
-
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
    #. Edit the ``task_get_extrn_lbcs:`` section of the ``config.yaml`` to include the correct data paths to the lateral boundary conditions files. For example, on Hera, add: 
@@ -352,8 +327,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
-
-.. COMMENT: Update name of container!
 
 .. _GenerateWorkflowC: 
 
@@ -370,7 +343,7 @@ Run the following command to generate the workflow:
 
    ./generate_FV3LAM_wflow.py
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/3 * * * *`` (or similar). 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/2 * * * *`` (or similar). 
 
 The generated workflow will be in the experiment directory specified in the ``config.yaml`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/ush`` and run the ``rocotostat`` command to check the experiment's status:
 
@@ -389,7 +362,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */2 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
    esc
    :wq
    enter

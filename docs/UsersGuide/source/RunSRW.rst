@@ -40,7 +40,7 @@ Download and Stage the Data
 The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available in the following locations: 
 
 .. _DataLocations:
-.. table:: Data locations for Level 1 systems
+.. table:: Data Locations for Level 1 Systems
 
    +--------------+-----------------------------------------------------------------+
    | Machine      | File location                                                   |
