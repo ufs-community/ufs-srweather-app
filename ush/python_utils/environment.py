@@ -20,7 +20,7 @@ def str_to_date(s):
         l = len(s)
         if l == 8:
             v = datetime.strptime(s, "%Y%m%d")
-        if l == 10:
+        elif l == 10:
             v = datetime.strptime(s, "%Y%m%d%H")
         elif l == 12:
             v = datetime.strptime(s, "%Y%m%d%H%M")

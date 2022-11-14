@@ -10,14 +10,10 @@ from textwrap import dedent
 from datetime import datetime, timedelta
 
 from python_utils import (
-    print_info_msg,
-    print_err_msg_exit,
     log_info,
     import_vars,
     export_vars,
     cp_vrfy,
-    cd_vrfy,
-    rm_vrfy,
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
