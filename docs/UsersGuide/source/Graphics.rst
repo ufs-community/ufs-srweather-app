@@ -37,6 +37,8 @@ To use the plotting scripts, the regional workflow environment, which includes t
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). Then users should follow the instructions output by the console (e.g., ``conda activate regional_workflow``). 
 
+.. COMMENT: Make note to ignore deprecation warnings...?
+
 .. _Cartopy:
 
 Cartopy Shapefiles
@@ -48,7 +50,7 @@ The full set of Cartopy shapefiles can be downloaded `here <https://www.naturale
 
 
 .. _CartopyData:
-.. table:: Cartopy shapefile locations for Level 1 systems
+.. table:: Cartopy Shapefile Locations for Level 1 Systems
 
    +--------------+-----------------------------------------------------------------+
    | Machine      | File location                                                   |
@@ -65,11 +67,7 @@ The full set of Cartopy shapefiles can be downloaded `here <https://www.naturale
    +--------------+-----------------------------------------------------------------+
    | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/v2p1/NaturalEarth                |
    +--------------+-----------------------------------------------------------------+
-   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/v2p1/NaturalEarth           |
-   +--------------+-----------------------------------------------------------------+ 
-    
-.. COMMENT: Can someone confirm whether the WCOSS2 location is correct?
-
+   
 Running the Plotting Scripts
 ======================================
 

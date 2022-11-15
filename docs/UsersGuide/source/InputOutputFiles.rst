@@ -210,6 +210,7 @@ Download and unpack the external files:
 
    mkdir crtm && cd crtm
    wget https://github.com/NOAA-EMC/UPP/releases/download/upp_v11.0.0/fix.tar.gz
+   wget https://github.com/NOAA-EMC/UPP/archive/refs/tags/upp-srw-v2.1.0.tar.gz
    tar -xzf fix.tar.gz
 
 Modify the ``config.yaml`` file to include the following lines:
@@ -245,13 +246,13 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
 
 Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.1.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``config.yaml`` file, and alter the variable paths accordingly:
+The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``task_run_fcst:`` section of the ``config.yaml`` file, and alter the variable paths accordingly:
 
 .. code-block:: console
 
-   FIXgsm="</path-to/fix/fix_am>"
-   TOPO_DIR="</path-to/fix/fix_am/fix_orog>"
-   SFC_CLIMO_INPUT_DIR="</path-to/fix_am/fix/sfc_climo/>"
+   FIXgsm: </path-to/fix/fix_am>
+   TOPO_DIR: </path-to/fix/fix_am/fix_orog>
+   SFC_CLIMO_INPUT_DIR: </path-to/fix_am/fix/sfc_climo/>
 
 .. _InitialConditions:
 
@@ -271,13 +272,20 @@ To download data for different dates, model types, and formats, users can explor
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
 
-The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` must be set in the ``config.yaml`` file as follows: 
+The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` must be set in the appropriate sections of the ``config.yaml`` file: 
 
 .. code-block:: console
 
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="<path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>"
+   task_get_extrn_ics:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+      EXTRN_MDL_FILES_ICS: []
+      EXTRN_MDL_DATA_STORES: disk
+   task_get_extrn_lbcs:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+      EXTRN_MDL_FILES_LBCS: []
+      EXTRN_MDL_DATA_STORES: disk
 
 These last two variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
@@ -301,11 +309,22 @@ For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would h
 
 .. code-block:: console
 
-   USE_USER_STAGED_EXTRN_FILES="TRUE"
-   EXTRN_MDL_SOURCE_BASEDIR_ICS="/path-to/input_model_data/HRRR/grib2/2020081012"
+   task_get_extrn_ics:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path-to/input_model_data/HRRR/grib2/2020081012
+      EXTRN_MDL_FILES_ICS: [hrrr.t{cycle}z.wrfprsf{fhr}.grib2]
+      EXTRN_MDL_DATA_STORES: disk
+   task_get_extrn_lbcs:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path-to/input_model_data/RAP/grib2/2020081012
+      EXTRN_MDL_FILES_LBCS: [rap.t{cycle}z.wrfprsf{fhr}.grib2]
+      EXTRN_MDL_DATA_STORES: disk
+
+.. COMMENT: Are EXTRN_MDL_FILES_ICS/LBCS correct? Is anything required there? Formerly:
+   
    EXTRN_MDL_FILES_ICS=( "hrrr.t12z.wrfprsf00.grib2" )
-   EXTRN_MDL_SOURCE_BASEDIR_LBCS="/path-to/input_model_data/RAP/grib2/2020081012"
    EXTRN_MDL_FILES_LBCS=( "rap.t12z.wrfprsf03.grib2" "rap.t12z.wrfprsf06.grib2" )
+
 
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
@@ -371,8 +390,8 @@ Additionally, users must set the following environment variables if they plan to
 
 .. code-block:: console
 
-   FV3GFS_FILE_FMT_ICS="grib2"
-   FV3GFS_FILE_FMT_LBCS="grib2"
+   FV3GFS_FILE_FMT_ICS: grib2
+   FV3GFS_FILE_FMT_LBCS: grib2
 
 This is ONLY necessary when using FV3GFS GRIB2 files. These settings may be removed when initializing from the default NEMSIO format for FV3GFS files.
 
