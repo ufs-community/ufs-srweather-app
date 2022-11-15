@@ -210,7 +210,6 @@ Download and unpack the external files:
 
    mkdir crtm && cd crtm
    wget https://github.com/NOAA-EMC/UPP/releases/download/upp_v11.0.0/fix.tar.gz
-   wget https://github.com/NOAA-EMC/UPP/archive/refs/tags/upp-srw-v2.1.0.tar.gz
    tar -xzf fix.tar.gz
 
 Modify the ``config.yaml`` file to include the following lines:

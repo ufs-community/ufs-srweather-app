@@ -159,19 +159,19 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128C.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l150.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l28.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l42.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l60.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l64.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l28.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l42.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l60.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l64sl.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l64.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l64sl.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l65.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l65.txt_0.1hPa
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l91.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l98.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l28.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l42.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l60.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l64.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_iceclim.2x2.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_idea_coeff_hflux.dat
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_idea_coeff_lflux.dat
@@ -303,7 +303,6 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_npoess_paramlist
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_o3clim.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_o3prdlos.f77
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography_0.5x0.5.dat
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography.t1148.2304.1152.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography.t126.384.190.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography.t126.384.190.rg.f77
@@ -376,6 +375,7 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography_uf.t92.192.94.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography_uf.t92.192.94.rg.f77
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography_uf.t92.192.94.rg.grb
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_orography_0.5x0.5.dat
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_salclm.t1534.3072.1536.nc
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_sfc_emissivity_idx.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_shdmax.0.144x0.144.grb
@@ -518,11 +518,11 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_soiltype.statsgo.t94.192.96.rg.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_cmip_an.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_cmip_mn.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstantdata.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_noaa_a0.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_noaa_an.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_noaa_an.txt_v2011
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstant_noaa_an.txt_v2019
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_solarconstantdata.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_spectral_coefs.f77
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_sstclim.2x2.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_tbthe.f77
