@@ -44,18 +44,15 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/CCN_ACTIVATE.BIN
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/cfs_ice1x1monclim19822001.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/cfs_oi2sst1x1monclim19822001.grb
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/cfs_v2_soilmcpc.1x1.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/CFSR.OISST.1982.2010.monthly.clim
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/CFSR.OISST.1999.2012.monthly.clim.grb
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/CFSR.SEAICE.1982.2010.monthly.clim
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/CFSR.SEAICE.1982.2012.monthly.clim.grb
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/cfs_v2_soilmcpc.1x1.grb
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/co2dat_4a
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/co2monthlycyc.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/emcsfc_gland5min.grib2
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/emcsfc_snow_cover_climo.grib2
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/emcsfc_snow_cover.grb
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/fix_co2_proj
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/fix_co2_update
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/emcsfc_snow_cover_climo.grib2
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/freezeH2O.dat
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/geo_em.d01.lat-lon.2.5m.HGT_M.nc
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/geo_em.d01.nc_HRRR_AK
@@ -159,13 +156,13 @@ Static Files for SRW App Release v2.1.0
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_h2o_pltc.f77
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hd_paramlist
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hd_paramlist.f00
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128C.txt
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l150.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l28.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l42.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l60.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev3.l64.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128C.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l128.txt
-   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l150.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l28.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l42.txt
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/fix/fix_am/global_hyblev.l60.txt

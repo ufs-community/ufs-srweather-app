@@ -107,6 +107,9 @@ The output files (in ``.png`` format) will be located in the directory ``$EXPTDI
 where in this case ``$EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv16`` and ``$CDATE`` 
 is ``2019061518``.
 
+.. note::
+   The plotting script may generate a series of deprecation warnings, but users can safely ignore these. The script will generate the plots successfully despite them. 
+
 Plotting Differences from Two Experiments
 --------------------------------------------
 
@@ -129,6 +132,9 @@ An example of plotting differences from two experiments for the same date and pr
    python plot_allvars_diff.py 2019061518 0 12 6 /path-to/expt_dirs1/test_CONUS_3km_GFSv16 /path-to/expt_dirs2/test_CONUS_3km_RRFSv1beta /path-to/NaturalEarth RRFS_CONUS_25km
 
 In this case, the output ``.png`` files will be located in the directory ``$EXPTDIR1/CDATE/postprd``.
+
+.. note::
+   The plotting script may generate a series of deprecation warnings, but users can safely ignore these. The script will generate the plots successfully despite them. 
 
 .. _Batch:
 

@@ -269,6 +269,8 @@ To download the model input data for the 12-hour "out-of-the-box" experiment con
 
 To download data for different dates, model types, and formats, users can explore the ``input_model_data`` section of the data bucket and replace the links above with ones that fetch their desired data. 
 
+.. _ICS-LBCS:
+
 Initial and Lateral Boundary Condition Organization
 ---------------------------------------------------
 
@@ -278,16 +280,18 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
 
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: <path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>
       EXTRN_MDL_FILES_ICS: []
       EXTRN_MDL_DATA_STORES: disk
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: <path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>
       EXTRN_MDL_FILES_LBCS: []
       EXTRN_MDL_DATA_STORES: disk
 
-These last two variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+.. COMMENT: Do we need EXTRN_MDL_FILES_*CS and EXTRN_MDL_DATA_STORES?
+
+The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
@@ -328,8 +332,7 @@ For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would h
 
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------
-The default initial and lateral boundary condition files are set to be a severe weather case
-from 20190615 at 18 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
+The default initial and lateral boundary condition files are set to be a severe weather case from June 15, 2019 (20190615) at 18 UTC. FV3GFS GRIB2 files are the default model and file format. A tar file
 (``gst_data.tgz``) containing the model data for this case is available in the `UFS SRW App Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#current_srw_release_data/>`__. 
 
 Running the App for Different Dates
@@ -343,7 +346,7 @@ Staging Initial Conditions Manually
 -----------------------------------
 If users want to run the SRW Application with raw model files for dates other than those that
 are currently available on the preconfigured platforms, they need to stage the data manually.
-The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.yaml`` file. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
+The data should be placed in ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` (which may be the same directory). The path to these variables can be set in the ``config.yaml`` file as shown :ref:`above <ICS-LBCS>`. Raw model files are available from a number of sources. A few examples are provided here for convenience. 
 
 NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model may be:
 
@@ -356,7 +359,7 @@ NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model
 * HRRR - available for the last 2 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/
 
-AWS S3:
+AWS S3 Data Buckets:
 
 * GFS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
 * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
@@ -365,7 +368,7 @@ Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
-FTP Data Repository: (data for SRW Release v1.0.0 & v1.0.1)
+FTP Data Repository (data for SRW Release v1.0.0 & v1.0.1):
 
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
 * https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
@@ -383,8 +386,8 @@ It is recommended that users have a separate directory for each file format if t
 
 .. code-block:: console
 
-   /path-to/model_data/FV3GFS/grib2/YYYYMMDDHH
-   /path-to/model_data/FV3GFS/nemsio/YYYYMMDDHH
+   /path-to/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+   /path-to/input_model_data/FV3GFS/nemsio/YYYYMMDDHH
 
 Additionally, users must set the following environment variables if they plan to use GRIB2-formatted files for FV3GFS:
 
@@ -403,4 +406,4 @@ that the users share the same ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_S
 directories. That way, if raw model input files are already on disk for a given date, they do not
 need to be replicated.
 
-The files in the subdirectories of the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directories should be write-protected. This prevents these files from being accidentally modified or deleted. The directories should generally be group writable so the directory can be shared among multiple users.
+The files in the subdirectories of the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directories should be write-protected. This prevents these files from being accidentally modified or deleted. The directories should generally be group-writable so the directory can be shared among multiple users.
