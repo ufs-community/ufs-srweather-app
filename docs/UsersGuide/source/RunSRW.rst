@@ -123,13 +123,7 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
    Please do the following to activate conda:
        > conda activate regional_workflow
 
-then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. If this is not the case, activate the regional workflow from the ``ush`` directory by running: 
-
-.. code-block:: console
-
-   conda init
-   source ~/.bashrc
-   conda activate regional_workflow
+then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. 
 
 .. _LinuxMacActivateWFenv:
 

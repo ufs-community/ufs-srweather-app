@@ -26,50 +26,16 @@ the same cycle starting date/time and forecast hours. Other parameters may diffe
 Loading the Environment
 ==========================
 
-To use the plotting scripts, the appropriate environment must be loaded. The scripts require Python 3 with the ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages. This Python environment has already been set up on Level 1 platforms and can be activated as follows:
-
-On Cheyenne:
+To use the plotting scripts, the regional workflow environment, which includes the required ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages, must be loaded. To activate the regional workflow, see :numref:`Section %s <SetUpPythonEnv>`, or use the following summary:
 
 .. code-block:: console
 
-   module load ncarenv
-   module load conda/latest
-   conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
+   cd <path/to/ufs-srweather-app/ush/Python>
+   source ../../etc/lmod-setup.sh <platform>
+   module use ../../modulefiles
+   module load wflow_<platform>
 
-On Hera and Jet:
-
-.. code-block:: console
-
-   module use -a /contrib/miniconda3/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Orion:
-
-.. code-block:: console
-
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load miniconda3/4.8.3-regional-workflow
-
-On NOAA Cloud:
-
-.. code-block:: console
-
-   module use /contrib/GST/miniconda3/modulefiles
-   module load miniconda3/4.10.3
-   conda activate regional_workflow
-
-.. note::
-
-   If using one of the batch submission scripts described :ref:`below <Batch>`, the user does not need to manually load an environment because the scripts perform this task.
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). Then users should follow the instructions output by the console (e.g., ``conda activate regional_workflow``). 
 
 .. _Cartopy:
 
