@@ -103,14 +103,12 @@ Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 :numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/parm``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table.[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``parm`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
 
-.. COMMENT: Update image!
-
 .. _MigratoryRoute:
 
 .. figure:: _static/SRW_wflow_input_path.png
    :alt: Flowchart showing how information from the physics suite travels from the configuration file to the setup file to the workflow generation script to the run forecast ex-script. As this information is fed from one file to the next, file paths and variables required for workflow execution are set. 
 
-   *Migratory route of input files*
+   *Migratory Route of Input Files*
 
 .. _OutputFiles:
 
@@ -143,7 +141,7 @@ experiment directory (``$EXPTDIR/YYYYMMDDHH/INPUT``) and consist of the followin
 * ``tmp_ICS``
 * ``tmp_LBCS``
 
-These output files are used as inputs for the UFS Weather Model, and are described in the `UFS Weather Model User's Guide 
+These output files are used as inputs for the UFS Weather Model and are described in the `UFS Weather Model User's Guide 
 <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/InputsOutputs.html#grid-description-and-initial-condition-files>`__. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where ``HHH`` is the 3-digit hour of the forecast. 
 
 UFS Weather Model
@@ -172,10 +170,12 @@ For the SRW Application, the Weather Model netCDF output files are written to ``
 
 The default setting for the output file names uses ``rrfs`` for ``{domain}``. This may be overridden by the user in the ``config.yaml`` settings.
 
+.. _ModifyUPPOutput:
+
 Modifying the UPP Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If users wish to modify the fields or levels that are output from the UPP, they will need to make modifications to ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. If the code was cloned into the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/src/UPP/parm``.
+If users wish to modify the fields or levels that are output from the UPP, they will need to make modifications to ``fv3lam.xml``, which resides in the UPP repository distributed with the UFS SRW Application. If the code was cloned into the directory ``ufs-srweather-app``, the file will be located in ``ufs-srweather-app/sorc/UPP/parm``.
 
 .. note::
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
@@ -190,10 +190,10 @@ After creating the new flat text file to reflect the changes, users will need to
 
 .. code-block:: console
 
-   USE_CUSTOM_POST_CONFIG_FILE="TRUE"
-   CUSTOM_POST_CONFIG_PATH="</path/to/custom/postxconfig-NT-fv3lam.txt>"
+   USE_CUSTOM_POST_CONFIG_FILE: true
+   CUSTOM_POST_CONFIG_FP: </path/to/custom/postxconfig-NT-fv3lam.txt>
 
-which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If ``USE_CUSTOM_POST_CONFIG_FILE`` is set to "TRUE", but the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
+which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If ``USE_CUSTOM_POST_CONFIG_FILE`` is set to true, but the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
 
 Users may then start their experiment workflow as usual, and the UPP will use the new flat ``*.txt`` file.
 
@@ -202,26 +202,24 @@ Users may then start their experiment workflow as usual, and the UPP will use th
 Outputting Satellite Products from UPP
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Synthetic satellite products for several instruments and channels (e.g., GOES 16/17) may be output through the UPP using the Community Radiative Transfer Model (:term:`CRTM`). External CRTM coefficient files, available through the UPP stand-alone release, will need to be manually downloaded before running the workflow. These instructions assume that the UPP configuration file has already been set up to output satellite products.
+Synthetic satellite products for several instruments and channels (e.g., GOES 16/17) may be output through the UPP using the Community Radiative Transfer Model (:term:`CRTM`). External CRTM coefficient files, available through the UPP stand-alone release, will need to be manually downloaded before running the workflow. These instructions assume that the UPP configuration file (``postxconfig-NT-fv3lam.txt``) has already been set up to output satellite products using the process described above in :numref:`Section %s<ModifyUPPOutput>`.
 
 Download and unpack the external files:
 
 .. code-block:: console
 
    mkdir crtm && cd crtm
-   wget https://github.com/NOAA-EMC/EMC_post/releases/download/upp_v10.1.0/fix.tar.gz
+   wget https://github.com/NOAA-EMC/UPP/releases/download/upp_v11.0.0/fix.tar.gz
    tar -xzf fix.tar.gz
-
-.. COMMENT: Get appropriate github link!
 
 Modify the ``config.yaml`` file to include the following lines:
 
 .. code-block:: console
 
-   USE_CRTM="TRUE"
-   CRTM_DIR="</path/to/top/crtm/dir>"
+   USE_CRTM: true
+   CRTM_DIR: </path/to/top/crtm/dir>
 
-By setting ``USE_CRTM`` to "TRUE", the workflow will use the path defined in ``CRTM_DIR`` to link the necessary coefficient files to the working directory at runtime. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration. ``CRTM_DIR`` should point to the top CRTM directory where the fix files are located.
+By setting ``USE_CRTM`` to true, the workflow will use the path defined in ``CRTM_DIR`` to link the necessary coefficient files to the working directory at runtime. Otherwise, it is assumed that no satellite fields are being requested in the UPP configuration. ``CRTM_DIR`` should point to the top CRTM directory where the fix files are located.
 
 .. note::
    Dependencies for outputting synthetic satellite products may exist based on model configuration (e.g., model physics).
