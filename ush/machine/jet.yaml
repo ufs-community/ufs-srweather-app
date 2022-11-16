@@ -2,13 +2,13 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 24
   SCHED: slurm
-  CCPA_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/obs_data/ndas/proc
+  CCPA_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/obs_data/mrms/proc
+  NDAS_OBS_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/obs_data/ndas/proc
   METPLUS_PATH: /contrib/met/METplus/METplus-4.1.1
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /contrib/met/10.1.1
-  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
+  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/FV3LAM_pregen
   PARTITION_DEFAULT: sjet,vjet,kjet,xjet
   QUEUE_DEFAULT: batch
   PARTITION_FCST: sjet,vjet,kjet,xjet
@@ -21,22 +21,22 @@ platform:
   RUN_CMD_UTILS: srun --export=ALL
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data
-  TEST_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/input_model_data
+  TEST_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
 task_make_orog:
-  TOPO_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
+  TOPO_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/fix/fix_orog
 task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
+  SFC_CLIMO_INPUT_DIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/fix/fix_sfc_climo
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_run_fcst:
-  FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
+  FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/fix/fix_aer
+  FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/fix/fix_am
+  FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/fix/fix_lut
 data:
   FV3GFS:
     nemsio: /public/data/grids/gfs/nemsio
