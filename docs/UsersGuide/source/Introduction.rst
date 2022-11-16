@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`Weather Enterprise` (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. New and improved capabilities for the v2.0.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. New and improved capabilities for the v2.0.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. The v2.1.0 release updates include:
 
    * Bug fixes since the v2.0.0 release
    * Conversion to a Python workflow (from the former shell workflow)
@@ -50,8 +50,6 @@ File paths and code that include angle brackets (e.g., ``build_<platform>_<compi
       #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. 
    * For background information on the SRW App code repositories and directory structure, see :numref:`Section %s <SRWStructure>` below. 
    * For an outline of SRW App components, see section :numref:`Section %s <ComponentsOverview>` below or refer to :numref:`Chapter %s <Components>` for a more in-depth treatment.
-
-.. COMMENT: Remove this hint section now that the there's a "This documentation provides..." list?
 
 .. _SRWPrerequisites:
 
@@ -449,7 +447,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/                     |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | HPC-Stack Documentation    | https://hpc-stack.readthedocs.io/en/release-srw-public-v2/                      |
+   | HPC-Stack Documentation    | https://hpc-stack-epic.readthedocs.io/en/release-public-v2.1.0/                 |
    +----------------------------+---------------------------------------------------------------------------------+
    | FV3 Scientific             | https://repository.library.noaa.gov/view/noaa/30725                             |
    | Documentation              |                                                                                 |
@@ -470,9 +468,6 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    +----------------------------+---------------------------------------------------------------------------------+
    | Unified Post Processor     | https://upp.readthedocs.io/en/upp-srw-v2.1.0/                                   |
    +----------------------------+---------------------------------------------------------------------------------+
-
-.. COMMENT: Pre-release, check whether CCPP tech doc link works. 
-   HPC-Stack: https://hpc-stack.readthedocs.io/en/release-srw-public-v2/ ???
 
 The UFS community is encouraged to contribute to the development effort of all related
 utilities, model code, and infrastructure. Users can post issues in the related GitHub repositories to report bugs or to announce upcoming contributions to the code base. For code to be accepted into the authoritative repositories, users must follow the code management rules of each UFS component repository. These rules are usually outlined in the User's Guide (see :numref:`Table %s <list_of_documentation>`) or wiki for each respective repository (see :numref:`Table %s <top_level_repos>`). Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the `SRW App Contributor's Guide <https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide>`__.
