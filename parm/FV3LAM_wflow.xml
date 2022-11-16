@@ -737,7 +737,7 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
         <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
 {%- if run_task_nexus_emission %}
-        <taskdep task="&NEXUS_EMISSION_TN;"/>
+        <taskdep task="&NEXUS_POST_SPLIT_TN;"/>
 {%- endif %}
 {%- if run_task_point_source %}
         <taskdep task="&POINT_SOURCE_TN;"/>
