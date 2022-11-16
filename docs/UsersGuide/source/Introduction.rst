@@ -16,8 +16,6 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
    * Addition of a multi-purpose code clean-up script (``devclean.sh``) (see :numref:`Section %s <CleanUp>`)
    * Documentation updates to reflect the changes above
 
-.. COMMENT: Link to details (e.g., for devclean script) and/or add details (e.g., about METplus bugs) in appropriate sections. 
-
 Future work will expand the capabilities of the application to include data assimilation (DA) and a forecast restart/cycling capability. 
 
 This documentation provides: 

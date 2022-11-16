@@ -20,7 +20,7 @@ WE2E tests fall into one of two categories: fundamental or comprehensive. The li
 For convenience, the WE2E tests are currently grouped into the following categories (under ``ufs-srweather-app/tests/WE2E/test_configs``):
 
 * ``grids_extrn_mdls_suites_community``
-   This category of tests ensures that the SRW App workflow running in **community mode** (i.e., with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various combinations of predefined grids, physics suites, and input data from different external models. Note that in community mode, all output from the App is placed under a single experiment directory.
+   This category of tests ensures that the SRW App workflow running in **community mode** (i.e., with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various combinations of predefined grids, physics suites, and input data from different external models. Note that in community mode, all output from the application is placed under a single experiment directory.
 
 * ``grids_extrn_mdls_suites_nco``
    This category of tests ensures that the workflow running in **NCO mode** (i.e., with ``RUN_ENVIR`` set to ``"nco"``) completes successfully for various combinations of predefined grids, physics suites, and input data from different external models. Note that in NCO mode, an operational run environment is used. This involves a specific directory structure and variable names (see :numref:`Section %s <NCOModeParms>`).
@@ -36,7 +36,7 @@ The test configuration files for these categories are located in the following d
    ufs-srweather-app/tests/WE2E/test_configs/grids_extrn_mdls_suites_nco
    ufs-srweather-app/tests/WE2E/test_configs/wflow_features
 
-The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls ``generate_FV3LAM_wflow.py``, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Chapter %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls ``generate_FV3LAM_wflow.py``, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
 
 Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.py`` for each test, the 
 Python modules required for experiment generation must be loaded before ``run_WE2E_tests.sh`` 
@@ -61,10 +61,10 @@ Users may specify the set of tests to run by creating a text file, such as ``my_
    grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
 
-(and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
+(and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script (``launch_FV3LAM_wflow.sh``) until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). 
 The cron job is then removed from the user's cron table.
 
-The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in Chapters :numref:`%s <BuildSRW>` and :numref:`%s <RunSRW>`). 
+The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Section %s <SetUpPythonEnv>`. 
 
 #. To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
    resources used to the "rtrr" account, use:
