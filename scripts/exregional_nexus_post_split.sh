@@ -80,13 +80,23 @@ set -x
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_NEXUS"
+DATA="${DATA}/tmp_NEXUS_POST_SPLIT"
 mkdir_vrfy -p "$DATA"
 
-DATAinput="${DATA}/input"
-mkdir_vrfy -p "$DATAinput"
-
 cd_vrfy $DATA
+
+#
+#-----------------------------------------------------------------------
+#
+# Copy the NEXUS config files to the tmp directory  
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}
+
+nspt="00"
+cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 
 #
 #-----------------------------------------------------------------------
@@ -96,7 +106,7 @@ cd_vrfy $DATA
 #-----------------------------------------------------------------------
 #
 cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
-./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_ugly.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
+./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
 
 #
 #-----------------------------------------------------------------------

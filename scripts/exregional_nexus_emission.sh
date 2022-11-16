@@ -101,7 +101,7 @@ cd_vrfy $DATA
 cp_vrfy ${EXECdir}/nexus ${DATA}
 cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
-cp_vrfy ${ARL_NEXUS_DIR}/config/megan/*.rc ${DATA}
+cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -256,10 +256,19 @@ fi
 #-----------------------------------------------------------------------
 #
 PREP_STEP
-eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_ugly.nc ${REDIRECT_OUT_ERR} || \
+eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to execute nexus standalone for the FV3LAM failed."
 POST_STEP
+
+#
+#-----------------------------------------------------------------------
+#
+# Move NEXUS output to INPUT_DATA directory.
+#
+#-----------------------------------------------------------------------
+#
+mv_vrfy ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
 
 #
 #-----------------------------------------------------------------------
