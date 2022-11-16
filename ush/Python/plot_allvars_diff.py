@@ -444,24 +444,28 @@ for fhr in fhours:
     cin_diff = cin_2 - cin_1
 
     # 500 mb height, wind, vorticity
-    z500_1 = data1.select(name="Geopotential Height", level=500)[0].values * 0.1
-    z500_1 = ndimage.filters.gaussian_filter(z500_1, 6.89)
-    z500_2 = data2.select(name="Geopotential Height", level=500)[0].values * 0.1
-    z500_2 = ndimage.filters.gaussian_filter(z500_2, 6.89)
-    z500_diff = z500_2 - z500_1
-    vort500_1 = data1.select(name="Absolute vorticity", level=500)[0].values * 100000
-    vort500_1 = ndimage.filters.gaussian_filter(vort500_1, 1.7225)
-    vort500_1[vort500_1 > 1000] = 0  # Mask out undefined values on domain edge
-    vort500_2 = data2.select(name="Absolute vorticity", level=500)[0].values * 100000
-    vort500_2 = ndimage.filters.gaussian_filter(vort500_2, 1.7225)
-    vort500_2[vort500_2 > 1000] = 0  # Mask out undefined values on domain edge
-    u500_1 = data1.select(name="U component of wind", level=500)[0].values * 1.94384
-    u500_2 = data2.select(name="U component of wind", level=500)[0].values * 1.94384
-    v500_1 = data1.select(name="V component of wind", level=500)[0].values * 1.94384
-    v500_2 = data2.select(name="V component of wind", level=500)[0].values * 1.94384
-    # Rotate winds from grid relative to Earth relative
-    u500_1, v500_1 = rotate_wind(Lat0, Lon0, lon, u500_1, v500_1, "lcc", inverse=False)
-    u500_2, v500_2 = rotate_wind(Lat0, Lon0, lon2, u500_2, v500_2, "lcc", inverse=False)
+    try:
+        z500_1 = data1.select(name="Geopotential Height", level=500)[0].values * 0.1
+        z500_1 = ndimage.filters.gaussian_filter(z500_1, 6.89)
+        z500_2 = data2.select(name="Geopotential Height", level=500)[0].values * 0.1
+        z500_2 = ndimage.filters.gaussian_filter(z500_2, 6.89)
+        z500_diff = z500_2 - z500_1
+        vort500_1 = data1.select(name="Absolute vorticity", level=500)[0].values * 100000
+        vort500_1 = ndimage.filters.gaussian_filter(vort500_1, 1.7225)
+        vort500_1[vort500_1 > 1000] = 0  # Mask out undefined values on domain edge
+        vort500_2 = data2.select(name="Absolute vorticity", level=500)[0].values * 100000
+        vort500_2 = ndimage.filters.gaussian_filter(vort500_2, 1.7225)
+        vort500_2[vort500_2 > 1000] = 0  # Mask out undefined values on domain edge
+        u500_1 = data1.select(name="U component of wind", level=500)[0].values * 1.94384
+        u500_2 = data2.select(name="U component of wind", level=500)[0].values * 1.94384
+        v500_1 = data1.select(name="V component of wind", level=500)[0].values * 1.94384
+        v500_2 = data2.select(name="V component of wind", level=500)[0].values * 1.94384
+        # Rotate winds from grid relative to Earth relative
+        u500_1, v500_1 = rotate_wind(Lat0, Lon0, lon, u500_1, v500_1, "lcc", inverse=False)
+        u500_2, v500_2 = rotate_wind(Lat0, Lon0, lon2, u500_2, v500_2, "lcc", inverse=False)
+    except:
+        u500_1 = None
+        u500_2 = None
 
     # 250 mb winds
     u250_1 = data1.select(name="U component of wind", level=250)[0].values * 1.94384
@@ -1450,178 +1454,179 @@ for fhr in fhours:
         #################################
         # Plot 500 mb HGT/WIND/VORT
         #################################
-        t1 = time.perf_counter()
-        print(("Working on 500 mb Hgt/Wind/Vort for " + dom))
+        if (u500_1 is not None) and (u500_2 is not None):
+            t1 = time.perf_counter()
+            print(("Working on 500 mb Hgt/Wind/Vort for " + dom))
 
-        # Clear off old plottables but keep all the map info
-        cbar1.remove()
-        cbar2.remove()
-        cbar3.remove()
-        clear_plotables(ax1, keep_ax_lst_1, fig)
-        clear_plotables(ax2, keep_ax_lst_2, fig)
-        clear_plotables(ax3, keep_ax_lst_3, fig)
+            # Clear off old plottables but keep all the map info
+            cbar1.remove()
+            cbar2.remove()
+            cbar3.remove()
+            clear_plotables(ax1, keep_ax_lst_1, fig)
+            clear_plotables(ax2, keep_ax_lst_2, fig)
+            clear_plotables(ax3, keep_ax_lst_3, fig)
 
-        units = "x10${^5}$ s${^{-1}}$"
-        skip = round(177.28 * (dx / 1000.0) ** -0.97)
-        print("skipping every " + str(skip) + " grid points to plot")
-        barblength = 4
+            units = "x10${^5}$ s${^{-1}}$"
+            skip = round(177.28 * (dx / 1000.0) ** -0.97)
+            print("skipping every " + str(skip) + " grid points to plot")
+            barblength = 4
 
-        vortlevs = [16, 20, 24, 28, 32, 36, 40]
-        clevsdiff = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
-        colorlist = ["yellow", "gold", "goldenrod", "orange", "orangered", "red"]
-        cm = matplotlib.colors.ListedColormap(colorlist)
-        norm = matplotlib.colors.BoundaryNorm(vortlevs, cm.N)
-        normdiff = matplotlib.colors.BoundaryNorm(clevsdiff, cmdiff.N)
+            vortlevs = [16, 20, 24, 28, 32, 36, 40]
+            clevsdiff = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+            colorlist = ["yellow", "gold", "goldenrod", "orange", "orangered", "red"]
+            cm = matplotlib.colors.ListedColormap(colorlist)
+            norm = matplotlib.colors.BoundaryNorm(vortlevs, cm.N)
+            normdiff = matplotlib.colors.BoundaryNorm(clevsdiff, cmdiff.N)
 
-        cs1_a = ax1.pcolormesh(
-            lon_shift, lat_shift, vort500_1, transform=transform, cmap=cm, norm=norm
-        )
-        cs1_a.cmap.set_under("white")
-        cs1_a.cmap.set_over("darkred")
-        cbar1 = plt.colorbar(
-            cs1_a,
-            ax=ax1,
-            orientation="horizontal",
-            pad=0.05,
-            shrink=0.6,
-            ticks=vortlevs,
-            extend="both",
-        )
-        cbar1.set_label(units, fontsize=6)
-        cbar1.ax.tick_params(labelsize=6)
-        ax1.barbs(
-            lon_shift[::skip, ::skip],
-            lat_shift[::skip, ::skip],
-            u500_1[::skip, ::skip],
-            v500_1[::skip, ::skip],
-            length=barblength,
-            linewidth=0.5,
-            color="steelblue",
-            transform=transform,
-        )
-        cs1_b = ax1.contour(
-            lon_shift,
-            lat_shift,
-            z500_1,
-            np.arange(486, 600, 6),
-            colors="black",
-            linewidths=1,
-            transform=transform,
-        )
-        plt.clabel(
-            cs1_b, np.arange(486, 600, 6), inline_spacing=1, fmt="%d", fontsize=8
-        )
-        ax1.text(
-            0.5,
-            1.03,
-            "FV3-LAM 500 mb Heights (dam), Winds (kts), and $\zeta$ ("
-            + units
-            + ") \n initialized: "
-            + itime
-            + " valid: "
-            + vtime
-            + " (f"
-            + fhour
-            + ")",
-            horizontalalignment="center",
-            fontsize=8,
-            transform=ax1.transAxes,
-            bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-        )
+            cs1_a = ax1.pcolormesh(
+                lon_shift, lat_shift, vort500_1, transform=transform, cmap=cm, norm=norm
+            )
+            cs1_a.cmap.set_under("white")
+            cs1_a.cmap.set_over("darkred")
+            cbar1 = plt.colorbar(
+                cs1_a,
+                ax=ax1,
+                orientation="horizontal",
+                pad=0.05,
+                shrink=0.6,
+                ticks=vortlevs,
+                extend="both",
+            )
+            cbar1.set_label(units, fontsize=6)
+            cbar1.ax.tick_params(labelsize=6)
+            ax1.barbs(
+                lon_shift[::skip, ::skip],
+                lat_shift[::skip, ::skip],
+                u500_1[::skip, ::skip],
+                v500_1[::skip, ::skip],
+                length=barblength,
+                linewidth=0.5,
+                color="steelblue",
+                transform=transform,
+            )
+            cs1_b = ax1.contour(
+                lon_shift,
+                lat_shift,
+                z500_1,
+                np.arange(486, 600, 6),
+                colors="black",
+                linewidths=1,
+                transform=transform,
+            )
+            plt.clabel(
+                cs1_b, np.arange(486, 600, 6), inline_spacing=1, fmt="%d", fontsize=8
+            )
+            ax1.text(
+                0.5,
+                1.03,
+                "FV3-LAM 500 mb Heights (dam), Winds (kts), and $\zeta$ ("
+                + units
+                + ") \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=8,
+                transform=ax1.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
 
-        cs2_a = ax2.pcolormesh(
-            lon2_shift, lat2_shift, vort500_2, transform=transform, cmap=cm, norm=norm
-        )
-        cs2_a.cmap.set_under("white")
-        cs2_a.cmap.set_over("darkred")
-        cbar2 = plt.colorbar(
-            cs2_a,
-            ax=ax2,
-            orientation="horizontal",
-            pad=0.05,
-            shrink=0.6,
-            ticks=vortlevs,
-            extend="both",
-        )
-        cbar2.set_label(units, fontsize=6)
-        cbar2.ax.tick_params(labelsize=6)
-        ax2.barbs(
-            lon2_shift[::skip, ::skip],
-            lat2_shift[::skip, ::skip],
-            u500_2[::skip, ::skip],
-            v500_2[::skip, ::skip],
-            length=barblength,
-            linewidth=0.5,
-            color="steelblue",
-            transform=transform,
-        )
-        cs2_b = ax2.contour(
-            lon2_shift,
-            lat2_shift,
-            z500_2,
-            np.arange(486, 600, 6),
-            colors="black",
-            linewidths=1,
-            transform=transform,
-        )
-        plt.clabel(
-            cs2_b, np.arange(486, 600, 6), inline_spacing=1, fmt="%d", fontsize=8
-        )
-        ax2.text(
-            0.5,
-            1.03,
-            "FV3-LAM-2 500 mb Heights (dam), Winds (kts), and $\zeta$ ("
-            + units
-            + ") \n initialized: "
-            + itime
-            + " valid: "
-            + vtime
-            + " (f"
-            + fhour
-            + ")",
-            horizontalalignment="center",
-            fontsize=8,
-            transform=ax2.transAxes,
-            bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-        )
+            cs2_a = ax2.pcolormesh(
+                lon2_shift, lat2_shift, vort500_2, transform=transform, cmap=cm, norm=norm
+            )
+            cs2_a.cmap.set_under("white")
+            cs2_a.cmap.set_over("darkred")
+            cbar2 = plt.colorbar(
+                cs2_a,
+                ax=ax2,
+                orientation="horizontal",
+                pad=0.05,
+                shrink=0.6,
+                ticks=vortlevs,
+                extend="both",
+            )
+            cbar2.set_label(units, fontsize=6)
+            cbar2.ax.tick_params(labelsize=6)
+            ax2.barbs(
+                lon2_shift[::skip, ::skip],
+                lat2_shift[::skip, ::skip],
+                u500_2[::skip, ::skip],
+                v500_2[::skip, ::skip],
+                length=barblength,
+                linewidth=0.5,
+                color="steelblue",
+                transform=transform,
+            )
+            cs2_b = ax2.contour(
+                lon2_shift,
+                lat2_shift,
+                z500_2,
+                np.arange(486, 600, 6),
+                colors="black",
+                linewidths=1,
+                transform=transform,
+            )
+            plt.clabel(
+                cs2_b, np.arange(486, 600, 6), inline_spacing=1, fmt="%d", fontsize=8
+            )
+            ax2.text(
+                0.5,
+                1.03,
+                "FV3-LAM-2 500 mb Heights (dam), Winds (kts), and $\zeta$ ("
+                + units
+                + ") \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=8,
+                transform=ax2.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
 
-        cs = ax3.pcolormesh(
-            lon2_shift,
-            lat2_shift,
-            z500_diff,
-            transform=transform,
-            cmap=cmdiff,
-            norm=normdiff,
-        )
-        cs.cmap.set_under("darkblue")
-        cs.cmap.set_over("darkred")
-        cbar3 = plt.colorbar(
-            cs, ax=ax3, orientation="horizontal", pad=0.05, shrink=0.6, extend="both"
-        )
-        cbar3.set_label(units, fontsize=6)
-        cbar3.ax.tick_params(labelsize=6)
-        ax3.text(
-            0.5,
-            1.03,
-            "FV3-LAM-2 - FV3-LAM 500-mb Heights (dam) \n initialized: "
-            + itime
-            + " valid: "
-            + vtime
-            + " (f"
-            + fhour
-            + ")",
-            horizontalalignment="center",
-            fontsize=6,
-            transform=ax3.transAxes,
-            bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
-        )
+            cs = ax3.pcolormesh(
+                lon2_shift,
+                lat2_shift,
+                z500_diff,
+                transform=transform,
+                cmap=cmdiff,
+                norm=normdiff,
+            )
+            cs.cmap.set_under("darkblue")
+            cs.cmap.set_over("darkred")
+            cbar3 = plt.colorbar(
+                cs, ax=ax3, orientation="horizontal", pad=0.05, shrink=0.6, extend="both"
+            )
+            cbar3.set_label(units, fontsize=6)
+            cbar3.ax.tick_params(labelsize=6)
+            ax3.text(
+                0.5,
+                1.03,
+                "FV3-LAM-2 - FV3-LAM 500-mb Heights (dam) \n initialized: "
+                + itime
+                + " valid: "
+                + vtime
+                + " (f"
+                + fhour
+                + ")",
+                horizontalalignment="center",
+                fontsize=6,
+                transform=ax3.transAxes,
+                bbox=dict(facecolor="white", alpha=0.85, boxstyle="square,pad=0.2"),
+            )
 
-        compress_and_save(
-            EXPT_DIR_1 + "/" + ymdh + "/postprd/500_diff_" + dom + "_f" + fhour + ".png"
-        )
-        t2 = time.perf_counter()
-        t3 = round(t2 - t1, 3)
-        print(("%.3f seconds to plot 500 mb Hgt/Wind/Vort for: " + dom) % t3)
+            compress_and_save(
+                EXPT_DIR_1 + "/" + ymdh + "/postprd/500_diff_" + dom + "_f" + fhour + ".png"
+            )
+            t2 = time.perf_counter()
+            t3 = round(t2 - t1, 3)
+            print(("%.3f seconds to plot 500 mb Hgt/Wind/Vort for: " + dom) % t3)
 
         #################################
         # Plot 250 mb WIND
