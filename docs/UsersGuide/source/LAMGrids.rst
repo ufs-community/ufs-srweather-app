@@ -110,19 +110,18 @@ Ultimately, the choice of grid is experiment-dependent and resource-dependent. F
 Creating User-Generated Grids
 ===============================
 While the four predefined grids available in this release are ideal for users just starting
-out with the SRW App, more advanced users may wish to create their own grid for testing over
+out with the SRW App, more advanced users may wish to create their own predefined grid for testing over
 a different region and/or with a different resolution. Creating a user-defined grid requires
 knowledge of how the SRW App workflow functions. In particular, it is important to understand the set of
 scripts that handle the workflow and experiment generation (see :numref:`Figure %s <WorkflowGeneration>` and :numref:`Figure %s <WorkflowTasksFig>`). It is also important to note that user-defined grids are not a supported feature of the current release; however, information is being provided for the benefit of the FV3-LAM community.
 
-With those caveats in mind, this section provides instructions for adding a new grid to the FV3-LAM
+With those caveats in mind, this section provides instructions for adding a new predefined grid to the FV3-LAM
 workflow that will be generated using the "ESGgrid" method (i.e., using the ``regional_esg_grid`` code
 in the `UFS_UTILS <https://github.com/ufs-community/UFS_UTILS>`__ repository, where ESG stands for "Extended Schmidt Gnomonic"). We assume here that the grid to be generated covers a domain that (1) does not contain either of the poles and (2) does not cross the -180 deg --> +180 deg discontinuity in longitude near the international date line. Instructions for domains that do not have these restrictions will be provided in a future release.
 
 The steps to add such a grid to the workflow are as follows:
 
 #. Choose the name of the grid. For the purposes of this documentation, the grid will be called "NEW_GRID".
-
 
 #. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/ush/valid_param_vals.yaml`` file.
 
@@ -197,3 +196,6 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
         WRTCMP_ny: 107
         WRTCMP_dx: 25000.0
         WRTCMP_dy: 25000.0
+
+.. note:: 
+   The process above explains how to create a new *predefined* grid, which can be used more than once. If a user prefers to create a custom grid for one-time use, the variables above can instead be specified in ``config.yaml``, and ``PREDEF_GRID_NAME`` can be set to a null string. In this case, it is not necessary to modify ``valid_param_vals.yaml`` or ``predef_grid_params.yaml``. 
