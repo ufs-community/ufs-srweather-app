@@ -13,4 +13,5 @@ platform:
   FIXorg: /Users/username/DATA/UFS/fix/fix_orog
   FIXsfc: /Users/username/DATA/UFS/fix/fix_sfc_climo
 data:
-  FV3GFS: /Users/username/DATA/UFS/FV3GFS
+  ics_lbcs:
+    FV3GFS: /Users/username/DATA/UFS/FV3GFS

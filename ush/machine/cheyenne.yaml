@@ -27,4 +27,5 @@ platform:
   FIXorg: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /glade/p/ral/jntp/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
-  FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}
+  ics_lbcs:
+    FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}

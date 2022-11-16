@@ -25,4 +25,5 @@ platform:
   FIXsfc: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
-  FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
+  ics_lbcs:
+    FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
