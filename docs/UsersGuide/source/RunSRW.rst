@@ -30,7 +30,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 .. figure:: _static/SRW_overall_workflow_run.png 
    :alt: Flowchart describing the SRW App workflow steps. 
 
-   *Overall layout of the SRW App Workflow*
+   *Overall Layout of the SRW App Workflow*
 
 .. _Data:
 
@@ -67,11 +67,11 @@ For Level 2-4 systems, the data must be added to the user's system. Detailed ins
 Grid Configuration
 =======================
 
-The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new custom domain should refer to :numref:`Section %s <UserDefinedGrid>` for instructions. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file. 
+The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>` for those who are curious. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new custom predefined grid should refer to :numref:`Section %s <UserDefinedGrid>` for instructions. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file. 
 
 .. _PredefinedGrids:
 
-.. table::  Predefined grids in the SRW App
+.. table::  Predefined Grids Supported in the SRW App
 
    +----------------------+-------------------+--------------------------------+
    | **Grid Name**        | **Grid Type**     | **Quilting (write component)** |
