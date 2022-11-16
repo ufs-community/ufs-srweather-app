@@ -117,14 +117,14 @@ where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <us
    If users source the ``lmod-setup.sh`` file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
 A brief recipe for building the regional_workflow environment could be found in  :numref:`Section %s <LinuxMacVEnv>`. 
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
 
 .. code-block:: console
 
    Please do the following to activate conda:
        > conda activate regional_workflow
 
-then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. 
+then the user should run ``conda activate regional_workflow``. This activates the ``regional_workflow`` conda environment, and the user typically sees ``(regional_workflow)`` in front of the Terminal prompt. 
 
 
 Preparing the Workflow Environment on Non-Level 1 Systems
