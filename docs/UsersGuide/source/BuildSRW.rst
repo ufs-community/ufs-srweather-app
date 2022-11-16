@@ -437,7 +437,7 @@ The build will take a few minutes to complete. When it starts, a random number i
 .. _MacLinuxDetails:
 
 Additional Details for Building on MacOS or generic Linux
-------------------------------------------
+-----------------------------------------------------------
 
 .. note::
     Users who are **not** building the SRW App on MacOS or generic Linux platforms may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
@@ -458,9 +458,8 @@ The ``./modulefiles/build_<platform>_gnu.lua`` modulefile, where ``<platform>`` 
 
    - This path should point to your HPCstack installation directory
    local HPCstack="/Users/username/hpc-stack/install"
-   
- Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case, and set ``BASH_ENV`` variable to point to Lmod initialization script. There is no need to modify this script for the ``macos`` case, when Lmod followed a standard intallation procedure using Homebrew package manager for the MacOS.
-Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App. 
+
+Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case, and set ``BASH_ENV`` variable to point to the Lmod initialization script. There is no need to modify this script for the ``macos`` case, when Lmod followed a standard intallation procedure using Homebrew package manager for the MacOS. Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App. 
 
 .. code-block:: console
 
