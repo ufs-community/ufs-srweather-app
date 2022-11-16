@@ -6,7 +6,7 @@ Introduction
 
 The Unified Forecast System (:term:`UFS`) is a community-based, coupled, comprehensive Earth modeling system. NOAA's operational model suite for numerical weather prediction (:term:`NWP`) is quickly transitioning to the UFS from a number of different modeling systems. The UFS enables research, development, and contribution opportunities within the broader :term:`Weather Enterprise` (including government, industry, and academia). For more information about the UFS, visit the `UFS Portal <https://ufscommunity.org/>`__.
 
-The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. New and improved capabilities for the v2.1.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
+The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The SRW Application v2.1.0 release includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. New and improved capabilities for the v2.0.0 release included the addition of a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. This v2.1.0 release includes:
 
    * Bug fixes since the v2.0.0 release
    * Conversion to a Python workflow (from the former shell workflow)
@@ -27,7 +27,7 @@ This documentation provides:
 
 The SRW App v2.1.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, Nov. 16). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.1.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
+UFS Development Team. (2022, Nov. 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.1.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
 
 .. COMMENT: DOI link will not work until after it is published (on or shortly before the release date). 
 
