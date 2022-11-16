@@ -2034,10 +2034,11 @@ task_plot_allvars:
   WTIME_PLOT_ALLVARS: 00:20:00
   MAXTRIES_PLOT_ALLVARS: 1
   # reference experiment directory
-  EXPTDIR_REF: ""
+  COMOUT_REF: ""
   # Plot fcts start and increment
   PLOT_FCST_START: 0
   PLOT_FCST_INC: 3
+  # By default the end is FCST_LEN_HRS
   PLOT_FCST_END: ""
 
 

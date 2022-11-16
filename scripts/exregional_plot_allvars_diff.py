@@ -16,12 +16,8 @@
 #                       2. Starting forecast hour
 #                       3. Ending forecast hour
 #                       4. Forecast hour increment
-#                       5. EXPT_DIR_1: Experiment 1 directory
-#                          -Postprocessed data should be found in the directory:
-#                            EXPT_DIR_1/YYYYMMDDHH/postprd/
-#                       6. EXPT_DIR_2: Experiment 2 directory
-#                          -Postprocessed data should be found in the directory:
-#                            EXPT_DIR_2/YYYYMMDDHH/postprd/
+#                       5. COMOUT_1: COMOUT directory containing postprocessed data.
+#                       6. COMOUT_2: COMOUT directory for second experiment
 #                       7. CARTOPY_DIR:  Base directory of cartopy shapefiles
 #                          -Shapefiles cannot be directly downloaded to NOAA
 #                            machines from the internet, so shapefiles need to
@@ -292,8 +288,8 @@ else:
     fhours = np.linspace(start_fhr, end_fhr, num, dtype="int")
 print(fhours)
 
-EXPT_DIR_1 = str(sys.argv[5])
-EXPT_DIR_2 = str(sys.argv[6])
+COMOUT_1 = str(sys.argv[5])
+COMOUT_2 = str(sys.argv[6])
 CARTOPY_DIR = str(sys.argv[7])
 POST_OUTPUT_DOMAIN_NAME = str(sys.argv[8]).lower()
 
@@ -306,10 +302,8 @@ for fhr in fhours:
 
     # Define the location of the input files
     data1 = pygrib.open(
-        EXPT_DIR_1
-        + "/"
-        + ymdh
-        + "/postprd/rrfs.t"
+        COMOUT_1
+        + "/rrfs.t"
         + cyc
         + "z.prslev.f"
         + fhour
@@ -318,10 +312,8 @@ for fhr in fhours:
         + ".grib2"
     )
     data2 = pygrib.open(
-        EXPT_DIR_2
-        + "/"
-        + ymdh
-        + "/postprd/rrfs.t"
+        COMOUT_2
+        + "/rrfs.t"
         + cyc
         + "z.prslev.f"
         + fhour
@@ -815,7 +807,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1 + "/" + ymdh + "/postprd/slp_diff_" + dom + "_f" + fhour + ".png"
+            COMOUT_1 + "/slp_diff_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -945,7 +937,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1 + "/" + ymdh + "/postprd/2mt_diff_" + dom + "_f" + fhour + ".png"
+            COMOUT_1 + "/2mt_diff_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -1058,10 +1050,8 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1
-            + "/"
-            + ymdh
-            + "/postprd/2mdew_diff_"
+            COMOUT_1
+            + "/2mdew_diff_"
             + dom
             + "_f"
             + fhour
@@ -1244,10 +1234,8 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1
-            + "/"
-            + ymdh
-            + "/postprd/10mwind_diff_"
+            COMOUT_1
+            + "/10mwind_diff_"
             + dom
             + "_f"
             + fhour
@@ -1438,10 +1426,8 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1
-            + "/"
-            + ymdh
-            + "/postprd/sfcape_diff_"
+            COMOUT_1
+            + "/sfcape_diff_"
             + dom
             + "_f"
             + fhour
@@ -1622,7 +1608,7 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR_1 + "/" + ymdh + "/postprd/500_diff_" + dom + "_f" + fhour + ".png"
+                COMOUT_1 + "/500_diff_" + dom + "_f" + fhour + ".png"
             )
             t2 = time.perf_counter()
             t3 = round(t2 - t1, 3)
@@ -1799,10 +1785,8 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1
-            + "/"
-            + ymdh
-            + "/postprd/250wind_diff_"
+            COMOUT_1
+            + "/250wind_diff_"
             + dom
             + "_f"
             + fhour
@@ -1997,10 +1981,8 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR_1
-                + "/"
-                + ymdh
-                + "/postprd/qpf_diff_"
+                COMOUT_1
+                + "/qpf_diff_"
                 + dom
                 + "_f"
                 + fhour
@@ -2173,10 +2155,8 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR_1
-                + "/"
-                + ymdh
-                + "/postprd/uh25_diff_"
+                COMOUT_1
+                + "/uh25_diff_"
                 + dom
                 + "_f"
                 + fhour
@@ -2331,10 +2311,8 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR_1
-            + "/"
-            + ymdh
-            + "/postprd/refc_diff_"
+            COMOUT_1
+            + "/refc_diff_"
             + dom
             + "_f"
             + fhour

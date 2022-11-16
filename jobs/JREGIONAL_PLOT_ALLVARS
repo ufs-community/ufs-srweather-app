@@ -48,11 +48,21 @@ This is the J-job script for the plotting task
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# Set grid name and COMOUT locations.
 #
 #-----------------------------------------------------------------------
 #
 GRID_NAME=${PREDEF_GRID_NAME:-$EXPT_SUBDIR}
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  export COMOUT="${COMOUT}${SLASH_ENSMEM_SUBDIR}/postprd"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary variables.
+#
+#-----------------------------------------------------------------------
+#
 
 # plot all variables
 $SCRIPTSdir/exregional_plot_allvars.py \
@@ -60,21 +70,21 @@ $SCRIPTSdir/exregional_plot_allvars.py \
            ${PLOT_FCST_START} \
            ${PLOT_FCST_END:-$FCST_LEN_HRS} \
            ${PLOT_FCST_INC:-1} \
-           ${EXPTDIR} \
+           ${COMOUT} \
            ${FIXshp} \
            ${GRID_NAME} || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 
 # plot all variables diff with baseline
-if [ ! -z $EXPTDIR_REF ]; then
+if [ ! -z $COMOUT_REF ]; then
   $SCRIPTSdir/exregional_plot_allvars_diff.py \
            ${CDATE} \
            ${PLOT_FCST_START} \
            ${PLOT_FCST_END:-$FCST_LEN_HRS} \
            ${PLOT_FCST_INC:-1} \
-           ${EXPTDIR} \
-           ${EXPTDIR_REF} \
+           ${COMOUT} \
+           ${COMOUT_REF} \
            ${FIXshp} \
            ${GRID_NAME} || \
   print_err_msg_exit "\

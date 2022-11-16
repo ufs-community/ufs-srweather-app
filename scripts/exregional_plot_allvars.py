@@ -16,9 +16,7 @@
 #                       2. Starting forecast hour
 #                       3. Ending forecast hour
 #                       4. Forecast hour increment
-#                       5. EXPT_DIR: Experiment directory
-#                          -Postprocessed data should be found in the directory:
-#                            EXPT_DIR/YYYYMMDDHH/postprd/
+#                       5. COMOUT: Postprocessed data location
 #                       6. CARTOPY_DIR:  Base directory of cartopy shapefiles
 #                          -Shapefiles cannot be directly downloaded to NOAA
 #                            machines from the internet, so shapefiles need to
@@ -286,7 +284,7 @@ else:
     fhours = np.linspace(start_fhr, end_fhr, num, dtype="int")
 print(fhours)
 
-EXPT_DIR = str(sys.argv[5])
+COMOUT = str(sys.argv[5])
 CARTOPY_DIR = str(sys.argv[6])
 POST_OUTPUT_DOMAIN_NAME = str(sys.argv[7]).lower()
 
@@ -299,10 +297,8 @@ for fhr in fhours:
 
     # Define the location of the input file
     data1 = pygrib.open(
-        EXPT_DIR
-        + "/"
-        + ymdh
-        + "/postprd/rrfs.t"
+        COMOUT
+        + "/rrfs.t"
         + cyc
         + "z.prslev.f"
         + fhour
@@ -635,7 +631,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/slp_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/slp_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -690,7 +686,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/2mt_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/2mt_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -738,7 +734,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/2mdew_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/2mdew_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -827,7 +823,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/10mwind_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/10mwind_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -911,7 +907,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/sfcape_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/sfcape_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -993,7 +989,7 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR + "/" + ymdh + "/postprd/500_" + dom + "_f" + fhour + ".png"
+                COMOUT + "/500_" + dom + "_f" + fhour + ".png"
             )
             t2 = time.perf_counter()
             t3 = round(t2 - t1, 3)
@@ -1080,7 +1076,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/250wind_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/250wind_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -1184,7 +1180,7 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR + "/" + ymdh + "/postprd/qpf_" + dom + "_f" + fhour + ".png"
+                COMOUT + "/qpf_" + dom + "_f" + fhour + ".png"
             )
             t2 = time.perf_counter()
             t3 = round(t2 - t1, 3)
@@ -1255,7 +1251,7 @@ for fhr in fhours:
         )
 
         compress_and_save(
-            EXPT_DIR + "/" + ymdh + "/postprd/refc_" + dom + "_f" + fhour + ".png"
+            COMOUT + "/refc_" + dom + "_f" + fhour + ".png"
         )
         t2 = time.perf_counter()
         t3 = round(t2 - t1, 3)
@@ -1342,7 +1338,7 @@ for fhr in fhours:
             )
 
             compress_and_save(
-                EXPT_DIR + "/" + ymdh + "/postprd/uh25_" + dom + "_f" + fhour + ".png"
+                COMOUT + "/uh25_" + dom + "_f" + fhour + ".png"
             )
             t2 = time.perf_counter()
             t3 = round(t2 - t1, 3)
