@@ -1217,7 +1217,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
       ./run_fcst.sh
       ./run_post.sh
 
-Each task should finish with exit code 0. For example: 
+Each task should finish with error code 0. For example: 
 
 .. code-block:: console
 
