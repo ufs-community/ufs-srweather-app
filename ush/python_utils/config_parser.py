@@ -402,6 +402,21 @@ def check_structure_dict(dict_o, dict_t):
     return True
 
 
+def filter_dict(dict_o, keys_regex):
+    """Filter dictionary keys based on a list of keys
+    Args:
+        dict_o: the source dictionary
+        keys_regex: list of keys to retain (could be regex exp.)
+    """
+
+    keys = []
+    for k in keys_regex:
+        r = re.compile(k)
+        keys += list(filter(r.match, dict_o.keys()))
+    dict_t = {k: dict_o[k] for k in keys}
+    return dict_t
+
+
 ##################
 # CONFIG loader
 ##################
@@ -490,11 +505,7 @@ def cfg_main():
             cfg = structure_dict(cfg, cfg_t)
 
         if args.keys:
-            keys = []
-            for k in args.keys:
-                r = re.compile(k)
-                keys += list(filter(r.match, cfg.keys()))
-            cfg = {k: cfg[k] for k in keys}
+            cfg = filter_dict(cfg, args.keys)
 
         if args.flatten:
             cfg = flatten_dict(cfg)

@@ -6,6 +6,7 @@ user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2020081000'
   DATE_LAST_CYCL: '2020081000'
   FCST_LEN_HRS: 3
@@ -23,7 +24,6 @@ task_get_extrn_lbcs:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
   DT_ATMOS: 120
-  PREDEF_GRID_NAME: RRFS_CONUScompact_25km
 task_run_post:
   SUB_HOURLY_POST: true
   DT_SUBHOURLY_POST_MNTS: 2
