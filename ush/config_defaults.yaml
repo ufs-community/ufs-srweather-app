@@ -882,7 +882,7 @@ workflow_switches:
   RUN_TASK_VX_ENSGRID: false
   RUN_TASK_VX_ENSPOINT: false
 
-  RUN_TASK_PLOT_ALLVARS: true
+  RUN_TASK_PLOT_ALLVARS: false
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
