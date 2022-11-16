@@ -16,8 +16,9 @@ endif
 source /etc/csh.login
    
 if ( "$L_MACHINE" == macos ) then
-   set ENV="/opt/homebrew/opt/lmod/init/csh"
-   # setenv ENV "/usr/local/opt/lmod/init/csh"
+   arch=$(uname -m)
+   [[ "$arch" = arm64 ]] && export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
+   [[ "$arch" = x86_64 ]] && export BASH_ENV="/usr/local/opt/lmod/init/bash"
    source $ENV
 
    module purge

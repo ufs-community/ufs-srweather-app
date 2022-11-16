@@ -36,12 +36,12 @@ Install the Prerequisite Software Stack
 Currently, installation of the prerequisite software stack is supported via HPC-Stack. :term:`HPC-Stack` is a repository that provides a unified, shell script-based system to build the software stack required for `UFS <https://ufscommunity.org/>`__ applications such as the SRW App. 
 
 .. Attention::
-   Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`_ (e.g., Cheyenne, Hera, Orion, NOAA Cloud).
+   Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ (e.g., Cheyenne, Hera, Orion, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
 
 Background
 ----------------
 
-The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third party libraries (e.g., NETCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
+The UFS Weather Model draws on over 50 code libraries to run its applications. These libraries range from libraries developed in-house at NOAA (e.g., NCEPLIBS, FMS) to libraries developed by NOAA's partners (e.g., PIO, ESMF) to truly third party libraries (e.g., netCDF). Individual installation of these libraries is not practical, so the `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ was developed as a central installation system to ensure that the infrastructure environment across multiple platforms is as similar as possible. Installation of the HPC-Stack is required to run the SRW App.
 
 Instructions
 -------------------------
@@ -58,7 +58,7 @@ Users working on systems that fall under `Support Levels 2-4 <https://github.com
 For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
 .. attention::
-   Although HPC-Stack is the fully-supported option for this release, UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. The spack-stack is currently used on NOAA Cloud platforms and in containers, while HPC-Stack is still used on other Level 1 systems and is the software stack currently validated by the UFS Weather Model. Users are encouraged to check out spack-stack to prepare for the upcoming shift in support from HPC-Stack to spack-stack. However, the HPC-Stack is still the go-to method for this release. 
+   Although HPC-Stack is the fully-supported option for the v2.1.0 release, UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. The spack-stack is currently used on NOAA Cloud platforms and in containers, while HPC-Stack is still used on other Level 1 systems and is the software stack validated by the UFS Weather Model as of this release. Users are encouraged to check out `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ to prepare for the upcoming shift in support from HPC-Stack to spack-stack. However, the HPC-Stack is still the go-to supported method for this release. 
 
 After completing installation, continue to the next section (:numref:`Section %s: Download the UFS SRW Application Code <DownloadSRWApp>`). 
 
@@ -73,12 +73,12 @@ The SRW Application source code is publicly available on GitHub. To download the
    git clone -b release/public-v2.1.0 https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
-:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
+:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``/home`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
 
 .. code-block:: console
 
-    export SRW=$HOME/ufs-srweather-app
-    setenv SRW $HOME/ufs-srweather-app
+    export SRW=/home/ufs-srweather-app
+    setenv SRW /home/ufs-srweather-app
 
 .. _FilesAndSubDirs:
 
@@ -117,7 +117,7 @@ The cloned repository contains the configuration files and sub-directories shown
    |                                | configuration files such as ``model_configure``,          |
    |                                | ``diag_table``, and ``field_table``.                      |
    +--------------------------------+-----------------------------------------------------------+
-   | README.md                      | Getting Started Guide                                     |
+   | README.md                      | Contains SRW App introductory information                 |
    +--------------------------------+-----------------------------------------------------------+
    | rename_model.sh                | Used to rename the model before it becomes NCO            |
    |                                | operational. The SRW App is a generic app that is the base|
@@ -150,8 +150,6 @@ The cloned repository contains the configuration files and sub-directories shown
    |                                | respectively.                                             |
    +--------------------------------+-----------------------------------------------------------+
 
-.. COMMENT: Is environment.yml deprecated? Remove?
-
 .. _CheckoutExternals:
 
 Check Out External Components
@@ -163,7 +161,7 @@ Run the executable that pulls in SRW App components from external repositories:
 
 .. code-block:: console
 
-   cd $SRW
+   cd </path/to/ufs-srweather-app/>
    ./manage_externals/checkout_externals
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
@@ -172,7 +170,7 @@ To see more options for the ``checkout_externals`` script, users can run ``./man
 
    * ``-S``: Outputs the status of the repositories managed by ``checkout_externals``. By default only summary information is provided. Use with the ``-v`` (verbose) option to see details.
    * ``-x [EXCLUDE [EXCLUDE ...]]``: allows users to exclude components when checking out externals. 
-   * ``-o``: By default only the required externals are checked out. This flag will also checkout the optional externals.
+   * ``-o``: By default only the required externals are checked out. This flag will also check out the optional externals.
 
 Generally, users will not need to use the options and can simply run the script, but the options are available for those who are curious. 
 
@@ -362,11 +360,6 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    | use_raphrrr_sfc.exe        | Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM.   |
    |                            | This is only used for starting the RRFS surface cycling.                    |
    +----------------------------+-----------------------------------------------------------------------------+
-   
-.. COMMENT: What does ufs_srweather_app.settings do? 
-   - precipitable hydrometeor analysis?
-   - What does the update_ice.exe description mean?
-
 
 .. _CMakeApproach:
 
@@ -387,9 +380,11 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
    source etc/lmod-setup.sh gaea
    source etc/lmod-setup.csh gaea
 
-If users execute one of the above commands on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). 
+.. note::
+   
+   If users execute one of the above commands on systems that don't need it, it will not cause any problems (it will simply do a ``module purge``). 
 
-From here on, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in the ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using a given ``<compiler>``, run:
+From here, ``Lmod`` is ready to load the modulefiles needed by the SRW App. These modulefiles are located in the ``modulefiles`` directory. To load the necessary modulefile for a specific ``<platform>`` using a given ``<compiler>``, run:
 
 .. code-block:: console
 
@@ -426,7 +421,7 @@ From the build directory, run the following commands to build the pre-processing
    cmake .. -DCMAKE_INSTALL_PREFIX=.. -DCMAKE_INSTALL_BINDIR=exec ..
    make -j 4  >& build.out &
 
-``-DCMAKE_INSTALL_PREFIX`` specifies the location in which the ``exec``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j 8``, ``-j 2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
+``-DCMAKE_INSTALL_PREFIX`` specifies the location where the ``exec``, ``include``, ``lib``, and ``share`` directories will be created. These directories will contain various components of the SRW App. Its recommended value ``..`` denotes one directory up from the build directory. In the next line, the ``make`` argument ``-j 4`` indicates that the build will run in parallel with 4 threads. Although users can specify a larger or smaller number of threads (e.g., ``-j 8``, ``-j 2``), it is highly recommended to use at least 4 parallel threads to prevent overly long installation times. 
 
 The build will take a few minutes to complete. When it starts, a random number is printed to the console, and when it is done, a ``[1]+  Done`` message is printed to the console. ``[1]+  Exit`` indicates an error. Output from the build will be in the ``ufs-srweather-app/build/build.out`` file. When the build completes, users should see the forecast model executable ``ufs_model`` and several pre- and post-processing executables in the ``ufs-srweather-app/exec`` directory. These executables are described in :numref:`Table %s <ExecDescription>`. 
 
@@ -444,11 +439,9 @@ Additional Details for Building on MacOS or generic Linux
 
 The SRW App can be built on MacOS and generic Linux machines, after the HPC-Stack was already installed on these systems. The installation for MacOS is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations for MacOS have been tested:
 
-* MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
-
-* MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
-
-* MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+#. MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+#. MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+#. MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
 
 Several Linux builds have been tested on systems with x86_64 architectures.
 

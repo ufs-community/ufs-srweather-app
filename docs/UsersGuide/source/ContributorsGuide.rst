@@ -460,6 +460,6 @@ Once a testing label is added to the PR and the tests are run, the results of th
 
 Once on the `Jenkins <https://jenkins-epic.woc.noaa.gov>`__ page specific to the PR check in question, users can view all of the testing output, including "artifacts" from the build. To do this, users must click on the arrow icon in the top right corner of the page. Then, in the lefthand navigation menu, they can click on *S3 Artifacts* and download any files listed there for in-depth review.
 
-If the Jenkins tests fail, then the developer will need to make the necessary corrections to their PR. Unfortunately, removing and adding the label back will not initiate the Jenkins tests. For re-runs, the job will need to be manually re-run through Jenkins.
+If the Jenkins tests fail, then the developer will need to make the necessary corrections to their PR. Unfortunately, removing and adding the label back will not initiate the Jenkins tests. Instead, the job will need to be manually re-run through Jenkins.
 
 
