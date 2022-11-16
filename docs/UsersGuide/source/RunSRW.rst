@@ -27,7 +27,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
 .. _AppOverallProc:
 
-.. figure:: _static/SRW_workflow_run_process.png 
+.. figure:: _static/SRW_run_process.png 
    :alt: Flowchart describing the SRW App workflow steps. 
 
    *Overall Layout of the SRW App Workflow*
