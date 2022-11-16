@@ -95,7 +95,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
       ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" use_cron_to_relaunch="FALSE"
 
-   In this case, the user will have to go into each test's experiment directory and either manually call the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoManualRun>` or :numref:`Section %s <RocotoStatCmd>`).
+   In this case, the user will have to go into each test's experiment directory and either manually run the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoManualRun>` or :numref:`Section %s <RocotoStatCmd>`).
 
 #. To place the experiment subdirectories in a subdirectory named ``test_set_01`` under 
    ``${HOMEdir}/../expt_dirs`` (instead of immediately under ``expt_dirs``), use:
@@ -113,7 +113,7 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
 
    This is useful for grouping various sets of tests.
 
-#. To use a test list file (again named ``my_tests.txt``) located in ``/path/to/custom/location`` instead of in the same directory as ``run_WE2E_tests.sh``, and to have the experiment directories be placed in a specific, non-default location (e.g., ``/path/to/custom/expt_dirs``), use:
+#. To use a test list file (again named ``my_tests.txt``) located in a custom location instead of in the same directory as ``run_WE2E_tests.sh`` and to have the experiment directories be placed in a specific, non-default location (e.g., ``/path/to/custom/expt_dirs``), use:
 
    .. code-block::
 
@@ -147,7 +147,7 @@ obtained by issuing:
 
    ./run_WE2E_tests.sh --help
 
-from within the directory ``ufs-srweather-app/tests/WE2E``.
+from within the ``ufs-srweather-app/tests/WE2E`` directory.
 
 
 .. _WE2ETestInfoFile:
@@ -178,8 +178,8 @@ The rows of the file/sheet represent the full set of available tests (not just t
 | The relative cost of running the dynamics in the test. This gives an 
   idea of how expensive the test is relative to a reference test that runs 
   a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined grid using 
-  its default time step.  To calculate the relative cost, the absolute cost 
-  ``abs_cost`` is first calculated as follows:
+  its default time step (``DT_ATMOS: 40``).  To calculate the relative cost, the absolute cost 
+  (``abs_cost``) is first calculated as follows:
 
 .. code-block::
 
@@ -372,7 +372,7 @@ To prevent proliferation of WE2E tests, users might want to use the same test fo
    ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
 
 in the ``grids_extrn_mdls_suites_community`` category. This checks for the successful
-completion of the Rocoto workflow running a combination of the ``RRFS_CONUScompact_25km`` grid, the ``FV3GFS`` model data for :term:`ICs` and :term:`LBCs`, and the ``FV3_GFS_v16`` physics suite. If this test also happens to use the inline post capability of the UFS :term:`Weather Model` (it currently doesn't; this is only a hypothetical example), then this test can also be used to ensure that the inline post feature of the App/Weather Model (which is activated in the App by setting ``WRITE_DOPOST`` to ``"TRUE"``) is working properly. Since this test will serve two purposes, it should have two names --- one per purpose. 
+completion of the Rocoto workflow running a combination of the ``RRFS_CONUScompact_25km`` grid, the ``FV3GFS`` model data for :term:`ICs` and :term:`LBCs`, and the ``FV3_GFS_v16`` physics suite. If this test also happens to use the inline post capability of the UFS :term:`Weather Model` (it currently doesn't; this is only a hypothetical example), then this test can also be used to ensure that the inline post feature of the SRW App/Weather Model (which is activated in the SRW App by setting ``WRITE_DOPOST: true``) is working properly. Since this test will serve two purposes, it should have two names --- one per purpose. 
 
 To set the second (alternate) name to ``activate_inline_post``, the user needs to create a symlink named ``config.activate_inline_post.yaml`` in the ``wflow_features`` category directory that points to the original configuration file (``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml``) in the ``grids_extrn_mdls_suites_community`` category directory: 
 
