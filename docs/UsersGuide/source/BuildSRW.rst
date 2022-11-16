@@ -442,38 +442,21 @@ Additional Details for Building on MacOS
 .. note::
     Users who are **not** building the SRW App on a MacOS machine may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
 
-The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The following two options have been tested:
+The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The installation is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations have been tested:
 
-* **Option 1:** MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+* MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
 
-* **Option 2:** MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+* MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
 
-The ``build_macos_gnu`` modulefile initializes the module environment, lists the location of HPC-Stack modules, loads the meta-modules and modules, and sets compilers, additional flags, and environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation and ``ufs-srweather-app`` directories. In particular, the following section must be modified:
+* MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+
+The ``build_macos_gnu.gnu`` modulefile is written as a LMOD module in Lua language, and could be loaded after the LMOD module environment is initialized. This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation:
 
 .. code-block:: console
 
-   # This path should point to your HPCstack installation directory
-   setenv HPCstack "/Users/username/hpc-stack/install"
-
-   # This path should point to your SRW Application directory
-   setenv SRW "/Users/username/ufs-srweather-app"
+   - This path should point to your HPCstack installation directory
+   local HPCstack="/Users/username/hpc-stack/install"
    
-An excerpt of the ``build_macos_gnu`` contents appears below for Option 1. To use Option 2, the user will need to comment out the lines specific to Option 1 (using a double hyphen) and uncomment the lines specific to Option 2 in the ``build_macos_gnu`` modulefile. Additionally, users need to verify that all file paths reflect their system's configuration and that the correct version numbers for software libraries appear in the modulefile. 
-
-.. code-block:: console
-
-   -- Option 1 compiler paths:
-   setenv("CC", "/opt/homebrew/bin/gcc")
-   setenv("FC", "/opt/homebrew/bin/gfortran")
-   setenv("CXX", "/opt/homebrew/bin/g++")
-
-   -- Option 2 compiler paths:
-   --[[
-   setenv("CC", "/usr/local/bin/gcc")
-   setenv("FC", "/usr/local/bin/gfortran")
-   setenv("CXX", "/usr/local/bin/g++")
-   --]]
-
 Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App:
 
 .. code-block:: console
@@ -481,15 +464,9 @@ Then, users must source the Lmod setup file, just as they would on other systems
    source etc/lmod-setup.sh macos
    module use <path/to/ufs-srweather-app/modulefiles>
    module load build_macos_gnu
-   export LDFLAGS="-L${MPI_ROOT}/lib"
+   export LDFLAGS+=" -L${MPI_ROOT}/lib "
 
 In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code block above. 
-
-Additionally, for Option 1 systems, set the variable ``ENABLE_QUAD_PRECISION`` to ``OFF`` in the ``$SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt`` file. This change is optional if using Option 2 to build the SRW App. To make this change using a streamline editor (`sed`), run: 
-
-.. code-block:: console
-
-   sed -i .bak 's/QUAD_PRECISION\"  ON)/QUAD_PRECISION\" OFF)/' $SRW/src/ufs-weather-model/FV3/atmos_cubed_sphere/CMakeLists.txt
 
 Proceed to building the executables using the process outlined in :numref:`Step %s <BuildCMake>`.
 

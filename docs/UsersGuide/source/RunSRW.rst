@@ -100,10 +100,10 @@ The first two steps depend on the platform being used and are described here for
 
 .. _SetUpPythonEnv:
 
-Load the Python Environment for the Regional Workflow
+Load the Conda Environment for the Regional Workflow
 ---------------------------------------------------------
 
-The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f90nml`` available. This Python environment has already been set up on Level 1 platforms, and it can be activated in the following way:
+The workflow requires Python3 installed using conda, with the additional packages built in a separate conda evironment named ``regional_workflow``. This environment has the following additional packages: ``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``. This conda/Python environment has already been set up on Level 1 platforms, and can be activated in the following way:
 
 .. code-block:: console
 
@@ -114,38 +114,26 @@ The workflow requires Python 3 with the packages ``PyYAML``, ``Jinja2``, and ``f
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). 
 
 .. note::
-   If users source the lmod-steup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
+   If users source the ``lmod-setup.sh`` file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+A brief recipe for building the regional_workflow environment could be found in  :numref:`Section %s <LinuxMacVEnv>`. 
+The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
 
 .. code-block:: console
 
    Please do the following to activate conda:
        > conda activate regional_workflow
 
-then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. However, the command(s) will vary from system to system. Regardless, the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point. 
+then the user should run ``conda activate regional_workflow``. This activates the ``regional_workflow`` conda environment, and the user typically sees ``(regional_workflow)`` in front of the Terminal prompt. 
 
-.. _LinuxMacActivateWFenv:
 
-Activating the Workflow Environment on Non-Level 1 Systems
+Preparing the Workflow Environment on Non-Level 1 Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. ``wflow_macos`` and ``wflow_linux`` template files are provided in the ``modulefiles`` directory. After making appropriate modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The modules ``wflow_macos`` and ``wflow_linux`` template files are provided in the ``modulefiles`` directory. The modifications are needed to provide paths for python, miniconda modules, loading the modules, conda initialization, and pathfor user's ``regional_workflow`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
 
-On generic Linux or MacOS systems, loading the designated ``wflow_<platform>`` file will output instructions similar to the following:
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > source $VENV/bin/activate
-
-If that does not work, users can also try:  
-
-.. code-block:: console
-
-   source $HOME/venv/regional_workflow/bin/activate
-
-However, it may instead be necessary to make additional adjustments to the ``wflow_<platform>`` file. 
+.. note::
+   ``conda`` needs to be initialized before running ``conda activate regional_workflow`` command. Depending on user's system and login setup, this could be accomplished by loading the miniconda module or in user's login session. Conda initialization usually involves the following: ``source <conda_basedir>/etc/profile.d/conda.sh``, where <conda_basedir> is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -566,36 +554,33 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 .. code-block:: console
 
    bash --version
-   brew upgrade bash
+   brew install bash   # or: brew upgrade bash
    brew install coreutils
-   brew gsed
+   brew gsed    # follow directions to update the PATH env. variable
 
 .. _LinuxMacVEnv: 
 
-Creating a Virtual Environment on Linux and Mac
+Creating a conda Environment on Linux and Mac
 ``````````````````````````````````````````````````
 
-Users should ensure that the following packages are installed and up-to-date:
+Users need to create a conda ``regional_workflow environment``. It could be stored in a local path, which could be a default location (inquire by ``conda info``, and look for ``envs directories`` list), or a user-specified location, e.g. ``$HOME/condaenv/venvs/`` directory. A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
 
 .. code-block:: console
 
-   python3 -m pip --version 
-   python3 -m pip install --upgrade pip 
-   python3 -m ensurepip --default-pip
-   python3 -m pip install ruby             OR (on MacOS only): brew install ruby
+   conda create --name regional_workflow python=<python3-conda-version>
+   conda activate regional_workflow
+   conda install -c conda-forge f90nml
+   conda install jinja2
+   conda install pyyaml
+   conda install scipy   # install packages for graphics environment
+   conda install matplotlib
+   conda install -c conda-forge pygrib
+   conda install cartopy
+   conda list            # verify the packages installed
+   conda deactivate
 
-Users must create a virtual regional workflow environment, store it in their ``$HOME/venv/`` directory, and install additional python packages:
+where <python3-conda-version> is a numeric version in conda base installation resulting from a query ``python3 --version``, e.g. ``3.9.12``.
 
-.. code-block:: console
-
-   [[ -d $HOME/venv ]] | mkdir -p $HOME/venv
-   python3 -m venv $HOME/venv/regional_workflow 
-   source $HOME/venv/regional_workflow/bin/activate
-   python3 -m pip install jinja2
-   python3 -m pip install pyyaml
-   python3 -m pip install f90nml
-
-The virtual environment can be deactivated by running the ``deactivate`` command. The virtual environment built here will be reactivated in :numref:`Step %s <LinuxMacActivateWFenv>` and needs to be used to generate the workflow and run the experiment. 
 
 .. _LinuxMacExptConfig:
 
@@ -634,30 +619,26 @@ In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and m
       PREDEF_GRID_NAME: RRFS_CONUS_25km	
       QUILTING: true
 
-Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults (usually, there are only 8 CPUs in M1-family chips and 4 CPUs for x86_64 chips). 
+Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults in ``predef_grid_params.yaml``. Domain decomposition needs to take into the account number of available CPUs, and configure variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group``. 
 
-For :ref:`Option 1 <MacDetails>`, add the following information to ``config.yaml``:
+The below example is for using 8 cpus:
 
 .. code-block:: console
 
-   task_run_fcst:
       LAYOUT_X: 3
       LAYOUT_Y: 2
-      WRTCMP_write_groups: 1
       WRTCMP_write_tasks_per_group: 2
-
-For :ref:`Option 2 <MacDetails>`, add the following information to ``config.yaml``:
-
-.. code-block:: console
-
-   task_run_fcst:
-      LAYOUT_X: 3
-      LAYOUT_Y: 1
-      WRTCMP_write_groups: 1
-      WRTCMP_write_tasks_per_group: 1
 
 .. note::
    The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
+
+For a machine with 4 CPU-s, the following domain decomposition could be used:
+
+.. code-block:: console
+
+      LAYOUT_X: 3
+      LAYOUT_Y: 1
+      WRTCMP_write_tasks_per_group: 1
 
 **Configure the Machine File**
 
