@@ -1076,6 +1076,12 @@ configuration files of the primary WE2E tests...
 # so the factor of 3600 is needed to convert the number of seconds to hours.
 #
       # Convert cycles to seconds
+      if [[ $DATE_FIRST_CYCL != [0-9]* ]]; then
+        DATE_FIRST_CYCL=$(eval ${DATE_FIRST_CYCL})
+      fi
+      if [[ $DATE_LAST_CYCL != [0-9]* ]]; then
+        DATE_LAST_CYCL=$(eval ${DATE_LAST_CYCL})
+      fi
       first=$(date --utc --date "${DATE_FIRST_CYCL:0:8} ${DATE_FIRST_CYCL:8:2}" +"%s")
       last=$(date --utc --date "${DATE_LAST_CYCL:0:8} ${DATE_LAST_CYCL:8:2}" +"%s")
       # Diff and convert seconds to number of cycles where freq is in

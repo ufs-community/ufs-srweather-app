@@ -7,6 +7,7 @@ user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2021061500'
   DATE_LAST_CYCL: '2021061500'
   FCST_LEN_HRS: 6
@@ -20,5 +21,3 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
   EXTRN_MDL_SYSBASEDIR_LBCS: set_to_non_default_location_in_testing_script
-task_run_fcst:
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
