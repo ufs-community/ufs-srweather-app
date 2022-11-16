@@ -89,8 +89,6 @@ Workflow task names.
 {%- endif %}
 {%- if run_task_nexus_emission %}
 <!ENTITY NEXUS_EMISSION_TN         "{{ nexus_emission_tn }}">
-{%- endif %}
-{%- if do_split_nexus %}
 <!ENTITY NEXUS_POST_SPLIT_TN       "{{ nexus_post_split_tn }}">
 {%- endif %}
 {%- if run_task_point_source %}
@@ -342,7 +340,6 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  {%- if do_split_nexus %}
   <metatask name="&NEXUS_EMISSION_TN;">
     <var name="nspt">{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}</var>
       <task name="&NEXUS_EMISSION_TN;_#nspt#" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
@@ -392,33 +389,6 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
-  {%- else %}
-  <task name="&NEXUS_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
-    &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
-    {%- if machine in ["HERA"]  %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
-    <native>{{ native_nexus_emission }}</native>
-    {%- elif machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
-    <native>&SCHED_NATIVE_CMD;</native>
-    {%- else %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
-    {%- endif %}
-    <walltime>{{ wtime_nexus_emission }}</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&NEXUS_EMISSION_TN;</jobname>
-    <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
-
-    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-  </task>
-  {%- endif %}
 {%- endif %}
 {%- if run_task_point_source %}
 <!--

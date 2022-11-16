@@ -81,7 +81,6 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_GSD_HRRR_25km.nc
-  DO_SPLIT_NEXUS: false
   NUM_SPLIT_NEXUS: 3
   PT_SRC_BASE_DIR_CONUS: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt/12US1
   PT_SRC_BASE_DIR_HI: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt/3HI1

@@ -2391,7 +2391,6 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: ""
   NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
-  DO_SPLIT_NEXUS: false
   NUM_SPLIT_NEXUS: 3
 
   PT_SRC_BASE_DIR_CONUS: "/path/to/point/source/base/directory/for/conus"

@@ -84,11 +84,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
-  DATA="${DATA}/tmp_NEXUS/${nspt}"
-else	
-  DATA="${DATA}/tmp_NEXUS"
-fi
+DATA="${DATA}/tmp_NEXUS/${nspt}"
 mkdir_vrfy -p "$DATA"
 
 DATAinput="${DATA}/input"
@@ -104,11 +100,8 @@ cd_vrfy $DATA
 #
 cp_vrfy ${EXECdir}/nexus ${DATA}
 cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
-if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
-  cp_vrfy ${ARL_NEXUS_DIR}/config/megan/*.rc ${DATA}
-else
-  cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
-fi
+
+cp_vrfy ${ARL_NEXUS_DIR}/config/megan/*.rc ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -122,7 +115,11 @@ dd="${PDY:6:2}"
 hh="${cyc}"
 yyyymmdd="${PDY}"
 
-if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
+NUM_SPLIT_NEXUS=$( printf "%02d" ${NUM_SPLIT_NEXUS} )
+if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
+  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
+  end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+else
   len_per_split=$(( FCST_LEN_HRS / NUM_SPLIT_NEXUS  ))
   nsptp=$(( nspt+1 ))
 
@@ -135,9 +132,6 @@ if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
     end_del_hr=$(( len_per_split * nsptp ))
     end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${end_del_hr} hours" "+%Y%m%d%H" )
   fi
-else
-  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
-  end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
 fi
 #
 #######################################################################
@@ -259,37 +253,16 @@ fi
 #
 # Execute NEXUS
 #
+#-----------------------------------------------------------------------
+#
 PREP_STEP
 eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_ugly.nc ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to execute nexus standalone for the FV3LAM failed."
 POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# make nexus output pretty
-#
-cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
-./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_ugly.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
 
 #
 #-----------------------------------------------------------------------
-#
-# run MEGAN NCO script
-#
-cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
-./run_nco_combine_ant_bio.sh NEXUS_Expt_pretty.nc NEXUS_Expt.nc
-
-#
-#-----------------------------------------------------------------------
-#
-# Move NEXUS output to INPUT_DATA directory.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${DO_SPLIT_NEXUS}" = "FALSE" ]; then
-  mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
-fi
 #
 # Print message indicating successful completion of script.
 #

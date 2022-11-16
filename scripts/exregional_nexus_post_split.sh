@@ -88,18 +88,25 @@ mkdir_vrfy -p "$DATAinput"
 
 cd_vrfy $DATA
 
+#
+#-----------------------------------------------------------------------
+#
+# make nexus output pretty
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
+./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_ugly.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
 
-
-
-
-
-
-
-
-
-
-
-
+#
+#-----------------------------------------------------------------------
+#
+# run MEGAN NCO script
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
+./run_nco_combine_ant_bio.sh NEXUS_Expt_pretty.nc NEXUS_Expt.nc
 
 #
 #-----------------------------------------------------------------------
