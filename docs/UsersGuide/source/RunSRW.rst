@@ -132,7 +132,7 @@ Preparing the Workflow Environment on Non-Level 1 Systems
 Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``regional_workflow`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow. 
 
 .. note::
-   ``conda`` needs to be initialized before running ``conda activate regional_workflow`` command. Depending on user's system and login setup, this may be accomplished by loading the miniconda module or in the user's login session. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
+   ``conda`` needs to be initialized before running ``conda activate regional_workflow`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -460,7 +460,7 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
 
 Detailed information on additional parameter options can be viewed in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
-On Level 1 systems, the following fields will need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case: 
+On Level 1 systems, the following fields typically need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case: 
 
 .. code-block:: console
 
@@ -531,11 +531,11 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
-To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>`.
+To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
 .. _LinuxMacEnvConfig:
 
-User-specific Configuration on a General Linux/MacOS System
+User-Specific Configuration on a General Linux/MacOS System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The configuration process for Linux and MacOS systems is similar to the process for other systems, but it requires a few extra steps.
@@ -552,16 +552,16 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 .. code-block:: console
 
    bash --version
-   brew install bash   # or: brew upgrade bash
+   brew install bash       # or: brew upgrade bash
    brew install coreutils
-   brew gsed    # follow directions to update the PATH env. variable
+   brew gsed               # follow directions to update the PATH env variable
 
 .. _LinuxMacVEnv: 
 
 Creating a *conda* Environment on Linux and Mac
 ``````````````````````````````````````````````````
 
-Users need to create a conda ``regional_workflow environment``. It could be stored in a local path, which could be a default location (inquire by ``conda info``, and look for ``envs directories`` list), or a user-specified location, e.g. ``$HOME/condaenv/venvs/`` directory. A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+Users need to create a conda ``regional_workflow`` environment. The environment can be stored in a local path, which could be a default location (determine default using the ``conda info`` command, and look for an ``envs directories`` list), or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
 
 .. code-block:: console
 
@@ -590,7 +590,7 @@ Configuring an Experiment on General Linux and MacOS Systems
 **Optional: Install Rocoto**
 
 .. note::
-   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not been tested yet on MacOS and has had limited testing on general Linux plaforms. 
+   Users may `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ if they want to make use of a workflow manager to run their experiments. However, this option has not yet been tested on MacOS and has had limited testing on general Linux plaforms. 
 
 
 **Configure the SRW App:**
@@ -615,16 +615,25 @@ In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and m
       PREEXISTING_DIR_METHOD: rename
       VERBOSE: true
       COMPILER: gnu
+   task_get_extrn_ics:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/input_model_data/FV3GFS/grib2/2019061518
+      EXTRN_MDL_DATA_STORES: disk
+   task_get_extrn_lbcs:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/input_model_data/FV3GFS/grib2/2019061518
+      EXTRN_MDL_DATA_STORES: disk
    task_run_fcst:
       PREDEF_GRID_NAME: RRFS_CONUS_25km	
       QUILTING: true
 
-Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition defaults in ``predef_grid_params.yaml``. Domain decomposition needs to take into the account number of available CPUs, and configure variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group``. 
+Due to the limited number of processors on MacOS systems, users must also add/configure the domain decomposition parameters in the ``task_run_fcst:`` section of ``config.yaml``. Domain decomposition needs to take into the account number of available CPUs and configure variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group``. 
 
-The below example is for using 8 cpus:
+The example below is for systems with 8 CPUs:
 
 .. code-block:: console
 
+   task_run_fcst:
       LAYOUT_X: 3
       LAYOUT_Y: 2
       WRTCMP_write_tasks_per_group: 2
@@ -632,17 +641,18 @@ The below example is for using 8 cpus:
 .. note::
    The number of MPI processes required by the forecast will be equal to ``LAYOUT_X`` * ``LAYOUT_Y`` + ``WRTCMP_write_tasks_per_group``. 
 
-For a machine with 4 CPU-s, the following domain decomposition could be used:
+For a machine with 4 CPUs, the following domain decomposition could be used:
 
 .. code-block:: console
 
+   task_run_fcst:
       LAYOUT_X: 3
       LAYOUT_Y: 1
       WRTCMP_write_tasks_per_group: 1
 
 **Configure the Machine File**
 
-Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine/`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
+Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -658,14 +668,18 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app
       RUN_CMD_UTILS: 'mpirun -np 4'
       # Commands to run at the start of each workflow task.
       PRE_TASK_CMDS: '{ ulimit -a; }'
+
    task_make_orog:
       TOPO_DIR: path/to/FIXgsm/files # (path to location of static input files used by the make_orog task)
+
    task_make_sfc_climo:
       SFC_CLIMO_INPUT_DIR: path/to/FIXgsm/files # (path to location of static surface climatology input fields used by sfc_climo_gen)
+
    task_run_fcst:
       FIXaer: /path/to/FIXaer/files
       FIXgsm: /path/to/FIXgsm/files
       FIXlut: /path/to/FIXlut/files
+
    data:
       FV3GFS: /Users/username/DATA/UFS/FV3GFS # (used by setup.py to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS)
 
@@ -681,7 +695,7 @@ The ``data:`` section of the machine file can point to various data sources that
       RAP: /Users/username/DATA/UFS/RAP/grib2
       HRRR: /Users/username/DATA/UFS/HRRR/grib2
 
-This can be helpful when conducting a multiple experiments with different types of data. 
+This can be helpful when conducting multiple experiments with different types of data. 
 
 .. _VXConfig:
 
@@ -757,7 +771,7 @@ This workflow generation script creates an experiment directory and populates it
 
 The ``setup.py`` script reads three other configuration scripts in order: (1) ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.py``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
 
-The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in the ``config.yaml`` file in :numref:`Step %s <UserSpecificConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
+The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``. 
 
 .. _WorkflowGeneration:
 
@@ -797,7 +811,7 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
 
 .. _WorkflowTasksTable:
 
-.. table::  Baseline workflow tasks in the SRW App
+.. table::  Baseline Workflow Tasks in the SRW App
 
    +----------------------+------------------------------------------------------------+
    | **Workflow Task**    | **Task Description**                                       |
@@ -830,7 +844,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
 
 .. _VXWorkflowTasksTable:
 
-.. table:: Verification (VX) workflow tasks in the SRW App
+.. table:: Verification (VX) Workflow Tasks in the SRW App
 
    +-----------------------+------------------------------------------------------------+
    | **Workflow Task**     | **Task Description**                                       |
@@ -945,7 +959,7 @@ Run the Workflow Using Rocoto
 
 The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, if Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
-There are three ways to run the workflow with Rocoto: (1) automation via crontab (2) by calling the ``launch_FV3LAM_wflow.sh`` script, and (3) by manually calling the ``rocotorun`` command. 
+There are three ways to run the workflow with Rocoto: (1) automation via crontab (2) by calling the ``launch_FV3LAM_wflow.sh`` script, and (3) by manually issuing the ``rocotorun`` command. 
 
 .. note::
    Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
@@ -968,14 +982,14 @@ If the login shell is csh/tcsh, it can be set using:
 Automated Option
 ^^^^^^^^^^^^^^^^^^^
 
-The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every minute), the user can add the following commands to their ``config.yaml`` file *before* generating the experiment:
+The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every 2 minutes), the user can add the following commands to their ``config.yaml`` file *before* generating the experiment:
 
 .. code-block:: console
 
    USE_CRON_TO_RELAUNCH: true
-   CRON_RELAUNCH_INTVL_MNTS: 3
+   CRON_RELAUNCH_INTVL_MNTS: 2
 
-This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry manually using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/2 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
@@ -1011,18 +1025,18 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
 
    CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
    ==========================================================================================================
-   201906150000       make_grid              4953154       SUCCEEDED         0          1          5.0
-   201906150000       make_orog              4953176       SUCCEEDED         0          1         26.0
-   201906150000       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
-   201906150000       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
-   201906150000       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
-   201906150000       make_ics               4953184       SUCCEEDED         0          1         16.0
-   201906150000       make_lbcs              4953185       SUCCEEDED         0          1         71.0
-   201906150000       run_fcst               4953196       SUCCEEDED         0          1       1035.0
-   201906150000       run_post_f000          4953244       SUCCEEDED         0          1          5.0
-   201906150000       run_post_f001          4953245       SUCCEEDED         0          1          4.0
+   201906151800       make_grid              4953154       SUCCEEDED         0          1          5.0
+   201906151800       make_orog              4953176       SUCCEEDED         0          1         26.0
+   201906151800       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
+   201906151800       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
+   201906151800       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
+   201906151800       make_ics               4953184       SUCCEEDED         0          1         16.0
+   201906151800       make_lbcs              4953185       SUCCEEDED         0          1         71.0
+   201906151800       run_fcst               4953196       SUCCEEDED         0          1       1035.0
+   201906151800       run_post_f000          4953244       SUCCEEDED         0          1          5.0
+   201906151800       run_post_f001          4953245       SUCCEEDED         0          1          4.0
    ...
-   201906150000       run_post_f012          4953381       SUCCEEDED         0          1          7.0
+   201906151800       run_post_f012          4953381       SUCCEEDED         0          1          7.0
 
 If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
@@ -1030,16 +1044,16 @@ If users choose to run METplus verification tasks as part of their experiment, t
 
    CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
    ==========================================================================================================
-   201906150000       make_grid              30466134       SUCCEEDED        0          1          5.0
+   201906151800       make_grid              30466134       SUCCEEDED        0          1          5.0
    ...
-   201906150000       run_post_f012          30468271       SUCCEEDED        0          1          7.0
-   201906150000       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
-   201906150000       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
-   201906150000       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
-   201906150000       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
-   201906150000       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
-   201906150000       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
-   201906150000       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
+   201906151800       run_post_f012          30468271       SUCCEEDED        0          1          7.0
+   201906151800       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
+   201906151800       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
+   201906151800       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
+   201906151800       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
+   201906151800       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
+   201906151800       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
+   201906151800       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
 
 
 Launch the Rocoto Workflow Using a Script
