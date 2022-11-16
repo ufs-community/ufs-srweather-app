@@ -9,7 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -43,57 +42,86 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that generates the emission files 
-using NEXUS which will output for FV3 (in NetCDF format).
+This is the ex-script for the task that runs NEXUS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
+# Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
+export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_POST_SPLIT}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_POST_SPLIT}
+export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_POST_SPLIT}
+#
+#-----------------------------------------------------------------------
+#
+# Set run command.
+#
+#-----------------------------------------------------------------------
+#
+eval ${PRE_TASK_CMDS}
+
+if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
+  print_err_msg_exit "\
+  Run command was not set in machine file. \
+  Please set RUN_CMD_SERIAL for your platform"
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  print_info_msg "$VERBOSE" "
+  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
-mkdir_vrfy -p "${INPUT_DATA}"
+
+set -x
 #
 #-----------------------------------------------------------------------
 #
-# Set the run directory
+# Move to the NEXUS working directory
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
+DATA="${DATA}/tmp_NEXUS"
+mkdir_vrfy -p "$DATA"
+
+DATAinput="${DATA}/input"
+mkdir_vrfy -p "$DATAinput"
+
+cd_vrfy $DATA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job.
+# Move NEXUS output to INPUT_DATA directory.
 #
 #-----------------------------------------------------------------------
 #
-time $SCRIPTSdir/exregional_nexus_emission.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+#
+# Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
-#
-#-----------------------------------------------------------------------
-#
-job_postamble
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+print_info_msg "
+========================================================================
+NEXUS NetCDF file has been generated successfully!!!!
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-

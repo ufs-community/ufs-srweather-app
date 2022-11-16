@@ -56,7 +56,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
-# Set machine-dependent parameters.
+# Set run command.
 #
 #-----------------------------------------------------------------------
 #
@@ -143,9 +143,8 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
     AQM_MOFILE_FN="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_CYC}/gfs.t00z.atmf"
   fi  
 
-  GEFS_CYC_DIFF=$( printf "%02d" "$(( ${RUN_CYC} - ${AQM_GEFS_CYC} ))" )
-
-  NUMTS="$(( ${FCST_LEN_HRS} / ${LBC_SPEC_INTVL_HRS} + 1 ))"
+  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_CYC ))" )
+  NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
 cat > gefs2lbc-nemsio.ini <<EOF
 &control

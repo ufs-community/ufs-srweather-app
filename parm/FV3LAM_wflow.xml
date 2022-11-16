@@ -81,17 +81,20 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
 {%- endif %}
 {%- if run_task_aqm_ics %}
-<!ENTITY AQM_EXTRN_ICS_TN      "{{ aqm_ics_tn }}_ext">
-<!ENTITY AQM_ICS_TN            "{{ aqm_ics_tn }}">
+<!ENTITY AQM_EXTRN_ICS_TN          "{{ aqm_ics_tn }}_ext">
+<!ENTITY AQM_ICS_TN                "{{ aqm_ics_tn }}">
 {%- endif %}
 {%- if run_task_aqm_lbcs %}
-<!ENTITY AQM_LBCS_TN           "{{ aqm_lbcs_tn }}">
+<!ENTITY AQM_LBCS_TN               "{{ aqm_lbcs_tn }}">
 {%- endif %}
 {%- if run_task_nexus_emission %}
-<!ENTITY NEXUS_EMISSION_TN              "{{ nexus_emission_tn }}">
+<!ENTITY NEXUS_EMISSION_TN         "{{ nexus_emission_tn }}">
+{%- endif %}
+{%- if do_split_nexus %}
+<!ENTITY NEXUS_POST_SPLIT_TN       "{{ nexus_post_split_tn }}">
 {%- endif %}
 {%- if run_task_point_source %}
-<!ENTITY POINT_SOURCE_TN              "{{ point_source_tn }}">
+<!ENTITY POINT_SOURCE_TN           "{{ point_source_tn }}">
 {%- endif %}
 {%- if run_task_post_stat %}
 <!ENTITY POST_STAT_TN              "{{ post_stat_tn }}">
@@ -339,19 +342,70 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&NEXUS_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
+  {%- if do_split_nexus %}
+  <metatask name="&NEXUS_EMISSION_TN;">
+    <var name="nspt">{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}</var>
+      <task name="&NEXUS_EMISSION_TN;_#nspt#" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
+        {%- if machine in ["HERA"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
+        <native>{{ native_nexus_emission }}</native>
+        {%- elif machine in ["WCOSS2"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
+        <native>&SCHED_NATIVE_CMD;</native>
+        {%- else %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
+        {%- endif %}
+        <walltime>{{ wtime_nexus_emission }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <jobname>&NEXUS_EMISSION_TN;_#nspt#</jobname>
+        <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H_s#nspt#&LOGEXT;</cyclestr></join>
 
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>nspt</name><value>#nspt#</value></envar>
+	<envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+	<envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      </task>
+  </metatask>      
+  <task name="&NEXUS_POST_SPLIT_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_POST_SPLIT_TN;" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"</command>
+    <nodes>{{ nnodes_nexus_post_split }}:ppn={{ ppn_nexus_post_split }}</nodes>
+    <walltime>{{ wtime_nexus_post_split }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&NEXUS_POST_SPLIT_TN;</jobname>
+    <join>&LOGDIR;/&NEXUS_POST_SPLIT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <metataskdep metatask="&NEXUS_EMISSION_TN;"/>
+    </dependency>
+
+  </task>
+
+  {%- else %}
+  <task name="&NEXUS_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
-  {%- if machine in ["HERA"]  %}
+    {%- if machine in ["HERA"]  %}
     <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
     <native>{{ native_nexus_emission }}</native>
-  {%- elif machine in ["WCOSS2"]  %}
+    {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
-  {%- else %}
+    {%- else %}
     <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
-  {%- endif %}
+    {%- endif %}
     <walltime>{{ wtime_nexus_emission }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&NEXUS_EMISSION_TN;</jobname>
@@ -363,8 +417,8 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-
   </task>
+  {%- endif %}
 {%- endif %}
 {%- if run_task_point_source %}
 <!--
@@ -451,7 +505,7 @@ MODULES_RUN_TASK_FP script.
     <memory>{{ mem_get_extrn_lbcs }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <nodesize>&NCORES_PER_NODE;</nodesize> 
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
@@ -1003,7 +1057,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 

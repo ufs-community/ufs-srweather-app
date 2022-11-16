@@ -57,7 +57,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 #
 #-----------------------------------------------------------------------
 #
-# Load modules.
+# Set run command.
 #
 #-----------------------------------------------------------------------
 #
@@ -84,7 +84,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_NEXUS"
+if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
+  DATA="${DATA}/tmp_NEXUS/${nspt}"
+else	
+  DATA="${DATA}/tmp_NEXUS"
+fi
 mkdir_vrfy -p "$DATA"
 
 DATAinput="${DATA}/input"
@@ -99,8 +103,12 @@ cd_vrfy $DATA
 #-----------------------------------------------------------------------
 #
 cp_vrfy ${EXECdir}/nexus ${DATA}
-cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
 cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
+  cp_vrfy ${ARL_NEXUS_DIR}/config/megan/*.rc ${DATA}
+else
+  cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -113,10 +121,24 @@ mm="${PDY:4:2}"
 dd="${PDY:6:2}"
 hh="${cyc}"
 yyyymmdd="${PDY}"
-# Note: a timezone offset is used to compute the end date. Consequently,
-# the code below will only work for forecast lengths up to 24 hours.
-start_date=$( date --utc --date "${yyyymmdd} ${hh}" "+%Y%m%d%H" )
-end_date=$( date --utc --date @$(( $( date --utc --date "${yyyymmdd} ${hh}" +%s ) + ${FCST_LEN_HRS} * 3600 )) +%Y%m%d%H )
+
+if [ "${DO_SPLIT_NEXUS}" = "TRUE" ]; then
+  len_per_split=$(( FCST_LEN_HRS / NUM_SPLIT_NEXUS  ))
+  nsptp=$(( nspt+1 ))
+
+  # Compute start and end dates for nexus split option
+  start_del_hr=$(( len_per_split * nspt ))
+  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${start_del_hr} hours " "+%Y%m%d%H" )
+  if [ "${nsptp}" = "${NUM_SPLIT_NEXUS}" ];then
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+  else
+    end_del_hr=$(( len_per_split * nsptp ))
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${end_del_hr} hours" "+%Y%m%d%H" )
+  fi
+else
+  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
+  end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+fi
 #
 #######################################################################
 # This will be the section to set the datasets used in $workdir/NEXUS_Config.rc 
@@ -265,7 +287,9 @@ cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+if [ "${DO_SPLIT_NEXUS}" = "FALSE" ]; then
+  mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+fi
 #
 # Print message indicating successful completion of script.
 #

@@ -2233,11 +2233,20 @@ cpl_aqm_parm:
   NEXUS_EMISSION_TN: "nexus_emission"
   NNODES_NEXUS_EMISSION: 4
   PPN_NEXUS_EMISSION: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
-  WTIME_NEXUS_EMISSION: 00:30:00
+  WTIME_NEXUS_EMISSION: 01:30:00
   MAXTRIES_NEXUS_EMISSION: 2
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
   OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+  NEXUS_POST_SPLIT_TN: "nexus_post_split"
+  NNODES_NEXUS_POST_SPLIT: 1
+  PPN_NEXUS_POST_SPLIT: 1
+  WTIME_NEXUS_POST_SPLIT: 00:30:00
+  MAXTRIES_NEXUS_POST_SPLIT: 2
+  KMP_AFFINITY_NEXUS_POST_SPLIT: "scatter"
+  OMP_NUM_THREADS_NEXUS_POST_SPLIT: 1
+  OMP_STACKSIZE_NEXUS_POST_SPLIT: "1024m"
 
   POINT_SOURCE_TN: "point_source"
   NNODES_POINT_SOURCE: ""  # will be calculated in the workflow generation scripts 
@@ -2382,6 +2391,8 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: ""
   NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
+  DO_SPLIT_NEXUS: false
+  NUM_SPLIT_NEXUS: 3
 
   PT_SRC_BASE_DIR_CONUS: "/path/to/point/source/base/directory/for/conus"
   PT_SRC_BASE_DIR_HI: "/path/to/point/source/base/directory/for/hi"

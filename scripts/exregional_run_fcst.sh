@@ -575,11 +575,6 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     mv_vrfy RESTART ${COMIN}
     ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
   fi
-
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp_vrfy ${DATA}/dynf*.nc ${COMOUT}
-    cp_vrfy ${DATA}/phyf*.nc ${COMOUT}
-  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -640,6 +635,11 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
+
+    if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then	
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   done
 
 fi
