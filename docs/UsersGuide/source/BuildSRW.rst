@@ -195,7 +195,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion``
 
 .. note::
-   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
+   Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacLinuxDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
 
 If compiler auto-detection fails for some reason, specify it using the ``--compiler`` argument. For example:
 
@@ -378,7 +378,7 @@ Set Up the Build Environment
 
 .. attention::
    * If users successfully built the executables in :numref:`Table %s <ExecDescription>`, they should skip to step :numref:`Chapter %s <RunSRW>`.
-   * Users who want to build the SRW App on a generic MacOS should skip to :numref:`Section %s <MacDetails>` and follow the approach there.  
+   * Users who want to build the SRW App on MacOS or generic Linux systems should skip to :numref:`Section %s <MacLinuxDetails>` and follow the approach there.  
 
 If the ``devbuild.sh`` approach failed, users need to set up their environment to run a workflow on their specific platform. First, users should make sure ``Lmod`` is the app used for loading modulefiles. This is the case on most Level 1 systems; however, on systems such as Gaea/Odin, the default modulefile loader is from Cray and must be switched to Lmod. For example, on Gaea, users can run one of the following two commands depending on whether they have a bash or csh shell, respectively:
 
@@ -434,39 +434,42 @@ The build will take a few minutes to complete. When it starts, a random number i
 
    If you see the ``build.out`` file, but there is no ``ufs-srweather-app/exec`` directory, wait a few more minutes for the build to complete.
 
-.. _MacDetails:
+.. _MacLinuxDetails:
 
-Additional Details for Building on MacOS
+Additional Details for Building on MacOS or generic Linux
 ------------------------------------------
 
 .. note::
-    Users who are **not** building the SRW App on a MacOS machine may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
+    Users who are **not** building the SRW App on MacOS or generic Linux platforms may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
 
-The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The installation is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations have been tested:
+The SRW App can be built on MacOS and generic Linux machines, after the HPC-Stack was already installed on these systems. The installation for MacOS is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations for MacOS have been tested:
 
-* MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
+* MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
 
-* MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
+* MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
 
-* MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
+* MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
 
-The ``build_macos_gnu.gnu`` modulefile is written as a LMOD module in Lua language, and could be loaded after the LMOD module environment is initialized. This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation:
+Several Linux builds have been tested on systems with x86_64 architectures.
+
+The ``./modulefiles/build_<platform>_gnu.lua`` modulefile, where ``<platform>`` is ``macos`` or ``linux``, is written as a LMOD module in Lua language, and could be loaded after the LMOD module environment is initialized. This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App.  The modulefile needs be modified to include the absolute path to the user's HPC-Stack installation:
 
 .. code-block:: console
 
    - This path should point to your HPCstack installation directory
    local HPCstack="/Users/username/hpc-stack/install"
    
-Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App:
+ Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case, and set ``BASH_ENV`` variable to point to Lmod initialization script. There is no need to modify this script for the ``macos`` case, when Lmod followed a standard intallation procedure using Homebrew package manager for the MacOS.
+Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App. 
 
 .. code-block:: console
 
-   source etc/lmod-setup.sh macos
+   source etc/lmod-setup.sh <platform>
    module use <path/to/ufs-srweather-app/modulefiles>
-   module load build_macos_gnu
+   module load build_<platform>_gnu
    export LDFLAGS+=" -L${MPI_ROOT}/lib "
 
-In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh macos`` in place of the first line in the code block above. 
+In a csh/tcsh shell, users would run ``source etc/lmod-setup.csh <platform>`` in place of the first line in the code block above. The last line is primarily needed for the MacOS platforms.
 
 Proceed to building the executables using the process outlined in :numref:`Step %s <BuildCMake>`.
 
