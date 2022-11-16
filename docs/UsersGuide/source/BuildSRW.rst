@@ -150,8 +150,6 @@ The cloned repository contains the configuration files and sub-directories shown
    |                                | respectively.                                             |
    +--------------------------------+-----------------------------------------------------------+
 
-.. COMMENT: Is environment.yml deprecated? Remove?
-
 .. _CheckoutExternals:
 
 Check Out External Components

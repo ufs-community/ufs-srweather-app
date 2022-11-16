@@ -280,15 +280,11 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_ICS: <path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>
-      EXTRN_MDL_FILES_ICS: []
       EXTRN_MDL_DATA_STORES: disk
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: <path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>
-      EXTRN_MDL_FILES_LBCS: []
       EXTRN_MDL_DATA_STORES: disk
-
-.. COMMENT: Do we need EXTRN_MDL_FILES_*CS and EXTRN_MDL_DATA_STORES?
 
 The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
@@ -308,26 +304,23 @@ where:
    * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
    * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
 
-For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. An example ``config.yaml`` setting using HRRR and RAP data appears below: 
+For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. 
+
+In some cases, it may be necessary to specify values for ``EXTRN_MDL_FILES_*CS``variables. This is often the case with HRRR and RAP data. An example ``config.yaml`` excerpt using HRRR and RAP data appears below: 
 
 .. code-block:: console
 
    task_get_extrn_ics:
+      EXTRN_MDL_NAME_ICS: HRRR
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path-to/input_model_data/HRRR/grib2/2020081012
-      EXTRN_MDL_FILES_ICS: [hrrr.t{cycle}z.wrfprsf{fhr}.grib2]
-      EXTRN_MDL_DATA_STORES: disk
+      EXTRN_MDL_FILES_ICS:
+         - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
    task_get_extrn_lbcs:
+      EXTRN_MDL_NAME_LBCS: RAP
+      LBC_SPEC_INTVL_HRS: 3
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path-to/input_model_data/RAP/grib2/2020081012
-      EXTRN_MDL_FILES_LBCS: [rap.t{cycle}z.wrfprsf{fhr}.grib2]
-      EXTRN_MDL_DATA_STORES: disk
-
-.. COMMENT: Are EXTRN_MDL_FILES_ICS/LBCS correct? Is anything required there? Formerly:
-   
-   EXTRN_MDL_FILES_ICS=( "hrrr.t12z.wrfprsf00.grib2" )
-   EXTRN_MDL_FILES_LBCS=( "rap.t12z.wrfprsf03.grib2" "rap.t12z.wrfprsf06.grib2" )
-
+      EXTRN_MDL_FILES_LBCS:
+         - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 
 Default Initial and Lateral Boundary Conditions
 -----------------------------------------------

@@ -627,7 +627,7 @@ In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and m
       PREDEF_GRID_NAME: RRFS_CONUS_25km	
       QUILTING: true
 
-Due to the limited number of processors on MacOS systems, users must also add/configure the domain decomposition parameters in the ``task_run_fcst:`` section of ``config.yaml``. Domain decomposition needs to take into the account number of available CPUs and configure variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group``. 
+Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition parameters directly in section of the ``predef_grid_params.yaml`` file pertaining to the grid they want to use. Domain decomposition needs to take into the account number of available CPUs and configure variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group``. 
 
 The example below is for systems with 8 CPUs:
 
@@ -706,8 +706,6 @@ Users who want to use the METplus verification suite to evaluate their forecasts
 
 .. attention::
    METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.1.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
-
-   .. COMMENT: Update note for release v2.1!
 
 .. note::
    If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
@@ -1009,8 +1007,6 @@ To check the experiment progress:
    cd $EXPTDIR
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-
-
 After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
 
 .. note::
@@ -1078,7 +1074,7 @@ In order to launch additional tasks in the workflow, call the launch script agai
 
    ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-This will output the last 40 lines of the log file, which list the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 40 can be changed according to the user's preferences. The output will look like this: 
+This will output the last 40 lines of the log file, which list the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 40 can be changed according to the user's preferences. The output will look similar to this: 
 
 .. code-block:: console
 
@@ -1106,7 +1102,7 @@ This will output the last 40 lines of the log file, which list the status of the
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each specific task can be found in the task log files located in ``$EXPTDIR/log``. 
+If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each task can be found in the task log files located in ``$EXPTDIR/log``. 
 
 The workflow run is complete when all tasks have "SUCCEEDED", and the ``rocotostat`` command outputs a table similar to the one :ref:`above <Success>`.
 
@@ -1188,7 +1184,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
    .. code-block:: console
 
-      cp <path-to>/ufs-srweather-app/ush/wrappers/* .
+      cp <path/to>/ufs-srweather-app/ush/wrappers/* .
 
 #. Set the ``OMP_NUM_THREADS`` variable. 
 
@@ -1258,7 +1254,7 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
    tail -n 40 log.launch_FV3LAM_wflow
 
 .. hint:: 
-   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA Cloud systems can be viewed in :numref:`Section %s <WorkOnHPC>` as an example. 
+   If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA HPC systems can be viewed in :numref:`Section %s <WorkOnHPC>` as an example. 
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
