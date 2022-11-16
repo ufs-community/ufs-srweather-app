@@ -250,21 +250,51 @@ def rotate_wind(true_lat, lov_lon, earth_lons, uin, vin, proj, inverse=False):
 
 # -------------Start of script -------------------------#
 
-# Define required positional arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("Cycle date/time in YYYYMMDDHH format")
-parser.add_argument("Starting forecast hour")
-parser.add_argument("Ending forecast hour")
-parser.add_argument("Forecast hour increment")
-parser.add_argument("Path to experiment directory")
-parser.add_argument("Path to base directory of cartopy shapefiles")
 parser.add_argument(
-    "Name of native domain used in forecast (and in constructing post file names)"
+    "--cycle",
+    "-c",
+    help="Cycle date/time in YYYYMMDDHH format.",
+    required=True,
+)
+parser.add_argument(
+    "--start",
+    "-s",
+    help="Starting forecast hour.",
+    required=True,
+)
+parser.add_argument(
+    "--end",
+    "-e",
+    help="Ending forecast hour.",
+    required=True,
+)
+parser.add_argument(
+    "--inc",
+    "-i",
+    help="Increment forecast hour.",
+    required=True,
+)
+parser.add_argument(
+    "--comout",
+    help="Path to directory containing post-processed files.",
+    required=True,
+)
+parser.add_argument(
+    "--cartopy-dir",
+    help="Path to base directory of cartopy shapefiles.",
+    required=True,
+)
+parser.add_argument(
+    "--domain",
+    "-d",
+    help="Name of native domain used in forecast (and in constructing post file names).",
+    required=True,
 )
 args = parser.parse_args()
 
 # Read date/time, forecast hour, and directory paths from command line
-ymdh = str(sys.argv[1])
+ymdh = str(args.cycle)
 ymd = ymdh[0:8]
 year = int(ymdh[0:4])
 month = int(ymdh[4:6])
@@ -274,9 +304,9 @@ cyc = str(hour).zfill(2)
 print(year, month, day, hour)
 
 # Define the range of forecast hours to create plots for
-start_fhr = int(sys.argv[2])
-end_fhr = int(sys.argv[3])
-increment_fhr = int(sys.argv[4])
+start_fhr = int(args.start)
+end_fhr = int(args.end)
+increment_fhr = int(args.inc)
 if (start_fhr == end_fhr) or (increment_fhr == 0):
     fhours = [start_fhr]
 else:
@@ -284,9 +314,9 @@ else:
     fhours = np.linspace(start_fhr, end_fhr, num, dtype="int")
 print(fhours)
 
-COMOUT = str(sys.argv[5])
-CARTOPY_DIR = str(sys.argv[6])
-POST_OUTPUT_DOMAIN_NAME = str(sys.argv[7]).lower()
+COMOUT = str(args.comout)
+CARTOPY_DIR = str(args.cartopy_dir)
+POST_OUTPUT_DOMAIN_NAME = str(args.domain).lower()
 
 # Loop over forecast hours
 for fhr in fhours:

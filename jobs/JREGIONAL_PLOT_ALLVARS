@@ -66,27 +66,27 @@ fi
 
 # plot all variables
 $SCRIPTSdir/exregional_plot_allvars.py \
-           ${CDATE} \
-           ${PLOT_FCST_START} \
-           ${PLOT_FCST_END:-$FCST_LEN_HRS} \
-           ${PLOT_FCST_INC:-1} \
-           ${COMOUT} \
-           ${FIXshp} \
-           ${GRID_NAME} || \
+           --cycle ${CDATE} \
+           --start ${PLOT_FCST_START} \
+           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --inc ${PLOT_FCST_INC:-1} \
+           --comout ${COMOUT} \
+           --cartopy-dir ${FIXshp} \
+           --domain ${GRID_NAME} || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 
 # plot all variables diff with baseline
 if [ ! -z $COMOUT_REF ]; then
   $SCRIPTSdir/exregional_plot_allvars_diff.py \
-           ${CDATE} \
-           ${PLOT_FCST_START} \
-           ${PLOT_FCST_END:-$FCST_LEN_HRS} \
-           ${PLOT_FCST_INC:-1} \
-           ${COMOUT} \
-           ${COMOUT_REF} \
-           ${FIXshp} \
-           ${GRID_NAME} || \
+           --cycle ${CDATE} \
+           --start ${PLOT_FCST_START} \
+           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --inc ${PLOT_FCST_INC:-1} \
+           --comout-1 ${COMOUT} \
+           --comout-2 ${COMOUT_REF} \
+           --cartopy-dir ${FIXshp} \
+           --domain ${GRID_NAME} || \
   print_err_msg_exit "\
   Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 fi

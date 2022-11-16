@@ -2033,7 +2033,8 @@ task_plot_allvars:
   PPN_PLOT_ALLVARS: 24
   WTIME_PLOT_ALLVARS: 00:20:00
   MAXTRIES_PLOT_ALLVARS: 1
-  # reference experiment directory
+  # Reference experiment's COMOUT directory.
+  # This is where the GRIB2 from post are locatd
   COMOUT_REF: ""
   # Plot fcts start and increment
   PLOT_FCST_START: 0
