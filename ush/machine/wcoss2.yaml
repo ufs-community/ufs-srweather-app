@@ -25,6 +25,7 @@ platform:
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   ics_lbcs:

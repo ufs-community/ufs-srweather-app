@@ -24,6 +24,7 @@ platform:
   FIXlut: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/NaturalEarth
 data:
   ics_lbcs:
     GSMGFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/GFS
