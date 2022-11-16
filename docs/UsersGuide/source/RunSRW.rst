@@ -116,7 +116,8 @@ where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <us
 .. note::
    If users source the ``lmod-setup.sh`` file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
-A brief recipe for building the regional_workflow environment could be found in  :numref:`Section %s <LinuxMacVEnv>`. 
+A brief recipe for building the regional workflow environment can be found in  :numref:`Section %s <LinuxMacVEnv>`. 
+
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
 
 .. code-block:: console
@@ -560,7 +561,7 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 
 .. _LinuxMacVEnv: 
 
-Creating a conda Environment on Linux and Mac
+Creating a *conda* Environment on Linux and Mac
 ``````````````````````````````````````````````````
 
 Users need to create a conda ``regional_workflow environment``. It could be stored in a local path, which could be a default location (inquire by ``conda info``, and look for ``envs directories`` list), or a user-specified location, e.g. ``$HOME/condaenv/venvs/`` directory. A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
@@ -572,14 +573,16 @@ Users need to create a conda ``regional_workflow environment``. It could be stor
    conda install -c conda-forge f90nml
    conda install jinja2
    conda install pyyaml
-   conda install scipy   # install packages for graphics environment
+   # install packages for graphics environment
+   conda install scipy
    conda install matplotlib
    conda install -c conda-forge pygrib
    conda install cartopy
-   conda list            # verify the packages installed
+   # verify the packages installed
+   conda list
    conda deactivate
 
-where <python3-conda-version> is a numeric version in conda base installation resulting from a query ``python3 --version``, e.g. ``3.9.12``.
+where ``<python3-conda-version>`` is a numeric version (e.g. ``3.9.12``) in the conda base installation resulting from the query ``python3 --version``.
 
 
 .. _LinuxMacExptConfig:
@@ -1148,7 +1151,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the regional workflow (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<compiler>_<platform>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the regional workflow (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<platform>_<compiler>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
 
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 

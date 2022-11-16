@@ -442,15 +442,13 @@ Additional Details for Building on MacOS
 .. note::
     Users who are **not** building the SRW App on a MacOS machine may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
 
-The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The installation is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations have been tested:
+The SRW App can be built on MacOS machines, presuming HPC-Stack has already been installed successfully. The installation is architecture-independent and has been tested using both x86_64 and M1 chips (running natively). The following configurations have been tested:
 
-* MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
+   #. MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
+   #. MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
+   #. MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
 
-* MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); no MPI pre-installed
-
-* MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); no MPI pre-installed
-
-The ``build_macos_gnu.gnu`` modulefile is written as a LMOD module in Lua language, and could be loaded after the LMOD module environment is initialized. This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation:
+The ``build_macos_gnu.gnu`` modulefile is written as a Lmod module in the Lua programming language, and it can be loaded after the Lmod module environment is initialized (which should have happened prior to :ref:`installing the HPC Stack <HPCstackInfo>`). This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation:
 
 .. code-block:: console
 
