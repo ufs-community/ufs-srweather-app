@@ -489,7 +489,7 @@ Verification Tasks
    Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
 ..
-   COMMENT: Might be worth defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"
+   COMMENT: Defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
 
 .. _make-grid:
 

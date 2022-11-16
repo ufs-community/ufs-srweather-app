@@ -520,9 +520,11 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_DATA_STORES: disk
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_DATA_STORES: disk
 
 To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
@@ -1163,6 +1165,10 @@ Run the Workflow Using Stand-Alone Scripts
 
 The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <UseRocoto>` to run the workflow using Rocoto. 
 
+.. attention:: 
+
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`.
+
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
    .. code-block:: console
@@ -1175,6 +1181,15 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
       export EXPTDIR=`pwd`
       setenv EXPTDIR `pwd`
+
+
+#. Set the ``PDY`` and ``cyc`` environment variables. ``PDY`` refers to the first 8 characters (YYYYMMDD) of the ``DATE_FIRST_CYCL`` variable defined in the ``config.yaml``. ``cyc`` refers to the last two digits of ``DATE_FIRST_CYCL`` (HH) defined in ``config.yaml``. For example, if the ``config.yaml`` file defines ``DATE_FIRST_CYCL: '2019061518'``, the user should run:
+
+   .. code-block:: console 
+      
+      export PDY=20190615 && export cyc=18 
+   
+   before running the wrapper scripts.
 
 #. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 

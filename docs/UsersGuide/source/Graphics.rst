@@ -37,8 +37,6 @@ To use the plotting scripts, the regional workflow environment, which includes t
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). Then users should follow the instructions output by the console (e.g., ``conda activate regional_workflow``). 
 
-.. COMMENT: Make note to ignore deprecation warnings...?
-
 .. _Cartopy:
 
 Cartopy Shapefiles
