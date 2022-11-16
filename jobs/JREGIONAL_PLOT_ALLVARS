@@ -53,10 +53,33 @@ This is the J-job script for the plotting task
 #-----------------------------------------------------------------------
 #
 GRID_NAME=${PREDEF_GRID_NAME:-$EXPT_SUBDIR}
-$SCRIPTSdir/exregional_plot_allvars.py ${CDATE} 0 ${FCST_LEN_HRS} 1 \
-            ${EXPTDIR} ${FIXshp} ${GRID_NAME} || \
+
+# plot all variables
+$SCRIPTSdir/exregional_plot_allvars.py \
+           ${CDATE} \
+           ${PLOT_FCST_START} \
+           ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           ${PLOT_FCST_INC:-1} \
+           ${EXPTDIR} \
+           ${FIXshp} \
+           ${GRID_NAME} || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+
+# plot all variables diff with baseline
+if [ ! -z $EXPTDIR_REF ]; then
+  $SCRIPTSdir/exregional_plot_allvars_diff.py ${CDATE} 0 ${FCST_LEN_HRS} 1 \
+           ${CDATE} \
+           ${PLOT_FCST_START} \
+           ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           ${PLOT_FCST_INC:-1} \
+           ${EXPTDIR} \
+           ${EXPTDIR_REF} \
+           ${FIXshp} \
+           ${GRID_NAME} || \
+  print_err_msg_exit "\
+  Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+fi
 #
 #-----------------------------------------------------------------------
 #

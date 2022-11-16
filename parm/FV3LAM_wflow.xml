@@ -782,7 +782,11 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 
     <dependency>
+        {%- if write_dopost %}
       <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
     </dependency>
 
   </task>

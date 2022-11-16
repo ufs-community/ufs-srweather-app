@@ -146,7 +146,7 @@ def cmap_t2m():
     green = []
     blue = []
     for i in range(len(xsize)):
-        xNorm = np.float(i) / (np.float(np.size(r)) - 1.0)
+        xNorm = float(i) / (float(np.size(r)) - 1.0)
         red.append([xNorm, r[i], r[i]])
         green.append([xNorm, g[i], g[i]])
         blue.append([xNorm, b[i], b[i]])
