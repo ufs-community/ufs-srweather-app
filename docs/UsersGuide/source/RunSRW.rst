@@ -1167,7 +1167,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`.
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the regional workflow (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<compiler>_<platform>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
 
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
@@ -1216,6 +1216,12 @@ The regional workflow can be run using standalone shell scripts in cases where t
       ./run_make_lbcs.sh
       ./run_fcst.sh
       ./run_post.sh
+
+Each task should finish with exit code 0. For example: 
+
+.. code-block:: console
+
+   End exregional_get_extrn_mdl_files.sh at Wed Nov 16 18:08:19 UTC 2022 with error code 0 (time elapsed: 00:00:01)
 
 Check the batch script output file in your experiment directory for a “SUCCESS” message near the end of the file.
 
