@@ -90,9 +90,9 @@ mm=${yyyymmddhh:4:2}
 dd=${yyyymmddhh:6:2}
 hh=${yyyymmddhh:8:2}
 
-# Re-define to use the pre-defined data paths in the machine file (ush/machine/).
-PDY=${yyyymmdd}
-cyc=${hh}
+# Set to use the pre-defined data paths in the machine file (ush/machine/).
+PDYext=${yyyymmdd}
+cycext=${hh}
 #
 #-----------------------------------------------------------------------
 #
