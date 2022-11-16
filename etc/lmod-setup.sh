@@ -23,8 +23,9 @@ $has_mu && set -u
 $has_me && set -e
 
 if [ "$L_MACHINE" = macos ]; then
-   export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
-   # export BASH_ENV="/usr/local/opt/lmod/init/bash"
+   arch=$(uname -m)
+   [[ "$arch" = arm64 ]] && export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
+   [[ "$arch" = x86_64 ]] && export BASH_ENV="/usr/local/opt/lmod/init/bash"
    source $BASH_ENV
 
    module purge
