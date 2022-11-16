@@ -361,6 +361,7 @@ platform:
   FIXlut: ""
   FIXorg: ""
   FIXsfc: ""
+  FIXshp: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -857,6 +858,9 @@ workflow_switches:
   # to be run. If this flag is set, both ensemble-stat point verification
   # and point verification of ensemble-stat output is computed.
   #
+  # RUN_TASK_PLOT_ALLVARS:
+  # Flag that determines whether to run python plotting scripts
+  #
   #-----------------------------------------------------------------------
   #
   RUN_TASK_MAKE_GRID: true
@@ -878,6 +882,7 @@ workflow_switches:
   RUN_TASK_VX_ENSGRID: false
   RUN_TASK_VX_ENSPOINT: false
 
+  RUN_TASK_PLOT_ALLVARS: true
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -2018,6 +2023,16 @@ task_run_vx_enspoint_prob:
   MEM_VX_ENSPOINT_PROB: 2G
   WTIME_VX_ENSPOINT_PROB: 01:00:00
   MAXTRIES_VX_ENSPOINT_PROB: 1
+
+#----------------------------
+# PLOT_ALLVARS config parameters
+#-----------------------------
+task_plot_allvars:
+  PLOT_ALLVARS_TN: "plot_allvars"
+  NNODES_PLOT_ALLVARS: 1
+  PPN_PLOT_ALLVARS: 24
+  WTIME_PLOT_ALLVARS: 00:20:00
+  MAXTRIES_PLOT_ALLVARS: 1
 
 
 #----------------------------
