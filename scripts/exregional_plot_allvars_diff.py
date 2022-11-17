@@ -1937,7 +1937,8 @@ if __name__ == "__main__":
                     extend="max",
                 )
                 cbar1.set_label(units, fontsize=6)
-                cbar1.ax.set_xticklabels([0.1, 0.5, 1, 1.5, 2, 3, 5, 10, 20])
+                #cbar1.ax.set_xticklabels([0.1, 0.5, 1, 1.5, 2, 3, 5, 10, 20])
+                cbar1.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
                 cbar1.ax.tick_params(labelsize=6)
                 ax1.text(
                     0.5,
@@ -1979,7 +1980,8 @@ if __name__ == "__main__":
                     extend="max",
                 )
                 cbar2.set_label(units, fontsize=6)
-                cbar2.ax.set_xticklabels([0.1, 0.5, 1, 1.5, 2, 3, 5, 10, 20])
+                #cbar2.ax.set_xticklabels([0.1, 0.5, 1, 1.5, 2, 3, 5, 10, 20])
+                cbar2.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
                 cbar2.ax.tick_params(labelsize=6)
                 ax2.text(
                     0.5,
