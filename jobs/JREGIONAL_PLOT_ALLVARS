@@ -69,6 +69,7 @@ COMOUT_REF=$(eval echo ${COMOUT_REF})
 
 # plot all variables
 $SCRIPTSdir/exregional_plot_allvars.py \
+           --debug \
            --cycle ${CDATE} \
            --start ${PLOT_FCST_START} \
            --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
@@ -82,6 +83,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 # plot all variables diff with baseline
 if [ ! -z $COMOUT_REF ]; then
   $SCRIPTSdir/exregional_plot_allvars_diff.py \
+           --debug \
            --cycle ${CDATE} \
            --start ${PLOT_FCST_START} \
            --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
