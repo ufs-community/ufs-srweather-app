@@ -7,7 +7,6 @@ import argparse
 from python_utils import (
     set_env_var,
     import_vars,
-    export_vars,
     load_config_file,
     flatten_dict,
 )
@@ -21,13 +20,29 @@ def calculate_cost(config_fn):
     global PREDEF_GRID_NAME, QUILTING, GRID_GEN_METHOD
 
     # import all environment variables
-    import_vars()
+    IMPORTS = [
+        "PREDEF_GRID_NAME",
+        "QUILTING",
+        "GRID_GEN_METHOD",
+        "DT_ATMOS",
+        "LAYOUT_X",
+        "LAYOUT_Y",
+        "BLOCKSIZE",
+    ]
+    import_vars(env_vars=IMPORTS)
 
     # get grid config parameters (predefined or custom)
     if PREDEF_GRID_NAME:
-        set_env_var("QUILTING", False)
-        set_predef_grid_params()
-        import_vars()
+        QUILTING = False
+        params_dict = set_predef_grid_params(
+            PREDEF_GRID_NAME,
+            QUILTING,
+            DT_ATMOS,
+            LAYOUT_X,
+            LAYOUT_Y,
+            BLOCKSIZE,
+        )
+        import_vars(dictionary=params_dict)
     else:
         cfg_u = load_config_file(config_fn)
         cfg_u = flatten_dict(cfg_u)
@@ -45,6 +60,8 @@ def calculate_cost(config_fn):
             iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
             jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
             jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
+            RUN_ENVIR="community",
+            VERBOSE=False,
         )
 
     elif GRID_GEN_METHOD == "ESGgrid":
@@ -66,9 +83,16 @@ def calculate_cost(config_fn):
     # reference grid (6-hour forecast on RRFS_CONUS_25km)
     PREDEF_GRID_NAME = "RRFS_CONUS_25km"
 
-    export_vars()
-    set_predef_grid_params()
-    import_vars()
+    params_dict = set_predef_grid_params(
+        PREDEF_GRID_NAME,
+        QUILTING,
+        DT_ATMOS,
+        LAYOUT_X,
+        LAYOUT_Y,
+        BLOCKSIZE,
+    )
+    import_vars(dictionary=params_dict)
+
     cost.extend([DT_ATMOS, ESGgrid_NX * ESGgrid_NY])
 
     return cost
@@ -100,9 +124,11 @@ class Testing(unittest.TestCase):
 
     def setUp(self):
         set_env_var("DEBUG", False)
+        set_env_var("VERBOSE", False)
         set_env_var("PREDEF_GRID_NAME", "RRFS_CONUS_3km")
         set_env_var("DT_ATMOS", 36)
         set_env_var("LAYOUT_X", 18)
         set_env_var("LAYOUT_Y", 36)
         set_env_var("BLOCKSIZE", 28)
         set_env_var("QUILTING", False)
+        set_env_var("RUN_ENVIR", "community")

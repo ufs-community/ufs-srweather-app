@@ -3,23 +3,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script copies files from various directories into the experiment
-# directory, creates links to some of them, and modifies others (e.g. 
-# templates) to customize them for the current experiment setup.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -53,55 +42,102 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs a forecast with FV3 for 
-the specified cycle.
+This is the ex-script for the task that runs NEXUS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Create the INPUT and RESTART directories under the run directory.
+# Set OpenMP variables.
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
+export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_POST_SPLIT}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_POST_SPLIT}
+export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_POST_SPLIT}
+#
+#-----------------------------------------------------------------------
+#
+# Set run command.
+#
+#-----------------------------------------------------------------------
+#
+eval ${PRE_TASK_CMDS}
+
+if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
+  print_err_msg_exit "\
+  Run command was not set in machine file. \
+  Please set RUN_CMD_SERIAL for your platform"
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  print_info_msg "$VERBOSE" "
+  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
+
+set -x
 #
 #-----------------------------------------------------------------------
 #
-# Create the INPUT and RESTART directories under the run directory.
+# Move to the NEXUS working directory
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p ${DATA}/INPUT
-mkdir_vrfy -p ${DATA}/RESTART
+DATA="${DATA}/tmp_NEXUS_POST_SPLIT"
+mkdir_vrfy -p "$DATA"
+
+cd_vrfy $DATA
+
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# Copy the NEXUS config files to the tmp directory  
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_fcst.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}
+
+nspt="00"
+cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
+# make nexus output pretty
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
+./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
+
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# run MEGAN NCO script
+#
+#-----------------------------------------------------------------------
+#
+cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
+./run_nco_combine_ant_bio.sh NEXUS_Expt_pretty.nc NEXUS_Expt.nc
+
+#
+#-----------------------------------------------------------------------
+#
+# Move NEXUS output to INPUT_DATA directory.
+#
+#-----------------------------------------------------------------------
+#
+mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+#
+# Print message indicating successful completion of script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+NEXUS NetCDF file has been generated successfully!!!!
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #

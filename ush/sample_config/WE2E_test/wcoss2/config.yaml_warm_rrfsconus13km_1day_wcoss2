@@ -12,7 +12,7 @@ workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   DATE_FIRST_CYCL: '2019080612'
   DATE_LAST_CYCL: '2019080612'
-  INCR_CYCL_FREQ: 24
+  INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
@@ -20,6 +20,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm
   FIELD_TABLE_TMPL_FN: field_table_aqm
 nco:
+  envir: prod
   NET: aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: true
@@ -49,6 +50,7 @@ global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
   HALO_BLEND: 0
+  DO_REAL_TIME: false
 cpl_aqm_parm:
   CPL_AQM: true
   RUN_TASK_AQM_ICS: true
@@ -65,7 +67,7 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  DO_AQM_FENGSHA: true
+  DO_AQM_FENGSHA: false
   AQM_FENGSHA_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
   AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_FENGSHA_FILE_SUFFIX: .nc  
@@ -80,6 +82,7 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_RRFS_CONUScompact_13km.nc
+  NUM_SPLIT_NEXUS: 1 
   PT_SRC_BASE_DIR_CONUS: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/12US1
   PT_SRC_BASE_DIR_HI: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/3HI1
   PT_SRC_BASE_DIR_AK: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/9AK1

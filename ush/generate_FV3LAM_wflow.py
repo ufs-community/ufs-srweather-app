@@ -14,6 +14,7 @@ from python_utils import (
     print_err_msg_exit,
     log_info,
     import_vars,
+    export_vars,
     cp_vrfy,
     cd_vrfy,
     rm_vrfy,
@@ -29,6 +30,7 @@ from python_utils import (
     find_pattern_in_str,
     set_env_var,
     get_env_var,
+    lowercase,
 )
 
 from setup import setup
@@ -64,15 +66,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         ========================================================================"""
     )
 
-    # define utilities
-    define_macos_utilities()
-
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    setup()
+    var_defs_dict = setup()
 
-    # import all environment variables
-    import_vars()
+    # export/import all environment variables
+    export_vars(source_dict=var_defs_dict)
+    import_vars(dictionary=var_defs_dict)
 
     #
     # -----------------------------------------------------------------------
@@ -108,6 +108,13 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
               WFLOW_XML_FP = '{WFLOW_XML_FP}'"""
         )
 
+        #
+        # Dictionary of settings to pass to fill_jinja
+        #
+        settings = {}
+        for k, v in var_defs_dict.items():
+            settings[lowercase(k)] = v
+
         ensmem_indx_name = ""
         uscore_ensmem_name = ""
         slash_ensmem_subdir = ""
@@ -116,7 +123,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
 
-        # get time string
         d = DATE_FIRST_CYCL + timedelta(seconds=DT_ATMOS)
         time_str = d.strftime("%M:%S")
 
@@ -125,318 +131,37 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         else:
             CYCL_NEXT = date_to_str(DATE_FIRST_CYCL + timedelta(hours=INCR_CYCL_FREQ), format="%Y%m%d%H00")
 
-        # Dictionary of settings
-        settings = {
-            #
-            # Parameters needed by the job scheduler.
-            #
-            "account": ACCOUNT,
-            "sched": SCHED,
-            "partition_default": PARTITION_DEFAULT,
-            "queue_default": QUEUE_DEFAULT,
-            "partition_hpss": PARTITION_HPSS,
-            "queue_hpss": QUEUE_HPSS,
-            "partition_fcst": PARTITION_FCST,
-            "queue_fcst": QUEUE_FCST,
-            "machine": MACHINE,
-            "sched_native_cmd": SCHED_NATIVE_CMD,
-            "workflow_id": WORKFLOW_ID,
-            #
-            # Run environment
-            #
-            "run_envir": RUN_ENVIR,
-            "run": RUN,
-            "net": NET,
-            #
-            # Workflow task names.
-            #
-            "make_grid_tn": MAKE_GRID_TN,
-            "make_orog_tn": MAKE_OROG_TN,
-            "make_sfc_climo_tn": MAKE_SFC_CLIMO_TN,
-            "get_extrn_ics_tn": GET_EXTRN_ICS_TN,
-            "get_extrn_lbcs_tn": GET_EXTRN_LBCS_TN,
-            "make_ics_tn": MAKE_ICS_TN,
-            "make_lbcs_tn": MAKE_LBCS_TN,
-            "run_fcst_tn": RUN_FCST_TN,
-            "run_post_tn": RUN_POST_TN,
-            "get_obs_ccpa_tn": GET_OBS_CCPA_TN,
-            "get_obs_ndas_tn": GET_OBS_NDAS_TN,
-            "get_obs_mrms_tn": GET_OBS_MRMS_TN,
-            "vx_tn": VX_TN,
-            "vx_gridstat_tn": VX_GRIDSTAT_TN,
-            "vx_gridstat_refc_tn": VX_GRIDSTAT_REFC_TN,
-            "vx_gridstat_retop_tn": VX_GRIDSTAT_RETOP_TN,
-            "vx_gridstat_03h_tn": VX_GRIDSTAT_03h_TN,
-            "vx_gridstat_06h_tn": VX_GRIDSTAT_06h_TN,
-            "vx_gridstat_24h_tn": VX_GRIDSTAT_24h_TN,
-            "vx_pointstat_tn": VX_POINTSTAT_TN,
-            "vx_ensgrid_tn": VX_ENSGRID_TN,
-            "vx_ensgrid_refc_tn": VX_ENSGRID_REFC_TN,
-            "vx_ensgrid_retop_tn": VX_ENSGRID_RETOP_TN,
-            "vx_ensgrid_03h_tn": VX_ENSGRID_03h_TN,
-            "vx_ensgrid_06h_tn": VX_ENSGRID_06h_TN,
-            "vx_ensgrid_24h_tn": VX_ENSGRID_24h_TN,
-            "vx_ensgrid_mean_tn": VX_ENSGRID_MEAN_TN,
-            "vx_ensgrid_prob_tn": VX_ENSGRID_PROB_TN,
-            "vx_ensgrid_mean_03h_tn": VX_ENSGRID_MEAN_03h_TN,
-            "vx_ensgrid_prob_03h_tn": VX_ENSGRID_PROB_03h_TN,
-            "vx_ensgrid_mean_06h_tn": VX_ENSGRID_MEAN_06h_TN,
-            "vx_ensgrid_prob_06h_tn": VX_ENSGRID_PROB_06h_TN,
-            "vx_ensgrid_mean_24h_tn": VX_ENSGRID_MEAN_24h_TN,
-            "vx_ensgrid_prob_24h_tn": VX_ENSGRID_PROB_24h_TN,
-            "vx_ensgrid_prob_refc_tn": VX_ENSGRID_PROB_REFC_TN,
-            "vx_ensgrid_prob_retop_tn": VX_ENSGRID_PROB_RETOP_TN,
-            "vx_enspoint_tn": VX_ENSPOINT_TN,
-            "vx_enspoint_mean_tn": VX_ENSPOINT_MEAN_TN,
-            "vx_enspoint_prob_tn": VX_ENSPOINT_PROB_TN,
-            #
-            # Entity used to load the module file for each GET_OBS_* task.
-            #
-            "get_obs": GET_OBS,
-            #
-            # Number of nodes to use for each task.
-            #
-            "nnodes_make_grid": NNODES_MAKE_GRID,
-            "nnodes_make_orog": NNODES_MAKE_OROG,
-            "nnodes_make_sfc_climo": NNODES_MAKE_SFC_CLIMO,
-            "nnodes_get_extrn_ics": NNODES_GET_EXTRN_ICS,
-            "nnodes_get_extrn_lbcs": NNODES_GET_EXTRN_LBCS,
-            "nnodes_make_ics": NNODES_MAKE_ICS,
-            "nnodes_make_lbcs": NNODES_MAKE_LBCS,
-            "nnodes_run_fcst": NNODES_RUN_FCST,
-            "nnodes_run_post": NNODES_RUN_POST,
-            "nnodes_get_obs_ccpa": NNODES_GET_OBS_CCPA,
-            "nnodes_get_obs_mrms": NNODES_GET_OBS_MRMS,
-            "nnodes_get_obs_ndas": NNODES_GET_OBS_NDAS,
-            "nnodes_vx_gridstat": NNODES_VX_GRIDSTAT,
-            "nnodes_vx_pointstat": NNODES_VX_POINTSTAT,
-            "nnodes_vx_ensgrid": NNODES_VX_ENSGRID,
-            "nnodes_vx_ensgrid_mean": NNODES_VX_ENSGRID_MEAN,
-            "nnodes_vx_ensgrid_prob": NNODES_VX_ENSGRID_PROB,
-            "nnodes_vx_enspoint": NNODES_VX_ENSPOINT,
-            "nnodes_vx_enspoint_mean": NNODES_VX_ENSPOINT_MEAN,
-            "nnodes_vx_enspoint_prob": NNODES_VX_ENSPOINT_PROB,
-            #
-            # Number of cores used for a task
-            #
-            "ncores_run_fcst": PE_MEMBER01,
-            "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
-            "native_nexus_emission": f"--cpus-per-task {OMP_NUM_THREADS_NEXUS_EMISSION}",
-            #
-            # Number of OpenMP threads for the run_fcst task and nexus_emission task
-            #
-            "omp_num_threads_run_fcst": OMP_NUM_THREADS_RUN_FCST,
-            "omp_num_threads_nexus_emission": OMP_NUM_THREADS_NEXUS_EMISSION,
-            "omp_num_threads_point_source": OMP_NUM_THREADS_POINT_SOURCE,
-            #
-            # Number of logical processes per node for each task.  If running without
-            # threading, this is equal to the number of MPI processes per node.
-            #
-            "ppn_make_grid": PPN_MAKE_GRID,
-            "ppn_make_orog": PPN_MAKE_OROG,
-            "ppn_make_sfc_climo": PPN_MAKE_SFC_CLIMO,
-            "ppn_get_extrn_ics": PPN_GET_EXTRN_ICS,
-            "ppn_get_extrn_lbcs": PPN_GET_EXTRN_LBCS,
-            "ppn_make_ics": PPN_MAKE_ICS,
-            "ppn_make_lbcs": PPN_MAKE_LBCS,
-            "ppn_run_fcst": PPN_RUN_FCST,
-            "ppn_run_post": PPN_RUN_POST,
-            "ppn_get_obs_ccpa": PPN_GET_OBS_CCPA,
-            "ppn_get_obs_mrms": PPN_GET_OBS_MRMS,
-            "ppn_get_obs_ndas": PPN_GET_OBS_NDAS,
-            "ppn_vx_gridstat": PPN_VX_GRIDSTAT,
-            "ppn_vx_pointstat": PPN_VX_POINTSTAT,
-            "ppn_vx_ensgrid": PPN_VX_ENSGRID,
-            "ppn_vx_ensgrid_mean": PPN_VX_ENSGRID_MEAN,
-            "ppn_vx_ensgrid_prob": PPN_VX_ENSGRID_PROB,
-            "ppn_vx_enspoint": PPN_VX_ENSPOINT,
-            "ppn_vx_enspoint_mean": PPN_VX_ENSPOINT_MEAN,
-            "ppn_vx_enspoint_prob": PPN_VX_ENSPOINT_PROB,
-            #
-            # Maximum wallclock time for each task.
-            #
-            "wtime_make_grid": WTIME_MAKE_GRID,
-            "wtime_make_orog": WTIME_MAKE_OROG,
-            "wtime_make_sfc_climo": WTIME_MAKE_SFC_CLIMO,
-            "wtime_get_extrn_ics": WTIME_GET_EXTRN_ICS,
-            "wtime_get_extrn_lbcs": WTIME_GET_EXTRN_LBCS,
-            "wtime_make_ics": WTIME_MAKE_ICS,
-            "wtime_make_lbcs": WTIME_MAKE_LBCS,
-            "wtime_run_fcst": WTIME_RUN_FCST,
-            "wtime_run_post": WTIME_RUN_POST,
-            "wtime_get_obs_ccpa": WTIME_GET_OBS_CCPA,
-            "wtime_get_obs_mrms": WTIME_GET_OBS_MRMS,
-            "wtime_get_obs_ndas": WTIME_GET_OBS_NDAS,
-            "wtime_vx_gridstat": WTIME_VX_GRIDSTAT,
-            "wtime_vx_pointstat": WTIME_VX_POINTSTAT,
-            "wtime_vx_ensgrid": WTIME_VX_ENSGRID,
-            "wtime_vx_ensgrid_mean": WTIME_VX_ENSGRID_MEAN,
-            "wtime_vx_ensgrid_prob": WTIME_VX_ENSGRID_PROB,
-            "wtime_vx_enspoint": WTIME_VX_ENSPOINT,
-            "wtime_vx_enspoint_mean": WTIME_VX_ENSPOINT_MEAN,
-            "wtime_vx_enspoint_prob": WTIME_VX_ENSPOINT_PROB,
-            #
-            # Maximum number of tries for each task.
-            #
-            "maxtries_make_grid": MAXTRIES_MAKE_GRID,
-            "maxtries_make_orog": MAXTRIES_MAKE_OROG,
-            "maxtries_make_sfc_climo": MAXTRIES_MAKE_SFC_CLIMO,
-            "maxtries_get_extrn_ics": MAXTRIES_GET_EXTRN_ICS,
-            "maxtries_get_extrn_lbcs": MAXTRIES_GET_EXTRN_LBCS,
-            "maxtries_make_ics": MAXTRIES_MAKE_ICS,
-            "maxtries_make_lbcs": MAXTRIES_MAKE_LBCS,
-            "maxtries_run_fcst": MAXTRIES_RUN_FCST,
-            "maxtries_run_post": MAXTRIES_RUN_POST,
-            "maxtries_get_obs_ccpa": MAXTRIES_GET_OBS_CCPA,
-            "maxtries_get_obs_mrms": MAXTRIES_GET_OBS_MRMS,
-            "maxtries_get_obs_ndas": MAXTRIES_GET_OBS_NDAS,
-            "maxtries_vx_gridstat": MAXTRIES_VX_GRIDSTAT,
-            "maxtries_vx_gridstat_refc": MAXTRIES_VX_GRIDSTAT_REFC,
-            "maxtries_vx_gridstat_retop": MAXTRIES_VX_GRIDSTAT_RETOP,
-            "maxtries_vx_gridstat_03h": MAXTRIES_VX_GRIDSTAT_03h,
-            "maxtries_vx_gridstat_06h": MAXTRIES_VX_GRIDSTAT_06h,
-            "maxtries_vx_gridstat_24h": MAXTRIES_VX_GRIDSTAT_24h,
-            "maxtries_vx_pointstat": MAXTRIES_VX_POINTSTAT,
-            "maxtries_vx_ensgrid": MAXTRIES_VX_ENSGRID,
-            "maxtries_vx_ensgrid_refc": MAXTRIES_VX_ENSGRID_REFC,
-            "maxtries_vx_ensgrid_retop": MAXTRIES_VX_ENSGRID_RETOP,
-            "maxtries_vx_ensgrid_03h": MAXTRIES_VX_ENSGRID_03h,
-            "maxtries_vx_ensgrid_06h": MAXTRIES_VX_ENSGRID_06h,
-            "maxtries_vx_ensgrid_24h": MAXTRIES_VX_ENSGRID_24h,
-            "maxtries_vx_ensgrid_mean": MAXTRIES_VX_ENSGRID_MEAN,
-            "maxtries_vx_ensgrid_prob": MAXTRIES_VX_ENSGRID_PROB,
-            "maxtries_vx_ensgrid_mean_03h": MAXTRIES_VX_ENSGRID_MEAN_03h,
-            "maxtries_vx_ensgrid_prob_03h": MAXTRIES_VX_ENSGRID_PROB_03h,
-            "maxtries_vx_ensgrid_mean_06h": MAXTRIES_VX_ENSGRID_MEAN_06h,
-            "maxtries_vx_ensgrid_prob_06h": MAXTRIES_VX_ENSGRID_PROB_06h,
-            "maxtries_vx_ensgrid_mean_24h": MAXTRIES_VX_ENSGRID_MEAN_24h,
-            "maxtries_vx_ensgrid_prob_24h": MAXTRIES_VX_ENSGRID_PROB_24h,
-            "maxtries_vx_ensgrid_prob_refc": MAXTRIES_VX_ENSGRID_PROB_REFC,
-            "maxtries_vx_ensgrid_prob_retop": MAXTRIES_VX_ENSGRID_PROB_RETOP,
-            "maxtries_vx_enspoint": MAXTRIES_VX_ENSPOINT,
-            "maxtries_vx_enspoint_mean": MAXTRIES_VX_ENSPOINT_MEAN,
-            "maxtries_vx_enspoint_prob": MAXTRIES_VX_ENSPOINT_PROB,
-            #
-            # Flags that specify whether to run the preprocessing or
-            # verification-related tasks.
-            #
-            "run_task_make_grid": RUN_TASK_MAKE_GRID,
-            "run_task_make_orog": RUN_TASK_MAKE_OROG,
-            "run_task_make_sfc_climo": RUN_TASK_MAKE_SFC_CLIMO,
-            "run_task_get_extrn_ics": RUN_TASK_GET_EXTRN_ICS,
-            "run_task_get_extrn_lbcs": RUN_TASK_GET_EXTRN_LBCS,
-            "run_task_make_ics": RUN_TASK_MAKE_ICS,
-            "run_task_make_lbcs": RUN_TASK_MAKE_LBCS,
-            "run_task_run_fcst": RUN_TASK_RUN_FCST,
-            "run_task_run_post": RUN_TASK_RUN_POST,
-            "run_task_get_obs_ccpa": RUN_TASK_GET_OBS_CCPA,
-            "run_task_get_obs_mrms": RUN_TASK_GET_OBS_MRMS,
-            "run_task_get_obs_ndas": RUN_TASK_GET_OBS_NDAS,
-            "run_task_vx_gridstat": RUN_TASK_VX_GRIDSTAT,
-            "run_task_vx_pointstat": RUN_TASK_VX_POINTSTAT,
-            "run_task_vx_ensgrid": RUN_TASK_VX_ENSGRID,
-            "run_task_vx_enspoint": RUN_TASK_VX_ENSPOINT,
-            #
-            # Number of physical cores per node for the current machine.
-            #
-            "ncores_per_node": NCORES_PER_NODE,
-            #
-            # Directories and files.
-            #
-            "exptdir": EXPTDIR,
-            "jobsdir": JOBSdir,
-            "logdir": LOGDIR,
-            "scriptsdir": SCRIPTSdir,
-            "comin_basedir": COMIN_BASEDIR,
-            "comout_basedir": COMOUT_BASEDIR,
-            "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
-            "load_modules_run_task_fp": LOAD_MODULES_RUN_TASK_FP,
-            #
-            # External model information for generating ICs and LBCs.
-            #
-            "extrn_mdl_name_ics": EXTRN_MDL_NAME_ICS,
-            "extrn_mdl_name_lbcs": EXTRN_MDL_NAME_LBCS,
-            #
-            # Parameters that determine the set of cycles to run.
-            #
-            "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
-            "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
-            "cdate_first_cycl": DATE_FIRST_CYCL,
-            "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
-            #
-            # Forecast length (same for all cycles).
-            #
-            "fcst_len_hrs": FCST_LEN_HRS,
-            #
-            # Inline post
-            #
-            "write_dopost": WRITE_DOPOST,
-            #
-            # METPlus-specific information
-            #
-            "model": MODEL,
-            "met_install_dir": MET_INSTALL_DIR,
-            "met_bin_exec": MET_BIN_EXEC,
-            "metplus_path": METPLUS_PATH,
-            "vx_config_dir": VX_CONFIG_DIR,
-            "metplus_conf": METPLUS_CONF,
-            "met_config": MET_CONFIG,
-            "ccpa_obs_dir": CCPA_OBS_DIR,
-            "mrms_obs_dir": MRMS_OBS_DIR,
-            "ndas_obs_dir": NDAS_OBS_DIR,
-            #
-            # AQM parameters
-            #
- 	      'aqm_ics_tn': AQM_ICS_TN,
-              'aqm_lbcs_tn': AQM_LBCS_TN,
-              'nexus_emission_tn': NEXUS_EMISSION_TN,
-              'point_source_tn': POINT_SOURCE_TN,
-              'post_stat_tn': POST_STAT_TN,
-              'coldstart': COLDSTART,
-              'warmstart_cycle_dir': WARMSTART_CYCLE_DIR,
-              'cycl_next': CYCL_NEXT,
-              'run_task_aqm_ics': RUN_TASK_AQM_ICS,
-              'run_task_aqm_lbcs': RUN_TASK_AQM_LBCS,
-              'run_task_nexus_emission': RUN_TASK_NEXUS_EMISSION,
-              'run_task_point_source': RUN_TASK_POINT_SOURCE,
-              'run_task_post_stat': RUN_TASK_POST_STAT,
-              'nnodes_aqm_ics': NNODES_AQM_ICS,
-              'nnodes_aqm_lbcs': NNODES_AQM_LBCS,
-              'nnodes_nexus_emission': NNODES_NEXUS_EMISSION,
-              'nnodes_point_source': NNODES_POINT_SOURCE,
-              'nnodes_post_stat': NNODES_POST_STAT,
-              'ppn_aqm_ics': PPN_AQM_ICS,
-              'ppn_aqm_lbcs': PPN_AQM_LBCS,
-              'ppn_nexus_emission': PPN_NEXUS_EMISSION,
-              'ppn_point_source': PPN_POINT_SOURCE,
-              'ppn_post_stat': PPN_POST_STAT,
-              'wtime_aqm_ics': WTIME_AQM_ICS,
-              'wtime_aqm_lbcs': WTIME_AQM_LBCS,
-              'wtime_nexus_emission': WTIME_NEXUS_EMISSION,
-              'wtime_point_source': WTIME_POINT_SOURCE,
-              'wtime_post_stat': WTIME_POST_STAT,
-              'maxtries_aqm_ics': MAXTRIES_AQM_ICS,
-              'maxtries_aqm_lbcs': MAXTRIES_AQM_LBCS,
-              'maxtries_nexus_emission': MAXTRIES_NEXUS_EMISSION,
-              'maxtries_point_source': MAXTRIES_POINT_SOURCE,
-              'maxtries_post_stat': MAXTRIES_POST_STAT,
-            #
-            # Ensemble-related parameters.
-            #
-            "do_ensemble": DO_ENSEMBLE,
-            "num_ens_members": NUM_ENS_MEMBERS,
-            "ndigits_ensmem_names": f"{NDIGITS_ENSMEM_NAMES}",
-            "ensmem_indx_name": ensmem_indx_name,
-            "uscore_ensmem_name": uscore_ensmem_name,
-            "slash_ensmem_subdir": slash_ensmem_subdir,
-            #
-            # Parameters associated with subhourly post-processed output
-            #
-            "sub_hourly_post": SUB_HOURLY_POST,
-            "delta_min": DT_SUBHOURLY_POST_MNTS,
-            "first_fv3_file_tstr": f"000:{time_str}",
-        }
-        # End of "settings" variable.
+        settings.update(
+            {
+                #
+                # Number of cores used for a task
+                #
+                "ncores_run_fcst": PE_MEMBER01,
+                "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
+                "native_nexus_emission": f"--cpus-per-task {OMP_NUM_THREADS_NEXUS_EMISSION}",
+                #
+                # Parameters that determine the set of cycles to run.
+                #
+                "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
+                "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
+                "cdate_first_cycl": DATE_FIRST_CYCL,
+                "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
+                "cycl_next": CYCL_NEXT,
+                #
+                # Ensemble-related parameters.
+                #
+                "ensmem_indx_name": ensmem_indx_name,
+                "uscore_ensmem_name": uscore_ensmem_name,
+                "slash_ensmem_subdir": slash_ensmem_subdir,
+                #
+                # Parameters associated with subhourly post-processed output
+                #
+                "delta_min": DT_SUBHOURLY_POST_MNTS,
+                "first_fv3_file_tstr": f"000:{time_str}",
+            }
+        )
+
+        # Log "settings" variable.
         settings_str = cfg_to_yaml_str(settings)
 
         log_info(

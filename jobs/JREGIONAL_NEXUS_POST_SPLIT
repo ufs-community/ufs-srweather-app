@@ -3,23 +3,13 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script copies files from various directories into the experiment
-# directory, creates links to some of them, and modifies others (e.g. 
-# templates) to customize them for the current experiment setup.
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/job_preamble.sh "TRUE"
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -53,13 +43,14 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs a forecast with FV3 for 
-the specified cycle.
+This is the J-job script for the task that generates the emission files 
+using NEXUS which will output for FV3 (in NetCDF format).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Create the INPUT and RESTART directories under the run directory.
+# Set the name of and create the directory in which the output from this
+# script will be placed (if it doesn't already exist).
 #
 #-----------------------------------------------------------------------
 #
@@ -68,25 +59,24 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
     export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
+mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-# Create the INPUT and RESTART directories under the run directory.
+# Set the run directory
 #
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p ${DATA}/INPUT
-mkdir_vrfy -p ${DATA}/RESTART
+mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# Call the ex-script for this J-job.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_fcst.sh || \
+time $SCRIPTSdir/exregional_nexus_post_split.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
@@ -106,3 +96,4 @@ job_postamble
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
+

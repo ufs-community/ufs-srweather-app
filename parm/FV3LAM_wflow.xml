@@ -81,17 +81,18 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
 {%- endif %}
 {%- if run_task_aqm_ics %}
-<!ENTITY AQM_EXTRN_ICS_TN      "{{ aqm_ics_tn }}_ext">
-<!ENTITY AQM_ICS_TN            "{{ aqm_ics_tn }}">
+<!ENTITY AQM_EXTRN_ICS_TN          "{{ aqm_ics_tn }}_ext">
+<!ENTITY AQM_ICS_TN                "{{ aqm_ics_tn }}">
 {%- endif %}
 {%- if run_task_aqm_lbcs %}
-<!ENTITY AQM_LBCS_TN           "{{ aqm_lbcs_tn }}">
+<!ENTITY AQM_LBCS_TN               "{{ aqm_lbcs_tn }}">
 {%- endif %}
 {%- if run_task_nexus_emission %}
-<!ENTITY NEXUS_EMISSION_TN              "{{ nexus_emission_tn }}">
+<!ENTITY NEXUS_EMISSION_TN         "{{ nexus_emission_tn }}">
+<!ENTITY NEXUS_POST_SPLIT_TN       "{{ nexus_post_split_tn }}">
 {%- endif %}
 {%- if run_task_point_source %}
-<!ENTITY POINT_SOURCE_TN              "{{ point_source_tn }}">
+<!ENTITY POINT_SOURCE_TN           "{{ point_source_tn }}">
 {%- endif %}
 {%- if run_task_post_stat %}
 <!ENTITY POST_STAT_TN              "{{ post_stat_tn }}">
@@ -120,27 +121,28 @@ specifies the number of processes per node being used (the PPN_... entities).
 <!--
 Directories and files.
 -->
-<!ENTITY JOBSdir                 "{{ jobsdir }}">
-<!ENTITY SCRIPTSdir              "{{ scriptsdir }}">
+<!ENTITY JOBSdir                  "{{ jobsdir }}">
+<!ENTITY SCRIPTSdir               "{{ scriptsdir }}">
 <!ENTITY COMIN_BASEDIR            "{{ comin_basedir }}">
 <!ENTITY COMOUT_BASEDIR           "{{ comout_basedir }}">
 <!ENTITY GLOBAL_VAR_DEFNS_FP      "{{ global_var_defns_fp }}">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
 <!ENTITY EXPTDIR                  "{{ exptdir }}">
 
+
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>{{ run }}.@Y@m@d/{{ net }}.t@Hz.phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- endif %}
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/dyn</cyclestr>">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H{{ slash_ensmem_subdir }}/phy</cyclestr>">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/phy">
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}">
 {%- endif %}
 
@@ -162,6 +164,9 @@ Directories and files.
 <!ENTITY NDAS_OBS_DIR "{{ ndas_obs_dir }}">
 
 <!ENTITY WARMSTART_CYCLE_DIR  "{{ warmstart_cycle_dir }}">
+{%- if do_real_time %}
+<!ENTITY COMINgfs_BASEDIR         "{{ comingfs_basedir }}">
+{%- endif %}
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -335,23 +340,42 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&NEXUS_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
+  <metatask name="&NEXUS_EMISSION_TN;">
+    <var name="nspt">{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}</var>
+      <task name="&NEXUS_EMISSION_TN;_#nspt#" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
+        {%- if machine in ["HERA"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
+        <native>{{ native_nexus_emission }}</native>
+        {%- elif machine in ["WCOSS2"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
+        <native>&SCHED_NATIVE_CMD;</native>
+        {%- else %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
+        {%- endif %}
+        <walltime>{{ wtime_nexus_emission }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <jobname>&NEXUS_EMISSION_TN;_#nspt#</jobname>
+        <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H_s#nspt#&LOGEXT;</cyclestr></join>
 
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>nspt</name><value>#nspt#</value></envar>
+	<envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+	<envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      </task>
+  </metatask>      
+  <task name="&NEXUS_POST_SPLIT_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_EMISSION_TN;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
-  {%- if machine in ["HERA"]  %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
-    <native>{{ native_nexus_emission }}</native>
-  {%- elif machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
-    <native>&SCHED_NATIVE_CMD;</native>
-  {%- else %}
-    <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
-  {%- endif %}
-    <walltime>{{ wtime_nexus_emission }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_POST_SPLIT_TN;" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"</command>
+    <nodes>{{ nnodes_nexus_post_split }}:ppn={{ ppn_nexus_post_split }}</nodes>
+    <walltime>{{ wtime_nexus_post_split }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&NEXUS_EMISSION_TN;</jobname>
-    <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&NEXUS_POST_SPLIT_TN;</jobname>
+    <join>&LOGDIR;/&NEXUS_POST_SPLIT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -359,6 +383,10 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <metataskdep metatask="&NEXUS_EMISSION_TN;"/>
+    </dependency>
 
   </task>
 {%- endif %}
@@ -409,9 +437,14 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_get_extrn_ics }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
     <jobname>&GET_EXTRN_ICS_TN;</jobname>
     <join>&LOGDIR;/&GET_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
@@ -421,7 +454,11 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
-
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs_BASEDIR;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
   </task>
 {%- endif %}
 {%- if run_task_get_extrn_lbcs %}
@@ -434,9 +471,14 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_get_extrn_lbcs }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <nodesize>&NCORES_PER_NODE;</nodesize> 
+  {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
     <jobname>&GET_EXTRN_LBCS_TN;</jobname>
     <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
@@ -446,6 +488,12 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs_BASEDIR;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
 
   </task>
 {%- endif %}
@@ -689,7 +737,7 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
         <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
 {%- if run_task_nexus_emission %}
-        <taskdep task="&NEXUS_EMISSION_TN;"/>
+        <taskdep task="&NEXUS_POST_SPLIT_TN;"/>
 {%- endif %}
 {%- if run_task_point_source %}
         <taskdep task="&POINT_SOURCE_TN;"/>
@@ -979,7 +1027,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
@@ -999,6 +1047,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"</command>
     <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_get_obs_ccpa }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1027,6 +1078,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"</command>
     <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_get_obs_mrms }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1056,6 +1110,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"</command>
     <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_get_obs_ndas }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1083,6 +1140,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1135,6 +1195,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1186,6 +1249,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1237,6 +1303,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1274,6 +1343,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1311,6 +1383,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_gridstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1348,6 +1423,9 @@ the <task> tag to be identical to the ones above for other output times.
 
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_POINTSTAT"</command>
     <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_pointstat }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_pointstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1402,6 +1480,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1435,6 +1516,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1468,6 +1552,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1501,6 +1588,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1533,6 +1623,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1564,6 +1657,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1594,6 +1690,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_mean }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1626,6 +1725,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1658,6 +1760,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_mean }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1690,6 +1795,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1723,6 +1831,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_mean }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1755,6 +1866,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1788,6 +1902,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_mean }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1820,6 +1937,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1852,6 +1972,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1883,6 +2006,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_ensgrid_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1915,6 +2041,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT"</command>
     <nodes>{{ nnodes_vx_enspoint }}:ppn={{ ppn_vx_enspoint }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_enspoint }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_enspoint }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1944,6 +2073,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
     <nodes>{{ nnodes_vx_enspoint_mean }}:ppn={{ ppn_vx_enspoint_mean }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_enspoint_mean }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_enspoint_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1973,6 +2105,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
     <nodes>{{ nnodes_vx_enspoint_prob }}:ppn={{ ppn_vx_enspoint_prob }}</nodes>
+  {%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_vx_enspoint_prob }}</memory>
+  {%- endif %}
     <walltime>{{ wtime_vx_enspoint_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>

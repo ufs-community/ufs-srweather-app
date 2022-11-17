@@ -57,7 +57,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 #
 #-----------------------------------------------------------------------
 #
-# Load modules.
+# Set run command.
 #
 #-----------------------------------------------------------------------
 #
@@ -84,7 +84,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_NEXUS"
+DATA="${DATA}/tmp_NEXUS/${nspt}"
 mkdir_vrfy -p "$DATA"
 
 DATAinput="${DATA}/input"
@@ -99,8 +99,9 @@ cd_vrfy $DATA
 #-----------------------------------------------------------------------
 #
 cp_vrfy ${EXECdir}/nexus ${DATA}
-cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
 cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+
+cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -113,10 +114,25 @@ mm="${PDY:4:2}"
 dd="${PDY:6:2}"
 hh="${cyc}"
 yyyymmdd="${PDY}"
-# Note: a timezone offset is used to compute the end date. Consequently,
-# the code below will only work for forecast lengths up to 24 hours.
-start_date=$( date --utc --date "${yyyymmdd} ${hh}" "+%Y%m%d%H" )
-end_date=$( date --utc --date @$(( $( date --utc --date "${yyyymmdd} ${hh}" +%s ) + ${FCST_LEN_HRS} * 3600 )) +%Y%m%d%H )
+
+NUM_SPLIT_NEXUS=$( printf "%02d" ${NUM_SPLIT_NEXUS} )
+if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
+  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
+  end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+else
+  len_per_split=$(( FCST_LEN_HRS / NUM_SPLIT_NEXUS  ))
+  nsptp=$(( nspt+1 ))
+
+  # Compute start and end dates for nexus split option
+  start_del_hr=$(( len_per_split * nspt ))
+  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${start_del_hr} hours " "+%Y%m%d%H" )
+  if [ "${nsptp}" = "${NUM_SPLIT_NEXUS}" ];then
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+  else
+    end_del_hr=$(( len_per_split * nsptp ))
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${end_del_hr} hours" "+%Y%m%d%H" )
+  fi
+fi
 #
 #######################################################################
 # This will be the section to set the datasets used in $workdir/NEXUS_Config.rc 
@@ -237,26 +253,13 @@ fi
 #
 # Execute NEXUS
 #
+#-----------------------------------------------------------------------
+#
 PREP_STEP
-eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_ugly.nc ${REDIRECT_OUT_ERR} || \
+eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} || \
 print_err_msg_exit "\
 Call to execute nexus standalone for the FV3LAM failed."
 POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# make nexus output pretty
-#
-cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
-./make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_ugly.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
-
-#
-#-----------------------------------------------------------------------
-#
-# run MEGAN NCO script
-#
-cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
-./run_nco_combine_ant_bio.sh NEXUS_Expt_pretty.nc NEXUS_Expt.nc
 
 #
 #-----------------------------------------------------------------------
@@ -265,7 +268,10 @@ cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+mv_vrfy ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
+
+#
+#-----------------------------------------------------------------------
 #
 # Print message indicating successful completion of script.
 #

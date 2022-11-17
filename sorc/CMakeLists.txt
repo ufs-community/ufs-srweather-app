@@ -23,7 +23,7 @@ endif()
 
 # Build UFS weather model
 if (BUILD_UFS)
-  list(APPEND TARGET_LIST UFS)
+  list(APPEND TARGET_LIST ufs-weather-model)
 
   if(NOT CCPP_SUITES)
     if(CPL_AQM)
