@@ -447,7 +447,7 @@ A list of available documentation is shown in :numref:`Table %s <list_of_documen
    | UFS Weather Model          | https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.1.0/                     |
    | User's Guide               |                                                                                 |
    +----------------------------+---------------------------------------------------------------------------------+
-   | HPC-Stack Documentation    | https://hpc-stack-epic.readthedocs.io/en/release-public-v2.1.0/                 |
+   | HPC-Stack Documentation    | https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.1.0/             |
    +----------------------------+---------------------------------------------------------------------------------+
    | FV3 Scientific             | https://repository.library.noaa.gov/view/noaa/30725                             |
    | Documentation              |                                                                                 |

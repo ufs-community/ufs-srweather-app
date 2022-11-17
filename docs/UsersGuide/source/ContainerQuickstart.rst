@@ -301,7 +301,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_CRON_TO_RELAUNCH: TRUE
-         CRON_RELAUNCH_INTVL_MNTS: 2
+         CRON_RELAUNCH_INTVL_MNTS: 3
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, this technique (automation via :term:`crontab`) is the simplest option. 
 
@@ -343,7 +343,7 @@ Run the following command to generate the workflow:
 
    ./generate_FV3LAM_wflow.py
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/2 * * * *`` (or similar). 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/3 * * * *`` (or similar). 
 
 The generated workflow will be in the experiment directory specified in the ``config.yaml`` file in :numref:`Step %s <SetUpConfigFileC>`. The default location is ``expt_dirs/test_community``. To view experiment progress, users can ``cd`` to the experiment directory from ``ufs-srweather-app/ush`` and run the ``rocotostat`` command to check the experiment's status:
 
@@ -362,7 +362,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */2 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
    esc
    :wq
    enter

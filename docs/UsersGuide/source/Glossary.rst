@@ -26,7 +26,7 @@ Glossary
 
    chgres_cube
        The preprocessing software used to create initial and boundary condition files to 
-       “coldstart” the forecast model. It is part of :term:`UFS_UTILS`.
+       "cold start" the forecast model. It is part of :term:`UFS_UTILS`.
 
    CIN
       Convective Inhibition.
