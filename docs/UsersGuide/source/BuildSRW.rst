@@ -431,28 +431,30 @@ The build will take a few minutes to complete. When it starts, a random number i
 
 .. _MacLinuxDetails:
 
-Additional Details for Building on MacOS or generic Linux
+Additional Details for Building on MacOS or Generic Linux
 -----------------------------------------------------------
 
 .. note::
     Users who are **not** building the SRW App on MacOS or generic Linux platforms may skip to the :numref:`Section %s <BuildExecutables>` to finish building the SRW App or continue to :numref:`Chapter %s <RunSRW>` to configure and run an experiment. 
 
-The SRW App can be built on MacOS and generic Linux machines, after the HPC-Stack was already installed on these systems. The installation for MacOS is architecture-independent, tested for both x86_64 and M1 chips (running natively). The following configurations for MacOS have been tested:
+The SRW App can be built on MacOS and generic Linux machines after the HPC-Stack has been installed on these systems. The installation for MacOS is architecture-independent and has been tested using both x86_64 and M1 chips (running natively). The following configurations for MacOS have been tested:
 
-#. MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
-#. MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
-#. MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+   #. MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), Monterey Sur 12.1, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+   #. MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, Big Sur 11.6.4, GNU compiler suite v.11.3.0 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
+   #. MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, GNU compiler suite v.11.2.0_3 (gcc, gfortran, g++); mpich 3.3.2 or openmpi/4.1.2
 
 Several Linux builds have been tested on systems with x86_64 architectures.
 
-The ``./modulefiles/build_<platform>_gnu.lua`` modulefile, where ``<platform>`` is ``macos`` or ``linux``, is written as a LMOD module in Lua language, and could be loaded after the LMOD module environment is initialized. This module lists the location of HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App.  The modulefile needs be modified to include the absolute path to the user's HPC-Stack installation:
+The ``./modulefiles/build_<platform>_gnu.lua`` modulefile (where ``<platform>`` is ``macos`` or ``linux``) is written as a LMOD module in Lua language, and it can be loaded once the LMOD module environment has been initialized (which should have happened even prior to :ref:`installing the HPC Stack <HPCstackInfo>`). This module lists the location of the HPC-Stack modules, loads the meta-modules and modules, sets serial and parallel compilers, additional flags, and any environment variables needed for building the SRW App. The modulefile must be modified to include the absolute path to the user's HPC-Stack installation:
 
 .. code-block:: console
 
    - This path should point to your HPCstack installation directory
    local HPCstack="/Users/username/hpc-stack/install"
 
-Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case, and set ``BASH_ENV`` variable to point to the Lmod initialization script. There is no need to modify this script for the ``macos`` case, when Lmod followed a standard intallation procedure using Homebrew package manager for the MacOS. Then, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App. 
+Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case, and set the ``BASH_ENV`` variable to point to the Lmod initialization script. There is no need to modify this script for the ``macos`` case presuming that Lmod followed a standard installation procedure using the Homebrew package manager for MacOS. 
+
+Next, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App: 
 
 .. code-block:: console
 

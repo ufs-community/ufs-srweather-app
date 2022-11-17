@@ -561,7 +561,7 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating a *conda* Environment on Linux and Mac
 ``````````````````````````````````````````````````
 
-Users need to create a conda ``regional_workflow`` environment. The environment can be stored in a local path, which could be a default location (determine default using the ``conda info`` command, and look for an ``envs directories`` list), or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+Users need to create a conda ``regional_workflow`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
 
 .. code-block:: console
 
