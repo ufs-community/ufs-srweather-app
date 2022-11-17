@@ -254,11 +254,11 @@ def setup_logging(debug=False):
     """Calls initialization functions for logging package, and sets the
     user-defined level for logging in the script."""
 
-    level = logging.WARNING
+    level = logging.INFO
     if debug:
         level = logging.DEBUG
 
-    logging.basicConfig(format="%(levelname)s: %(message)s \n ", level=level)
+    logging.basicConfig(format="%(levelname)s: %(message)s ", level=level)
     if debug:
         logging.info("Logging level set to DEBUG")
 
