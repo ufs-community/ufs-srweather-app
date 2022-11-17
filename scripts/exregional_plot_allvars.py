@@ -64,6 +64,7 @@ import pyproj
 import argparse
 import cartopy
 import logging
+import warnings
 
 # --------------Define some functions ------------------#
 
@@ -315,6 +316,9 @@ if __name__ == "__main__":
     
     setup_logging(args.debug)
     
+    # Throw away python warnings (mostly depreciation.)
+    warnings.simplefilter("ignore")
+
     # Read date/time, forecast hour, and directory paths from command line
     ymdh = str(args.cycle)
     ymd = ymdh[0:8]
