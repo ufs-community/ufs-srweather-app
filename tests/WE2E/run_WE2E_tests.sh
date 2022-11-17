@@ -432,9 +432,9 @@ elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
   if [ -n "${test_type}" ] ; then
     # Check for a pre-defined set. It could be machine dependent or has the mode
     # (community or nco), or default
-    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.nco
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.nco
     if [ ! -f ${user_spec_tests_fp} ]; then
-        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.com
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.com
         if [ ! -f ${user_spec_tests_fp} ]; then
             user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
             if [ ! -f ${user_spec_tests_fp} ]; then
