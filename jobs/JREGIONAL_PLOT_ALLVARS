@@ -56,6 +56,9 @@ GRID_NAME=${PREDEF_GRID_NAME:-$EXPT_SUBDIR}
 if [ "${RUN_ENVIR}" != "nco" ]; then
   export COMOUT="${COMOUT}${SLASH_ENSMEM_SUBDIR}/postprd"
 fi
+# if COMOUT_REF is templatized with $PDY and $cyc, evaluate it
+# This is necessary to compare multiple cycles correctly
+COMOUT_REF=$(eval echo ${COMOUT_REF})
 #
 #-----------------------------------------------------------------------
 #
