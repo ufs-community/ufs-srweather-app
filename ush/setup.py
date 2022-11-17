@@ -23,7 +23,6 @@ from python_utils import (
     load_config_file,
     cfg_to_shell_str,
     cfg_to_yaml_str,
-    load_shell_config,
     load_ini_config,
     get_ini_value,
 )
@@ -457,7 +456,7 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR
+    global FIXgsm, FIXaer, FIXlut, FIXorg, FIXsfc, DOMAIN_PREGEN_BASEDIR
     global RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, QUEUE_DEFAULT
     global QUEUE_HPSS, QUEUE_FCST, PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
 
@@ -469,8 +468,8 @@ def setup():
         "FIXgsm",
         "FIXaer",
         "FIXlut",
-        "TOPO_DIR",
-        "SFC_CLIMO_INPUT_DIR",
+        "FIXorg",
+        "FIXsfc",
     ]
     globalvars = globals()
     for val in mandatory:
@@ -1717,15 +1716,10 @@ def setup():
         "FIXam": FIXam,
         "FIXclim": FIXclim,
         "FIXlam": FIXlam,
-        "FIXgsm": FIXgsm,
-        "FIXaer": FIXaer,
-        "FIXlut": FIXlut,
         "VX_CONFIG_DIR": VX_CONFIG_DIR,
         "METPLUS_CONF": METPLUS_CONF,
         "MET_CONFIG": MET_CONFIG,
         "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
-        "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
-        "TOPO_DIR": TOPO_DIR,
         "ARL_NEXUS_DIR": ARL_NEXUS_DIR,
         "EXPTDIR": EXPTDIR,
         "GRID_DIR": GRID_DIR,

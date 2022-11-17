@@ -7,6 +7,7 @@ user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15_thompson_mynn_lam3km
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2019070100'
   DATE_LAST_CYCL: '2019070100'
   FCST_LEN_HRS: 6
@@ -19,5 +20,4 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  PREDEF_GRID_NAME: RRFS_CONUS_3km
   USE_MERRA_CLIMO: true

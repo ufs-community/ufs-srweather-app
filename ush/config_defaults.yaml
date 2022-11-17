@@ -3,8 +3,8 @@
 #----------------------------
 metadata:
   description: >-
-    Default configuration for an experiment. The valid values each parameter
-    takes are specified in valid_param_vals.yaml
+    Default configuration for an experiment. The valid values for most of the
+    parameters are specified in valid_param_vals.yaml
   version: !!str '1.0'
 #----------------------------
 # USER config parameters
@@ -337,6 +337,47 @@ platform:
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
+  #
+  # FIXgsm:
+  # System directory in which the majority of fixed (i.e. time-independent) 
+  # files that are needed to run the FV3-LAM model are located
+  #
+  # FIXaer:
+  # System directory where MERRA2 aerosol climatology files are located
+  #
+  # FIXlut:
+  # System directory where the lookup tables for optics properties are located
+  #
+  # FIXorg:
+  # System directory where orography data is located
+  #
+  # FIXsfc:
+  # System directory where surface climatology data is located
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXgsm: ""
+  FIXaer: ""
+  FIXlut: ""
+  FIXorg: ""
+  FIXsfc: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # EXTRN_MDL_DATA_STORES:
+  # A list of data stores where the scripts should look for external model
+  # data. The list is in priority order. If disk information is provided
+  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
+  # the disk location will be highest priority. Options are disk, hpss,
+  # aws, and nomads.
+  #
+  #-----------------------------------------------------------------------
+  #
+  EXTRN_MDL_DATA_STORES: ""
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -573,6 +614,40 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
+  # grid, as follows:
+  #
+  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
+  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
+  #   the write-component grid parameters are set to predefined values for 
+  #   the specified grid, overwriting any settings of these parameters in 
+  #   the user-specified experiment configuration file.  In addition, if 
+  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
+  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
+  #   they are also set to predefined values for the specified grid.
+  #
+  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
+  #   is providing the native grid parameters in the user-specified 
+  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
+  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
+  #   and the write-component grid parameters as well as the time step 
+  #   forecast model's main time step DT_ATMOS and the computational 
+  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
+  #   configuration file; otherwise, the values of all of these parameters 
+  #   in this default experiment configuration file will be used.
+  #
+  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
+  # commonly used set of grid-dependent parameters.  The predefined grid 
+  # parameters are specified in the script 
+  #
+  #   $HOMEdir/ush/set_predef_grid_params.py
+  #
+  #-----------------------------------------------------------------------
+  #
+  PREDEF_GRID_NAME: ""
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set forecast parameters.  Definitions:
   #
   # DATE_FIRST_CYCL:
@@ -653,16 +728,22 @@ workflow:
   # be set manually; it is not inherited from the build system in the 
   # ufs-srweather-app directory.
   #
+  # SYMLINK_FIX_FILES:
+  # Symlink fix files to experiment directory if true; otherwise copy the files.
+  #
+  # GET_OBS:
+  # Task modulefile name for all get_obs_* tasks
+  #
+  # VX_TN:
+  # Task modulefile name for all verification tasks
+  #
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
+  SYMLINK_FIX_FILES: true
 
-  #is this the right place?
   GET_OBS: "get_obs"
   VX_TN: "run_vx"
-  VX_ENSGRID_TN: "run_ensgridvx"
-  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
 
 #----------------------------
 # NCO specific variables
@@ -909,7 +990,7 @@ task_make_grid:
   ESGgrid_WIDE_HALO_WIDTH: ""
   ESGgrid_PAZI: ""
 
-#-----------------------------------------------------------------------
+  #-----------------------------------------------------------------------
   #
   # Set parameters specific to the "GFDLgrid" method of generating a regional
   # grid (i.e. for GRID_GEN_METHOD set to "GFDLgrid").  The following 
@@ -1101,7 +1182,6 @@ task_make_orog:
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
   OROG_DIR: ""
-  TOPO_DIR: ""
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1116,7 +1196,6 @@ task_make_sfc_climo:
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
   SFC_CLIMO_DIR: ""
-  SFC_CLIMO_INPUT_DIR: ""
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1211,34 +1290,11 @@ task_get_extrn_ics:
   # Or for FV3GFS grib files:
   #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
   #
-  # EXTRN_MDL_DATA_STORES:
-  # A list of data stores where the scripts should look for external model
-  # data. The list is in priority order. If disk information is provided
-  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
-  # the disk location will be highest priority. Options are disk, hpss,
-  # aws, and nomads.
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
   EXTRN_MDL_FILES_ICS: ""
-  EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set NOMADS online data associated parameters. Definitions:
-  #
-  # NOMADS:
-  # Flag controlling whether or not using NOMADS online data.
-  #
-  # NOMADS_file_type:
-  # Flag controlling the format of data.
-  #
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
 
 #----------------------------
 # EXTRN LBCS config parameters
@@ -1315,23 +1371,11 @@ task_get_extrn_lbcs:
   # EXTRN_MDL_FILES_LBCS:
   # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
   #
-  # EXTRN_MDL_DATA_STORES:
-  # Analogous to EXTRN_MDL_DATA_STORES in ICS but for LBCs
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
   EXTRN_MDL_FILES_LBCS: ""
-  EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  # Analogus to NOMADS for ICSs
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
-
 
 #----------------------------
 # MAKE ICS config parameters
@@ -1631,70 +1675,12 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
-  # grid, as follows:
-  #
-  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
-  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
-  #   the write-component grid parameters are set to predefined values for 
-  #   the specified grid, overwriting any settings of these parameters in 
-  #   the user-specified experiment configuration file.  In addition, if 
-  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
-  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
-  #   they are also set to predefined values for the specified grid.
-  #
-  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   is providing the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
-  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
-  #   and the write-component grid parameters as well as the time step 
-  #   forecast model's main time step DT_ATMOS and the computational 
-  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
-  #   configuration file; otherwise, the values of all of these parameters 
-  #   in this default experiment configuration file will be used.
-  #
-  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
-  # commonly used set of grid-dependent parameters.  The predefined grid 
-  # parameters are specified in the script 
-  #
-  #   $HOMEdir/ush/set_predef_grid_params.py
-  #
-  #-----------------------------------------------------------------------
-  #
-  PREDEF_GRID_NAME: ""
-  #
-  #-----------------------------------------------------------------------
-  #
   # Flag that determines whether MERRA2 aerosol climatology data and
   # lookup tables for optics properties are obtained
   #
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
-  #
-  # SYMLINK_FIX_FILES:
-  # Symlink fix files to experiment directory if true; otherwise copy the files.
-  #
-  # FIXgsm:
-  # System directory in which the majority of fixed (i.e. time-independent) 
-  # files that are needed to run the FV3-LAM model are located
-  #
-  # FIXaer:
-  # System directory where MERRA2 aerosol climatology files are located
-  #
-  # FIXlut:
-  # System directory where the lookup tables for optics properties are located
-  #
-  #-----------------------------------------------------------------------
-  #
-  SYMLINK_FIX_FILES: true
-  FIXgsm: ""
-  FIXaer: ""
-  FIXlut: ""
 
 #----------------------------
 # POST config parameters
@@ -1885,6 +1871,8 @@ task_run_vx_pointstat:
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
+  VX_ENSGRID_TN: "run_ensgridvx"
+  MAXTRIES_VX_ENSGRID: 1
   VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
   MAXTRIES_VX_ENSGRID_03h: 1
   VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
@@ -1893,13 +1881,10 @@ task_run_vx_ensgrid:
   MAXTRIES_VX_ENSGRID_24h: 1
   VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
   MAXTRIES_VX_ENSGRID_RETOP: 1
-  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID: 1
 
 
 #----------------------------
@@ -1963,6 +1948,10 @@ task_run_vx_ensgrid_mean_24h:
 task_run_vx_ensgrid_prob:
   VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
   NNODES_VX_ENSGRID_PROB: 1
+  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
+  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
+  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
+  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00

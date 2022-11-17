@@ -10,14 +10,10 @@ from textwrap import dedent
 from datetime import datetime, timedelta
 
 from python_utils import (
-    print_info_msg,
-    print_err_msg_exit,
     log_info,
     import_vars,
     export_vars,
     cp_vrfy,
-    cd_vrfy,
-    rm_vrfy,
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
@@ -696,20 +692,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
         set_FV3nml_sfc_climo_filenames()
 
-    # Call function to get NOMADS data
-    if NOMADS:
-        raise Exception("Nomads script does not work!")
-
-        # get_nomads_data(
-        #     NOMADS_file_type,
-        #     EXPTDIR,
-        #     USHdir,
-        #     DATE_FIRST_CYCL,
-        #     CYCL_HRS,
-        #     FCST_LEN_HRS,
-        #     LBC_SPEC_INTVL_HRS,
-        # )
-
     #
     # -----------------------------------------------------------------------
     #
@@ -783,29 +765,6 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     # If we got to this point everything was successful: move the log file to the experiment directory.
     mv_vrfy(logfile, EXPTDIR)
-
-
-def get_nomads_data(
-    NOMADS_file_type,
-    EXPTDIR,
-    USHdir,
-    DATE_FIRST_CYCL,
-    CYCL_HRS,
-    FCST_LEN_HRS,
-    LBC_SPEC_INTVL_HRS,
-):
-    print("Getting NOMADS online data")
-    print(f"NOMADS_file_type= {NOMADS_file_type}")
-    cd_vrfy(EXPTDIR)
-    NOMADS_script = os.path.join(USHdir, "NOMADS_get_extrn_mdl_files.sh")
-    run_command(
-        f"""{NOMADS_script} \
-            {date_to_str(DATE_FIRST_CYCL,format='%Y%m%d')} \
-            {date_to_str(DATE_FIRST_CYCL,format='%H')} \
-            {NOMADS_file_type} \
-            {FCST_LEN_HRS} \
-            {LBC_SPEC_INTVL_HRS}"""
-    )
 
 
 def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:

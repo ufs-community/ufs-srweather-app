@@ -19,14 +19,11 @@ platform:
   TEST_PREGEN_BASEDIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-task_make_orog:
-  TOPO_DIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_run_fcst:
   FIXaer: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_lut
+  FIXorg: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
 data:
   GSMGFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/GFS
   FV3GFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/FV3GFS
