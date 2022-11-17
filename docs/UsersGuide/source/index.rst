@@ -23,6 +23,5 @@ UFS Short-Range Weather App Users Guide
    RocotoInfo
    WE2Etests
    Graphics
-   ContributorsGuide
    FAQ
    Glossary

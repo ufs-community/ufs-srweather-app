@@ -21,14 +21,12 @@ Download the Container
 Prerequisites: 
 -------------------
 
-Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
-
-.. COMMENT: Remove "for the develop branch"?
+Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``release/public-v2.1.0`` branch assumes that Rocoto is pre-installed. 
 
 Install Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://sylabs.io/guides/3.2/user-guide/installation.html#>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
+To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://docs.sylabs.io/guides/3.2/user-guide/installation.html>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
 
 .. warning:: 
    Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
@@ -70,7 +68,7 @@ Build the Container
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` has already been built at the following locations:
 
 .. table:: Locations of pre-built containers
 
@@ -95,20 +93,20 @@ Users can simply copy the container to their local working directory. For exampl
 
 .. code-block:: console
 
-   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
+   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-release-public-v2.1.0.img .
 
 Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-develop.img
+   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-develop.img
+   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -119,17 +117,10 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
 .. code-block:: console
 
-   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
-
-Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
+   sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.1.0
 
 .. note::
-   Users can choose to build a release version of the container (SRW App v2.0.0) using a similar command:
-
-   .. code-block:: console
-
-      sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel22-ufs-srwapp:release-public-v2
-
+   Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. _WorkOnHPC:
 
@@ -191,7 +182,7 @@ To explore the container and view available directories, users can either ``cd``
 
 .. code-block:: console
 
-   singularity shell ./ubuntu20.04-intel-srwapp-develop.img
+   singularity shell ./ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
    cd /
    ls 
 
@@ -210,7 +201,7 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GenerateForecastC:
 
@@ -246,7 +237,7 @@ To activate the regional workflow, run the following commands:
 
 where: 
 
-   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's system (often ``$PWD/modulefiles``), and 
+   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
    * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
@@ -274,13 +265,13 @@ where:
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
-   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
+   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-release-public-v2.1.0.img`` by default).
 
 For example, on Hera, the command would be:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-develop.img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-release-public-v2.1.0.img
 
 .. attention::
 
@@ -310,7 +301,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_CRON_TO_RELAUNCH: TRUE
-         CRON_RELAUNCH_INTVL_MNTS: 02
+         CRON_RELAUNCH_INTVL_MNTS: 3
 
       There are instructions for running the experiment via additional methods in :numref:`Section %s <Run>`. However, this technique (automation via :term:`crontab`) is the simplest option. 
 
@@ -322,7 +313,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
@@ -333,10 +324,9 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
-
 
 .. _GenerateWorkflowC: 
 
@@ -351,7 +341,7 @@ Run the following command to generate the workflow:
 
 .. code-block:: console
 
-   python generate_FV3LAM_wflow.py
+   ./generate_FV3LAM_wflow.py
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The last line of output from this script should start with ``*/3 * * * *`` (or similar). 
 
@@ -377,8 +367,6 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
    :wq
    enter
 
-.. COMMENT: Check the crontab command to reflect python workflow.s
-
 where: 
 
    * ``<path/to>`` is replaced by the actual path to the user's experiment directory, and 
@@ -387,7 +375,7 @@ where:
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``python generate_FV3LAM_wflow.py``.
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
 
 Plot the Output
 ===============
