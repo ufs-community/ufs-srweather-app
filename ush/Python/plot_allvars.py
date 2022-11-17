@@ -62,6 +62,7 @@ from scipy import ndimage
 import pyproj
 import argparse
 import cartopy
+import warnings
 
 #--------------Define some functions ------------------#
 
@@ -233,6 +234,9 @@ parser.add_argument("Path to experiment directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
 parser.add_argument("Name of native domain used in forecast (and in constructing post file names)")
 args = parser.parse_args()
+
+# Throw away python warnings (mostly depreciation.)
+warnings.simplefilter("ignore")
 
 # Read date/time, forecast hour, and directory paths from command line
 ymdh = str(sys.argv[1])
