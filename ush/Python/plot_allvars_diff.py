@@ -66,6 +66,7 @@ from scipy import ndimage
 import pyproj
 import argparse
 import cartopy
+import warnings
 
 #--------------Define some functions ------------------#
 
@@ -238,6 +239,9 @@ parser.add_argument("Path to experiment 2 directory")
 parser.add_argument("Path to base directory of cartopy shapefiles")
 parser.add_argument("Name of native domain used in forecasts (and in constructing post file names)")
 args = parser.parse_args()
+
+# Throw away python warnings (mostly depreciation.)
+warnings.simplefilter("ignore")
 
 # Read date/time, forecast hour, and directory paths from command line
 ymdh = str(sys.argv[1])
@@ -960,7 +964,8 @@ for fhr in fhours:
       cs_1.cmap.set_over('pink')
       cbar1 = plt.colorbar(cs_1,ax=ax1,orientation='horizontal',pad=0.05,shrink=0.6,extend='max')
       cbar1.set_label(units,fontsize=6)
-      cbar1.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      #cbar1.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      cbar1.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
       cbar1.ax.tick_params(labelsize=6)
       ax1.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=6,transform=ax1.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
@@ -969,7 +974,8 @@ for fhr in fhours:
       cs_2.cmap.set_over('pink')
       cbar2 = plt.colorbar(cs_2,ax=ax2,orientation='horizontal',pad=0.05,shrink=0.6,extend='max')
       cbar2.set_label(units,fontsize=6)
-      cbar2.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      #cbar2.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      cbar2.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
       cbar2.ax.tick_params(labelsize=6)
       ax2.text(.5,1.03,'FV3-LAM-2 '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=6,transform=ax2.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
