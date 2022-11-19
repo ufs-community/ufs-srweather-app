@@ -3,12 +3,20 @@
 #
 #-----------------------------------------------------------------------
 #
+# This script generate NEXUS emission netcdf file.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_fcst|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

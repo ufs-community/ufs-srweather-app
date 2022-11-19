@@ -56,6 +56,7 @@ cpl_aqm_parm:
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
   RUN_TASK_NEXUS_EMISSION: true
+  RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
   RUN_TASK_POST_STAT: false
   NNODES_NEXUS_EMISSION: 2
@@ -73,7 +74,7 @@ cpl_aqm_parm:
   AQM_FENGSHA_FILE_SUFFIX: .nc  
   DO_AQM_CANOPY: false
   AQM_FIRE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/emissions/GSCE/GBBEPx.in.C775/Reprocessed
-  AQM_FIRE_FILE: Hourly_Emissions_regrid_rrfs_13km
+  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_rrfs_13km
   AQM_FIRE_FILE_SUFFIX: _new48_v2.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/RRFS_CONUS_13km_no_blending

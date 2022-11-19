@@ -57,6 +57,7 @@ cpl_aqm_parm:
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
   RUN_TASK_NEXUS_EMISSION: true
+  RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
   RUN_TASK_POST_STAT: false
   DO_AQM_CHEM_LBCS: true
@@ -72,10 +73,10 @@ cpl_aqm_parm:
   AQM_FENGSHA_FILE_SUFFIX: .nc  
   DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  AQM_CANOPY_FILE: gfs.t12z.geo
+  AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
   AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
   AQM_FIRE_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/GSCE/RAVE.in.793/RAVE_RT
-  AQM_FIRE_FILE: Hourly_Emissions_regrid_NA_13km
+  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/RRFS_NA13km_GEOS5_v2

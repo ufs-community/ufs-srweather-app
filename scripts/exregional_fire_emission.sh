@@ -3,23 +3,12 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script generates both the initial conditions (ICs) and the lateral
-# boundary conditions (LBCs) files for the air quality model (AQM) from
-# files stored either in the system directory or on mass storage (HPSS).
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_extrn_lbcs|task_make_lbcs|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -53,51 +42,46 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the ex-script for the task that copies or fetches fire emission
+data files from disk or HPSS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
+# Set up variables for call to retrieve_data.py
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
+set -x
+
+yyyymmdd=${FIRE_FILE_CDATE:0:8}
+hh=${FIRE_FILE_CDATE:8:2}
+#
+#-----------------------------------------------------------------------
+#
+# Retrieve fire files to FIRE_EMISSION_STAGING_DIR
+#
+#-----------------------------------------------------------------------
+#
+aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUFFIX}"
+
+# Check if the file exists in the designated directory
+if [ -s "${AQM_FIRE_DIR}/${aqm_fire_file_fn}" ]; then
+  cp_vrfy "${AQM_FIRE_DIR}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  # Retrieve files from HPSS
+  arcv_dir="/NCEPDEV/emc-naqfc/2year/Kai.Wang/RAVE_fire/RAVE_NA"
+  arcv_fp="${arcv_dir}/${aqm_fire_file_fn}"
+
+  hsi_log_fn="log.hsi_get.${yyyymmdd}_${hh}"
+  hsi get ${arcv_fp} >& ${hsi_log_fn} || \
+  print_err_msg_exit "\
+htar file reading operation (\"hsi get ...\") failed.  Check the log 
+file hsi_log_fn in the staging directory (fire_emission_staging_dir) for 
+details:
+  fire_emission_staging_dir = \"${FIRE_EMISSION_STAGING_DIR}\"
+  hsi_log_fn = \"${hsi_log_fn}\""
 fi
-mkdir_vrfy -p "${INPUT_DATA}"
-#
-#-----------------------------------------------------------------------
-#
-# Set the run directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
-#
-#-----------------------------------------------------------------------
-#
-# Call the ex-script for this J-job and pass to it the necessary variables.
-#
-#-----------------------------------------------------------------------
-#
-$SCRIPTSdir/exregional_aqm_lbcs.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
-#
-#-----------------------------------------------------------------------
-#
-# Run job postamble.
-#
-#-----------------------------------------------------------------------
-#
-job_postamble
 #
 #-----------------------------------------------------------------------
 #
@@ -106,4 +90,3 @@ job_postamble
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-

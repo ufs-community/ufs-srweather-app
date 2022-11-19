@@ -92,6 +92,9 @@ Workflow task names.
 <!ENTITY NEXUS_EMISSION_TN         "{{ nexus_emission_tn }}">
 <!ENTITY NEXUS_POST_SPLIT_TN       "{{ nexus_post_split_tn }}">
 {%- endif %}
+{%- if run_task_fire_emission %}
+<!ENTITY FIRE_EMISSION_TN          "{{ fire_emission_tn }}">
+{%- endif %}
 {%- if run_task_point_source %}
 <!ENTITY POINT_SOURCE_TN           "{{ point_source_tn }}">
 {%- endif %}
@@ -360,7 +363,8 @@ MODULES_RUN_TASK_FP script.
         <join>&LOGDIR;/&NEXUS_EMISSION_TN;<cyclestr>_@Y@m@d@H_s#nspt#&LOGEXT;</cyclestr></join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
         <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
         <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
         <envar><name>nspt</name><value>#nspt#</value></envar>
@@ -378,6 +382,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&NEXUS_POST_SPLIT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -388,6 +393,32 @@ MODULES_RUN_TASK_FP script.
       <metataskdep metatask="&NEXUS_EMISSION_TN;"/>
     </dependency>
 
+  </task>
+{%- endif %}
+{%- if run_task_fire_emission %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&FIRE_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_fire_emission }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&FIRE_EMISSION_TN;" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"</command>
+    <nodes>{{ nnodes_fire_emission }}:ppn={{ ppn_fire_emission }}</nodes>
+    <walltime>{{ wtime_fire_emission }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&FIRE_EMISSION_TN;</jobname>
+    <join>&LOGDIR;/&FIRE_EMISSION_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
   </task>
 {%- endif %}
 {%- if run_task_point_source %}
@@ -411,6 +442,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&POINT_SOURCE_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -622,6 +654,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&AQM_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -656,6 +689,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&AQM_ICS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -691,6 +725,7 @@ MODULES_RUN_TASK_FP script.
     <join>&LOGDIR;/&AQM_LBCS_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
@@ -743,6 +778,9 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
 {%- if run_task_nexus_emission %}
         <taskdep task="&NEXUS_POST_SPLIT_TN;"/>
+{%- endif %}
+{%- if run_task_fire_emission %}
+        <taskdep task="&FIRE_EMISSION_TN;"/>
 {%- endif %}
 {%- if run_task_point_source %}
         <taskdep task="&POINT_SOURCE_TN;"/>
@@ -1034,6 +1072,7 @@ the <task> tag to be identical to the ones above for other output times.
     <join>&LOGDIR;/&POST_STAT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 

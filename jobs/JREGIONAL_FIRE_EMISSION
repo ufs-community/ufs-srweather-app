@@ -3,9 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script generates both the initial conditions (ICs) and the lateral
-# boundary conditions (LBCs) files for the air quality model (AQM) from
-# files stored either in the system directory or on mass storage (HPSS).
+# This script gets fire emission data files from disk or HPSS
 #
 #-----------------------------------------------------------------------
 #
@@ -18,8 +16,8 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_extrn_lbcs|task_make_lbcs|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -53,33 +51,48 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the J-job script for the task that copies or fetches RAVE fire
+emission data files from disk, or HPSS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
+# Set the external model start time
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
-else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+export TIME_OFFSET_HRS=${AQM_FIRE_FILE_OFFSET_HRS:-0}
+yyyymmdd=${PDY}
+hh=${cyc}
+export FIRE_FILE_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+
+#
+#-----------------------------------------------------------------------
+#
+# Check whether FIRE EMISSION data files are available on the specified 
+# cycle date and time on HPSS (FIRE_FILE_CDATE).
+#
+#-----------------------------------------------------------------------
+#
+CDATE_min="2022101500"
+if [ "$FIRE_FILE_CDATE" -lt "$CDATE_min" ]; then
+  print_info_msg "
+========================================================================  
+RAVE fire emission data are not available on HPSS for this date.
+CDATE:  \"${FIRE_FILE_CDATE}\"
+CDATE_min:    \"${CDATE_min}\"
+========================================================================"
 fi
-mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the run directory
+# Create the directory where the RAVE fire emission files should be stored
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
+export FIRE_EMISSION_STAGING_DIR="${COMINext}/FIRE_EMISSION"
+mkdir_vrfy -p "${FIRE_EMISSION_STAGING_DIR}"
+cd_vrfy ${FIRE_EMISSION_STAGING_DIR}
 #
 #-----------------------------------------------------------------------
 #
@@ -87,7 +100,7 @@ mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_aqm_lbcs.sh || \
+$SCRIPTSdir/exregional_fire_emission.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

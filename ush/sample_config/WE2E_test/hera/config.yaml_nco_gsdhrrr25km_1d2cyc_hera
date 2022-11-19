@@ -60,6 +60,7 @@ cpl_aqm_parm:
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
   RUN_TASK_NEXUS_EMISSION: true
+  RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
   RUN_TASK_POST_STAT: false
   DO_AQM_CHEM_LBCS: true
@@ -72,7 +73,7 @@ cpl_aqm_parm:
   DO_AQM_FENGSHA: false
   DO_AQM_CANOPY: false
   AQM_FIRE_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/GSCE/GBBEPx.in.C401/Reprocessed
-  AQM_FIRE_FILE: GBBEPx_C401GRID.emissions_v003
+  AQM_FIRE_FILE_PREFIX: GBBEPx_C401GRID.emissions_v003
   AQM_FIRE_FILE_SUFFIX: .nc
   AQM_RC_FIRE_FREQUENCY: static
   AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/boundary_conditions_v4

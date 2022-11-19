@@ -10,8 +10,8 @@ workflow:
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
   EXPT_SUBDIR: aqm_test_realtime
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
-  DATE_FIRST_CYCL: '2022110312'
-  DATE_LAST_CYCL: '2022110312'
+  DATE_FIRST_CYCL: '2022111300'
+  DATE_LAST_CYCL: '2022111300'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
@@ -24,7 +24,7 @@ nco:
   NET: aqm
   model_ver: v7.0
   RUN: aqm_test
-  OPSROOT: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/NCO_OUTPUT_aqm
+#  OPSROOT: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/NCO_OUTPUT_aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
@@ -67,6 +67,7 @@ cpl_aqm_parm:
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
   RUN_TASK_NEXUS_EMISSION: true
+  RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
   RUN_TASK_POST_STAT: false
   DO_AQM_CHEM_LBCS: true
@@ -80,12 +81,12 @@ cpl_aqm_parm:
   AQM_FENGSHA_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
   AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_FENGSHA_FILE_SUFFIX: .nc
-#  DO_AQM_CANOPY: false
-#  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-#  AQM_CANOPY_FILE: gfs.t12z.geo
-#  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
-  AQM_FIRE_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/RRFS_CMAQ/emissions/GSCE/RAVE.in.C793/RAVE_RT
-  AQM_FIRE_FILE: Hourly_Emissions_regrid_NA_13km
+  DO_AQM_CANOPY: false
+  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
+  AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
+  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
+  AQM_FIRE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/emissions/GSCE/RAVE.in.793/RAVE_RT
+  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/UFSAQM_NA13km_GEOS5_LBC_v2
