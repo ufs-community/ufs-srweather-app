@@ -48,7 +48,7 @@ def get_crontab_contents(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "DEBUG"]
+    IMPORTS = ["MACHINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     __crontab_cmd__ = "crontab"
@@ -93,7 +93,7 @@ def add_crontab_line():
     """Add crontab line to cron table"""
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
+    IMPORTS = ["MACHINE", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -160,7 +160,7 @@ def delete_crontab_line(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "DEBUG"]
+    IMPORTS = ["MACHINE", "CRONTAB_LINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     #

@@ -6,9 +6,6 @@ from textwrap import dedent
 
 from python_utils import (
     log_info,
-    import_vars,
-    export_vars,
-    set_env_var,
     list_to_str,
     print_input_args,
     define_macos_utilities,
@@ -18,6 +15,9 @@ from python_utils import (
 
 
 def set_thompson_mp_fix_files(
+    EXTRN_MDL_NAME_ICS,
+    EXTRN_MDL_NAME_LBCS,
+    CCPP_PHYS_SUITE,
     ccpp_phys_suite_fp,
     thompson_mp_climo_fn,
     CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
@@ -34,6 +34,9 @@ def set_thompson_mp_fix_files(
     symlinks to these files are created in the run directories.
 
     Args:
+        EXTRN_MDL_NAME_ICS,
+        EXTRN_MDL_NAME_LBCS,
+        CCPP_PHYS_SUITE,
         ccpp_phys_suite_fp: full path to CCPP physics suite
         thompson_mp_climo_fn: netcdf file for thompson microphysics
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
@@ -43,10 +46,6 @@ def set_thompson_mp_fix_files(
     """
 
     print_input_args(locals())
-
-    # import some environment variables
-    IMPORTS = ["EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS", "CCPP_PHYS_SUITE"]
-    import_vars(env_vars=IMPORTS)
 
     #
     # -----------------------------------------------------------------------
@@ -130,6 +129,9 @@ class Testing(unittest.TestCase):
         self.assertEqual(
             True,
             set_thompson_mp_fix_files(
+                "FV3GFS",
+                "FV3GFS",
+                "FV3_GSD_SAR",
                 f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
                 "Thompson_MP_MONTHLY_CLIMO.nc",
                 CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
@@ -138,9 +140,6 @@ class Testing(unittest.TestCase):
         )
 
     def setUp(self):
-        set_env_var("EXTRN_MDL_NAME_ICS", "FV3GFS")
-        set_env_var("EXTRN_MDL_NAME_LBCS", "FV3GFS")
-        set_env_var("CCPP_PHYS_SUITE", "FV3_GSD_SAR")
 
         global CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [

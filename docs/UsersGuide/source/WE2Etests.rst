@@ -33,9 +33,9 @@ The test configuration files for these categories are located in the following d
    ufs-srweather-app/regional_workflow/tests/WE2E/test_configs/grids_extrn_mdls_suites_nco
    ufs-srweather-app/regional_workflow/tests/WE2E/test_configs/wflow_features
 
-The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.sh``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.sh`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.sh``.) For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.sh`` file. It then calls ``generate_FV3LAM_wflow.sh``, which in turn reads in ``config.sh`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.sh`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/regional_workflow/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls ``generate_FV3LAM_wflow.py``, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
 
-Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.sh`` for each test, the 
+Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.py`` for each test, the 
 Python modules required for experiment generation must be loaded before ``run_WE2E_tests.sh`` 
 can be called. See :numref:`Section %s <SetUpPythonEnv>` for information on loading the Python
 environment on supported platforms. Note also that ``run_WE2E_tests.sh`` assumes that all of 
@@ -61,7 +61,7 @@ Users may specify the set of tests to run by creating a text file, such as ``my_
 (and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script ``launch_FV3LAM_wflow.sh`` until the workflow either completes successfully (i.e., all tasks are successful) or fails (i.e., at least one task fails). 
 The cron job is then removed from the user's cron table.
 
-The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in :numref:`Chapter %s <BuildRunSRW>`). 
+The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Chapter %s <NCQuickstart>` (and in detail in Chapters :numref:`%s <BuildSRW>` and :numref:`%s <RunSRW>`). 
 
 #. To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
    resources used to the "rtrr" account, use:
@@ -252,7 +252,7 @@ Checking Test Status
 If :term:`cron` jobs are used to periodically relaunch the tests, the status of each test can be checked by viewing the end of the log file (``log.launch_FV3LAM_wflow``). Otherwise (or alternatively), the ``rocotorun``/``rocotostat`` combination of commands can be used. (See :numref:`Section %s <RocotoManualRun>` for details.)
 
 The SRW App also provides the script ``get_expts_status.sh`` in the directory 
-``ufs-srweather-app/regional_workflow/tests/WE2E``, which can be used to generate 
+``ufs-srweather-app/tests/WE2E``, which can be used to generate 
 a status summary for all tests in a given base directory. This script updates
 the workflow status of each test by internally calling ``launch_FV3LAM_wflow.sh``. Then, it prints out the status of the various tests in the command prompt. It also creates 
 a status report file named ``expts_status_${create_date}.txt`` (where ``create_date``
@@ -329,11 +329,11 @@ Adding a New Test
 ---------------------
 To add a new test named, e.g., ``new_test01``, to one of the existing test categories, such as ``wflow_features``:
 
-#. Choose an existing test configuration file in any one of the category directories that matches most closely the new test to be added. Copy that file to ``config.new_test01.sh`` and, if necessary, move it to the ``wflow_features`` category directory. 
+#. Choose an existing test configuration file in any one of the category directories that matches most closely the new test to be added. Copy that file to ``config.new_test01.yaml`` and, if necessary, move it to the ``wflow_features`` category directory. 
 
-#. Edit the header comments in ``config.new_test01.sh`` so that they properly describe the new test.
+#. Edit the header comments in ``config.new_test01.yaml`` so that they properly describe the new test.
 
-#. Edit the contents of ``config.new_test01.sh`` by modifying existing experiment variable values and/or adding new variables such that the test runs with the intended configuration.
+#. Edit the contents of ``config.new_test01.yaml`` by modifying existing experiment variable values and/or adding new variables such that the test runs with the intended configuration.
 
 
 .. _AddNewCategory:
@@ -371,14 +371,14 @@ To prevent proliferation of WE2E tests, users might want to use the same test fo
 in the ``grids_extrn_mdls_suites_community`` category. This checks for the successful
 completion of the Rocoto workflow running a combination of the ``RRFS_CONUScompact_25km`` grid, the ``FV3GFS`` model data for :term:`ICs` and :term:`LBCs`, and the ``FV3_GFS_v16`` physics suite. If this test also happens to use the inline post capability of the UFS :term:`Weather Model` (it currently doesn't; this is only a hypothetical example), then this test can also be used to ensure that the inline post feature of the App/Weather Model (which is activated in the App by setting ``WRITE_DOPOST`` to ``"TRUE"``) is working properly. Since this test will serve two purposes, it should have two names --- one per purpose. 
 
-To set the second (alternate) name to ``activate_inline_post``, the user needs to create a symlink named ``config.activate_inline_post.sh`` in the ``wflow_features`` category directory that points to the original configuration file (``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh``) in the ``grids_extrn_mdls_suites_community`` category directory: 
+To set the second (alternate) name to ``activate_inline_post``, the user needs to create a symlink named ``config.activate_inline_post.yaml`` in the ``wflow_features`` category directory that points to the original configuration file (``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml``) in the ``grids_extrn_mdls_suites_community`` category directory: 
 
 .. code-block:: console
 
-   ln -fs --relative </path/to/grids_extrn_mdls_suites_community/config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh> </path/to/wflow_features/config.activate_inline_post.sh>
+   ln -fs --relative </path/to/grids_extrn_mdls_suites_community/config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml> </path/to/wflow_features/config.activate_inline_post.yaml>
 
 In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
-(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.sh`` is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name. This approach of allowing multiple names for the same test makes it easier to identify the multiple purposes that a test may serve. 
+(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml`` is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name. This approach of allowing multiple names for the same test makes it easier to identify the multiple purposes that a test may serve. 
 
 .. note::
 

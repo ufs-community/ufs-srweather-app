@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -468,31 +468,6 @@ python3 $USHdir/create_diag_table_file.py \
 Call to function to create a diag table file for the current cycle's 
 (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
-#
-#-----------------------------------------------------------------------
-#
-# Pre-generate symlinks to forecast output in DATA pointing to DATA_SHARED
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-
-  # first set suffix for minutes and seconds of forecast time
-  mnts_secs_str=""
-  if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-    if [ ${fhr}${fmn} = "00000" ]; then
-      mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${dt_atmos} seconds" "+%M:%S" )
-    else
-      mnts_secs_str=":${fmn}:00"
-    fi
-  fi
-
-  # create the symlinks
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc" "dynf${fhr}${mnts_secs_str}.nc"
-    ln_vrfy -sf "${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc" "phyf${fhr}${mnts_secs_str}.nc"
-  done
-fi
 #
 #-----------------------------------------------------------------------
 #

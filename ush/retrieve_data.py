@@ -34,6 +34,7 @@ import subprocess
 import sys
 from textwrap import dedent
 import time
+from copy import deepcopy
 
 import yaml
 
@@ -70,7 +71,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     return unavailable
 
 
-def copy_file(source, destination):
+def copy_file(source, destination, copy_cmd):
 
     """
     Copy a file from a source and place it in the destination location.
@@ -85,7 +86,7 @@ def copy_file(source, destination):
 
     # Using subprocess here because system copy is much faster than
     # python copy options.
-    cmd = f"cp {source} {destination}"
+    cmd = f"{copy_cmd} {source} {destination}"
     logging.info(f"Running command: \n {cmd}")
     try:
         subprocess.run(
@@ -289,6 +290,16 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
+    file_templates = deepcopy(file_templates)
+
+    # Remove sfc files from fcst in file_names of external models for LBCs
+    # sfc files needed in fcst when time_offset is not zero.
+    if cla.ics_or_lbcs == "LBCS":
+        for format in ['netcdf', 'nemsio']:
+            for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
+                if "sfc" in tmpl:
+                    del file_templates[format]['fcst'][i]
+
     if use_cla_tmpl:
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
@@ -381,7 +392,10 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                     logging.debug(f"Full file path: {input_loc}")
 
                     if method == "disk":
-                        retrieved = copy_file(input_loc, target_path)
+                        if cla.symlink:
+                            retrieved = copy_file(input_loc, target_path, "ln -sf")
+                        else:
+                            retrieved = copy_file(input_loc, target_path, "cp")
 
                     if method == "download":
                         retrieved = download_file(input_loc)
@@ -943,8 +957,19 @@ def parse_args(argv):
         required=True,
         type=os.path.abspath,
     )
+    parser.add_argument(
+        "--ics_or_lbcs",
+        choices=("ICS", "LBCS"),
+        help="Flag for whether ICS or LBCS.",
+        required=True,
+    )
 
     # Optional
+    parser.add_argument(
+        "--symlink",
+        action="store_true",
+        help="Symlink data files when source is disk",
+    )
     parser.add_argument(
         "--debug",
         action="store_true",

@@ -81,14 +81,15 @@ jjob_fp="$2"
 set +u
 if [ ! -z ${SLURM_JOB_ID} ]; then
     export job=${SLURM_JOB_NAME}
-    export jobid=${job}.${SLURM_JOB_ID}
+    export pid=${pid:-${SLURM_JOB_ID}}
 elif [ ! -z ${PBS_JOBID} ]; then
     export job=${PBS_JOBNAME}
-    export jobid=${job}.${PBS_JOBID}
+    export pid=${pid:-${PBS_JOBID}}
 else
     export job=${task_name}
-    export jobid=${job}.$$
+    export pid=${pid:-$$}
 fi
+export jobid=${job}.${pid}
 set -u
 #
 #-----------------------------------------------------------------------
@@ -184,10 +185,6 @@ module list
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda activate ${SRW_ENV}
-  if [ $machine = "gaea" ]; then
-     conda deactivate
-     conda activate ${SRW_ENV}
-  fi
   set -u
 fi
 

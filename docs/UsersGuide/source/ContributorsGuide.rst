@@ -13,7 +13,7 @@ Background
 Authoritative branch
 -----------------------
 
-The ``ufs-srweather-app`` and ``regional_workflow`` repositories each maintain a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components. Pull requests (PRs) will be merged to ``develop``. 
+The ``ufs-srweather-app`` repository maintains a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual sub-components. Pull requests (PRs) will be merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
     #. Pull requests for this branch require approval by at least two code reviewers.
@@ -52,7 +52,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
     | GSL              | Jeff Beck (@JeffBeck-NOAA)                     | SRW App configuration/workflow, code management, meteorological evaluation                  |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
-    |                  | Gerard Ketefian (@gsketefian)                  | ``regional_workflow`` scripts, jinja templates, and verification tasks                      |
+    |                  | Gerard Ketefian (@gsketefian)                  | regional workflow scripts, jinja templates, and verification tasks                          |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
     |                  | Linlin Pan (@panll)                            | Workflow, CCPP/physics, verification                                                        |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -64,7 +64,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
     | NCAR             | Mike Kavulich (@mkavulich)                     | CCPP/physics                                                                                |
     |                  +------------------------------------------------+---------------------------------------------------------------------------------------------+
-    |                  | Will Mayfield (@willmayfield)                  | Verification/METplus tasks, regional_workflow (esp. on Cheyenne)                            |
+    |                  | Will Mayfield (@willmayfield)                  | Verification/METplus tasks, regional workflow (esp. on Cheyenne)                            |
     +------------------+------------------------------------------------+---------------------------------------------------------------------------------------------+
     | NSSL             | Yunheng Wang (@ywangwof)                       | HPC systems, code management and regional workflow especially on Stampede, Jet              |
     |                  |                                                | and NSSL computers                                                                          |
@@ -75,7 +75,7 @@ Scientists from across multiple labs and organizations have volunteered to revie
 Contribution Process
 ========================
 
-The steps below should be followed in order to make changes to the ``develop`` branch of the ``ufs-srweather-app`` or ``regional_workflow`` repositories. Communication with code managers and the code management team throughout the process is encouraged.
+The steps below should be followed in order to make changes to the ``develop`` branch of the ``ufs-srweather-app`` repository. Communication with code managers and the code management team throughout the process is encouraged.
 
     #. **Issue** - Open an issue to document changes. Click `here <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ to open a new ``ufs-srweather-app`` issue or see :numref:`Step %s <Issue>` for detailed instructions. 
     #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`__ procedures for development. 
@@ -99,9 +99,9 @@ The steps below should be followed in order to make changes to the ``develop`` b
 Opening an Issue
 -------------------
 
-All changes should be associated with a GitHub Issue. If developers are working on a change, they should search the existing issues in the appropriate repository (``ufs-srweather-app`` and/or ``regional_workflow``). If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request.
+All changes should be associated with a GitHub Issue. If developers are working on a change, they should search the existing issues in the ``ufs-srweather-app`` repository. If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request.
 
-To open an issue, click on `New Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ within the ``ufs-srweather-app`` GitHub repository and/or within the ``regional_workflow`` repository (depending on where the changes will be made). 
+To open an issue, click on `New Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ within the ``ufs-srweather-app`` GitHub repository. 
 
 Choose from three options: 
     #. `Bug Report <https://github.com/ufs-community/ufs-srweather-app/issues/new?assignees=&labels=bug&template=bug_report.md&title=>`__: Report specific problems ("bugs") in the code using the following template:
@@ -217,9 +217,9 @@ Pull requests will be reviewed and approved by at least two code reviewers, at l
 
 .. note::
 
-    * If a developer wants to make use of automated testing, any ``ufs-srweather-app`` + ``regional_workflow`` dependencies must be opened in PRs from dependent branches of forks belonging to the same user.
-    * The ``Externals.cfg`` file should point to any dependent branches in ``regional_workflow`` (and other components, if necessary) while those branches are under review. Once the corresponding ``regional_workflow`` PR has been merged, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
-    * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of ``regional_workflow`` and that it will be updated once the corresponding ``regional_workflow`` PR is merged.
+    * If a developer wants to make use of automated testing, any ``ufs-srweather-app`` dependencies must be opened in PRs from dependent branches of forks belonging to the same user.
+    * The ``Externals.cfg`` file should point to any dependent branches in component repositories while those branches are under review. Once the PR has been merged in the dependent repository, the developer should update the references in their ``Externals.cfg`` file to reflect the appropriate hashes in the authoritative repositories. 
+    * Developers should mention in their ``ufs-srweather-app`` PR description that they are temporarily pointing to a branch/hash in their fork of a component repository and that it will be updated once the corresponding PR is merged.
 
 
 .. _Template:
@@ -369,32 +369,30 @@ General
 * For changes to the ``scripts``, ``ush``, or ``jobs`` directories, developers should follow the `NCO Guidelines <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ for what is incorporated into each layer. 
 * Developers should ensure that their contributions work with the most recent version of the ``ufs-srweather-app``, including all the specific up-to-date hashes of each subcomponent.
 * Modifications should not break any existing supported capabilities on any supported platforms.
-* Update the ``.rst`` documentation files where appropriate as part of the PR. The documentation files reside in ``ufs-srweather-app``, so changes to ``regional_workflow`` that require documentation need a corresponding PR to ``ufs-srweather-app``. If necessary, contributors may update the documentation in a subsequent PR. In these cases, the contributor should open an issue reflecting the need for documentation (see :numref:`Step %s <Issue>`) and include the issue number and explanation in the Documentation section of their initial PR. 
+* Update the ``.rst`` documentation files where appropriate as part of the PR. The documentation files reside in ``ufs-srweather-app/docs``. If necessary, contributors may update the documentation in a subsequent PR. In these cases, the contributor should open an issue reflecting the need for documentation (see :numref:`Step %s <Issue>`) and include the issue number and explanation in the Documentation section of their initial PR. 
 
 SRW Application
 ------------------
 
-Externals.cfg
+**Externals.cfg**
     * All externals live in a single ``Externals.cfg`` file.
     * Only a single hash will be maintained for any given external code base. All externals should point to this static hash (not to the top of a branch). 
     * All new entries in ``Externals.cfg`` must point only to authoritative repositories. In other words, entries must point to either a `UFS Community GitHub organization <https://github.com/ufs-community>`__ repository or another NOAA project organization repository. 
 
-        * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``regional_workflow`` PR from the same contributor). When the component PR is merged, the contributor must update the corresponding ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
+        * Temporary exceptions are made for a PR into the ``develop`` branch of ``ufs-srweather-app`` that is dependent on another PR (e.g., a ``ufs-weather-model`` PR from the same contributor). When the component PR is merged, the contributor must update the corresponding ``ufs-srweather-app`` PR with the hash of the component's authoritative repository.
     
     
-Build system
+**Build System**
     * Each component must build with CMake
     * Each component must build with Intel compilers on official `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms and with GNU or Intel compilers on other platforms. 
     * Each component must have a mechanism for platform independence (i.e., no hard-coded machine-specific settings outside of established environment, configuration, and modulefiles). 
     * Each component must build using the standard supported NCEPLIBS environment (currently `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__).
 
-Modulefiles
+**Modulefiles**
     * Each component must build using the common modules located in the ``modulefiles/srw_common`` file.
 
-
 Regional Workflow
-----------------------
-If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweather-app`` should be opened to update the ``regional_workflow`` hash.
+--------------------
 
 **General Coding Standards:** 
     * The ``regional_workflow`` repository must not contain source code for compiled programs. Only scripts and configuration files should reside in this repository. 
@@ -414,7 +412,7 @@ If changes are made to ``regional_workflow``, a corresponding PR to ``ufs-srweat
 
 **Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template. For example, if a new type of namelist is introduced for a new application component, it should make use of the existing ``jinja`` framework for populating namelist settings.
 
-**Namelist Management:** Namelists in ``ufs-srweather-app`` and ``regional_workflow`` are generated using a Python tool and managed by setting YAML configuration parameters. This allows for the management of multiple configuration settings with maximum flexibility and minimum duplication of information.     
+**Namelist Management:** Namelists in ``ufs-srweather-app`` are generated using a Python tool and managed by setting YAML configuration parameters. This allows for the management of multiple configuration settings with maximum flexibility and minimum duplication of information.     
 
 .. _Testing: 
 

@@ -150,6 +150,8 @@ The cloned repository contains the configuration files and sub-directories shown
    |                                | respectively.                                             |
    +--------------------------------+-----------------------------------------------------------+
 
+.. COMMENT: Is environment.yml deprecated? Remove?
+
 .. _CheckoutExternals:
 
 Check Out External Components
@@ -360,6 +362,11 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    | use_raphrrr_sfc.exe        | Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM.   |
    |                            | This is only used for starting the RRFS surface cycling.                    |
    +----------------------------+-----------------------------------------------------------------------------+
+   
+.. COMMENT: What does ufs_srweather_app.settings do? 
+   - precipitable hydrometeor analysis?
+   - What does the update_ice.exe description mean?
+
 
 .. _CMakeApproach:
 

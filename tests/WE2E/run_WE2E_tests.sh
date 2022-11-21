@@ -43,7 +43,7 @@ HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-USHdir="$HOMEdir/ush"
+export USHdir="$HOMEdir/ush"
 TESTSdir="$HOMEdir/tests"
 WE2Edir="$TESTSdir/WE2E"
 #
@@ -430,10 +430,24 @@ elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
   # one managed in the repo
 
   if [ -n "${test_type}" ] ; then
-    # Check for a pre-defined set. It could be machine dependent or not.
-    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+    # Check for a pre-defined set. It could be machine dependent or has the mode
+    # (community or nco), or default
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.nco
     if [ ! -f ${user_spec_tests_fp} ]; then
-        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.com
+        if [ ! -f ${user_spec_tests_fp} ]; then
+            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
+            if [ ! -f ${user_spec_tests_fp} ]; then
+                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+                if [ ! -f ${user_spec_tests_fp} ]; then
+                    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                fi
+            fi
+        else
+            run_envir=${run_envir:-"community"}
+        fi
+    else
+        run_envir=${run_envir:-"nco"}
     fi
   elif [ -n "${tests_file}" ] ; then
     user_spec_tests_fp=$( readlink -f "${tests_file}" )
@@ -901,6 +915,20 @@ RUN_ENVIR=${run_envir}"
 fi
 
 #
+# Eval DATE_FIRST/LAST_CYCL commands
+#
+if [[ $DATE_FIRST_CYCL != [0-9]* ]]; then
+  DATE_FIRST_CYCL=$(eval ${DATE_FIRST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_FIRST_CYCL=${DATE_FIRST_CYCL}"
+fi
+if [[ $DATE_LAST_CYCL != [0-9]* ]]; then
+  DATE_LAST_CYCL=$(eval ${DATE_LAST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_LAST_CYCL=${DATE_LAST_CYCL}"
+fi
+
+#
 #-----------------------------------------------------------------------
 #
 # Modifications to the experiment configuration file if the WE2E test 
@@ -984,13 +1012,11 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
-
     expt_config_str=${expt_config_str}"
 #
 # Set NCO mode OPSROOT
 #
-OPSROOT=\"${OPSROOT}\""
+OPSROOT=\"${opsroot}\""
 
   fi
 #

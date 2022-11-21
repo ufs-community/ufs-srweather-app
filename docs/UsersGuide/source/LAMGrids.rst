@@ -10,7 +10,7 @@ grids supported in the v2.0.0 release, but other predefined grids are available 
 
 Predefined Grids
 =================
-The SRW App v2.0.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``config.sh`` script must be set to one of the following four options:
+The SRW App v2.0.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``config.yaml`` script must be set to one of the following four options:
 
 * ``RRFS_CONUS_3km``
 * ``RRFS_CONUS_13km``
@@ -124,24 +124,24 @@ The steps to add such a grid to the workflow are as follows:
 #. Choose the name of the grid. For the purposes of this documentation, the grid will be called "NEW_GRID".
 
 
-#. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/regional_workflow/ush/valid_param_vals.sh`` file.
+#. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/ush/valid_param_vals.yaml`` file.
 
-#. In ``ufs-srweather-app/regional_workflow/ush/set_predef_grid_params.sh``, add a stanza to
+#. In ``ufs-srweather-app/ush/set_predef_grid_params.py``, add a stanza to
    the case statement ``case ${PREDEF_GRID_NAME} in`` for NEW_GRID. An example of such a stanza
    is given :ref:`below <NewGridExample>` along with comments describing the variables that need to be set.
 
-To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.sh``, located in the ``ufs-srweather-app/regional_workflow/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` to the following:
+To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` to the following:
 
 .. code-block:: console
 
    PREDEF_GRID_NAME="NEW_GRID"
 
-Then, generate a new experiment/workflow using the ``generate_FV3LAM_wflow.sh`` script in the :ref:`usual way <GenerateWorkflow>`.
+Then, generate a new experiment/workflow using the ``generate_FV3LAM_wflow.py`` script in the :ref:`usual way <GenerateWorkflow>`.
 
 Code Example
 ---------------
 
-The following is an example of a code stanza for "NEW_GRID" to be added to ``set_predef_grid_params.sh``:
+The following is an example of a code stanza for "NEW_GRID" to be added to ``set_predef_grid_params.py``:
 
 .. _NewGridExample:
 
@@ -200,7 +200,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
    # needs to be in order to avoid numerical instabilities during the 
    # forecast. The values specified below are used only if DT_ATMOS is 
    # not explicitly set in the user-specified experiment configuration 
-   # file config.sh. Note that this parameter may be suite dependent.
+   # file config.yaml. Note that this parameter may be suite dependent.
 
      if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16" ]; then
        DT_ATMOS=${DT_ATMOS:-"300"}
@@ -212,7 +212,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
    
    # Default MPI task layout (decomposition) along the x and y directions and
    # blocksize. The values specified below are used only if they are not explicitly
-   # set in the user-specified experiment configuration file config.sh.
+   # set in the user-specified experiment configuration file config.yaml.
 
      LAYOUT_X=${LAYOUT_X:-"5"}
      LAYOUT_Y=${LAYOUT_Y:-"2"}
@@ -250,7 +250,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``set
    
    # The coordinate system for the write-component grid 
    # See the array valid_vals_WRTCMP_output_grid (defined in 
-   # the script valid_param_vals.sh) for the values this can take on.  
+   # the script valid_param_vals.yaml) for the values this can take on.  
    # The following example is specifically for the Lambert conformal 
    # coordinate system.
 

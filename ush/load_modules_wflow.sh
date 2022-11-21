@@ -60,13 +60,11 @@ task failed:
 [[ ${SHELLOPTS} =~ nounset ]] && has_mu=true || has_mu=false
 
 $has_mu && set +u
-if [[ "${machine}" == 'cheyenne' ]]; then
-    conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
-else
-    if [ ! -z $(command -v conda) ]; then
-        conda activate regional_workflow
-    fi
+
+if [ ! -z $(command -v conda) ]; then
+    conda activate regional_workflow
 fi
+
 $has_mu && set -u
 
 # List loaded modulefiles
