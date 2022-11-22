@@ -12,7 +12,6 @@ sys.path.append("../../ush")
 
 from python_utils import (
     print_err_msg_exit,
-    log_info,
     cp_vrfy,
     cd_vrfy,
     rm_vrfy,
@@ -47,7 +46,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
     """
 
     # Set up logging to write to screen and logfile
-    setup_logging()
+    setup_logging(debug=args.debug)
 
     # Check python version and presence of some non-standard packages
     check_python_version()
@@ -56,10 +55,10 @@ def run_we2e_tests(HOMEdir, args) -> None:
     USHdir=HOMEdir + '/ush'
 
     testfilename='machine_suites/test'
-    log_info(f"reading test file name {testfilename}")
+    logging.info(f"reading test file name {testfilename}")
     user_spec_tests = list(open(testfilename))
 
-    log_info("Checking that all tests are valid")
+    logging.info("Checking that all tests are valid")
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
     tests_to_run=[]
     for test in user_spec_tests:
@@ -68,14 +67,14 @@ def run_we2e_tests(HOMEdir, args) -> None:
         test_config='config.' + test.rstrip() + '.yaml'
         for testfile in testfiles:
             if test_config in testfile:
-                log_info(f"found test {test}",args.debug)
+                logging.debug(f"found test {test}")
                 match=True
                 tests_to_run.append(testfile)
         if not match:
             print_err_msg_exit(f"Could not find test {test}")
 
     pretty_list = "\n".join(str(x) for x in tests_to_run)
-    log_info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
+    logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
     #Load default and machine-specific values
     config_defaults = load_config_file(USHdir + '/config_defaults.yaml')
@@ -84,6 +83,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
     for test in tests_to_run:
         #Starting with test yaml template, fill in user-specified and machine- and 
         # test-specific options, then write resulting complete config.yaml
+        logging.debug(f"For test {os.path.basename(test)}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
         test_cfg['user'].update({"machine": args.machine})
@@ -92,27 +92,30 @@ def run_we2e_tests(HOMEdir, args) -> None:
         test_cfg['user'].update({"BUILD_MOD_FN": args.modulefile})
 
 
-        print(cfg_to_yaml_str(test_cfg))
+        logging.debug(cfg_to_yaml_str(test_cfg))
         with open(USHdir + "/config.yaml","w+") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
-    log_info("calling script that monitors rocoto jobs, prints summary")
+    logging.info("calling script that monitors rocoto jobs, prints summary")
 
 
-def setup_logging(logfile: str = "log.run_WE2E_tests") -> None:
+def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
     """
     logging.basicConfig(
         level=logging.DEBUG,
-        format="%(name)-22s %(levelname)-8s %(message)s",
+        format="%(name)-16s %(levelname)-8s %(message)s",
         filename=logfile,
         filemode="w",
     )
     logging.debug(f"Finished setting up debug file logging in {logfile}")
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    if debug:
+       console.setLevel(logging.DEBUG)
+    else:
+       console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
 
