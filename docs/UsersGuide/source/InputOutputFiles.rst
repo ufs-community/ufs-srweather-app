@@ -107,7 +107,7 @@ Migratory Route of the Input Files in the Workflow
 
 .. _MigratoryRoute:
 
-.. figure:: _static/FV3LAM_wflow_input_path.png
+.. figure:: _static/SRW_wflow_input_path.png
    :alt: Flowchart showing how information on the physics suite travels from the config shell file to the setup shell file to the workflow generation script to the run forecast ex-script. As this information is fed from one script to the next, file paths and variables required for workflow execution are set. 
 
    *Migratory route of input files*
