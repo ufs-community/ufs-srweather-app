@@ -154,8 +154,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    
    "NEW_GRID":
    
-   # The method used to generate the grid. This example is specifically
-   # for the "ESGgrid" method.
+   # The method used to generate the grid. This example is specifically for the "ESGgrid" method.
 
       GRID_GEN_METHOD: "ESGgrid"
    
