@@ -19,58 +19,23 @@ output over the :term:`CONUS` for a number of variables, including:
 
 The Python scripts are located under ``ufs-srweather-app/ush/Python``.
 The script ``plot_allvars.py`` plots the output from a single cycle within an experiment, while 
-the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different
-experiments (e.g., the experiments may differ in some aspect such as the physics suite used). If 
+the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different experiments. If 
 plotting the difference, the two experiments must be on the same domain and available for 
-the same cycle starting date/time and forecast hours. 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
 
 Loading the Environment
 ==========================
 
-To use the plotting scripts, the appropriate environment must be loaded. The scripts require Python 3 with the ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages. This Python environment has already been set up on Level 1 platforms and can be activated as follows:
-
-On Cheyenne:
+To use the plotting scripts, the regional workflow environment, which includes the required ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages, must be loaded. To activate the regional workflow, see :numref:`Section %s <SetUpPythonEnv>`, or use the following summary:
 
 .. code-block:: console
+   
+   cd <path/to/ufs-srweather-app/ush/Python>
+   source ../../etc/lmod-setup.sh <platform>
+   module use ../../modulefiles
+   module load wflow_<platform>
 
-   module load ncarenv
-   module load conda/latest
-   conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
-
-On Hera and Jet:
-
-.. code-block:: console
-
-   module use -a /contrib/miniconda3/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Orion:
-
-.. code-block:: console
-
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load miniconda3/4.8.3-regional-workflow
-
-On NOAA Cloud:
-
-.. code-block:: console
-
-   module use /contrib/GST/miniconda3/modulefiles
-   module load miniconda3/4.10.3
-   conda activate regional_workflow
-
-.. note::
-
-   If using one of the batch submission scripts described :ref:`below <Batch>`, the user does not need to manually load an environment because the scripts perform this task.
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). Then users should follow the instructions output by the console (e.g., ``conda activate regional_workflow``).
 
 .. _Cartopy:
 
@@ -81,42 +46,25 @@ The Python plotting scripts also require a path to the directory where the Carto
 
 The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
-On Cheyenne:
+.. _CartopyData:
 
-.. code-block:: console
+.. table:: Cartopy Shapefile Locations for Level 1 Systems
 
-   /glade/p/ral/jntp/UFS_SRW_App/v2p0/NaturalEarth
-
-On Hera:
-
-.. code-block:: console
-
-   /scratch2/BMC/det/UFS_SRW_App/v2p0/NaturalEarth
-
-On Jet:
- 
-.. code-block:: console
- 
-   /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/NaturalEarth
-
-On Orion: 
-
-.. code-block:: console
-
-   /work/noaa/fv3-cam/UFS_SRW_App/v2p0/NaturalEarth
-
-On Gaea:
-
-.. code-block:: console
-
-   /lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/NaturalEarth
-
-On NOAA Cloud:
-
-.. code-block:: console
-
-   /contrib/EPIC/UFS_SRW_App/v2p0/NaturalEarth
-
+   +--------------+-----------------------------------------------------------------+
+   | Machine      | File location                                                   |
+   +==============+=================================================================+
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/v2p1/NaturalEarth                 |
+   +--------------+-----------------------------------------------------------------+
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/NaturalEarth             |
+   +--------------+-----------------------------------------------------------------+
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/v2p1/NaturalEarth                 |
+   +--------------+-----------------------------------------------------------------+
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/NaturalEarth              |
+   +--------------+-----------------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/v2p1/NaturalEarth                     |
+   +--------------+-----------------------------------------------------------------+
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/v2p1/NaturalEarth                |
+   +--------------+-----------------------------------------------------------------+
 
 Running the Plotting Scripts
 ======================================
@@ -139,7 +87,7 @@ following command line arguments:
 #. Ending forecast hour
 #. Forecast hour increment
 #. The top level of the experiment directory ``$EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``$EXPTDIR/CDATE/postprd``.
-#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``. See :numref:`Table %s <CartopyData>` for the correct ``$CARTOPY_DIR`` locations on Level 1 systems.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecast
 
 .. note::
@@ -151,7 +99,7 @@ is as follows:
 
 .. code-block:: console
 
-   python plot_allvars.py 2019061500 0 12 6 /path-to/expt_dirs/test_CONUS_25km_GFSv16 /path-to/NaturalEarth RRFS_CONUS_25km
+   python plot_allvars.py 2019061518 0 12 6 /path-to/expt_dirs/test_community /path-to/NaturalEarth RRFS_CONUS_25km
 
 The output files (in ``.png`` format) will be located in the directory ``$EXPTDIR/CDATE/postprd``,
 where in this case ``$EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv16`` and ``$CDATE`` 
@@ -172,7 +120,7 @@ command line arguments:
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
 
-An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
+An example of plotting differences from two experiments for the same date and predefined domain where one uses the ``FV3_GFS_v16`` suite definition file (SDF) and one uses the ``FV3_RRFS_v1beta`` SDF is as follows:
 
 .. code-block:: console
 
