@@ -464,6 +464,7 @@ Linux users need to configure the ``./etc/lmod-setup.sh`` for the ``linux`` case
 Next, users must source the Lmod setup file, just as they would on other systems, and load the modulefiles needed for building and running the SRW App:
 
 .. code-block:: console
+   
    source etc/lmod-setup.sh <platform>
    module use <path/to/ufs-srweather-app/modulefiles>
    module load build_<platform>_gnu
