@@ -15,9 +15,10 @@ from python_utils import (
     check_var_valid_value,
     lowercase,
     uppercase,
+    list_to_str,
     check_for_preexist_dir_file,
     flatten_dict,
-    check_strcuture_dict,
+    check_structure_dict,
     update_dict,
     import_vars,
     get_env_var,
@@ -28,6 +29,7 @@ from python_utils import (
     load_ini_config,
     get_ini_value,
     str_to_list,
+    extend_yaml,
 )
 
 from set_cycle_dates import set_cycle_dates
@@ -115,6 +117,12 @@ def load_config_for_setup(ushdir, default_config, user_config):
         )
     machine_cfg = load_config_file(machine_file)
 
+    # Load the fixed files configuration
+    cfg_f = load_config_file(
+        os.path.join(ushdir, os.pardir, "parm",
+        "fixed_files_mapping.yaml")
+    )
+
     # Load the constants file
     cfg_c = load_config_file(os.path.join(ushdir, "constants.yaml"))
 
@@ -130,8 +138,13 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Machine settings
     update_dict(machine_cfg, cfg_d)
 
+    # Fixed files
+    update_dict(cfg_f, cfg_d)
+
     # User settings (take precedence over all others)
     update_dict(cfg_u, cfg_d)
+
+    extend_yaml(cfg_d)
 
     # Do any conversions of data types
     for sect, settings in cfg_d.items():
@@ -139,8 +152,12 @@ def load_config_for_setup(ushdir, default_config, user_config):
             if not (v is None or v == ""):
                 cfg_d[sect][k] = str_to_list(v)
 
+    for k, v in cfg_d['task_run_fcst'].items():
+        print(f"*** {k}: {v}")
+
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
+        "EXPT_SUBDIR",
         "NCORES_PER_NODE",
         "FIXgsm",
         "FIXaer",
@@ -148,23 +165,24 @@ def load_config_for_setup(ushdir, default_config, user_config):
         "TOPO_DIR",
         "SFC_CLIMO_INPUT_DIR",
     ]
+    flat_cfg = flatten_dict(cfg_d)
     for val in mandatory:
-        if not cfg_d.get("task_run_fcst", {}).get("val"):
+        if not flat_cfg.get(val):
             raise Exception(
                 dedent(
                     f"""
-                            Mandatory variable "{val}" not found in:
-                            user config file {user_config}
-                                          OR
-                            machine file {machine_file} 
-                            """
+                    Mandatory variable "{val}" not found in:
+                    user config file {user_config}
+                                  OR
+                    machine file {machine_file} 
+                    """
                 )
             )
 
     # Check that input dates are in a date format
     dates = ["DATE_FIRST_CYCL", "DATE_LAST_CYCL"]
     for val in dates:
-        if not isinstance(cfg_d["user"][val], datetime.date):
+        if not isinstance(cfg_d["workflow"][val], datetime.date):
             raise Exception(
                 dedent(
                     f"""
@@ -175,22 +193,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
                 )
             )
 
-    # Check to make sure mandatory workflow variables are set.
-    vlist = ["EXPT_SUBDIR"]
-    for val in vlist:
-        if not cfg_d["task_run_fcst"].get("val"):
-            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
-
-    # Check to make sure that mandatory forecast variables are set.
-    vlist = [
-        "DT_ATMOS",
-        "LAYOUT_X",
-        "LAYOUT_Y",
-        "BLOCKSIZE",
-    ]
-    for val in vlist:
-        if not cfg_d["task_run_fcst"].get("val"):
-            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     return cfg_d
 
@@ -281,7 +283,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     """
 
     logger = getLogger(__name__)
-    cd_verify(USHdir)
+    cd_vrfy(USHdir)
 
     # print message
     log_info(
@@ -357,8 +359,9 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
     expt_basedir = workflow_config.get("EXPT_BASEDIR")
+    home_dir = expt_config['user'].get("HOMEdir")
     if (not expt_basedir) or (expt_basedir[0] != "/"):
-        if not expt_basedir:
+        if not expt_basedir or "{{" in expt_basedir:
             expt_basedir = ""
         expt_basedir = os.path.join(home_dir, "..", "expt_dirs", expt_basedir)
     try:
@@ -367,9 +370,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
         pass
     expt_basedir = os.path.abspath(expt_basedir)
 
-    mkdir_vrfy(f' -p "{expt_basedir}"')
+    #mkdir_vrfy(f' -p "{expt_basedir}"')
     workflow_config["EXPT_BASEDIR"] = expt_basedir
 
+    # Update some paths that include EXPT_BASEDIR
+    extend_yaml(expt_config)
     #
     # -----------------------------------------------------------------------
     #
@@ -405,6 +410,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                         """
         )
         raise FileExistsError(errmsg) from None
+
 
     #
     # -----------------------------------------------------------------------
@@ -446,7 +452,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # A batch system account is specified
     if expt_config["platform"].get("WORKFLOW_MANAGER") is not None:
-        if not expt.get("user").get("ACCOUNT"):
+        if not expt_config.get("user").get("ACCOUNT"):
             raise Exception(
                 dedent(
                     f"""
@@ -528,17 +534,22 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # Gather the pre-defined grid parameters, if needed
     fcst_config = expt_config["task_run_fcst"]
-    grid_config = expt_confg["task_make_grid"]
+    grid_config = expt_config["task_make_grid"]
     if fcst_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(USHdir, fcst_config)
 
         # Users like to change these variables, so don't overwrite them
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
-            if param in special_vars and fcst_config.get(param) is not None:
-                continue
+            if param in special_vars:
+                if fcst_config.get(param) and "{{" not in fcst_config.get(param):
+                    continue
+                else:
+                    fcst_config[param] = value
             elif param.startswith("WRTCMP"):
                 fcst_config[param] = value
+            elif param == "GRID_GEN_METHOD":
+                workflow_config[param] = value
             else:
                 grid_config[param] = value
 
@@ -579,20 +590,29 @@ def setup(USHdir, user_config_fn="config.yaml"):
             constants=expt_config["constants"],
         )
     else:
-        grid_params = {
-            "LON_CTR": LON_CTR,
-            "LAT_CTR": LAT_CTR,
-            "NX": NX,
-            "NY": NY,
-            "NHW": NHW,
-            "STRETCH_FAC": STRETCH_FAC,
-        }
+
+        errmsg = dedent(
+            f"""
+            Valid values of GRID_GEN_METHOD are GFDLgrid and ESGgrid.
+            The value provided is:
+              GRID_GEN_METHOD = {grid_gen_method}
+            """
+        )
+        raise KeyError(errmsg) from None
 
     # Add a grid parameter section to the experiment config
     expt_config["grid_params"] = grid_params
 
-    # grid params
-    cfg_d["grid_params"] = grid_params
+    # Check to make sure that mandatory forecast variables are set.
+    vlist = [
+        "DT_ATMOS",
+        "LAYOUT_X",
+        "LAYOUT_Y",
+        "BLOCKSIZE",
+    ]
+    for val in vlist:
+        if not fcst_config.get(val):
+            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     #
     # -----------------------------------------------------------------------
@@ -743,7 +763,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # If using a custom post configuration file, make sure that it exists.
-    post_config = expt_config("task_run_post")
+    post_config = expt_config["task_run_post"]
     if post_config.get("USE_CUSTOM_POST_CONFIG_FILE"):
         custom_post_config_fp = post_config.get("CUSTOM_POST_CONFIG_FP")
         try:
@@ -868,7 +888,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
             )
         post_output_domain_name = predef_grid_name
 
-    if not isintstance(post_output_domain_name, int):
+    if not isinstance(post_output_domain_name, int):
         post_output_domain_name = lowercase(post_output_domain_name)
     #
     # -----------------------------------------------------------------------
@@ -972,18 +992,20 @@ def setup(USHdir, user_config_fn="config.yaml"):
               FIELD_DICT_IN_UWM_FP = \"{field_dict_in_uwm_fp}\"'''
         )
 
+
+    fixed_files = expt_config["fixed_files"]
     # Set the appropriate ozone production/loss file paths and symlinks
     ozone_param, fixgsm_ozone_fn, ozone_link_mappings = set_ozone_param(
         ccpp_phys_suite_in_ccpp_fp,
-        fcst_config["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
     )
 
     # Reset the dummy value saved in the last list item to the ozone
     # file name
-    fcst_config["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
+    fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
 
     # Reset the experiment config list with the update list
-    fcst_config["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
+    fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
 
     log_info(
         f"""
@@ -1005,7 +1027,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(ozone_link_mappings)}
         """,
         verbose=verbose,
-        _dedent=False,
+        dedent_=False,
     )
 
     #
@@ -1069,12 +1091,12 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 dot_or_underscore=workflow_config["DOT_OR_USCORE"],
                 nhw=grid_params["NHW"],
                 run_task=False,
-                sfc_climo_fields=expt_config["task_run_fcst"]["SFC_CLIMO_FIELDS"],
+                sfc_climo_fields=fixed_files["SFC_CLIMO_FIELDS"],
             )
             if res_in_fixlam_filenames is None:
                 res_in_fixlam_filenames = res_in_fns
             else:
-                if res_in_fixlam_filesnames != res_in_fns:
+                if res_in_fixlam_filenames != res_in_fns:
                     raise Exception(
                         dedent(
                             f"""
@@ -1083,20 +1105,20 @@ def setup(USHdir, user_config_fn="config.yaml"):
                         set:
 
                         Resolution in {prep_task}: {res_in_fns}
-                        Resolution expected: {res_in_fixlam_filesnames}
+                        Resolution expected: {res_in_fixlam_filenames}
                         """
                         )
                     )
 
-        if not os.path.exists(task_dir):
-            raise FileNotFoundError(
-                f'''
-                The directory ({dir_key}) that should contain the pregenerated
-                {prep_task.lower()} files does not exist:
-                  {dir_key} = \"{task_dir}\"'''
-            )
+            if not os.path.exists(task_dir):
+                raise FileNotFoundError(
+                    f'''
+                    The directory ({dir_key}) that should contain the pregenerated
+                    {prep_task.lower()} files does not exist:
+                      {dir_key} = \"{task_dir}\"'''
+                )
 
-    workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filesnames
+    workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
     #
@@ -1108,7 +1130,8 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXlam}"')
+    fixlam = workflow_config["FIXlam"]
+    mkdir_vrfy(f' -p "{fixlam}"')
 
     #
     # -----------------------------------------------------------------------
@@ -1147,7 +1170,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
     workflow_config["SDF_USES_RUC_LSM"] = check_ruc_lsm(
-        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP
+        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp
     )
     #
     # -----------------------------------------------------------------------
@@ -1167,18 +1190,18 @@ def setup(USHdir, user_config_fn="config.yaml"):
         get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"]
     ) or (get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"])
     use_thompson, mapping, fix_files = set_thompson_mp_fix_files(
-        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP,
-        thompson_mp_climo_fn=THOMPSON_MP_CLIMO_FN,
+        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp,
+        thompson_mp_climo_fn=workflow_config["THOMPSON_MP_CLIMO_FN"],
         link_thompson_climo=link_thompson_climo,
     )
 
     workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
     if use_thompson:
-        expt_config["task_run_fcst"]["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
             mapping
         )
-        expt_config["task_run_fcst"]["FIXgsm_FILES_TO_COPY_TO_FIXam"].append(fix_files)
+        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].append(fix_files)
 
         log_info(
             f"""
@@ -1195,12 +1218,14 @@ def setup(USHdir, user_config_fn="config.yaml"):
         )
         log_info(
             f"""
-                FIXgsm_FILES_TO_COPY_TO_FIXam = {list_to_str(FIXgsm_FILES_TO_COPY_TO_FIXam)}
+                FIXgsm_FILES_TO_COPY_TO_FIXam =
+                {list_to_str(fixed_files['FIXgsm_FILES_TO_COPY_TO_FIXam'])}
             """
         )
         log_info(
             f"""
-                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
+                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING =
+                {list_to_str(fixed_files['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'])}
             """
         )
     #
@@ -1211,6 +1236,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
+
+
+    extend_yaml(expt_config)
+    for sect, sect_keys in expt_config.items():
+        for k, v in sect_keys.items():
+            expt_config[sect][k] = str_to_list(v)
+    extend_yaml(expt_config)
 
     # print content of var_defns if DEBUG=True
     all_lines = cfg_to_yaml_str(expt_config)
@@ -1223,7 +1255,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         Generating the global experiment variable definitions file here:
           GLOBAL_VAR_DEFNS_FP = '{global_var_defns_fp}'
         For more detailed information, set DEBUG to 'TRUE' in the experiment
-        configuration file ('{user_config}')."""
+        configuration file ('{user_config_fn}')."""
     )
 
     with open(global_var_defns_fp, "a") as f:
@@ -1240,7 +1272,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # loop through the flattened expt_config and check validity of params
     cfg_v = load_config_file("valid_param_vals.yaml")
     for k, v in flatten_dict(expt_config).items():
-        if v == None:
+        if v is None or v == '':
             continue
         vkey = "valid_vals_" + k
         if (vkey in cfg_v) and not (v in cfg_v[vkey]):

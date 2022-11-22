@@ -47,4 +47,5 @@ from .config_parser import (
     load_config_file,
     load_yaml_config,
     cfg_to_yaml_str,
+    extend_yaml,
 )

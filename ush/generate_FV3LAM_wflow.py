@@ -185,9 +185,17 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
             )
         except:
-            logging.exception(
+            logging.info(
                 dedent(
                     f"""
+                      Variable settings specified on command line for
+                      fill_jinja_template.py:\n
+                        settings =\n\n"""
+                )
+                + settings_str
+            )
+            raise Exception(
+                dedent(f"""
                     Call to python script fill_jinja_template.py to create a rocoto workflow
                     XML file from a template file failed.  Parameters passed to this script
                     are:
@@ -195,10 +203,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                         template_xml_fp = '{template_xml_fp}'
                       Full path to output rocoto XML file:
                         WFLOW_XML_FP = '{wflow_xml_fp}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
+                    """
                 )
-                + settings_str
             )
     #
     # -----------------------------------------------------------------------
@@ -210,6 +216,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     exptdir = expt_config['workflow']['EXPTDIR']
     wflow_launch_script_fp = expt_config['workflow']['WFLOW_LAUNCH_SCRIPT_FP']
+    wflow_launch_script_fn = expt_config['workflow']['WFLOW_LAUNCH_SCRIPT_FN']
     log_info(
         f"""
         Creating symlink in the experiment directory (EXPTDIR) that points to the
@@ -237,8 +244,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # in the flattened expt_config dictionary
     # TODO: Reference all these variables in their respective
     # dictionaries, instead.
-    import_vars(dictionary=flatten_dict(expt_config),
-            target_dict=locals())
+    import_vars(dictionary=flatten_dict(expt_config))
 
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
@@ -718,10 +724,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # -----------------------------------------------------------------------
     #
     if WORKFLOW_MANAGER == "rocoto":
-        wflow_xml_fn = settings['WFLOW_XML_FN']
-        wflow_db_fn = f"{os.path.splitext(wflow_xml_fn)[0]}.db"
-        rocotorun_cmd = f"rocotorun -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
-        rocotostat_cmd = f"rocotostat -w {wflow_xml_fn} -d {wflow_db_fn} -v 10"
+        wflow_db_fn = f"{os.path.splitext(WFLOW_XML_FN)[0]}.db"
+        rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
+        rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
 
         log_info(
             f"""

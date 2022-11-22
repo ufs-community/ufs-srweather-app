@@ -30,7 +30,7 @@ def link_fix(
     target_dir,
     ccpp_phys_suite,
     constants,
-    dot_or_underscore,
+    dot_or_uscore,
     nhw,
     run_task,
     sfc_climo_fields,
@@ -46,7 +46,7 @@ def link_fix(
         source_dir: the path to directory where the file_group fix files
                     are linked from
         target_dir: the directory where the fix files should be linked to
-        dot_or_underscore: str containing either a dot or an underscore
+        dot_or_uscore: str containing either a dot or an underscore
         nhw: grid parameter setting
         constants: dict containing the constants used by SRW
         run_task: boolean value indicating whether the task is to be run
@@ -361,7 +361,8 @@ def link_fix(
 
             # Create links without halo and tile7, and with "tile1"
             halo_tile = f"{cres}.{field}.tile{tile_rgnl}.halo{nh0}.nc"
-            no_halo_tile = re.sub(f"tile{tile_rgnl}.halo{nh0}", "tile1", True)
+            no_halo_tile = re.sub(f"tile{tile_rgnl}.halo{nh0}", "tile1", halo_tile)
+            create_symlink_to_file(halo_tile, no_halo_tile, True)
 
     # Change directory back to original one.
     cd_vrfy(save_dir)
@@ -400,14 +401,14 @@ if __name__ == "__main__":
     link_fix(
         verbose=cfg["workflow"]["VERBOSE"],
         file_group=args.file_group,
-        source_dir=cfg["task_make_{args.file_group.upper()}"][f"{args.file_group}_DIR"],
+        source_dir=cfg[f"task_make_{args.file_group.lower()}"][f"{args.file_group.upper()}_DIR"],
         target_dir=cfg["workflow"]["FIXlam"],
         ccpp_phys_suite=cfg["workflow"]["CCPP_PHYS_SUITE"],
         constants=cfg["constants"],
-        dot_or_underscore=cfg["workflow"]["DOT_OR_USCORE"],
+        dot_or_uscore=cfg["workflow"]["DOT_OR_USCORE"],
         nhw=cfg["grid_params"]["NHW"],
         run_task=True,
-        sfc_climo_fields=cfg["task_run_fcst"]["SFC_CLIMO_FIELDS"],
+        sfc_climo_fields=cfg["fixed_files"]["SFC_CLIMO_FIELDS"],
     )
 
 
@@ -420,7 +421,7 @@ class Testing(unittest.TestCase):
             target_dir=self.FIXlam,
             ccpp_phys_suite=self.cfg["CCPP_PHYS_SUITE"],
             constants=self.cfg["constants"],
-            dot_or_underscore=self.cfg["DOT_OR_USCORE"],
+            dot_or_uscore=self.cfg["DOT_OR_USCORE"],
             nhw=self.cfg["NHW"],
             run_task=False,
             sfc_climo_fields=["foo", "bar"],

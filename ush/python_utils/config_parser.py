@@ -35,6 +35,8 @@ import configparser
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+import jinja2
+
 from .environment import list_to_str, str_to_list
 from .run_command import run_command
 
@@ -88,6 +90,11 @@ try:
 except NameError:
     pass
 
+def path_join(arg):
+    """ A filter for jinja2 that joins paths """
+
+    return os.path.join(*arg)
+
 def extend_yaml(yaml_dict, full_dict=None):
 
     '''
@@ -123,9 +130,12 @@ def extend_yaml(yaml_dict, full_dict=None):
               if '{%' in v:
                   templates = [v_str]
               else:
+                  # Separates out all the double curly bracket pairs
                   templates = re.findall(r'{{[^}]*}}|\S', v_str)
               data = []
               for template in templates:
+                  if len(template) > 1:
+                      print(template)
                   j2env = jinja2.Environment(loader=jinja2.BaseLoader,
                           undefined=jinja2.StrictUndefined)
                   j2env.filters['path_join'] = path_join
@@ -133,13 +143,21 @@ def extend_yaml(yaml_dict, full_dict=None):
                   try:
                       # Fill in a template that has the appropriate variables
                       # set.
-                      template = j2tmpl.render(env=os.environ, **full_dict)
+                      template = j2tmpl.render(**yaml_dict, **full_dict)
                   except jinja2.exceptions.UndefinedError as e:
                       # Leave a templated field as-is in the resulting dict
-                      print(f'Error: {e}')
+                      #print(f'Error: {e}')
                       print(f'Preserved template: {k}: {template}')
-                      for a, b in full_dict.items():
-                          print(f'    {a}: {b}')
+                      #for a, b in full_dict.items():
+                      #    print(f'    {a}: {b}')
+                      pass
+                  except TypeError:
+                      print(f'Preserved template: {k}: {template}')
+                  except ZeroDivisionError:
+                      print(f'Preserved template: {k}: {template}')
+                  except:
+                      print(f'{k}: {template}')
+                      raise
 
                   data.append(template)
 
@@ -149,6 +167,7 @@ def extend_yaml(yaml_dict, full_dict=None):
                   # Put the full template line back together as it was,
                   # filled or not
                   yaml_dict[k] = ''.join(data)
+                  print(f"    {k}: {yaml_dict[k]}")
 
 
 ##########
@@ -434,12 +453,16 @@ def update_dict(dict_o, dict_t, provide_default=False):
     Returns:
         None
     """
-    for k, v in dict_t.items():
+    for k, v in dict_o.items():
         if isinstance(v, dict):
-            update_dict(dict_o, v, provide_default)
-        elif k in dict_o.keys():
-            if (not provide_default) or (dict_t[k] is None) or (len(dict_t[k]) == 0):
-                dict_t[k] = dict_o[k]
+            if isinstance(dict_t.get(k), dict):
+                update_dict(v, dict_t[k], provide_default)
+            else:
+                dict_t[k] = v
+        elif k in dict_t.keys():
+            if (not provide_default) or (dict_t[k] is None) or \
+                (len(dict_t[k]) == 0) or ("{{" in dict_t[k]):
+                dict_t[k] = v
 
 
 def check_structure_dict(dict_o, dict_t):
