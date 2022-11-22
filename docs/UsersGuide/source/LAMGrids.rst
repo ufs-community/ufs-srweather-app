@@ -147,18 +147,18 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    #
    #---------------------------------------------------------------------
    #
-   # Stanza for NEW_GRID. This grid covers [description of the
-   # domain] with ~[size]-km cells.
+   #  Stanza for NEW_GRID. This grid covers [description of the
+   #  domain] with ~[size]-km cells.
    #
    #---------------------------------------------------------------------
    
    "NEW_GRID":
    
-   # The method used to generate the grid. This example is specifically for the "ESGgrid" method.
+   #  The method used to generate the grid. This example is specifically for the "ESGgrid" method.
 
       GRID_GEN_METHOD: "ESGgrid"
    
-   # ESGgrid parameters:
+   #  ESGgrid parameters:
 
       ESGgrid_LON_CTR: -97.5
       ESGgrid_LAT_CTR: 38.5
@@ -169,14 +169,14 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
       ESGgrid_PAZI: 0.0
       ESGgrid_WIDE_HALO_WIDTH: 6
 
-   # Forecast configuration parameters:
+   #  Forecast configuration parameters:
 
       DT_ATMOS: 40
       LAYOUT_X: 5
       LAYOUT_Y: 2
       BLOCKSIZE: 40
 
-   # Parameters for the write-component (aka "quilting") grid. 
+   #  Parameters for the write-component (aka "quilting") grid. 
 
       QUILTING:
          WRTCMP_write_groups: 1
@@ -187,7 +187,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
          WRTCMP_lon_lwr_left: -121.12455072
          WRTCMP_lat_lwr_left: 23.89394570
 
-   # Parameters required for the Lambert conformal grid mapping.
+   #  Parameters required for the Lambert conformal grid mapping.
 
          WRTCMP_stdlat1: 38.5
          WRTCMP_stdlat2: 38.5
