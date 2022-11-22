@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -90,6 +90,9 @@ mm=${yyyymmddhh:4:2}
 dd=${yyyymmddhh:6:2}
 hh=${yyyymmddhh:8:2}
 
+# Set to use the pre-defined data paths in the machine file (ush/machine/).
+PDYext=${yyyymmdd}
+cycext=${hh}
 #
 #-----------------------------------------------------------------------
 #
@@ -154,6 +157,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --data_stores ${data_stores} \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
+  --ics_or_lbcs ${ICS_OR_LBCS} \
   --output_path ${EXTRN_MDL_STAGING_DIR} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"

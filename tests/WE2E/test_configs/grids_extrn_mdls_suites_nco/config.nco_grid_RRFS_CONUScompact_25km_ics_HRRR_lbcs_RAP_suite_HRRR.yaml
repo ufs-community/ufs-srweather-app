@@ -7,6 +7,7 @@ user:
   RUN_ENVIR: nco
 workflow:
   CCPP_PHYS_SUITE: FV3_HRRR
+  PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2020081000'
   DATE_LAST_CYCL: '2020081000'
   FCST_LEN_HRS: 6
@@ -28,4 +29,3 @@ task_get_extrn_lbcs:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
   WRITE_DOPOST: true
-  PREDEF_GRID_NAME: RRFS_CONUScompact_25km

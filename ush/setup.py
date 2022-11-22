@@ -25,7 +25,6 @@ from python_utils import (
     load_config_file,
     cfg_to_shell_str,
     cfg_to_yaml_str,
-    load_shell_config,
     load_ini_config,
     get_ini_value,
     str_to_list,
@@ -162,8 +161,8 @@ def load_config_for_setup(ushdir, default_config, user_config):
         "FIXgsm",
         "FIXaer",
         "FIXlut",
-        "TOPO_DIR",
-        "SFC_CLIMO_INPUT_DIR",
+        "FIXorg",
+        "FIXsfc",
     ]
     flat_cfg = flatten_dict(cfg_d)
     for val in mandatory:
@@ -410,7 +409,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
                         """
         )
         raise FileExistsError(errmsg) from None
-
 
     #
     # -----------------------------------------------------------------------
@@ -912,6 +910,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         "dcomroot",
         "comin_basedir",
         "comout_basedir",
+        "extroot",
     ]
 
     nco_config = expt_config["nco"]

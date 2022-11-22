@@ -5,20 +5,19 @@ metadata:
     (from which ICs and LBCs will be derived).
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: nomads hpss aws
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
-  DATE_FIRST_CYCL: '2020082600'
-  DATE_LAST_CYCL: '2020082600'
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: date --utc --date="2 days ago" +%Y%m%d00
+  DATE_LAST_CYCL: date --utc --date="2 days ago" +%Y%m%d00
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
-  NOMADS: true
-  NOMADS_file_type: NEMSIO
+  FV3GFS_FILE_FMT_ICS: netcdf
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
-  NOMADS: true
-  NOMADS_file_type: NEMSIO
-task_run_fcst:
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  FV3GFS_FILE_FMT_LBCS: netcdf
