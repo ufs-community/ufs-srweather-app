@@ -1,0 +1,56 @@
+metadata:
+  description: This test is to ensure that the workflow running in community mode
+    completes successfully on the SUBCONUS_Ind_3km grid using the RRFS_v1beta physics
+    suite with ICs derived from HRRR and LBCs derived from the RAP.
+user:
+  RUN_ENVIR: community
+  MACHINE: NOAACLOUD
+  ACCOUNT: none
+platform:
+  BUILD_MOD_FN: build_noaacloud_intel
+workflow:
+  USE_CRON_TO_RELAUNCH: true
+  CRON_RELAUNCH_INTVL_MNTS: 1
+  EXPT_BASEDIR: /lustre/GST_test
+  EXPT_SUBDIR: grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  DATE_FIRST_CYCL: '2019061518'
+  DATE_LAST_CYCL: '2019061518'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: false
+  DEBUG: false
+  COMPILER: intel
+task_make_grid:
+  MAXTRIES_MAKE_GRID: 2
+task_make_orog:
+  MAXTRIES_MAKE_OROG: 2
+task_make_sfc_climo:
+  MAXTRIES_MAKE_SFC_CLIMO: 2
+task_get_extrn_ics:
+  MAXTRIES_GET_EXTRN_ICS: 1
+  EXTRN_MDL_NAME_ICS: HRRR
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/HRRR/${yyyymmddhh}
+# EXTRN_MDL_FILES_ICS:
+#   - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+  EXTRN_MDL_DATA_STORES: disk
+task_get_extrn_lbcs:
+  MAXTRIES_GET_EXTRN_LBCS: 1
+  EXTRN_MDL_NAME_LBCS: RAP
+  LBC_SPEC_INTVL_HRS: 6
+  EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/RAP/${yyyymmddhh}
+# EXTRN_MDL_FILES_LBCS:
+#   - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+  EXTRN_MDL_DATA_STORES: disk
+task_make_ics:
+  MAXTRIES_MAKE_ICS: 2
+task_make_lbcs:
+  MAXTRIES_MAKE_LBCS: 2
+task_run_fcst:
+  MAXTRIES_RUN_FCST: 1
+  PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+task_run_post:
+  MAXTRIES_RUN_POST: 2

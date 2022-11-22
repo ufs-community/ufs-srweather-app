@@ -309,12 +309,12 @@
   ESGgrid_PAZI: 0.0
   ESGgrid_WIDE_HALO_WIDTH: 6
   DT_ATMOS: 40
-  LAYOUT_X: 5
-  LAYOUT_Y: 5
+  LAYOUT_X: 10
+  LAYOUT_Y: 4
   BLOCKSIZE: 40
   QUILTING:
     WRTCMP_write_groups: 1
-    WRTCMP_write_tasks_per_group: 5
+    WRTCMP_write_tasks_per_group: 4
     WRTCMP_output_grid: "lambert_conformal"
     WRTCMP_cen_lon: -86.16
     WRTCMP_cen_lat: 39.77
