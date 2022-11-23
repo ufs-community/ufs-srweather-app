@@ -32,17 +32,14 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: HRRR
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/HRRR/${yyyymmddhh}
-  EXTRN_MDL_FILES_ICS:
-    - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
   EXTRN_MDL_DATA_STORES: disk
 task_get_extrn_lbcs:
   MAXTRIES_GET_EXTRN_LBCS: 1
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 6
+  EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/RAP/${yyyymmddhh}
-  EXTRN_MDL_FILES_LBCS:
-    - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
   EXTRN_MDL_DATA_STORES: disk
 task_make_ics:
   MAXTRIES_MAKE_ICS: 2

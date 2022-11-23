@@ -44,12 +44,6 @@ task_get_extrn_lbcs:
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
   EXTRN_MDL_FILES_LBCS: []
   EXTRN_MDL_DATA_STORES: disk
-task_make_ics:
-  MAXTRIES_MAKE_ICS: 2
-task_make_lbcs:
-  MAXTRIES_MAKE_LBCS: 2
 task_run_fcst:
   MAXTRIES_RUN_FCST: 1
   PREDEF_GRID_NAME: RRFS_CONUS_25km
-task_run_post:
-  MAXTRIES_RUN_POST: 2

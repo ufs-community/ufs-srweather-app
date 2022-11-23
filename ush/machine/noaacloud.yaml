@@ -1,6 +1,6 @@
 platform:
   WORKFLOW_MANAGER: rocoto
-  NCORES_PER_NODE: 36
+  NCORES_PER_NODE: 44
   SCHED: slurm
   CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/obs_data/ccpa/proc
   MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/obs_data/mrms/proc
@@ -22,13 +22,29 @@ task_make_orog:
   TOPO_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_orog
 task_make_sfc_climo:
   SFC_CLIMO_INPUT_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_sfc_climo
+  NNODES_MAKE_SFC_CLIMO: 1
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: aws nomads
 task_get_extrn_lbcs:
   EXTRN_MDL_DATA_STORES: aws nomads
+task_make_ics:
+  MAXTRIES_MAKE_ICS: 2
+  NNODES_MAKE_ICS: 1
+task_make_lbcs:
+  MAXTRIES_MAKE_LBCS: 2
+  NNODES_MAKE_LBCS: 1
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
   FIXaer: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_aer
   FIXgsm: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_am
   FIXlut: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_lut
+  WRITE_DOPOST: TRUE
+  PPN_RUN_FCST: 44
+  OMP_NUM_THREADS_RUN_FCST: 1
+  LAYOUT_X: 4
+  LAYOUT_Y: 10
+  WRTCMP_write_tasks_per_group: 4
+task_run_post:
+  NNODES_RUN_POST: 1
 data:
   FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
