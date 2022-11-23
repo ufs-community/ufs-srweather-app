@@ -89,7 +89,16 @@ fi
 DATA="${DATA}/tmp_PT_SOURCE"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
+#
+#-----------------------------------------------------------------------
+#
+# Set the directories for CONUS/HI/AK
+#
+#-----------------------------------------------------------------------
+#
+PT_SRC_CONUS="${PT_SRC_BASEDIR}/12US1"
+PT_SRC_HI="${PT_SRC_BASEDIR}/3HI1"
+PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 #
 #-----------------------------------------------------------------------
 #
@@ -99,7 +108,7 @@ cd_vrfy $DATA
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
   cp_vrfy ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py stack-pt-merge.py
-  python3 stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_BASE_DIR_CONUS} -hi ${PT_SRC_BASE_DIR_HI} -ak ${PT_SRC_BASE_DIR_AK}
+  python3 stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
 
   if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
     print_err_msg_exit "\
