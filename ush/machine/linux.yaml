@@ -7,13 +7,23 @@ platform:
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -n 4
   PRE_TASK_CMDS: '{ ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /home/mpotts/GST/model_data
+  TEST_PREGEN_BASEDIR: /home/mpotts/GST/model_data/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /home/mpotts/GST/model_data/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /home/mpotts/GST/model_data/dummy_FV3GFS_sys_dir
 task_make_orog:
-  TOPO_DIR: /home/username/DATA/UFS/fix/fix_orog
+  TOPO_DIR: /home/mpotts/GST/fix/fix_orog
 task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /home/username/DATA/UFS/fix/fix_sfc_climo
+  SFC_CLIMO_INPUT_DIR: /home/mpotts/GST/fix/fix_sfc_climo
 task_run_fcst:
-  FIXaer: /home/username/DATA/UFS/fix/fix_aer
-  FIXgsm: /home/username/DATA/UFS/fix/fix_am
-  FIXlut: /home/username/DATA/UFS/fix/fix_lut
+  FIXaer: /home/mpotts/GST/fix/fix_aer
+  FIXgsm: /home/mpotts/GST/fix/fix_am
+  FIXlut: /home/mpotts/GST/fix/fix_lut
+  FCST_LEN_HRS: 2
+  NNODES_RUN_FCST: 1
+  PPN_RUN_FCST: 1
+  OMP_NUM_THREADS_RUN_FCST: 1 
+  LAYOUT_X: 3
+  LAYOUT_Y: 2
 data:
-  FV3GFS: /home/username/DATA/UFS/FV3GFS
+  FV3GFS: /home/mpotts/GST/model_data/FV3GFS

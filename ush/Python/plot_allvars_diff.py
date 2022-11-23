@@ -332,7 +332,7 @@ for fhr in fhours:
 # Specify plotting domains
 # User can add domains here, just need to specify lat/lon information below
 # (if dom == 'conus' block)
-  domains=['conus']    # Other option is 'regional'
+  domains=['indiana']    # Other option is 'regional'
 
 ###################################################
 # Read in all variables and calculate differences #
@@ -383,9 +383,9 @@ for fhr in fhours:
   cin_diff = cin_2 - cin_1
 
 # 500 mb height, wind, vorticity
-  z500_1 = data1.select(name='Geopotential height',level=500)[0].values * 0.1
+  z500_1 = data1.select(name='Geopotential Height',level=500)[0].values * 0.1
   z500_1 = ndimage.filters.gaussian_filter(z500_1, 6.89)
-  z500_2 = data2.select(name='Geopotential height',level=500)[0].values * 0.1
+  z500_2 = data2.select(name='Geopotential Height',level=500)[0].values * 0.1
   z500_2 = ndimage.filters.gaussian_filter(z500_2, 6.89)
   z500_diff = z500_2 - z500_1
   vort500_1 = data1.select(name='Absolute vorticity',level=500)[0].values * 100000
@@ -471,6 +471,14 @@ for fhr in fhours:
       lat_0 = 35.4
       lon_0 = -97.6
       extent=[llcrnrlon-3,urcrnrlon-6,llcrnrlat-1,urcrnrlat+2]
+    elif dom == 'indiana':
+      llcrnrlon = -89.71
+      llcrnrlat = 36.84
+      urcrnrlon = -82.61
+      urcrnrlat = 42.5
+      lat_0 = 39.77
+      lon_0 = -86.16
+      extent = [llcrnrlon, urcrnrlon, llcrnrlat, urcrnrlat]
     elif dom == 'regional':
       llcrnrlon = np.min(lon)
       llcrnrlat = np.min(lat)
@@ -960,7 +968,8 @@ for fhr in fhours:
       cs_1.cmap.set_over('pink')
       cbar1 = plt.colorbar(cs_1,ax=ax1,orientation='horizontal',pad=0.05,shrink=0.6,extend='max')
       cbar1.set_label(units,fontsize=6)
-      cbar1.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      #cbar1.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      cbar1.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
       cbar1.ax.tick_params(labelsize=6)
       ax1.text(.5,1.03,'FV3-LAM '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=6,transform=ax1.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
@@ -969,7 +978,8 @@ for fhr in fhours:
       cs_2.cmap.set_over('pink')
       cbar2 = plt.colorbar(cs_2,ax=ax2,orientation='horizontal',pad=0.05,shrink=0.6,extend='max')
       cbar2.set_label(units,fontsize=6)
-      cbar2.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      #cbar2.ax.set_xticklabels([0.1,0.5,1,1.5,2,3,5,10,20])
+      cbar2.ax.set_xticklabels([0.1, 0.3, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 17.5, 20])
       cbar2.ax.tick_params(labelsize=6)
       ax2.text(.5,1.03,'FV3-LAM-2 '+fhour+'-hr Accumulated Precipitation ('+units+') \n initialized: '+itime+' valid: '+vtime + ' (f'+fhour+')',horizontalalignment='center',fontsize=6,transform=ax2.transAxes,bbox=dict(facecolor='white',alpha=0.85,boxstyle='square,pad=0.2'))
 
