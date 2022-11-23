@@ -53,17 +53,17 @@ The full set of Cartopy shapefiles can be downloaded `here <https://www.naturale
    +--------------+-----------------------------------------------------------------+
    | Machine      | File location                                                   |
    +==============+=================================================================+
-   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/v2p1/NaturalEarth                 |
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/NaturalEarth              |
    +--------------+-----------------------------------------------------------------+
-   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/v2p1/NaturalEarth             |
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/NaturalEarth          |
    +--------------+-----------------------------------------------------------------+
-   | Hera         | /scratch2/BMC/det/UFS_SRW_App/v2p1/NaturalEarth                 |
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth              |
    +--------------+-----------------------------------------------------------------+
-   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p1/NaturalEarth              |
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/NaturalEarth           |
    +--------------+-----------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/v2p1/NaturalEarth                     |
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/NaturalEarth                  |
    +--------------+-----------------------------------------------------------------+
-   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/v2p1/NaturalEarth                |
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/NaturalEarth             |
    +--------------+-----------------------------------------------------------------+
 
 Running the Plotting Scripts
