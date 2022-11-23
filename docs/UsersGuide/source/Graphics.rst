@@ -19,7 +19,7 @@ output over the :term:`CONUS` for a number of variables, including:
 
 The Python scripts are located under ``ufs-srweather-app/ush/Python``.
 The script ``plot_allvars.py`` plots the output from a single cycle within an experiment, while 
-the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different experiments. If 
+the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different experiments. When 
 plotting the difference, the two experiments must be on the same domain and available for 
 the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
 
