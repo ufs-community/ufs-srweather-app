@@ -73,12 +73,12 @@ The SRW Application source code is publicly available on GitHub. To download the
    git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
-:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``/home`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
+:numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
 
 .. code-block:: console
 
-    export SRW=/home/ufs-srweather-app
-    setenv SRW /home/ufs-srweather-app
+    export SRW=$HOME/ufs-srweather-app
+    setenv SRW $HOME/ufs-srweather-app
 
 .. _FilesAndSubDirs:
 
