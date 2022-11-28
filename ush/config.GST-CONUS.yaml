@@ -4,7 +4,7 @@ metadata:
     with ICs and LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: community
-  MACHINE: NOAACLOUD
+  MACHINE: AMI
   ACCOUNT: none
 platform:
   BUILD_MOD_FN: build_noaacloud_intel
