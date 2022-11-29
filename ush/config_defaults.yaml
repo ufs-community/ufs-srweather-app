@@ -2344,14 +2344,8 @@ cpl_aqm_parm:
 # NEXUS_GRID_FN:
 # File name of the input grid_spec file of nexus
 #
-# PT_SRC_BASE_DIR_CONUS:
-# Directory containing point source files for CONUS
-#
-# PT_SRC_BASE_DIR_HI:
-# Directory containing point source files for HI
-#
-# PT_SRC_BASE_DIR_AK:
-# Directory containing point source files for AK
+# PT_SRC_BASEDIR:
+# Parent directory containing point source files for CONUS/AK/HI
 #
 # COLDSTART:
 # Flag turning on/off warm start
@@ -2391,9 +2385,7 @@ cpl_aqm_parm:
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
 
-  PT_SRC_BASE_DIR_CONUS: "/path/to/point/source/base/directory/for/conus"
-  PT_SRC_BASE_DIR_HI: "/path/to/point/source/base/directory/for/hi"
-  PT_SRC_BASE_DIR_AK: "/path/to/point/source/base/directory/for/ak"
+  PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
 
   COLDSTART: true
   WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"

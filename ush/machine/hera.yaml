@@ -33,4 +33,5 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 cpl_aqm_parm:
+  PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt
   COMINgfs_BASEDIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/test/dir
