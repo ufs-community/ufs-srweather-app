@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -142,7 +142,6 @@ cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
 #
 #-----------------------------------------------------------------------
 #
-echo ${INPUT_DATA}
 mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
 #
 # Print message indicating successful completion of script.
