@@ -204,7 +204,7 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-   'hpc-stack': ('https://hpc-stack.readthedocs.io/en/latest/', None),
+   'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
    'met': ('https://met.readthedocs.io/en/latest/', None),
 }
 
