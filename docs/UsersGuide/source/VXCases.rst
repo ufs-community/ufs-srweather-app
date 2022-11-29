@@ -33,7 +33,10 @@ Set Up Verification
 
 Follow the instructions below to reproduce this event using your own model setup! Make sure to install the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline of comparison. 
 
-#. **Get Data:** Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
+Get Data
+-----------
+
+Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
    * Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
    * From a terminal using the AWS command line interface (cli) if installed:
@@ -48,98 +51,120 @@ Follow the instructions below to reproduce this event using your own model setup
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-   After downloading, untar the downloaded compressed archive file: 
+After downloading, untar the downloaded compressed archive file: 
 
-   .. code-block:: console
+.. code-block:: console
 
-      tar xvfz Indy-Severe-Weather.tgz
+   tar xvfz Indy-Severe-Weather.tgz
 
-   Record the path to this file output by the ``pwd`` command: 
+Record the path to this file output using the ``pwd`` command: 
    
-   .. code-block:: console 
+.. code-block:: console 
 
-      cd Indy-Severe-Weather
-      pwd
+   cd Indy-Severe-Weather
+   pwd
    
-#. Follow the instructions in :numref:`Section %s <UserSpecificConfig>` to set up the configuration file (``config.yaml``). First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
+Configure the Verification Sample Case
+--------------------------------------------
 
-   .. code-block:: console
+Follow the instructions in :numref:`Section %s <UserSpecificConfig>` to set up the configuration file (``config.yaml``). First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
 
-      cd </path/to/ufs-srweather-app/ush>
-      cp config.community.yaml config.yaml
-   
-   where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
-   
-   * Then, edit the ``config.yaml`` file substituting values in ``<>`` with values appropriate to your system. 
-   
-      .. note::
-         Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
-   
-      .. note::
-         To open a file, users may run the command: 
+.. code-block:: console
 
-         .. code-block::console
+   cd </path/to/ufs-srweather-app/ush>
+   cp config.community.yaml config.yaml
+   
+where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
+   
+Then, edit the ``config.yaml`` file substituting values in ``<>`` with values appropriate to your system. 
+   
+.. note::
+   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
+   
+   .. note::
+      To open a file, users may run the command: 
 
-            vi config.yaml
+      .. code-block::console
+
+         vi config.yaml
          
-         To close and save, hit the ``esc`` key and type ``:wq``.
+      To close and save, hit the ``esc`` key and type ``:wq``.
 
-         Users may opt to use their preferred code editor and should modify the commands above accordingly. 
+      Users may opt to use their preferred code editor and should modify the commands above accordingly. 
             
-      .. code-block:: console
+   .. code-block:: console
 
-         user:
-            ACCOUNT: <my_account>
-         platform:
-            MODEL: FV3_GFS_v16_SUBCONUS_3km
-            # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-            MET_INSTALL_DIR: </path/to/met/x.x.x>
-            # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-            METPLUS_PATH: </path/to/METplus/METplus-x.x.x>
-            # Add MET_BIN_EXEC variable to config.yaml
-            MET_BIN_EXEC: bin
-            CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
-            MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
-            NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
-         workflow:
-            EXPT_SUBDIR: <any_name_you_like>
-            DATE_FIRST_CYCL: '2019061500'
-            DATE_LAST_CYCL: '2019061500'
-            FCST_LEN_HRS: 60
-         workflow_switches:
-            RUN_TASK_VX_GRIDSTAT: true
-            RUN_TASK_VX_POINTSTAT: true
-         task_get_extrn_ics:
-            # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
-            EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
-            USE_USER_STAGED_EXTRN_FILES: true
-         task_get_extrn_lbcs:
-            # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
-            EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
-            USE_USER_STAGED_EXTRN_FILES: true
-         task_run_fcst:
-            WTIME_RUN_FCST: 03:00:00
-            PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+      user:
+         ACCOUNT: <my_account>
+      platform:
+         MODEL: FV3_GFS_v16_SUBCONUS_3km
+         # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
+         MET_INSTALL_DIR: </path/to/met/x.x.x>
+         # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
+         METPLUS_PATH: </path/to/METplus/METplus-x.x.x>
+         # Add MET_BIN_EXEC variable to config.yaml
+         MET_BIN_EXEC: bin
+         CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
+         MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
+         NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
+      workflow:
+         EXPT_SUBDIR: <any_name_you_like>
+         DATE_FIRST_CYCL: '2019061500'
+         DATE_LAST_CYCL: '2019061500'
+         FCST_LEN_HRS: 60
+      workflow_switches:
+         RUN_TASK_VX_GRIDSTAT: true
+         RUN_TASK_VX_POINTSTAT: true
+      task_get_extrn_ics:
+         # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+         USE_USER_STAGED_EXTRN_FILES: true
+      task_get_extrn_lbcs:
+         # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+         USE_USER_STAGED_EXTRN_FILES: true
+      task_run_fcst:
+         WTIME_RUN_FCST: 03:00:00
+         PREDEF_GRID_NAME: SUBCONUS_Ind_3km
 
+Load the Regional Workflow
+-----------------------------
 
-Once the changes above are completed, load the regional workflow environment:
+Once the changes to ``config.yaml`` are complete, load the regional workflow environment:
 
 .. code-block:: console
    
-   module use /path/to/ufs-srweather-app/modulefiles
-   module load <your_env>
+   module use </path/to/ufs-srweather-app/modulefiles>
+   module load wflow_<platform>
 
-Generate experiment by running this command in the ush directory:
+
+Generate the Experiment
+---------------------------
+
+Generate the experiment by running this command from the ush directory:
 
 .. code-block:: console
    
    ./generate_FV3LAM_wflow.py
 
-``cd`` into the experiment directory and run the launch script:
+Run the Experiment
+----------------------
 
-./launch_FV3LAM_wflow.sh
+Navigate (``cd``) to the experiment directory and run the launch script:
 
-Keep running the launch script until the experiment completes. Refer to :ref:` Chapter %s: Rocoto <RocotoInfo>` if you run into any issues running this experiment.
+.. code-block:: console
+
+   ./launch_FV3LAM_wflow.sh
+
+Run the launch script regularly and repeatedly until the experiment completes. 
+
+To check progress, run:
+
+.. code-block:: console
+
+   tail -n 40 log.launch_FV3LAM_wflow
+
+Refer to :ref:` Chapter %s: Rocoto <RocotoInfo>` if you run into any issues with this experiment. See :numref:`Section %s <RestartTask>` if a task goes DEAD. 
 
 Set Up Plots
 ---------------
