@@ -7,7 +7,7 @@ Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with this release was a severe weather event over Indianapolis on June 15-16, 2019. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. 
 
 Each sample case contains module output from a control run, which consists of ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables. These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
@@ -19,76 +19,107 @@ Indianapolis Severe Weather: 2019-06-16
 Description
 --------------
 
-A severe weather event over the Indianapolis Metropolitan Area during the summer of 2019 resulted from a frontal passage, which led to the development of isolated severe thunderstorms before it organized into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
+A severe weather event over the Indianapolis Metropolitan Area during the summer of 2019 resulted from a frontal passage, which led to the development of isolated severe thunderstorms that subsequently organized into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
 
 .. COMMENT: Edit above for clarity. 
 
 There were many storm reports for this event with the majority of tornadoes and severe winds being reported on June 15th, while more severe hail was reported on June 16th. A link to the Storm Prediction Center's Storm Reports can be found here: 
-`Storm Prediction Center 20190615's Storm Reports (noaa.gov) <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__
-`Storm Prediction Center 20190616's Storm Reports (noaa.gov) <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
+
+   * `Storm Prediction Center Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__
+   * `Storm Prediction Center Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
 Set Up Verification
 ======================
 
-Follow the instructions below to reproduce this event using your own model setup! Make sure to install the latest version of the SRW Application (UFS SRW App v2.1.0).
+Follow the instructions below to reproduce this event using your own model setup! Make sure to install the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline of comparison. 
 
-Get Data
-Download the Indy-Severe-Weather.tgz file from the S3 bucket:
-https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/
-Untar the file: 
+#. **Get Data:** Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
-.. code-block:: console
+   * Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
+   * From a terminal using the AWS command line interface (cli) if installed:
 
-   tar xvfz Indy-Severe-Weather.tgz
+      .. code-block:: console
 
-Record the path to this file: Setup config.yaml
-The tar file can be downloaded via a terminal if aws cli is installed in the environment. If this is the case, run the command below:
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
+   
+   * From a terminal using wget: 
 
-.. code-block:: console
+      .. code-block:: console
 
-   aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
+         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-Then, navigate to the ``ufs-srweather-app/ush`` directory and view the 
+   After downloading, untar the downloaded compressed archive file: 
 
-.. code-block:: console
+   .. code-block:: console
 
-   cd /path/to/ufs-srweather-app/ush
-   cp config.community.yaml config.yaml
-   vi config.yaml
+      tar xvfz Indy-Severe-Weather.tgz
 
-Make the following changes, substituting values in ``<>`` with values appropriate to your system:
+   Record the path to this file output by the ``pwd`` command: 
+   
+   .. code-block:: console 
 
-.. code-block:: console
+      cd Indy-Severe-Weather
+      pwd
+   
+#. Follow the instructions in :numref:`Section %s <UserSpecificConfig>` to set up the configuration file (``config.yaml``). First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
 
-   user:
-      ACCOUNT: to your account
-   platform:
-      MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: /path/to/met/<version_number>
-      example: /contrib/met/10.1.1
-      METPLUS_PATH: /path/to/METplus/METplus-<version_number>
-      example: /contrib/METplus/METplus-4.1.1
-      MET_BIN_EXEC='bin'
-      CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
-      MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
-   workflow:
-      EXPT_SUBDIR: <whichever name you’d like>
-      DATE_FIRST_CYCL: '2019061500'
-      DATE_LAST_CYCL: '2019061500'
-      FCST_LEN_HRS: 60
-   workflow_switches:
-      RUN_TASK_VX_GRIDSTAT: true
-      RUN_TASK_VX_POINTSTAT: true
-   task_get_extrn_ics:
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
-      USE_USER_STAGED_EXTRN_FILES: true
-   task_get_extrn_lbcs:
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS:  /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
-      USE_USER_STAGED_EXTRN_FILES: true
-   task_run_fcst:
-      WTIME_RUN_FCST: 03:00:00
-      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+   .. code-block:: console
+
+      cd </path/to/ufs-srweather-app/ush>
+      cp config.community.yaml config.yaml
+   
+   where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
+   
+   * Then, edit the ``config.yaml`` file substituting values in ``<>`` with values appropriate to your system. 
+   
+      .. note::
+         Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
+   
+      .. note::
+         To open a file, users may run the command: 
+
+         .. code-block::console
+
+            vi config.yaml
+         
+         To close and save, hit the ``esc`` key and type ``:wq``.
+
+         Users may opt to use their preferred code editor and should modify the commands above accordingly. 
+            
+      .. code-block:: console
+
+         user:
+            ACCOUNT: <my_account>
+         platform:
+            MODEL: FV3_GFS_v16_SUBCONUS_3km
+            # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
+            MET_INSTALL_DIR: </path/to/met/x.x.x>
+            # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
+            METPLUS_PATH: </path/to/METplus/METplus-x.x.x>
+            # Add MET_BIN_EXEC variable to config.yaml
+            MET_BIN_EXEC: bin
+            CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
+            MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
+            NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
+         workflow:
+            EXPT_SUBDIR: <any_name_you_like>
+            DATE_FIRST_CYCL: '2019061500'
+            DATE_LAST_CYCL: '2019061500'
+            FCST_LEN_HRS: 60
+         workflow_switches:
+            RUN_TASK_VX_GRIDSTAT: true
+            RUN_TASK_VX_POINTSTAT: true
+         task_get_extrn_ics:
+            # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
+            EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+            USE_USER_STAGED_EXTRN_FILES: true
+         task_get_extrn_lbcs:
+            # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
+            EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+            USE_USER_STAGED_EXTRN_FILES: true
+         task_run_fcst:
+            WTIME_RUN_FCST: 03:00:00
+            PREDEF_GRID_NAME: SUBCONUS_Ind_3km
 
 
 Once the changes above are completed, load the regional workflow environment:
