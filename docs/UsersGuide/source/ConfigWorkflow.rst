@@ -488,8 +488,7 @@ Verification Tasks
 ``RUN_TASK_VX_ENSPOINT``: (Default: false)
    Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
 
-..
-   COMMENT: Might be worth defining "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"
+.. COMMENT: COMMENT: Define "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
 
 .. _make-grid:
 
@@ -917,10 +916,12 @@ Non-default parameters for the ``make_lbcs`` task are set in the ``task_make_lbc
 ``OMP_STACKSIZE_MAKE_LBCS``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
+.. _FcstConfigParams:
+
 FORECAST Configuration Parameters
 =====================================
 
-Non-default parameters for the ``run_fcst`` task are set in the ``task_run_fcst`` section of the ``config.yaml`` file. 
+Non-default parameters for the ``run_fcst`` task are set in the ``task_run_fcst:`` section of the ``config.yaml`` file. 
 
 Basic Task Parameters
 ---------------------------------
@@ -961,13 +962,15 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``OMP_STACKSIZE_RUN_FCST``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
+.. _ModelConfigParams:
+
 Model Configuration Parameters
 ----------------------------------
 
 These parameters set values in the Weather Model's ``model_configure`` file.
 
 ``DT_ATMOS``: (Default: "")
-   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.yaml`` script, but a different value can be set in ``config.yaml``. 
+   Time step for the outermost atmospheric model loop in seconds. This corresponds to the frequency at which the physics routines and the top level dynamics routine are called. (Note that one call to the top-level dynamics routine results in multiple calls to the horizontal dynamics, :term:`tracer` transport, and vertical dynamics routines; see the `FV3 dycore scientific documentation <https://repository.library.noaa.gov/view/noaa/30725>`__ for details.) Must be set. Takes an integer value. In the SRW App, a default value for ``DT_ATMOS`` appears in the ``set_predef_grid_params.yaml`` script, but a different value can be set in ``config.yaml``. In general, the smaller the grid cell size is, the smaller this value needs to be in order to avoid numerical instabilities during the forecast.
 
 ``RESTART_INTERVAL``: (Default: 0)
    Frequency of the output restart files in hours. Using the default interval (0), restart files are produced at the end of a forecast run. When ``RESTART_INTERVAL: 1``, restart files are produced every hour with the prefix "YYYYMMDD.HHmmSS." in the ``RESTART`` directory. 
@@ -1012,7 +1015,7 @@ Write-Component (Quilting) Parameters
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory). Valid values: ``True`` | ``False``
 
 ``WRTCMP_write_groups``: (Default: 1)
-   The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component.
+   The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
 
 ``WRTCMP_write_tasks_per_group``: (Default: 20)
    The number of MPI tasks to allocate for each write group.
@@ -1911,11 +1914,6 @@ The parameters below turn on SPP in Noah or RUC LSM (support for Noah MP is in p
 
 ``LSM_SPP_MAG_LIST``: (Default: [ 0.017, 0.001, 0.001, 0.001, 0.001, 0.001, 0.2 ] )
    Sets the maximum random pattern amplitude for each of the LSM perturbations. 
-
-.. COMMENT: This variable no longer appears and was going to be removed. See if anything has replaced it. 
-   ``LSM_SPP_EACH_STEP``: (Default: "true") 
-      When set to "TRUE", it sets ``lndp_each_step=.true.`` and perturbs each time step. 
-
 
 .. _HaloBlend:
 
