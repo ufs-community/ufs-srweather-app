@@ -61,7 +61,7 @@ or the launch script (``launch_FV3LAM_wflow.sh``) multiple times.
 rocotostat
 ===========
 ``rocotostat`` is a tool for querying the status of tasks in an active Rocoto workflow.  Once the
-workflow has been started with the ``rocotorun`` command, Rocoto can also check the status of the
+workflow has been started with the ``rocotorun`` command, Rocoto can check the status of the
 workflow using the ``rocotostat`` command:
 
 .. code-block:: console
@@ -91,7 +91,7 @@ Executing this command will generate a workflow status table similar to the foll
    201907010000       run_post_f006                       -              -              -       -           -
 
 This table indicates that the ``make_grid`` task was sent to the batch system and is now queued, while
-the ``get_extrn_ics`` and ``get_extrn_lbcs`` tasks for the ``201907010000`` cycle are in the process of being
+the ``get_extrn_ics`` and ``get_extrn_lbcs`` tasks for the ``201907010000`` cycle are currently being
 submitted to the batch system. 
 
 Note that issuing a ``rocotostat`` command without an intervening ``rocotorun`` command will not result in an
@@ -101,7 +101,7 @@ reads the database file and prints the table to the screen. To see an updated ta
 must be executed followed by the ``rocotostat`` command.
 
 After issuing the ``rocotorun`` command several times (over the course of several minutes or longer, depending
-on your grid size and computational resources), the output of the ``rocotostat`` command should look like this:
+on the grid size and computational resources available), the output of the ``rocotostat`` command should look like this:
 
 .. code-block:: console
 
@@ -143,7 +143,7 @@ from the ``$EXPTDIR`` directory as follows:
 where 
 
 * ``-c`` is the cycle to query in YYYYMMDDHHmm format
-* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst``). See :numref:`Chapter %s <ConfigWorkflow>` for the default values for task name variables, which end in ``_TN``.
+* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst``). 
 
 The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. 
 
@@ -208,7 +208,7 @@ rocotorewind
 ``rocotorewind`` is a tool that attempts to undo the effects of running a task. It is commonly used to rerun part
 of a workflow that has failed. If a task fails to run (the STATE is DEAD) and needs to be restarted, the ``rocotorewind``
 command will rerun tasks in the workflow. The command line options are the same as those described for ``rocotocheck``
-(in :numref:`section %s <rocotocheck>`), and the general usage statement looks like the following:
+(in :numref:`Section %s <rocotocheck>`), and the general usage statement looks like this:
 						
 .. code-block:: console
 
@@ -216,7 +216,7 @@ command will rerun tasks in the workflow. The command line options are the same 
 
 Running this command will edit the Rocoto database file ``FV3LAM_wflow.db`` to remove evidence that the job has been run.
 ``rocotorewind`` is recommended over ``rocotoboot`` for restarting a task, since ``rocotoboot`` will force a specific
-task to run, ignoring all dependencies and throttle limits. The throttle limit, denoted by the variable cyclethrottle
+task to run, ignoring all dependencies and throttle limits. The throttle limit, denoted by the variable ``cyclethrottle``
 in the ``FV3LAM_wflow.xml`` file, limits how many cycles can be active at one time. An example of how to use the ``rocotorewind``
 command to rerun the forecast task from ``$EXPTDIR`` is:
 
@@ -228,7 +228,7 @@ rocotoboot
 ===========
 ``rocotoboot`` will force a specific task of a cycle in a Rocoto workflow to run. All dependencies and throttle
 limits are ignored, and it is generally recommended to use ``rocotorewind`` instead. An example of how to
-use this command to rerun the ``make_ics`` task from ``$EXPTDIR`` is:
+use this command to rerun the ``make_ics`` task from the ``$EXPTDIR`` is:
 
 .. code-block:: console
 
