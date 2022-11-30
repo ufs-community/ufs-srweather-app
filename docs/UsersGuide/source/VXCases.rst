@@ -83,6 +83,8 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regio
 
 Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
 
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
+
 Configure the Verification Sample Case
 --------------------------------------------
 
