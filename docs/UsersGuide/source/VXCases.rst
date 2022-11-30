@@ -51,7 +51,7 @@ Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBCs` files, observation data, model/forecast output and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download the fix files required for SRW App forecasts and the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with wget. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
+This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download the fix files required for SRW App forecasts and the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with wget. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -65,6 +65,10 @@ Record the path to this file output using the ``pwd`` command:
 
    cd Indy-Severe-Weather
    pwd
+
+.. note::
+
+   Users can untar the fix files and Natural Earth files by substituting those file names in the commands above. 
 
 Load the Regional Workflow
 -----------------------------
@@ -183,9 +187,7 @@ The plots are created using the graphics generation script that comes with the S
 Compare
 ===========
 
-Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against our forecast results. 
-
-The ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>` contains forecast output and plots from NOAA developers under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
+Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against the forecast results provided in the ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>`. This directory contains the forecast output and plots from NOAA developers under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
 
 Qualitative Comparision of the Plots
 ----------------------------------------
@@ -203,15 +205,15 @@ Comparing the plots is relatively straightforward since they are in ``.png`` for
    +-----------------------------------------+-----------------------------------+
    | Surface-based CAPE/CIN                  | sfcape_conus_fhhh.png             |
    +-----------------------------------------+-----------------------------------+
-   | 2 meter temperature                     | 2mt_conus_fhhh.png                |
+   | 2-meter temperature                     | 2mt_conus_fhhh.png                |
    +-----------------------------------------+-----------------------------------+
-   | 2 meter dew point temperature           | 2mdew_conus_fhhh.png              |
+   | 2-meter dew point temperature           | 2mdew_conus_fhhh.png              |
    +-----------------------------------------+-----------------------------------+
-   | 10 meter winds                          | 10mwind_conus_fhhh.png            |
+   | 10-meter winds                          | 10mwind_conus_fhhh.png            |
    +-----------------------------------------+-----------------------------------+
-   | 250 hPa winds                           | 250wind_conus_fhhh.png            |
+   | 250-hPa winds                           | 250wind_conus_fhhh.png            |
    +-----------------------------------------+-----------------------------------+
-   | 500 hPa heights, winds, and vorticity   | 500_conus_fhhh.png                |
+   | 500-hPa heights, winds, and vorticity   | 500_conus_fhhh.png                |
    +-----------------------------------------+-----------------------------------+
    | Max/Min 2 - 5 km updraft helicity       | uh25_conus_fhhh.png               |
    +-----------------------------------------+-----------------------------------+
@@ -219,7 +221,8 @@ Comparing the plots is relatively straightforward since they are in ``.png`` for
    +-----------------------------------------+-----------------------------------+
    | Accumulated precipitation               | qpf_conus_fhhh.png                |
    +-----------------------------------------+-----------------------------------+
-   
+
+Users can visually compare their plots with the plots produced by NOAA developers to see how close they are. 
 
 Quantitative Forecast Comparision
 -------------------------------------
