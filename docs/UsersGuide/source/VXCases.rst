@@ -7,19 +7,20 @@ Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. In the future, additional sample cases will be added. 
 
 Each sample case contains module output from a control run, which consists of ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables. These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
-Indianapolis Severe Weather: 2019-06-16
+.. attention::
+
+   This chapter assumes that users have already built the SRW App v2.1.0 successfully. For instructions on how to do this, see the v2.1.0 release documentation on :doc:`Building the SRW App <srw_v2.1.0:BuildSRW>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will also have an easier time if they run through the out-of-the-box case described in :numref:`Chapter %s <RunSRW>` before attempting to run this sample case. 
+
+Indianapolis Severe Weather Description
 ==========================================
 
 .. COMMENT: Why only 06-16 in heading? 
 
-Description
---------------
-
-A severe weather event over the Indianapolis Metropolitan Area during the summer of 2019 resulted from a frontal passage, which led to the development of isolated severe thunderstorms that subsequently organized into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
+A severe weather event over the Indianapolis Metropolitan Area in June 2019 resulted from a frontal passage that led to the development of isolated severe thunderstorms that subsequently organized into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
 
 .. COMMENT: Edit above for clarity. 
 
@@ -31,27 +32,32 @@ There were many storm reports for this event with the majority of tornadoes and 
 Set Up Verification
 ======================
 
-Follow the instructions below to reproduce this event using your own model setup! Make sure to install the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline of comparison. 
+Follow the instructions below to reproduce this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline of comparison. 
+
+.. _GetSampleData:
 
 Get Data
 -----------
 
+.. COMMENT: Does the Indy-Severe-Weather.tgz file contain all the fix files and other stuff required for running this? Or just the output/plots?
+
 Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
-   * Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
-   * From a terminal using the AWS command line interface (cli) if installed:
+   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
+
+   #. Download from a terminal using the AWS command line interface (cli) if installed:
 
       .. code-block:: console
 
          aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
    
-   * From a terminal using wget: 
+   #. Download from a terminal using wget: 
 
       .. code-block:: console
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-After downloading, untar the downloaded compressed archive file: 
+After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
 .. code-block:: console
 
@@ -67,7 +73,7 @@ Record the path to this file output using the ``pwd`` command:
 Configure the Verification Sample Case
 --------------------------------------------
 
-Follow the instructions in :numref:`Section %s <UserSpecificConfig>` to set up the configuration file (``config.yaml``). First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
+First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
 
 .. code-block:: console
 
@@ -76,56 +82,54 @@ Follow the instructions in :numref:`Section %s <UserSpecificConfig>` to set up t
    
 where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
    
-Then, edit the ``config.yaml`` file substituting values in ``<>`` with values appropriate to your system. 
-   
+Then, edit the configuration file (``config.yaml``) to match the sample configuration file below. Make sure to substitute values in ``<>`` with values appropriate to your system.  
+
 .. note::
    Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
-   
-   .. note::
-      To open a file, users may run the command: 
 
-      .. code-block::console
+.. code-block:: console
 
-         vi config.yaml
-         
-      To close and save, hit the ``esc`` key and type ``:wq``.
+   user:
+      ACCOUNT: <my_account>
+   platform:
+      MODEL: FV3_GFS_v16_SUBCONUS_3km
+      MET_INSTALL_DIR: </path/to/met/x.x.x>           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
+      METPLUS_PATH: </path/to/METplus/METplus-x.x.x>  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
+      # Add MET_BIN_EXEC variable to config.yaml
+      MET_BIN_EXEC: bin
+      CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
+      MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
+      NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
+   workflow:
+      EXPT_SUBDIR: <any_name_you_like>
+      DATE_FIRST_CYCL: '2019061500'
+      DATE_LAST_CYCL: '2019061500'
+      FCST_LEN_HRS: 60
+   workflow_switches:
+      RUN_TASK_VX_GRIDSTAT: true
+      RUN_TASK_VX_POINTSTAT: true
+   task_get_extrn_ics:
+      # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+      USE_USER_STAGED_EXTRN_FILES: true
+   task_get_extrn_lbcs:
+      # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+      USE_USER_STAGED_EXTRN_FILES: true
+   task_run_fcst:
+      WTIME_RUN_FCST: 03:00:00
+      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
 
-      Users may opt to use their preferred code editor and should modify the commands above accordingly. 
-            
+.. hint::
+   To open the configuration file in the command line, users may run the command: 
+
    .. code-block:: console
 
-      user:
-         ACCOUNT: <my_account>
-      platform:
-         MODEL: FV3_GFS_v16_SUBCONUS_3km
-         # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-         MET_INSTALL_DIR: </path/to/met/x.x.x>
-         # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-         METPLUS_PATH: </path/to/METplus/METplus-x.x.x>
-         # Add MET_BIN_EXEC variable to config.yaml
-         MET_BIN_EXEC: bin
-         CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
-         MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
-         NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
-      workflow:
-         EXPT_SUBDIR: <any_name_you_like>
-         DATE_FIRST_CYCL: '2019061500'
-         DATE_LAST_CYCL: '2019061500'
-         FCST_LEN_HRS: 60
-      workflow_switches:
-         RUN_TASK_VX_GRIDSTAT: true
-         RUN_TASK_VX_POINTSTAT: true
-      task_get_extrn_ics:
-         # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
-         USE_USER_STAGED_EXTRN_FILES: true
-      task_get_extrn_lbcs:
-         # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
-         USE_USER_STAGED_EXTRN_FILES: true
-      task_run_fcst:
-         WTIME_RUN_FCST: 03:00:00
-         PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+      vi config.yaml
+         
+   To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
+
+For additional configuration guidance, refer to :numref:`Section %s <UserSpecificConfig>`.
 
 Load the Regional Workflow
 -----------------------------
@@ -134,14 +138,16 @@ Once the changes to ``config.yaml`` are complete, load the regional workflow env
 
 .. code-block:: console
    
+   source <path/to/etc/lmod-setup.sh>
    module use </path/to/ufs-srweather-app/modulefiles>
    module load wflow_<platform>
 
+Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
 
 Generate the Experiment
 ---------------------------
 
-Generate the experiment by running this command from the ush directory:
+Generate the experiment by running this command from the ``ush`` directory:
 
 .. code-block:: console
    
@@ -164,21 +170,28 @@ To check progress, run:
 
    tail -n 40 log.launch_FV3LAM_wflow
 
-Refer to :ref:` Chapter %s: Rocoto <RocotoInfo>` if you run into any issues with this experiment. See :numref:`Section %s <RestartTask>` if a task goes DEAD. 
+Users who prefer to automate the workflow via :term:`crontab` or who need guidance for running without the Rocoto workflow manager should refer to :numref:`Section %s <Run>` for these options. 
 
-Set Up Plots
+If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem and refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
+
+Generate Plots
 ---------------
 
-The plots are created using the graphic generation script that comes with the SRW App. Instructions on how to run the script as well as information on the plots can be found here: https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/Graphics.html
+The plots are created using the graphics generation script that comes with the SRW App. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. 
 
 Compare
-----------
+===========
 
-Once your experiment has completed, you can compare it against our experiment that ran from one of our release branches. 
+Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against our forecast results. 
 
-If you do not already have the Indy-Severe-Weather tar file downloaded, please go `here <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/>`__. As mentioned earlier, this tar file contains the forecast output and plots under the ``postprd`` directory, and METplus verification files under the ``metprd`` directory. 
+The ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>` contains our forecast output and plots under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
 
-Comparing the plots is quite easy since they are in the png format and most computers can render them in their default image viewer. The following are the plots available every 6 hours for the forecast: 
+Qualitative Comparision of the Plots
+----------------------------------------
+
+Comparing the plots is relatively simple since they are in ``.png`` format, and most computers can render them in their default image viewer. :numref:`Table %s <AvailablePlots>` lists the plots that are available every 6 hours of the forecast (where ``hhh`` is replaced by the three-digit forecast hour): 
+
+.. _AvailablePlots:
 
 .. table:: Sample Indianapolis Forecast Plots
 
@@ -206,9 +219,14 @@ Comparing the plots is quite easy since they are in the png format and most comp
    | Accumulated precipitation               | qpf_conus_fhhh.png                |
    +-----------------------------------------+-----------------------------------+
    
-METplus verification STAT files provide the user the opportunity to compare their model run to a baseline using quantitative measures. The file format is ``(grid|point)_stat_PREFIX_HHMMSSL_YYYYMMDD_HHMMSSV.stat``, where PREFIX indicates the user-defined output prefix, HHMMSSL indicates the forecast lead time and YYYYMMDD_HHMMSSV indicates the forecast valid time. The following is the list of METplus output files users can use during the comparison process:
+
+Quantitative Forecast Comparision
+-------------------------------------
+
+METplus verification ``.stat`` files provide users the opportunity to compare their model run with a baseline using quantitative measures. The file format is ``(grid|point)_stat_PREFIX_HHMMSSL_YYYYMMDD_HHMMSSV.stat``, where PREFIX indicates the user-defined output prefix, HHMMSSL indicates the forecast lead time, and YYYYMMDD_HHMMSSV indicates the forecast valid time. The following is the list of METplus output files users can use during the comparison process:
 
 .. COMMENT: Explain meaning of prefix, lead time, and valid time and/or give example
+      What are the L/V in HHMMSSL/HHMMSSV?
 
 .. code-block:: console 
    
@@ -226,9 +244,9 @@ METplus verification STAT files provide the user the opportunity to compare thei
 Point STAT Files
 ^^^^^^^^^^^^^^^^^^^
 
-The point STAT files contain continuous variables like temperature, pressure, and wind speed. A description of the point STAT file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#introduction>`__. 
+The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
-The point STAT files contain quite a bit of information and could be overwhelming for the user to go through. To simplify this we suggest the users to focus on the CNT MET test which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 ‘LINE_TYPE’ of the STAT file. Look for ‘CNT’ in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
+The Point-Stat files contain a potentially overwhelming amount of information. Therefore, we recommend that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 ‘LINE_TYPE’ of the STAT file. Look for ‘CNT’ in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
 
 .. COMMENT: Use/add intersphinx to link to MET docs?
 
@@ -245,12 +263,14 @@ To narrow down the variable field even further, we suggest that users focus on t
 * A lower RMSE indicates that the model forecast value is closer to the observation value.
 * If MBIAS > 1, then the forecast is too high on average by (MBIAS - 1)%. If MBIAS < 1, then the forecast is too low on average by (1 - MBIAS)%.
 
-Grid STAT Files
+Grid-Stat Files
 ^^^^^^^^^^^^^^^^^^^
 
-The grid STAT files contain gridded variables like reflectivity and precipitation. A description of the grid STAT file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/grid-stat.html#introduction>`__. 
+The Grid-Stat files contain gridded variables like reflectivity and precipitation. A description of the Grid-Stat file can be found :ref:`here <met:grid-stat>`. 
 
-As with the point STAT file, there are several MET tests and statistics in the grid STAT file. Again, to simplify this dataset we suggest that users focus on the MET tests and statistics found in the table below. As before, the MET tests are found in column 24 ‘LINE_TYPE’ of the grid STAT file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the grid STAT files look here: 11. Grid-Stat Tool — MET 10.1.2 documentation
+As with the Point-Stat file, there are several MET tests and statistics in the Grid-Stat file. Again, to simplify this dataset we suggest that users focus on the MET tests and statistics found in :numref:`Table %s <GridStatStatistics>` below. As before, the MET tests are found in column 24 ‘LINE_TYPE’ of the Grid-Stat file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the Grid-Stat files, view the :ref:`MET Grid-Stat Documentation <met:grid-stat>`.
+
+.. _GridStatStatistics:
 
 .. table:: Grid-Stat Statistics
 
@@ -268,7 +288,7 @@ As with the point STAT file, there are several MET tests and statistics in the g
 
 * If FBIAS > 1, then the event is over forecast. If FBIAS < 1, then the event is under forecast. If 1, then the forecast matched the observation.
 
-.. COMMENT: What does over or under forecast mean?
+   .. COMMENT: What does over or under forecast mean?
 
 * FSS values > 0.5 indicates a useful score. On a scale from 0 to 1 with 0 being no overlap between forecast and observation and 1 being a complete overlap.
 * FAR ranges from 0 to 1; a perfect forecast would have FAR = 0 with 1 indicating no skill in the forecast.
