@@ -77,7 +77,7 @@ cpl_aqm_parm:
   AQM_LBCS_DIR: /work/noaa/fv3-cam/RRFS_CMAQ/LBCS/boundary_conditions_v4
   AQM_LBCS_FILES: gfs_bndy_chem_<MM>.tile7.000.nc
   AQM_GEFS_DIR: /work/noaa/fv3-cam/RRFS_CMAQ/GEFS_aerosol
-  NUM_SPLIT_NEXUS: 1
+  NUM_SPLIT_NEXUS: 2
   NEXUS_INPUT_DIR: /work/noaa/fv3-cam/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /work/noaa/fv3-cam/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_GSD_HRRR_25km.nc

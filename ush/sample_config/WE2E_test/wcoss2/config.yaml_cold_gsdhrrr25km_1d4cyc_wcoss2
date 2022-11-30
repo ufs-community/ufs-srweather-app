@@ -76,5 +76,5 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_GSD_HRRR_25km.nc
-  NUM_SPLIT_NEXUS: 1
+  NUM_SPLIT_NEXUS: 2
 

@@ -85,6 +85,6 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_793.nc
-  NUM_SPLIT_NEXUS: 1
+  NUM_SPLIT_NEXUS: 2
 #  COLDSTART: false
 #  WARMSTART_CYCLE_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/restart/RRFS_CONUS_13km/2019080612
