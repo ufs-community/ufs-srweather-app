@@ -567,13 +567,19 @@ POST_STEP
 # Move RESTART directory to COMIN and create symlink in DATA only for
 # NCO mode and when it is not empty.
 #
+# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ
+#
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
   rm_vrfy -rf "${COMIN}/RESTART"
-  if [ "$(ls -A RESTART)" ]; then
-    mv_vrfy RESTART ${COMIN}
+  if [ "$(ls -A ${DATA}/RESTART)" ]; then
+    mv_vrfy ${DATA}/RESTART ${COMIN}
     ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+  fi
+
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
   fi
 fi
 #

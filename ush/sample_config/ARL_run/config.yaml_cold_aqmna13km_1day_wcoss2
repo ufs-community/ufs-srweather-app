@@ -10,10 +10,8 @@ workflow:
   EXPT_BASEDIR: /lfs/h2/oar/ptmp/Patrick.C.Campbell/expt_dirs
   EXPT_SUBDIR: aqm_cold_aqmna13_1day
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
-  DATE_FIRST_CYCL: '20190805'
-  DATE_LAST_CYCL: '20190805'
-  CYCL_HRS:
-    - 12
+  DATE_FIRST_CYCL: '2019080512'
+  DATE_LAST_CYCL: '2019080512'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
@@ -77,6 +75,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
+  DO_AQM_PRODUCT: true
   AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/RRFS_NA13km_GEOS5_v2
   AQM_LBCS_FILES: geos5_bndy_v2.c793.2013<MM>.nc
   AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_aerosol

@@ -76,6 +76,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: GBBEPx_C401GRID.emissions_v003
   AQM_FIRE_FILE_SUFFIX: .nc
   AQM_RC_FIRE_FREQUENCY: static
+  DO_AQM_PRODUCT: true
   AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/boundary_conditions_v4
   AQM_LBCS_FILES: gfs_bndy_chem_<MM>.tile7.000.nc
   AQM_GEFS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_aerosol

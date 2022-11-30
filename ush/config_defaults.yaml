@@ -2312,10 +2312,19 @@ cpl_aqm_parm:
 # 
 # AQM_FIRE_FILE_SUFFIX:
 # Suffix and extension of AQM FIRE file
-# 
+#
 # AQM_RC_FIRE_FREQUENCY:
 # Fire frequency in aqm.rc
 # 
+# DO_AQM_PRODUCT
+# Flag turning on/off AQM output products in AQM_RC
+#
+# AQM_RC_PRODUCT_FN:
+# File name of AQM output products
+#
+# AQM_RC_PRODUCT_FREQUENCY:
+# Frequency of AQM output products
+#
 # AQM_LBCS_DIR:
 # Path to the directory containing chemical LBC files
 # 
@@ -2372,6 +2381,10 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
   AQM_RC_FIRE_FREQUENCY: "static"
+  DO_AQM_PRODUCT: true
+  AQM_RC_PRODUCT_FN: "aqm.prod.nc"
+  AQM_RC_PRODUCT_FREQUENCY: "hourly"
+
   AQM_LBCS_DIR: ""
   AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
   AQM_GEFS_DIR: ""

@@ -81,6 +81,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     settings = {
         "do_aqm_fengsha": DO_AQM_FENGSHA,
         "do_aqm_canopy": DO_AQM_CANOPY,
+        "do_aqm_product": DO_AQM_PRODUCT,
         "aqm_config_dir": AQM_CONFIG_DIR,
         "init_concentrations": init_concentrations,
         "aqm_rc_bio_file_fp": aqm_rc_bio_file_fp,
@@ -88,7 +89,9 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         "aqm_rc_fire_file_fp": aqm_rc_fire_file_fp,
         "aqm_rc_fire_frequency": AQM_RC_FIRE_FREQUENCY,
         "aqm_rc_fengsha_file_fp": aqm_rc_fengsha_file_fp,
-        "aqm_rc_canopy_file_fp": aqm_rc_canopy_file_fp
+        "aqm_rc_canopy_file_fp": aqm_rc_canopy_file_fp,
+        "aqm_rc_product_fn": AQM_RC_PRODUCT_FN,
+        "aqm_rc_product_frequency": AQM_RC_PRODUCT_FREQUENCY
     }
     settings_str = cfg_to_yaml_str(settings)
     

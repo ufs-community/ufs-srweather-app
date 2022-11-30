@@ -74,6 +74,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_rrfs_13km
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
+  DO_AQM_PRODUCT: true
   AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/RRFS_CONUS_13km_no_blending
   AQM_LBCS_FILES: gfs_bndy_chem_<MM>.tile7.000.nc
   AQM_GEFS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_aerosol
