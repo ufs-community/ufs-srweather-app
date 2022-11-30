@@ -246,7 +246,7 @@ The Point-Stat files contain continuous variables like temperature, pressure, an
 
 The Point-Stat files contain a potentially overwhelming amount of information. Therefore, we recommend that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 ‘LINE_TYPE’ of the STAT file. Look for ‘CNT’ in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
 
-.. COMMENT: Use/add intersphinx to link to MET docs?
+.. COMMENT: Use/add intersphinx to link to MET docs? Remove "we" language
 
 To narrow down the variable field even further, we suggest that users focus on these weather variables: 
 
@@ -259,14 +259,16 @@ To narrow down the variable field even further, we suggest that users focus on t
 **Interpretation:**
 
 * A lower RMSE indicates that the model forecast value is closer to the observation value.
-* If MBIAS > 1, then the forecast is too high on average by (MBIAS - 1)%. If MBIAS < 1, then the forecast is too low on average by (1 - MBIAS)%.
+* If MBIAS > 1, then the value for a given forecast variable is too high on average by (MBIAS - 1)%. If MBIAS < 1, then the forecasted value is too low on average by (1 - MBIAS)%.
 
 Grid-Stat Files
 ^^^^^^^^^^^^^^^^^^^
 
 The Grid-Stat files contain gridded variables like reflectivity and precipitation. A description of the Grid-Stat file can be found :ref:`here <met:grid-stat>`. 
 
-As with the Point-Stat file, there are several MET tests and statistics in the Grid-Stat file. Again, to simplify this dataset we suggest that users focus on the MET tests and statistics found in :numref:`Table %s <GridStatStatistics>` below. As before, the MET tests are found in column 24 ‘LINE_TYPE’ of the Grid-Stat file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the Grid-Stat files, view the :ref:`MET Grid-Stat Documentation <met:grid-stat>`.
+As with the Point-Stat file, there are several MET tests and statistics available in the Grid-Stat file. To simplify this dataset we suggest that users focus on the MET tests and statistics found in :numref:`Table %s <GridStatStatistics>` below. The MET tests are found in column 24 ‘LINE_TYPE’ of the Grid-Stat file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the Grid-Stat files, view the :ref:`MET Grid-Stat Documentation <met:grid-stat>`.
+
+.. COMMENT: Remove "we" language
 
 .. _GridStatStatistics:
 
@@ -288,6 +290,6 @@ As with the Point-Stat file, there are several MET tests and statistics in the G
 
    .. COMMENT: What does over or under forecast mean?
 
-* FSS values > 0.5 indicates a useful score. On a scale from 0 to 1 with 0 being no overlap between forecast and observation and 1 being a complete overlap.
-* FAR ranges from 0 to 1; a perfect forecast would have FAR = 0 with 1 indicating no skill in the forecast.
-* CSI ranges from 0 to 1, with 1 being a perfect forecast and 0 representing no skill in the forecast.
+* FSS values > 0.5 indicates a useful score. FSS values range from 0 to 1, where with 0 means that there is no overlap between the forecast and observation, and 1 means that the forecast and observation are the same (i.e., complete overlap).
+* FAR ranges from 0 to 1; 0 indicates a perfect forecast, and 1 indicates no skill in the forecast.
+* CSI ranges from 0 to 1; 1 indicates a perfect forecast, and 0 represents no skill in the forecast.
