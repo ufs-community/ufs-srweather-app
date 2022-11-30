@@ -227,7 +227,7 @@ Users can visually compare their plots with the plots produced by NOAA developer
 Quantitative Forecast Comparision
 -------------------------------------
 
-METplus verification ``.stat`` files provide users the opportunity to compare their model run with a baseline using quantitative measures. The file format is ``(grid|point)_stat_PREFIX_HHMMSSL_YYYYMMDD_HHMMSSV.stat``, where PREFIX indicates the user-defined output prefix, HHMMSSL indicates the forecast *lead time*, and YYYYMMDD_HHMMSSV indicates the forecast *valid time*. For example, the ``.stat`` file for the 30th hour of a forecast starting at midnight (00Z) on June 15, 2019 would be:
+METplus verification ``.stat`` files provide users the opportunity to compare their model run with a baseline using quantitative measures. The file format is ``(grid|point)_stat_PREFIX_HHMMSSL_YYYYMMDD_HHMMSSV.stat``, where PREFIX indicates the user-defined output prefix, HHMMSSL indicates the forecast *lead time*, and YYYYMMDD_HHMMSSV indicates the forecast *valid time*. For example, one of the ``.stat`` files for the 30th hour of a forecast starting at midnight (00Z) on June 15, 2019 would be:
 
 .. code-block:: console
 
@@ -235,16 +235,17 @@ METplus verification ``.stat`` files provide users the opportunity to compare th
 
 The 30th hour of the forecast occurs at 6am (06Z) on June 16, 2019. The lead time is 30 hours (300000L in HHMMSSL format) because this is the 30th hour of the forecast. The valid time is 06Z (060000V in HHMMSSV format).
 
-The following is the list of METplus output files users can use during the comparison process:
+The following is the list of METplus output files users can reference during the comparison process:
 
 .. code-block:: console 
    
+   # Point-Stat Files
    point_stat_FV3_GFS_v16_SUBCONUS_3km_NDAS_ADPSFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
    point_stat_FV3_GFS_v16_SUBCONUS_3km_NDAS_ADPUPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
 
+   # Grid-Stat Files
    grid_stat_FV3_GFS_v16_SUBCONUS_3km_REFC_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
    grid_stat_FV3_GFS_v16_SUBCONUS_3km_RETOP_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-
    grid_stat_FV3_GFS_v16_SUBCONUS_3km_APCP_01h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
    grid_stat_FV3_GFS_v16_SUBCONUS_3km_APCP_03h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
    grid_stat_FV3_GFS_v16_SUBCONUS_3km_APCP_06h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
@@ -256,9 +257,9 @@ Point STAT Files
 
 The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
-The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the STAT file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
+The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
 
-To narrow down the variable field even further, we suggest that users focus on these weather variables: 
+To narrow down the variable field even further, users can focus on these weather variables: 
 
    * 250 mb - wind speed, temperature
    * 500 mb - wind speed, temperature
@@ -294,7 +295,7 @@ As with the Point-Stat file, there are several MET tests and statistics availabl
 
 **Interpretation:**
 
-* If FBIAS > 1, then the event is over forecast, meaning that the prediction for a particular variable (e.g., precipitation, wind speed) was higher than the observed value. If FBIAS < 1, then the event is under forecast, so the predicted value was lower than the observed value. If FBIAS = 1, then the forecast matched the observation.
-* FSS values > 0.5 indicates a useful score. FSS values range from 0 to 1, where with 0 means that there is no overlap between the forecast and observation, and 1 means that the forecast and observation are the same (i.e., complete overlap).
+* If FBIAS > 1, then the event is over forecast, meaning that the prediction for a particular variable (e.g., precipitation, reflectivity) was higher than the observed value. If FBIAS < 1, then the event is under forecast, so the predicted value was lower than the observed value. If FBIAS = 1, then the forecast matched the observation.
+* FSS values > 0.5 indicate a useful score. FSS values range from 0 to 1, where 0 means that there is no overlap between the forecast and observation, and 1 means that the forecast and observation are the same (complete overlap).
 * FAR ranges from 0 to 1; 0 indicates a perfect forecast, and 1 indicates no skill in the forecast.
 * CSI ranges from 0 to 1; 1 indicates a perfect forecast, and 0 represents no skill in the forecast.
