@@ -7,22 +7,18 @@ Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. In the future, additional sample cases will be added. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. In the future, additional sample cases will be provided. 
 
-Each sample case contains module output from a control run, which consists of ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables. These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
+Each sample case contains module output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables. These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
 .. attention::
 
-   This chapter assumes that users have already built the SRW App v2.1.0 successfully. For instructions on how to do this, see the v2.1.0 release documentation on :doc:`Building the SRW App <srw_v2.1.0:BuildSRW>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will also have an easier time if they run through the out-of-the-box case described in :numref:`Chapter %s <RunSRW>` before attempting to run this sample case. 
+   This chapter assumes that users have already built the SRW App v2.1.0 successfully. For instructions on how to do this, see the v2.1.0 release documentation on :ref:`Building the SRW App <srw_v2.1.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will also have an easier time if they run through the out-of-the-box case described in :numref:`Chapter %s <RunSRW>` before attempting to run any verification sample cases. 
 
 Indianapolis Severe Weather Description
 ==========================================
 
-.. COMMENT: Why only 06-16 in heading? 
-
-A severe weather event over the Indianapolis Metropolitan Area in June 2019 resulted from a frontal passage that led to the development of isolated severe thunderstorms that subsequently organized into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
-
-.. COMMENT: Edit above for clarity. 
+A severe weather event over the Indianapolis Metropolitan Area in June 2019 resulted from a frontal passage that led to the development of isolated severe thunderstorms. These thunderstorms subsequently congealed into a convective squall line. The frontal line was associated with a vorticity maximum originating over the northern Great Plains that moved into an unstable environment over Indianapolis. The moist air remained over the southern part of the area on the following day, when the diurnal heating caused isolated thunderstorms producing small hail.
 
 There were many storm reports for this event with the majority of tornadoes and severe winds being reported on June 15th, while more severe hail was reported on June 16th. A link to the Storm Prediction Center's Storm Reports can be found here: 
 
@@ -32,12 +28,12 @@ There were many storm reports for this event with the majority of tornadoes and 
 Set Up Verification
 ======================
 
-Follow the instructions below to reproduce this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline of comparison. 
+Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
 
 .. _GetSampleData:
 
-Get Data
------------
+Download Data
+----------------
 
 .. COMMENT: Does the Indy-Severe-Weather.tgz file contain all the fix files and other stuff required for running this? Or just the output/plots?
 
@@ -45,7 +41,7 @@ Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods
 
    #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
 
-   #. Download from a terminal using the AWS command line interface (cli) if installed:
+   #. Download from a terminal using the AWS command line interface (CLI) if installed:
 
       .. code-block:: console
 
@@ -69,11 +65,24 @@ Record the path to this file output using the ``pwd`` command:
 
    cd Indy-Severe-Weather
    pwd
+
+Load the Regional Workflow
+-----------------------------
+
+First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional workflow environment:
+
+.. code-block:: console
    
+   source <path/to/etc/lmod-setup.sh>
+   module use </path/to/ufs-srweather-app/modulefiles>
+   module load wflow_<platform>
+
+Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
+
 Configure the Verification Sample Case
 --------------------------------------------
 
-First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-the-box configuration:
+Once the regional workflow is loaded, copy the out-of-the-box configuration:
 
 .. code-block:: console
 
@@ -82,7 +91,7 @@ First, navigate to the ``ufs-srweather-app/ush`` directory and copy the out-of-t
    
 where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
    
-Then, edit the configuration file (``config.yaml``) to match the sample configuration file below. Make sure to substitute values in ``<>`` with values appropriate to your system.  
+Then, edit the configuration file (``config.yaml``) to match the sample configuration file below. Users must be sure to substitute values in ``<>`` with values appropriate to their system. Additionally, they will need to modify any values from ``config.yaml`` that are different in the example below. 
 
 .. note::
    Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
@@ -127,22 +136,9 @@ Then, edit the configuration file (``config.yaml``) to match the sample configur
 
       vi config.yaml
          
-   To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
 For additional configuration guidance, refer to :numref:`Section %s <UserSpecificConfig>`.
-
-Load the Regional Workflow
------------------------------
-
-Once the changes to ``config.yaml`` are complete, load the regional workflow environment:
-
-.. code-block:: console
-   
-   source <path/to/etc/lmod-setup.sh>
-   module use </path/to/ufs-srweather-app/modulefiles>
-   module load wflow_<platform>
-
-Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
 
 Generate the Experiment
 ---------------------------
@@ -156,7 +152,7 @@ Generate the experiment by running this command from the ``ush`` directory:
 Run the Experiment
 ----------------------
 
-Navigate (``cd``) to the experiment directory and run the launch script:
+Navigate (``cd``) to the experiment directory (``$EXPTDIR``) and run the launch script:
 
 .. code-block:: console
 
@@ -172,12 +168,12 @@ To check progress, run:
 
 Users who prefer to automate the workflow via :term:`crontab` or who need guidance for running without the Rocoto workflow manager should refer to :numref:`Section %s <Run>` for these options. 
 
-If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem and refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
+If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem. Then refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
 
 Generate Plots
 ---------------
 
-The plots are created using the graphics generation script that comes with the SRW App. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. 
+The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. 
 
 Compare
 ===========
@@ -186,10 +182,12 @@ Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end 
 
 The ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>` contains our forecast output and plots under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
 
+.. COMMENT: Fix first person "our" wording.
+
 Qualitative Comparision of the Plots
 ----------------------------------------
 
-Comparing the plots is relatively simple since they are in ``.png`` format, and most computers can render them in their default image viewer. :numref:`Table %s <AvailablePlots>` lists the plots that are available every 6 hours of the forecast (where ``hhh`` is replaced by the three-digit forecast hour): 
+Comparing the plots is relatively straightforward since they are in ``.png`` format, and most computers can render them in their default image viewer. :numref:`Table %s <AvailablePlots>` lists plots that are available every 6 hours of the forecast (where ``hhh`` is replaced by the three-digit forecast hour): 
 
 .. _AvailablePlots:
 
