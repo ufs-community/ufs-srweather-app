@@ -51,7 +51,7 @@ Download the ``Indy-Severe-Weather.tgz`` file using any of the following methods
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBCs` files, observation data, model/forecast output and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download the fix files required for SRW App forecasts. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with wget. 
+This tar file contains :term:`IC/LBCs` files, observation data, model/forecast output and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download the fix files required for SRW App forecasts and the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with wget. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -91,7 +91,7 @@ Once the regional workflow is loaded, copy the out-of-the-box configuration:
    
 where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
    
-Then, edit the configuration file (``config.yaml``) to match the sample configuration file below. Users must be sure to substitute values in ``<>`` with values appropriate to their system. Additionally, they will need to modify any values from ``config.yaml`` that are different in the example below. 
+Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
    Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
@@ -173,7 +173,12 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ---------------
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. 
+The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+
+.. code-block:: console
+
+   cd <path/to/ufs-srweather-app/ush/Python>
+   python plot_allvars.py 2019061500 0 60 6 </path-to/$EXPTDIR> /<path-to/NaturalEarth> SUBCONUS_Ind_3km
 
 Compare
 ===========
