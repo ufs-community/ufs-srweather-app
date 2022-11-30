@@ -76,9 +76,13 @@ def run_we2e_tests(HOMEdir, args) -> None:
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
-    #Load default and machine-specific values
-    config_defaults = load_config_file(USHdir + '/config_defaults.yaml')
-    machine_defaults = load_config_file(USHdir + '/machine/' + args.machine + '.yaml')
+    config_default_file = USHdir + '/config_defaults.yaml'
+    logging.debug(f"Loading config defaults file {config_default_file}")
+    config_defaults = load_config_file(config_default_file)
+
+    machine_file = USHdir + '/machine/' + args.machine + '.yaml'
+    logging.debug(f"Loading machine defaults file {machine_file}")
+    machine_defaults = load_config_file(machine_file)
 
     for test in tests_to_run:
         #Starting with test yaml template, fill in user-specified and machine- and 
@@ -110,14 +114,69 @@ def run_we2e_tests(HOMEdir, args) -> None:
         if args.verbose_tests:
             test_cfg['workflow'].update({"VERBOSE": args.verbose_tests})
 
-        
+        logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
+
+#        if 'task_get_extrn_ics' in test_cfg:
+#            check_task_get_extrn_ics(test_cfg,machine_defaults)
+#        if 'task_get_extrn_lbcs' in test_cfg:
+#            check_task_get_extrn_lbcs(test_cfg,machine_defaults)
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
         with open(USHdir + "/config.yaml","w+") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
+        logging.debug(f"Calling workflow generation function for test {test_name}\n")
+
     logging.info("calling script that monitors rocoto jobs, prints summary")
+
+def check_task_get_extrn_ics(cfg: dict, mach: dict) -> None:
+    """
+    Function for checking and overwriting various settings in task_get_extrn_ics section of test config yaml
+
+    Args:
+        cfg  : Dictionary loaded from test config file
+        mach : Dictionary loaded from machine settings file
+    Returns:
+        None
+    """
+
+    # If EXTRN_MDL_SYSBASEDIR_ICS not specified, do nothing and return
+    if 'EXTRN_MDL_SYSBASEDIR_ICS' not in cfg['task_get_extrn_ics']:
+        return
+
+    # If EXTRN_MDL_SYSBASEDIR_ICS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
+    if cfg['task_get_extrn_ics']['EXTRN_MDL_SYSBASEDIR_ICS'] == "set_to_non_default_location_in_testing_script":
+        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
+            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
+                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
+            cfg['task_get_extrn_ics']['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
+        else:
+            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
+
+def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> None:
+    """
+    Function for checking and overwriting various settings in task_get_extrn_lbcs section of test config yaml
+
+    Args:
+        cfg  : Dictionary loaded from test config file
+        mach : Dictionary loaded from machine settings file
+    Returns:
+        None
+    """
+
+    # If EXTRN_MDL_SYSBASEDIR_LBCS not specified, do nothing and return
+    if 'EXTRN_MDL_SYSBASEDIR_LBCS' not in cfg['task_get_extrn_lbcs']:
+        return
+
+    # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
+    if cfg['task_get_extrn_lbcs']['EXTRN_MDL_SYSBASEDIR_LBCS'] == "set_to_non_default_location_in_testing_script":
+        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
+            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
+                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
+            cfg['task_get_extrn_lbcs']['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
+        else:
+            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
 
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
