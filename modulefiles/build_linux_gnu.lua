@@ -19,8 +19,6 @@ load("hpc-openmpi")
 
 load("srw_common")
 
-
-
 -- Set the env. variables for the serial compilers (CC, FC, CXX)
 setenv("CC", "gcc")
 setenv("FC", "gfortran")
@@ -56,6 +54,6 @@ if mode() == "load" then
      The example below is for the GNU compilers built with OpenMPI libraries
   NB: After the module is customized, comment out the this line and lines above
   Please export env. variable LDFLAGS after the module is successfully loaded:
-       > export LDFLAGS=" -L$MPI_ROOT/lib $LDFLAGS"
+       > export LDFLAGS+=" -L$MPI_ROOT/lib "
   ]===])
 end
