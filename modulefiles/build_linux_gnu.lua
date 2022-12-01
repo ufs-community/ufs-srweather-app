@@ -17,40 +17,14 @@ load("hpc-gnu")
 load("openmpi")
 load("hpc-openmpi")
 
-load("jasper/2.0.25")
-load("zlib/1.2.11")
+load("srw_common")
 
-load("hdf5/1.10.6")
-load("netcdf/4.7.4")
-load("pio/2.5.3")
-load("esmf/8.3.0b09")
-load("fms/2022.01")
 
-load("bacio/2.4.1")
-load("crtm/2.3.0")
-load("g2/3.4.3")
-load("g2tmpl/1.10.0")
-load("ip/3.3.3")
-load("sp/2.3.3")
-load("w3nco/2.4.1")
-load("upp/10.0.10")
 
-load("gftl-shared/1.3.3")
-load("yafyaml/0.5.1")
-load("mapl/2.11.0-esmf-8.3.0b09")
-load("gfsio/1.4.1")
-load("landsfcutil/2.4.1")
-load("nemsio/2.5.2")
-load("nemsiogfs/2.5.3")
-load("sfcio/1.4.1")
-load("sigio/2.3.2")
-load("w3emc/2.7.3")
-load("wgrib2/2.0.8")
-
--- Set the env. variables for the serial compilers (CC, FC, CXX), if not present
-setenv("CC", "/usr/local/bin/gcc")
-setenv("FC", "/usr/local/bin/gfortran")
-setenv("CXX", "/usr/local/bin/g++")
+-- Set the env. variables for the serial compilers (CC, FC, CXX)
+setenv("CC", "gcc")
+setenv("FC", "gfortran")
+setenv("CXX", "g++")
 
 -- Set MPI compilers depending on the MPI libraries built:
 local MPI_CC="mpicc"
@@ -82,6 +56,6 @@ if mode() == "load" then
      The example below is for the GNU compilers built with OpenMPI libraries
   NB: After the module is customized, comment out the this line and lines above
   Please export env. variable LDFLAGS after the module is successfully loaded:
-       > export LDFLAGS=\"-L\$MPI_ROOT/lib \"
+       > export LDFLAGS=" -L$MPI_ROOT/lib $LDFLAGS"
   ]===])
 end
