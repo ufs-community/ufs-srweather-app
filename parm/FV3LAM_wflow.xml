@@ -67,6 +67,7 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_TN            "{{ vx_enspoint_tn }}">
 <!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
+<!ENTITY PLOT_ALLVARS_TN           "{{ plot_allvars_tn }}">
 
 <!--
 Flags that specify whether to run the preprocessing and/or verification tasks.
@@ -753,6 +754,44 @@ the <task> tag to be identical to the ones above for other output times.
 
   </metatask>
   {%- endif %}
+{%- endif %}
+
+{%- if run_task_plot_allvars %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&PLOT_ALLVARS_TN;" cycledefs="forecast" maxtries="{{ maxtries_plot_allvars }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&PLOT_ALLVARS_TN;" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"</command>
+    <nodes>{{ nnodes_plot_allvars }}:ppn={{ ppn_plot_allvars }}</nodes>
+    <walltime>{{ wtime_plot_allvars }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&PLOT_ALLVARS_TN;</jobname>
+    <join>&LOGDIR;/&PLOT_ALLVARS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+    <dependency>
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
+    </dependency>
+
+  </task>
 {%- endif %}
 
 {%- if run_task_get_obs_ccpa %}

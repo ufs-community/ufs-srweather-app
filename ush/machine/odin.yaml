@@ -24,9 +24,11 @@ platform:
   FIXlut: /scratch/ywang/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /scratch/ywang/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /scratch/ywang/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /scratch/ywang/UFS_SRW_App/develop/NaturalEarth
 data:
-  GSMGFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/GFS
-  FV3GFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/FV3GFS
-  HRRR: /scratch/ywang/UFS_SRW_App/develop/input_model_data/HRRR
-  RAP: /scratch/ywang/UFS_SRW_App/develop/input_model_data/RAP
-  NAM: /scratch/ywang/UFS_SRW_App/develop/input_model_data/NAM
+  ics_lbcs:
+    GSMGFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/GFS
+    FV3GFS: /scratch/ywang/UFS_SRW_App/develop/input_model_data/FV3GFS
+    HRRR: /scratch/ywang/UFS_SRW_App/develop/input_model_data/HRRR
+    RAP: /scratch/ywang/UFS_SRW_App/develop/input_model_data/RAP
+    NAM: /scratch/ywang/UFS_SRW_App/develop/input_model_data/NAM

@@ -1,0 +1,112 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "task_plot_allvars|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the plotting task
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Set grid name and COMOUT locations.
+#
+#-----------------------------------------------------------------------
+#
+GRID_NAME=${PREDEF_GRID_NAME:-$EXPT_SUBDIR}
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  export COMOUT="${COMOUT}${SLASH_ENSMEM_SUBDIR}/postprd"
+fi
+# if COMOUT_REF is templatized with $PDY and $cyc, evaluate it
+# This is necessary to compare multiple cycles correctly
+COMOUT_REF=$(eval echo ${COMOUT_REF})
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary variables.
+#
+#-----------------------------------------------------------------------
+#
+
+# plot all variables
+$SCRIPTSdir/exregional_plot_allvars.py \
+           --cycle ${CDATE} \
+           --start ${PLOT_FCST_START} \
+           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --inc ${PLOT_FCST_INC:-1} \
+           --comout ${COMOUT} \
+           --cartopy-dir ${FIXshp} \
+           --domain ${GRID_NAME} || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+
+# plot all variables diff with baseline
+if [ ! -z $COMOUT_REF ]; then
+  $SCRIPTSdir/exregional_plot_allvars_diff.py \
+           --cycle ${CDATE} \
+           --start ${PLOT_FCST_START} \
+           --end ${PLOT_FCST_END:-$FCST_LEN_HRS} \
+           --inc ${PLOT_FCST_INC:-1} \
+           --comout-1 ${COMOUT} \
+           --comout-2 ${COMOUT_REF} \
+           --cartopy-dir ${FIXshp} \
+           --domain ${GRID_NAME} || \
+  print_err_msg_exit "\
+  Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+
