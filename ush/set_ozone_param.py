@@ -134,13 +134,11 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
 class Testing(unittest.TestCase):
     def test_set_ozone_param(self):
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        self.assertEqual(
-            "ozphys_2015",
-            set_ozone_param(
-                f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
-                self.CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-            ),
+        ozone_param, _, _ = set_ozone_param(
+            f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
+            self.CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
         )
+        self.assertEqual("ozphys_2015", ozone_param)
 
     def setUp(self):
         self.CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
