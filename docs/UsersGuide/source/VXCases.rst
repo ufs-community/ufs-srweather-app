@@ -132,7 +132,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       EXTRN_MDL_SOURCE_BASEDIR_LBCS:  </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
       USE_USER_STAGED_EXTRN_FILES: true
    task_run_fcst:
-      WTIME_RUN_FCST: 03:00:00
+      WTIME_RUN_FCST: 05:00:00
       PREDEF_GRID_NAME: SUBCONUS_Ind_3km
 
 .. hint::
