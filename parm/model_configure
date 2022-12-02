@@ -13,7 +13,7 @@ dt_atmos:                {{ dt_atmos }}
 calendar:                'julian'
 memuse_verbose:          .false.
 atmos_nthreads:          {{ atmos_nthreads }}
-restart_interval:        {{ restart_interval }}  -1
+restart_interval:        {{ restart_interval }}
 output_1st_tstep_rst:    .false.
 write_dopost:            {{ write_dopost }}
 ideflate:                0
