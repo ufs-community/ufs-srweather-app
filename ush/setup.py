@@ -391,22 +391,22 @@ def setup(USHdir, user_config_fn="config.yaml"):
     except ValueError:
         logger.exception(
             f"""
-                        Check that the following values are valid:
-                        EXPTDIR {exptdir}
-                        PREEXISTING_DIR_METHOD {preexisting_dir_method}
-                        """
+            Check that the following values are valid:
+            EXPTDIR {exptdir}
+            PREEXISTING_DIR_METHOD {preexisting_dir_method}
+            """
         )
         raise
     except FileExistsError:
         errmsg = dedent(
             f"""
-                        EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
+            EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
 
-                        To ignore this error, delete the directory, or set 
-                        PREEXISTING_DIR_METHOD = delete, or
-                        PREEXISTING_DIR_METHOD = rename
-                        in your config file.
-                        """
+            To ignore this error, delete the directory, or set 
+            PREEXISTING_DIR_METHOD = delete, or
+            PREEXISTING_DIR_METHOD = rename
+            in your config file.
+            """
         )
         raise FileExistsError(errmsg) from None
 
@@ -938,6 +938,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("LOGDIR")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
     if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
 
@@ -986,20 +987,20 @@ def setup(USHdir, user_config_fn="config.yaml"):
     ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
     if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
         raise FileNotFoundError(
-            f'''
+            f"""
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
-              CCPP_PHYS_SUITE_IN_CCPP_FP = \"{ccpp_phys_suite_in_ccpp_fp}\"'''
+              CCPP_PHYS_SUITE_IN_CCPP_FP = '{ccpp_phys_suite_in_ccpp_fp}'"""
         )
 
     # Check for the field dict file
     field_dict_in_uwm_fp = workflow_config["FIELD_DICT_IN_UWM_FP"]
     if not os.path.exists(field_dict_in_uwm_fp):
         raise FileNotFoundError(
-            f'''
+            f"""
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
-              FIELD_DICT_IN_UWM_FP = \"{field_dict_in_uwm_fp}\"'''
+              FIELD_DICT_IN_UWM_FP = '{field_dict_in_uwm_fp}'"""
         )
 
 

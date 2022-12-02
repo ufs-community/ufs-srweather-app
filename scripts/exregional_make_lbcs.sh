@@ -8,7 +8,6 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-set -x
 source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -65,8 +64,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-
-set -x
 
 nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))
 
