@@ -206,6 +206,7 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {
    'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
    'met': ('https://met.readthedocs.io/en/latest/', None),
+   'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
 }
 
 # -- Options for todo extension ----------------------------------------------
