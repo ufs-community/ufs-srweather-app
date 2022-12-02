@@ -491,7 +491,7 @@ class Testing(unittest.TestCase):
             iend_of_t7_on_t6g=84,
             jstart_of_t7_on_t6g=17,
             jend_of_t7_on_t6g=80,
-            run_env="community",
+            run_envir="community",
             verbose=True,
             nh4=4,
         )

@@ -54,7 +54,8 @@ class Testing(unittest.TestCase):
         )
         params_dict = set_predef_grid_params(
             ushdir,
-            fcst_config,
+            fcst_config["PREDEF_GRID_NAME"],
+            fcst_config["QUILTING"],
         )
         self.assertEqual(params_dict["GRID_GEN_METHOD"], "ESGgrid")
         self.assertEqual(params_dict["ESGgrid_LON_CTR"], -97.5)
@@ -68,6 +69,7 @@ class Testing(unittest.TestCase):
         )
         params_dict = set_predef_grid_params(
             ushdir,
-            fcst_config,
+            fcst_config["PREDEF_GRID_NAME"],
+            fcst_config["QUILTING"],
         )
         self.assertEqual(params_dict["WRTCMP_nx"], 1799)
