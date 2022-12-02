@@ -25,11 +25,13 @@ platform:
   FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
-  GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
-  FV3GFS: compath.py ${envir}/gfs/${gfs_ver}/gfs.${PDYext}/${cycext}/atmos
-  RAP: compath.py ${envir}/rap/${rap_ver}/rap.${PDYext}
-  NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDYext}
-  HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
+  ics_lbcs:
+    GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
+    FV3GFS: compath.py ${envir}/gfs/${gfs_ver}/gfs.${PDYext}/${cycext}/atmos
+    RAP: compath.py ${envir}/rap/${rap_ver}/rap.${PDYext}
+    NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDYext}
+    HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 

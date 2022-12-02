@@ -467,8 +467,9 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
     def get_location(xcs, fmt, expt_cfg):
-        if ("data" in expt_cfg) and (xcs in expt_cfg["data"]):
-            v = expt_cfg["data"][xcs]
+        ics_lbcs = expt_cfg.get("data", {}).get("ics_lbcs")
+        if ics_lbcs is not None:
+            v = ics_lbcs[xcs]
             if not isinstance(v, dict):
                 return v
             else:

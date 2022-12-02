@@ -30,11 +30,13 @@ platform:
   FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
-  FV3GFS:
-    nemsio: /public/data/grids/gfs/nemsio
-    grib2: /public/data/grids/gfs/0p25deg/grib2
-    netcdf: /public/data/grids/gfs/anl/netcdf
-  RAP: /public/data/grids/rap/full/wrfprs/grib2
-  HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
+  ics_lbcs:
+    FV3GFS:
+      nemsio: /public/data/grids/gfs/nemsio
+      grib2: /public/data/grids/gfs/0p25deg/grib2
+      netcdf: /public/data/grids/gfs/anl/netcdf
+    RAP: /public/data/grids/rap/full/wrfprs/grib2
+    HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2

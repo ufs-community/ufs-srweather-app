@@ -24,9 +24,11 @@ platform:
   FIXlut: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/NaturalEarth
 data:
-  GSMGFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/GFS
-  FV3GFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/FV3GFS
-  HRRR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/HRRR
-  RAP: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/RAP
-  NAM: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/NAM
+  ics_lbcs:
+    GSMGFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/GFS
+    FV3GFS: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/FV3GFS
+    HRRR: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/HRRR
+    RAP: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/RAP
+    NAM: /work2/00315/tg455890/stampede2/UFS_SRW_App/develop/input_model_data/NAM
