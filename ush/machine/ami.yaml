@@ -2,26 +2,26 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 36
   SCHED: slurm
-  CCPA_OBS_DIR: /opt/EPIC/UFS_SRW_App/v2p1/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /opt/EPIC/UFS_SRW_App/v2p1/obs_data/mrms/proc
-  NDAS_OBS_DIR: /opt/EPIC/UFS_SRW_App/v2p1/obs_data/ndas/proc
-  METPLUS_PATH: /opt/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/metplus
+  CCPA_OBS_DIR: /data/EPIC/UFS_SRW_App/v2p1/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /data/EPIC/UFS_SRW_App/v2p1/obs_data/mrms/proc
+  NDAS_OBS_DIR: /data/EPIC/UFS_SRW_App/v2p1/obs_data/ndas/proc
+  METPLUS_PATH: /data/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/metplus
   MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /opt/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/met
+  MET_INSTALL_DIR: /data/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/met
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -np $nprocs
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /opt/EPIC/UFS_SRW_App/v2p1/input_model_data
-  TEST_PREGEN_BASEDIR: /opt/EPIC/UFS_SRW_App/v2p1/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /opt/EPIC/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /opt/EPIC/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /data/EPIC/UFS_SRW_App/v2p1/input_model_data
+  TEST_PREGEN_BASEDIR: /data/EPIC/UFS_SRW_App/v2p1/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /data/EPIC/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /data/EPIC/UFS_SRW_App/v2p1/dummy_FV3GFS_sys_dir
 task_make_orog:
-  TOPO_DIR: /opt/EPIC/UFS_SRW_App/v2p1/fix/fix_orog
+  TOPO_DIR: /data/EPIC/UFS_SRW_App/v2p1/fix/fix_orog
 task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /opt/EPIC/UFS_SRW_App/v2p1/fix/fix_sfc_climo
+  SFC_CLIMO_INPUT_DIR: /data/EPIC/UFS_SRW_App/v2p1/fix/fix_sfc_climo
   NNODES_MAKE_SFC_CLIMO: 1
 task_get_extrn_ics:
   EXTRN_MDL_DATA_STORES: aws nomads
@@ -36,9 +36,9 @@ task_make_lbcs:
   NNODES_MAKE_LBCS: 1
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
-  FIXaer: /opt/EPIC/UFS_SRW_App/v2p1/fix/fix_aer
-  FIXgsm: /opt/EPIC/UFS_SRW_App/v2p1/fix/fix_am
-  FIXlut: /opt/EPIC/UFS_SRW_App/v2p1/fix/fix_lut
+  FIXaer: /data/EPIC/UFS_SRW_App/v2p1/fix/fix_aer
+  FIXgsm: /data/EPIC/UFS_SRW_App/v2p1/fix/fix_am
+  FIXlut: /data/EPIC/UFS_SRW_App/v2p1/fix/fix_lut
   WRITE_DOPOST: TRUE
   PPN_RUN_FCST: 36
   OMP_NUM_THREADS_RUN_FCST: 1
@@ -47,5 +47,3 @@ task_run_fcst:
   WRTCMP_write_tasks_per_group: 4
 task_run_post:
   NNODES_RUN_POST: 1
-data:
-  FV3GFS: /opt/GST/model_data/FV3GFS/${yyyymmdd}${hh}

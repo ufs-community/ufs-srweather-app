@@ -1,1 +1,1 @@
-prepend_path("PATH", "/contrib/EPIC/miniconda3/4.12.0/envs/regional_workflow/bin")
+prepend_path("PATH", "/home/ubuntu/.conda/envs/regional_workflow/bin")

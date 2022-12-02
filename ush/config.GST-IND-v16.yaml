@@ -1,17 +1,17 @@
-metadata:
+metahome/ubuntu:
   description: This test is to ensure that the workflow running in community mode
     completes successfully on the SUBCONUS_Ind_3km grid using the GFS_v16 physics
     suite with ICs and LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: community
-  MACHINE: NOAACLOUD
+  MACHINE: AMI
   ACCOUNT: none
 platform:
-  BUILD_MOD_FN: build_noaacloud_intel
+  BUILD_MOD_FN: build_ami_intel
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 1
-  EXPT_BASEDIR: /lustre/GST_test
+  EXPT_BASEDIR: /home/ubuntu/GST_test
   EXPT_SUBDIR: grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019061518'
@@ -32,7 +32,7 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /data/EPIC/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
   EXTRN_MDL_FILES_ICS: []
   EXTRN_MDL_DATA_STORES: disk
 task_get_extrn_lbcs:
@@ -41,7 +41,7 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /data/EPIC/UFS_SRW_App/v2p1/input_model_data/FV3GFS/grib2/${yyyymmddhh}
   EXTRN_MDL_FILES_LBCS: []
   EXTRN_MDL_DATA_STORES: disk
 task_make_ics:

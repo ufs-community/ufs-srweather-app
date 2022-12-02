@@ -1,5 +1,6 @@
 #!/bin/bash
-
+sudo ln -s /data/spack-stack /opt/spack-stack
+sudo ln -s /home/ubuntu/EPIC /opt/EPIC
 #
 #-----------------------------------------------------------------------
 #
