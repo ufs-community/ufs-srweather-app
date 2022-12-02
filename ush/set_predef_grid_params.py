@@ -10,21 +10,20 @@ from python_utils import (
 )
 
 
-def set_predef_grid_params(USHdir, fcst_config):
+def set_predef_grid_params(USHdir, grid_name, quilting):
     """Sets grid parameters for the specified predfined grid
 
     Args:
         USHdir:      path to the SRW ush directory
-        fcst_config: dict containing grid settings
+        grid_name    str specifying the predefined grid name.
+        quilting:    bool whether quiliting should be used for output
     Returns:
         Dictionary of grid parameters
     """
-    predef_grid_name = fcst_config["PREDEF_GRID_NAME"]
-    quilting = fcst_config["QUILTING"]
 
     params_dict = load_config_file(os.path.join(USHdir, "predef_grid_params.yaml"))
     try:
-        params_dict = params_dict[predef_grid_name]
+        params_dict = params_dict[grid_name]
     except KeyError:
         errmsg = dedent(
             f"""

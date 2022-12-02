@@ -577,6 +577,7 @@ def cfg_main():
     args = parser.parse_args()
     cfg = load_config_file(args.cfg, 2)
 
+
     if args.validate:
         cfg_t = load_config_file(args.validate, 1)
         r = check_structure_dict(cfg, cfg_t)

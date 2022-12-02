@@ -361,7 +361,7 @@ MODULES_RUN_TASK_FP script.
 {%- if do_ensemble %}
   <metatask name="run_ensemble">
 
-    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d" }}{% endfor %}</var>
+    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
 
 {%- endif %}
 

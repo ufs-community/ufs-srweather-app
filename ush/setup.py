@@ -533,14 +533,22 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # Gather the pre-defined grid parameters, if needed
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
-    if fcst_config.get("PREDEF_GRID_NAME"):
-        grid_params = set_predef_grid_params(USHdir, fcst_config)
+    if workflow_config.get("PREDEF_GRID_NAME"):
+        grid_params = set_predef_grid_params(
+                USHdir,
+                workflow_config['PREDEF_GRID_NAME'],
+                fcst_config['QUILTING'],
+                )
 
         # Users like to change these variables, so don't overwrite them
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
             if param in special_vars:
-                if fcst_config.get(param) and "{{" not in fcst_config.get(param):
+                param_val = fcst_config.get(param)
+                if param_val and isinstance(param_val, str) and \
+                    "{{" not in param_val:
+                    continue
+                elif isinstance(param_val, (int, float)):
                     continue
                 else:
                     fcst_config[param] = value
@@ -551,6 +559,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
             else:
                 grid_config[param] = value
 
+    run_envir = expt_config["user"].get("RUN_ENVIR", "")
     #
     # -----------------------------------------------------------------------
     #
@@ -870,7 +879,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
             )
 
     # Make sure the post output domain is set
-    predef_grid_name = fcst_config.get("PREDEF_GRID_NAME")
+    predef_grid_name = workflow_config.get("PREDEF_GRID_NAME")
     post_output_domain_name = post_config.get("POST_OUTPUT_DOMAIN_NAME")
 
     if not post_output_domain_name:
@@ -896,7 +905,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
     # These NCO variables need to be set based on the user's specificed
     # run environment. The default is set in config_defaults for nco. If
@@ -918,6 +926,8 @@ def setup(USHdir, user_config_fn="config.yaml"):
         # Put the variables in config dict.
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
+
+        nco_config["LOGDIR"] = os.path.join(exptdir, "log")
 
     # create NCO directories
     if run_envir == "nco":
@@ -1087,7 +1097,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 target_dir=workflow_config["FIXlam"],
                 ccpp_phys_suite=workflow_config["CCPP_PHYS_SUITE"],
                 constants=expt_config["constants"],
-                dot_or_underscore=workflow_config["DOT_OR_USCORE"],
+                dot_or_uscore=workflow_config["DOT_OR_USCORE"],
                 nhw=grid_params["NHW"],
                 run_task=False,
                 sfc_climo_fields=fixed_files["SFC_CLIMO_FIELDS"],
@@ -1197,10 +1207,10 @@ def setup(USHdir, user_config_fn="config.yaml"):
     workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
     if use_thompson:
-        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(
             mapping
         )
-        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].append(fix_files)
+        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fix_files)
 
         log_info(
             f"""
@@ -1212,7 +1222,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
             CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
             values of these parameters are as follows:
 
-            CCPP_PHYS_SUITE = \"{CCPP_PHYS_SUITE}\"
+            CCPP_PHYS_SUITE = \"{workflow_config["CCPP_PHYS_SUITE"]}\"
             """
         )
         log_info(

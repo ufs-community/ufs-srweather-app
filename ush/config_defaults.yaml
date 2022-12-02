@@ -159,10 +159,10 @@ platform:
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
   LMOD_PATH: ""
-  BUILD_MOD_FN: "build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}"
-  WFLOW_MOD_FN: "wflow_{{ user.MACHINE|lower() }}"
-  BUILD_VER_FN: "build.ver.{{ user.MACHINE|lower() }}"
-  RUN_VER_FN: "run.ver.{{ user.MACHINE|lower() }}"
+  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
+  WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
+  BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
+  RUN_VER_FN: 'run.ver.{{ user.MACHINE|lower() }}'
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -419,7 +419,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  CPL: "{{ workflow.FCST_MODEL == 'fv3gfs_aqm' }}"
+  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -440,7 +440,7 @@ workflow:
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   CRONTAB_LINE: ""
-  LOAD_MODULES_RUN_TASK_FP: "{{ [user.USHdir, 'load_modules_run_task.sh']|path_join}}"
+  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
 
   #
   #-----------------------------------------------------------------------
@@ -467,10 +467,10 @@ workflow:
   # installed.
   #-----------------------------------------------------------------------
   #
-  EXPT_BASEDIR: "{{ workflow.EXPT_BASEDIR }}"
-  EXPT_SUBDIR: "{{ EXPT_SUBDIR }}"
+  EXPT_BASEDIR: '{{ workflow.EXPT_BASEDIR }}'
+  EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
-  EXPTDIR: "{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join}}"
+  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -591,24 +591,24 @@ workflow:
   DATA_TABLE_FN: "data_table"
   DIAG_TABLE_FN: "diag_table"
   FIELD_TABLE_FN: "field_table"
-  DIAG_TABLE_TMPL_FN: "diag_table.{{ CCPP_PHYS_SUITE }}"
-  FIELD_TABLE_TMPL_FN: "field_table.{{ CCPP_PHYS_SUITE }}"
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
   NEMS_CONFIG_FN: "nems.configure"
 
-  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join}}'
-  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join}}'
-  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join}}'
-  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join}}'
-  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join}}'
-  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join}}'
-  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join}}'
-  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join}}'
+  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
+  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
+  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
+  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
 
   # These are staged in the exptdir at configuration time
-  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join}}'
-  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join}}'
-  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join}}'
+  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
+  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
+  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
@@ -618,9 +618,9 @@ workflow:
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
 
-  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join}}'
-  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join}}'
-  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join}}'
+  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
+  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -651,13 +651,13 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: "{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else path_join([user.HOMEdir, 'fix']) }}"
-  FIXam: "{{ [FIXdir, 'fix_am']|path_join}}"
-  FIXclim: "{{ [FIXdir, 'fix_clim']|path_join}}"
-  FIXlam: "{{ [FIXdir, 'fix_lam']|path_join}}"
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
+  FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
+  FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
 
   THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
-  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join}}'
+  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -675,9 +675,9 @@ workflow:
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
-  CCPP_PHYS_SUITE_FN: "suite_{{ CCPP_PHYS_SUITE }}.xml"
-  CCPP_PHYS_SUITE_IN_CCPP_FP: "{{ [user.UFS_WTHR_MDL_DIR, 'FV3', 'ccpp', 'suites', CCPP_PHYS_SUITE_FN] |path_join}}"
-  CCPP_PHYS_SUITE_FP: "{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join}}"
+  CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
+  CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -686,8 +686,8 @@ workflow:
   #-----------------------------------------------------------------------
   #
   FIELD_DICT_FN: "fd_nems.yaml"
-  FIELD_DICT_IN_UWM_FP: "{{ [user.UFS_WTHR_MDL_DIR, 'tests', 'parm', FIELD_DICT_FN]|path_join}}"
-  FIELD_DICT_FP: "{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join}}"
+  FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
+  FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -905,14 +905,15 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
-  OPSROOT: "{{ workflow.EXPT_BASEDIR }}/../nco_dirs"
-  COMROOT: "{{ OPSROOT }}/com"
-  PACKAGEROOT: "{{ OPSROOT }}/packages"
-  DATAROOT: "{{ OPSROOT }}/tmp"
-  DCOMROOT: "{{ OPSROOT }}/dcom"
-  LOGDIR: "{{ OPSROOT }}/output"
-  COMIN_BASEDIR: "{{ COMROOT }}/{{ NET }}/{{ model_ver }}"
-  COMOUT_BASEDIR: "{{ COMROOT }}/{{ NET }}/{{ model_ver }}"
+  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT: '{{ OPSROOT }}/com'
+  PACKAGEROOT: '{{ OPSROOT }}/packages'
+  DATAROOT: '{{ OPSROOT }}/tmp'
+  DCOMROOT: '{{ OPSROOT }}/dcom'
+  LOGDIR: '{{ OPSROOT }}/output'
+  EXTROOT: '{{ OPSROOT }}/ext'
+  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
 
   #
   #-----------------------------------------------------------------------
@@ -1044,7 +1045,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: "{{ [workflow.EXPTDIR, 'grid']|path_join}}"
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1325,7 +1326,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: "{{ [workflow.EXPTDIR, 'orog']|path_join }}"
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join }}'
   TOPO_DIR: ""
 
 #----------------------------
@@ -1340,7 +1341,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: "{{ [workflow.EXPTDIR, 'sfc_climo']|path_join }}"
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join }}'
   SFC_CLIMO_INPUT_DIR: ""
 
 #----------------------------
@@ -1488,7 +1489,7 @@ task_get_extrn_lbcs:
   #
   EXTRN_MDL_NAME_LBCS: "FV3GFS"
   LBC_SPEC_INTVL_HRS: 6
-  EXTRN_MDL_LBCS_OFFSET_HRS: "{{ 3 if EXTRN_MDL_NAME_LBCS == 'RAP' else 0 }}"
+  EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
   #-----------------------------------------------------------------------
   #
@@ -1580,18 +1581,18 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: "{% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ h }}{% endfor %}"
+  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
   RUN_FCST_TN: "run_fcst"
-  NNODES_RUN_FCST: "{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}"
-  PPN_RUN_FCST: "{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}"
+  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
+  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   WTIME_RUN_FCST: 04:30:00
   MAXTRIES_RUN_FCST: 1
-  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join}}'
+  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1691,9 +1692,9 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  LAYOUT_X: "{{ LAYOUT_X }}"
-  LAYOUT_Y: "{{ LAYOUT_Y }}"
-  BLOCKSIZE: "{{ BLOCKSIZE }}"
+  LAYOUT_X: '{{ LAYOUT_X }}'
+  LAYOUT_Y: '{{ LAYOUT_Y }}'
+  BLOCKSIZE: '{{ BLOCKSIZE }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1796,8 +1797,8 @@ task_run_fcst:
 
   PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
   
-  WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: 20
+  WRTCMP_write_groups: ""
+  WRTCMP_write_tasks_per_group: ""
   
   WRTCMP_output_grid: "''"
   WRTCMP_cen_lon: ""
@@ -1830,7 +1831,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: "{{ workflow.CCPP_PHYS_SUITE == 'FV3_GFS_v15_thompson_mynn_lam3km' }}"
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
 
 #----------------------------
 # POST config parameters
@@ -1905,7 +1906,7 @@ task_run_post:
   #
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
-  POST_OUTPUT_DOMAIN_NAME: "{{ task_run_fcst.PREDEF_GRID_NAME }}"
+  POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
 
 #----------------------------
 # GET OBS CCPA config parameters
@@ -2229,8 +2230,8 @@ global:
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
-  ENSMEM_NAMES: "{% for m in range(NUM_ENS_MEMBERS) %} 'mem%03d, ' % m {% endfor %}"
-  FV3_NML_ENSMEM_FPS: "{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, '%s_%s' % FV3_NML_FN, mem]|path_join }}{% endfor %}"
+  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
+  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
 
   #
   #-----------------------------------------------------------------------

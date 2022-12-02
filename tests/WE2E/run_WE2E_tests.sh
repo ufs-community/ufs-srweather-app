@@ -787,10 +787,14 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
+  set -x
+  save_USHdir=${USHdir}
   source_config ${USHdir}/config_defaults.yaml
+  USHdir=${save_USHdir}
   MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
   source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
+
 #
 #-----------------------------------------------------------------------
 #
@@ -1016,7 +1020,7 @@ model_ver="we2e""
 #
 # Set NCO mode OPSROOT
 #
-OPSROOT=\"${opsroot}\""
+OPSROOT=\"${opsroot:-$OPSROOT}\""
 
   fi
 #

@@ -241,6 +241,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # TODO: Reference all these variables in their respective
     # dictionaries, instead.
     import_vars(dictionary=flatten_dict(expt_config))
+    export_vars(source_dict=flatten_dict(expt_config))
 
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()

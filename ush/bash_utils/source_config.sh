@@ -6,6 +6,7 @@
 #
 
 function config_to_str() {
+  set -x
   $USHdir/config_utils.py -o $1 -c $2 "${@:3}"
 }
 
