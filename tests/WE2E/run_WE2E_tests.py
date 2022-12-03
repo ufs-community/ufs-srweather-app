@@ -55,27 +55,77 @@ def run_we2e_tests(HOMEdir, args) -> None:
     # Set some important directories
     USHdir=HOMEdir + '/ush'
 
-    testfilename='machine_suites/test'
-    logging.info(f"reading test file name {testfilename}")
-    user_spec_tests = list(open(testfilename))
+    # Set some variables based on input arguments
+    run_envir = args.run_envir
+
+    # If args.tests is a list of length more than one, we assume it is a list of test names
+    if len(args.tests) > 1:
+        print(len(args.tests))
+        tests_to_check=args.tests
+        logging.debug(f"User specified a list of tests:\n{tests_to_check}")
+    else:
+        #First see if args.tests is a valid test name
+        user_spec_tests = args.tests
+        try:
+            logging.debug(f'Checking if {user_spec_tests} is a valid test name')
+            _ = check_tests(user_spec_tests)
+            # If no error, user_spec_tests is the name of the test specified on the command line
+            tests_to_check = user_spec_tests
+        except:
+            # If not a valid test name, check if it is a test suite
+            if user_spec_tests == 'all':
+                alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
+                tests_to_check = []
+                for f in alltests:
+                    filename = os.path.basename(f)
+                    filename = filename[7:-5]
+                    tests_to_check.append(filename)
+                logging.debug(f"Will check all tests:\n{tests_to_check}")
+            elif user_spec_tests == 'fundamental' or user_spec_tests == 'comprehensive':
+                # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
+                testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}.nco"
+                if not os.path.isfile(testfilename):
+                    testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}.com"
+                    if not os.path.isfile(testfilename):
+                        testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}"
+                        if not os.path.isfile(testfilename):
+                            testfilename = f"machine_suites/{user_spec_tests}.{args.machine}"
+                            if not os.path.isfile(testfilename):
+                                testfilename = f"machine_suites/{user_spec_tests}"
+                    else:
+                        if not run_envir:
+                            run_envir = 'community'
+                            logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
+                                           'Setting run_envir = {run_envir} for all tests')
+                else:
+                    if not run_envir:
+                        run_envir = 'nco'
+                        logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
+                                       'Setting run_envir = {run_envir} for all tests')
+                
+                logging.debug(f"Reading test file: {testfilename}")
+                tests_to_check = list(open(testfilename))
+                logging.debug(f"Will check {user_spec_tests} tests:\n{tests_to_check}")
+            else:
+                # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
+                if os.path.isfile(user_spec_tests):
+                    tests_to_check = list(open(user_spec_tests))
+                else:
+                    raise FileNotFoundError(dedent(f"""
+                    The specified 'tests' argument '{user_spec_tests}'
+                    does not appear to be a valid test name, a valid test suite, or a valid test file.
+
+                    Check your inputs and try again.
+                    """))
+
 
     logging.info("Checking that all tests are valid")
-    testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
-    tests_to_run=[]
-    for test in user_spec_tests:
-        match=False
-        #Search for exact config file name to avoid accidental partial matches
-        test_config='config.' + test.rstrip() + '.yaml'
-        for testfile in testfiles:
-            if test_config in testfile:
-                logging.debug(f"found test {test}")
-                match=True
-                tests_to_run.append(testfile)
-        if not match:
-            print_err_msg_exit(f"Could not find test {test}")
+
+    tests_to_run=check_tests(tests_to_check)
 
     pretty_list = "\n".join(str(x) for x in tests_to_run)
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
+
 
     config_default_file = USHdir + '/config_defaults.yaml'
     logging.debug(f"Loading config defaults file {config_default_file}")
@@ -94,8 +144,8 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
         test_cfg['user'].update({"MACHINE": args.machine})
         test_cfg['user'].update({"ACCOUNT": args.account})
-        if args.run_envir is not None:
-            test_cfg['user'].update({"RUN_ENVIR": args.run_envir})
+        if run_envir:
+            test_cfg['user'].update({"RUN_ENVIR": run_envir})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -135,6 +185,32 @@ def run_we2e_tests(HOMEdir, args) -> None:
         generate_FV3LAM_wflow(USHdir, debug=args.debug)
 
     logging.info("calling script that monitors rocoto jobs, prints summary")
+
+def check_tests(tests: list) -> list:
+    """
+    Function for checking that all tests in a provided list of tests are valid
+
+    Args:
+        tests        : List of potentially valid test names
+    Returns:
+        tests_to_run : List of config files corresponding to test names
+    """
+
+    testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    tests_to_run=[]
+    for test in tests:
+        match=False
+        #Search for exact config file name to avoid accidental partial matches
+        test_config='config.' + test.rstrip() + '.yaml'
+        for testfile in testfiles:
+            if test_config in testfile:
+                logging.debug(f"found test {test}")
+                match=True
+                tests_to_run.append(testfile)
+        if not match:
+            raise Exception(f"Could not find test {test}")
+
+    return tests_to_run
 
 
 
@@ -270,21 +346,30 @@ if __name__ == "__main__":
 
     #Parse arguments
     parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted in CAPS), see ush/config_defaults.yaml\n")
-    optional = parser._action_groups.pop() # Edited this line
+    optional = parser._action_groups.pop() # Create a group for optional arguments so they can be listed after required args
     required = parser.add_argument_group('required arguments')
 
-    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
     required.add_argument('-m', '--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
     required.add_argument('-a', '--account', type=str, help='Account name for running submitted jobs', required=True)
+    required.add_argument('-t', '--tests', type=str, nargs="*", help="""Can be one of three options (in order of priority):
+    1. A test name or list of test names.
+    2. A test suite name ("fundamental", "comprehensive", or "all")
+    3. The name of a file (full or relative path) containing a list of test names.
+    """, required=True)
+
     parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
+    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+
+
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
-    parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments')
+    parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments', default='')
     parser.add_argument('--expt_basedir', type=str, help='Explicitly set EXPT_BASEDIR for all experiments')
     parser.add_argument('--exec_subdir', type=str, help='Explicitly set EXEC_SUBDIR for all experiments')
-    parser.add_argument('use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments')
+    parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments')
     parser.add_argument('--cron_relaunch_intvl_mnts', type=str, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
     parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
+
     parser._action_groups.append(optional)
 
     args = parser.parse_args()
