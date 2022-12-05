@@ -1648,8 +1648,10 @@ task_run_fcst:
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
   # Default=0: restart files are produced at the end of a forecast run
-  # For example, RESTART_INTERVAL: 1: restart files are produced every hour
-  # with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
   #
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 

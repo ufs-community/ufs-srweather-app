@@ -22,6 +22,7 @@ UFS Short-Range Weather App Users Guide
    ConfigWorkflow
    RocotoInfo
    WE2Etests
+   VXCases
    Graphics
    FAQ
    Glossary

@@ -119,8 +119,8 @@ The cloned repository contains the configuration files and sub-directories shown
    +--------------------------------+-----------------------------------------------------------+
    | README.md                      | Contains SRW App introductory information                 |
    +--------------------------------+-----------------------------------------------------------+
-   | rename_model.sh                | Used to rename the model before it becomes NCO            |
-   |                                | operational. The SRW App is a generic app that is the base|
+   | rename_model.sh                | Used to rename the model before it is transitioned into   |
+   |                                | operations. The SRW App is a generic app that is the base |
    |                                | for models such as :term:`AQM` and :term:`RRFS`. When     |
    |                                | these models become operational, variables like           |
    |                                | ``HOMEdir`` and ``PARMdir`` will be renamed to            |

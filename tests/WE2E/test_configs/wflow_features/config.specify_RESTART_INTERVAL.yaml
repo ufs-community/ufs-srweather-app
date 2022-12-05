@@ -2,11 +2,11 @@ metadata:
   description: |-
     This test checks the capability of the workflow to have the time
     interval (RESTART_INTERVAL) at which restart files are written by the
-    forecast model be set to a user-specified value.
+    forecast model be set to user-specified values.
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  CCPP_PHYS_SUITE: FV3_GFS_v16
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019070100'
   DATE_LAST_CYCL: '2019070100'
@@ -17,7 +17,7 @@ task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 3
+  LBC_SPEC_INTVL_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  RESTART_INTERVAL: 1
+  RESTART_INTERVAL: 1 2 5
