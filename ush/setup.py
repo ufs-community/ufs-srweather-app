@@ -558,13 +558,6 @@ def setup():
     if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
         USE_MERRA_CLIMO = True
 
-    # Make sure RESTART_INTERVAL is set to an integer value
-
-    if not isinstance(RESTART_INTERVAL, int):
-        raise Exception(
-            f"\nRESTART_INTERVAL = {RESTART_INTERVAL}, must be an integer value\n"
-        )
-
     # Check that input dates are in a date format
     # get dictionary of all variables
     allvars = dict(globals())
