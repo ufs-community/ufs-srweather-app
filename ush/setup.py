@@ -102,7 +102,9 @@ def load_config_for_setup(ushdir, default_config, user_config):
             )
 
     # Load the machine config file
-    machine = cfg_u.get("user").get("MACHINE")
+    machine = uppercase(cfg_u.get("user").get("MACHINE"))
+    cfg_u["user"]["MACHINE"] = uppercase(machine)
+
     machine_file = os.path.join(ushdir, "machine", f"{lowercase(machine)}.yaml")
 
     if not os.path.exists(machine_file):

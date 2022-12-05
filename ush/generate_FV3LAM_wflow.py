@@ -13,6 +13,8 @@ from python_utils import (
     log_info,
     import_vars,
     export_vars,
+    load_config_file,
+    update_dict,
     cp_vrfy,
     ln_vrfy,
     mkdir_vrfy,
@@ -67,6 +69,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # non-user-specified values from config_defaults.yaml
     expt_config = setup(ushdir)
 
+    verbose = expt_config['workflow']['VERBOSE']
     #
     # -----------------------------------------------------------------------
     #
@@ -159,8 +162,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
         # Log "settings" variable.
         settings_str = cfg_to_yaml_str(settings)
-
-        verbose = expt_config['workflow']['VERBOSE']
 
         log_info(
             f"""
@@ -812,11 +813,24 @@ class Testing(unittest.TestCase):
         run_workflow(USHdir, logfile)
 
         # nco test case
-        set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
-        cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
-        run_command(
-            f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
-        )
+        nco_test_config = load_config_file(f"{USHdir}/config.nco.yaml")
+        # Since we don't have a pre-gen grid dir on a generic linux
+        # platform, turn the make_* tasks on for this test.
+        cfg_updates = {
+            'user': {
+                'MACHINE': 'linux',
+            },
+            'workflow_switches': {
+                'RUN_TASK_MAKE_GRID': True,
+                'RUN_TASK_MAKE_OROG': True,
+                'RUN_TASK_MAKE_SFC_CLIMO': True,
+            },
+        }
+        update_dict(cfg_updates, nco_test_config)
+
+        with open(f"{USHdir}/config.yaml", 'w') as cfg_file:
+            cfg_file.write(cfg_to_yaml_str(nco_test_config))
+
         run_workflow(USHdir, logfile)
 
     def setUp(self):

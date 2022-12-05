@@ -1050,7 +1050,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join }}'
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else [platform.DOMAIN_PREGEN_BASEDIR, workflow.PREDEF_GRID_NAME]|path_join}}'
   #
   #-----------------------------------------------------------------------
   #
