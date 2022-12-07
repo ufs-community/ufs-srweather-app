@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Emulates slurm's squeue
-if [[ "$1" = *"--jobs="* ]]; then
+if [[ "$1" = "--jobs="* ]]; then
   PIDS="${1:7}"
 elif [[ -f .job_database ]]; then
   PIDS=$(cat .job_database | grep submitted | sort -u -k1,1 |  awk '{print $3}')

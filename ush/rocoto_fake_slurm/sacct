@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Emulates slurm's sacct
-if [[ "$1" = *"--jobs="* ]]; then
+if [[ "$1" = "--jobs="* ]]; then
   PIDS="${1:7}"
 elif [[ -f .job_database ]]; then
   PIDS=$(cat .job_database | grep submitted | sort -u -k1,1 |  awk '{print $3}')
@@ -9,6 +9,7 @@ fi
 PIDS="${PIDS//,/' '}"
 
 # Output info the way rocoto calls sacct
+FMT="%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n"
 echo "JobID|User|JobName|Partition|Priority|Submit|Start|End|NCPUS|ExitCode|State"
 for pid in ${PIDS}; do
    t_sub=$(date --utc +%Y-%m-%d:%H:%M:%S)
@@ -26,8 +27,8 @@ for pid in ${PIDS}; do
    fi
 
    if [ -z "$v" ]; then
-      echo "$pid|$USER|$name|linux|$t_sub|$t_start|$t_end|0.1|0|RUNNING"
+      printf "$FMT" $pid ${USER:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1  0 RUNNING
    else
-      echo "$pid|$USER|$name|linux|$t_sub|$t_start|$t_end|0.1|$v|COMPLETED"
+      printf "$FMT" $pid ${USRE:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1 $v COMPLETED
    fi
 done
