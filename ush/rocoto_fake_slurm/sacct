@@ -16,6 +16,7 @@ for pid in ${PIDS}; do
    t_start=$t_sub
    t_end=$t_sub
    name=$pid
+   user=${USER:-user}
 
    v=$(cat .job_database | grep "pid $pid submitted" | awk '{print $1" "$5}')
    if [ ! -z "$v" ]; then
@@ -27,8 +28,8 @@ for pid in ${PIDS}; do
    fi
 
    if [ -z "$v" ]; then
-      printf "$FMT" $pid ${USER:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1  0 RUNNING
+      printf "$FMT" $pid ${user:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1  0 RUNNING
    else
-      printf "$FMT" $pid ${USRE:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1 $v COMPLETED
+      printf "$FMT" $pid ${user:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1 $v COMPLETED
    fi
 done
