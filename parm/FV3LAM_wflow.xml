@@ -27,6 +27,11 @@ Workflow task names.
 {%- else %}
 <!ENTITY SCHED_NATIVE_CMD          "">
 {%- endif %}
+{%- if taskthrottle  %}
+<!ENTITY TASKTHROTTLE              "{{ taskthrottle }}">
+{%- else %}
+<!ENTITY TASKTHROTTLE              "">
+{%- endif %}
 <!ENTITY MAKE_GRID_TN              "{{ make_grid_tn }}">
 <!ENTITY MAKE_OROG_TN              "{{ make_orog_tn }}">
 <!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
@@ -153,7 +158,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 
 ]>
 
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20" taskthrottle="&TASKTHROTTLE;">
 {# Double quotes are required inside the strftime! Expect an error from reading the template if using single quotes. #}
   <cycledef group="at_start">{{ cdate_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
   <cycledef group="forecast">
