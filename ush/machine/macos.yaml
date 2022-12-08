@@ -24,6 +24,7 @@ platform:
   FIXorg: /Users/username/DATA/UFS/fix/fix_orog
   FIXsfc: /Users/username/DATA/UFS/fix/fix_sfc_climo
   FIXshp: /Users/username/DATA/UFS/NaturalEarth
+  EXTRN_MDL_DATA_STORES: aws nomads
 data:
   ics_lbcs:
     FV3GFS: /Users/username/DATA/UFS/FV3GFS
