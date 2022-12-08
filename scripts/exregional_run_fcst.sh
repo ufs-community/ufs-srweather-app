@@ -583,8 +583,10 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
     if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+        mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+        mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      done
     fi
   fi
 fi
