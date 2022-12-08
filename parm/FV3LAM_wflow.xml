@@ -98,8 +98,20 @@ Workflow task names.
 {%- if run_task_point_source %}
 <!ENTITY POINT_SOURCE_TN           "{{ point_source_tn }}">
 {%- endif %}
-{%- if run_task_post_stat %}
-<!ENTITY POST_STAT_TN              "{{ post_stat_tn }}">
+{%- if run_task_pre_post_stat %}
+<!ENTITY PRE_POST_STAT_TN          "{{ pre_post_stat_tn }}">
+{%- endif %}
+{%- if run_task_post_stat_o3 %}
+<!ENTITY POST_STAT_O3_TN           "{{ post_stat_o3_tn }}">
+{%- endif %}
+{%- if run_task_post_stat_pm25 %}
+<!ENTITY POST_STAT_PM25_TN         "{{ post_stat_pm25_tn }}">
+{%- endif %}
+{%- if run_task_bias_correction_o3 %}
+<!ENTITY BIAS_CORRECTION_O3_TN     "{{ bias_correction_o3_tn }}">
+{%- endif %}
+{%- if run_task_bias_correction_pm25 %}
+<!ENTITY BIAS_CORRECTION_PM25_TN   "{{ bias_correction_pm25_tn }}">
 {%- endif %}
 
 <!--
@@ -1057,19 +1069,19 @@ the <task> tag to be identical to the ones above for other output times.
   </metatask>
   {%- endif %}
 {%- endif %}
-{%- if run_task_post_stat %}
+{%- if run_task_pre_post_stat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&POST_STAT_TN;" cycledefs="forecast" maxtries="{{ maxtries_post_stat }}">
+  <task name="&PRE_POST_STAT_TN;" cycledefs="forecast" maxtries="{{ maxtries_pre_post_stat }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_TN;" "&JOBSdir;/JREGIONAL_POST_STAT"</command>
-    <nodes>{{ nnodes_post_stat }}:ppn={{ ppn_post_stat }}</nodes>
-    <walltime>{{ wtime_post_stat }}</walltime>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&PRE_POST_STAT_TN;" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"</command>
+    <nodes>{{ nnodes_pre_post_stat }}:ppn={{ ppn_pre_post_stat }}</nodes>
+    <walltime>{{ wtime_pre_post_stat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&POST_STAT_TN;</jobname>
-    <join>&LOGDIR;/&POST_STAT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&PRE_POST_STAT_TN;</jobname>
+    <join>&LOGDIR;/&PRE_POST_STAT_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>    
@@ -1080,7 +1092,127 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
+{%- if run_task_run_post %}
       <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+{%- else %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+{%- endif %}
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_post_stat_o3 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&POST_STAT_O3_TN;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_o3 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_O3_TN;" "&JOBSdir;/JREGIONAL_POST_STAT_O3"</command>
+    <nodes>{{ nnodes_post_stat_o3 }}:ppn={{ ppn_post_stat_o3 }}</nodes>
+    <walltime>{{ wtime_post_stat_o3 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&POST_STAT_O3_TN;</jobname>
+    <join>&LOGDIR;/&POST_STAT_O3_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&PRE_POST_STAT_TN;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_post_stat_pm25 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&POST_STAT_PM25_TN;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_pm25 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_PM25_TN;" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"</command>
+    <nodes>{{ nnodes_post_stat_pm25 }}:ppn={{ ppn_post_stat_pm25 }}</nodes>
+    <walltime>{{ wtime_post_stat_pm25 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&POST_STAT_PM25_TN;</jobname>
+    <join>&LOGDIR;/&POST_STAT_PM25_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&PRE_POST_STAT_TN;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_bias_correction_o3 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&BIAS_CORRECTION_O3_TN;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_o3 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&BIAS_CORRECTION_O3_TN;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"</command>
+    <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}</nodes>
+    <walltime>{{ wtime_bias_correction_o3 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&BIAS_CORRECTION_O3_TN;</jobname>
+    <join>&LOGDIR;/&BIAS_CORRECTION_O3_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+{%- if run_task_post_stat_pm25 %}
+    <taskdep task="&POST_STAT_PM25_TN;"/>
+{%- else %}
+    <taskdep task="&POST_STAT_O3_TN;"/>
+{%- endif %}    
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_bias_correction_pm25 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&BIAS_CORRECTION_PM25_TN;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_pm25 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&BIAS_CORRECTION_PM25_TN;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"</command>
+    <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}</nodes>
+    <walltime>{{ wtime_bias_correction_pm25 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&BIAS_CORRECTION_PM25_TN;</jobname>
+    <join>&LOGDIR;/&BIAS_CORRECTION_PM25_TN;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&BIAS_CORRECTION_O3_TN;"/>
     </dependency>
 
   </task>

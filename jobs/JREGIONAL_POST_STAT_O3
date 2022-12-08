@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs POST-UPP-STAT.
+# This script runs POST-STAT-O3.
 #
 #-----------------------------------------------------------------------
 #
@@ -61,18 +61,10 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-#
-#-----------------------------------------------------------------------
-#
-# If it doesn't already exist, create the directory (COMOUT) in which 
-# to store post-processing output.  (Note that COMOUT may have already 
-# been created by this post-processing script for a different output time 
-# from the same forecast start time and/or ensemble member.)
-#
-#-----------------------------------------------------------------------
-#
-export COMOUT="${COMOUT}/POST_STAT"
-mkdir_vrfy -p "${COMOUT}"
+
+export COMIN_PDY="${COMIN_PDY:-${COMIN_BASEDIR}/${RUN}.${PDY}}"
+export COMIN_PDYm1="${COMIN_PDYm1:-${COMIN_BASEDIR}/${RUN}.${PDYm1}}"
+export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
 #
 #-----------------------------------------------------------------------
 #
@@ -81,7 +73,7 @@ mkdir_vrfy -p "${COMOUT}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_post_stat.sh || \
+$SCRIPTSdir/exregional_post_stat_o3.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

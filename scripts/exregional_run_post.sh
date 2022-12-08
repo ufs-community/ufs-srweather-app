@@ -294,10 +294,10 @@ for fid in "${fids[@]}"; do
   fi
 done
 
-# Move phy and dyn files to COMOUT only for AQM in NCO mode
+# Move phy and dyn files to COMIN only for AQM in NCO mode
 if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then
-  mv_vrfy ${dyn_file} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-  mv_vrfy ${phy_file} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+  mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+  mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
 fi
 
 rm_vrfy -rf ${DATA_FHR}

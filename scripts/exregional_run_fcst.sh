@@ -567,7 +567,8 @@ POST_STEP
 # Move RESTART directory to COMIN and create symlink in DATA only for
 # NCO mode and when it is not empty.
 #
-# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ
+# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
+# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
 #
 #-----------------------------------------------------------------------
 #
@@ -580,6 +581,11 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 
   if [ "${CPL_AQM}" = "TRUE" ]; then
     mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+ 
+    if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   fi
 fi
 #
@@ -643,8 +649,8 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     done
 
     if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then	
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi
   done
 
