@@ -468,11 +468,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
     def get_location(xcs, fmt, expt_cfg):
         ics_lbcs = expt_cfg.get("data", {}).get("ics_lbcs")
         if ics_lbcs is not None:
-            v = ics_lbcs[xcs]
+            v = ics_lbcs.get(xcs)
             if not isinstance(v, dict):
                 return v
             else:
-                return v[fmt]
+                return v.get(fmt, "")
         else:
             return ""
 
@@ -917,8 +917,14 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
         nco_config["LOGBASEDIR"] = os.path.join(exptdir, "log")
 
-    # create NCO directories
+    # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
+
+        for nco_var in nco_vars:
+            envar = os.environ.get(nco_var)
+            if envar is not None:
+                nco_config[nco_var.upper()] = envar
+
         mkdir_vrfy(f' -p "{nco_config.get("OPSROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("COMROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
