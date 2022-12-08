@@ -915,7 +915,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
-        nco_config["LOGDIR"] = os.path.join(exptdir, "log")
+        nco_config["LOGBASEDIR"] = os.path.join(exptdir, "log")
 
     # create NCO directories
     if run_envir == "nco":
@@ -924,7 +924,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
         mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("LOGDIR")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
         mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
     if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')

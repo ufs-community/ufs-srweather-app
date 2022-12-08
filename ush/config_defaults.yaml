@@ -892,7 +892,7 @@ nco:
   # OPSROOT:
   # The operations root directory in NCO mode.
   #
-  # LOGDIR:
+  # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
   # For more information on NCO standards
@@ -910,7 +910,7 @@ nco:
   PACKAGEROOT: '{{ OPSROOT }}/packages'
   DATAROOT: '{{ OPSROOT }}/tmp'
   DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGDIR: '{{ OPSROOT }}/output'
+  LOGBASEDIR: '{{ OPSROOT }}/output'
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'

@@ -111,10 +111,10 @@ Directories and files.
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
-<!ENTITY LOGDIR                   "{{ logdir }}/<cyclestr>@Y@m@d</cyclestr>">
+<!ENTITY LOGDIR                   "{{ logbasedir }}/<cyclestr>@Y@m@d</cyclestr>">
 <!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
 {%- else %}
-<!ENTITY LOGDIR                   "{{ logdir }}">
+<!ENTITY LOGDIR                   "{{ logbasedir }}">
 <!ENTITY LOGEXT                   ".log" >
 {%- endif %}
 <!ENTITY CMPEXT                   "_task_complete.txt">
