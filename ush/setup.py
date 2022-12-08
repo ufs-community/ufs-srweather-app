@@ -120,8 +120,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Load the fixed files configuration
     cfg_f = load_config_file(
-        os.path.join(ushdir, os.pardir, "parm",
-        "fixed_files_mapping.yaml")
+        os.path.join(ushdir, os.pardir, "parm", "fixed_files_mapping.yaml")
     )
 
     # Load the constants file
@@ -153,7 +152,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             if not (v is None or v == ""):
                 cfg_d[sect][k] = str_to_list(v)
 
-    for k, v in cfg_d['task_run_fcst'].items():
+    for k, v in cfg_d["task_run_fcst"].items():
         print(f"*** {k}: {v}")
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
@@ -193,7 +192,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
                             """
                 )
             )
-
 
     return cfg_d
 
@@ -360,7 +358,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
     expt_basedir = workflow_config.get("EXPT_BASEDIR")
-    homedir = expt_config['user'].get("HOMEdir")
+    homedir = expt_config["user"].get("HOMEdir")
     if (not expt_basedir) or (expt_basedir[0] != "/"):
         if not expt_basedir or "{{" in expt_basedir:
             expt_basedir = ""
@@ -537,18 +535,17 @@ def setup(USHdir, user_config_fn="config.yaml"):
     grid_config = expt_config["task_make_grid"]
     if workflow_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(
-                USHdir,
-                workflow_config['PREDEF_GRID_NAME'],
-                fcst_config['QUILTING'],
-                )
+            USHdir,
+            workflow_config["PREDEF_GRID_NAME"],
+            fcst_config["QUILTING"],
+        )
 
         # Users like to change these variables, so don't overwrite them
         special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
         for param, value in grid_params.items():
             if param in special_vars:
                 param_val = fcst_config.get(param)
-                if param_val and isinstance(param_val, str) and \
-                    "{{" not in param_val:
+                if param_val and isinstance(param_val, str) and "{{" not in param_val:
                     continue
                 elif isinstance(param_val, (int, float)):
                     continue
@@ -897,7 +894,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-
     # These NCO variables need to be set based on the user's specificed
     # run environment. The default is set in config_defaults for nco. If
     # running in community mode, we set these paths to the experiment
@@ -993,7 +989,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
             in the local clone of the ufs-weather-model:
               FIELD_DICT_IN_UWM_FP = '{field_dict_in_uwm_fp}'"""
         )
-
 
     fixed_files = expt_config["fixed_files"]
     # Set the appropriate ozone production/loss file paths and symlinks
@@ -1200,9 +1195,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
     if use_thompson:
-        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(
-            mapping
-        )
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(mapping)
         fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fix_files)
 
         log_info(
@@ -1239,7 +1232,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-
     extend_yaml(expt_config)
     for sect, sect_keys in expt_config.items():
         for k, v in sect_keys.items():
@@ -1274,7 +1266,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # loop through the flattened expt_config and check validity of params
     cfg_v = load_config_file("valid_param_vals.yaml")
     for k, v in flatten_dict(expt_config).items():
-        if v is None or v == '':
+        if v is None or v == "":
             continue
         vkey = "valid_vals_" + k
         if (vkey in cfg_v) and not (v in cfg_v[vkey]):

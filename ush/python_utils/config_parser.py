@@ -90,17 +90,19 @@ try:
 except NameError:
     pass
 
+
 def path_join(arg):
-    """ A filter for jinja2 that joins paths """
+    """A filter for jinja2 that joins paths"""
 
     return os.path.join(*arg)
 
+
 def extend_yaml(yaml_dict, full_dict=None):
 
-    '''
+    """
     Updates yaml_dict inplace by rendering any existing Jinja2 templates
     that exist in a value.
-    '''
+    """
 
     if full_dict is None:
         full_dict = yaml_dict
@@ -114,60 +116,61 @@ def extend_yaml(yaml_dict, full_dict=None):
             extend_yaml(v, full_dict)
         else:
 
-          # Save a bit of compute and only do this part for strings that
-          # contain the jinja double brackets.
-          v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
-          is_a_template = any((ele for ele in ['{{', '{%'] if ele in v_str))
-          if is_a_template:
+            # Save a bit of compute and only do this part for strings that
+            # contain the jinja double brackets.
+            v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
+            is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
+            if is_a_template:
 
-              # Find expressions first, and process them as a single template
-              # if they exist
-              # Find individual double curly brace template in the string
-              # otherwise. We need one substitution template at a time so that
-              # we can opt to leave some un-filled when they are not yet set.
-              # For example, we can save cycle-dependent templates to fill in
-              # at run time.
-              if '{%' in v:
-                  templates = [v_str]
-              else:
-                  # Separates out all the double curly bracket pairs
-                  templates = re.findall(r'{{[^}]*}}|\S', v_str)
-              data = []
-              for template in templates:
-                  if len(template) > 1:
-                      print(template)
-                  j2env = jinja2.Environment(loader=jinja2.BaseLoader,
-                          undefined=jinja2.StrictUndefined)
-                  j2env.filters['path_join'] = path_join
-                  j2tmpl = j2env.from_string(template)
-                  try:
-                      # Fill in a template that has the appropriate variables
-                      # set.
-                      template = j2tmpl.render(**yaml_dict, **full_dict)
-                  except jinja2.exceptions.UndefinedError as e:
-                      # Leave a templated field as-is in the resulting dict
-                      #print(f'Error: {e}')
-                      print(f'Preserved template: {k}: {template}')
-                      #for a, b in full_dict.items():
-                      #    print(f'    {a}: {b}')
-                      pass
-                  except TypeError:
-                      print(f'Preserved template: {k}: {template}')
-                  except ZeroDivisionError:
-                      print(f'Preserved template: {k}: {template}')
-                  except:
-                      print(f'{k}: {template}')
-                      raise
+                # Find expressions first, and process them as a single template
+                # if they exist
+                # Find individual double curly brace template in the string
+                # otherwise. We need one substitution template at a time so that
+                # we can opt to leave some un-filled when they are not yet set.
+                # For example, we can save cycle-dependent templates to fill in
+                # at run time.
+                if "{%" in v:
+                    templates = [v_str]
+                else:
+                    # Separates out all the double curly bracket pairs
+                    templates = re.findall(r"{{[^}]*}}|\S", v_str)
+                data = []
+                for template in templates:
+                    if len(template) > 1:
+                        print(template)
+                    j2env = jinja2.Environment(
+                        loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
+                    )
+                    j2env.filters["path_join"] = path_join
+                    j2tmpl = j2env.from_string(template)
+                    try:
+                        # Fill in a template that has the appropriate variables
+                        # set.
+                        template = j2tmpl.render(**yaml_dict, **full_dict)
+                    except jinja2.exceptions.UndefinedError as e:
+                        # Leave a templated field as-is in the resulting dict
+                        # print(f'Error: {e}')
+                        print(f"Preserved template: {k}: {template}")
+                        # for a, b in full_dict.items():
+                        #    print(f'    {a}: {b}')
+                        pass
+                    except TypeError:
+                        print(f"Preserved template: {k}: {template}")
+                    except ZeroDivisionError:
+                        print(f"Preserved template: {k}: {template}")
+                    except:
+                        print(f"{k}: {template}")
+                        raise
 
-                  data.append(template)
+                    data.append(template)
 
-              if isinstance(v, ET.Element):
-                  v.text = ''.join(data)
-              else:
-                  # Put the full template line back together as it was,
-                  # filled or not
-                  yaml_dict[k] = ''.join(data)
-                  print(f"    {k}: {yaml_dict[k]}")
+                if isinstance(v, ET.Element):
+                    v.text = "".join(data)
+                else:
+                    # Put the full template line back together as it was,
+                    # filled or not
+                    yaml_dict[k] = "".join(data)
+                    print(f"    {k}: {yaml_dict[k]}")
 
 
 ##########
@@ -460,8 +463,12 @@ def update_dict(dict_o, dict_t, provide_default=False):
             else:
                 dict_t[k] = v
         elif k in dict_t.keys():
-            if (not provide_default) or (dict_t[k] is None) or \
-                (len(dict_t[k]) == 0) or ("{{" in dict_t[k]):
+            if (
+                (not provide_default)
+                or (dict_t[k] is None)
+                or (len(dict_t[k]) == 0)
+                or ("{{" in dict_t[k])
+            ):
                 dict_t[k] = v
 
 

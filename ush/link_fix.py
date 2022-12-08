@@ -401,7 +401,9 @@ if __name__ == "__main__":
     link_fix(
         verbose=cfg["workflow"]["VERBOSE"],
         file_group=args.file_group,
-        source_dir=cfg[f"task_make_{args.file_group.lower()}"][f"{args.file_group.upper()}_DIR"],
+        source_dir=cfg[f"task_make_{args.file_group.lower()}"][
+            f"{args.file_group.upper()}_DIR"
+        ],
         target_dir=cfg["workflow"]["FIXlam"],
         ccpp_phys_suite=cfg["workflow"]["CCPP_PHYS_SUITE"],
         constants=cfg["constants"],

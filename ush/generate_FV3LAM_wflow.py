@@ -69,7 +69,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # non-user-specified values from config_defaults.yaml
     expt_config = setup(ushdir)
 
-    verbose = expt_config['workflow']['VERBOSE']
+    verbose = expt_config["workflow"]["VERBOSE"]
     #
     # -----------------------------------------------------------------------
     #
@@ -125,19 +125,18 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
 
-
-        dt_atmos = expt_config['task_run_fcst']['DT_ATMOS']
-        date_first_cycl = expt_config['workflow']['DATE_FIRST_CYCL']
-        date_last_cycl = expt_config['workflow']['DATE_LAST_CYCL']
+        dt_atmos = expt_config["task_run_fcst"]["DT_ATMOS"]
+        date_first_cycl = expt_config["workflow"]["DATE_FIRST_CYCL"]
+        date_last_cycl = expt_config["workflow"]["DATE_LAST_CYCL"]
         first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
-        fcst_threads = expt_config['task_run_fcst']['OMP_NUM_THREADS_RUN_FCST']
+        fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
 
         settings.update(
             {
                 #
                 # Number of cores used for a task
                 #
-                "ncores_run_fcst": expt_config['task_run_fcst']['PE_MEMBER01'],
+                "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
                 "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
                 #
                 # Parameters that determine the set of cycles to run.
@@ -155,7 +154,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 #
                 # Parameters associated with subhourly post-processed output
                 #
-                "delta_min": expt_config['task_run_post']['DT_SUBHOURLY_POST_MNTS'],
+                "delta_min": expt_config["task_run_post"]["DT_SUBHOURLY_POST_MNTS"],
                 "first_fv3_file_tstr": first_file_time.strftime("000:%M:%S"),
             }
         )
@@ -192,7 +191,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 + settings_str
             )
             raise Exception(
-                dedent(f"""
+                dedent(
+                    f"""
                     Call to python script fill_jinja_template.py to create a rocoto workflow
                     XML file from a template file failed.  Parameters passed to this script
                     are:
@@ -211,9 +211,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    exptdir = expt_config['workflow']['EXPTDIR']
-    wflow_launch_script_fp = expt_config['workflow']['WFLOW_LAUNCH_SCRIPT_FP']
-    wflow_launch_script_fn = expt_config['workflow']['WFLOW_LAUNCH_SCRIPT_FN']
+    exptdir = expt_config["workflow"]["EXPTDIR"]
+    wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
+    wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
     log_info(
         f"""
         Creating symlink in the experiment directory (EXPTDIR) that points to the
@@ -224,9 +224,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     )
 
     create_symlink_to_file(
-        wflow_launch_script_fp,
-        os.path.join(exptdir, wflow_launch_script_fn),
-        False
+        wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
     )
     #
     # -----------------------------------------------------------------------
@@ -817,18 +815,18 @@ class Testing(unittest.TestCase):
         # Since we don't have a pre-gen grid dir on a generic linux
         # platform, turn the make_* tasks on for this test.
         cfg_updates = {
-            'user': {
-                'MACHINE': 'linux',
+            "user": {
+                "MACHINE": "linux",
             },
-            'workflow_switches': {
-                'RUN_TASK_MAKE_GRID': True,
-                'RUN_TASK_MAKE_OROG': True,
-                'RUN_TASK_MAKE_SFC_CLIMO': True,
+            "workflow_switches": {
+                "RUN_TASK_MAKE_GRID": True,
+                "RUN_TASK_MAKE_OROG": True,
+                "RUN_TASK_MAKE_SFC_CLIMO": True,
             },
         }
         update_dict(cfg_updates, nco_test_config)
 
-        with open(f"{USHdir}/config.yaml", 'w') as cfg_file:
+        with open(f"{USHdir}/config.yaml", "w") as cfg_file:
             cfg_file.write(cfg_to_yaml_str(nco_test_config))
 
         run_workflow(USHdir, logfile)
