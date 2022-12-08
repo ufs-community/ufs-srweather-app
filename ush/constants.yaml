@@ -37,7 +37,7 @@ constants:
   # Grid type string, set to regional for SRW
   #
   # TILE_RGNL: 7
-  # Tile number set ot 7 for a regional grid in SRW
+  # Tile number set to 7 for a regional grid in SRW
   #
   # We will let:
   #

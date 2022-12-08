@@ -218,10 +218,10 @@ def set_srw_paths(ushdir, expt_config):
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
-    home_dir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
 
     # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(home_dir, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
@@ -243,7 +243,7 @@ def set_srw_paths(ushdir, expt_config):
         raise Exception(errmsg) from None
 
     # Check that the model code has been downloaded
-    ufs_wthr_mdl_dir = os.path.join(home_dir, ufs_wthr_mdl_dir)
+    ufs_wthr_mdl_dir = os.path.join(homedir, ufs_wthr_mdl_dir)
     if not os.path.exists(ufs_wthr_mdl_dir):
         raise FileNotFoundError(
             dedent(
@@ -257,7 +257,7 @@ def set_srw_paths(ushdir, expt_config):
         )
 
     return dict(
-        HOMEdir=home_dir,
+        HOMEdir=homedir,
         USHdir=ushdir,
         UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
     )
@@ -360,18 +360,17 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
     expt_basedir = workflow_config.get("EXPT_BASEDIR")
-    home_dir = expt_config['user'].get("HOMEdir")
+    homedir = expt_config['user'].get("HOMEdir")
     if (not expt_basedir) or (expt_basedir[0] != "/"):
         if not expt_basedir or "{{" in expt_basedir:
             expt_basedir = ""
-        expt_basedir = os.path.join(home_dir, "..", "expt_dirs", expt_basedir)
+        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
     try:
         expt_basedir = os.path.realpath(expt_basedir)
     except:
         pass
     expt_basedir = os.path.abspath(expt_basedir)
 
-    #mkdir_vrfy(f' -p "{expt_basedir}"')
     workflow_config["EXPT_BASEDIR"] = expt_basedir
 
     # Update some paths that include EXPT_BASEDIR
@@ -737,16 +736,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
                       {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
                       """
                 )
-
-    # Make sure RESTART_INTERVAL is set to an integer value
-    restart_interval = fcst_config.get("RESTART_INTERVAL")
-    if not isinstance(restart_interval, int):
-        try:
-            fcst_config["RESTART_INTERVAL"] = int(restart_interval)
-        except ValueError:
-            raise ValueError(
-                f"\nRESTART_INTERVAL = {restart_interval}, must be an integer value\n"
-            )
 
     # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
     # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an

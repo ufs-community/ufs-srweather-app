@@ -16,7 +16,7 @@ def set_predef_grid_params(USHdir, grid_name, quilting):
     Args:
         USHdir:      path to the SRW ush directory
         grid_name    str specifying the predefined grid name.
-        quilting:    bool whether quiliting should be used for output
+        quilting:    bool whether quilting should be used for output
     Returns:
         Dictionary of grid parameters
     """

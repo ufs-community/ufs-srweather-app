@@ -797,6 +797,9 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
+
+  # Save the environment variable since a default will override when
+  # sourced.
   save_USHdir=${USHdir}
   source_config ${USHdir}/config_defaults.yaml
   USHdir=${save_USHdir}

@@ -158,7 +158,6 @@ platform:
   #
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
-  LMOD_PATH: ""
   BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
   WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
   BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
