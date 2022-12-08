@@ -125,7 +125,7 @@ export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198; do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.1hpm25.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.1hpm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25.${grid}.grib2
 done
 
 cp_vrfy ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
@@ -227,8 +227,8 @@ EOF1
 
   for grid in 227 196 198; do
     gg="grid${grid}"
-    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.24hrpm25-ave.${grid}.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25-max.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.24hrpm25-ave.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25-max.${grid}.grib2
 
     # Add WMO header for daily 1h PM2.5 and 24hr_ave PM2.5
     rm -rf filesize

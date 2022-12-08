@@ -138,7 +138,7 @@ grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198;do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.1ho3.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1ho3.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.1ho3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1ho3.${grid}.grib2
 
   if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     wgrib2 ${NET}.${cycle}.8ho3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.8ho3.${grid}.grib2
@@ -237,8 +237,8 @@ EOF1
 
   for grid in 227 196 198; do
     gg="grid${grid}"
-    wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
     cp_vrfy ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
     if [ "$SENDDBN" = "YES" ]; then

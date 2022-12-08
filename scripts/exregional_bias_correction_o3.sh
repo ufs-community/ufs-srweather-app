@@ -1,9 +1,14 @@
-ource the variable definitions file and the bash utility functions.
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -102,25 +107,9 @@ esac
 #-----------------------------------------------------------------------------
 # STEP 1:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
 
-ic=1
-while [ $ic -lt 120 ]; do
-  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc ]; then
-    echo "cycle ${cyc} post1 is done!"
-    break 
-  else
-     (( ic=ic+1 ))
-     sleep 10
-   fi
-done
-
-if [ $ic -ge 120 ]; then
-  print_err_msg_exit "FATAL ERROR - COULD NOT LOCATE:${COMIN}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc"
-fi
-
 # remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
-if [ -s ${DATA}/grid/${cyc}z/${PDY}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc ]; then
-  rm_vrfy -f ${DATA}/grid/${cyc}z/${PDY}/${NET}.${cycle}.chem_sfc.*.nc
-  rm_vrfy -f ${DATA}/grid/${cyc}z/${PDY}/${NET}.${cycle}.met_sfc.*.nc
+if [ -d ${DATA}/grid/${cyc}z/${PDY} ]; then
+  rm_vrfy -rf ${DATA}/grid/${cyc}z/${PDY}
 fi
 
 mkdir_vrfy -p ${DATA}/grid/${cyc}z/${PDY}
@@ -130,8 +119,8 @@ mkdir_vrfy -p ${DATA}/setup
 mkdir_vrfy -p ${DATA}/out/ozone/${yyyy}
 mkdir_vrfy -p ${DATA}/interpolated/ozone/${yyyy} 
 
-cp_vrfy ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
-cp_vrfy ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
 
 #-----------------------------------------------------------------------
 # STEP 2 :  Intepolating CMAQ O3 into AIRNow sites

@@ -8,12 +8,12 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
-  EXPT_SUBDIR: aqm_test_realtime
+  EXPT_SUBDIR: aqm_test_post
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
-  DATE_FIRST_CYCL: '2022112300'
-  DATE_LAST_CYCL: '2022112300'
+  DATE_FIRST_CYCL: '2022120600'
+  DATE_LAST_CYCL: '2022120606'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 6
+  FCST_LEN_HRS: 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
@@ -24,12 +24,12 @@ nco:
   NET: aqm
   model_ver: v7.0
   RUN: aqm_test
-#  OPSROOT: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/NCO_OUTPUT_aqm
+#  OPSROOT: /lfs/h2/emc/stmp/chan-hoo.jeon/NCO_OUTPUT_aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: true
+  RUN_TASK_RUN_POST: false
 task_make_grid:
   GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
@@ -39,12 +39,12 @@ task_make_sfc_climo:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
-  EXTRN_MDL_ICS_OFFSET_HRS: 6
+  EXTRN_MDL_ICS_OFFSET_HRS: 0
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
-  EXTRN_MDL_LBCS_OFFSET_HRS: 6
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
@@ -69,9 +69,12 @@ cpl_aqm_parm:
   RUN_TASK_NEXUS_EMISSION: true
   RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
-  RUN_TASK_PRE_POST_STAT: false
-  RUN_TASK_POST_STAT: false
-  RUN_TASK_BIAS_CORRECTION: false
+  RUN_TASK_PRE_POST_STAT: true
+  RUN_TASK_POST_STAT_O3: true
+  RUN_TASK_POST_STAT_PM25: true
+  RUN_TASK_BIAS_CORRECTION_O3: false
+  RUN_TASK_BIAS_CORRECTION_PM25: false
+  WTIME_AQM_LBCS: 01:00:00
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: true
   AQM_GEFS_CYC: 0
