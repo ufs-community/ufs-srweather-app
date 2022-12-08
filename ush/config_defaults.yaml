@@ -1226,7 +1226,7 @@ task_make_grid:
   # GFDLgrid_NUM_CELLS:
   # Number of points in each of the two horizontal directions (x and y) on
   # each tile of the parent global grid.  Note that the name of this parameter
-  # is really a misnomer because although it has the stirng "RES" (for 
+  # is really a misnomer because although it has the string "RES" (for 
   # "resolution") in its name, it specifies number of grid cells, not grid
   # size (in say meters or kilometers).  However, we keep this name in order
   # to remain consistent with the usage of the word "resolution" in the 
@@ -1639,7 +1639,7 @@ task_run_fcst:
   # Set model_configure parameters.  Definitions:
   #
   # DT_ATMOS:
-  # The main forecast model integraton time step.  As described in the 
+  # The main forecast model integration time step.  As described in the 
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
@@ -2221,7 +2221,7 @@ global:
   #
   # USE_CRTM:
   # Flag that defines whether external CRTM coefficient files have been
-  # staged by the user in order to output synthetic statellite products
+  # staged by the user in order to output synthetic satellite products
   # available within the UPP. If this is set to true, then the workflow
   # will check for these files in the directory CRTM_DIR. Otherwise, it is
   # assumed that no satellite fields are being requested in the UPP

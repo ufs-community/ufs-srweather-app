@@ -11,7 +11,7 @@ from python_utils import (
 
 
 def set_predef_grid_params(USHdir, grid_name, quilting):
-    """Sets grid parameters for the specified predfined grid
+    """Sets grid parameters for the specified predefined grid
 
     Args:
         USHdir:      path to the SRW ush directory

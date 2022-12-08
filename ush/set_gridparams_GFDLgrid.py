@@ -182,7 +182,7 @@ def set_gridparams_GFDLgrid(
     # on the tile 6 grid; it cannot cut through tile 6 cells.  (Note that
     # this implies that the starting indices on the tile 6 supergrid must be
     # odd while the ending indices must be even; the above expressions sa-
-    # tisfy this requirement.)  We perfrom these calculations next.
+    # tisfy this requirement.)  We perform these calculations next.
     #
     # -----------------------------------------------------------------------
     #

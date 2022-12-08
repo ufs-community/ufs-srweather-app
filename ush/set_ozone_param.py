@@ -91,7 +91,7 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
     # Set the element in the array CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING that
     # specifies the mapping between the symlink for the ozone production/loss
     # file that must be created in each cycle directory and its target in the
-    # FIXam directory.  The name of the symlink is alrady in the array, but
+    # FIXam directory.  The name of the symlink is already in the array, but
     # the target is not because it depends on the ozone parameterization that
     # the physics suite uses.  Since we determined the ozone parameterization
     # above, we now set the target of the symlink accordingly.

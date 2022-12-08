@@ -229,9 +229,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    # If USE_CRON_TO_RELAUNCH is set to TRUE, add a line to the user's cron
-    # table to call the (re)launch script every CRON_RELAUNCH_INTVL_MNTS mi-
-    # nutes.
+    # If USE_CRON_TO_RELAUNCH is set to TRUE, add a line to the user's
+    # cron table to call the (re)launch script every
+    # CRON_RELAUNCH_INTVL_MNTS minutes.
     #
     # -----------------------------------------------------------------------
     #
@@ -345,7 +345,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying the CCPP physics suite definition XML file from its location in
-        the forecast model directory sturcture to the experiment directory...""",
+        the forecast model directory structure to the experiment directory...""",
         verbose=verbose,
     )
     cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
@@ -357,7 +357,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying the field dictionary file from its location in the forecast
-        model directory sturcture to the experiment directory...""",
+        model directory structure to the experiment directory...""",
         verbose=verbose,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
@@ -615,7 +615,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # the base (i.e. starting) namelist file, with physics-suite-dependent
     # modifications to the base file specified in the yaml configuration file
     # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
-    # and with additional physics-suite-independent modificaitons specified
+    # and with additional physics-suite-independent modifications specified
     # in the variable "settings" set above.
     #
     # -----------------------------------------------------------------------

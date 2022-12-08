@@ -894,7 +894,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    # These NCO variables need to be set based on the user's specificed
+    # These NCO variables need to be set based on the user's specified
     # run environment. The default is set in config_defaults for nco. If
     # running in community mode, we set these paths to the experiment
     # directory.
@@ -934,8 +934,8 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # -----------------------------------------------------------------------
     #
-    # The FV3 forecast model needs the following input files in the run di-
-    # rectory to start a forecast:
+    # The FV3 forecast model needs the following input files in the run
+    # directory to start a forecast:
     #
     #   (1) The data table file
     #   (2) The diagnostics table file
@@ -955,12 +955,12 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # configuration file (or derived from such values).  The scripts then
     # use the resulting "actual" files as inputs to the forecast model.
     #
-    # Note that the CCPP physics suite defintion file does not have a cor-
-    # responding template file because it does not contain any values that
-    # need to be replaced according to the experiment/workflow configura-
-    # tion.  If using CCPP, this file simply needs to be copied over from
-    # its location in the forecast model's directory structure to the ex-
-    # periment directory.
+    # Note that the CCPP physics suite definition file does not have a
+    # corresponding template file because it does not contain any values
+    # that need to be replaced according to the experiment/workflow
+    # configuration.  If using CCPP, this file simply needs to be copied
+    # over from its location in the forecast model's directory structure
+    # to the experiment directory.
     #
     # Below, we first set the names of the templates for the first six files
     # listed above.  We then set the full paths to these template files.

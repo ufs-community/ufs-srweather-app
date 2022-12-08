@@ -345,7 +345,7 @@ def link_fix(
     # climatology files that do not contain the halo size in their names.
     # These are needed by the make_ics task.
     #
-    # The forecat model needs sfc climo files to be named without the
+    # The forecast model needs sfc climo files to be named without the
     # tile7 and halo references, and with only "tile1" in the name.
     #
     # -----------------------------------------------------------------------
