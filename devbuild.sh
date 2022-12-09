@@ -272,6 +272,11 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
     BUILD_NEXUS="on"
     BUILD_AQM_UTILS="on"
   fi
+  if [ "${PLATFORM}" = "wcoss2" ]; then
+    BUILD_POST_STAT="on"
+  else
+    BUILD_POST_STAT="off"
+  fi
 fi
 
 # source version file only if it is specified in versions directory
@@ -343,7 +348,8 @@ CMAKE_SETTINGS="\
  -DBUILD_GSI=${BUILD_GSI}\
  -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}\
  -DBUILD_NEXUS=${BUILD_NEXUS}\
- -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}"
+ -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}\
+ -DBUILD_POST_STAT=${BUILD_POST_STAT}"
 
 if [ ! -z "${APPLICATION}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DAPP=${APPLICATION}"
