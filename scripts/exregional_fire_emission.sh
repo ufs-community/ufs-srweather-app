@@ -66,8 +66,8 @@ hh=${FIRE_FILE_CDATE:8:2}
 aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUFFIX}"
 
 # Check if the file exists in the designated directory
-if [ -s "${AQM_FIRE_DIR}/${aqm_fire_file_fn}" ]; then
-  cp_vrfy "${AQM_FIRE_DIR}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+if [ -e "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" ]; then
+  cp_vrfy "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Retrieve files from HPSS
   arcv_dir="/NCEPDEV/emc-naqfc/2year/Kai.Wang/RAVE_fire/RAVE_NA"
