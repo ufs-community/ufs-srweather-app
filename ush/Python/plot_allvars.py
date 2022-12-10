@@ -458,16 +458,16 @@ for fhr in fhours:
 #                    alpha=falpha)
     lakes=cfeature.NaturalEarthFeature('physical','lakes',back_res,
                       edgecolor='blue',facecolor='none',
-                      linewidth=fline_wd,alpha=falpha)
+                      linewidth=fline_wd,alpha=falpha,zorder=4)
     coastline=cfeature.NaturalEarthFeature('physical','coastline',
                       back_res,edgecolor='blue',facecolor='none',
-                      linewidth=fline_wd,alpha=falpha)
+                      linewidth=fline_wd,alpha=falpha,zorder=4)
     states=cfeature.NaturalEarthFeature('cultural','admin_1_states_provinces',
                       back_res,edgecolor='black',facecolor='none',
-                      linewidth=fline_wd,linestyle=':',alpha=falpha)
+                      linewidth=fline_wd,linestyle=':',alpha=falpha,zorder=4)
     borders=cfeature.NaturalEarthFeature('cultural','admin_0_countries',
                       back_res,edgecolor='red',facecolor='none',
-                      linewidth=fline_wd,alpha=falpha)
+                      linewidth=fline_wd,alpha=falpha,zorder=4)
 
   # All lat lons are earth relative, so setup the associated projection correct for that data
     transform = ccrs.PlateCarree()
