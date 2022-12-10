@@ -44,6 +44,8 @@ load(pathJoin("sfcio", os.getenv("sfcio_ver")))
 load(pathJoin("wrf_io", os.getenv("wrf_io_ver")))
 
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
+load(pathJoin("bufr", os.getenv("bufr_ver")))
+load(pathJoin("nemsiogfs", os.getenv("nemsiogfs_ver")))
 
 setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
