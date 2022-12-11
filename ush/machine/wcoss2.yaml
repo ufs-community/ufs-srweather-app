@@ -35,5 +35,5 @@ data:
   HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 cpl_aqm_parm:
   PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt
-  COMINbicor: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/aqmv7.0
+  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
   COMINgfs_BASEDIR: /lfs/h1/ops/prod/com/gfs/v16.3

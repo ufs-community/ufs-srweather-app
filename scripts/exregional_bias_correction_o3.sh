@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -80,12 +80,21 @@ fi
 #-----------------------------------------------------------------------
 #
 DATA="${DATA}/tmp_BIAS_CORRECTION_O3"
+rm_vrfy -rf "$DATA"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
 set -x
 
 yyyy=${PDY:0:4}
+yyyymm=${PDY:0:6}
+yyyy_m1=${PDYm1:0:4}
+yyyymm_m1=${PDYm1:0:6}
+yyyy_m2=${PDYm2:0:4}
+yyyymm_m2=${PDYm2:0:6}
+yyyy_m3=${PDYm3:0:4}
+yyyymm_m3=${PDYm3:0:6}
+
 #
 #-----------------------------------------------------------------------
 #
@@ -97,6 +106,22 @@ if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
 
+#-----------------------------------------------------------------------------
+# STEP 1: Retrieve AIRNOW observation data
+#-----------------------------------------------------------------------------
+
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+
+cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+
+#-----------------------------------------------------------------------------
+# STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
+#-----------------------------------------------------------------------------
+
 case $cyc in
   00) bc_interp_hr=06;;
   06) bc_interp_hr=72;;
@@ -104,59 +129,65 @@ case $cyc in
   18) bc_interp_hr=06;;
 esac
 
-#-----------------------------------------------------------------------------
-# STEP 1:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
+ic=1
+while [ $ic -lt 120 ]; do
+  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc ]; then
+    echo "cycle ${cyc} post1 is done!"
+    break
+  else
+    (( ic=ic+1 ))
+  fi
+done
 
-# remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
-if [ -d ${DATA}/grid/${cyc}z/${PDY} ]; then
-  rm_vrfy -rf ${DATA}/grid/${cyc}z/${PDY}
+if [ $ic -ge 120 ]; then
+  print_err_msg_exit "FATAL ERROR - COULD NOT LOCATE:${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc"
 fi
 
-mkdir_vrfy -p ${DATA}/grid/${cyc}z/${PDY}
+# remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
+DATA_grid="${DATA}/data/bcdata.${yyyymm}/grid"
+if [ -d "${DATA_grid}/${cyc}z/${PDY}" ]; then
+  rm_vrfy -rf "${DATA_grid}/${cyc}z/${PDY}"
+fi
+
+mkdir_vrfy -p "${DATA_grid}/${cyc}z/${PDY}"
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+
+#-----------------------------------------------------------------------------
+# STEP 3:  Intepolating CMAQ O3 into AIRNow sites
+#-----------------------------------------------------------------------------
+
 mkdir_vrfy -p ${DATA}/data/coords 
 mkdir_vrfy -p ${DATA}/data/site-lists.interp 
-mkdir_vrfy -p ${DATA}/setup
 mkdir_vrfy -p ${DATA}/out/ozone/${yyyy}
 mkdir_vrfy -p ${DATA}/interpolated/ozone/${yyyy} 
 
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA}/grid/${cyc}z/${PDY}
-
-#-----------------------------------------------------------------------
-# STEP 2 :  Intepolating CMAQ O3 into AIRNow sites
-
-ln_vrfy -sf ${PARMaqm_utils}/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
-ln_vrfy -sf ${PARMaqm_utils}/setup.wcoss2.ifort.serial.opt-zero ${DATA}/setup
-ln_vrfy -sf ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-ln_vrfy -sf ${PARMaqm_utils}/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
-ln_vrfy -sf ${COMINbicor} ${DATA}/data
-
-source ${DATA}/setup/setup.wcoss2.ifort.serial.opt-zero
+cp_vrfy ${PARMaqm_utils}/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
+cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp_vrfy ${PARMaqm_utils}/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
 ${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}
 
-cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/interpolated/ozone/${yyyy}
+cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-#-----------------------------------------------------------------------
-# STEP 3:  Performing Bias Correction for PM2.5 
+#-----------------------------------------------------------------------------
+# STEP 4:  Performing Bias Correction for Ozone
+#-----------------------------------------------------------------------------
 
 mkdir_vrfy -p ${DATA}/data/sites
-
-ln_vrfy -sf ${PARMaqm_utils}/setup.wcoss2.ifort.parallel.opt-3 ${DATA}/setup
-ln_vrfy -sf ${PARMaqm_utils}/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
-
-source ${DATA}/setup/setup.wcoss2.ifort.parallel.opt-3
+cp_vrfy ${PARMaqm_utils}/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
   
 ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY}
  
 cp_vrfy ${DATA}/out/ozone.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
+  cp_vrfy ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${COMOUT}
 fi
 
-#------------------------------------------------------------------------
-# STEP 4:  converting netcdf to grib format
+#-----------------------------------------------------------------------------
+# STEP 5:  converting netcdf to grib format
+#-----------------------------------------------------------------------------
 
 ln_vrfy -sf ${COMIN}/ozone.corrected.${PDY}.${cyc}z.nc .
 
@@ -175,8 +206,10 @@ ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc}
 
 cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 
-#--------------------------------------------------------------
-# STEP 5: calculating 24-hr ave PM2.5
+#-----------------------------------------------------------------------------
+# STEP 6: calculating 24-hr ave PM2.5
+#-----------------------------------------------------------------------------
+
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   ln_vrfy -sf ${COMOUT}/ozone.corrected.${PDY}.${cyc}z.nc a.nc 
 
@@ -293,15 +326,15 @@ rm_vrfy -rf tmpfile
 while [ "${fhr}" -le "${endfhr}" ]; do
   fhr=$( printf "%02d" "${fhr}" )
   
-  cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_grib}.grib2 ${COMIN}
+  cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 ${COMOUT}
 
   # create GRIB file to convert to grid 227 then to GRIB2 for NDFD
-  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_grib}.grib2 >> tmpfile
+  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 >> tmpfile
   if [ "${fhr}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_grib}.grib2 >> tmpfile.1hr
+    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 >> tmpfile.1hr
   else
-    ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_grib}.grib2 -d 1 -append -grib tmpfile.1hr
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_grib}.grib2 -d 2 -append -grib tmpfile.8hr
+    ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
   fi
   (( fhr=fhr+1 ))
 done

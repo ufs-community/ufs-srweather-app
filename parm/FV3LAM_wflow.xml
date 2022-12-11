@@ -1180,11 +1180,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
-{%- if run_task_post_stat_pm25 %}
-    <taskdep task="&POST_STAT_PM25_TN;"/>
-{%- else %}
-    <taskdep task="&POST_STAT_O3_TN;"/>
-{%- endif %}    
+      <taskdep task="&PRE_POST_STAT_TN;"/>
     </dependency>
 
   </task>
@@ -1212,7 +1208,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="&BIAS_CORRECTION_O3_TN;"/>
+      <taskdep task="&PRE_POST_STAT_TN;"/>
     </dependency>
 
   </task>

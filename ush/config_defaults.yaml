@@ -2402,8 +2402,8 @@ cpl_aqm_parm:
 # WARMSTART_CYCLE_DIR:
 # Path to the directory where RESTART dir is located for warm start
 #
-# COMINbicor:
-# Path to the data for bias correction
+# COMINairnow:
+# Path to the AIRNOW observation data
 #
 #-----------------------------------------------------------------------
 #
@@ -2446,5 +2446,5 @@ cpl_aqm_parm:
   COLDSTART: true
   WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
-  COMINbicor: ""
+  COMINairnow: "/path/to/airnow/data"
   COMINgfs_BASEDIR: ""

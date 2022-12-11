@@ -1,4 +1,9 @@
-ource the variable definitions file and the bash utility functions.
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
@@ -81,6 +86,14 @@ cd_vrfy $DATA
 set -x
 
 yyyy=${PDY:0:4}
+yyyymm=${PDY:0:6}
+yyyy_m1=${PDYm1:0:4}
+yyyymm_m1=${PDYm1:0:6}
+yyyy_m2=${PDYm2:0:4}
+yyyymm_m2=${PDYm2:0:6}
+yyyy_m3=${PDYm3:0:4}
+yyyymm_m3=${PDYm3:0:6}
+
 #
 #-----------------------------------------------------------------------
 #
@@ -92,58 +105,91 @@ if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
 
-case ${cyc} in
+#-----------------------------------------------------------------------------
+# STEP 1: Retrieve AIRNOW observation data
+#-----------------------------------------------------------------------------
+
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+
+cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+
+#-----------------------------------------------------------------------------
+# STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
+#-----------------------------------------------------------------------------
+
+case $cyc in
   00) bc_interp_hr=06;;
   06) bc_interp_hr=72;;
   12) bc_interp_hr=72;;
   18) bc_interp_hr=06;;
 esac
 
+ic=1
+while [ $ic -lt 120 ]; do
+  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc ]; then
+    echo "cycle ${cyc} post1 is done!"
+    break
+  else  
+    (( ic=ic+1 ))
+  fi    
+done    
+
+if [ $ic -ge 120 ]; then 
+  print_err_msg_exit "FATAL ERROR - COULD NOT LOCATE:${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc"
+fi      
+
+# remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
+DATA_grid="${DATA}/data/bcdata.${yyyymm}/grid"
+if [ -d "${DATA_grid}/${cyc}z/${PDY}" ]; then
+  rm_vrfy -rf "${DATA_grid}/${cyc}z/${PDY}"
+fi
+
+mkdir_vrfy -p "${DATA_grid}/${cyc}z/${PDY}"
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+
 #-----------------------------------------------------------------------
-# STEP 1 :  Intepolating CMAQ PM2.5 into AIRNow sites
+# STEP 3:  Intepolating CMAQ PM2.5 into AIRNow sites
+#-----------------------------------------------------------------------
 
 mkdir_vrfy -p ${DATA}/data/coords 
 mkdir_vrfy -p ${DATA}/data/site-lists.interp 
-mkdir_vrfy -p ${DATA}/setup
 mkdir_vrfy -p ${DATA}/out/pm25/${yyyy}
 mkdir_vrfy -p ${DATA}/interpolated/pm25/${yyyy}
 
-ln_vrfy -sf ${PARMaqm_utils}/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
-ln_vrfy -sf ${PARMaqm_utils}/setup.wcoss2.ifort.serial.opt-zero ${DATA}/setup
-ln_vrfy -sf ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-ln_vrfy -sf ${PARMaqm_utils}/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
-ln_vrfy -sf ${COMINbicor} ${DATA}/data
-
-source ${DATA}/setup/setup.wcoss2.ifort.serial.opt-zero
+cp_vrfy ${PARMaqm_utils}/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
+cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp_vrfy ${PARMaqm_utils}/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
 ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}
 
-cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/interpolated/pm25/${Yr}
+cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 #-----------------------------------------------------------------------
-# STEP 2:  Performing Bias Correction for PM2.5 
+# STEP 4:  Performing Bias Correction for PM2.5 
+#-----------------------------------------------------------------------
 
 mkdir_vrfy -p ${DATA}/data/sites
 
-ln_vrfy -sf ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords/
-ln_vrfy -sf ${PARMaqm_utils}/setup.wcoss2.ifort.parallel.opt-3 ${DATA}/setup
-ln_vrfy -sf ${PARMaqm_utils}/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
-ln_vrfy -sf ${COMINbicordat}/bcdata* ${DATA}/data/
-ln_vrfy -sf ${PARMaqm_utils}/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
-ln_vrfy -sf ${PARMaqm_utils}/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
-
-source ${DATA}/setup/setup.wcoss2.ifort.parallel.opt-3
+cp_vrfy ${PARMaqm_utils}/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp_vrfy ${PARMaqm_utils}/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
 ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY}
 
 cp_vrfy $DATA/out/pm2.5.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy $DATA/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
+  cp_vrfy $DATA/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${COMOUT}
 fi
 
 #------------------------------------------------------------------------
-# STEP 3:  converting netcdf to grib format
+# STEP 5:  converting netcdf to grib format
+#------------------------------------------------------------------------
 
 ln_vrfy -sf ${COMIN}/pm2.5.corrected.${PDY}.${cyc}z.nc .
 
@@ -164,8 +210,9 @@ if [ "$SENDDBN" = "YES" ]; then
   $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
 fi
 
-#--------------------------------------------------------------
-# STEP 4: calculating 24-hr ave PM2.5
+#-----------------------------------------------------------------------
+# STEP 6: calculating 24-hr ave PM2.5
+#------------------------------------------------------------------------
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   ln_vrfy -sf ${COMOUT}/pm2.5.corrected.${PDY}.${cyc}z.nc  a.nc 
@@ -276,7 +323,8 @@ if [ "${SENDDBN}" = "YES" ]; then
 fi
 
 #--------------------------------------------------------------
-# STEP 5: adding WMO header  
+# STEP 7: adding WMO header  
+#--------------------------------------------------------------
 
 # Create AWIPS GRIB2 data for Bias-Corrected PM2.5
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
@@ -297,7 +345,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_pm25_bc.${cycle}.227
 
   ####################################################
-  rm_vrfy -rf filesize
+  rm_vrfy -f filesize
   echo 0 > filesize
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
@@ -314,7 +362,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
   tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
 
-  rm_vrfy filesize
+  rm_vrfy -f filesize
   # daily_24hr_ave_PM2.5
   echo 0 > filesize
   export XLFRTEOPTS="unit_vars=yes"
