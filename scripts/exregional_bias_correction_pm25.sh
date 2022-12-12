@@ -159,13 +159,15 @@ ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
 mkdir_vrfy -p ${DATA}/data/coords 
 mkdir_vrfy -p ${DATA}/data/site-lists.interp 
 mkdir_vrfy -p ${DATA}/out/pm25/${yyyy}
-mkdir_vrfy -p ${DATA}/interpolated/pm25/${yyyy}
+mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 cp_vrfy ${PARMaqm_utils}/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
 cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp_vrfy ${PARMaqm_utils}/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
-${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}
+PREP_STEP
+${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}  || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
+POST_STEP
 
 cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
@@ -179,12 +181,14 @@ cp_vrfy ${PARMaqm_utils}/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
 cp_vrfy ${PARMaqm_utils}/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
 cp_vrfy ${PARMaqm_utils}/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
-${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY}
+PREP_STEP
+${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
+POST_STEP
 
 cp_vrfy $DATA/out/pm2.5.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy $DATA/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${COMOUT}
+  cp_vrfy ${DATA}/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #------------------------------------------------------------------------
@@ -203,7 +207,10 @@ id_gribdomain=${id_domain}
 /
 EOF1
 
-${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} 
+PREP_STEP
+${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
+Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
+POST_STEP
 
 cp_vrfy ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
 if [ "$SENDDBN" = "YES" ]; then
@@ -267,8 +274,11 @@ EOF1
     #-------------------------------------------------
     # write out grib2 format 
     #-------------------------------------------------
-    ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1}
-   
+    PREP_STEP
+    ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} || print_err_msg_exit "\
+    Call to executable to run AQM_POST_MAXI_BIAS_COR_GRIB2 returned with nonzero exit code."
+    POST_STEP
+
     # split into two files: one for 24hr_ave and one for 1h_max
     wgrib2 aqm-pm25_bc.${id_domain}.grib2  |grep  "PMTF"   | ${WGRIB2} -i  aqm-pm25_bc.${id_domain}.grib2  -grib aqm.t${cyc}z.ave_24hr_pm25_bc.793.grib2 
     wgrib2 aqm-pm25_bc.${id_domain}.grib2  |grep  "PDMAX1" | ${WGRIB2} -i  aqm-pm25_bc.${id_domain}.grib2  -grib aqm.t${cyc}z.max_1hr_pm25_bc.793.grib2 

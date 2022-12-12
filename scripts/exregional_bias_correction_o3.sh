@@ -160,13 +160,15 @@ ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
 mkdir_vrfy -p ${DATA}/data/coords 
 mkdir_vrfy -p ${DATA}/data/site-lists.interp 
 mkdir_vrfy -p ${DATA}/out/ozone/${yyyy}
-mkdir_vrfy -p ${DATA}/interpolated/ozone/${yyyy} 
+mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
 cp_vrfy ${PARMaqm_utils}/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
 cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp_vrfy ${PARMaqm_utils}/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
-${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}
+PREP_STEP
+${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
+POST_STEP
 
 cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
@@ -176,13 +178,15 @@ cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated
 
 mkdir_vrfy -p ${DATA}/data/sites
 cp_vrfy ${PARMaqm_utils}/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
-  
-${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY}
  
+PREP_STEP
+${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
+POST_STEP
+
 cp_vrfy ${DATA}/out/ozone.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${COMOUT}
+  cp_vrfy ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #-----------------------------------------------------------------------------
@@ -202,7 +206,10 @@ id_gribdomain=${id_domain}
 EOF1
 
 # convert from netcdf to grib2 format
-${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} 
+PREP_STEP
+${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
+Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
+POST_STEP
 
 cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 
@@ -264,8 +271,11 @@ EOF1
     #-------------------------------------------------
     # write out grib2 format 
     #-------------------------------------------------
-    ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1}
-   
+    PREP_STEP
+    ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} || print_err_msg_exit "\
+    Call to executable to run AQM_POST_MAXI_BIAS_COR_GRIB2 returned with nonzero exit code."
+    POST_STEP
+
     # split into max_1h and max_8h files and copy to grib227
     wgrib2 aqm-maxi_bc.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi_bc.${id_domain}.grib2 -grib  ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2
     wgrib2 aqm-maxi_bc.${id_domain}.grib2 |grep "OZMAX8" | wgrib2 -i aqm-maxi_bc.${id_domain}.grib2 -grib  ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2
