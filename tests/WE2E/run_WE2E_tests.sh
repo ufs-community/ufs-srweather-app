@@ -1319,10 +1319,13 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $USHdir/generate_FV3LAM_wflow.py || \
+  $USHdir/generate_FV3LAM_wflow.py
+
+  if [ $? != 0 ] ; then
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""
+  fi
 
 done
 

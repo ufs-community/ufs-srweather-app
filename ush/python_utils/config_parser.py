@@ -136,8 +136,6 @@ def extend_yaml(yaml_dict, full_dict=None):
                     templates = re.findall(r"{{[^}]*}}|\S", v_str)
                 data = []
                 for template in templates:
-                    if len(template) > 1:
-                        print(template)
                     j2env = jinja2.Environment(
                         loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
                     )
@@ -149,15 +147,11 @@ def extend_yaml(yaml_dict, full_dict=None):
                         template = j2tmpl.render(**yaml_dict, **full_dict)
                     except jinja2.exceptions.UndefinedError as e:
                         # Leave a templated field as-is in the resulting dict
-                        # print(f'Error: {e}')
-                        print(f"Preserved template: {k}: {template}")
-                        # for a, b in full_dict.items():
-                        #    print(f'    {a}: {b}')
                         pass
                     except TypeError:
-                        print(f"Preserved template: {k}: {template}")
+                        pass
                     except ZeroDivisionError:
-                        print(f"Preserved template: {k}: {template}")
+                        pass
                     except:
                         print(f"{k}: {template}")
                         raise
@@ -170,7 +164,6 @@ def extend_yaml(yaml_dict, full_dict=None):
                     # Put the full template line back together as it was,
                     # filled or not
                     yaml_dict[k] = "".join(data)
-                    print(f"    {k}: {yaml_dict[k]}")
 
 
 ##########
