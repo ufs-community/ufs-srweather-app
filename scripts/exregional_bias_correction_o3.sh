@@ -334,7 +334,7 @@ esac
 rm_vrfy -rf tmpfile
 
 while [ "${fhr}" -le "${endfhr}" ]; do
-  fhr2d=$( printf "%02d" "${fhr2d}" )
+  fhr2d=$( printf "%02d" "${fhr}" )
   
   cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
 
