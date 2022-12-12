@@ -25,9 +25,9 @@ copyright = '2020, '
 author = ' '
 
 # The short X.Y version
-version = ''
+version = 'develop'
 # The full version, including alpha/beta/rc tags
-release = 'v1.0'
+release = 'Develop Branch Documentation'
 
 numfig = True
 
@@ -144,6 +144,9 @@ latex_elements = {
         \usepackage[defaultsans]{lato}
         \usepackage{inconsolata}
     ''',
+    # Release name prefix
+      'releasename': ' ',
+
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
