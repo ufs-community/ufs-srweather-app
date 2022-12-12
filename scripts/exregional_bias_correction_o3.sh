@@ -162,9 +162,9 @@ mkdir_vrfy -p ${DATA}/data/site-lists.interp
 mkdir_vrfy -p ${DATA}/out/ozone/${yyyy}
 mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
-cp_vrfy ${PARMaqm_utils}/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
-cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-cp_vrfy ${PARMaqm_utils}/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
+cp_vrfy ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp_vrfy ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 ${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
@@ -177,7 +177,7 @@ cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated
 #-----------------------------------------------------------------------------
 
 mkdir_vrfy -p ${DATA}/data/sites
-cp_vrfy ${PARMaqm_utils}/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
  
 PREP_STEP
 ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
@@ -343,7 +343,7 @@ while [ "${fhr}" -le "${endfhr}" ]; do
   if [ "${fhr}" -le "07" ]; then
     cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 >> tmpfile.1hr
   else
-    ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
     wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
   fi
   (( fhr=fhr+1 ))

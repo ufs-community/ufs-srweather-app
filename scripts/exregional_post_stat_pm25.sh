@@ -114,7 +114,10 @@ id_gribdomain=${id_domain}
 EOF1
 
 # convert from netcdf to grib2 format
-${EXECdir}/aqm_post_grib2 ${PDY} ${cyc}
+PREP_STEP
+${EXECdir}/aqm_post_grib2 ${PDY} ${cyc}  "\
+Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+POST_STEP
 
 cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.1hpm25.${id_domain}.grib2
 
@@ -215,7 +218,10 @@ EOF1
     fi
   fi
 
-  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1}
+  PREP_STEP
+  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1}  "\
+  Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+  POST_STEP
 
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PMTF" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PDMAX1" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2
@@ -231,7 +237,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25-max.${grid}.grib2
 
     # Add WMO header for daily 1h PM2.5 and 24hr_ave PM2.5
-    rm -rf filesize
+    rm_vrfy -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.1hpm25-max.${grid}.grib2
@@ -248,7 +254,7 @@ EOF1
     export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
-    rm filesize
+    rm_vrfy -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2

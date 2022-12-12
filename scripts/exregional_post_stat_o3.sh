@@ -109,7 +109,10 @@ id_gribdomain=${id_domain}
 EOF1
 
 # convert from netcdf to grib2 format
-${EXECdir}/aqm_post_grib2 ${PDY} ${cyc}
+PREP_STEP
+${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
+Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+POST_STEP
 
 fhr=01
 case ${cyc} in
@@ -224,7 +227,10 @@ EOF1
     fi
   fi
 
-  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1}
+  PREP_STEP
+  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1}  "\
+  Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+  POST_STEP
 
   # split into max_1h and max_8h files and copy to grib227
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2

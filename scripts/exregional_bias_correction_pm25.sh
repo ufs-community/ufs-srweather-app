@@ -161,9 +161,9 @@ mkdir_vrfy -p ${DATA}/data/site-lists.interp
 mkdir_vrfy -p ${DATA}/out/pm25/${yyyy}
 mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-cp_vrfy ${PARMaqm_utils}/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
-cp_vrfy ${PARMaqm_utils}/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-cp_vrfy ${PARMaqm_utils}/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
+cp_vrfy ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp_vrfy ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY}  || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
@@ -177,9 +177,9 @@ cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/
 
 mkdir_vrfy -p ${DATA}/data/sites
 
-cp_vrfy ${PARMaqm_utils}/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
-cp_vrfy ${PARMaqm_utils}/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
-cp_vrfy ${PARMaqm_utils}/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
+cp_vrfy ${PARMaqm_utils}/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
 PREP_STEP
 ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
