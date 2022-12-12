@@ -334,17 +334,17 @@ esac
 rm_vrfy -rf tmpfile
 
 while [ "${fhr}" -le "${endfhr}" ]; do
-  fhr=$( printf "%02d" "${fhr}" )
+  fhr2d=$( printf "%02d" "${fhr2d}" )
   
-  cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 ${COMOUT}
+  cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
 
   # create GRIB file to convert to grid 227 then to GRIB2 for NDFD
-  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 >> tmpfile
+  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile
   if [ "${fhr}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 >> tmpfile.1hr
+    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile.1hr
   else
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
   fi
   (( fhr=fhr+1 ))
 done

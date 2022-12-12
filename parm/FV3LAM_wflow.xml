@@ -1110,6 +1110,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_O3_TN;" "&JOBSdir;/JREGIONAL_POST_STAT_O3"</command>
     <nodes>{{ nnodes_post_stat_o3 }}:ppn={{ ppn_post_stat_o3 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_post_stat_o3 }}</memory>
+{%- endif %}
     <walltime>{{ wtime_post_stat_o3 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&POST_STAT_O3_TN;</jobname>
@@ -1138,6 +1141,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&POST_STAT_PM25_TN;" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"</command>
     <nodes>{{ nnodes_post_stat_pm25 }}:ppn={{ ppn_post_stat_pm25 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_post_stat_pm25 }}</memory>
+{%- endif %}    
     <walltime>{{ wtime_post_stat_pm25 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&POST_STAT_PM25_TN;</jobname>
@@ -1166,6 +1172,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&BIAS_CORRECTION_O3_TN;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"</command>
     <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_bias_correction_o3 }}</memory>
+{%- endif %}
     <walltime>{{ wtime_bias_correction_o3 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&BIAS_CORRECTION_O3_TN;</jobname>
@@ -1194,6 +1203,9 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&BIAS_CORRECTION_PM25_TN;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"</command>
     <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_bias_correction_pm25 }}</memory>
+{%- endif %}
     <walltime>{{ wtime_bias_correction_pm25 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&BIAS_CORRECTION_PM25_TN;</jobname>

@@ -228,7 +228,7 @@ EOF1
   fi
 
   PREP_STEP
-  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1}  "\
+  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} || print_err_msg_exit "\
   Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
   POST_STEP
 

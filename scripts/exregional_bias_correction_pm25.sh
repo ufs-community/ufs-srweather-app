@@ -80,6 +80,7 @@ fi
 #-----------------------------------------------------------------------
 #
 DATA="${DATA}/tmp_BIAS_CORRECTION_PM25"
+rm_vrfy -rf $DATA
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
@@ -113,9 +114,9 @@ mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
 mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
 mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 
-cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -318,8 +319,8 @@ case ${cyc} in
 esac
 
 while [ "${fhr}" -le "${endfhr}" ]; do
-  fhr=$( printf "%02d" "${fhr}" )
-  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr}.${id_grib}.grib2 >> tmpfile_pm25_bc
+  fhr2d=$( printf "%02d" "${fhr}" )
+  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile_pm25_bc
   (( fhr=fhr+1 ))
 done
 
@@ -380,7 +381,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp
-  tocgrib2super < ${PARMaqm}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
+  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
   echo `ls -l  ${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp | awk '{print $5} '` > filesize
   export XLFRTEOPTS="unit_vars=yes"
