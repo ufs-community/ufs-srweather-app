@@ -1057,6 +1057,18 @@ def setup(USHdir, user_config_fn="config.yaml"):
         )
 
     #
+    # -----------------------------------------------------------------------
+    # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
+    # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
+    # tasks, create symlinks under the FIXlam directory to pregenerated grid,
+    # orography, and surface climatology files.
+    #
+    # -----------------------------------------------------------------------
+    #
+    fixlam = workflow_config["FIXlam"]
+    mkdir_vrfy(f' -p "{fixlam}"')
+
+    #
     # Use the pregenerated domain files if the RUN_TASK_MAKE* tasks are
     # turned off. Link the files, and check that they all contain the
     # same resolution input.
@@ -1123,18 +1135,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
-
-    #
-    # -----------------------------------------------------------------------
-    # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
-    # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
-    # tasks, create symlinks under the FIXlam directory to pregenerated grid,
-    # orography, and surface climatology files.
-    #
-    # -----------------------------------------------------------------------
-    #
-    fixlam = workflow_config["FIXlam"]
-    mkdir_vrfy(f' -p "{fixlam}"')
 
     #
     # -----------------------------------------------------------------------
