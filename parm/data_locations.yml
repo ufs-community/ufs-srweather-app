@@ -93,7 +93,7 @@ FV3GFS:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
-          - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
+          - com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
       nemsio:
         anl:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nemsioa.tar
