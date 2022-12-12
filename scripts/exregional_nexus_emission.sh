@@ -183,11 +183,8 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
     cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_linker.py .
     cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_control_tilefix.py .
     mkdir_vrfy -p ${DATAinput}/NEI2016v1
-    mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2020-07
-    mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2020-07/${mm}
     mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07
     mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07/${mm}
-    ./nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2020-07"
     ./nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
     ./nexus_nei2016_control_tilefix.py -f NEXUS_Config.rc -d ${yyyymmdd}
 fi
