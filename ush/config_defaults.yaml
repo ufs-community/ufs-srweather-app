@@ -1331,7 +1331,6 @@ task_make_orog:
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
   OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join }}'
-  TOPO_DIR: ""
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1346,7 +1345,6 @@ task_make_sfc_climo:
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
   SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join }}'
-  SFC_CLIMO_INPUT_DIR: ""
 
 #----------------------------
 # EXTRN ICS config parameters
