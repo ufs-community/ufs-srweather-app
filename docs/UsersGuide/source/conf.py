@@ -25,9 +25,9 @@ copyright = '2020, '
 author = ' '
 
 # The short X.Y version
-version = ''
+version = 'v2.1'
 # The full version, including alpha/beta/rc tags
-release = 'v1.0'
+release = 'v2.1.0'
 
 numfig = True
 
