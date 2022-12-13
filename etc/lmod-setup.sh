@@ -59,6 +59,11 @@ elif [ "$L_MACHINE" = odin ]; then
    module --initial_load --no_redirect restore
    export MODULEPATH="/oldscratch/ywang/external/hpc-stack/modulefiles/mpi/intel/2020/cray-mpich/7.7.16:/oldscratch/ywang/external/hpc-stack/modulefiles/compiler/intel/2020:/oldscratch/ywang/external/hpc-stack/modulefiles/core:/oldscratch/ywang/external/hpc-stack/modulefiles/stack:/opt/cray/pe/perftools/21.02.0/modulefiles:/opt/cray/ari/modulefiles:/opt/cray/pe/craype-targets/default/modulefiles:/opt/cray/pe/modulefiles:/opt/cray/modulefiles:/opt/modulefiles"
 
+elif [ "$L_MACHINE" = ami ]; then
+   export BASH_ENV="/usr/share/lmod/lmod/init/bash"
+   source $BASH_ENV
+   export MODULEPATH=/opt/spack-stack/spack/share/spack/modules/linux-ubuntu20.04-skylake_avx512:/etc/lmod/modules:/usr/share/lmod/lmod/modulefiles
+   
 else
    export BASH_ENV="/usr/share/lmod/lmod/init/bash"
    source $BASH_ENV
