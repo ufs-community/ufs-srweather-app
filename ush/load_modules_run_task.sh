@@ -107,12 +107,14 @@ if [ -f ${VERSION_FILE} ]; then
 fi
 
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
-module use "${HOMEdir}/modulefiles"
-module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+if [ "${task_name}" != "nexus_post_split" ]; then
+  module use "${HOMEdir}/modulefiles"
+  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
 Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
+fi
 #
 #-----------------------------------------------------------------------
 #
