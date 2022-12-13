@@ -1,6 +1,6 @@
 platform:
   WORKFLOW_MANAGER: rocoto
-  NCORES_PER_NODE: 44
+  NCORES_PER_NODE: 36
   SCHED: slurm
   CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/obs_data/ccpa/proc
   MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/v2p1/obs_data/mrms/proc
@@ -39,10 +39,10 @@ task_run_fcst:
   FIXgsm: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_am
   FIXlut: /contrib/EPIC/UFS_SRW_App/v2p1/fix/fix_lut
   WRITE_DOPOST: TRUE
-  PPN_RUN_FCST: 44
+  PPN_RUN_FCST: 36
   OMP_NUM_THREADS_RUN_FCST: 1
   LAYOUT_X: 4
-  LAYOUT_Y: 10
+  LAYOUT_Y: 8
   WRTCMP_write_tasks_per_group: 4
 task_run_post:
   NNODES_RUN_POST: 1
