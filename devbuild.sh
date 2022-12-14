@@ -370,6 +370,7 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
   mkdir -p ${EXTRN_BUILD_MOD_DIR}
   if [ "${BUILD_UFS}" = "on" ]; then
     cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-weather-model.lua"
+    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_common.lua ${EXTRN_BUILD_MOD_DIR}
   fi
   if [ "${BUILD_UFS_UTILS}" = "on" ]; then
     cp "${SRW_DIR}/sorc/UFS_UTILS/modulefiles/build.${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-utils.lua"
