@@ -2406,8 +2406,11 @@ cpl_aqm_parm:
 # WARMSTART_CYCLE_DIR:
 # Path to the directory where RESTART dir is located for warm start
 #
+# AQM_AIRNOW_HIST_DIR:
+# Path to the directory where the historical AIRNOW data are located
+#
 # COMINairnow:
-# Path to the AIRNOW observation data
+# Path to the real-time AIRNOW observation data
 #
 #-----------------------------------------------------------------------
 #
@@ -2450,5 +2453,6 @@ cpl_aqm_parm:
   COLDSTART: true
   WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
-  COMINairnow: "/path/to/airnow/data"
+  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+  COMINairnow: "/path/to/real/time/airnow/data"
   COMINgfs_BASEDIR: ""
