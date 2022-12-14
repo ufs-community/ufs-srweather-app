@@ -364,6 +364,25 @@ if [ ! -z "${DISABLE_OPTIONS}" ]; then
 fi
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCPL_AQM=ON -DBUILD_POST_STAT=${BUILD_POST_STAT}"
+
+  # Copy module files to designated directory
+  EXTRN_BUILD_MOD_DIR="${SRW_DIR}/modulefiles/extrn_comp_build"
+  mkdir -p ${EXTRN_BUILD_MOD_DIR}
+  if [ "${BUILD_UFS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-weather-model.lua"
+  fi
+  if [ "${BUILD_UFS_UTILS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/UFS_UTILS/modulefiles/build.${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-utils.lua"
+  fi
+  if [ "${BUILD_UPP}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/UPP/modulefiles/${PLATFORM}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_upp.lua" 
+  fi
+  if [ "${BUILD_NEXUS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/AQM-utils/parm/nexus_modulefiles/${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_nexus.lua"
+  fi
+  if [ "${BUILD_AQM_UTILS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/AQM-utils/modulefiles/build_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_aqm-utils.lua"
+  fi
 fi
 
 # make settings
