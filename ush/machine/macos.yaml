@@ -12,5 +12,7 @@ platform:
   FIXlut: /Users/username/DATA/UFS/fix/fix_lut
   FIXorg: /Users/username/DATA/UFS/fix/fix_orog
   FIXsfc: /Users/username/DATA/UFS/fix/fix_sfc_climo
+  FIXshp: /Users/username/DATA/UFS/NaturalEarth
 data:
-  FV3GFS: /Users/username/DATA/UFS/FV3GFS
+  ics_lbcs:
+    FV3GFS: /Users/username/DATA/UFS/FV3GFS

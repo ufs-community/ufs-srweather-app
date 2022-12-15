@@ -26,5 +26,7 @@ platform:
   FIXlut: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/NaturalEarth
 data:
-  FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
+  ics_lbcs:
+    FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}

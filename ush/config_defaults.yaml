@@ -365,6 +365,7 @@ platform:
   FIXlut: ""
   FIXorg: ""
   FIXsfc: ""
+  FIXshp: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -861,6 +862,9 @@ workflow_switches:
   # to be run. If this flag is set, both ensemble-stat point verification
   # and point verification of ensemble-stat output is computed.
   #
+  # RUN_TASK_PLOT_ALLVARS:
+  # Flag that determines whether to run python plotting scripts
+  #
   #-----------------------------------------------------------------------
   #
   RUN_TASK_MAKE_GRID: true
@@ -882,6 +886,7 @@ workflow_switches:
   RUN_TASK_VX_ENSGRID: false
   RUN_TASK_VX_ENSPOINT: false
 
+  RUN_TASK_PLOT_ALLVARS: false
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -1494,8 +1499,10 @@ task_run_fcst:
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
   # Default=0: restart files are produced at the end of a forecast run
-  # For example, RESTART_INTERVAL: 1: restart files are produced every hour
-  # with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
   #
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 
@@ -1799,7 +1806,7 @@ task_run_vx_gridstat:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 1
+  MAXTRIES_VX_GRIDSTAT: 2
 
 #----------------------------
 # VX_GRIDSTAT_REFC config parameters
@@ -1810,7 +1817,7 @@ task_run_vx_gridstat_refc:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 1
+  MAXTRIES_VX_GRIDSTAT_REFC: 2
 
 #----------------------------
 # VX_GRIDSTAT_RETOP config parameters
@@ -1821,7 +1828,7 @@ task_run_vx_gridstat_retop:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 1
+  MAXTRIES_VX_GRIDSTAT_RETOP: 2
 
 #----------------------------
 # VX_GRIDSTAT_03h config parameters
@@ -1832,7 +1839,7 @@ task_run_vx_gridstat_03h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 1
+  MAXTRIES_VX_GRIDSTAT_03h: 2
 
 #----------------------------
 # VX_GRIDSTAT_06h config parameters
@@ -1843,7 +1850,7 @@ task_run_vx_gridstat_06h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 1
+  MAXTRIES_VX_GRIDSTAT_06h: 2
 
 #----------------------------
 # VX_GRIDSTAT_24h config parameters
@@ -1854,7 +1861,7 @@ task_run_vx_gridstat_24h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 1
+  MAXTRIES_VX_GRIDSTAT_24h: 2
 
 #----------------------------
 # VX_POINTSTAT config parameters
@@ -1865,22 +1872,22 @@ task_run_vx_pointstat:
   PPN_VX_POINTSTAT: 1
   MEM_VX_POINTSTAT: 2G
   WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 1
+  MAXTRIES_VX_POINTSTAT: 2
 
 #----------------------------
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
   VX_ENSGRID_TN: "run_ensgridvx"
-  MAXTRIES_VX_ENSGRID: 1
+  MAXTRIES_VX_ENSGRID: 2
   VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 1
+  MAXTRIES_VX_ENSGRID_03h: 2
   VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 1
+  MAXTRIES_VX_ENSGRID_06h: 2
   VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 1
+  MAXTRIES_VX_ENSGRID_24h: 2
   VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 1
+  MAXTRIES_VX_ENSGRID_RETOP: 2
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
@@ -1896,7 +1903,7 @@ task_run_vx_ensgrid_refc:
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 1
+  MAXTRIES_VX_ENSGRID_REFC: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN config parameters
@@ -1907,7 +1914,7 @@ task_run_vx_ensgrid_mean:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 1
+  MAXTRIES_VX_ENSGRID_MEAN: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_03h config parameters
@@ -1918,7 +1925,7 @@ task_run_vx_ensgrid_mean_03h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_06h config parameters
@@ -1929,7 +1936,7 @@ task_run_vx_ensgrid_mean_06h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_24h config parameters
@@ -1940,7 +1947,7 @@ task_run_vx_ensgrid_mean_24h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB config parameters
@@ -1949,13 +1956,13 @@ task_run_vx_ensgrid_prob:
   VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
   NNODES_VX_ENSGRID_PROB: 1
   VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
+  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
   VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
+  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 1
+  MAXTRIES_VX_ENSGRID_PROB: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_03h config parameters
@@ -1966,7 +1973,7 @@ task_run_vx_ensgrid_prob_03h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 1
+  MAXTRIES_VX_ENSGRID_PROB_03h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_06h config parameters
@@ -1977,7 +1984,7 @@ task_run_vx_ensgrid_prob_06h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 1
+  MAXTRIES_VX_ENSGRID_PROB_06h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_24h config parameters
@@ -1988,7 +1995,7 @@ task_run_vx_ensgrid_prob_24h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 1
+  MAXTRIES_VX_ENSGRID_PROB_24h: 2
 
 #----------------------------
 # VX_ENSPOINT config parameters
@@ -1999,7 +2006,7 @@ task_run_vx_enspoint:
   PPN_VX_ENSPOINT: 1
   MEM_VX_ENSPOINT: 2G
   WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 1
+  MAXTRIES_VX_ENSPOINT: 2
 
 #----------------------------
 # VX_ENSPOINT_MEAN config parameters
@@ -2010,7 +2017,7 @@ task_run_vx_enspoint_mean:
   PPN_VX_ENSPOINT_MEAN: 1
   MEM_VX_ENSPOINT_MEAN: 2G
   WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 1
+  MAXTRIES_VX_ENSPOINT_MEAN: 2
 
 #----------------------------
 # VX_ENSPOINT_PROB config parameters
@@ -2021,7 +2028,35 @@ task_run_vx_enspoint_prob:
   PPN_VX_ENSPOINT_PROB: 1
   MEM_VX_ENSPOINT_PROB: 2G
   WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 1
+  MAXTRIES_VX_ENSPOINT_PROB: 2
+
+#----------------------------
+# PLOT_ALLVARS config parameters
+#-----------------------------
+task_plot_allvars:
+  PLOT_ALLVARS_TN: "plot_allvars"
+  NNODES_PLOT_ALLVARS: 1
+  PPN_PLOT_ALLVARS: 24
+  WTIME_PLOT_ALLVARS: 01:00:00
+  MAXTRIES_PLOT_ALLVARS: 1
+  #-------------------------------------------------------------------------
+  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
+  # from postprocessing are located. Make this a template to compare
+  # multiple cycle and dates. COMOUT_REF should end with:
+  #    nco mode: $PDY/$cyc
+  #    community mode: $PDY$cyc/postprd
+  # We don't do this inside the code, so that we can compare nco vs com runs.
+  #-------------------------------------------------------------------------
+  COMOUT_REF: ""
+  #------------------------------
+  # Plot fcts start and increment
+  #------------------------------
+  PLOT_FCST_START: 0
+  PLOT_FCST_INC: 3
+  #-----------------------------------
+  # By default the end is FCST_LEN_HRS
+  #-----------------------------------
+  PLOT_FCST_END: ""
 
 
 #----------------------------

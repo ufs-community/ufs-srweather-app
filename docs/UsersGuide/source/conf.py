@@ -25,9 +25,9 @@ copyright = '2020, '
 author = ' '
 
 # The short X.Y version
-version = ''
+version = 'develop'
 # The full version, including alpha/beta/rc tags
-release = 'v1.0'
+release = 'Develop Branch Documentation'
 
 numfig = True
 
@@ -144,6 +144,9 @@ latex_elements = {
         \usepackage[defaultsans]{lato}
         \usepackage{inconsolata}
     ''',
+    # Release name prefix
+      'releasename': ' ',
+
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -206,6 +209,7 @@ epub_exclude_files = ['search.html']
 intersphinx_mapping = {
    'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
    'met': ('https://met.readthedocs.io/en/latest/', None),
+   'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
 }
 
 # -- Options for todo extension ----------------------------------------------

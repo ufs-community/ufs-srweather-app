@@ -29,4 +29,5 @@ platform:
   FIXlut: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /work/noaa/fv3-cam/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /work/noaa/fv3-cam/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads

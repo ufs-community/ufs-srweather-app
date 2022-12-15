@@ -158,8 +158,12 @@ def setup():
 
     # ics and lbcs
     def get_location(xcs, fmt):
-        if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
-            v = machine_cfg["data"][xcs]
+        if (
+             "data" in machine_cfg
+             and ("ics_lbcs" in machine_cfg["data"])
+             and (xcs in machine_cfg["data"]["ics_lbcs"])
+        ):
+            v = machine_cfg["data"]["ics_lbcs"][xcs]
             if not isinstance(v, dict):
                 return v
             else:

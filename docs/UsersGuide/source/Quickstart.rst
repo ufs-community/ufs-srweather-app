@@ -13,6 +13,7 @@ SRW App users who are not working on a `Level 1 <https://github.com/ufs-communit
 
 Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
+.. _QuickBuildRun:
 
 Building and Running the UFS SRW Application 
 ===============================================

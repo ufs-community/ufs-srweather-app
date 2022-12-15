@@ -31,6 +31,7 @@ platform:
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 cpl_aqm_parm:
   PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt

@@ -6,6 +6,7 @@ user:
   MACHINE: hera
   ACCOUNT: an_account
 workflow:
+  USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: test_nco
   CCPP_PHYS_SUITE: FV3_GFS_v16
   PREDEF_GRID_NAME: RRFS_CONUS_25km
@@ -19,6 +20,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
+  RUN_TASK_PLOT_ALLVARS: false
 nco:
   NET: rrfs
   model_ver: v1.0
@@ -35,5 +37,7 @@ task_run_fcst:
   WTIME_RUN_FCST: 01:00:00
   WRITE_DOPOST: true
   QUILTING: true
+task_plot_allvars:
+  COMOUT_REF: ""
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km

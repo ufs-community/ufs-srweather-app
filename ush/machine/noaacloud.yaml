@@ -5,9 +5,9 @@ platform:
   CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ccpa/proc
   MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/mrms/proc
   NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ndas/proc
-  METPLUS_PATH: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/metplus-4.1.0-t4mkmbg
+  METPLUS_PATH: /contrib/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/metplus
   MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/met-10.1.0-mqwqjxt
+  MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/met
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs
   RUN_CMD_SERIAL: time
@@ -23,6 +23,8 @@ platform:
   FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /contrib/EPIC/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
-  FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
+  ics_lbcs:
+    FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
