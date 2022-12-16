@@ -132,8 +132,8 @@ cp_vrfy ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py .
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy ${ARL_NEXUS_DIR}/utils/run_nco_combine_ant_bio.sh .
-./run_nco_combine_ant_bio.sh NEXUS_Expt_pretty.nc NEXUS_Expt.nc
+cp_vrfy ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py .
+./combine_ant_bio.py NEXUS_Expt_pretty.nc NEXUS_Expt.nc
 
 #
 #-----------------------------------------------------------------------
