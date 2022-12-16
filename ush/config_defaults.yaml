@@ -1049,7 +1049,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else [platform.DOMAIN_PREGEN_BASEDIR, workflow.PREDEF_GRID_NAME]|path_join}}'
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else "" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1330,7 +1330,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join }}'
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if workflow_switches.RUN_TASK_MAKE_OROG else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1344,7 +1344,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join }}'
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if workflow_switches.RUN_TASK_MAKE_SFC_CLIMO else "" }}'
 
 #----------------------------
 # EXTRN ICS config parameters

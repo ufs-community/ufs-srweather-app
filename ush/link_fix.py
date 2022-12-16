@@ -241,13 +241,20 @@ def link_fix(
 
     for pattern in fps:
         files = glob.glob(pattern)
+        if not files:
+            print_err_msg_exit(
+                f"""
+                Trying to link files in group: {file_group} 
+                No files were found matching the pattern {pattern}.
+                """
+            )
         for fp in files:
 
             fn = os.path.basename(fp)
 
             regex_search = "^C([0-9]*).*"
             res = find_pattern_in_str(regex_search, fn)
-            if res is None:
+            if not res:
                 print_err_msg_exit(
                     f"""
                     The resolution could not be extracted from the current file's name.  The

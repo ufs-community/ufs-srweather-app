@@ -1079,20 +1079,31 @@ def setup(USHdir, user_config_fn="config.yaml"):
         res_in_fns = ""
         switch = f"RUN_TASK_MAKE_{prep_task}"
         # If the user doesn't want to run the given task, link the fix
-        # file
+        # file from the staged files.
         if not workflow_switches[switch]:
-            task_dir = os.path.join(pregen_basedir, predef_grid_name)
             sect_key = f"task_make_{prep_task.lower()}"
             dir_key = f"{prep_task}_DIR"
-            expt_config[sect_key][dir_key] = task_dir
+            task_dir = expt_config[sect_key].get(dir_key)
 
-            msg = dedent(
-                f"""
-               {dir_key} not specified!
-               Setting {dir_key} = {task_dir}
-            """
-            )
-            logger.warning(msg)
+            if not task_dir:
+                task_dir = os.path.join(pregen_basedir, predef_grid_name)
+                expt_config[sect_key][dir_key] = task_dir
+                msg = dedent(
+                    f"""
+                   {dir_key} will use pre-generated files.
+                   Setting {dir_key} = {task_dir}
+                   """
+                )
+                logger.warning(msg)
+
+            if not os.path.exists(task_dir):
+                msg = dedent(
+                    f"""
+                    File directory does not exist!
+                    {dir_key} needs {task_dir}
+                    """
+                )
+                raise FileNotFoundError(msg)
 
             # Link the fix files and check that their resolution is
             # consistent
@@ -1108,7 +1119,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 run_task=False,
                 sfc_climo_fields=fixed_files["SFC_CLIMO_FIELDS"],
             )
-            if res_in_fixlam_filenames is None:
+            if not res_in_fixlam_filenames:
                 res_in_fixlam_filenames = res_in_fns
             else:
                 if res_in_fixlam_filenames != res_in_fns:
