@@ -91,6 +91,9 @@ Workflow task names.
 {%- if run_task_aqm_lbcs %}
 <!ENTITY AQM_LBCS_TN               "{{ aqm_lbcs_tn }}">
 {%- endif %}
+{%- if run_task_nexus_gfs_sfc %}
+<!ENTITY NEXUS_GFS_SFC_TN         "{{ nexus_gfs_sfc_tn }}">
+{%- endif %}
 {%- if run_task_nexus_emission %}
 <!ENTITY NEXUS_EMISSION_TN         "{{ nexus_emission_tn }}">
 <!ENTITY NEXUS_POST_SPLIT_TN       "{{ nexus_post_split_tn }}">
@@ -353,6 +356,32 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+{%- if run_task_nexus_gfs_sfc %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&NEXUS_GFS_SFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_gfs_sfc }}">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_GFS_SFC_TN;" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"</command>
+    <nodes>{{ nnodes_nexus_gfs_sfc }}:ppn={{ ppn_nexus_gfs_sfc }}</nodes>
+    <walltime>{{ wtime_nexus_gfs_sfc }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&NEXUS_GFS_SFC_TN;</jobname>
+    <join>&LOGDIR;/&NEXUS_GFS_SFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+</task>
+{%- endif %}
 {%- if run_task_nexus_emission %}
 <!--
 ************************************************************************
@@ -385,6 +414,11 @@ MODULES_RUN_TASK_FP script.
         <envar><name>nspt</name><value>#nspt#</value></envar>
 	<envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 	<envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+        <dependency>
+          <taskdep task="&NEXUS_GFS_SFC_TN;"/>    
+        </dependency>
+
       </task>
   </metatask>      
   <task name="&NEXUS_POST_SPLIT_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">

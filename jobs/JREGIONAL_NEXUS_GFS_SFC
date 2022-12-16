@@ -1,0 +1,135 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script gets fire emission data files from disk or HPSS
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh "TRUE"
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that copies or fetches RAVE fire
+emission data files from disk, or HPSS.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Set the external model start time
+#
+#-----------------------------------------------------------------------
+#
+export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
+yyyymmdd=${PDY}
+hh=${cyc}
+export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+
+#
+#-----------------------------------------------------------------------
+#
+# Check whether GFS_SFC_CDATE data files are available on the specified 
+# cycle date and time on HPSS.
+#
+#-----------------------------------------------------------------------
+#
+CDATE_min="2021032100"
+if [ "$GFS_SFC_CDATE" -lt "$CDATE_min" ]; then
+  print_info_msg "
+========================================================================  
+GFS surface data (NetCDF) are not available on HPSS for this date.
+CDATE:     \"${GFS_SFC_CDATE}\"
+CDATE_min: \"${CDATE_min}\"
+
+Therefore, this task will be skipped and MERRA2 data will be used for
+NEXUS_EMISSION.
+========================================================================"
+
+  exit 0
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Create the directory where the RAVE fire emission files should be stored
+#
+#-----------------------------------------------------------------------
+#
+export GFS_SFC_STAGING_DIR="${COMINext}/GFS_SFC"
+mkdir_vrfy -p "${GFS_SFC_STAGING_DIR}"
+#
+#-----------------------------------------------------------------------
+#
+# Set the run directory
+#
+#-----------------------------------------------------------------------
+#
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+mkdir_vrfy -p "${DATA}"
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary variables.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_nexus_gfs_sfc.sh || \
+print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

@@ -2238,6 +2238,7 @@ cpl_aqm_parm:
   #
   RUN_TASK_AQM_ICS: false
   RUN_TASK_AQM_LBCS: false
+  RUN_TASK_NEXUS_GFS_SFC: false
   RUN_TASK_NEXUS_EMISSION: false
   RUN_TASK_FIRE_EMISSION: false
   RUN_TASK_POINT_SOURCE: false
@@ -2259,6 +2260,13 @@ cpl_aqm_parm:
   WTIME_AQM_LBCS: 00:30:00
   MAXTRIES_AQM_LBCS: 2
 
+  NEXUS_GFS_SFC_TN: "nexus_gfs_sfc"
+  NNODES_NEXUS_GFS_SFC: 1
+  PPN_NEXUS_GFS_SFC: 1
+  MEM_NEXUS_GFS_SFC: 2G
+  WTIME_NEXUS_GFS_SFC: 00:30:00
+  MAXTRIES_NEXUS_GFS_SFC: 2
+   
   NEXUS_EMISSION_TN: "nexus_emission"
   NNODES_NEXUS_EMISSION: 4
   PPN_NEXUS_EMISSION: "" # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
@@ -2432,6 +2440,15 @@ cpl_aqm_parm:
 # NEXUS_GRID_FN:
 # File name of the input grid_spec file of nexus
 #
+# NEXUS_GFS_SFC_OFFSET_HRS: 0
+# Time offset when retrieving gfs surface data files
+# 
+# NUM_SPLIT_NEXUS:
+# Number of split nexus emission tasks
+#
+# NEXUS_GFS_SFC_ARCHV_DIR: 
+# Path to archive directory for gfs surface files
+#
 # PT_SRC_BASEDIR:
 # Parent directory containing point source files for CONUS/AK/HI
 #
@@ -2482,6 +2499,8 @@ cpl_aqm_parm:
   NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
+  NEXUS_GFS_SFC_OFFSET_HRS: 0
+  NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
   PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
 
