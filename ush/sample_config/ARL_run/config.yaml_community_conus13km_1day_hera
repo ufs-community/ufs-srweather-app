@@ -61,7 +61,7 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  DO_AQM_FENGSHA: false
+  DO_AQM_FENGSHA: true
   AQM_FENGSHA_DIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/Online_CMAQ
   AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_FENGSHA_FILE_SUFFIX: .nc
