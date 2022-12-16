@@ -151,7 +151,7 @@ dust_format: netcdf
 dust_file: {{ aqm_rc_fengsha_file_fp }}
 dust_frequency: monthly
 dust_alpha: 15.0
-fengsha_species::
+dust_species::
     CLAYF       1.00000   clayfrac     1
     SANDF       1.00000   sandfrac     1
     DRAG        1.00000   albedo_drag  1
