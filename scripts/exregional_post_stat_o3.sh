@@ -167,7 +167,10 @@ for grid in 227 196 198;do
       cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
       cp_vrfy ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUT}
     done
-
+  else
+    for var in 1ho3 awpozcon;do
+      cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+    done
   fi
 done
 
