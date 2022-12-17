@@ -97,9 +97,11 @@ cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
+USE_GFS_SFC="FALSE"
 if [ -d "${COMINext}/GFS_SFC" ]; then
   if [ "$(ls -A ${COMINext}/GFS_SFC)" ]; then
     ln_vrfy -sf "${COMINext}/GFS_SFC" .
+    USE_GFS_SFC="TRUE"
   fi
 fi
 #
