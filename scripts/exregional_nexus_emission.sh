@@ -76,7 +76,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_AQM}\'."
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -91,6 +90,18 @@ DATAinput="${DATA}/input"
 mkdir_vrfy -p "$DATAinput"
 
 cd_vrfy $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Link GFS surface data files to the tmp directory if they exist
+#
+#-----------------------------------------------------------------------
+#
+if [ -d "${COMINext}/GFS_SFC" ]; then
+  if [ "$(ls -A ${COMINext}/GFS_SFC)" ]; then
+    ln_vrfy -sf "${COMINext}/GFS_SFC" .
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
