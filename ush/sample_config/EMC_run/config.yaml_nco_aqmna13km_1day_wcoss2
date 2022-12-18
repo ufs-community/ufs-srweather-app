@@ -8,12 +8,12 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
-  EXPT_SUBDIR: aqm_test_post
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
-  DATE_FIRST_CYCL: '2022120600'
-  DATE_LAST_CYCL: '2022120606'
+  EXPT_SUBDIR: aqm_test_72h_v16
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  DATE_FIRST_CYCL: '2022121500'
+  DATE_LAST_CYCL: '2022121506'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 12
+  FCST_LEN_HRS: 72
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
@@ -23,7 +23,7 @@ nco:
   envir: prod
   NET: aqm
   model_ver: v7.0
-  RUN: aqm_test
+  RUN: aqm_test_v16
 #  OPSROOT: /lfs/h2/emc/stmp/chan-hoo.jeon/NCO_OUTPUT_aqm
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
@@ -45,13 +45,14 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  WTIME_GET_EXTRN_LBCS: 02:00:00
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6
-  WTIME_RUN_FCST: 02:00:00
+  WTIME_RUN_FCST: 04:00:00
   QUILTING: true
   PRINT_ESMF: false
   PREDEF_GRID_NAME: AQM_NA_13km

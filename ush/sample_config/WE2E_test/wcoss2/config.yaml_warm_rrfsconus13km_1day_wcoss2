@@ -9,7 +9,7 @@ workflow:
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
   EXPT_SUBDIR: aqm_warm_conus13_1day
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080612'
   DATE_LAST_CYCL: '2019080612'
   INCR_CYCL_FREQ: 6

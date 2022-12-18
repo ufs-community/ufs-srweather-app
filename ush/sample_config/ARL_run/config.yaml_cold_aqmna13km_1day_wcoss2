@@ -9,7 +9,7 @@ workflow:
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_BASEDIR: /lfs/h2/oar/ptmp/Patrick.C.Campbell/expt_dirs
   EXPT_SUBDIR: aqm_cold_aqmna13_1day
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080512'
   DATE_LAST_CYCL: '2019080512'
   FCST_LEN_HRS: 6
