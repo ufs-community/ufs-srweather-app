@@ -416,10 +416,11 @@ MODULES_RUN_TASK_FP script.
 	<envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 	<envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
+{%- if run_task_nexus_gfs_sfc %}	
         <dependency>
           <taskdep task="&NEXUS_GFS_SFC_TN;"/>    
-        </dependency>
-
+	</dependency>
+{%- endif %}
       </task>
   </metatask>      
   <task name="&NEXUS_POST_SPLIT_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">
