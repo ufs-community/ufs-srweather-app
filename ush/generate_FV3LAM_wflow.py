@@ -13,6 +13,8 @@ from python_utils import (
     log_info,
     import_vars,
     export_vars,
+    load_config_file,
+    update_dict,
     cp_vrfy,
     ln_vrfy,
     mkdir_vrfy,
@@ -27,6 +29,7 @@ from python_utils import (
     set_env_var,
     get_env_var,
     lowercase,
+    flatten_dict,
 )
 
 from setup import setup
@@ -37,12 +40,12 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
+def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
     Args:
-        USHdir  (str): The full path of the ush/ directory where this script is located
+        ushdir  (str): The full path of the ush/ directory where this script is located
         logfile (str): The name of the file where logging is written
     Returns:
         None
@@ -64,12 +67,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    var_defs_dict = setup()
+    expt_config = setup(ushdir)
 
-    # export/import all environment variables
-    export_vars(source_dict=var_defs_dict)
-    import_vars(dictionary=var_defs_dict)
-
+    verbose = expt_config["workflow"]["VERBOSE"]
     #
     # -----------------------------------------------------------------------
     #
@@ -79,8 +79,11 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    WFLOW_XML_FP = os.path.join(EXPTDIR, WFLOW_XML_FN)
-
+    wflow_xml_fn = expt_config["workflow"]["WFLOW_XML_FN"]
+    wflow_xml_fp = os.path.join(
+        expt_config["workflow"]["EXPTDIR"],
+        wflow_xml_fn,
+    )
     #
     # -----------------------------------------------------------------------
     #
@@ -92,57 +95,63 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    if WORKFLOW_MANAGER == "rocoto":
+    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
 
-        template_xml_fp = os.path.join(PARMdir, WFLOW_XML_FN)
+        template_xml_fp = os.path.join(
+            expt_config["user"]["PARMdir"],
+            wflow_xml_fn,
+        )
 
         log_info(
             f"""
             Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
             file (template_xml_fp):
               template_xml_fp = '{template_xml_fp}'
-              WFLOW_XML_FP = '{WFLOW_XML_FP}'"""
+              WFLOW_XML_FP = '{wflow_xml_fp}'"""
         )
 
         #
         # Dictionary of settings to pass to fill_jinja
         #
         settings = {}
-        for k, v in var_defs_dict.items():
+        for k, v in flatten_dict(expt_config).items():
             settings[lowercase(k)] = v
 
         ensmem_indx_name = ""
         uscore_ensmem_name = ""
         slash_ensmem_subdir = ""
-        if DO_ENSEMBLE:
+        if expt_config["global"]["DO_ENSEMBLE"]:
             ensmem_indx_name = "mem"
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
 
-        d = DATE_FIRST_CYCL + timedelta(seconds=DT_ATMOS)
-        time_str = d.strftime("%M:%S")
+        dt_atmos = expt_config["task_run_fcst"]["DT_ATMOS"]
+        date_first_cycl = expt_config["workflow"]["DATE_FIRST_CYCL"]
+        date_last_cycl = expt_config["workflow"]["DATE_LAST_CYCL"]
+        first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
+        fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
 
-        if DATE_FIRST_CYCL == DATE_LAST_CYCL:
-            CYCL_NEXT = date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00")
+        if date_first_cycl == date_last_cycl:
+            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H00")
         else:
-            CYCL_NEXT = date_to_str(DATE_FIRST_CYCL + timedelta(hours=INCR_CYCL_FREQ), format="%Y%m%d%H00")
+            cycl_next = date_to_str(date_first_cycl + timedelta(hours=expt_config['workflow']['INCR_CYCL_FREQ']), format="%Y%m%d%H00")
 
         settings.update(
             {
                 #
                 # Number of cores used for a task
                 #
-                "ncores_run_fcst": PE_MEMBER01,
-                "native_run_fcst": f"--cpus-per-task {OMP_NUM_THREADS_RUN_FCST} --exclusive",
-                "native_nexus_emission": f"--cpus-per-task {OMP_NUM_THREADS_NEXUS_EMISSION}",
+                "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
+                "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
+                "native_nexus_emission": f"--cpus-per-task {expt_config['cpl_aqm_parm']['OMP_NUM_THREADS_NEXUS_EMISSION']}",
                 #
                 # Parameters that determine the set of cycles to run.
                 #
-                "date_first_cycl": date_to_str(DATE_FIRST_CYCL, format="%Y%m%d%H00"),
-                "date_last_cycl": date_to_str(DATE_LAST_CYCL, format="%Y%m%d%H00"),
-                "cdate_first_cycl": DATE_FIRST_CYCL,
-                "cycl_freq": f"{INCR_CYCL_FREQ:02d}:00:00",
-                "cycl_next": CYCL_NEXT,
+                "date_first_cycl": date_to_str(date_first_cycl, format="%Y%m%d%H00"),
+                "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
+                "cdate_first_cycl": date_first_cycl,
+                "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
+                "cycl_next": cycl_next,
                 #
                 # Ensemble-related parameters.
                 #
@@ -152,8 +161,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 #
                 # Parameters associated with subhourly post-processed output
                 #
-                "delta_min": DT_SUBHOURLY_POST_MNTS,
-                "first_fv3_file_tstr": f"000:{time_str}",
+                "delta_min": expt_config["task_run_post"]["DT_SUBHOURLY_POST_MNTS"],
+                "first_fv3_file_tstr": first_file_time.strftime("000:%M:%S"),
             }
         )
 
@@ -166,9 +175,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             has been set as follows:
             #-----------------------------------------------------------------------
             settings =\n\n""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
-        log_info(settings_str, verbose=VERBOSE)
+        log_info(settings_str, verbose=verbose)
 
         #
         # Call the python script to generate the experiment's actual XML file
@@ -176,10 +185,19 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         #
         try:
             fill_jinja_template(
-                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", WFLOW_XML_FP]
+                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
             )
         except:
-            logging.exception(
+            logging.info(
+                dedent(
+                    f"""
+                      Variable settings specified on command line for
+                      fill_jinja_template.py:\n
+                        settings =\n\n"""
+                )
+                + settings_str
+            )
+            raise Exception(
                 dedent(
                     f"""
                     Call to python script fill_jinja_template.py to create a rocoto workflow
@@ -188,11 +206,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                       Full path to template rocoto XML file:
                         template_xml_fp = '{template_xml_fp}'
                       Full path to output rocoto XML file:
-                        WFLOW_XML_FP = '{WFLOW_XML_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
+                        WFLOW_XML_FP = '{wflow_xml_fp}'
+                    """
                 )
-                + settings_str
             )
     #
     # -----------------------------------------------------------------------
@@ -202,27 +218,37 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
+    exptdir = expt_config["workflow"]["EXPTDIR"]
+    wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
+    wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
     log_info(
         f"""
         Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
-          EXPTDIR = '{EXPTDIR}'
-          WFLOW_LAUNCH_SCRIPT_FP = '{WFLOW_LAUNCH_SCRIPT_FP}'""",
-        verbose=VERBOSE,
+          EXPTDIR = '{exptdir}'
+          WFLOW_LAUNCH_SCRIPT_FP = '{wflow_launch_script_fp}'""",
+        verbose=verbose,
     )
 
     create_symlink_to_file(
-        WFLOW_LAUNCH_SCRIPT_FP, os.path.join(EXPTDIR, WFLOW_LAUNCH_SCRIPT_FN), False
+        wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
     )
     #
     # -----------------------------------------------------------------------
     #
-    # If USE_CRON_TO_RELAUNCH is set to TRUE, add a line to the user's cron
-    # table to call the (re)launch script every CRON_RELAUNCH_INTVL_MNTS mi-
-    # nutes.
+    # If USE_CRON_TO_RELAUNCH is set to TRUE, add a line to the user's
+    # cron table to call the (re)launch script every
+    # CRON_RELAUNCH_INTVL_MNTS minutes.
     #
     # -----------------------------------------------------------------------
     #
+    # From here on out, going back to setting variables for everything
+    # in the flattened expt_config dictionary
+    # TODO: Reference all these variables in their respective
+    # dictionaries, instead.
+    import_vars(dictionary=flatten_dict(expt_config))
+    export_vars(source_dict=flatten_dict(expt_config))
+
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
 
@@ -236,7 +262,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
@@ -247,7 +273,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         check_for_preexist_dir_file(FIXam, "delete")
@@ -273,7 +299,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
               FIXaer = '{FIXaer}'
               FIXlut = '{FIXlut}'
               FIXclim = '{FIXclim}'""",
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         check_for_preexist_dir_file(FIXclim, "delete")
@@ -295,27 +321,27 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying templates of various input files to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
 
     log_info(
         f"""
         Copying the template data table file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
         f"""
         Copying the template field table file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
     log_info(
         f"""
         Copying the template NEMS configuration file to the experiment directory...""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
@@ -326,8 +352,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying the CCPP physics suite definition XML file from its location in
-        the forecast model directory sturcture to the experiment directory...""",
-        verbose=VERBOSE,
+        the forecast model directory structure to the experiment directory...""",
+        verbose=verbose,
     )
     cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
     #
@@ -338,8 +364,8 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     log_info(
         f"""
         Copying the field dictionary file from its location in the forecast
-        model directory sturcture to the experiment directory...""",
-        verbose=VERBOSE,
+        model directory structure to the experiment directory...""",
+        verbose=verbose,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
     #
@@ -626,9 +652,9 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         f"""
         The variable 'settings' specifying values of the weather model's
         namelist variables has been set as follows:\n""",
-        verbose=VERBOSE,
+        verbose=verbose,
     )
-    log_info("\nsettings =\n\n" + settings_str, verbose=VERBOSE)
+    log_info("\nsettings =\n\n" + settings_str, verbose=verbose)
     #
     # -----------------------------------------------------------------------
     #
@@ -637,7 +663,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # the base (i.e. starting) namelist file, with physics-suite-dependent
     # modifications to the base file specified in the yaml configuration file
     # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
-    # and with additional physics-suite-independent modificaitons specified
+    # and with additional physics-suite-independent modifications specified
     # in the variable "settings" set above.
     #
     # -----------------------------------------------------------------------
@@ -701,7 +727,7 @@ def generate_FV3LAM_wflow(USHdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(USHdir, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
 
     # Note workflow generation completion
     log_info(
@@ -788,12 +814,12 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
 if __name__ == "__main__":
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
-    logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
+    wflow_logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
 
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        generate_FV3LAM_wflow(USHdir, logfile)
+        generate_FV3LAM_wflow(USHdir, wflow_logfile)
     except:
         logging.exception(
             dedent(
@@ -802,7 +828,7 @@ if __name__ == "__main__":
                 FATAL ERROR:
                 Experiment generation failed. See the error message(s) printed below.
                 For more detailed information, check the log file from the workflow
-                generation script: {logfile}
+                generation script: {wflow_logfile}
                 *********************************************************************\n
                 """
             )
@@ -833,11 +859,24 @@ class Testing(unittest.TestCase):
         run_workflow(USHdir, logfile)
 
         # nco test case
-        set_env_var("OPSROOT", f"{USHdir}/../../nco_dirs")
-        cp_vrfy(f"{USHdir}/config.nco.yaml", f"{USHdir}/config.yaml")
-        run_command(
-            f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
-        )
+        nco_test_config = load_config_file(f"{USHdir}/config.nco.yaml")
+        # Since we don't have a pre-gen grid dir on a generic linux
+        # platform, turn the make_* tasks on for this test.
+        cfg_updates = {
+            "user": {
+                "MACHINE": "linux",
+            },
+            "workflow_switches": {
+                "RUN_TASK_MAKE_GRID": True,
+                "RUN_TASK_MAKE_OROG": True,
+                "RUN_TASK_MAKE_SFC_CLIMO": True,
+            },
+        }
+        update_dict(cfg_updates, nco_test_config)
+
+        with open(f"{USHdir}/config.yaml", "w") as cfg_file:
+            cfg_file.write(cfg_to_yaml_str(nco_test_config))
+
         run_workflow(USHdir, logfile)
 
     def setUp(self):

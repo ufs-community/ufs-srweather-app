@@ -9,6 +9,7 @@ workflow:
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /scratch2/NCEPDEV/stmp3/Chan-hoo.Jeon/expt_dirs
   EXPT_SUBDIR: aqm_nco_hrrr25_1d4cyc
+  PREDEF_GRID_NAME: GSD_HRRR_25km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080500'
   DATE_LAST_CYCL: '2019080506'
@@ -17,8 +18,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_aqm
-  FIELD_TABLE_TMPL_FN: field_table_aqm
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
 nco:
   NET: aqm
   model_ver: v7.0
@@ -49,7 +50,6 @@ task_run_fcst:
   WTIME_RUN_FCST: 00:30:00
   QUILTING: true
   PRINT_ESMF: false
-  PREDEF_GRID_NAME: GSD_HRRR_25km
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2

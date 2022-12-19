@@ -165,10 +165,10 @@ Directories and files.
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
-<!ENTITY LOGDIR                   "{{ logdir }}/<cyclestr>@Y@m@d</cyclestr>">
+<!ENTITY LOGDIR                   "{{ logbasedir }}/<cyclestr>@Y@m@d</cyclestr>">
 <!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
 {%- else %}
-<!ENTITY LOGDIR                   "{{ logdir }}">
+<!ENTITY LOGDIR                   "{{ logbasedir }}">
 <!ENTITY LOGEXT                   ".log" >
 {%- endif %}
 <!ENTITY CMPEXT                   "_task_complete.txt">
@@ -588,11 +588,8 @@ MODULES_RUN_TASK_FP script.
 {%- if do_ensemble %}
   <metatask name="run_ensemble">
 
-    <var name="{{ ensmem_indx_name }}">
-{%- for m in range(1, num_ens_members+1) -%}
-  {%- set fmtstr=" %0"~ndigits_ensmem_names~"d" -%}
-  {{- fmtstr%m -}}
-{%- endfor %} </var>
+    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
+
 {%- endif %}
 
 {%- if run_task_make_ics %}

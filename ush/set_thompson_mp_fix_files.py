@@ -15,13 +15,7 @@ from python_utils import (
 
 
 def set_thompson_mp_fix_files(
-    EXTRN_MDL_NAME_ICS,
-    EXTRN_MDL_NAME_LBCS,
-    CCPP_PHYS_SUITE,
-    ccpp_phys_suite_fp,
-    thompson_mp_climo_fn,
-    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-    FIXgsm_FILES_TO_COPY_TO_FIXam,
+    ccpp_phys_suite_fp, thompson_mp_climo_fn, link_thompson_climo
 ):
     """Function that first checks whether the Thompson
     microphysics parameterization is being called by the selected physics
@@ -34,13 +28,9 @@ def set_thompson_mp_fix_files(
     symlinks to these files are created in the run directories.
 
     Args:
-        EXTRN_MDL_NAME_ICS,
-        EXTRN_MDL_NAME_LBCS,
-        CCPP_PHYS_SUITE,
         ccpp_phys_suite_fp: full path to CCPP physics suite
         thompson_mp_climo_fn: netcdf file for thompson microphysics
-        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
-        FIXgsm_FILES_TO_COPY_TO_FIXam
+        link_thompson_climo: whether to use the thompson climo file
     Returns:
         boolean: sdf_uses_thompson_mp
     """
@@ -64,6 +54,8 @@ def set_thompson_mp_fix_files(
     #
     # -----------------------------------------------------------------------
     #
+    mapping = []
+    thompson_mp_fix_files = []
     if sdf_uses_thompson_mp:
         #
         # -----------------------------------------------------------------------
@@ -85,116 +77,21 @@ def set_thompson_mp_fix_files(
             "qr_acr_qsV2.dat",
         ]
 
-        if (EXTRN_MDL_NAME_ICS != "HRRR" and EXTRN_MDL_NAME_ICS != "RAP") or (
-            EXTRN_MDL_NAME_LBCS != "HRRR" and EXTRN_MDL_NAME_LBCS != "RAP"
-        ):
+        if link_thompson_climo:
             thompson_mp_fix_files.append(thompson_mp_climo_fn)
 
-        FIXgsm_FILES_TO_COPY_TO_FIXam.extend(thompson_mp_fix_files)
-
         for fix_file in thompson_mp_fix_files:
-            mapping = f"{fix_file} | {fix_file}"
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.append(mapping)
+            mapping.append(f"{fix_file} | {fix_file}")
 
-        log_info(
-            f"""
-            Since the Thompson microphysics parameterization is being used by this
-            physics suite (CCPP_PHYS_SUITE), the names of the fixed files needed by
-            this scheme have been appended to the array FIXgsm_FILES_TO_COPY_TO_FIXam,
-            and the mappings between these files and the symlinks that need to be
-            created in the cycle directories have been appended to the array
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
-            values of these parameters are as follows:
-
-            CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
-            """
-        )
-        log_info(
-            f"""
-                FIXgsm_FILES_TO_COPY_TO_FIXam = {list_to_str(FIXgsm_FILES_TO_COPY_TO_FIXam)}
-            """
-        )
-        log_info(
-            f"""
-                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING)}
-            """
-        )
-
-    return sdf_uses_thompson_mp
+    return sdf_uses_thompson_mp, mapping, thompson_mp_fix_files
 
 
 class Testing(unittest.TestCase):
     def test_set_thompson_mp_fix_files(self):
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        self.assertEqual(
-            True,
-            set_thompson_mp_fix_files(
-                "FV3GFS",
-                "FV3GFS",
-                "FV3_GSD_SAR",
-                f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
-                "Thompson_MP_MONTHLY_CLIMO.nc",
-                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING,
-                FIXgsm_FILES_TO_COPY_TO_FIXam,
-            ),
+        uses_thompson, _, _ = set_thompson_mp_fix_files(
+            f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
+            "Thompson_MP_MONTHLY_CLIMO.nc",
+            False,
         )
-
-    def setUp(self):
-
-        global CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
-        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = [
-            "aerosol.dat                | global_climaeropac_global.txt",
-            "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
-            "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt",
-            "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt",
-            "co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt",
-            "co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt",
-            "co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt",
-            "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt",
-            "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt",
-            "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt",
-            "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt",
-            "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt",
-            "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt",
-            "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt",
-            "co2monthlycyc.txt          | co2monthlycyc.txt",
-            "global_h2oprdlos.f77       | global_h2o_pltc.f77",
-            "global_zorclim.1x1.grb     | global_zorclim.1x1.grb",
-            "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
-            "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-            "global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
-        ]
-
-        global FIXgsm_FILES_TO_COPY_TO_FIXam
-        FIXgsm_FILES_TO_COPY_TO_FIXam = [
-            "global_glacier.2x2.grb",
-            "global_maxice.2x2.grb",
-            "RTGSST.1982.2012.monthly.clim.grb",
-            "global_snoclim.1.875.grb",
-            "CFSR.SEAICE.1982.2012.monthly.clim.grb",
-            "global_soilmgldas.t126.384.190.grb",
-            "seaice_newland.grb",
-            "global_climaeropac_global.txt",
-            "fix_co2_proj/global_co2historicaldata_2010.txt",
-            "fix_co2_proj/global_co2historicaldata_2011.txt",
-            "fix_co2_proj/global_co2historicaldata_2012.txt",
-            "fix_co2_proj/global_co2historicaldata_2013.txt",
-            "fix_co2_proj/global_co2historicaldata_2014.txt",
-            "fix_co2_proj/global_co2historicaldata_2015.txt",
-            "fix_co2_proj/global_co2historicaldata_2016.txt",
-            "fix_co2_proj/global_co2historicaldata_2017.txt",
-            "fix_co2_proj/global_co2historicaldata_2018.txt",
-            "fix_co2_proj/global_co2historicaldata_2019.txt",
-            "fix_co2_proj/global_co2historicaldata_2020.txt",
-            "fix_co2_proj/global_co2historicaldata_2021.txt",
-            "global_co2historicaldata_glob.txt",
-            "co2monthlycyc.txt",
-            "global_h2o_pltc.f77",
-            "global_hyblev.l65.txt",
-            "global_zorclim.1x1.grb",
-            "global_sfc_emissivity_idx.txt",
-            "global_solarconstant_noaa_an.txt",
-            "geo_em.d01.lat-lon.2.5m.HGT_M.nc",
-            "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
-            "ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77",
-        ]
+        self.assertEqual(True, uses_thompson)

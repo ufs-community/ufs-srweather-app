@@ -9,6 +9,7 @@ workflow:
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_BASEDIR: /lfs/h2/oar/ptmp/Patrick.C.Campbell/expt_dirs
   EXPT_SUBDIR: aqm_cold_aqmna13_1day
+  PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080512'
   DATE_LAST_CYCL: '2019080512'
@@ -16,8 +17,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_aqm
-  FIELD_TABLE_TMPL_FN: field_table_aqm
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
 nco:
   NET: aqm
 workflow_switches:
@@ -41,7 +42,6 @@ task_run_fcst:
   WTIME_RUN_FCST: 02:00:00
   QUILTING: true
   PRINT_ESMF: false
-  PREDEF_GRID_NAME: AQM_NA_13km
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
 global:

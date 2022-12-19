@@ -4,6 +4,7 @@ import unittest
 import os
 import sys
 import argparse
+import re
 import glob
 
 from python_utils import (
@@ -22,11 +23,36 @@ from python_utils import (
 )
 
 
-def link_fix(cfg_d, file_group):
-    """This file defines a function that ...
+def link_fix(
+    verbose,
+    file_group,
+    source_dir,
+    target_dir,
+    ccpp_phys_suite,
+    constants,
+    dot_or_uscore,
+    nhw,
+    run_task,
+    sfc_climo_fields,
+    **kwargs,
+):
+    """This file defines a function that links fix files to the target
+    directory for a given SRW experiment. Only links files for one group
+    at a time.
+
     Args:
         cfg_d: dictionary of settings
         file_group: could be on of ["grid", "orog", "sfc_climo"]
+        source_dir: the path to directory where the file_group fix files
+                    are linked from
+        target_dir: the directory where the fix files should be linked to
+        dot_or_uscore: str containing either a dot or an underscore
+        nhw: grid parameter setting
+        constants: dict containing the constants used by SRW
+        run_task: boolean value indicating whether the task is to be run
+                  in the experiment
+        climo_fields: list of fields needed for climo
+
     Returns:
         a string: resolution
     """
@@ -36,15 +62,18 @@ def link_fix(cfg_d, file_group):
     valid_vals_file_group = ["grid", "orog", "sfc_climo"]
     check_var_valid_value(file_group, valid_vals_file_group)
 
-    # import all environement variables
-    import_vars(dictionary=flatten_dict(cfg_d))
+    # Decompress the constants needed below.
+    nh0 = constants["NH0"]
+    nh3 = constants["NH3"]
+    nh4 = constants["NH4"]
+    tile_rgnl = constants["TILE_RGNL"]
 
     #
     # -----------------------------------------------------------------------
     #
-    # Create symlinks in the FIXlam directory pointing to the grid files.
-    # These symlinks are needed by the make_orog, make_sfc_climo, make_ic,
-    # make_lbc, and/or run_fcst tasks.
+    # Create symlinks in the target_dir pointing to the fix files.
+    # These symlinks are needed by the make_orog, make_sfc_climo,
+    # make_ic, make_lbc, and/or run_fcst tasks.
     #
     # Note that we check that each target file exists before attempting to
     # create symlinks.  This is because the "ln" command will create sym-
@@ -54,7 +83,8 @@ def link_fix(cfg_d, file_group):
     # -----------------------------------------------------------------------
     #
     print_info_msg(
-        f"Creating links in the FIXlam directory to the grid files...", verbose=VERBOSE
+        f"Creating links in the {target_dir} directory to the grid files...",
+        verbose=verbose,
     )
     #
     # -----------------------------------------------------------------------
@@ -165,44 +195,37 @@ def link_fix(cfg_d, file_group):
     #
     if file_group == "grid":
         fns = [
-            f"C*{DOT_OR_USCORE}mosaic.halo{NHW}.nc",
-            f"C*{DOT_OR_USCORE}mosaic.halo{NH4}.nc",
-            f"C*{DOT_OR_USCORE}mosaic.halo{NH3}.nc",
-            f"C*{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NHW}.nc",
-            f"C*{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NH3}.nc",
-            f"C*{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NH4}.nc",
+            f"C*{dot_or_uscore}mosaic.halo{nhw}.nc",
+            f"C*{dot_or_uscore}mosaic.halo{nh4}.nc",
+            f"C*{dot_or_uscore}mosaic.halo{nh3}.nc",
+            f"C*{dot_or_uscore}grid.tile{tile_rgnl}.halo{nhw}.nc",
+            f"C*{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh3}.nc",
+            f"C*{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh4}.nc",
         ]
-        fps = [os.path.join(GRID_DIR, itm) for itm in fns]
-        run_task = f"{RUN_TASK_MAKE_GRID}"
-    #
+
     elif file_group == "orog":
         fns = [
-            f"C*{DOT_OR_USCORE}oro_data.tile{TILE_RGNL}.halo{NH0}.nc",
-            f"C*{DOT_OR_USCORE}oro_data.tile{TILE_RGNL}.halo{NH4}.nc",
+            f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh0}.nc",
+            f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh4}.nc",
         ]
-        if CCPP_PHYS_SUITE == "FV3_HRRR":
+        if ccpp_phys_suite == "FV3_HRRR":
             fns += [
-                f"C*{DOT_OR_USCORE}oro_data_ss.tile{TILE_RGNL}.halo{NH0}.nc",
-                f"C*{DOT_OR_USCORE}oro_data_ls.tile{TILE_RGNL}.halo{NH0}.nc",
+                f"C*{dot_or_uscore}oro_data_ss.tile{tile_rgnl}.halo{nh0}.nc",
+                f"C*{dot_or_uscore}oro_data_ls.tile{tile_rgnl}.halo{nh0}.nc",
             ]
-        fps = [os.path.join(OROG_DIR, itm) for itm in fns]
-        run_task = f"{RUN_TASK_MAKE_OROG}"
+
     #
     # The following list of symlinks (which have the same names as their
-    # target files) need to be created made in order for the make_ics and
-    # make_lbcs tasks (i.e. tasks involving chgres_cube) to work.
+    # target files) need to be created for the make_ics and make_lbcs
+    # tasks (i.e. tasks involving chgres_cube) to work.
     #
     elif file_group == "sfc_climo":
-        num_fields = len(SFC_CLIMO_FIELDS)
-        fns = [None] * (2 * num_fields)
-        for i in range(num_fields):
-            ii = 2 * i
-            fns[ii] = f"C*.{SFC_CLIMO_FIELDS[i]}.tile{TILE_RGNL}.halo{NH0}.nc"
-            fns[ii + 1] = f"C*.{SFC_CLIMO_FIELDS[i]}.tile{TILE_RGNL}.halo{NH4}.nc"
-        fps = [os.path.join(SFC_CLIMO_DIR, itm) for itm in fns]
-        run_task = f"{RUN_TASK_MAKE_SFC_CLIMO}"
-    #
+        fns = []
+        for sfc_climo_field in sfc_climo_fields:
+            fns.append(f"C*.{sfc_climo_field}.tile{tile_rgnl}.halo{nh0}.nc")
+            fns.append(f"C*.{sfc_climo_field}.tile{tile_rgnl}.halo{nh4}.nc")
 
+    fps = [os.path.join(source_dir, itm) for itm in fns]
     #
     # -----------------------------------------------------------------------
     #
@@ -218,13 +241,20 @@ def link_fix(cfg_d, file_group):
 
     for pattern in fps:
         files = glob.glob(pattern)
+        if not files:
+            print_err_msg_exit(
+                f"""
+                Trying to link files in group: {file_group} 
+                No files were found matching the pattern {pattern}.
+                """
+            )
         for fp in files:
 
             fn = os.path.basename(fp)
 
             regex_search = "^C([0-9]*).*"
             res = find_pattern_in_str(regex_search, fn)
-            if res is None:
+            if not res:
                 print_err_msg_exit(
                     f"""
                     The resolution could not be extracted from the current file's name.  The
@@ -269,31 +299,25 @@ def link_fix(cfg_d, file_group):
     #
     # -----------------------------------------------------------------------
     #
-    SAVE_DIR = os.getcwd()
-    cd_vrfy(FIXlam)
+    save_dir = os.getcwd()
+    cd_vrfy(target_dir)
     #
     # -----------------------------------------------------------------------
     #
     # Use the set of full file paths generated above as the link targets to
-    # create symlinks to these files in the FIXlam directory.
+    # create symlinks to these files in the target directory.
     #
     # -----------------------------------------------------------------------
     #
-    # If the task in consideration (which will be one of the pre-processing
-    # tasks MAKE_GRID_TN, MAKE_OROG_TN, and MAKE_SFC_CLIMO_TN) was run, then
-    # the target files will be located under the experiment directory.  In
-    # this case, we use relative symlinks in order the experiment directory
-    # more portable and the symlinks more readable.  However, if the task
-    # was not run, then pregenerated grid, orography, or surface climatology
-    # files will be used, and those will be located in an arbitrary directory
-    # (specified by the user) that is somwehere outside the experiment
-    # directory.  Thus, in this case, there isn't really an advantage to using
-    # relative symlinks, so we use symlinks with absolute paths.
+    # If the task in consideration (one of the pre-processing tasks
+    # MAKE_GRID_TN, MAKE_OROG_TN, and MAKE_SFC_CLIMO_TN) was run, then
+    # the source location of the fix files will be located under the
+    # experiment directory.  In this case, we use relative symlinks for
+    # portability and readability. Make absolute links otherwise.
     #
+    relative_link_flag = False
     if run_task:
         relative_link_flag = True
-    else:
-        relative_link_flag = False
 
     for fp in fps:
         fn = os.path.basename(fp)
@@ -318,55 +342,37 @@ def link_fix(cfg_d, file_group):
     # -----------------------------------------------------------------------
     #
     if file_group == "grid":
-        target = f"{cres}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.halo{NH4}.nc"
-        symlink = f"{cres}{DOT_OR_USCORE}grid.tile{TILE_RGNL}.nc"
+        target = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh4}.nc"
+        symlink = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.nc"
         create_symlink_to_file(target, symlink, True)
     #
     # -----------------------------------------------------------------------
     #
     # If considering surface climatology files, create symlinks to the surface
     # climatology files that do not contain the halo size in their names.
-    # These are needed by the task that generates the initial condition files.
+    # These are needed by the make_ics task.
+    #
+    # The forecast model needs sfc climo files to be named without the
+    # tile7 and halo references, and with only "tile1" in the name.
     #
     # -----------------------------------------------------------------------
     #
     if file_group == "sfc_climo":
 
-        tmp = [f"{cres}.{itm}" for itm in SFC_CLIMO_FIELDS]
-        fns_sfc_climo_with_halo_in_fn = [
-            f"{itm}.tile{TILE_RGNL}.halo{NH4}.nc" for itm in tmp
-        ]
-        fns_sfc_climo_no_halo_in_fn = [f"{itm}.tile{TILE_RGNL}.nc" for itm in tmp]
+        for field in sfc_climo_fields:
 
-        for i in range(num_fields):
-            target = f"{fns_sfc_climo_with_halo_in_fn[i]}"
-            symlink = f"{fns_sfc_climo_no_halo_in_fn[i]}"
-            create_symlink_to_file(target, symlink, True)
-        #
-        # In order to be able to specify the surface climatology file names in
-        # the forecast model's namelist file, in the FIXlam directory a symlink
-        # must be created for each surface climatology field that has "tile1" in
-        # its name (and no "halo") and which points to the corresponding "tile7.halo0"
-        # file.
-        #
-        tmp = [f"{cres}.{itm}" for itm in SFC_CLIMO_FIELDS]
-        fns_sfc_climo_tile7_halo0_in_fn = [
-            f"{itm}.tile{TILE_RGNL}.halo{NH0}.nc" for itm in tmp
-        ]
-        fns_sfc_climo_tile1_no_halo_in_fn = [f"{itm}.tile1.nc" for itm in tmp]
+            # Create links without "halo" in the name
+            halo = f"{cres}.{field}.tile{tile_rgnl}.halo{nh4}.nc"
+            no_halo = re.sub(f".halo{nh4}", "", halo)
+            create_symlink_to_file(halo, no_halo, True)
 
-        for i in range(num_fields):
-            target = f"{fns_sfc_climo_tile7_halo0_in_fn[i]}"
-            symlink = f"{fns_sfc_climo_tile1_no_halo_in_fn[i]}"
-            create_symlink_to_file(target, symlink, True)
-    #
-    # -----------------------------------------------------------------------
-    #
+            # Create links without halo and tile7, and with "tile1"
+            halo_tile = f"{cres}.{field}.tile{tile_rgnl}.halo{nh0}.nc"
+            no_halo_tile = re.sub(f"tile{tile_rgnl}.halo{nh0}", "tile1", halo_tile)
+            create_symlink_to_file(halo_tile, no_halo_tile, True)
+
     # Change directory back to original one.
-    #
-    # -----------------------------------------------------------------------
-    #
-    cd_vrfy(SAVE_DIR)
+    cd_vrfy(save_dir)
 
     return res
 
@@ -399,33 +405,53 @@ def parse_args(argv):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
-    link_fix(cfg, args.file_group)
+    link_fix(
+        verbose=cfg["workflow"]["VERBOSE"],
+        file_group=args.file_group,
+        source_dir=cfg[f"task_make_{args.file_group.lower()}"][
+            f"{args.file_group.upper()}_DIR"
+        ],
+        target_dir=cfg["workflow"]["FIXlam"],
+        ccpp_phys_suite=cfg["workflow"]["CCPP_PHYS_SUITE"],
+        constants=cfg["constants"],
+        dot_or_uscore=cfg["workflow"]["DOT_OR_USCORE"],
+        nhw=cfg["grid_params"]["NHW"],
+        run_task=True,
+        sfc_climo_fields=cfg["fixed_files"]["SFC_CLIMO_FIELDS"],
+    )
 
 
 class Testing(unittest.TestCase):
     def test_link_fix(self):
+        res = link_fix(
+            verbose=True,
+            file_group="grid",
+            source_dir=self.task_dir,
+            target_dir=self.FIXlam,
+            ccpp_phys_suite=self.cfg["CCPP_PHYS_SUITE"],
+            constants=self.cfg["constants"],
+            dot_or_uscore=self.cfg["DOT_OR_USCORE"],
+            nhw=self.cfg["NHW"],
+            run_task=False,
+            sfc_climo_fields=["foo", "bar"],
+        )
+        self.assertTrue(res == "3357")
+
+    def setUp(self):
         define_macos_utilities()
         TEST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        FIXlam = os.path.join(TEST_DIR, "expt", "fix_lam")
-        mkdir_vrfy("-p", FIXlam)
+        self.FIXlam = os.path.join(TEST_DIR, "expt", "fix_lam")
+        self.task_dir = os.path.join(TEST_DIR, "RRFS_CONUS_3km")
+        mkdir_vrfy("-p", self.FIXlam)
 
-        cfg_d = {
-            "FIXlam": FIXlam,
+        self.cfg = {
             "DOT_OR_USCORE": "_",
-            "TILE_RGNL": 7,
-            "NH0": 0,
             "NHW": 6,
-            "NH4": 4,
-            "NH3": 3,
-            "GRID_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
-            "RUN_TASK_MAKE_GRID": "FALSE",
-            "OROG_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
-            "RUN_TASK_MAKE_OROG": "FALSE",
-            "SFC_CLIMO_DIR": TEST_DIR + os.sep + "RRFS_CONUS_3km",
-            "RUN_TASK_MAKE_SFC_CLIMO": "FALSE",
             "CCPP_PHYS_SUITE": "FV3_GSD_SAR",
-            "VERBOSE": False,
+            "constants": {
+                "NH0": 0,
+                "NH4": 4,
+                "NH3": 3,
+                "TILE_RGNL": 7,
+            },
         }
-
-        res = link_fix(cfg_d, file_group="grid")
-        self.assertTrue(res == "3357")
