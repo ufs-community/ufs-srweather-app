@@ -76,7 +76,7 @@ export fhr_last
 fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
 export fhr_list
 
-NUM_PAD=${NDIGITS_ENSMEM_NAMES}
+NUM_PAD=3
 
 #
 #-----------------------------------------------------------------------

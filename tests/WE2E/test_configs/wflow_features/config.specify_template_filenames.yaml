@@ -6,8 +6,8 @@ user:
   RUN_ENVIR: community
 workflow:
   DATA_TABLE_TMPL_FN: data_table
-  DIAG_TABLE_TMPL_FN: diag_table
-  FIELD_TABLE_TMPL_FN: field_table
+  DIAG_TABLE_TMPL_FN: diag_table.FV3_GFS_v15p2
+  FIELD_TABLE_TMPL_FN: field_table.FV3_GFS_v15p2
   MODEL_CONFIG_TMPL_FN: model_configure
   NEMS_CONFIG_TMPL_FN: nems.configure
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
