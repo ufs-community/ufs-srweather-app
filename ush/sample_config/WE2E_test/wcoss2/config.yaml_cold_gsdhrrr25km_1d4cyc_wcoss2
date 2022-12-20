@@ -65,7 +65,6 @@ cpl_aqm_parm:
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: true
   AQM_GEFS_CYC: 0
-  AQM_RC_TMPL_FN: aqm.rc
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_SARC401.ncf
