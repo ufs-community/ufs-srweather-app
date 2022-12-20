@@ -29,7 +29,7 @@ ctm_pmdiag: true
 #
 #  Input emissions
 #
-emission_sources: anthro fire
+emission_sources: anthro fire pt
 {%- if do_aqm_canopy %} canopy{% endif %}
 {%- if do_aqm_fengsha %} dust{% endif %}
 {%- if do_aqm_product %} prod{% endif %}
@@ -320,6 +320,80 @@ fire_species::
     UNR     0.0100516  CO          KG/M2/S
     XYL     0.0002964  CO          KG/M2/S
     FRP     1000000    MeanFRP     1
+::
+
+#
+# PT Source
+#
+pt_type: point-source
+pt_file: PT.nc
+pt_frequency: hourly
+pt_plume_rise: default
+pt_layers: 32
+pt_latlon_names: LATITUDE LONGITUDE
+pt_stack_diameter:    STKDM
+pt_stack_height:      STKHT
+pt_stack_temperature: STKTK
+pt_stack_velocity:    STKVE
+pt_species::
+    ACET          1.0000  ACET          MOL/S
+    ACROLEIN      1.0000  ACROLEIN      MOL/S
+    ALD2          1.0000  ALD2          MOL/S
+    ALD2_PRIMARY  1.0000  ALD2_PRIMARY  MOL/S
+    ALDX          1.0000  ALDX          MOL/S
+    BENZ          1.0000  BENZ          MOL/S
+    BUTADIENE13   1.0000  BUTADIENE13   MOL/S
+    CH4           1.0000  CH4           MOL/S
+    CL2           1.0000  CL2           MOL/S
+    CO            1.0000  CO            MOL/S
+    ETH           1.0000  ETH           MOL/S
+    ETHA          1.0000  ETHA          MOL/S
+    ETHY          1.0000  ETHY          MOL/S
+    ETOH          1.0000  ETOH          MOL/S
+    FORM          1.0000  FORM          MOL/S
+    FORM_PRIMARY  1.0000  FORM_PRIMARY  MOL/S
+    HCL           1.0000  HCL           MOL/S
+    HONO          1.0000  HONO          MOL/S
+    IOLE          1.0000  IOLE          MOL/S
+    ISOP          1.0000  ISOP          MOL/S
+    KET           1.0000  KET           MOL/S
+    MEOH          1.0000  MEOH          MOL/S
+    NAPH          1.0000  NAPH          MOL/S
+    NH3           1.0000  NH3           MOL/S
+    NH3_FERT      1.0000  NH3_FERT      MOL/S
+    NO            1.0000  NO            MOL/S
+    NO2           1.0000  NO2           MOL/S
+    NVOL          1.0000  NVOL          MOL/S
+    OLE           1.0000  OLE           MOL/S
+    PAL           1.0000  PAL           G/S
+    PAR           1.0000  PAR           MOL/S
+    PCA           1.0000  PCA           G/S
+    PCL           1.0000  PCL           G/S
+    PEC           1.0000  PEC           G/S
+    PFE           1.0000  PFE           G/S
+    PH2O          1.0000  PH2O          G/S
+    PK            1.0000  PK            G/S
+    PMC           1.0000  PMC           G/S
+    PMG           1.0000  PMG           G/S
+    PMN           1.0000  PMN           G/S
+    PMOTHR        1.0000  PMOTHR        G/S
+    PNA           1.0000  PNA           G/S
+    PNCOM         1.0000  PNCOM         G/S
+    PNH4          1.0000  PNH4          G/S
+    PNO3          1.0000  PNO3          G/S
+    POC           1.0000  POC           G/S
+    PRPA          1.0000  PRPA          MOL/S
+    PSI           1.0000  PSI           G/S
+    PSO4          1.0000  PSO4          G/S
+    PTI           1.0000  PTI           G/S
+    SO2           1.0000  SO2           MOL/S
+    SOAALK        1.0000  SOAALK        MOL/S
+    SULF          1.0000  SULF          MOL/S
+    TERP          1.0000  TERP          MOL/S
+    TOL           1.0000  TOL           MOL/S
+    UNR           1.0000  UNR           MOL/S
+    VOC_INV       1.0000  VOC_INV       G/S
+    XYLMN         1.0000  XYLMN         MOL/S
 ::
 
 #
