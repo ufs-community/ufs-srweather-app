@@ -549,6 +549,9 @@ workflow:
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
+  # AQM_RC_TMPL_FN:
+  # Template file name of resource file for NOAA Air Quality Model (AQM)
+  #
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)
   #
@@ -2521,9 +2524,6 @@ cpl_aqm_parm:
 #
 # Parameters for additional files for air quality modeling
 #
-# AQM_RC_TMPL_FN:
-# Template file name of resource file for NOAA Air Quality Model (AQM)
-#
 # AQM_CONFIG_DIR:
 # Configuration directory for AQM
 # 
@@ -2632,7 +2632,6 @@ cpl_aqm_parm:
 #
 #-----------------------------------------------------------------------
 #
-  AQM_RC_TMPL_FN: "aqm.rc"
   AQM_CONFIG_DIR: ""
   AQM_BIO_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
