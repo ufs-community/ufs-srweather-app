@@ -2613,7 +2613,7 @@ cpl_aqm_parm:
 # Number of split nexus emission tasks
 #
 # NEXUS_GFS_SFC_ARCHV_DIR: 
-# Path to archive directory for gfs surface files
+# Path to archive directory for gfs surface files on HPSS
 #
 # PT_SRC_BASEDIR:
 # Parent directory containing point source files for CONUS/AK/HI

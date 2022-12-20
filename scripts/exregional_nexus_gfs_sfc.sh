@@ -71,69 +71,92 @@ hh=${GFS_SFC_CDATE:8:2}
 #
 GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${yyyy}/${yyyymm}/${yyyymmdd}"
 GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
-if [ "${yyyymmdd}" -lt "20220627" ]; then
-  GFS_SFC_TAR_FN_VER="prod"
-elif [ "${yyyymmdd}" -lt "20221129" ]; then
-  GFS_SFC_TAR_FN_VER="v16.2"
-else
-  GFS_SFC_TAR_FN_VER="v16.3"
-fi
-GFS_SFC_TAR_FN_PREFIX="com_gfs_${GFS_SFC_TAR_FN_VER}_gfs"
-GFS_SFC_TAR_FN_SUFFIX_A="gfs_nca.tar"
-GFS_SFC_TAR_FN_SUFFIX_B="gfs_ncb.tar"
+
+GFS_SFC_LOCAL_DIR="${COMINgfs_BASEDIR}/${GFS_SFC_TAR_SUB_DIR}"
 GFS_SFC_DATA_INTVL="3"
 
-# Check if the sfcanl file exists in the staging directory
-gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_A}"
-gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
-gfs_sfc_fns=("gfs.t${hh}z.sfcanl.nc")
-gfs_sfc_fps="./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcanl.nc"
-if [ "${FCST_LEN_HRS}" -lt "40" ]; then
-  ARCHV_LEN_HRS="${FCST_LEN_HRS}"
+# copy files from local directory
+if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
+  gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
+  cp_vrfy "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+
+  for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
+    gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
+    if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
+      cp_vrfy "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+    else
+    print_err_msg_exit "\
+sfc file does not exist in the directory:
+  GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
+  gfs_sfc_fn = \"${gfs_sfc_fn}\""
+    fi	    
+  done
+ 
+# retrieve files from HPSS
 else
-  ARCHV_LEN_HRS="39"
-fi
-for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${ARCHV_LEN_HRS}); do
-  gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
-  gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"
-done
+  if [ "${yyyymmdd}" -lt "20220627" ]; then
+    GFS_SFC_TAR_FN_VER="prod"
+  elif [ "${yyyymmdd}" -lt "20221129" ]; then
+    GFS_SFC_TAR_FN_VER="v16.2"
+  else
+    GFS_SFC_TAR_FN_VER="v16.3"
+  fi
+  GFS_SFC_TAR_FN_PREFIX="com_gfs_${GFS_SFC_TAR_FN_VER}_gfs"
+  GFS_SFC_TAR_FN_SUFFIX_A="gfs_nca.tar"
+  GFS_SFC_TAR_FN_SUFFIX_B="gfs_ncb.tar"
 
-# Retrieve data from A file up to FCST_LEN_HRS=39
-htar_log_fn="log.htar_a_get.${yyyymmdd}_${hh}"
-htar -tvf ${gfs_sfc_tar_fp}
-htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} >& ${htar_log_fn} || \
-  print_err_msg_exit "\
-htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
-file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
-details:
-  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\"
-  htar_log_fn = \"${htar_log_fn}\""
-
-# Retireve data from B file when FCST_LEN_HRS>=40
-if [ "${FCST_LEN_HRS}" -ge "40" ]; then
-  gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_B}"
+  # Check if the sfcanl file exists in the staging directory
+  gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_A}"
   gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
-  gfs_sfc_fns=()
-  gfs_sfc_fps=""
-  for fhr in $(seq -f "%03g" 42 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
+  gfs_sfc_fns=("gfs.t${hh}z.sfcanl.nc")
+  gfs_sfc_fps="./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcanl.nc"
+  if [ "${FCST_LEN_HRS}" -lt "40" ]; then
+    ARCHV_LEN_HRS="${FCST_LEN_HRS}"
+  else
+    ARCHV_LEN_HRS="39"
+  fi
+  for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${ARCHV_LEN_HRS}); do
     gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
-    gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"  
+    gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"
   done
 
-  htar_log_fn="log.htar_b_get.${yyyymmdd}_${hh}"
+  # Retrieve data from A file up to FCST_LEN_HRS=39
+  htar_log_fn="log.htar_a_get.${yyyymmdd}_${hh}"
   htar -tvf ${gfs_sfc_tar_fp}
   htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} >& ${htar_log_fn} || \
-  print_err_msg_exit "\
+    print_err_msg_exit "\
 htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
 file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
 details:
   gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\"
   htar_log_fn = \"${htar_log_fn}\""
-fi
 
-# Move retrieved files to staging directory
-mv_vrfy ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}
+  # Retireve data from B file when FCST_LEN_HRS>=40
+  if [ "${FCST_LEN_HRS}" -ge "40" ]; then
+    gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_B}"
+    gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
+    gfs_sfc_fns=()
+    gfs_sfc_fps=""
+    for fhr in $(seq -f "%03g" 42 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
+      gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
+      gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"  
+    done
 
+    htar_log_fn="log.htar_b_get.${yyyymmdd}_${hh}"
+    htar -tvf ${gfs_sfc_tar_fp}
+    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} >& ${htar_log_fn} || \
+    print_err_msg_exit "\
+htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
+file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
+details:
+  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\"
+  htar_log_fn = \"${htar_log_fn}\""
+
+  fi
+  # Move retrieved files to staging directory
+  mv_vrfy ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}
+
+fi  
 #
 #-----------------------------------------------------------------------
 #

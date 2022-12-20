@@ -52,8 +52,6 @@ data files from disk or HPSS.
 #
 #-----------------------------------------------------------------------
 #
-set -x
-
 yyyymmdd=${FIRE_FILE_CDATE:0:8}
 hh=${FIRE_FILE_CDATE:8:2}
 #

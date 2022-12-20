@@ -381,6 +381,13 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs_BASEDIR;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
+
 </task>
 {%- endif %}
 {%- if run_task_nexus_emission %}
