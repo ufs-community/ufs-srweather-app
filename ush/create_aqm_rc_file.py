@@ -65,7 +65,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     aqm_rc_bio_file_fp=os.path.join(AQM_BIO_DIR, AQM_BIO_FILE)
     aqm_fire_file_fn=AQM_FIRE_FILE_PREFIX+"_"+yyyymmdd+"_t"+hh+"z"+AQM_FIRE_FILE_SUFFIX
     aqm_rc_fire_file_fp=os.path.join(COMINext, "FIRE_EMISSION", aqm_fire_file_fn)
-    aqm_dust_file_fn=AQM_DUST_FILE_PREFIX+"_"+PREDEF_GRID_NAME+AQM_FENGSHA_FILE_SUFFIX
+    aqm_dust_file_fn=AQM_DUST_FILE_PREFIX+"_"+PREDEF_GRID_NAME+AQM_DUST_FILE_SUFFIX
     aqm_rc_dust_file_fp=os.path.join(AQM_DUST_DIR, aqm_dust_file_fn)
     aqm_canopy_file_fn=AQM_CANOPY_FILE_PREFIX+"."+mm+AQM_CANOPY_FILE_SUFFIX
     aqm_rc_canopy_file_fp=os.path.join(AQM_CANOPY_DIR, PREDEF_GRID_NAME, aqm_canopy_file_fn)
