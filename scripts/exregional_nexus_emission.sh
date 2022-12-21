@@ -104,6 +104,7 @@ if [ -d "${COMINext}/GFS_SFC" ]; then
     USE_GFS_SFC="TRUE"
   fi
 fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -114,7 +115,12 @@ fi
 cp_vrfy ${EXECdir}/nexus ${DATA}
 cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
-cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
+
+if [ "${USE_GFS_SFC}" = "TRUE" ]; then
+    cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq_gfs_megan/*.rc ${DATA}
+else
+    cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/*.rc ${DATA}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -202,6 +208,8 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
     ./nexus_nei2016_control_tilefix.py -f NEXUS_Config.rc -d ${yyyymmdd}
 fi
 
+
+
 if [ "${TIMEZONES}" = "TRUE" ]; then # TIME ZONES
     ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/TIMEZONES ${DATAinput}/
 fi
@@ -256,6 +264,12 @@ fi
 
 if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
     ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}/
+fi
+
+if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
+    cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_gfs_bio.py .
+    mkdir_vrfy -p $${DATAinput}/GFS_SFC
+    ./nexus_gfs_bio.py -i GFS_SFC/gfs.t??z.sfcf???.nc -o GFS_SFC_MEGAN_INPUT.nc
 fi
 
 #
