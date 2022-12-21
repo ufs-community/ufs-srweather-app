@@ -29,7 +29,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: true
+  RUN_TASK_RUN_POST: false
 task_make_grid:
   GRID_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/DOMAIN_DATA/GSD_HRRR_25km
 task_make_orog:
