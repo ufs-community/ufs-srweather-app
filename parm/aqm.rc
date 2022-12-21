@@ -31,7 +31,7 @@ ctm_pmdiag: true
 #
 emission_sources: anthro fire pt
 {%- if do_aqm_canopy %} canopy{% endif %}
-{%- if do_aqm_fengsha %} dust{% endif %}
+{%- if do_aqm_dust %} dust{% endif %}
 {%- if do_aqm_product %} prod{% endif %}
 
 #
@@ -148,7 +148,7 @@ anthro_species::
 #
 dust_type: fengsha
 dust_format: netcdf
-dust_file: {{ aqm_rc_fengsha_file_fp }}
+dust_file: {{ aqm_rc_dust_file_fp }}
 dust_frequency: monthly
 dust_alpha: 15.0
 dust_species::
