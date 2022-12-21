@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_vx_ensgrid|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -76,7 +76,7 @@ export fhr_last
 fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
 export fhr_list
 
-NUM_PAD=${NDIGITS_ENSMEM_NAMES}
+NUM_PAD=3
 
 #
 #-----------------------------------------------------------------------

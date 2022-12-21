@@ -3,35 +3,37 @@
 import os
 import sys
 import datetime
+import traceback
 from textwrap import dedent
+from logging import getLogger
 
 from python_utils import (
+    log_info,
     cd_vrfy,
     mkdir_vrfy,
     rm_vrfy,
     check_var_valid_value,
     lowercase,
     uppercase,
+    list_to_str,
     check_for_preexist_dir_file,
     flatten_dict,
+    check_structure_dict,
     update_dict,
     import_vars,
-    export_vars,
     get_env_var,
-    print_info_msg,
-    print_err_msg_exit,
     load_config_file,
     cfg_to_shell_str,
     cfg_to_yaml_str,
-    load_shell_config,
     load_ini_config,
     get_ini_value,
+    str_to_list,
+    extend_yaml,
 )
 
 from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
 from set_ozone_param import set_ozone_param
-from set_extrn_mdl_params import set_extrn_mdl_params
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
@@ -39,745 +41,306 @@ from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 
-def setup():
-    """Function that sets a secondary set
-    of parameters needed by the various scripts that are called by the
-    FV3-LAM rocoto community workflow.  This secondary set of parameters is
-    calculated using the primary set of user-defined parameters in the de-
-    fault and custom experiment/workflow configuration scripts (whose file
-    names are defined below).  This script then saves both sets of parame-
-    ters in a global variable definitions file (really a bash script) in
-    the experiment directory.  This file then gets sourced by the various
-    scripts called by the tasks in the workflow.
+def load_config_for_setup(ushdir, default_config, user_config):
+    """Load in the default, machine, and user configuration files into
+    Python dictionaries. Return the combined experiment dictionary.
 
     Args:
-      None
+      ushdir             (str): Path to the ush directory for SRW
+      default_config     (str): Path to the default config YAML
+      user_config        (str): Path to the user-provided config YAML
+
+    Returns:
+      Python dict of configuration settings from YAML files.
+    """
+
+    # Load the default config.
+    cfg_d = load_config_file(default_config)
+
+    # Load the user config file, then ensure all user-specified
+    # variables correspond to a default value.
+    if not os.path.exists(user_config):
+        raise FileNotFoundError(
+            f"""
+            User config file not found:
+            user_config = {user_config}
+            """
+        )
+
+    try:
+        cfg_u = load_config_file(user_config)
+    except:
+        errmsg = dedent(
+            f"""\n
+            Could not load YAML config file:  {user_config}
+            Reference the above traceback for more information.
+            """
+        )
+        raise Exception(errmsg)
+
+    # Make sure the keys in user config match those in the default
+    # config.
+    if not check_structure_dict(cfg_u, cfg_d):
+        raise Exception(
+            dedent(
+                f"""
+                User-specified variable "{key}" in {user_config} is not valid
+                Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n
+                """
+            )
+        )
+
+    # Mandatory variables *must* be set in the user's config; the default value is invalid
+    mandatory = ["user.MACHINE"]
+    for val in mandatory:
+        sect, key = val.split(".")
+        user_setting = cfg_u.get(sect, {}).get(key)
+        if user_setting is None:
+            raise Exception(
+                f"""Mandatory variable "{val}" not found in
+            user config file {user_config}"""
+            )
+
+    # Load the machine config file
+    machine = uppercase(cfg_u.get("user").get("MACHINE"))
+    cfg_u["user"]["MACHINE"] = uppercase(machine)
+
+    machine_file = os.path.join(ushdir, "machine", f"{lowercase(machine)}.yaml")
+
+    if not os.path.exists(machine_file):
+        raise FileNotFoundError(
+            dedent(
+                f"""
+            The machine file {machine_file} does not exist.
+            Check that you have specified the correct machine
+            ({machine}) in your config file {user_config}"""
+            )
+        )
+    machine_cfg = load_config_file(machine_file)
+
+    # Load the fixed files configuration
+    cfg_f = load_config_file(
+        os.path.join(ushdir, os.pardir, "parm", "fixed_files_mapping.yaml")
+    )
+
+    # Load the constants file
+    cfg_c = load_config_file(os.path.join(ushdir, "constants.yaml"))
+
+    # Update default config with the constants, the machine config, and
+    # then the user_config
+    # Recall: update_dict updates the second dictionary with the first,
+    # and so, we update the default config settings in place with all
+    # the others.
+
+    # Constants
+    update_dict(cfg_c, cfg_d)
+
+    # Machine settings
+    update_dict(machine_cfg, cfg_d)
+
+    # Fixed files
+    update_dict(cfg_f, cfg_d)
+
+    # User settings (take precedence over all others)
+    update_dict(cfg_u, cfg_d)
+
+    extend_yaml(cfg_d)
+
+    # Do any conversions of data types
+    for sect, settings in cfg_d.items():
+        for k, v in settings.items():
+            if not (v is None or v == ""):
+                cfg_d[sect][k] = str_to_list(v)
+
+    for k, v in cfg_d["task_run_fcst"].items():
+        print(f"*** {k}: {v}")
+
+    # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
+    mandatory = [
+        "EXPT_SUBDIR",
+        "NCORES_PER_NODE",
+        "FIXgsm",
+        "FIXaer",
+        "FIXlut",
+        "FIXorg",
+        "FIXsfc",
+    ]
+    flat_cfg = flatten_dict(cfg_d)
+    for val in mandatory:
+        if not flat_cfg.get(val):
+            raise Exception(
+                dedent(
+                    f"""
+                    Mandatory variable "{val}" not found in:
+                    user config file {user_config}
+                                  OR
+                    machine file {machine_file} 
+                    """
+                )
+            )
+
+    # Check that input dates are in a date format
+    dates = ["DATE_FIRST_CYCL", "DATE_LAST_CYCL"]
+    for val in dates:
+        if not isinstance(cfg_d["workflow"][val], datetime.date):
+            raise Exception(
+                dedent(
+                    f"""
+                            Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
+
+                            For examples of valid formats, see the Users' Guide.
+                            """
+                )
+            )
+
+    return cfg_d
+
+
+def set_srw_paths(ushdir, expt_config):
+
+    """
+    Generate a dictionary of directories that describe the SRW
+    structure, i.e., where SRW is installed, and the paths to
+    external repositories managed via the manage_externals tool.
+
+    Other paths for SRW are set as defaults in config_defaults.yaml
+
+    Args:
+       ushdir:      (str) path to the system location of the ush/ directory
+                     under the SRW clone
+       expt_config: (dict) contains the configuration settings for the
+                     user-defined experiment
+
+    Returns:
+       dictionary of config settings and system paths as keys/values
+    """
+
+    # HOMEdir is the location of the SRW clone, one directory above ush/
+    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+
+    # Read Externals.cfg
+    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
+    try:
+        mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
+    except:
+        pass
+    cfg = load_ini_config(mng_extrns_cfg_fn)
+
+    # Get the base directory of the FV3 forecast model code.
+    external_name = expt_config.get("workflow", {}).get("FCST_MODEL")
+    property_name = "local_path"
+
+    try:
+        ufs_wthr_mdl_dir = get_ini_value(cfg, external_name, property_name)
+    except KeyError:
+        errmsg = dedent(
+            f"""
+            Externals configuration file {mng_extrns_cfg_fn}
+            does not contain '{external_name}'."""
+        )
+        raise Exception(errmsg) from None
+
+    # Check that the model code has been downloaded
+    ufs_wthr_mdl_dir = os.path.join(homedir, ufs_wthr_mdl_dir)
+    if not os.path.exists(ufs_wthr_mdl_dir):
+        raise FileNotFoundError(
+            dedent(
+                f"""
+                The base directory in which the FV3 source code should be located
+                (UFS_WTHR_MDL_DIR) does not exist:
+                  UFS_WTHR_MDL_DIR = '{ufs_wthr_mdl_dir}'
+                Please clone the external repository containing the code in this directory,
+                build the executable, and then rerun the workflow."""
+            )
+        )
+
+    return dict(
+        HOMEdir=homedir,
+        USHdir=ushdir,
+        UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
+    )
+
+
+def setup(USHdir, user_config_fn="config.yaml"):
+    """Function that validates user-provided configuration, and derives
+    a secondary set of parameters needed to configure a Rocoto-based SRW
+    workflow. The derived parameters use a set of required user-defined
+    parameters defined by either config_defaults.yaml, a user-provided
+    configuration file (config.yaml), or a YAML machine file.
+
+    A set of global variable definitions is saved to the experiment
+    directory as a bash configure file that is sourced by scripts at run
+    time.
+
+    Args:
+      USHdir          (str): The full path of the ush/ directory where
+                             this script is located
+      user_config_fn  (str): The name of a user-provided config YAML
+
     Returns:
       None
     """
 
-    global USHdir
-    USHdir = os.path.dirname(os.path.abspath(__file__))
+    logger = getLogger(__name__)
     cd_vrfy(USHdir)
 
-    # import all environment variables
-    import_vars()
-
     # print message
-    print_info_msg(
+    log_info(
         f"""
         ========================================================================
         Starting function setup() in \"{os.path.basename(__file__)}\"...
         ========================================================================"""
     )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-1 of config
-    # ================
-    # Set the name of the configuration file containing default values for
-    # the experiment/workflow variables.  Then load its content.
-    #
-    # -----------------------------------------------------------------------
-    #
-    EXPT_DEFAULT_CONFIG_FN = "config_defaults.yaml"
-    cfg_d = load_config_file(os.path.join(USHdir, EXPT_DEFAULT_CONFIG_FN))
-    EXPT_CONFIG_FN = cfg_d["workflow"]["EXPT_CONFIG_FN"]
+
+    # Create a dictionary of config options from defaults, machine, and
+    # user config files.
+    default_config_fp = os.path.join(USHdir, "config_defaults.yaml")
+    user_config_fp = os.path.join(USHdir, user_config_fn)
+    expt_config = load_config_for_setup(USHdir, default_config_fp, user_config_fp)
+
+    # Set up some paths relative to the SRW clone
+    expt_config["user"].update(set_srw_paths(USHdir, expt_config))
 
     #
     # -----------------------------------------------------------------------
     #
-    # Load the user config file but don't source it yet.  This file
-    # contains user-specified values for a subset of the experiment/workflow
-    # variables that override their default values.  Note that the user-
-    # specified configuration file is not tracked by the repository, whereas
-    # the default configuration file is tracked.
+    # Validate the experiment configuration starting with the workflow,
+    # then in rough order of the tasks in the workflow
     #
     # -----------------------------------------------------------------------
     #
-    if os.path.exists(EXPT_CONFIG_FN):
-        cfg_u = load_config_file(os.path.join(USHdir, EXPT_CONFIG_FN))
-        cfg_u = flatten_dict(cfg_u)
-        import_vars(dictionary=cfg_u,
-            env_vars=["MACHINE",
-                      "EXTRN_MDL_NAME_ICS", "EXTRN_MDL_NAME_LBCS",
-                      "FV3GFS_FILE_FMT_ICS", "FV3GFS_FILE_FMT_LBCS"])
-    else:
-        print_err_msg_exit(
-            f'''
-            User config file not found
-              EXPT_CONFIG_FN = \"{EXPT_CONFIG_FN}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-2 of config
-    # ================
-    # Source machine specific config file to set default values
-    #
-    # -----------------------------------------------------------------------
-    #
-    global MACHINE, EXTRN_MDL_SYSBASEDIR_ICS, EXTRN_MDL_SYSBASEDIR_LBCS
-    MACHINE_FILE = os.path.join(USHdir, "machine", f"{lowercase(MACHINE)}.yaml")
-    machine_cfg = load_config_file(MACHINE_FILE)
 
-    # ics and lbcs
-    def get_location(xcs,fmt):
-       if ("data" in machine_cfg) and (xcs in machine_cfg["data"]):
-          v = machine_cfg["data"][xcs]
-          if not isinstance(v,dict):
-             return v
-          else:
-             return v[fmt]
-       else:
-          return ""
+    # Workflow
+    workflow_config = expt_config["workflow"]
 
-    EXTRN_MDL_SYSBASEDIR_ICS = get_location(EXTRN_MDL_NAME_ICS, FV3GFS_FILE_FMT_ICS)
-    EXTRN_MDL_SYSBASEDIR_LBCS = get_location(EXTRN_MDL_NAME_LBCS, FV3GFS_FILE_FMT_LBCS)
-
-    # remove the data key and provide machine specific default values for cfg_d
-    if "data" in machine_cfg:
-        machine_cfg.pop("data")
-    machine_cfg.update({
-       "EXTRN_MDL_SYSBASEDIR_ICS": EXTRN_MDL_SYSBASEDIR_ICS,
-       "EXTRN_MDL_SYSBASEDIR_LBCS": EXTRN_MDL_SYSBASEDIR_LBCS,
-    })
-    machine_cfg = flatten_dict(machine_cfg)
-    update_dict(machine_cfg, cfg_d)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Step-3 of config
-    # ================
-    # Source user config. This overrides previous two configs
-    #
-    # -----------------------------------------------------------------------
-    #
-    update_dict(cfg_u, cfg_d)
-
-    # Now that all 3 config files have their contribution in cfg_d
-    # import its content to python globals()
-    import_vars(dictionary=flatten_dict(cfg_d))
-
-    # make machine name uppercase
-    MACHINE = uppercase(MACHINE)
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Source constants.sh and save its contents to a variable for later
-    #
-    # -----------------------------------------------------------------------
-    #
-    cfg_c = load_config_file(os.path.join(USHdir, CONSTANTS_FN))
-    import_vars(dictionary=flatten_dict(cfg_c))
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate a unique number for this workflow run. This maybe used to
+    # Generate a unique number for this workflow run. This may be used to
     # get unique log file names for example
-    #
-    # -----------------------------------------------------------------------
-    #
-    global WORKFLOW_ID
-    WORKFLOW_ID = "id_" + str(int(datetime.datetime.now().timestamp()))
-    print_info_msg(f"""WORKFLOW ID = {WORKFLOW_ID}""")
+    workflow_id = "id_" + str(int(datetime.datetime.now().timestamp()))
+    workflow_config["WORKFLOW_ID"] = workflow_id
+    log_info(f"""WORKFLOW ID = {workflow_id}""")
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If PREDEF_GRID_NAME is set to a non-empty string, set or reset parameters
-    # according to the predefined domain specified.
-    #
-    # -----------------------------------------------------------------------
-    #
-    # export env vars before calling another module
-    export_vars()
-
-    if PREDEF_GRID_NAME:
-        set_predef_grid_params()
-
-    import_vars()
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure different variables are set to their corresponding valid value
-    #
-    # -----------------------------------------------------------------------
-    #
-    global VERBOSE
-    if DEBUG and not VERBOSE:
-        print_info_msg(
+    debug = workflow_config.get("DEBUG")
+    if debug:
+        log_info(
             """
-            Resetting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
+            Setting VERBOSE to \"TRUE\" because DEBUG has been set to \"TRUE\"..."""
         )
-        VERBOSE = True
+        workflow_config["VERBOSE"] = True
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
-    # being used. This is required at the moment, since "do_shum/sppt/skeb"
-    # does not override the use of the scheme unless the magnitude is also
-    # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
-    # "false," then none will run, regardless of the magnitude values.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global SHUM_MAG, SKEB_MAG, SPPT_MAG
-    if not DO_SHUM:
-        SHUM_MAG = -999.0
-    if not DO_SKEB:
-        SKEB_MAG = -999.0
-    if not DO_SPPT:
-        SPPT_MAG = -999.0
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
-    # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
-    # N_VAR_SPP, otherwise set it to zero.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global N_VAR_SPP
-    N_VAR_SPP = 0
-    if DO_SPP:
-        N_VAR_SPP = len(SPP_VAR_LIST)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with Noah or RUC-LSM SPP, count the number of entries in
-    # LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
-    # Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
-    # initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
-    # is turned on.  This requirement is necessary since LSM SPP cannot run with
-    # FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
-    # length of the forecast either.  A bug fix will be submitted to
-    # ufs-weather-model soon, at which point, this requirement can be removed
-    # from regional_workflow.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global N_VAR_LNDP, LNDP_TYPE, LNDP_MODEL_TYPE, FHCYC_LSM_SPP_OR_NOT
-    N_VAR_LNDP = 0
-    LNDP_TYPE = 0
-    LNDP_MODEL_TYPE = 0
-    FHCYC_LSM_SPP_OR_NOT = 0
-    if DO_LSM_SPP:
-        N_VAR_LNDP = len(LSM_SPP_VAR_LIST)
-        LNDP_TYPE = 2
-        LNDP_MODEL_TYPE = 2
-        FHCYC_LSM_SPP_OR_NOT = 999
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with SPP, confirm that each SPP-related namelist value
-    # contains the same number of entries as N_VAR_SPP (set above to be equal
-    # to the number of entries in SPP_VAR_LIST).
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_SPP:
-        if (
-            (len(SPP_MAG_LIST) != N_VAR_SPP)
-            or (len(SPP_LSCALE) != N_VAR_SPP)
-            or (len(SPP_TSCALE) != N_VAR_SPP)
-            or (len(SPP_SIGTOP1) != N_VAR_SPP)
-            or (len(SPP_SIGTOP2) != N_VAR_SPP)
-            or (len(SPP_STDDEV_CUTOFF) != N_VAR_SPP)
-            or (len(ISEED_SPP) != N_VAR_SPP)
-        ):
-            print_err_msg_exit(
-                f'''
-                All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
-                variables set in {CONFIG_FN} must be equal in number of entries to what is
-                found in SPP_VAR_LIST:
-                  Number of entries in SPP_VAR_LIST = \"{len(SPP_VAR_LIST)}\"'''
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If running with LSM SPP, confirm that each LSM SPP-related namelist
-    # value contains the same number of entries as N_VAR_LNDP (set above to
-    # be equal to the number of entries in LSM_SPP_VAR_LIST).
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_LSM_SPP:
-        if (
-            (len(LSM_SPP_MAG_LIST) != N_VAR_LNDP)
-            or (len(LSM_SPP_LSCALE) != N_VAR_LNDP)
-            or (len(LSM_SPP_TSCALE) != N_VAR_LNDP)
-        ):
-            print_err_msg_exit(
-                f'''
-                All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
-                set in {CONFIG_FN} must be equal in number of entries to what is found in
-                SPP_VAR_LIST:
-                  Number of entries in SPP_VAR_LIST = \"{len(LSM_SPP_VAR_LIST)}\"'''
-            )
-    #
-    # The current script should be located in the ush subdirectory of the
-    # workflow directory.  Thus, the workflow directory is the one above the
-    # directory of the current script.
-    #
-    HOMEdir = os.path.abspath(
-        os.path.dirname(__file__) + os.sep + os.pardir
-    )
+    verbose = workflow_config["VERBOSE"]
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the base directories in which codes obtained from external reposi-
-    # tories (using the manage_externals tool) are placed.  Obtain the rela-
-    # tive paths to these directories by reading them in from the manage_ex-
-    # ternals configuration file.  (Note that these are relative to the lo-
-    # cation of the configuration file.)  Then form the full paths to these
-    # directories.  Finally, make sure that each of these directories actu-
-    # ally exists.
-    #
-    # -----------------------------------------------------------------------
-    #
-    mng_extrns_cfg_fn = os.path.join(HOMEdir, "Externals.cfg")
-    try:
-        mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
-    except:
-        pass
-    property_name = "local_path"
-    cfg = load_ini_config(mng_extrns_cfg_fn)
-    #
-    # Get the base directory of the FV3 forecast model code.
-    #
-    external_name = FCST_MODEL
-    UFS_WTHR_MDL_DIR = get_ini_value(cfg, external_name, property_name)
-
-    if not UFS_WTHR_MDL_DIR:
-        print_err_msg_exit(
-            f"""
-            Externals.cfg does not contain "{external_name}"."""
-        )
-
-    UFS_WTHR_MDL_DIR = os.path.join(HOMEdir, UFS_WTHR_MDL_DIR)
-    if not os.path.exists(UFS_WTHR_MDL_DIR):
-        print_err_msg_exit(
-            f"""
-            The base directory in which the FV3 source code should be located
-            (UFS_WTHR_MDL_DIR) does not exist:
-              UFS_WTHR_MDL_DIR = \"{UFS_WTHR_MDL_DIR}\"
-            Please clone the external repository containing the code in this directory,
-            build the executable, and then rerun the workflow."""
-        )
-    #
-    # Define some other useful paths
-    #
-    global SCRIPTSdir, JOBSdir, SORCdir, PARMdir, MODULESdir
-    global EXECdir, PARMdir, FIXdir, VX_CONFIG_DIR, METPLUS_CONF, MET_CONFIG
-
-    USHdir = os.path.join(HOMEdir, "ush")
-    SCRIPTSdir = os.path.join(HOMEdir, "scripts")
-    JOBSdir = os.path.join(HOMEdir, "jobs")
-    SORCdir = os.path.join(HOMEdir, "sorc")
-    PARMdir = os.path.join(HOMEdir, "parm")
-    MODULESdir = os.path.join(HOMEdir, "modulefiles")
-    EXECdir = os.path.join(HOMEdir, EXEC_SUBDIR)
-    VX_CONFIG_DIR = PARMdir
-    METPLUS_CONF = os.path.join(PARMdir, "metplus")
-    MET_CONFIG = os.path.join(PARMdir, "met")
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Source the machine config file containing architechture information,
-    # queue names, and supported input file paths.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global FIXgsm, FIXaer, FIXlut, TOPO_DIR, SFC_CLIMO_INPUT_DIR, DOMAIN_PREGEN_BASEDIR
-    global RELATIVE_LINK_FLAG, WORKFLOW_MANAGER, NCORES_PER_NODE, SCHED, QUEUE_DEFAULT
-    global QUEUE_HPSS, QUEUE_FCST, PARTITION_DEFAULT, PARTITION_HPSS, PARTITION_FCST
-
-    RELATIVE_LINK_FLAG = "--relative"
-
-    if not NCORES_PER_NODE:
-        print_err_msg_exit(
-            f"""
-            NCORES_PER_NODE has not been specified in the file {MACHINE_FILE}
-            Please ensure this value has been set for your desired platform. """
-        )
-
-    if not (FIXgsm and FIXaer and FIXlut and TOPO_DIR and SFC_CLIMO_INPUT_DIR):
-        print_err_msg_exit(
-            f"""
-            One or more fix file directories have not been specified for this machine:
-              MACHINE = \"{MACHINE}\"
-              FIXgsm = \"{FIXgsm or ""}
-              FIXaer = \"{FIXaer or ""}
-              FIXlut = \"{FIXlut or ""}
-              TOPO_DIR = \"{TOPO_DIR or ""}
-              SFC_CLIMO_INPUT_DIR = \"{SFC_CLIMO_INPUT_DIR or ""}
-              DOMAIN_PREGEN_BASEDIR = \"{DOMAIN_PREGEN_BASEDIR or ""}
-            You can specify the missing location(s) in config.sh"""
-        )
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the names of the build and workflow module files (if not
-    # already specified by the user).  These are the files that need to be
-    # sourced before building the component SRW App codes and running various
-    # workflow scripts, respectively.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global WFLOW_MOD_FN, BUILD_MOD_FN, BUILD_VER_FN, RUN_VER_FN
-    machine = lowercase(MACHINE)
-    WFLOW_MOD_FN = WFLOW_MOD_FN or f"wflow_{machine}"
-    BUILD_MOD_FN = BUILD_MOD_FN or f"build_{machine}_{COMPILER}"
-    BUILD_VER_FN = BUILD_VER_FN or f"build.ver.{machine}"
-    RUN_VER_FN = RUN_VER_FN or f"run.ver.{machine}"
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Calculate a default value for the number of processes per node for the
-    # RUN_FCST_TN task.  Then set PPN_RUN_FCST to this default value if
-    # PPN_RUN_FCST is not already specified by the user.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global PPN_RUN_FCST
-    ppn_run_fcst_default = NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST
-    PPN_RUN_FCST = PPN_RUN_FCST or ppn_run_fcst_default
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If we are using a workflow manager check that the ACCOUNT variable is
-    # not empty.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if WORKFLOW_MANAGER is not None:
-        if not ACCOUNT:
-            print_err_msg_exit(
-                f'''
-                The variable ACCOUNT cannot be empty if you are using a workflow manager:
-                  ACCOUNT = \"ACCOUNT\"
-                  WORKFLOW_MANAGER = \"WORKFLOW_MANAGER\"'''
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the grid type (GTYPE).  In general, in the FV3 code, this can take
-    # on one of the following values: "global", "stretch", "nest", and "re-
-    # gional".  The first three values are for various configurations of a
-    # global grid, while the last one is for a regional grid.  Since here we
-    # are only interested in a regional grid, GTYPE must be set to "region-
-    # al".
-    #
-    # -----------------------------------------------------------------------
-    #
-    global TILE_RGNL, GTYPE
-    GTYPE = "regional"
-    TILE_RGNL = "7"
-
-    # -----------------------------------------------------------------------
-    #
-    # Set USE_MERRA_CLIMO to either "TRUE" or "FALSE" so we don't
-    # have to consider other valid values later on.
-    #
-    # -----------------------------------------------------------------------
-    global USE_MERRA_CLIMO
-    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
-        USE_MERRA_CLIMO = True
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set CPL to TRUE/FALSE based on FCST_MODEL.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global CPL
-    if FCST_MODEL == "ufs-weather-model":
-        CPL = False
-    elif FCST_MODEL == "fv3gfs_aqm":
-        CPL = True
-    else:
-        print_err_msg_exit(
-            f'''
-            The coupling flag CPL has not been specified for this value of FCST_MODEL:
-              FCST_MODEL = \"{FCST_MODEL}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure RESTART_INTERVAL is set to an integer value if present
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not isinstance(RESTART_INTERVAL, int):
-        print_err_msg_exit(
-            f'''
-            RESTART_INTERVAL must be set to an integer number of hours.
-              RESTART_INTERVAL = \"{RESTART_INTERVAL}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Check that DATE_FIRST_CYCL and DATE_LAST_CYCL are strings consisting
-    # of exactly 10 digits.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not isinstance(DATE_FIRST_CYCL, datetime.date):
-        print_err_msg_exit(
-            f'''
-            DATE_FIRST_CYCL must be a string consisting of exactly 8 digits of the
-            form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
-            month, DD is the 2-digit day-of-month, and HH is the 2-digit
-            cycle hour.
-              DATE_FIRST_CYCL = \"{DATE_FIRST_CYCL}\"'''
-        )
-
-    if not isinstance(DATE_LAST_CYCL, datetime.date):
-        print_err_msg_exit(
-            f'''
-            DATE_LAST_CYCL must be a string consisting of exactly 8 digits of the
-            form \"YYYYMMDDHH\", where YYYY is the 4-digit year, MM is the 2-digit
-            month, DD is the 2-digit day-of-month, and HH is the 2-digit
-            cycle hour.
-              DATE_LAST_CYCL = \"{DATE_LAST_CYCL}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Call a function to generate the array ALL_CDATES containing the cycle
-    # dates/hours for which to run forecasts.  The elements of this array
-    # will have the form YYYYMMDDHH.  They are the starting dates/times of
-    # the forecasts that will be run in the experiment.  Then set NUM_CYCLES
-    # to the number of elements in this array.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    ALL_CDATES = set_cycle_dates(
-        date_start=DATE_FIRST_CYCL,
-        date_end=DATE_LAST_CYCL,
-        incr_cycl_freq=INCR_CYCL_FREQ,
-    )
-
-    NUM_CYCLES = len(ALL_CDATES)
-
-    # Completely arbitrary cutoff of 90 cycles.
-    if NUM_CYCLES > 90:
-        ALL_CDATES = None
-        print_info_msg(
-            f"""
-            Too many cycles in ALL_CDATES to list, redefining in abbreviated form."
-            ALL_CDATES="{DATE_FIRST_CYCL}...{DATE_LAST_CYCL}"""
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If using a custom post configuration file, make sure that it exists.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if USE_CUSTOM_POST_CONFIG_FILE:
-        if not os.path.exists(CUSTOM_POST_CONFIG_FP):
-            print_err_msg_exit(
-                f'''
-                The custom post configuration specified by CUSTOM_POST_CONFIG_FP does not
-                exist:
-                  CUSTOM_POST_CONFIG_FP = \"{CUSTOM_POST_CONFIG_FP}\"'''
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If using external CRTM fix files to allow post-processing of synthetic
-    # satellite products from the UPP, then make sure the fix file directory
-    # exists.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if USE_CRTM:
-        if not os.path.exists(CRTM_DIR):
-            print_err_msg_exit(
-                f'''
-                The external CRTM fix file directory specified by CRTM_DIR does not exist:
-                    CRTM_DIR = \"{CRTM_DIR}\"'''
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # The forecast length (in integer hours) cannot contain more than 3 cha-
-    # racters.  Thus, its maximum value is 999.  Check whether the specified
-    # forecast length exceeds this maximum value.  If so, print out a warn-
-    # ing and exit this script.
-    #
-    # -----------------------------------------------------------------------
-    #
+    # The forecast length (in integer hours) cannot contain more than 3 characters.
+    # Thus, its maximum value is 999.
     fcst_len_hrs_max = 999
-    if FCST_LEN_HRS > fcst_len_hrs_max:
-        print_err_msg_exit(
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    if fcst_len_hrs > fcst_len_hrs_max:
+        raise ValueError(
             f"""
             Forecast length is greater than maximum allowed length:
-              FCST_LEN_HRS = {FCST_LEN_HRS}
+              FCST_LEN_HRS = {fcst_len_hrs}
               fcst_len_hrs_max = {fcst_len_hrs_max}"""
         )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
-    # by the BC update interval (LBC_SPEC_INTVL_HRS).  If not, print out a
-    # warning and exit this script.  If so, generate an array of forecast
-    # hours at which the boundary values will be updated.
-    #
-    # -----------------------------------------------------------------------
-    #
-    rem = FCST_LEN_HRS % LBC_SPEC_INTVL_HRS
 
-    if rem != 0:
-        print_err_msg_exit(
-            f"""
-            The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
-            boundary conditions update interval (LBC_SPEC_INTVL_HRS):
-              FCST_LEN_HRS = {FCST_LEN_HRS}
-              LBC_SPEC_INTVL_HRS = {LBC_SPEC_INTVL_HRS}
-              rem = FCST_LEN_HRS%%LBC_SPEC_INTVL_HRS = {rem}"""
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the array containing the forecast hours at which the lateral
-    # boundary conditions (LBCs) need to be updated.  Note that this array
-    # does not include the 0-th hour (initial time).
-    #
-    # -----------------------------------------------------------------------
-    #
-    global LBC_SPEC_FCST_HRS
-    LBC_SPEC_FCST_HRS = [
-        i
-        for i in range(
-            LBC_SPEC_INTVL_HRS, LBC_SPEC_INTVL_HRS + FCST_LEN_HRS, LBC_SPEC_INTVL_HRS
-        )
-    ]
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Check to make sure that various computational parameters needed by the
-    # forecast model are set to non-empty values.  At this point in the
-    # experiment generation, all of these should be set to valid (non-empty)
-    # values.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not DT_ATMOS:
-        print_err_msg_exit(
-            f'''
-            The forecast model main time step (DT_ATMOS) is set to a null string:
-              DT_ATMOS = {DT_ATMOS}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-
-    if not LAYOUT_X:
-        print_err_msg_exit(
-            f'''
-            The number of MPI processes to be used in the x direction (LAYOUT_X) by
-            the forecast job is set to a null string:
-              LAYOUT_X = {LAYOUT_X}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-
-    if not LAYOUT_Y:
-        print_err_msg_exit(
-            f'''
-            The number of MPI processes to be used in the y direction (LAYOUT_Y) by
-            the forecast job is set to a null string:
-              LAYOUT_Y = {LAYOUT_Y}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-
-    if not BLOCKSIZE:
-        print_err_msg_exit(
-            f'''
-            The cache size to use for each MPI task of the forecast (BLOCKSIZE) is
-            set to a null string:
-              BLOCKSIZE = {BLOCKSIZE}
-            Please set this to a valid numerical value in the user-specified experiment
-            configuration file (EXPT_CONFIG_FP) and rerun:
-              EXPT_CONFIG_FP = \"{EXPT_CONFIG_FP}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If performing sub-hourly model output and post-processing, check that
-    # the output interval DT_SUBHOURLY_POST_MNTS (in minutes) is specified
-    # correctly.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global SUB_HOURLY_POST
-
-    if SUB_HOURLY_POST:
-        #
-        # Check that DT_SUBHOURLY_POST_MNTS is between 0 and 59, inclusive.
-        #
-        if DT_SUBHOURLY_POST_MNTS < 0 or DT_SUBHOURLY_POST_MNTS > 59:
-            print_err_msg_exit(
-                f'''
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
-                DT_SUBHOURLY_POST_MNTS must be set to an integer between 0 and 59,
-                inclusive but in this case is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"'''
-            )
-        #
-        # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
-        # evenly divisible by the forecast model's main time step DT_ATMOS.
-        #
-        rem = DT_SUBHOURLY_POST_MNTS * 60 % DT_ATMOS
-        if rem != 0:
-            print_err_msg_exit(
-                f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
-                the time interval specified by DT_SUBHOURLY_POST_MNTS (after converting
-                to seconds) must be evenly divisible by the time step DT_ATMOS used in
-                the forecast model, i.e. the remainder (rem) must be zero.  In this case,
-                it is not:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                  DT_ATMOS = \"{DT_ATMOS}\"
-                  rem = (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS = {rem}
-                Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so that this remainder
-                is zero."""
-            )
-        #
-        # If DT_SUBHOURLY_POST_MNTS is set to 0 (with SUB_HOURLY_POST set to
-        # True), then we're not really performing subhourly post-processing.
-        # In this case, reset SUB_HOURLY_POST to False and print out an
-        # informational message that such a change was made.
-        #
-        if DT_SUBHOURLY_POST_MNTS == 0:
-            print_info_msg(
-                f"""
-                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
-                DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
-                sub-hourly output is not really being performed:
-                  SUB_HOURLY_POST = \"{SUB_HOURLY_POST}\"
-                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
-                Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you
-                must set DT_SUBHOURLY_POST_MNTS to something other than zero."""
-            )
-            SUB_HOURLY_POST = False
     #
     # -----------------------------------------------------------------------
     #
@@ -794,32 +357,22 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global EXPT_BASEDIR
-    if (not EXPT_BASEDIR) or (EXPT_BASEDIR[0] != "/"):
-        if not EXPT_BASEDIR:
-            EXPT_BASEDIR = ""
-        EXPT_BASEDIR = os.path.join(HOMEdir, "..", "expt_dirs", EXPT_BASEDIR)
+    expt_basedir = workflow_config.get("EXPT_BASEDIR")
+    homedir = expt_config["user"].get("HOMEdir")
+    if (not expt_basedir) or (expt_basedir[0] != "/"):
+        if not expt_basedir or "{{" in expt_basedir:
+            expt_basedir = ""
+        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
     try:
-        EXPT_BASEDIR = os.path.realpath(EXPT_BASEDIR)
+        expt_basedir = os.path.realpath(expt_basedir)
     except:
         pass
-    EXPT_BASEDIR = os.path.abspath(EXPT_BASEDIR)
+    expt_basedir = os.path.abspath(expt_basedir)
 
-    mkdir_vrfy(f' -p "{EXPT_BASEDIR}"')
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the experiment subdirectory name (EXPT_SUBDIR) is set to an empty
-    # string, print out an error message and exit.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if not EXPT_SUBDIR:
-        print_err_msg_exit(
-            f'''
-            The name of the experiment subdirectory (EXPT_SUBDIR) cannot be empty:
-              EXPT_SUBDIR = \"{EXPT_SUBDIR}\"'''
-        )
+    workflow_config["EXPT_BASEDIR"] = expt_basedir
+
+    # Update some paths that include EXPT_BASEDIR
+    extend_yaml(expt_config)
     #
     # -----------------------------------------------------------------------
     #
@@ -828,139 +381,567 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global EXPTDIR
-    EXPTDIR = os.path.join(EXPT_BASEDIR, EXPT_SUBDIR)
-    check_for_preexist_dir_file(EXPTDIR, PREEXISTING_DIR_METHOD)
+
+    expt_subdir = workflow_config.get("EXPT_SUBDIR", "")
+    exptdir = workflow_config["EXPTDIR"]
+    preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
+    try:
+        check_for_preexist_dir_file(exptdir, preexisting_dir_method)
+    except ValueError:
+        logger.exception(
+            f"""
+            Check that the following values are valid:
+            EXPTDIR {exptdir}
+            PREEXISTING_DIR_METHOD {preexisting_dir_method}
+            """
+        )
+        raise
+    except FileExistsError:
+        errmsg = dedent(
+            f"""
+            EXPTDIR ({exptdir}) already exists, and PREEXISTING_DIR_METHOD = {preexisting_dir_method}
+
+            To ignore this error, delete the directory, or set 
+            PREEXISTING_DIR_METHOD = delete, or
+            PREEXISTING_DIR_METHOD = rename
+            in your config file.
+            """
+        )
+        raise FileExistsError(errmsg) from None
+
     #
     # -----------------------------------------------------------------------
     #
-    # Set other directories, some of which may depend on EXPTDIR (depending
-    # on whether we're running in NCO or community mode, i.e. whether RUN_ENVIR
-    # is set to "nco" or "community").  Definitions:
-    #
-    # LOGDIR:
-    # Directory in which the log files from the workflow tasks will be placed.
-    #
-    # FIXam:
-    # This is the directory that will contain the fixed files or symlinks to
-    # the fixed files containing various fields on global grids (which are
-    # usually much coarser than the native FV3-LAM grid).
-    #
-    # FIXclim:
-    # This is the directory that will contain the MERRA2 aerosol climatology
-    # data file and lookup tables for optics properties
-    #
-    # FIXlam:
-    # This is the directory that will contain the fixed files or symlinks to
-    # the fixed files containing the grid, orography, and surface climatology
-    # on the native FV3-LAM grid.
-    #
-    # POST_OUTPUT_DOMAIN_NAME:
-    # The PREDEF_GRID_NAME is set by default.
+    # Set cron table entry for relaunching the workflow if
+    # USE_CRON_TO_RELAUNCH is set to TRUE.
     #
     # -----------------------------------------------------------------------
     #
-    global LOGDIR, FIXam, FIXclim, FIXlam
-    global POST_OUTPUT_DOMAIN_NAME
-    global COMIN_BASEDIR, COMOUT_BASEDIR
+    if workflow_config.get("USE_CRON_TO_RELAUNCH"):
+        intvl_mnts = workflow_config.get("CRON_RELAUNCH_INTVL_MNTS")
+        launch_script_fn = workflow_config.get("WFLOW_LAUNCH_SCRIPT_FN")
+        launch_log_fn = workflow_config.get("WFLOW_LAUNCH_LOG_FN")
+        workflow_config["CRONTAB_LINE"] = (
+            f"""*/{intvl_mnts} * * * * cd {exptdir} && """
+            f"""./{launch_script_fn} called_from_cron="TRUE" >> ./{launch_log_fn} 2>&1"""
+        )
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Check user settings against platform settings
+    #
+    # -----------------------------------------------------------------------
+    #
 
-    global OPSROOT, COMROOT, PACKAGEROOT, DATAROOT, DCOMROOT, DBNROOT
-    global SENDECF, SENDDBN, SENDDBN_NTC, SENDCOM, SENDWEB
-    global KEEPDATA, MAILTO, MAILCC
+    # Necessary tasks are turned on
+    pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
+    if pregen_basedir is None and not (
+        run_task_make_grid and run_task_make_orog and run_task_make_sfc_climo
+    ):
+        raise Exception(
+            f"""
+            DOMAIN_PREGEN_BASEDIR must be set when any of the following
+            tasks are turned off:
+                RUN_TASK_MAKE_GRID = {run_task_make_grid}
+                RUN_TASK_MAKE_OROG = {run_task_make_orog}
+                RUN_TASK_MAKE_SFC_CLIMO = {run_task_make_sfc_climo}"""
+        )
 
-    # Main directory locations
-    if RUN_ENVIR == "nco":
+    # A batch system account is specified
+    if expt_config["platform"].get("WORKFLOW_MANAGER") is not None:
+        if not expt_config.get("user").get("ACCOUNT"):
+            raise Exception(
+                dedent(
+                    f"""
+                  ACCOUNT must be specified in config or machine file if using a workflow manager.
+                  WORKFLOW_MANAGER = {expt_config["platform"].get("WORKFLOW_MANAGER")}\n"""
+                )
+            )
 
-        try: OPSROOT = os.path.abspath(f"{EXPT_BASEDIR}{os.sep}..{os.sep}nco_dirs") \
-                       if OPSROOT is None else OPSROOT
-        except NameError: OPSROOT = EXPTDIR
-        try: COMROOT
-        except NameError: COMROOT = os.path.join(OPSROOT, "com")
-        try: PACKAGEROOT
-        except NameError: PACKAGEROOT = os.path.join(OPSROOT, "packages")
-        try: DATAROOT
-        except NameError: DATAROOT = os.path.join(OPSROOT, "tmp")
-        try: DCOMROOT
-        except NameError: DCOMROOT = os.path.join(OPSROOT, "dcom")
+    #
+    # -----------------------------------------------------------------------
+    #
+    # ICS and LBCS settings and validation
+    #
+    # -----------------------------------------------------------------------
+    #
+    def get_location(xcs, fmt, expt_cfg):
+        ics_lbcs = expt_cfg.get("data", {}).get("ics_lbcs")
+        if ics_lbcs is not None:
+            v = ics_lbcs.get(xcs)
+            if not isinstance(v, dict):
+                return v
+            else:
+                return v.get(fmt, "")
+        else:
+            return ""
 
-        COMIN_BASEDIR = os.path.join(COMROOT, NET, model_ver)
-        COMOUT_BASEDIR = os.path.join(COMROOT, NET, model_ver)
+    # Get the paths to any platform-supported data streams
+    get_extrn_ics = expt_config.get("task_get_extrn_ics", {})
+    extrn_mdl_sysbasedir_ics = get_location(
+        get_extrn_ics.get("EXTRN_MDL_NAME_ICS"),
+        get_extrn_ics.get("FV3GFS_FILE_FMT_ICS"),
+        expt_config,
+    )
+    get_extrn_ics["EXTRN_MDL_SYSBASEDIR_ICS"] = extrn_mdl_sysbasedir_ics
 
-        LOGDIR = os.path.join(OPSROOT,"output")
+    get_extrn_lbcs = expt_config.get("task_get_extrn_lbcs", {})
+    extrn_mdl_sysbasedir_lbcs = get_location(
+        get_extrn_lbcs.get("EXTRN_MDL_NAME_LBCS"),
+        get_extrn_lbcs.get("FV3GFS_FILE_FMT_LBCS"),
+        expt_config,
+    )
+    get_extrn_lbcs["EXTRN_MDL_SYSBASEDIR_LBCS"] = extrn_mdl_sysbasedir_lbcs
 
+    # remove the data key -- it's not needed beyond this point
+    if "data" in expt_config:
+        expt_config.pop("data")
+
+    # Check for the user-specified directories for external model files if
+    # USE_USER_STAGED_EXTRN_FILES is set to TRUE
+    task_keys = zip(
+        [get_extrn_ics, get_extrn_lbcs],
+        ["EXTRN_MDL_SOURCE_BASEDIR_ICS", "EXTRN_MDL_SOURCE_BASEDIR_LBCS"],
+    )
+
+    for task, data_key in task_keys:
+        use_staged_extrn_files = task.get("USE_USER_STAGED_EXTRN_FILES")
+        if use_staged_extrn_files:
+            basedir = task[data_key]
+            # Check for the base directory up to the first templated field.
+            idx = basedir.find("$")
+            if idx == -1:
+                idx = len(basedir)
+
+            if not os.path.exists(basedir[:idx]):
+                raise FileNotFoundError(
+                    f'''
+                    The user-staged-data directory does not exist.
+                    Please point to the correct path where your external
+                    model files are stored.
+                      {data_key} = \"{basedir}\"'''
+                )
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Forecast settings
+    #
+    # -----------------------------------------------------------------------
+    #
+
+    # Gather the pre-defined grid parameters, if needed
+    fcst_config = expt_config["task_run_fcst"]
+    grid_config = expt_config["task_make_grid"]
+    if workflow_config.get("PREDEF_GRID_NAME"):
+        grid_params = set_predef_grid_params(
+            USHdir,
+            workflow_config["PREDEF_GRID_NAME"],
+            fcst_config["QUILTING"],
+        )
+
+        # Users like to change these variables, so don't overwrite them
+        special_vars = ["DT_ATMOS", "LAYOUT_X", "LAYOUT_Y", "BLOCKSIZE"]
+        for param, value in grid_params.items():
+            if param in special_vars:
+                param_val = fcst_config.get(param)
+                if param_val and isinstance(param_val, str) and "{{" not in param_val:
+                    continue
+                elif isinstance(param_val, (int, float)):
+                    continue
+                else:
+                    fcst_config[param] = value
+            elif param.startswith("WRTCMP"):
+                fcst_config[param] = value
+            elif param == "GRID_GEN_METHOD":
+                workflow_config[param] = value
+            else:
+                grid_config[param] = value
+
+    run_envir = expt_config["user"].get("RUN_ENVIR", "")
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Set parameters according to the type of horizontal grid generation
+    # method specified.
+    #
+    # -----------------------------------------------------------------------
+    #
+    grid_gen_method = workflow_config["GRID_GEN_METHOD"]
+    if grid_gen_method == "GFDLgrid":
+        grid_params = set_gridparams_GFDLgrid(
+            lon_of_t6_ctr=grid_config["GFDLgrid_LON_T6_CTR"],
+            lat_of_t6_ctr=grid_config["GFDLgrid_LAT_T6_CTR"],
+            res_of_t6g=grid_config["GFDLgrid_NUM_CELLS"],
+            stretch_factor=grid_config["GFDLgrid_STRETCH_FAC"],
+            refine_ratio_t6g_to_t7g=grid_config["GFDLgrid_REFINE_RATIO"],
+            istart_of_t7_on_t6g=grid_config["GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G"],
+            iend_of_t7_on_t6g=grid_config["GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G"],
+            jstart_of_t7_on_t6g=grid_config["GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G"],
+            jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
+            verbose=verbose,
+            nh4=expt_config["constants"]["NH4"],
+            run_envir=run_envir,
+        )
+    elif grid_gen_method == "ESGgrid":
+        grid_params = set_gridparams_ESGgrid(
+            lon_ctr=grid_config["ESGgrid_LON_CTR"],
+            lat_ctr=grid_config["ESGgrid_LAT_CTR"],
+            nx=grid_config["ESGgrid_NX"],
+            ny=grid_config["ESGgrid_NY"],
+            pazi=grid_config["ESGgrid_PAZI"],
+            halo_width=grid_config["ESGgrid_WIDE_HALO_WIDTH"],
+            delx=grid_config["ESGgrid_DELX"],
+            dely=grid_config["ESGgrid_DELY"],
+            constants=expt_config["constants"],
+        )
     else:
 
-        COMIN_BASEDIR = EXPTDIR
-        COMOUT_BASEDIR = EXPTDIR
-        OPSROOT = EXPTDIR
-        COMROOT = EXPTDIR
-        PACKAGEROOT = EXPTDIR
-        DATAROOT = EXPTDIR
-        DCOMROOT = EXPTDIR
+        errmsg = dedent(
+            f"""
+            Valid values of GRID_GEN_METHOD are GFDLgrid and ESGgrid.
+            The value provided is:
+              GRID_GEN_METHOD = {grid_gen_method}
+            """
+        )
+        raise KeyError(errmsg) from None
 
-        LOGDIR = os.path.join(EXPTDIR, "log")
+    # Add a grid parameter section to the experiment config
+    expt_config["grid_params"] = grid_params
 
-    try: DBNROOT
-    except NameError: DBNROOT = None
-    try: SENDECF
-    except NameError: SENDECF = False
-    try: SENDDBN
-    except NameError: SENDDBN = False
-    try: SENDDBN_NTC
-    except NameError: SENDDBN_NTC = False
-    try: SENDCOM
-    except NameError: SENDCOM = False
-    try: SENDWEB
-    except NameError: SENDWEB = False
-    try: KEEPDATA
-    except NameError: KEEPDATA = True
-    try: MAILTO
-    except NameError: MAILTO = None
-    try: MAILCC
-    except NameError: MAILCC = None
-
-    # create NCO directories
-    if RUN_ENVIR == "nco":
-        mkdir_vrfy(f' -p "{OPSROOT}"')
-        mkdir_vrfy(f' -p "{COMROOT}"')
-        mkdir_vrfy(f' -p "{PACKAGEROOT}"')
-        mkdir_vrfy(f' -p "{DATAROOT}"')
-        mkdir_vrfy(f' -p "{DCOMROOT}"')
-    if DBNROOT is not None:
-        mkdir_vrfy(f' -p "{DBNROOT}"')
+    # Check to make sure that mandatory forecast variables are set.
+    vlist = [
+        "DT_ATMOS",
+        "LAYOUT_X",
+        "LAYOUT_Y",
+        "BLOCKSIZE",
+    ]
+    for val in vlist:
+        if not fcst_config.get(val):
+            raise Exception(f"\nMandatory variable '{val}' has not been set\n")
 
     #
     # -----------------------------------------------------------------------
     #
-    #
-    # If POST_OUTPUT_DOMAIN_NAME has not been specified by the user, set it
-    # to PREDEF_GRID_NAME (which won't be empty if using a predefined grid).
-    # Then change it to lowercase.  Finally, ensure that it does not end up
-    # getting set to an empty string.
+    # Set magnitude of stochastic ad-hoc schemes to -999.0 if they are not
+    # being used. This is required at the moment, since "do_shum/sppt/skeb"
+    # does not override the use of the scheme unless the magnitude is also
+    # specifically set to -999.0.  If all "do_shum/sppt/skeb" are set to
+    # "false," then none will run, regardless of the magnitude values.
     #
     # -----------------------------------------------------------------------
     #
-    POST_OUTPUT_DOMAIN_NAME = POST_OUTPUT_DOMAIN_NAME or PREDEF_GRID_NAME
+    global_sect = expt_config["global"]
+    if not global_sect.get("DO_SHUM"):
+        global_sect["SHUM_MAG"] = -999.0
+    if not global_sect.get("DO_SKEB"):
+        global_sect["SKEB_MAG"] = -999.0
+    if not global_sect.get("DO_SPPT"):
+        global_sect["SPPT_MAG"] = -999.0
+    #
+    # -----------------------------------------------------------------------
+    #
+    # If running with SPP in MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or
+    # RRTMG, count the number of entries in SPP_VAR_LIST to correctly set
+    # N_VAR_SPP, otherwise set it to zero.
+    #
+    # -----------------------------------------------------------------------
+    #
+    if global_sect.get("DO_SPP"):
+        global_sect["N_VAR_SPP"] = len(global_sect["SPP_VAR_LIST"])
+    else:
+        global_sect["N_VAR_SPP"] = 0
+    #
+    # -----------------------------------------------------------------------
+    #
+    # If running with SPP, confirm that each SPP-related namelist value
+    # contains the same number of entries as N_VAR_SPP (set above to be equal
+    # to the number of entries in SPP_VAR_LIST).
+    #
+    # -----------------------------------------------------------------------
+    #
+    spp_vars = [
+        "SPP_MAG_LIST",
+        "SPP_LSCALE",
+        "SPP_TSCALE",
+        "SPP_SIGTOP1",
+        "SPP_SIGTOP2",
+        "SPP_STDDEV_CUTOFF",
+        "ISEED_SPP",
+    ]
 
-    if type(POST_OUTPUT_DOMAIN_NAME) != int:
-      POST_OUTPUT_DOMAIN_NAME = lowercase(POST_OUTPUT_DOMAIN_NAME)
+    if global_sect.get("DO_SPP"):
+        for spp_var in spp_vars:
+            if len(global_sect[spp_var]) != global_sect["N_VAR_SPP"]:
+                raise Exception(
+                    f"""
+                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                    variables must be of equal length to SPP_VAR_LIST:
+                      SPP_VAR_LIST (length {global_sect['N_VAR_SPP']})
+                      {spp_var} (length {len(global_sect[spp_var])})
+                    """
+                )
+    #
+    # -----------------------------------------------------------------------
+    #
+    # If running with Noah or RUC-LSM SPP, count the number of entries in
+    # LSM_SPP_VAR_LIST to correctly set N_VAR_LNDP, otherwise set it to zero.
+    # Also set LNDP_TYPE to 2 for LSM SPP, otherwise set it to zero.  Finally,
+    # initialize an "FHCYC_LSM_SPP" variable to 0 and set it to 999 if LSM SPP
+    # is turned on.  This requirement is necessary since LSM SPP cannot run with
+    # FHCYC=0 at the moment, but FHCYC cannot be set to anything less than the
+    # length of the forecast either.  A bug fix will be submitted to
+    # ufs-weather-model soon, at which point, this requirement can be removed
+    # from regional_workflow.
+    #
+    # -----------------------------------------------------------------------
+    #
+    if global_sect.get("DO_LSM_SPP"):
+        global_sect["N_VAR_LNDP"] = len(global_sect["LSM_SPP_VAR_LIST"])
+        global_sect["LNDP_TYPE"] = 2
+        global_sect["LNDP_MODEL_TYPE"] = 2
+        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 999
+    else:
+        global_sect["N_VAR_LNDP"] = 0
+        global_sect["LNDP_TYPE"] = 0
+        global_sect["LNDP_MODEL_TYPE"] = 0
+        global_sect["FHCYC_LSM_SPP_OR_NOT"] = 0
+    #
+    # -----------------------------------------------------------------------
+    #
+    # If running with LSM SPP, confirm that each LSM SPP-related namelist
+    # value contains the same number of entries as N_VAR_LNDP (set above to
+    # be equal to the number of entries in LSM_SPP_VAR_LIST).
+    #
+    # -----------------------------------------------------------------------
+    #
+    lsm_spp_vars = [
+        "LSM_SPP_MAG_LIST",
+        "LSM_SPP_LSCALE",
+        "LSM_SPP_TSCALE",
+    ]
+    if global_sect.get("DO_LSM_SPP"):
+        for lsm_spp_var in lsm_spp_vars:
+            if len(global_sect[lsm_spp_var]) != global_sect["N_VAR_LNDP"]:
+                raise Exception(
+                    f"""
+                    All MYNN PBL, MYNN SFC, GSL GWD, Thompson MP, or RRTMG SPP-related namelist
+                    variables must be of equal length to SPP_VAR_LIST:
+                    All Noah or RUC-LSM SPP-related namelist variables (except ISEED_LSM_SPP)
+                    must be equal of equal length to LSM_SPP_VAR_LIST:
+                      LSM_SPP_VAR_LIST (length {global_sect['N_VAR_LNDP']})
+                      {lsm_spp_var} (length {len(global_sect[lsm_spp_var])}
+                      """
+                )
 
-    if POST_OUTPUT_DOMAIN_NAME is None:
-        if PREDEF_GRID_NAME is None:
-            print_err_msg_exit(
+    # Check whether the forecast length (FCST_LEN_HRS) is evenly divisible
+    # by the BC update interval (LBC_SPEC_INTVL_HRS). If so, generate an
+    # array of forecast hours at which the boundary values will be updated.
+
+    lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
+    rem = fcst_len_hrs % lbc_spec_intvl_hrs
+    if rem != 0:
+        raise Exception(
+            f"""
+            The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
+            boundary conditions update interval (LBC_SPEC_INTVL_HRS):
+              FCST_LEN_HRS = {fcst_len_hrs}
+              LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}
+              rem = FCST_LEN_HRS%%LBC_SPEC_INTVL_HRS = {rem}"""
+        )
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Post-processing validation and settings
+    #
+    # -----------------------------------------------------------------------
+    #
+
+    # If using a custom post configuration file, make sure that it exists.
+    post_config = expt_config["task_run_post"]
+    if post_config.get("USE_CUSTOM_POST_CONFIG_FILE"):
+        custom_post_config_fp = post_config.get("CUSTOM_POST_CONFIG_FP")
+        try:
+            # os.path.exists returns exception if passed None, so use
+            # "try/except" to catch it and the non-existence of a
+            # provided path
+            if not os.path.exists(custom_post_config_fp):
+                raise FileNotFoundError(
+                    dedent(
+                        f"""
+                    USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom post configuration file
+                    CUSTOM_POST_CONFIG_FP = {custom_post_config_fp}
+                    could not be found."""
+                    )
+                ) from None
+        except TypeError:
+            raise TypeError(
+                dedent(
+                    f"""
+                USE_CUSTOM_POST_CONFIG_FILE has been set, but the custom
+                post configuration file path (CUSTOM_POST_CONFIG_FP) is
+                None.
+                """
+                )
+            ) from None
+        except FileNotFoundError:
+            raise
+
+    # If using external CRTM fix files to allow post-processing of synthetic
+    # satellite products from the UPP, make sure the CRTM fix file directory exists.
+    if global_sect.get("USE_CRTM"):
+        crtm_dir = global_sect.get("CRTM_DIR")
+        try:
+            # os.path.exists returns exception if passed None, so use
+            # "try/except" to catch it and the non-existence of a
+            # provided path
+            if not os.path.exists(crtm_dir):
+                raise FileNotFoundError(
+                    dedent(
+                        f"""
+                    USE_CRTM has been set, but the external CRTM fix file directory:
+                    CRTM_DIR = {crtm_dir}
+                    could not be found."""
+                    )
+                ) from None
+        except TypeError:
+            raise TypeError(
+                dedent(
+                    f"""
+                USE_CRTM has been set, but the external CRTM fix file
+                directory (CRTM_DIR) is None.
+                """
+                )
+            ) from None
+        except FileNotFoundError:
+            raise
+
+    # If performing sub-hourly model output and post-processing, check that
+    # the output interval DT_SUBHOURLY_POST_MNTS (in minutes) is specified
+    # correctly.
+    if post_config.get("SUB_HOURLY_POST"):
+
+        # Subhourly post should be set with minutes between 1 and 59 for
+        # real subhourly post to be performed.
+        dt_subhourly_post_mnts = post_config.get("DT_SUBHOURLY_POST_MNTS")
+        if dt_subhourly_post_mnts == 0:
+            logger.warning(
+                f"""
+                When performing sub-hourly post (i.e. SUB_HOURLY_POST set to \"TRUE\"),
+                DT_SUBHOURLY_POST_MNTS must be set to a value greater than 0; otherwise,
+                sub-hourly output is not really being performed:
+                  DT_SUBHOURLY_POST_MNTS = \"{DT_SUBHOURLY_POST_MNTS}\"
+                Resetting SUB_HOURLY_POST to \"FALSE\".  If you do not want this, you
+                must set DT_SUBHOURLY_POST_MNTS to something other than zero."""
+            )
+            post_config["SUB_HOURLY_POST"] = False
+
+        if dt_subhourly_post_mnts < 1 or dt_subhourly_post_mnts > 59:
+            raise ValueError(
+                f'''
+                When SUB_HOURLY_POST is set to \"TRUE\",
+                DT_SUBHOURLY_POST_MNTS must be set to an integer between 1 and 59,
+                inclusive but:
+                  DT_SUBHOURLY_POST_MNTS = \"{dt_subhourly_post_mnts}\"'''
+            )
+
+        # Check that DT_SUBHOURLY_POST_MNTS (after converting to seconds) is
+        # evenly divisible by the forecast model's main time step DT_ATMOS.
+        dt_atmos = fcst_config["DT_ATMOS"]
+        rem = dt_subhourly_post_mnts * 60 % dt_atmos
+        if rem != 0:
+            raise ValueError(
+                f"""
+                When SUB_HOURLY_POST is set to \"TRUE\") the post
+                processing interval in seconds must be evenly divisible
+                by the time step DT_ATMOS used in the forecast model,
+                i.e. the remainder must be zero.  In this case, it is
+                not:
+
+                  DT_SUBHOURLY_POST_MNTS = \"{dt_subhourly_post_mnts}\"
+                  DT_ATMOS = \"{dt_atmos}\"
+                  remainder = (DT_SUBHOURLY_POST_MNTS*60) %% DT_ATMOS = {rem}
+
+                Please reset DT_SUBHOURLY_POST_MNTS and/or DT_ATMOS so
+                that this remainder is zero."""
+            )
+
+    # Make sure the post output domain is set
+    predef_grid_name = workflow_config.get("PREDEF_GRID_NAME")
+    post_output_domain_name = post_config.get("POST_OUTPUT_DOMAIN_NAME")
+
+    if not post_output_domain_name:
+        if not predef_grid_name:
+            raise Exception(
                 f"""
                 The domain name used in naming the run_post output files
                 (POST_OUTPUT_DOMAIN_NAME) has not been set:
-                POST_OUTPUT_DOMAIN_NAME = \"{POST_OUTPUT_DOMAIN_NAME}\"
+                POST_OUTPUT_DOMAIN_NAME = \"{post_output_domain_name}\"
                 If this experiment is not using a predefined grid (i.e. if
                 PREDEF_GRID_NAME is set to a null string), POST_OUTPUT_DOMAIN_NAME
-                must be set in the configuration file (\"{EXPT_CONFIG_FN}\"). """
+                must be set in the configuration file (\"{user_config}\"). """
             )
+        post_output_domain_name = predef_grid_name
+
+    if not isinstance(post_output_domain_name, int):
+        post_output_domain_name = lowercase(post_output_domain_name)
     #
     # -----------------------------------------------------------------------
     #
-    # The FV3 forecast model needs the following input files in the run di-
-    # rectory to start a forecast:
+    # Set the output directory locations
+    #
+    # -----------------------------------------------------------------------
+    #
+
+    # These NCO variables need to be set based on the user's specified
+    # run environment. The default is set in config_defaults for nco. If
+    # running in community mode, we set these paths to the experiment
+    # directory.
+    nco_vars = [
+        "opsroot",
+        "comroot",
+        "packageroot",
+        "dataroot",
+        "dcomroot",
+        "comin_basedir",
+        "comout_basedir",
+        "extroot",
+    ]
+
+    nco_config = expt_config["nco"]
+    if run_envir != "nco":
+        # Put the variables in config dict.
+        for nco_var in nco_vars:
+            nco_config[nco_var.upper()] = exptdir
+
+        nco_config["LOGBASEDIR"] = os.path.join(exptdir, "log")
+
+    # Use env variables for NCO variables and create NCO directories
+    if run_envir == "nco":
+
+        for nco_var in nco_vars:
+            envar = os.environ.get(nco_var)
+            if envar is not None:
+                nco_config[nco_var.upper()] = envar
+
+        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("COMROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
+    if nco_config["DBNROOT"]:
+        mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
+
+    # create experiment dir
+    mkdir_vrfy(f' -p "{exptdir}"')
+
+    # -----------------------------------------------------------------------
+    #
+    # The FV3 forecast model needs the following input files in the run
+    # directory to start a forecast:
     #
     #   (1) The data table file
     #   (2) The diagnostics table file
@@ -968,9 +949,6 @@ def setup():
     #   (4) The FV3 namelist file
     #   (5) The model configuration file
     #   (6) The NEMS configuration file
-    #
-    # If using CCPP, it also needs:
-    #
     #   (7) The CCPP physics suite definition file
     #
     # The workflow contains templates for the first six of these files.
@@ -983,12 +961,12 @@ def setup():
     # configuration file (or derived from such values).  The scripts then
     # use the resulting "actual" files as inputs to the forecast model.
     #
-    # Note that the CCPP physics suite defintion file does not have a cor-
-    # responding template file because it does not contain any values that
-    # need to be replaced according to the experiment/workflow configura-
-    # tion.  If using CCPP, this file simply needs to be copied over from
-    # its location in the forecast model's directory structure to the ex-
-    # periment directory.
+    # Note that the CCPP physics suite definition file does not have a
+    # corresponding template file because it does not contain any values
+    # that need to be replaced according to the experiment/workflow
+    # configuration.  If using CCPP, this file simply needs to be copied
+    # over from its location in the forecast model's directory structure
+    # to the experiment directory.
     #
     # Below, we first set the names of the templates for the first six files
     # listed above.  We then set the full paths to these template files.
@@ -997,643 +975,205 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global DATA_TABLE_TMPL_FN, DIAG_TABLE_TMPL_FN, FIELD_TABLE_TMPL_FN, MODEL_CONFIG_TMPL_FN, NEMS_CONFIG_TMPL_FN
-    global DATA_TABLE_TMPL_FP, DIAG_TABLE_TMPL_FP, FIELD_TABLE_TMPL_FP, MODEL_CONFIG_TMPL_FP, NEMS_CONFIG_TMPL_FP
-    global FV3_NML_BASE_SUITE_FP, FV3_NML_YAML_CONFIG_FP, FV3_NML_BASE_ENS_FP
 
-    dot_ccpp_phys_suite_or_null = f".{CCPP_PHYS_SUITE}"
-
-    # Names of input files that the forecast model (ufs-weather-model) expects
-    # to read in.  These should only be changed if the input file names in the
-    # forecast model code are changed.
-    # ----------------------------------
-    DATA_TABLE_FN = "data_table"
-    DIAG_TABLE_FN = "diag_table"
-    FIELD_TABLE_FN = "field_table"
-    MODEL_CONFIG_FN = "model_configure"
-    NEMS_CONFIG_FN = "nems.configure"
-    # ----------------------------------
-
-    DATA_TABLE_TMPL_FN = DATA_TABLE_TMPL_FN or DATA_TABLE_FN
-    DIAG_TABLE_TMPL_FN = (
-        f"{DIAG_TABLE_TMPL_FN or DIAG_TABLE_FN}{dot_ccpp_phys_suite_or_null}"
-    )
-    FIELD_TABLE_TMPL_FN = (
-        f"{FIELD_TABLE_TMPL_FN or FIELD_TABLE_FN}{dot_ccpp_phys_suite_or_null}"
-    )
-    MODEL_CONFIG_TMPL_FN = MODEL_CONFIG_TMPL_FN or MODEL_CONFIG_FN
-    NEMS_CONFIG_TMPL_FN = NEMS_CONFIG_TMPL_FN or NEMS_CONFIG_FN
-
-    DATA_TABLE_TMPL_FP = os.path.join(PARMdir, DATA_TABLE_TMPL_FN)
-    DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, DIAG_TABLE_TMPL_FN)
-    FIELD_TABLE_TMPL_FP = os.path.join(PARMdir, FIELD_TABLE_TMPL_FN)
-    FV3_NML_BASE_SUITE_FP = os.path.join(PARMdir, FV3_NML_BASE_SUITE_FN)
-    FV3_NML_YAML_CONFIG_FP = os.path.join(PARMdir, FV3_NML_YAML_CONFIG_FN)
-    FV3_NML_BASE_ENS_FP = os.path.join(EXPTDIR, FV3_NML_BASE_ENS_FN)
-    MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_TMPL_FN)
-    NEMS_CONFIG_TMPL_FP = os.path.join(PARMdir, NEMS_CONFIG_TMPL_FN)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set:
-    #
-    # 1) the variable CCPP_PHYS_SUITE_FN to the name of the CCPP physics
-    #    suite definition file.
-    # 2) the variable CCPP_PHYS_SUITE_IN_CCPP_FP to the full path of this
-    #    file in the forecast model's directory structure.
-    # 3) the variable CCPP_PHYS_SUITE_FP to the full path of this file in
-    #    the experiment directory.
-    #
-    # Note that the experiment/workflow generation scripts will copy this
-    # file from CCPP_PHYS_SUITE_IN_CCPP_FP to CCPP_PHYS_SUITE_FP.  Then, for
-    # each cycle, the forecast launch script will create a link in the cycle
-    # run directory to the copy of this file at CCPP_PHYS_SUITE_FP.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global CCPP_PHYS_SUITE_FN, CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP
-    CCPP_PHYS_SUITE_FN = f"suite_{CCPP_PHYS_SUITE}.xml"
-    CCPP_PHYS_SUITE_IN_CCPP_FP = os.path.join(
-        UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN
-    )
-    CCPP_PHYS_SUITE_FP = os.path.join(EXPTDIR, CCPP_PHYS_SUITE_FN)
-    if not os.path.exists(CCPP_PHYS_SUITE_IN_CCPP_FP):
-        print_err_msg_exit(
-            f'''
+    # Check for the CCPP_PHYSICS suite xml file
+    ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
+    if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
+        raise FileNotFoundError(
+            f"""
             The CCPP suite definition file (CCPP_PHYS_SUITE_IN_CCPP_FP) does not exist
             in the local clone of the ufs-weather-model:
-              CCPP_PHYS_SUITE_IN_CCPP_FP = \"{CCPP_PHYS_SUITE_IN_CCPP_FP}\"'''
+              CCPP_PHYS_SUITE_IN_CCPP_FP = '{ccpp_phys_suite_in_ccpp_fp}'"""
         )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set:
-    #
-    # 1) the variable FIELD_DICT_FN to the name of the field dictionary
-    #    file.
-    # 2) the variable FIELD_DICT_IN_UWM_FP to the full path of this
-    #    file in the forecast model's directory structure.
-    # 3) the variable FIELD_DICT_FP to the full path of this file in
-    #    the experiment directory.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global FIELD_DICT_FN, FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP
-    FIELD_DICT_FN = "fd_nems.yaml"
-    FIELD_DICT_IN_UWM_FP = os.path.join(
-        UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN
-    )
-    FIELD_DICT_FP = os.path.join(EXPTDIR, FIELD_DICT_FN)
-    if not os.path.exists(FIELD_DICT_IN_UWM_FP):
-        print_err_msg_exit(
-            f'''
+
+    # Check for the field dict file
+    field_dict_in_uwm_fp = workflow_config["FIELD_DICT_IN_UWM_FP"]
+    if not os.path.exists(field_dict_in_uwm_fp):
+        raise FileNotFoundError(
+            f"""
             The field dictionary file (FIELD_DICT_IN_UWM_FP) does not exist
             in the local clone of the ufs-weather-model:
-              FIELD_DICT_IN_UWM_FP = \"{FIELD_DICT_IN_UWM_FP}\"'''
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Call the function that sets the ozone parameterization being used and
-    # modifies associated parameters accordingly.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    # export env vars before calling another module
-    export_vars()
-
-    OZONE_PARAM = set_ozone_param(ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP)
-
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the full paths to those forecast model input files that are cycle-
-    # independent, i.e. they don't include information about the cycle's
-    # starting day/time.  These are:
-    #
-    #   * The data table file [(1) in the list above)]
-    #   * The field table file [(3) in the list above)]
-    #   * The FV3 namelist file [(4) in the list above)]
-    #   * The NEMS configuration file [(6) in the list above)]
-    #
-    # Since they are cycle-independent, the experiment/workflow generation
-    # scripts will place them in the main experiment directory (EXPTDIR).
-    # The script that runs each cycle will then create links to these files
-    # in the run directories of the individual cycles (which are subdirecto-
-    # ries under EXPTDIR).
-    #
-    # The remaining two input files to the forecast model, i.e.
-    #
-    #   * The diagnostics table file [(2) in the list above)]
-    #   * The model configuration file [(5) in the list above)]
-    #
-    # contain parameters that depend on the cycle start date.  Thus, custom
-    # versions of these two files must be generated for each cycle and then
-    # placed directly in the run directories of the cycles (not EXPTDIR).
-    # For this reason, the full paths to their locations vary by cycle and
-    # cannot be set here (i.e. they can only be set in the loop over the
-    # cycles in the rocoto workflow XML file).
-    #
-    # -----------------------------------------------------------------------
-    #
-    global DATA_TABLE_FP, FIELD_TABLE_FP, FV3_NML_FN, FV3_NML_FP, NEMS_CONFIG_FP
-    DATA_TABLE_FP = os.path.join(EXPTDIR, DATA_TABLE_FN)
-    FIELD_TABLE_FP = os.path.join(EXPTDIR, FIELD_TABLE_FN)
-    FV3_NML_FN = os.path.splitext(FV3_NML_BASE_SUITE_FN)[0]
-    FV3_NML_FP = os.path.join(EXPTDIR, FV3_NML_FN)
-    NEMS_CONFIG_FP = os.path.join(EXPTDIR, NEMS_CONFIG_FN)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If USE_USER_STAGED_EXTRN_FILES is set to TRUE, make sure that the user-
-    # specified directories under which the external model files should be
-    # located actually exist.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if USE_USER_STAGED_EXTRN_FILES:
-        # Check for the base directory up to the first templated field.
-        idx = EXTRN_MDL_SOURCE_BASEDIR_ICS.find("$")
-        if idx == -1:
-            idx = len(EXTRN_MDL_SOURCE_BASEDIR_ICS)
-
-        if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_ICS[:idx]):
-            print_err_msg_exit(
-                f'''
-                The directory (EXTRN_MDL_SOURCE_BASEDIR_ICS) in which the user-staged
-                external model files for generating ICs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_ICS = \"{EXTRN_MDL_SOURCE_BASEDIR_ICS}\"'''
-            )
-
-        idx = EXTRN_MDL_SOURCE_BASEDIR_LBCS.find("$")
-        if idx == -1:
-            idx = len(EXTRN_MDL_SOURCE_BASEDIR_LBCS)
-
-        if not os.path.exists(EXTRN_MDL_SOURCE_BASEDIR_LBCS[:idx]):
-            print_err_msg_exit(
-                f'''
-                The directory (EXTRN_MDL_SOURCE_BASEDIR_LBCS) in which the user-staged
-                external model files for generating LBCs should be located does not exist:
-                  EXTRN_MDL_SOURCE_BASEDIR_LBCS = \"{EXTRN_MDL_SOURCE_BASEDIR_LBCS}\"'''
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure that DO_ENSEMBLE is set to a valid value.  Then set the names
-    # of the ensemble members.  These will be used to set the ensemble member
-    # directories.  Also, set the full path to the FV3 namelist file corresponding
-    # to each ensemble member.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global NDIGITS_ENSMEM_NAMES, ENSMEM_NAMES, FV3_NML_ENSMEM_FPS, NUM_ENS_MEMBERS
-    NDIGITS_ENSMEM_NAMES = 0
-    ENSMEM_NAMES = []
-    FV3_NML_ENSMEM_FPS = []
-    if DO_ENSEMBLE:
-        NDIGITS_ENSMEM_NAMES = len(str(NUM_ENS_MEMBERS))
-        fmt = f"0{NDIGITS_ENSMEM_NAMES}d"
-        for i in range(NUM_ENS_MEMBERS):
-            ENSMEM_NAMES.append(f"mem{fmt}".format(i + 1))
-            FV3_NML_ENSMEM_FPS.append(
-                os.path.join(EXPTDIR, f"{FV3_NML_FN}_{ENSMEM_NAMES[i]}")
-            )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the full path to the forecast model executable.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global FV3_EXEC_FP
-    FV3_EXEC_FP = os.path.join(EXECdir, FV3_EXEC_FN)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the full path to the script that can be used to (re)launch the
-    # workflow.  Also, if USE_CRON_TO_RELAUNCH is set to TRUE, set the line
-    # to add to the cron table to automatically relaunch the workflow every
-    # CRON_RELAUNCH_INTVL_MNTS minutes.  Otherwise, set the variable con-
-    # taining this line to a null string.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global WFLOW_LAUNCH_SCRIPT_FP, WFLOW_LAUNCH_LOG_FP, CRONTAB_LINE
-    WFLOW_LAUNCH_SCRIPT_FP = os.path.join(USHdir, WFLOW_LAUNCH_SCRIPT_FN)
-    WFLOW_LAUNCH_LOG_FP = os.path.join(EXPTDIR, WFLOW_LAUNCH_LOG_FN)
-    if USE_CRON_TO_RELAUNCH:
-        CRONTAB_LINE = (
-            f"""*/{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && """
-            f"""./{WFLOW_LAUNCH_SCRIPT_FN} called_from_cron="TRUE" >> ./{WFLOW_LAUNCH_LOG_FN} 2>&1"""
-        )
-    else:
-        CRONTAB_LINE = ""
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the full path to the script that, for a given task, loads the
-    # necessary module files and runs the tasks.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global LOAD_MODULES_RUN_TASK_FP
-    LOAD_MODULES_RUN_TASK_FP = os.path.join(USHdir, "load_modules_run_task.sh")
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Turn off some tasks that can not be run in NCO mode
-    #
-    # -----------------------------------------------------------------------
-    #
-    global RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO
-    global RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID, RUN_TASK_VX_ENSPOINT
-
-    # Fix file location
-    if RUN_TASK_MAKE_GRID:
-        FIXdir = EXPTDIR
-    else:
-        FIXdir = os.path.join(HOMEdir, "fix")
-
-    FIXam = os.path.join(FIXdir, "fix_am")
-    FIXclim = os.path.join(FIXdir, "fix_clim")
-    FIXlam = os.path.join(FIXdir, "fix_lam")
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure that DO_ENSEMBLE is set to TRUE when running ensemble vx.
-    #
-    # -----------------------------------------------------------------------
-    #
-    if (not DO_ENSEMBLE) and (RUN_TASK_VX_ENSGRID or RUN_TASK_VX_ENSPOINT):
-        print_err_msg_exit(
-            f'''
-            Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{DO_ENSEMBLE}\"
-               RUN_TASK_VX_ENSGRID = \"{RUN_TASK_VX_ENSGRID}\"
-               RUN_TASK_VX_ENSPOINT = \"{RUN_TASK_VX_ENSPOINT}\"'''
+              FIELD_DICT_IN_UWM_FP = '{field_dict_in_uwm_fp}'"""
         )
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Define the various work subdirectories under the main work directory.
-    # Each of these corresponds to a different step/substep/task in the pre-
-    # processing, as follows:
-    #
-    # GRID_DIR:
-    # Directory in which the grid files will be placed (if RUN_TASK_MAKE_GRID
-    # is set to True) or searched for (if RUN_TASK_MAKE_GRID is set to
-    # False).
-    #
-    # OROG_DIR:
-    # Directory in which the orography files will be placed (if RUN_TASK_MAKE_OROG
-    # is set to True) or searched for (if RUN_TASK_MAKE_OROG is set to
-    # False).
-    #
-    # SFC_CLIMO_DIR:
-    # Directory in which the surface climatology files will be placed (if
-    # RUN_TASK_MAKE_SFC_CLIMO is set to True) or searched for (if
-    # RUN_TASK_MAKE_SFC_CLIMO is set to False).
-    #
-    # ----------------------------------------------------------------------
-    #
-    global GRID_DIR, OROG_DIR, SFC_CLIMO_DIR
+    fixed_files = expt_config["fixed_files"]
+    # Set the appropriate ozone production/loss file paths and symlinks
+    ozone_param, fixgsm_ozone_fn, ozone_link_mappings = set_ozone_param(
+        ccpp_phys_suite_in_ccpp_fp,
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
+    )
 
-    if DOMAIN_PREGEN_BASEDIR is None:
-        RUN_TASK_MAKE_GRID = True
-        RUN_TASK_MAKE_OROG = True
-        RUN_TASK_MAKE_SFC_CLIMO = True
+    # Reset the dummy value saved in the last list item to the ozone
+    # file name
+    fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
 
-    #
-    # If RUN_TASK_MAKE_GRID is set to False, the workflow will look for
-    # the pregenerated grid files in GRID_DIR.  In this case, make sure that
-    # GRID_DIR exists.  Otherwise, set it to a predefined location under the
-    # experiment directory (EXPTDIR).
-    #
-    if not RUN_TASK_MAKE_GRID:
-        if (GRID_DIR is None) or (not os.path.exists(GRID_DIR)):
-            GRID_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+    # Reset the experiment config list with the update list
+    fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
 
-            msg = f"""Setting GRID_DIR to:
-               GRID_DIR = \"{GRID_DIR}\"
-            """
-            print_info_msg(msg)
+    log_info(
+        f"""
+        The ozone parameter used for this experiment is {ozone_param}.
+        """
+    )
 
-            if not os.path.exists(GRID_DIR): 
-                print_err_msg_exit(
-                    f'''
-                    The directory (GRID_DIR) that should contain the pregenerated grid files
-                    does not exist:
-                      GRID_DIR = \"{GRID_DIR}\"'''
-                )
-    else:
-        GRID_DIR = os.path.join(EXPTDIR, "grid")
-    #
-    # If RUN_TASK_MAKE_OROG is set to False, the workflow will look for
-    # the pregenerated orography files in OROG_DIR.  In this case, make sure
-    # that OROG_DIR exists.  Otherwise, set it to a predefined location under
-    # the experiment directory (EXPTDIR).
-    #
-    if not RUN_TASK_MAKE_OROG:
-        if (OROG_DIR is None) or (not os.path.exists(OROG_DIR)):
-            OROG_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
+    log_info(
+        f"""
+        The list that sets the mapping between symlinks in the cycle
+        directory, and the files in the FIXam directory has been updated
+        to include the ozone production/loss file.
+        """,
+        verbose=verbose,
+    )
 
-            msg = f"""Setting OROG_DIR to:
-               OROG_DIR = \"{OROG_DIR}\"
-            """
-            print_info_msg(msg)
-
-            if not os.path.exists(OROG_DIR):
-                print_err_msg_exit(
-                    f'''
-                    The directory (OROG_DIR) that should contain the pregenerated orography
-                    files does not exist:
-                      OROG_DIR = \"{OROG_DIR}\"'''
-                )
-    else:
-        OROG_DIR = os.path.join(EXPTDIR, "orog")
-    #
-    # If RUN_TASK_MAKE_SFC_CLIMO is set to False, the workflow will look
-    # for the pregenerated surface climatology files in SFC_CLIMO_DIR.  In
-    # this case, make sure that SFC_CLIMO_DIR exists.  Otherwise, set it to
-    # a predefined location under the experiment directory (EXPTDIR).
-    #
-    if not RUN_TASK_MAKE_SFC_CLIMO:
-        if (SFC_CLIMO_DIR is None) or (not os.path.exists(SFC_CLIMO_DIR)):
-            SFC_CLIMO_DIR = os.path.join(DOMAIN_PREGEN_BASEDIR, PREDEF_GRID_NAME)
-
-            msg = f"""Setting SFC_CLIMO_DIR to:
-               SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"
-            """
-            print_info_msg(msg)
-
-            if not os.path.exists(SFC_CLIMO_DIR):
-                print_err_msg_exit(
-                    f'''
-                    The directory (SFC_CLIMO_DIR) that should contain the pregenerated surface
-                    climatology files does not exist:
-                      SFC_CLIMO_DIR = \"{SFC_CLIMO_DIR}\"'''
-                )
-    else:
-        SFC_CLIMO_DIR = os.path.join(EXPTDIR, "sfc_climo")
-
-    # -----------------------------------------------------------------------
-    #
-    # Set cycle-independent parameters associated with the external models
-    # from which we will obtain the ICs and LBCs.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    # export env vars before calling another module
-    export_vars()
-
-    set_extrn_mdl_params()
-
-    IMPORTS = ["EXTRN_MDL_LBCS_OFFSET_HRS"]
-    import_vars(env_vars=IMPORTS)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set parameters according to the type of horizontal grid generation
-    # method specified.  First consider GFDL's global-parent-grid based
-    # method.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global LON_CTR, LAT_CTR, NX, NY, NHW, STRETCH_FAC
-
-    if GRID_GEN_METHOD == "GFDLgrid":
-        grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=GFDLgrid_LON_T6_CTR,
-            lat_of_t6_ctr=GFDLgrid_LAT_T6_CTR,
-            res_of_t6g=GFDLgrid_NUM_CELLS,
-            stretch_factor=GFDLgrid_STRETCH_FAC,
-            refine_ratio_t6g_to_t7g=GFDLgrid_REFINE_RATIO,
-            istart_of_t7_on_t6g=GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G,
-            iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
-            jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
-            jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Now consider Jim Purser's map projection/grid generation method.
-    #
-    # -----------------------------------------------------------------------
-    #
-    elif GRID_GEN_METHOD == "ESGgrid":
-        grid_params = set_gridparams_ESGgrid(
-            lon_ctr=ESGgrid_LON_CTR,
-            lat_ctr=ESGgrid_LAT_CTR,
-            nx=ESGgrid_NX,
-            ny=ESGgrid_NY,
-            pazi=ESGgrid_PAZI,
-            halo_width=ESGgrid_WIDE_HALO_WIDTH,
-            delx=ESGgrid_DELX,
-            dely=ESGgrid_DELY,
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Otherwise
-    #
-    # -----------------------------------------------------------------------
-    #
-    else:
-        grid_params = {
-            "LON_CTR": LON_CTR,
-            "LAT_CTR": LAT_CTR,
-            "NX": NX,
-            "NY": NY,
-            "NHW": NHW,
-            "STRETCH_FAC": STRETCH_FAC,
-        }
-
-
-    # Extract the basic grid params from the dictionary
-    (LON_CTR, LAT_CTR, NX, NY, NHW, STRETCH_FAC) = (
-        grid_params[k] for k in ["LON_CTR", "LAT_CTR", "NX", "NY", "NHW", "STRETCH_FAC"]
+    log_info(
+        f"""
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(ozone_link_mappings)}
+        """,
+        verbose=verbose,
+        dedent_=False,
     )
 
     #
     # -----------------------------------------------------------------------
     #
-    # Create a new experiment directory.  Note that at this point we are
-    # guaranteed that there is no preexisting experiment directory. For
-    # platforms with no workflow manager, we need to create LOGDIR as well,
-    # since it won't be created later at runtime.
+    # Check that the set of tasks to run in the workflow is internally
+    # consistent.
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{EXPTDIR}"')
-    mkdir_vrfy(f' -p "{LOGDIR}"')
+    workflow_switches = expt_config["workflow_switches"]
+
+    # Ensemble verification can only be run in ensemble mode
+    do_ensemble = global_sect["DO_ENSEMBLE"]
+    run_task_vx_ensgrid = workflow_switches["RUN_TASK_VX_ENSGRID"]
+    run_task_vx_enspoint = workflow_switches["RUN_TASK_VX_ENSPOINT"]
+    if (not do_ensemble) and (run_task_vx_ensgrid or run_task_vx_enspoint):
+        raise Exception(
+            f'''
+            Ensemble verification can not be run unless running in ensemble mode:
+               DO_ENSEMBLE = \"{do_ensemble}\"
+               RUN_TASK_VX_ENSGRID = \"{run_task_vx_ensgrid}\"
+               RUN_TASK_VX_ENSPOINT = \"{run_task_vx_enspoint}\"'''
+        )
+
     #
     # -----------------------------------------------------------------------
-    #
+    # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
     # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
     # tasks, create symlinks under the FIXlam directory to pregenerated grid,
-    # orography, and surface climatology files.  In the process, also set
-    # RES_IN_FIXLAM_FILENAMES, which is the resolution of the grid (in units
-    # of number of grid points on an equivalent global uniform cubed-sphere
-    # grid) used in the names of the fixed files in the FIXlam directory.
+    # orography, and surface climatology files.
     #
     # -----------------------------------------------------------------------
     #
-    mkdir_vrfy(f' -p "{FIXlam}"')
-    RES_IN_FIXLAM_FILENAMES = ""
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the grid file generation task in the workflow is going to be skipped
-    # (because pregenerated files are available), create links in the FIXlam
-    # directory to the pregenerated grid files.
-    #
-    # -----------------------------------------------------------------------
-    #
+    fixlam = workflow_config["FIXlam"]
+    mkdir_vrfy(f' -p "{fixlam}"')
 
-    # export env vars
-    export_vars()
-
-    # link fix files
-    res_in_grid_fns = ""
-    if not RUN_TASK_MAKE_GRID:
-
-        res_in_grid_fns = link_fix(verbose=VERBOSE, file_group="grid")
-
-        RES_IN_FIXLAM_FILENAMES = res_in_grid_fns
     #
-    # -----------------------------------------------------------------------
+    # Use the pregenerated domain files if the RUN_TASK_MAKE* tasks are
+    # turned off. Link the files, and check that they all contain the
+    # same resolution input.
     #
-    # If the orography file generation task in the workflow is going to be
-    # skipped (because pregenerated files are available), create links in
-    # the FIXlam directory to the pregenerated orography files.
-    #
-    # -----------------------------------------------------------------------
-    #
-    res_in_orog_fns = ""
-    if not RUN_TASK_MAKE_OROG:
+    prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
+    res_in_fixlam_filenames = None
+    for prep_task in prep_tasks:
+        res_in_fns = ""
+        switch = f"RUN_TASK_MAKE_{prep_task}"
+        # If the user doesn't want to run the given task, link the fix
+        # file from the staged files.
+        if not workflow_switches[switch]:
+            sect_key = f"task_make_{prep_task.lower()}"
+            dir_key = f"{prep_task}_DIR"
+            task_dir = expt_config[sect_key].get(dir_key)
 
-        res_in_orog_fns = link_fix(verbose=VERBOSE, file_group="orog")
+            if not task_dir:
+                task_dir = os.path.join(pregen_basedir, predef_grid_name)
+                expt_config[sect_key][dir_key] = task_dir
+                msg = dedent(
+                    f"""
+                   {dir_key} will use pre-generated files.
+                   Setting {dir_key} = {task_dir}
+                   """
+                )
+                logger.warning(msg)
 
-        if not RES_IN_FIXLAM_FILENAMES and (res_in_orog_fns != RES_IN_FIXLAM_FILENAMES):
-            print_err_msg_exit(
-                f"""
-                The resolution extracted from the orography file names (res_in_orog_fns)
-                does not match the resolution in other groups of files already consi-
-                dered (RES_IN_FIXLAM_FILENAMES):
-                  res_in_orog_fns = {res_in_orog_fns}
-                  RES_IN_FIXLAM_FILENAMES = {RES_IN_FIXLAM_FILENAMES}"""
+            if not os.path.exists(task_dir):
+                msg = dedent(
+                    f"""
+                    File directory does not exist!
+                    {dir_key} needs {task_dir}
+                    """
+                )
+                raise FileNotFoundError(msg)
+
+            # Link the fix files and check that their resolution is
+            # consistent
+            res_in_fns = link_fix(
+                verbose=verbose,
+                file_group=prep_task.lower(),
+                source_dir=task_dir,
+                target_dir=workflow_config["FIXlam"],
+                ccpp_phys_suite=workflow_config["CCPP_PHYS_SUITE"],
+                constants=expt_config["constants"],
+                dot_or_uscore=workflow_config["DOT_OR_USCORE"],
+                nhw=grid_params["NHW"],
+                run_task=False,
+                sfc_climo_fields=fixed_files["SFC_CLIMO_FIELDS"],
             )
-        else:
-            RES_IN_FIXLAM_FILENAMES = res_in_orog_fns
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the surface climatology file generation task in the workflow is
-    # going to be skipped (because pregenerated files are available), create
-    # links in the FIXlam directory to the pregenerated surface climatology
-    # files.
-    #
-    # -----------------------------------------------------------------------
-    #
-    res_in_sfc_climo_fns = ""
-    if not RUN_TASK_MAKE_SFC_CLIMO:
+            if not res_in_fixlam_filenames:
+                res_in_fixlam_filenames = res_in_fns
+            else:
+                if res_in_fixlam_filenames != res_in_fns:
+                    raise Exception(
+                        dedent(
+                            f"""
+                        The resolution of the pregenerated files for
+                        {prep_task} do not match those that were alread
+                        set:
 
-        res_in_sfc_climo_fns = link_fix(verbose=VERBOSE, file_group="sfc_climo")
+                        Resolution in {prep_task}: {res_in_fns}
+                        Resolution expected: {res_in_fixlam_filenames}
+                        """
+                        )
+                    )
 
-        if RES_IN_FIXLAM_FILENAMES and res_in_sfc_climo_fns != RES_IN_FIXLAM_FILENAMES:
-            print_err_msg_exit(
-                f"""
-                The resolution extracted from the surface climatology file names (res_-
-                in_sfc_climo_fns) does not match the resolution in other groups of files
-                already considered (RES_IN_FIXLAM_FILENAMES):
-                  res_in_sfc_climo_fns = {res_in_sfc_climo_fns}
-                  RES_IN_FIXLAM_FILENAMES = {RES_IN_FIXLAM_FILENAMES}"""
-            )
-        else:
-            RES_IN_FIXLAM_FILENAMES = res_in_sfc_climo_fns
+            if not os.path.exists(task_dir):
+                raise FileNotFoundError(
+                    f'''
+                    The directory ({dir_key}) that should contain the pregenerated
+                    {prep_task.lower()} files does not exist:
+                      {dir_key} = \"{task_dir}\"'''
+                )
+
+    workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
+    workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
+
     #
     # -----------------------------------------------------------------------
     #
-    # The variable CRES is needed in constructing various file names.  If
-    # not running the make_grid task, we can set it here.  Otherwise, it
-    # will get set to a valid value by that task.
+    # Turn off post task if it's not consistent with the forecast's
+    # user-setting of WRITE_DOPOST
     #
     # -----------------------------------------------------------------------
     #
-    global CRES
-    CRES = ""
-    if not RUN_TASK_MAKE_GRID:
-        CRES = f"C{RES_IN_FIXLAM_FILENAMES}"
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Make sure that WRITE_DOPOST is set to a valid value.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global RUN_TASK_RUN_POST
-    if WRITE_DOPOST:
+    if fcst_config["WRITE_DOPOST"]:
         # Turn off run_post
-        RUN_TASK_RUN_POST = False
+        if workflow_switches["RUN_TASK_RUN_POST"]:
+            logger.warning(
+                dedent(
+                    f"""
+                           Inline post is turned on, deactivating post-processing tasks:
+                           RUN_TASK_RUN_POST = False
+                           """
+                )
+            )
+            workflow_switches["RUN_TASK_RUN_POST"] = False
 
         # Check if SUB_HOURLY_POST is on
-        if SUB_HOURLY_POST:
-            print_err_msg_exit(
+        if expt_config["task_run_post"]["SUB_HOURLY_POST"]:
+            raise Exception(
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""
             )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Calculate PE_MEMBER01.  This is the number of MPI tasks used for the
-    # forecast, including those for the write component if QUILTING is set
-    # to True.
-    #
-    # -----------------------------------------------------------------------
-    #
-    global PE_MEMBER01
-    PE_MEMBER01 = LAYOUT_X * LAYOUT_Y
-    if QUILTING:
-        PE_MEMBER01 = PE_MEMBER01 + WRTCMP_write_groups * WRTCMP_write_tasks_per_group
-
-    print_info_msg(
-        f"""
-        The number of MPI tasks for the forecast (including those for the write
-        component if it is being used) are:
-          PE_MEMBER01 = {PE_MEMBER01}""",
-        verbose=VERBOSE,
-    )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Calculate the number of nodes (NNODES_RUN_FCST) to request from the job
-    # scheduler for the forecast task (RUN_FCST_TN).  This is just PE_MEMBER01
-    # dividied by the number of processes per node we want to request for this
-    # task (PPN_RUN_FCST), then rounded up to the nearest integer, i.e.
-    #
-    #   NNODES_RUN_FCST = ceil(PE_MEMBER01/PPN_RUN_FCST)
-    #
-    # where ceil(...) is the ceiling function, i.e. it rounds its floating
-    # point argument up to the next larger integer.  Since in bash, division
-    # of two integers returns a truncated integer, and since bash has no
-    # built-in ceil(...) function, we perform the rounding-up operation by
-    # adding the denominator (of the argument of ceil(...) above) minus 1 to
-    # the original numerator, i.e. by redefining NNODES_RUN_FCST to be
-    #
-    #   NNODES_RUN_FCST = (PE_MEMBER01 + PPN_RUN_FCST - 1)/PPN_RUN_FCST
-    #
-    # -----------------------------------------------------------------------
-    #
-    global NNODES_RUN_FCST
-    NNODES_RUN_FCST = (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST
-
     #
     # -----------------------------------------------------------------------
     #
@@ -1643,348 +1183,94 @@ def setup():
     #
     # -----------------------------------------------------------------------
     #
-    global SDF_USES_RUC_LSM
-    SDF_USES_RUC_LSM = check_ruc_lsm(ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP)
+    workflow_config["SDF_USES_RUC_LSM"] = check_ruc_lsm(
+        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp
+    )
     #
     # -----------------------------------------------------------------------
     #
-    # Set the name of the file containing aerosol climatology data that, if
-    # necessary, can be used to generate approximate versions of the aerosol
-    # fields needed by Thompson microphysics.  This file will be used to
-    # generate such approximate aerosol fields in the ICs and LBCs if Thompson
-    # MP is included in the physics suite and if the exteranl model for ICs
-    # or LBCs does not already provide these fields.  Also, set the full path
-    # to this file.
-    #
-    # -----------------------------------------------------------------------
-    #
-    THOMPSON_MP_CLIMO_FN = "Thompson_MP_MONTHLY_CLIMO.nc"
-    THOMPSON_MP_CLIMO_FP = os.path.join(FIXam, THOMPSON_MP_CLIMO_FN)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Call the function that, if the Thompson microphysics parameterization
-    # is being called by the physics suite, modifies certain workflow arrays
-    # to ensure that fixed files needed by this parameterization are copied
-    # to the FIXam directory and appropriate symlinks to them are created in
-    # the run directories.  This function also sets the workflow variable
-    # SDF_USES_THOMPSON_MP that indicates whether Thompson MP is called by
+    # Check if the Thompson microphysics parameterization is being
+    # called by the physics suite and modify certain workflow arrays to
+    # ensure that fixed files needed by this parameterization are copied
+    # to the FIXam directory and appropriate symlinks to them are
+    # created in the run directories. Set the boolean flag
+    # SDF_USES_THOMPSON_MP to indicates whether Thompson MP is called by
     # the physics suite.
     #
     # -----------------------------------------------------------------------
     #
-    SDF_USES_THOMPSON_MP = set_thompson_mp_fix_files(
-        ccpp_phys_suite_fp=CCPP_PHYS_SUITE_IN_CCPP_FP,
-        thompson_mp_climo_fn=THOMPSON_MP_CLIMO_FN,
+
+    link_thompson_climo = (
+        get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"]
+    ) or (get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"])
+    use_thompson, mapping, fix_files = set_thompson_mp_fix_files(
+        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp,
+        thompson_mp_climo_fn=workflow_config["THOMPSON_MP_CLIMO_FN"],
+        link_thompson_climo=link_thompson_climo,
     )
 
-    IMPORTS = ["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING", "FIXgsm_FILES_TO_COPY_TO_FIXam"]
-    import_vars(env_vars=IMPORTS)
+    workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
+    if use_thompson:
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(mapping)
+        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fix_files)
+
+        log_info(
+            f"""
+            Since the Thompson microphysics parameterization is being used by this
+            physics suite (CCPP_PHYS_SUITE), the names of the fixed files needed by
+            this scheme have been appended to the array FIXgsm_FILES_TO_COPY_TO_FIXam,
+            and the mappings between these files and the symlinks that need to be
+            created in the cycle directories have been appended to the array
+            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
+            values of these parameters are as follows:
+
+            CCPP_PHYS_SUITE = \"{workflow_config["CCPP_PHYS_SUITE"]}\"
+            """
+        )
+        log_info(
+            f"""
+                FIXgsm_FILES_TO_COPY_TO_FIXam =
+                {list_to_str(fixed_files['FIXgsm_FILES_TO_COPY_TO_FIXam'])}
+            """
+        )
+        log_info(
+            f"""
+                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING =
+                {list_to_str(fixed_files['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'])}
+            """
+        )
     #
     # -----------------------------------------------------------------------
     #
-    # Generate the shell script that will appear in the experiment directory
-    # (EXPTDIR) and will contain definitions of variables needed by the va-
-    # rious scripts in the workflow.  We refer to this as the experiment/
-    # workflow global variable definitions file.  We will create this file
-    # by:
-    #
-    # 1) Copying the default workflow/experiment configuration file (speci-
-    #    fied by EXPT_DEFAULT_CONFIG_FN and located in the shell script di-
-    #    rectory specified by USHdir) to the experiment directory and rena-
-    #    ming it to the name specified by GLOBAL_VAR_DEFNS_FN.
-    #
-    # 2) Resetting the default variable values in this file to their current
-    #    values.  This is necessary because these variables may have been
-    #    reset by the user-specified configuration file (if one exists in
-    #    USHdir) and/or by this setup script, e.g. because predef_domain is
-    #    set to a valid non-empty value.
-    #
-    # 3) Appending to the variable definitions file any new variables intro-
-    #    duced in this setup script that may be needed by the scripts that
-    #    perform the various tasks in the workflow (and which source the va-
-    #    riable defintions file).
-    #
-    # First, set the full path to the variable definitions file and copy the
-    # default configuration script into it.
+    # Generate var_defns.sh file in the EXPTDIR. This file contains all
+    # the user-specified settings from expt_config.
     #
     # -----------------------------------------------------------------------
     #
 
-    # global variable definition file path
-    global GLOBAL_VAR_DEFNS_FP
-    GLOBAL_VAR_DEFNS_FP = os.path.join(EXPTDIR, GLOBAL_VAR_DEFNS_FN)
-
-    # update dictionary with globals() values
-    update_dict(globals(), cfg_d)
-
-    # constants section
-    cfg_d.update(cfg_c)
-
-    # grid params
-    cfg_d["grid_params"] = grid_params
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Append additional variable definitions (and comments) to the variable
-    # definitions file.  These variables have been set above using the vari-
-    # ables in the default and local configuration scripts.  These variables
-    # are needed by various tasks/scripts in the workflow.
-    #
-    # -----------------------------------------------------------------------
-    #
-    settings = {
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Full path to workflow (re)launch script, its log file, and the line
-        # that gets added to the cron table to launch this script if the flag
-        # USE_CRON_TO_RELAUNCH is set to \"TRUE\".
-        #
-        # -----------------------------------------------------------------------
-        #
-        "WFLOW_LAUNCH_SCRIPT_FP": WFLOW_LAUNCH_SCRIPT_FP,
-        "WFLOW_LAUNCH_LOG_FP": WFLOW_LAUNCH_LOG_FP,
-        "CRONTAB_LINE": CRONTAB_LINE,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Directories.
-        #
-        # -----------------------------------------------------------------------
-        #
-        "HOMEdir": HOMEdir,
-        "USHdir": USHdir,
-        "SCRIPTSdir": SCRIPTSdir,
-        "JOBSdir": JOBSdir,
-        "SORCdir": SORCdir,
-        "PARMdir": PARMdir,
-        "MODULESdir": MODULESdir,
-        "EXECdir": EXECdir,
-        "FIXdir": FIXdir,
-        "FIXam": FIXam,
-        "FIXclim": FIXclim,
-        "FIXlam": FIXlam,
-        "FIXgsm": FIXgsm,
-        "FIXaer": FIXaer,
-        "FIXlut": FIXlut,
-        "VX_CONFIG_DIR": VX_CONFIG_DIR,
-        "METPLUS_CONF": METPLUS_CONF,
-        "MET_CONFIG": MET_CONFIG,
-        "UFS_WTHR_MDL_DIR": UFS_WTHR_MDL_DIR,
-        "SFC_CLIMO_INPUT_DIR": SFC_CLIMO_INPUT_DIR,
-        "TOPO_DIR": TOPO_DIR,
-        "EXPTDIR": EXPTDIR,
-        "GRID_DIR": GRID_DIR,
-        "OROG_DIR": OROG_DIR,
-        "SFC_CLIMO_DIR": SFC_CLIMO_DIR,
-        "NDIGITS_ENSMEM_NAMES": NDIGITS_ENSMEM_NAMES,
-        "ENSMEM_NAMES": ENSMEM_NAMES,
-        "FV3_NML_ENSMEM_FPS": FV3_NML_ENSMEM_FPS,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Files.
-        #
-        # -----------------------------------------------------------------------
-        #
-        "GLOBAL_VAR_DEFNS_FP": GLOBAL_VAR_DEFNS_FP,
-        "DATA_TABLE_FN": DATA_TABLE_FN,
-        "DIAG_TABLE_FN": DIAG_TABLE_FN,
-        "FIELD_TABLE_FN": FIELD_TABLE_FN,
-        "MODEL_CONFIG_FN": MODEL_CONFIG_FN,
-        "NEMS_CONFIG_FN": NEMS_CONFIG_FN,
-        "DATA_TABLE_TMPL_FN": DATA_TABLE_TMPL_FN,
-        "DIAG_TABLE_TMPL_FN": DIAG_TABLE_TMPL_FN,
-        "FIELD_TABLE_TMPL_FN": FIELD_TABLE_TMPL_FN,
-        "MODEL_CONFIG_TMPL_FN": MODEL_CONFIG_TMPL_FN,
-        "NEMS_CONFIG_TMPL_FN": NEMS_CONFIG_TMPL_FN,
-        "DATA_TABLE_TMPL_FP": DATA_TABLE_TMPL_FP,
-        "DIAG_TABLE_TMPL_FP": DIAG_TABLE_TMPL_FP,
-        "FIELD_TABLE_TMPL_FP": FIELD_TABLE_TMPL_FP,
-        "FV3_NML_BASE_SUITE_FP": FV3_NML_BASE_SUITE_FP,
-        "FV3_NML_YAML_CONFIG_FP": FV3_NML_YAML_CONFIG_FP,
-        "FV3_NML_BASE_ENS_FP": FV3_NML_BASE_ENS_FP,
-        "MODEL_CONFIG_TMPL_FP": MODEL_CONFIG_TMPL_FP,
-        "NEMS_CONFIG_TMPL_FP": NEMS_CONFIG_TMPL_FP,
-        "CCPP_PHYS_SUITE_FN": CCPP_PHYS_SUITE_FN,
-        "CCPP_PHYS_SUITE_IN_CCPP_FP": CCPP_PHYS_SUITE_IN_CCPP_FP,
-        "CCPP_PHYS_SUITE_FP": CCPP_PHYS_SUITE_FP,
-        "FIELD_DICT_FN": FIELD_DICT_FN,
-        "FIELD_DICT_IN_UWM_FP": FIELD_DICT_IN_UWM_FP,
-        "FIELD_DICT_FP": FIELD_DICT_FP,
-        "DATA_TABLE_FP": DATA_TABLE_FP,
-        "FIELD_TABLE_FP": FIELD_TABLE_FP,
-        "FV3_NML_FN": FV3_NML_FN,  # This may not be necessary...
-        "FV3_NML_FP": FV3_NML_FP,
-        "NEMS_CONFIG_FP": NEMS_CONFIG_FP,
-        "FV3_EXEC_FP": FV3_EXEC_FP,
-        "LOAD_MODULES_RUN_TASK_FP": LOAD_MODULES_RUN_TASK_FP,
-        "THOMPSON_MP_CLIMO_FN": THOMPSON_MP_CLIMO_FN,
-        "THOMPSON_MP_CLIMO_FP": THOMPSON_MP_CLIMO_FP,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Flag for creating relative symlinks (as opposed to absolute ones).
-        #
-        # -----------------------------------------------------------------------
-        #
-        "RELATIVE_LINK_FLAG": RELATIVE_LINK_FLAG,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Parameters that indicate whether or not various parameterizations are
-        # included in and called by the physics suite.
-        #
-        # -----------------------------------------------------------------------
-        #
-        "SDF_USES_RUC_LSM": SDF_USES_RUC_LSM,
-        "SDF_USES_THOMPSON_MP": SDF_USES_THOMPSON_MP,
-        #
-        # -----------------------------------------------------------------------
-        #
-        # Grid configuration parameters needed regardless of grid generation
-        # method used.
-        #
-        # -----------------------------------------------------------------------
-        #
-        "GTYPE": GTYPE,
-        "TILE_RGNL": TILE_RGNL,
-        "RES_IN_FIXLAM_FILENAMES": RES_IN_FIXLAM_FILENAMES,
-        #
-        # If running the make_grid task, CRES will be set to a null string during
-        # the grid generation step.  It will later be set to an actual value after
-        # the make_grid task is complete.
-        #
-        "CRES": CRES,
-    }
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Continue appending variable definitions to the variable definitions
-    # file.
-    #
-    # -----------------------------------------------------------------------
-    #
-    settings.update(
-        {
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Flag in the \"{MODEL_CONFIG_FN}\" file for coupling the ocean model to
-            # the weather model.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "CPL": CPL,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Name of the ozone parameterization.  The value this gets set to depends
-            # on the CCPP physics suite being used.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "OZONE_PARAM": OZONE_PARAM,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # The number of cycles for which to make forecasts and the list of
-            # starting dates/hours of these cycles.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "NUM_CYCLES": NUM_CYCLES,
-            "ALL_CDATES": ALL_CDATES,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # Computational parameters.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "PE_MEMBER01": PE_MEMBER01,
-            #
-            # -----------------------------------------------------------------------
-            #
-            # IF DO_SPP is set to "TRUE", N_VAR_SPP specifies the number of physics
-            # parameterizations that are perturbed with SPP.  If DO_LSM_SPP is set to
-            # "TRUE", N_VAR_LNDP specifies the number of LSM parameters that are
-            # perturbed.  LNDP_TYPE determines the way LSM perturbations are employed
-            # and FHCYC_LSM_SPP_OR_NOT sets FHCYC based on whether LSM perturbations
-            # are turned on or not.
-            #
-            # -----------------------------------------------------------------------
-            #
-            "N_VAR_SPP": N_VAR_SPP,
-            "N_VAR_LNDP": N_VAR_LNDP,
-            "LNDP_TYPE": LNDP_TYPE,
-            "LNDP_MODEL_TYPE": LNDP_MODEL_TYPE,
-            "FHCYC_LSM_SPP_OR_NOT": FHCYC_LSM_SPP_OR_NOT,
-        }
-    )
-
-    # write derived settings
-    cfg_d["derived"] = settings
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # NCO specific settings
-    #
-    # -----------------------------------------------------------------------
-    #
-    settings = {
-        "COMIN_BASEDIR": COMIN_BASEDIR,
-        "COMOUT_BASEDIR": COMOUT_BASEDIR,
-        "OPSROOT": OPSROOT,
-        "COMROOT": COMROOT,
-        "PACKAGEROOT": PACKAGEROOT,
-        "DATAROOT": DATAROOT,
-        "DCOMROOT": DCOMROOT,
-        "DBNROOT": DBNROOT,
-        "SENDECF": SENDECF,
-        "SENDDBN": SENDDBN,
-        "SENDDBN_NTC": SENDDBN_NTC,
-        "SENDCOM": SENDCOM,
-        "SENDWEB": SENDWEB,
-        "KEEPDATA": KEEPDATA,
-        "MAILTO": MAILTO,
-        "MAILCC": MAILCC,
-    }
-
-    cfg_d["nco"].update(settings)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Now write everything to var_defns.sh file
-    #
-    # -----------------------------------------------------------------------
-    #
+    extend_yaml(expt_config)
+    for sect, sect_keys in expt_config.items():
+        for k, v in sect_keys.items():
+            expt_config[sect][k] = str_to_list(v)
+    extend_yaml(expt_config)
 
     # print content of var_defns if DEBUG=True
-    all_lines = cfg_to_yaml_str(cfg_d)
-    print_info_msg(all_lines, verbose=DEBUG)
+    all_lines = cfg_to_yaml_str(expt_config)
+    log_info(all_lines, verbose=debug)
 
+    global_var_defns_fp = workflow_config["GLOBAL_VAR_DEFNS_FP"]
     # print info message
-    print_info_msg(
+    log_info(
         f"""
-        Generating the global experiment variable definitions file specified by
-        GLOBAL_VAR_DEFNS_FN:
-          GLOBAL_VAR_DEFNS_FN = \"{GLOBAL_VAR_DEFNS_FN}\"
-        Full path to this file is:
-          GLOBAL_VAR_DEFNS_FP = \"{GLOBAL_VAR_DEFNS_FP}\"
-        For more detailed information, set DEBUG to \"TRUE\" in the experiment
-        configuration file (\"{EXPT_CONFIG_FN}\")."""
+        Generating the global experiment variable definitions file here:
+          GLOBAL_VAR_DEFNS_FP = '{global_var_defns_fp}'
+        For more detailed information, set DEBUG to 'TRUE' in the experiment
+        configuration file ('{user_config_fn}')."""
     )
 
-    with open(GLOBAL_VAR_DEFNS_FP, "a") as f:
-        f.write(cfg_to_shell_str(cfg_d))
-
-    # export all global variables back to the environment
-    export_vars()
+    with open(global_var_defns_fp, "a") as f:
+        f.write(cfg_to_shell_str(expt_config))
 
     #
     # -----------------------------------------------------------------------
@@ -1994,34 +1280,21 @@ def setup():
     # -----------------------------------------------------------------------
     #
 
-    # loop through cfg_d and check validity of params
+    # loop through the flattened expt_config and check validity of params
     cfg_v = load_config_file("valid_param_vals.yaml")
-    cfg_d = flatten_dict(cfg_d)
-    for k, v in cfg_d.items():
-        if v == None:
+    for k, v in flatten_dict(expt_config).items():
+        if v is None or v == "":
             continue
         vkey = "valid_vals_" + k
         if (vkey in cfg_v) and not (v in cfg_v[vkey]):
-            print_err_msg_exit(
+            raise Exception(
                 f"""
-                The variable {k}={v} in {EXPT_DEFAULT_CONFIG_FN} or {EXPT_CONFIG_FN} does not have
-                a valid value. Possible values are:
+                The variable {k}={v} in the user's configuration
+                does not have a valid value. Possible values are:
                     {k} = {cfg_v[vkey]}"""
             )
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Print message indicating successful completion of script.
-    #
-    # -----------------------------------------------------------------------
-    #
-    print_info_msg(
-        f"""
-        ========================================================================
-        Function setup() in \"{os.path.basename(__file__)}\" completed successfully!!!
-        ========================================================================"""
-    )
+    return expt_config
 
 
 #
@@ -2032,4 +1305,5 @@ def setup():
 # -----------------------------------------------------------------------
 #
 if __name__ == "__main__":
-    setup()
+    USHdir = os.path.dirname(os.path.abspath(__file__))
+    setup(USHdir)

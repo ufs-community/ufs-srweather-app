@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_make_orog|task_make_grid" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -122,12 +122,12 @@ DATA="${DATA:-${raw_dir}/tmp}"
 mkdir_vrfy -p "${DATA}"
 cd_vrfy "${DATA}"
 #
-# Copy topography and related data files from the system directory (TOPO_DIR)
+# Copy topography and related data files from the system directory (FIXorg)
 # to the temporary directory.
 #
-cp_vrfy ${TOPO_DIR}/thirty.second.antarctic.new.bin fort.15
-cp_vrfy ${TOPO_DIR}/landcover30.fixed .
-cp_vrfy ${TOPO_DIR}/gmted2010.30sec.int fort.235
+cp_vrfy ${FIXorg}/thirty.second.antarctic.new.bin fort.15
+cp_vrfy ${FIXorg}/landcover30.fixed .
+cp_vrfy ${FIXorg}/gmted2010.30sec.int fort.235
 #
 #-----------------------------------------------------------------------
 #

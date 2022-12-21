@@ -43,7 +43,7 @@ HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-USHdir="$HOMEdir/ush"
+export USHdir="$HOMEdir/ush"
 TESTSdir="$HOMEdir/tests"
 WE2Edir="$TESTSdir/WE2E"
 #
@@ -62,6 +62,18 @@ WE2Edir="$TESTSdir/WE2E"
 #-----------------------------------------------------------------------
 #
 . ${WE2Edir}/get_WE2Etest_names_subdirs_descs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Run python checks
+#
+#-----------------------------------------------------------------------
+#
+python3 $USHdir/check_python_version.py
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -101,10 +113,20 @@ Usage:
 The arguments in brackets are optional.  The arguments are defined as 
 follows:
 
-tests_file:
-Name of file or relative or absolute path to file containing the list of
-WE2E tests to run.  This file must contain one test name per line, with 
-no repeated names.  This is a required argument.
+Exactly one of the following flags for defining which tests to run is
+required
+
+  tests_file:
+  Name of file or relative or absolute path to file containing the list
+  of WE2E tests to run.  This file must contain one test name per line,
+  with no repeated names.
+
+  test_type:
+  Name of a supported set of tests. Options are fundamental,
+  comprehensive, or all.
+
+  test_name:
+  The name of a single test to run
 
 machine:
 Argument used to explicitly set the experiment variable MACHINE in the
@@ -317,6 +339,8 @@ fi
 #
 valid_args=( \
   "tests_file" \
+  "test_type" \
+  "test_name" \
   "machine" \
   "account" \
   "expt_basedir" \
@@ -356,10 +380,13 @@ Use
   ${scrfunc_fn} ${help_flag}
 to get help on how to use this script."
 
-if [ -z "${tests_file}" ]; then
+if [ -z "${tests_file}" ] && [ -z "${test_name}" ] && [ -z "${test_type}" ] ; then
   print_err_msg_exit "\
-The argument \"tests_file\" specifying the file containing a list of the 
-WE2E tests to run was not specified in the call to this script.  \
+At least on of the following arguments must be specified to run this
+script:
+  tests_file
+  test_name
+  test_type
 ${help_msg}"
 fi
 
@@ -368,6 +395,16 @@ if [ -z "${machine}" ]; then
 The argument \"machine\" specifying the machine or platform on which to
 run the WE2E tests was not specified in the call to this script.  \
 ${help_msg}"
+fi
+  # Cheyenne-specific test limitation
+
+if [ "${machine,,}" = "cheyenne" ]; then
+  use_cron_to_relaunch=FALSE
+  echo "
+Due to system limitations, the 'use_cron_to_relaunch' command can not be used on
+the '${machine}' machine. Setting this variable to false.
+
+"
 fi
 
 if [ -z "${account}" ]; then
@@ -380,42 +417,83 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file containing the list of user-specified 
-# WE2E tests to run.  Then verify that the file exists.
+# Set the list of tests to run.
 #
 #-----------------------------------------------------------------------
 #
-user_spec_tests_fp=$( readlink -f "${tests_file}" )
+if [ -n "${test_name}" ] ; then
 
-if [ ! -f "${user_spec_tests_fp}" ]; then
-  print_err_msg_exit "\
-The file containing the user-specified list of WE2E tests to run 
-(tests_file) that is passed in as an argument to this script does not
-exit:
-  tests_file = \"${tests_file}\"
-The full path to this script is:
-  user_spec_tests_fp = \"${user_spec_tests_fp}\"
-Please ensure that this file exists and rerun."
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Read in each line of the file specified by user_spec_tests_fp and add 
-# each non-empty line to the array user_spec_tests.  Note that the read 
-# command will remove any leading and trailing whitespace from each line 
-# in user_spec_tests_fp [because it treats whatever character(s) the bash 
-# variable IFS (Internal Field Separator) is set to as word separators 
-# on each line, and IFS is by default set to a space, a tab, and a 
-# newline].
-#
-#-----------------------------------------------------------------------
-#
-user_spec_tests=()
-while read -r line; do
-  if [ ! -z "$line" ]; then
-    user_spec_tests+=("$line")
+  # User specified a single test
+  user_spec_tests=( "${test_name}" )
+
+elif [ "${test_type}" = "all" ] ; then
+
+  # User would like to run all the tests available
+  user_spec_tests=()
+  for fp in $(find ${scrfunc_dir}/test_configs -name "config.*" -type f ) ; do
+    user_spec_tests+=("$(basename $fp | cut -f 2 -d .)")
+  done
+
+elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
+
+  # User wants to run a set of tests from a file, either their own or
+  # one managed in the repo
+
+  if [ -n "${test_type}" ] ; then
+    # Check for a pre-defined set. It could be machine dependent or has the mode
+    # (community or nco), or default
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.nco
+    if [ ! -f ${user_spec_tests_fp} ]; then
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.com
+        if [ ! -f ${user_spec_tests_fp} ]; then
+            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
+            if [ ! -f ${user_spec_tests_fp} ]; then
+                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+                if [ ! -f ${user_spec_tests_fp} ]; then
+                    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                fi
+            fi
+        else
+            run_envir=${run_envir:-"community"}
+        fi
+    else
+        run_envir=${run_envir:-"nco"}
+    fi
+  elif [ -n "${tests_file}" ] ; then
+    user_spec_tests_fp=$( readlink -f "${tests_file}" )
   fi
-done < "${user_spec_tests_fp}"
+
+  if [ ! -f "${user_spec_tests_fp}" ]; then
+    print_err_msg_exit "\
+  The file containing the user-specified list of WE2E tests to run 
+  (tests_file) that is passed in as an argument to this script does not
+  exit:
+    tests_file = \"${tests_file}\"
+  The full path to this script is:
+    user_spec_tests_fp = \"${user_spec_tests_fp}\"
+  Please ensure that this file exists and rerun."
+  fi
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Read in each line of the file specified by user_spec_tests_fp and add 
+  # each non-empty line to the array user_spec_tests.  Note that the read 
+  # command will remove any leading and trailing whitespace from each line 
+  # in user_spec_tests_fp [because it treats whatever character(s) the bash 
+  # variable IFS (Internal Field Separator) is set to as word separators 
+  # on each line, and IFS is by default set to a space, a tab, and a 
+  # newline].
+  #
+  #-----------------------------------------------------------------------
+  #
+  user_spec_tests=()
+  while read -r line; do
+    if [ ! -z "$line" ]; then
+      user_spec_tests+=("$line")
+    fi
+  done < "${user_spec_tests_fp}"
+
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -719,7 +797,12 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
+
+  # Save the environment variable since a default will override when
+  # sourced.
+  save_USHdir=${USHdir}
   source_config ${USHdir}/config_defaults.yaml
+  USHdir=${save_USHdir}
   MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
   source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
@@ -847,6 +930,20 @@ RUN_ENVIR=${run_envir}"
 fi
 
 #
+# Eval DATE_FIRST/LAST_CYCL commands
+#
+if [[ $DATE_FIRST_CYCL != [0-9]* ]]; then
+  DATE_FIRST_CYCL=$(eval ${DATE_FIRST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_FIRST_CYCL=${DATE_FIRST_CYCL}"
+fi
+if [[ $DATE_LAST_CYCL != [0-9]* ]]; then
+  DATE_LAST_CYCL=$(eval ${DATE_LAST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_LAST_CYCL=${DATE_LAST_CYCL}"
+fi
+
+#
 #-----------------------------------------------------------------------
 #
 # Modifications to the experiment configuration file if the WE2E test 
@@ -930,13 +1027,11 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
-
     expt_config_str=${expt_config_str}"
 #
 # Set NCO mode OPSROOT
 #
-OPSROOT=\"${OPSROOT}\""
+OPSROOT=\"${opsroot:-$OPSROOT}\""
 
   fi
 #
@@ -1224,12 +1319,47 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $USHdir/generate_FV3LAM_wflow.py || \
+  $USHdir/generate_FV3LAM_wflow.py
+
+  if [ $? != 0 ] ; then
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""
+  fi
 
 done
+
+# Print notes about monitoring/running jobs if use_cron_to_relaunch = FALSE
+topdir=${scrfunc_dir%/*/*/*}
+expt_dirs_fullpath="${topdir}/expt_dirs"
+
+echo "
+  ========================================================================
+  ========================================================================
+
+  All experiments have been generated in the directory
+  ${expt_dirs_fullpath}
+
+  ========================================================================
+  ========================================================================
+"
+
+if [ "${use_cron_to_relaunch,,}" = "false" ]; then
+  echo "
+
+The variable 'use_cron_to_relaunch' has been set to FALSE. Jobs will not be automatically run via crontab.
+
+You can run each task manually in the experiment directory:
+(${expt_dirs_fullpath})
+
+Or you can use the 'run_srw_tests.py' script in the ush/ directory:
+
+  cd $USHdir
+  ./run_srw_tests.py -e=${expt_dirs_fullpath}
+
+"
+fi
+
 #
 #-----------------------------------------------------------------------
 #

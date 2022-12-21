@@ -39,9 +39,17 @@ class Testing(unittest.TestCase):
     def test_set_cycle_dates(self):
         cdates = set_cycle_dates(
             date_start=datetime(2022, 1, 1, 6),
-            date_end=datetime(2022, 1, 4, 12),
+            date_end=datetime(2022, 1, 2, 12),
             incr_cycl_freq=6,
         )
         self.assertEqual(
-            cdates, ["2022010106", "2022010112", "2022010306", "2022010312"]
+            cdates,
+            [
+                "2022010106",
+                "2022010112",
+                "2022010118",
+                "2022010200",
+                "2022010206",
+                "2022010212",
+            ],
         )

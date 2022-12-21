@@ -17,60 +17,25 @@ output over the :term:`CONUS` for a number of variables, including:
 * Max/Min 2-5 km updraft helicity
 * Sea level pressure (SLP)
 
-The Python scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python``.
+The Python scripts are located under ``ufs-srweather-app/ush/Python``.
 The script ``plot_allvars.py`` plots the output from a single cycle within an experiment, while 
-the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different
-experiments (e.g., the experiments may differ in some aspect such as the physics suite used). If 
+the script ``plot_allvars_diff.py`` plots the difference between the same cycle from two different experiments. When 
 plotting the difference, the two experiments must be on the same domain and available for 
-the same cycle starting date/time and forecast hours. 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
 
 Loading the Environment
 ==========================
 
-To use the plotting scripts, the appropriate environment must be loaded. The scripts require Python 3 with the ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages. This Python environment has already been set up on Level 1 platforms and can be activated as follows:
-
-On Cheyenne:
+To use the plotting scripts, the regional workflow environment, which includes the required ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` packages, must be loaded. To activate the regional workflow, see :numref:`Section %s <SetUpPythonEnv>`, or use the following summary:
 
 .. code-block:: console
+   
+   cd <path/to/ufs-srweather-app/ush/Python>
+   source ../../etc/lmod-setup.sh <platform>
+   module use ../../modulefiles
+   module load wflow_<platform>
 
-   module load ncarenv
-   module load conda/latest
-   conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/python_graphics
-
-On Hera and Jet:
-
-.. code-block:: console
-
-   module use -a /contrib/miniconda3/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Orion:
-
-.. code-block:: console
-
-   module use -a /apps/contrib/miniconda3-noaa-gsl/modulefiles
-   module load miniconda3
-   conda activate pygraf
-
-On Gaea:
-
-.. code-block:: console
-
-   module use /lustre/f2/pdata/esrl/gsd/contrib/modulefiles
-   module load miniconda3/4.8.3-regional-workflow
-
-On NOAA Cloud:
-
-.. code-block:: console
-
-   module use /contrib/GST/miniconda3/modulefiles
-   module load miniconda3/4.10.3
-   conda activate regional_workflow
-
-.. note::
-
-   If using one of the batch submission scripts described :ref:`below <Batch>`, the user does not need to manually load an environment because the scripts perform this task.
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). Then users should follow the instructions output by the console (e.g., ``conda activate regional_workflow``).
 
 .. _Cartopy:
 
@@ -81,42 +46,25 @@ The Python plotting scripts also require a path to the directory where the Carto
 
 The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. For convenience, the small subset of files required for these Python scripts can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. They are also available on all `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms in the following locations:
 
-On Cheyenne:
+.. _CartopyData:
 
-.. code-block:: console
+.. table:: Cartopy Shapefile Locations for Level 1 Systems
 
-   /glade/p/ral/jntp/UFS_SRW_App/v2p0/NaturalEarth
-
-On Hera:
-
-.. code-block:: console
-
-   /scratch2/BMC/det/UFS_SRW_App/v2p0/NaturalEarth
-
-On Jet:
- 
-.. code-block:: console
- 
-   /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/NaturalEarth
-
-On Orion: 
-
-.. code-block:: console
-
-   /work/noaa/fv3-cam/UFS_SRW_App/v2p0/NaturalEarth
-
-On Gaea:
-
-.. code-block:: console
-
-   /lustre/f2/pdata/ncep/UFS_SRW_App/v2p0/NaturalEarth
-
-On NOAA Cloud:
-
-.. code-block:: console
-
-   /contrib/EPIC/UFS_SRW_App/v2p0/NaturalEarth
-
+   +--------------+-----------------------------------------------------------------+
+   | Machine      | File location                                                   |
+   +==============+=================================================================+
+   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/NaturalEarth              |
+   +--------------+-----------------------------------------------------------------+
+   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/NaturalEarth          |
+   +--------------+-----------------------------------------------------------------+
+   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth              |
+   +--------------+-----------------------------------------------------------------+
+   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/NaturalEarth           |
+   +--------------+-----------------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/NaturalEarth                  |
+   +--------------+-----------------------------------------------------------------+
+   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/NaturalEarth             |
+   +--------------+-----------------------------------------------------------------+
 
 Running the Plotting Scripts
 ======================================
@@ -126,7 +74,7 @@ scripts:
 
 .. code-block:: console
 
-   cd ufs-srweather-app/regional_workflow/ush/Python
+   cd ufs-srweather-app/ush/Python
 
 Plotting Output from One Experiment
 --------------------------------------
@@ -139,19 +87,19 @@ following command line arguments:
 #. Ending forecast hour
 #. Forecast hour increment
 #. The top level of the experiment directory ``$EXPTDIR`` containing the post-processed data. The script will look for the data files in the directory ``$EXPTDIR/CDATE/postprd``.
-#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
+#. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``. See :numref:`Table %s <CartopyData>` for the correct ``$CARTOPY_DIR`` locations on Level 1 systems.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecast
 
 .. note::
    If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
 An example of plotting output from a cycle generated using the sample experiment/workflow 
-configuration in the ``config.community.sh`` script (which uses the GFSv16 suite definition file)
+configuration in the ``config.community.yaml`` script (which uses the GFSv16 suite definition file)
 is as follows: 
 
 .. code-block:: console
 
-   python plot_allvars.py 2019061500 0 12 6 /path-to/expt_dirs/test_CONUS_25km_GFSv16 /path-to/NaturalEarth RRFS_CONUS_25km
+   python plot_allvars.py 2019061518 0 12 6 /path-to/expt_dirs/test_community /path-to/NaturalEarth RRFS_CONUS_25km
 
 The output files (in ``.png`` format) will be located in the directory ``$EXPTDIR/CDATE/postprd``,
 where in this case ``$EXPTDIR`` is ``/path-to/expt_dirs/test_CONUS_25km_GFSv16`` and ``$CDATE`` 
@@ -172,7 +120,7 @@ command line arguments:
 #. The base directory ``CARTOPY_DIR`` of the cartopy shapefiles. The script will look for the shapefiles (``*.shp``) in the directory ``$CARTOPY_DIR/shapefiles/natural_earth/cultural``.
 #. The name ``POST_OUTPUT_DOMAIN_NAME`` of the native grid used in the forecasts (this must be the same for the two forecasts)
 
-An example of plotting differences from two experiments for the same date and predefined domain where one uses the "FV3_GFS_v16" suite definition file (SDF) and one using the "FV3_RRFS_v1beta" SDF is as follows:
+An example of plotting differences from two experiments for the same date and predefined domain where one uses the ``FV3_GFS_v16`` suite definition file (SDF) and one uses the ``FV3_RRFS_v1beta`` SDF is as follows:
 
 .. code-block:: console
 
@@ -185,7 +133,7 @@ In this case, the output ``.png`` files will be located in the directory ``$EXPT
 Submitting Plotting Scripts Through a Batch System
 ======================================================
 
-If users plan to create plots of multiple forecast lead times and forecast variables, then they may need to submit the Python scripts to the batch system. Sample scripts are provided for use on a platform such as Hera that uses the Slurm job scheduler: ``sq_job.sh`` and ``sq_job_diff.sh``. Equivalent sample scripts are provided for use on a platform such as Cheyenne that uses PBS as the job scheduler: ``qsub_job.sh`` and ``qsub_job_diff.sh``. Examples of these scripts are located under ``ufs-srweather-app/regional_workflow/ush/Python`` and can be used as a starting point to create a batch script for the user's specific platform/job scheduler. 
+If users plan to create plots of multiple forecast lead times and forecast variables, then they may need to submit the Python scripts to the batch system. Sample scripts are provided for use on a platform such as Hera that uses the Slurm job scheduler: ``sq_job.sh`` and ``sq_job_diff.sh``. Equivalent sample scripts are provided for use on a platform such as Cheyenne that uses PBS as the job scheduler: ``qsub_job.sh`` and ``qsub_job_diff.sh``. Examples of these scripts are located under ``ufs-srweather-app/ush/Python`` and can be used as a starting point to create a batch script for the user's specific platform/job scheduler. 
 
 At a minimum, the account should be set appropriately prior to job submission:
 
@@ -201,14 +149,14 @@ If the user's login shell is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app
    export EXPTDIR=/path-to/experiment/directory
 
 If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app
    setenv EXPTDIR /path-to/experiment/directory
 
 If plotting the difference between the same cycle from two different experiments, the variables 
@@ -217,7 +165,7 @@ is bash, these variables can be set as follows:
 
 .. code-block:: console
 
-   export HOMEdir=/path-to/ufs-srweather-app/regional_workflow
+   export HOMEdir=/path-to/ufs-srweather-app
    export EXPTDIR1=/path-to/experiment/directory1
    export EXPTDIR2=/path-to/experiment/directory2
 
@@ -225,7 +173,7 @@ If the user's login shell is csh/tcsh, they can be set as follows:
 
 .. code-block:: console
 
-   setenv HOMEdir /path-to/ufs-srweather-app/regional_workflow
+   setenv HOMEdir /path-to/ufs-srweather-app
    setenv EXPTDIR1 /path-to/experiment/directory1
    setenv EXPTDIR2 /path-to/experiment/directory2
 
@@ -235,7 +183,7 @@ in the batch scripts:
 
 .. code-block:: console
 
-   export CDATE=${DATE_FIRST_CYCL}${CYCL_HRS}
+   export CDATE=${DATE_FIRST_CYCL}
 
 This sets ``CDATE`` to the first cycle in the set of cycles that the experiment has run. If the
 experiment contains multiple cycles and the user wants to plot output from a cycle other than 

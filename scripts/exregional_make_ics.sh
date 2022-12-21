@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -86,7 +86,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMIN}"
+    extrn_mdl_staging_dir="${COMINext}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS"
@@ -124,6 +124,7 @@ case "${CCPP_PHYS_SUITE}" in
 #
   "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
+  "FV3_WoFS_v0" | \
   "FV3_HRRR" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then

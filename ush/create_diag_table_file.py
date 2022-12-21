@@ -36,26 +36,25 @@ def create_diag_table_file(run_dir):
 
     # create a diagnostic table file within the specified run directory
     print_info_msg(
-        f'''
-        Creating a diagnostics table file (\"{DIAG_TABLE_FN}\") in the specified
+        f"""
+        Creating a diagnostics table file ('{DIAG_TABLE_FN}') in the specified
         run directory...
 
-          run_dir = \"{run_dir}\"''',
+          run_dir = '{run_dir}'""",
         verbose=VERBOSE,
     )
 
     diag_table_fp = os.path.join(run_dir, DIAG_TABLE_FN)
 
     print_info_msg(
-        f'''
-
+        f"""
         Using the template diagnostics table file:
 
             diag_table_tmpl_fp = {DIAG_TABLE_TMPL_FP}
 
         to create:
 
-            diag_table_fp = \"{diag_table_fp}\"''',
+            diag_table_fp = '{diag_table_fp}'""",
         verbose=VERBOSE,
     )
 
@@ -65,9 +64,9 @@ def create_diag_table_file(run_dir):
     print_info_msg(
         dedent(
             f"""
-        The variable \"settings\" specifying values to be used in the \"{DIAG_TABLE_FN}\"
-        file has been set as follows:\n
-        settings =\n\n"""
+            The variable 'settings' specifying values to be used in the '{DIAG_TABLE_FN}'
+            file has been set as follows:\n
+            settings =\n\n"""
         )
         + settings_str,
         verbose=VERBOSE,
@@ -82,14 +81,14 @@ def create_diag_table_file(run_dir):
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script fill_jinja_template.py to create a \"{DIAG_TABLE_FN}\"
-            file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template diag table file:
-                DIAG_TABLE_TMPL_FP = \"{DIAG_TABLE_TMPL_FP}\"
-              Full path to output diag table file:
-                diag_table_fp = \"{diag_table_fp}\"
-              Namelist settings specified on command line:\n
-                settings =\n\n"""
+                Call to python script fill_jinja_template.py to create a '{DIAG_TABLE_FN}'
+                file from a jinja2 template failed.  Parameters passed to this script are:
+                  Full path to template diag table file:
+                    DIAG_TABLE_TMPL_FP = '{DIAG_TABLE_TMPL_FP}'
+                  Full path to output diag table file:
+                    diag_table_fp = '{diag_table_fp}'
+                  Namelist settings specified on command line:\n
+                    settings =\n\n"""
             )
             + settings_str
         )
@@ -133,9 +132,7 @@ class Testing(unittest.TestCase):
         USHdir = os.path.dirname(os.path.abspath(__file__))
         PARMdir = os.path.join(USHdir, "..", "parm")
         DIAG_TABLE_FN = "diag_table"
-        DIAG_TABLE_TMPL_FP = os.path.join(
-            PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2"
-        )
+        DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2")
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         set_env_var("USHdir", USHdir)

@@ -14,14 +14,15 @@ UFS Short-Range Weather App Users Guide
    Introduction
    Quickstart
    ContainerQuickstart
-   BuildRunSRW
+   BuildSRW
+   RunSRW
    Components
    InputOutputFiles
    LAMGrids
    ConfigWorkflow
    RocotoInfo
    WE2Etests
+   VXCases
    Graphics
-   ContributorsGuide
    FAQ
    Glossary

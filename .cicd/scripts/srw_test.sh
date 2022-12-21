@@ -28,6 +28,7 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
+nco_dir="${workspace}/nco_dirs"
 
 # Run the end-to-end tests.
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
@@ -37,14 +38,25 @@ else
 fi
 
 cd ${we2e_test_dir}
-./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} ${we2e_experiment_base_dir}
+./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
+    expt_basedir=${we2e_experiment_base_dir} \
+    opsroot=${nco_dir}
 
-# Allow the tests to start before checking for status.
-# TODO: Create a parameter that sets the initial start delay.
-sleep 300
+# Run the new run_srw_tests script if the machine is Cheyenne.
+if [[ "${platform}" = "cheyenne" ]]; then
+    cd ${workspace}/ush
+    ./run_srw_tests.py -e=${we2e_experiment_base_dir}
+    cd ${we2e_test_dir}
+fi
 
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
+
+# Allow the tests to start before checking for status.
+# TODO: Create a parameter that sets the initial start delay.
+if [[ "${platform}" != "cheyenne" ]]; then
+    sleep 300
+fi
 
 # Wait for all tests to complete.
 while true; do
@@ -71,10 +83,15 @@ done
 # TODO: Create parameter that sets the interval for the we2e cron jobs; this
 # value should be some factor of that interval to ensure the cron jobs execute
 # before the workspace is cleaned up.
-sleep 600
+if [[ "${platform}" != "cheyenne" ]]; then
+    sleep 600
+fi
 
 # Set exit code to number of failures
 set +e
 failures=$(grep "Workflow status:  FAILURE" ${progress_file} | wc -l)
+if [[ $failures -ne 0 ]]; then
+    failures=1
+fi
 set -e
 exit ${failures}

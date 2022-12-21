@@ -13,14 +13,28 @@ platform:
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
 workflow:
+  USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: test_community
   CCPP_PHYS_SUITE: FV3_GFS_v16
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019061518'
   DATE_LAST_CYCL: '2019061518'
   FCST_LEN_HRS: 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
+workflow_switches:
+  RUN_TASK_MAKE_GRID: true
+  RUN_TASK_MAKE_OROG: true
+  RUN_TASK_MAKE_SFC_CLIMO: true
+  RUN_TASK_GET_OBS_CCPA: false
+  RUN_TASK_GET_OBS_MRMS: false
+  RUN_TASK_GET_OBS_NDAS: false
+  RUN_TASK_VX_GRIDSTAT: false
+  RUN_TASK_VX_POINTSTAT: false
+  RUN_TASK_VX_ENSGRID: false
+  RUN_TASK_VX_ENSPOINT: false
+  RUN_TASK_PLOT_ALLVARS: false
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -30,7 +44,8 @@ task_get_extrn_lbcs:
   FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
   QUILTING: true
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
+task_plot_allvars:
+  COMOUT_REF: ""
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2

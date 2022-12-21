@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_make_sfc_climo" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -82,14 +82,14 @@ cd_vrfy $DATA
 #
 cat << EOF > ./fort.41
 &config
-input_facsf_file="${SFC_CLIMO_INPUT_DIR}/facsf.1.0.nc"
-input_substrate_temperature_file="${SFC_CLIMO_INPUT_DIR}/substrate_temperature.2.6x1.5.nc"
-input_maximum_snow_albedo_file="${SFC_CLIMO_INPUT_DIR}/maximum_snow_albedo.0.05.nc"
-input_snowfree_albedo_file="${SFC_CLIMO_INPUT_DIR}/snowfree_albedo.4comp.0.05.nc"
-input_slope_type_file="${SFC_CLIMO_INPUT_DIR}/slope_type.1.0.nc"
-input_soil_type_file="${SFC_CLIMO_INPUT_DIR}/soil_type.statsgo.0.05.nc"
-input_vegetation_type_file="${SFC_CLIMO_INPUT_DIR}/vegetation_type.igbp.0.05.nc"
-input_vegetation_greenness_file="${SFC_CLIMO_INPUT_DIR}/vegetation_greenness.0.144.nc"
+input_facsf_file="${FIXsfc}/facsf.1.0.nc"
+input_substrate_temperature_file="${FIXsfc}/substrate_temperature.2.6x1.5.nc"
+input_maximum_snow_albedo_file="${FIXsfc}/maximum_snow_albedo.0.05.nc"
+input_snowfree_albedo_file="${FIXsfc}/snowfree_albedo.4comp.0.05.nc"
+input_slope_type_file="${FIXsfc}/slope_type.1.0.nc"
+input_soil_type_file="${FIXsfc}/soil_type.statsgo.0.05.nc"
+input_vegetation_type_file="${FIXsfc}/vegetation_type.igbp.0.05.nc"
+input_vegetation_greenness_file="${FIXsfc}/vegetation_greenness.0.144.nc"
 mosaic_file_mdl="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"
 orog_dir_mdl="${FIXlam}"
 orog_files_mdl="${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"

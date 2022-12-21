@@ -5,8 +5,10 @@ import sys
 import unittest
 import argparse
 from datetime import datetime
+from textwrap import dedent
 
 from python_utils import (
+    log_info,
     import_vars,
     set_env_var,
     print_input_args,
@@ -46,7 +48,7 @@ def get_crontab_contents(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "DEBUG"]
+    IMPORTS = ["MACHINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     __crontab_cmd__ = "crontab"
@@ -62,22 +64,22 @@ def get_crontab_contents(called_from_cron):
             __crontab_cmd__ = "/usr/bin/crontab"
 
     print_info_msg(
-        f'''
+        f"""
         Getting crontab content with command:
         =========================================================
           {__crontab_cmd__} -l
-        =========================================================''',
+        =========================================================""",
         verbose=DEBUG,
     )
 
     (_, __crontab_contents__, _) = run_command(f"""{__crontab_cmd__} -l""")
 
     print_info_msg(
-        f'''
+        f"""
         Crontab contents:
         =========================================================
           {__crontab_contents__}
-        =========================================================''',
+        =========================================================""",
         verbose=DEBUG,
     )
 
@@ -91,7 +93,7 @@ def add_crontab_line():
     """Add crontab line to cron table"""
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
+    IMPORTS = ["MACHINE", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -99,10 +101,10 @@ def add_crontab_line():
     #
     time_stamp = datetime.now().strftime("%F_%T")
     crontab_backup_fp = os.path.join(EXPTDIR, f"crontab.bak.{time_stamp}")
-    print_info_msg(
-        f'''
+    log_info(
+        f"""
         Copying contents of user cron table to backup file:
-          crontab_backup_fp = \"{crontab_backup_fp}\"''',
+          crontab_backup_fp = '{crontab_backup_fp}'""",
         verbose=VERBOSE,
     )
 
@@ -118,25 +120,25 @@ def add_crontab_line():
     )
 
     # Create backup
-    run_command(f'''printf "%s" '{crontab_contents}' > "{crontab_backup_fp}"''')
+    run_command(f"""printf "%s" '{crontab_contents}' > '{crontab_backup_fp}'""")
 
     # Add crontab line
     if CRONTAB_LINE in crontab_contents:
 
-        print_info_msg(
-            f'''
+        log_info(
+            f"""
             The following line already exists in the cron table and thus will not be
             added:
-              CRONTAB_LINE = \"{CRONTAB_LINE}\"'''
+              CRONTAB_LINE = '{CRONTAB_LINE}'"""
         )
 
     else:
 
-        print_info_msg(
-            f'''
+        log_info(
+            f"""
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:
-              CRONTAB_LINE = \"{CRONTAB_LINE}\"''',
+              CRONTAB_LINE = '{CRONTAB_LINE}'""",
             verbose=VERBOSE,
         )
 
@@ -158,7 +160,7 @@ def delete_crontab_line(called_from_cron):
     print_input_args(locals())
 
     # import selected env vars
-    IMPORTS = ["MACHINE", "USER", "CRONTAB_LINE", "DEBUG"]
+    IMPORTS = ["MACHINE", "CRONTAB_LINE", "DEBUG"]
     import_vars(env_vars=IMPORTS)
 
     #
@@ -171,11 +173,11 @@ def delete_crontab_line(called_from_cron):
     # Then record the results back into the user's cron table.
     #
     print_info_msg(
-        f'''
+        f"""
         Crontab contents before delete:
         =========================================================
           {crontab_contents}
-        =========================================================''',
+        =========================================================""",
         verbose=True,
     )
 
@@ -187,11 +189,11 @@ def delete_crontab_line(called_from_cron):
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
 
     print_info_msg(
-        f'''
+        f"""
         Crontab contents after delete:
         =========================================================
           {crontab_contents}
-        =========================================================''',
+        =========================================================""",
         verbose=True,
     )
 

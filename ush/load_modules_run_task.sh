@@ -9,7 +9,6 @@
 #
 . ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
-. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -66,16 +65,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Initialize the environment, e.g. by making available the "module" 
-# command as well as others.
-#
-#-----------------------------------------------------------------------
-#
-env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
-init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
-#
-#-----------------------------------------------------------------------
-#
 # Get the task name and the name of the J-job script.
 #
 #-----------------------------------------------------------------------
@@ -92,14 +81,15 @@ jjob_fp="$2"
 set +u
 if [ ! -z ${SLURM_JOB_ID} ]; then
     export job=${SLURM_JOB_NAME}
-    export jobid=${job}.${SLURM_JOB_ID}
+    export pid=${pid:-${SLURM_JOB_ID}}
 elif [ ! -z ${PBS_JOBID} ]; then
     export job=${PBS_JOBNAME}
-    export jobid=${job}.${PBS_JOBID}
+    export pid=${pid:-${PBS_JOBID}}
 else
     export job=${task_name}
-    export jobid=${job}.$$
+    export pid=${pid:-$$}
 fi
+export jobid=${job}.${pid}
 set -u
 #
 #-----------------------------------------------------------------------
@@ -175,7 +165,7 @@ fi
 # Load the .local module file if available for the given task
 #
 modulefile_local="${task_name}.local"
-if [ -f ${modules_dir}/${modulefile_local} ]; then
+if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
   module load "${modulefile_local}" || print_err_msg_exit "\
   Loading .local module file (in directory specified by mod-
   ules_dir) for the specified task (task_name) failed:

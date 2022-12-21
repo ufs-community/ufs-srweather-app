@@ -96,7 +96,6 @@ fi
 #
 . $exptdir/var_defns.sh
 . $USHdir/source_util_funcs.sh
-. $USHdir/init_env.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -122,16 +121,6 @@ called_from_cron=$(boolify "${called_from_cron}")
 #
 #-----------------------------------------------------------------------
 #
-# Initialize the environment, e.g. by making the "module" command as well
-# as others available.
-#
-#-----------------------------------------------------------------------
-#
-env_init_scripts_fps_str="( "$(printf "\"%s\" " "${ENV_INIT_SCRIPTS_FPS[@]}")")"
-init_env env_init_scripts_fps="${env_init_scripts_fps_str}"
-#
-#-----------------------------------------------------------------------
-#
 # Set the name of the experiment.  We take this to be the name of the 
 # experiment subdirectory (i.e. the string after the last "/" in the 
 # full path to the experiment directory).
@@ -146,31 +135,9 @@ expt_name="${EXPT_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
-# source version file (run) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
-fi  
-module use "${HOMEdir}/modulefiles"
-module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || print_err_msg_exit "\
-Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
-task failed:
-  WFLOW_MOD_FN = \"${WFLOW_MOD_FN}\""
+machine=$(echo_lowercase $MACHINE)
 
-#
-#-----------------------------------------------------------------------
-#
-# Hack for Cheyenne since system python3 version is 3.4.10.
-# SRW app requires at least 3.6 so crontab deletion doesn't work with it.
-# Here we switch to using the python3 in conda that satisfies the requirement.
-# In the future, we could do conda activate on all systems here, to get rid
-# of the system python requirement.
-#
-#-----------------------------------------------------------------------
-#
-if [ "$MACHINE" = "CHEYENNE" ]; then
-    conda activate /glade/p/ral/jntp/UFS_SRW_app/conda/regional_workflow
-fi
+. ${USHdir}/load_modules_wflow.sh ${machine}
 
 #
 #-----------------------------------------------------------------------
