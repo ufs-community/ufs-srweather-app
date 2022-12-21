@@ -94,4 +94,4 @@ cpl_aqm_parm:
   NUM_SPLIT_NEXUS: 1
   RESTART_WORKFLOW: true
   RESTART_CYCLE_DIR: /scratch2/NCEPDEV/stmp3/Jianping.Huang/NCO_OUTPUT/stmp/tmpnwprd/aqm_test_a/2020091412
-  RUN_TASK_NEXUS_GFS_SFC: true
+

@@ -83,4 +83,4 @@ cpl_aqm_parm:
   NUM_SPLIT_NEXUS: 1
   COLDSTART: false
   WARMSTART_CYCLE_DIR: /scratch2/NCEPDEV/stmp3/Jianping.Huang/expt_dirs/uwm_aqm_cs_canopy_a/2019073112
-  RUN_TASK_NEXUS_GFS_SFC: true
+

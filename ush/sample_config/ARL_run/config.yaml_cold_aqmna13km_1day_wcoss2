@@ -82,6 +82,5 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_793.nc
-  RUN_TASK_NEXUS_GFS_SFC: true
 #  COLDSTART: false
 #  WARMSTART_CYCLE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/restart/RRFS_CONUS_13km/2019080612
