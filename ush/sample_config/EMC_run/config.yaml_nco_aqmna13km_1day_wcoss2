@@ -104,5 +104,6 @@ cpl_aqm_parm:
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
   AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/aqmv7.0
+  RUN_TASK_NEXUS_GFS_SFC: true
 #  COLDSTART: false
 #  WARMSTART_CYCLE_DIR: /lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.c3/2022102118

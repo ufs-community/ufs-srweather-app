@@ -13,7 +13,7 @@ workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080512'
   DATE_LAST_CYCL: '2019080512'
-  FCST_LEN_HRS: 6
+  FCST_LEN_HRS: 24
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
@@ -38,7 +38,7 @@ task_run_fcst:
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 12
+  RESTART_INTERVAL: 24
   WTIME_RUN_FCST: 02:00:00
   QUILTING: true
   PRINT_ESMF: false
@@ -82,5 +82,6 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GRID_FN: grid_spec_793.nc
+  RUN_TASK_NEXUS_GFS_SFC: true
 #  COLDSTART: false
 #  WARMSTART_CYCLE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/restart/RRFS_CONUS_13km/2019080612
