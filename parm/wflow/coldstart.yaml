@@ -7,10 +7,12 @@ default_task: &default_task
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
+    nprocs: '{{ nnodes * nprocs }}'
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     ENSMEM_INDX: '#mem#'
-  nodes: 1:ppn=24
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nodesize: "&NCORES_PER_NODE;"
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
@@ -22,7 +24,9 @@ task_get_extrn_ics:
     <<: *default_vars
     ICS_OR_LBCS: ICS
   join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-  nodes: 1:ppn=1
+  memory: 2G
+  nnodes: 1
+  ppn: 1
   queue: '&QUEUE_HPSS;'
   walltime: 00:45:00
 
@@ -33,7 +37,9 @@ task_get_extrn_lbcs:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
   join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-  nodes: 1:ppn=1
+  memory: 2G
+  nnodes: 1
+  ppn: 1
   queue: '&QUEUE_HPSS;'
   walltime: 00:45:00
 
@@ -47,7 +53,9 @@ metatask_run_ensemble:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-    nodes: 4:ppn=12
+
+    nnodes: 4
+    ppn: 12
     dependency:
       and: &make_ics_deps
         taskdep_get_extrn:
@@ -76,7 +84,8 @@ metatask_run_ensemble:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-    nodes: 4:ppn=12
+    nnodes: 4
+    ppn: 12
     dependency:
       and:
         <<: *make_ics_deps
@@ -87,13 +96,13 @@ metatask_run_ensemble:
   task_run_fcst:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
-    cores: '12'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-    native: '--cpus-per-task 2 --exclusive'
-    nodes: None
+    nodesize: '{{ platform.NCORES_PER_NODE }}'
+    nnodes: '{{ NNODES_RUN_FCST }}'
+    ppn: '{{ PPN_RUN_FCST }}'
     queue: '&QUEUE_FCST;'
     walltime: 04:30:00
     dependency:

@@ -35,3 +35,14 @@ data:
     NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDYext}
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 
+task_get_extrn_ics:
+  native: ''
+task_get_extrn_lbcs:
+  native: ''
+task_plot_allvars:
+  native: ''
+task_run_fcst:
+  cores: ''
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ NNODES }}:ppn={{ PPN }}:tpp={{ OMP_NUM_THREADS_RUN_FCST }}'
+  nodesize: '{{ platform.NCORES_PER_NODE }}'

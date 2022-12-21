@@ -32,3 +32,8 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+
+task_run_fcst:
+  cores: '{{ PE_MEMBER01 }}'
+  native: '--cpus-per-task {{ OMP_NUM_THREADS_RUN_FCST }} --exclusive'
+  nodes: ''

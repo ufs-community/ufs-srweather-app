@@ -1025,10 +1025,6 @@ workflow_switches:
   RUN_TASK_MAKE_OROG: true
   RUN_TASK_MAKE_SFC_CLIMO: true
   
-  RUN_TASK_GET_EXTRN_ICS: true
-  RUN_TASK_GET_EXTRN_LBCS: true
-  RUN_TASK_MAKE_ICS: true
-  RUN_TASK_MAKE_LBCS: true
   RUN_TASK_RUN_FCST: true
   RUN_TASK_RUN_POST: true
   
@@ -1345,12 +1341,6 @@ task_make_sfc_climo:
 # EXTRN ICS config parameters
 #-----------------------------
 task_get_extrn_ics:
-  GET_EXTRN_ICS_TN: "get_extrn_ics"
-  NNODES_GET_EXTRN_ICS: 1
-  PPN_GET_EXTRN_ICS: 1
-  MEM_GET_EXTRN_ICS: 2G
-  WTIME_GET_EXTRN_ICS: 00:45:00
-  MAXTRIES_GET_EXTRN_ICS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1444,12 +1434,6 @@ task_get_extrn_ics:
 # EXTRN LBCS config parameters
 #-----------------------------
 task_get_extrn_lbcs:
-  GET_EXTRN_LBCS_TN: "get_extrn_lbcs"
-  NNODES_GET_EXTRN_LBCS: 1
-  PPN_GET_EXTRN_LBCS: 1
-  MEM_GET_EXTRN_LBCS: 2G
-  WTIME_GET_EXTRN_LBCS: 00:45:00
-  MAXTRIES_GET_EXTRN_LBCS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1574,11 +1558,8 @@ task_make_lbcs:
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
-  RUN_FCST_TN: "run_fcst"
   NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
   PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
-  WTIME_RUN_FCST: 04:30:00
-  MAXTRIES_RUN_FCST: 1
   FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
@@ -1892,280 +1873,9 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
 
 #----------------------------
-# GET OBS CCPA config parameters
-#-----------------------------
-task_get_obs_ccpa:
-  GET_OBS_CCPA_TN: "get_obs_ccpa"
-  NNODES_GET_OBS_CCPA: 1
-  PPN_GET_OBS_CCPA: 1
-  MEM_GET_OBS_CCPA: 2G
-  WTIME_GET_OBS_CCPA: 00:45:00
-  MAXTRIES_GET_OBS_CCPA: 1
-
-#----------------------------
-# GET OBS MRMS config parameters
-#-----------------------------
-task_get_obs_mrms:
-  GET_OBS_MRMS_TN: "get_obs_mrms"
-  NNODES_GET_OBS_MRMS: 1
-  PPN_GET_OBS_MRMS: 1
-  MEM_GET_OBS_MRMS: 2G
-  WTIME_GET_OBS_MRMS: 00:45:00
-  MAXTRIES_GET_OBS_MRMS: 1
-
-#----------------------------
-# GET OBS NDAS config parameters
-#-----------------------------
-task_get_obs_ndas:
-  GET_OBS_NDAS_TN: "get_obs_ndas"
-  NNODES_GET_OBS_NDAS: 1
-  PPN_GET_OBS_NDAS: 1
-  MEM_GET_OBS_NDAS: 2G
-  WTIME_GET_OBS_NDAS: 02:00:00
-  MAXTRIES_GET_OBS_NDAS: 1
-
-#----------------------------
-# VX_GRIDSTAT config parameters
-#-----------------------------
-task_run_vx_gridstat:
-  VX_GRIDSTAT_TN: "run_gridstatvx"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 2
-
-#----------------------------
-# VX_GRIDSTAT_REFC config parameters
-#-----------------------------
-task_run_vx_gridstat_refc:
-  VX_GRIDSTAT_REFC_TN: "run_gridstatvx_refc"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 2
-
-#----------------------------
-# VX_GRIDSTAT_RETOP config parameters
-#-----------------------------
-task_run_vx_gridstat_retop:
-  VX_GRIDSTAT_RETOP_TN: "run_gridstatvx_retop"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 2
-
-#----------------------------
-# VX_GRIDSTAT_03h config parameters
-#-----------------------------
-task_run_vx_gridstat_03h:
-  VX_GRIDSTAT_03h_TN: "run_gridstatvx_03h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 2
-
-#----------------------------
-# VX_GRIDSTAT_06h config parameters
-#-----------------------------
-task_run_vx_gridstat_06h:
-  VX_GRIDSTAT_06h_TN: "run_gridstatvx_06h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 2
-
-#----------------------------
-# VX_GRIDSTAT_24h config parameters
-#-----------------------------
-task_run_vx_gridstat_24h:
-  VX_GRIDSTAT_24h_TN: "run_gridstatvx_24h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 2
-
-#----------------------------
-# VX_POINTSTAT config parameters
-#-----------------------------
-task_run_vx_pointstat:
-  VX_POINTSTAT_TN: "run_pointstatvx"
-  NNODES_VX_POINTSTAT: 1
-  PPN_VX_POINTSTAT: 1
-  MEM_VX_POINTSTAT: 2G
-  WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 2
-
-#----------------------------
-# VX_ENSGRID config parameters
-#-----------------------------
-task_run_vx_ensgrid:
-  VX_ENSGRID_TN: "run_ensgridvx"
-  MAXTRIES_VX_ENSGRID: 2
-  VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 2
-  VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 2
-  VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 2
-  VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 2
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  MEM_VX_ENSGRID: 2G
-  WTIME_VX_ENSGRID: 01:00:00
-
-
-#----------------------------
-# VX_ENSGRID_REFC config parameters
-#-----------------------------
-task_run_vx_ensgrid_refc:
-  VX_ENSGRID_REFC_TN: "run_ensgridvx_refc"
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  MEM_VX_ENSGRID: 2G
-  WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 2
-
-#----------------------------
-# VX_ENSGRID_MEAN config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean:
-  VX_ENSGRID_MEAN_TN: "run_ensgridvx_mean"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 2
-
-#----------------------------
-# VX_ENSGRID_MEAN_03h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_03h:
-  VX_ENSGRID_MEAN_03h_TN: "run_ensgridvx_mean_03h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
-
-#----------------------------
-# VX_ENSGRID_MEAN_06h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_06h:
-  VX_ENSGRID_MEAN_06h_TN: "run_ensgridvx_mean_06h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
-
-#----------------------------
-# VX_ENSGRID_MEAN_24h config parameters
-#-----------------------------
-task_run_vx_ensgrid_mean_24h:
-  VX_ENSGRID_MEAN_24h_TN: "run_ensgridvx_mean_24h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
-
-#----------------------------
-# VX_ENSGRID_PROB config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob:
-  VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
-  NNODES_VX_ENSGRID_PROB: 1
-  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
-  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 2
-
-#----------------------------
-# VX_ENSGRID_PROB_03h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_03h:
-  VX_ENSGRID_PROB_03h_TN: "run_ensgridvx_prob_03h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 2
-
-#----------------------------
-# VX_ENSGRID_PROB_06h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_06h:
-  VX_ENSGRID_PROB_06h_TN: "run_ensgridvx_prob_06h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 2
-
-#----------------------------
-# VX_ENSGRID_PROB_24h config parameters
-#-----------------------------
-task_run_vx_ensgrid_prob_24h:
-  VX_ENSGRID_PROB_24h_TN: "run_ensgridvx_prob_24h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 2
-
-#----------------------------
-# VX_ENSPOINT config parameters
-#-----------------------------
-task_run_vx_enspoint:
-  VX_ENSPOINT_TN: "run_enspointvx"
-  NNODES_VX_ENSPOINT: 1
-  PPN_VX_ENSPOINT: 1
-  MEM_VX_ENSPOINT: 2G
-  WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 2
-
-#----------------------------
-# VX_ENSPOINT_MEAN config parameters
-#-----------------------------
-task_run_vx_enspoint_mean:
-  VX_ENSPOINT_MEAN_TN: "run_enspointvx_mean"
-  NNODES_VX_ENSPOINT_MEAN: 1
-  PPN_VX_ENSPOINT_MEAN: 1
-  MEM_VX_ENSPOINT_MEAN: 2G
-  WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 2
-
-#----------------------------
-# VX_ENSPOINT_PROB config parameters
-#-----------------------------
-task_run_vx_enspoint_prob:
-  VX_ENSPOINT_PROB_TN: "run_enspointvx_prob"
-  NNODES_VX_ENSPOINT_PROB: 1
-  PPN_VX_ENSPOINT_PROB: 1
-  MEM_VX_ENSPOINT_PROB: 2G
-  WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 2
-
-#----------------------------
 # PLOT_ALLVARS config parameters
 #-----------------------------
 task_plot_allvars:
-  PLOT_ALLVARS_TN: "plot_allvars"
-  NNODES_PLOT_ALLVARS: 1
-  PPN_PLOT_ALLVARS: 24
-  WTIME_PLOT_ALLVARS: 01:00:00
-  MAXTRIES_PLOT_ALLVARS: 1
   #-------------------------------------------------------------------------
   # Reference experiment's COMOUT directory. This is where the GRIB2 files 
   # from postprocessing are located. Make this a template to compare

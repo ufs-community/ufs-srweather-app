@@ -13,8 +13,12 @@ default_task_post: &default_task
     ENSMEM_INDX: '#mem#'
     cyc: !cycstr '@H'
     fhr: '#fhr#'
+    nprocs: '{{ nnodes * nprocs }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
-  nodes: 2:ppn=24
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 2
+  ppn: 24
   nodesize: "&NCORES_PER_NODE;"
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:15:00

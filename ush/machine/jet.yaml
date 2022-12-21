@@ -40,3 +40,9 @@ data:
       netcdf: /public/data/grids/gfs/anl/netcdf
     RAP: /public/data/grids/rap/full/wrfprs/grib2
     HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
+
+task_run_fcst:
+  cores: '{{ PE_MEMBER01 }}'
+  native: '--cpus-per-task {{ OMP_NUM_THREADS_RUN_FCST }} --exclusive'
+  nodes: ''
+

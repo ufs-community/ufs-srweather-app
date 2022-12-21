@@ -8,11 +8,15 @@ default_task_prep: &default_task
     maxtries: '2'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
+    nprocs: '{{ nnodes * nprocs }}'
     subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
-  nodes: 1:ppn=24
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 1
+  ppn: 24
   nodesize: "&NCORES_PER_NODE;"
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:20:00
@@ -35,7 +39,7 @@ task_make_sfc_climo:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
   join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-  nodes: 2:ppn=24
+  nnodes: 2
   dependency:
     and:
       taskdep_make_grid:
