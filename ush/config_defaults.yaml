@@ -2359,17 +2359,17 @@ cpl_aqm_parm:
 # AQM_BIO_FILE:
 # File name of AQM BIO file
 #
-# DO_AQM_FENGSHA:
-# Flag turning on/off AQM Fengsha option in AQM_RC
+# DO_AQM_DUST:
+# Flag turning on/off AQM dust option in AQM_RC
 #
-# AQM_FENGSHA_DIR:
-# Path to the directory containing AQM Fengsha file
+# AQM_DUST_DIR:
+# Path to the directory containing AQM dust file
 #
-# AQM_FENGSHA_FILE_PREFIX:
-# Frefix of AQM Fengsha file
+# AQM_DUST_FILE_PREFIX:
+# Frefix of AQM dust file
 #
-# AQM_FENGSHA_FILE_SUFFIX:
-# Suffix and extension of AQM Fengsha file
+# AQM_DUST_FILE_SUFFIX:
+# Suffix and extension of AQM dust file
 #
 # DO_AQM_CANOPY
 # Flag turning on/off AQM canopy option in AQM_RC
@@ -2453,10 +2453,10 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: ""
   AQM_BIO_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
-  DO_AQM_FENGSHA: true
-  AQM_FENGSHA_DIR: "/path/to/fengsha/dir"
-  AQM_FENGSHA_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
-  AQM_FENGSHA_FILE_SUFFIX: ".nc"
+  DO_AQM_DUST: true
+  AQM_DUST_DIR: "/path/to/dust/dir"
+  AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
+  AQM_DUST_FILE_SUFFIX: ".nc"
   DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
