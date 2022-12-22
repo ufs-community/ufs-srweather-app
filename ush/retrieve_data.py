@@ -226,13 +226,14 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     return template_str.format(**format_values)
 
 
-def create_target_path(target_path):
+def create_target_path(target_path, cla, mem):
 
     """
     Append target path and create directory for ensemble members
     """
     if not os.path.exists(target_path):
         os.makedirs(target_path)
+    setattr(cla, 'output_path_{0}'.format(mem), target_path)
     return target_path
 
 
@@ -363,8 +364,9 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     locs_files = pair_locs_with_files(input_locs, file_templates, check_all)
     for mem in members:
-        target_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
-        target_path = create_target_path(target_path)
+        output_path = f"{cla.output_path}/mem{mem:03d}"
+        target_path = fill_template(output_path, cla.cycle_date, mem=mem)
+        target_path = create_target_path(target_path, cla, mem)
 
         logging.info(f"Retrieved files will be placed here: \n {target_path}")
         os.chdir(target_path)
@@ -519,8 +521,9 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                 cla.cycle_date,
                 mem=mem,
             )
-
-            output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
+            
+            output_path = f"{cla.output_path}/mem{mem:03d}"
+            output_path = fill_template(output_path, cla.cycle_date, mem=mem)
             logging.info(f"Will place files in {os.path.abspath(output_path)}")
             logging.debug(f"CWD: {os.getcwd()}")
 
@@ -530,7 +533,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cla.cycle_date,
                     mem=mem,
                 )
-                output_path = create_target_path(output_path)
+                output_path = create_target_path(output_path, cla, mem)
                 logging.info(f"Will place files in {os.path.abspath(output_path)}")
 
             source_paths = []
@@ -699,24 +702,48 @@ def write_summary_file(cla, data_store, file_templates):
 
     files = []
     for tmpl in file_templates:
-        files.extend(
-            [fill_template(tmpl, cla.cycle_date, fcst_hr=fh) for fh in cla.fcst_hrs]
+        if type(tmpl) == list:
+            for t in tmpl:
+                files.extend(
+                    [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=cla.members[0]) for fh in cla.fcst_hrs]
+                )
+        else:
+            files.extend(
+                [fill_template(tmpl, cla.cycle_date, fcst_hr=fh) for fh in cla.fcst_hrs]
+            )
+    
+    if hasattr(cla, "members"):
+        for m in cla.members:
+            output_path_member = getattr(cla, 'output_path_{0}'.format(str(m)))
+            summary_fp = os.path.join(output_path_member, cla.summary_file)
+            logging.info(f"Writing a summary file to {summary_fp}")
+            file_contents = dedent(
+                f"""
+                DATA_SRC={data_store}
+                EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
+                EXTRN_MDL_STAGING_DIR={output_path_member}
+                EXTRN_MDL_FNS=( {' '.join(files)} )
+                EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
+                """
+            )
+            logging.info(f"Contents: {file_contents}")
+            with open(summary_fp, "w") as summary:
+                summary.write(file_contents)
+    else:
+        summary_fp = os.path.join(cla.output_path, cla.summary_file)
+        logging.info(f"Writing a summary file to {summary_fp}")
+        file_contents = dedent(
+            f"""
+            DATA_SRC={data_store}
+            EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
+            EXTRN_MDL_STAGING_DIR={cla.output_path}
+            EXTRN_MDL_FNS=( {' '.join(files)} )
+            EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
+            """
         )
-
-    summary_fp = os.path.join(cla.output_path, cla.summary_file)
-    logging.info(f"Writing a summary file to {summary_fp}")
-    file_contents = dedent(
-        f"""
-        DATA_SRC={data_store}
-        EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
-        EXTRN_MDL_STAGING_DIR={cla.output_path}
-        EXTRN_MDL_FNS=( {' '.join(files)} )
-        EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
-        """
-    )
-    logging.info(f"Contents: {file_contents}")
-    with open(summary_fp, "w") as summary:
-        summary.write(file_contents)
+        logging.info(f"Contents: {file_contents}")
+        with open(summary_fp, "w") as summary:
+            summary.write(file_contents)
 
 
 def to_datetime(arg):
