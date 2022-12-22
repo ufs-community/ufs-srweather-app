@@ -299,7 +299,6 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   external_model="GFS"
   input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
-  fn_sfc="${EXTRN_MDL_FNS[1]}"
   ;;
 
 "GEFS")
@@ -383,7 +382,6 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     ;;
   "GDAS")
     fn_atm="${EXTRN_MDL_FNS[0][$i]}"
-    fn_sfc="${EXTRN_MDL_FNS[1][$i]}"
     ;;
   "GEFS")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
