@@ -77,7 +77,7 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_SARC401.ncf
-  DO_AQM_FENGSHA: false
+  DO_AQM_DUST: false
   DO_AQM_CANOPY: false
   AQM_FIRE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/emissions/GSCE/GBBEPx.in.C401/Reprocessed
   AQM_FIRE_FILE_PREFIX: GBBEPx_C401GRID.emissions_v003

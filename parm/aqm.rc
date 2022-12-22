@@ -29,7 +29,7 @@ ctm_pmdiag: true
 #
 #  Input emissions
 #
-emission_sources: anthro fire pt
+emission_sources: anthro fire
 {%- if do_aqm_canopy %} canopy{% endif %}
 {%- if do_aqm_dust %} dust{% endif %}
 {%- if do_aqm_product %} prod{% endif %}
