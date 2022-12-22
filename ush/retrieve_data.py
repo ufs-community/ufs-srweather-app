@@ -295,8 +295,9 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
     # Remove sfc files from fcst in file_names of external models for LBCs
     # sfc files needed in fcst when time_offset is not zero.
-    if cla.ics_or_lbcs == "LBCS":
+    if cla.ics_or_lbcs == "LBCS" and isinstance(file_templates, dict):
         for format in ['netcdf', 'nemsio']:
+            print('file temp {0}'.format(file_templates))
             for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
                 if "sfc" in tmpl:
                     del file_templates[format]['fcst'][i]
@@ -702,7 +703,7 @@ def write_summary_file(cla, data_store, file_templates):
 
     files = []
     for tmpl in file_templates:
-        if type(tmpl) == list:
+        if isinstance(tmpl, list):
             for t in tmpl:
                 files.extend(
                     [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=cla.members[0]) for fh in cla.fcst_hrs]
