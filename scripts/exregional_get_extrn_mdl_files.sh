@@ -56,14 +56,14 @@ or lateral boundary conditions for the FV3.
 #
 set -x
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-  if [ ${TIME_OFFSET_HRS} -eq 0 ] ; then
+  if [ ${TIME_OFFSET_HRS} -eq 0 ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
     anl_or_fcst="anl"
   else
     anl_or_fcst="fcst"
   fi
   fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
     file_type=$FV3GFS_FILE_FMT_ICS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
@@ -74,7 +74,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
     file_type=$FV3GFS_FILE_FMT_LBCS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
@@ -136,6 +136,12 @@ if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   additional_flags="$additional_flags \
   --symlink"
 fi
+
+if [ "${EXTRN_MDL_NAME}" == "GEFS" ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+  member_list=(1 ${NUM_ENS_MEMBERS})
+  additional_flags="$additional_flags \
+  --members ${member_list[@]}"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -168,6 +174,49 @@ Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
+#
+#-----------------------------------------------------------------------
+#
+# Merge GEFS files
+#
+#-----------------------------------------------------------------------
+#
+if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
+    for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
+        if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
+            fcst_hrs_tmp=( $fcst_hrs )
+            fcst_hrs_ary=( $(seq ${fcst_hrs_tmp[0]} ${fcst_hrs_tmp[2]} ${fcst_hrs_tmp[1]}) )
+        else
+            fcst_hrs_ary=( ${fcst_hrs} )
+        fi
+            for fcst_hr in "${fcst_hrs_ary[@]}"; do
+                fn_list_1=( "gep$num.t${hh}z.pgrb2a.0p50.f`printf %03d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2b.0p50.f`printf %03d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
+                fn_list_2=( "gep$num.t${hh}z.pgrb2af`printf %02d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2bf`printf %02d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
+                fn_list_3=( "gep$num.t${hh}z.pgrb2af`printf %03d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2bf`printf %03d $fcst_hr`" \
+                        "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
+                fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
+
+                base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
+
+                for fn in "${fn_lists[@]}"; do
+                    fn_str="$fn[@]"
+                    fn_ary=( "${!fn_str}" )
+                    if [ -f "$base_path/${fn_ary[0]}" ] && [ -f "$base_path/${fn_ary[1]}" ]; then
+                        cat $base_path/${fn_ary[0]} $base_path/${fn_ary[1]} > $base_path/${fn_ary[2]}
+                        merged_fn+=( "${fn_ary[2]}" )
+                    fi
+                done
+            done
+            merged_fn_str="( ${merged_fn[@]} )"
+            sed -i "s|EXTRN_MDL_FNS=.*|EXTRN_MDL_FNS=${merged_fn_str}|g" $base_path/${EXTRN_DEFNS}
+            merged_fn=()
+    done
+fi
 #
 #-----------------------------------------------------------------------
 #
