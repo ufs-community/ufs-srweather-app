@@ -55,6 +55,19 @@ user:
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
 
+  HOMEdir: '{{ user.HOMEdir }}'
+  USHdir: '{{ user.USHdir }}'
+  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
+  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
+  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
+  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
+  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
+  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
+  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
+  UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
+
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -145,10 +158,10 @@ platform:
   #
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
-  BUILD_MOD_FN: ""
-  WFLOW_MOD_FN: ""
-  BUILD_VER_FN: ""
-  RUN_VER_FN: ""
+  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
+  WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
+  BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
+  RUN_VER_FN: 'run.ver.{{ user.MACHINE|lower() }}'
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -361,6 +374,7 @@ platform:
   FIXlut: ""
   FIXorg: ""
   FIXsfc: ""
+  FIXshp: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -382,6 +396,33 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # Unique ID for workflow run that will be set in setup.py
+  #
+  #-----------------------------------------------------------------------
+  #
+  WORKFLOW_ID: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # How to make links. Relative links by default. Empty string for
+  # absolute paths in links.
+  #
+  #-----------------------------------------------------------------------
+  #
+  RELATIVE_LINK_FLAG: "--relative"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # CPL:
+  # Flag indicating whether another component should run in coupled mode
+  # with the forecast.
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
+  #
+  #-----------------------------------------------------------------------
+  #
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:
@@ -398,6 +439,9 @@ workflow:
   #
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
+  CRONTAB_LINE: ""
+  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
+
   #
   #-----------------------------------------------------------------------
   #
@@ -423,9 +467,10 @@ workflow:
   # installed.
   #-----------------------------------------------------------------------
   #
-  EXPT_BASEDIR: ""
-  EXPT_SUBDIR: ""
+  EXPT_BASEDIR: '{{ workflow.EXPT_BASEDIR }}'
+  EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
+  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -476,9 +521,10 @@ workflow:
   # directory (EXECDIR; this is set during experiment generation).
   #
   # DIAG_TABLE_TMPL_FN:
-  # Name of a template file that specifies the output fields of the forecast 
-  # model (ufs-weather-model: diag_table) followed by [dot_ccpp_phys_suite]. 
-  # Its default value is the name of the file that the ufs weather model 
+  # Name of a template file that specifies the output fields of the
+  # forecast model (ufs-weather-model: diag_table) followed by the name
+  # of the ccpp_phys_suite.  Its default value is the name of the file
+  # that the ufs weather model 
   # expects to read in.
   #
   # FIELD_TABLE_TMPL_FN:
@@ -539,20 +585,79 @@ workflow:
   FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
   FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
+  FV3_NML_FN: "input.nml"
   FV3_EXEC_FN: "ufs_model"
   
-  DATA_TABLE_TMPL_FN: ""
-  DIAG_TABLE_TMPL_FN: ""
-  FIELD_TABLE_TMPL_FN: ""
-  MODEL_CONFIG_TMPL_FN: ""
-  NEMS_CONFIG_TMPL_FN: ""
-  
+  DATA_TABLE_FN: "data_table"
+  DIAG_TABLE_FN: "diag_table"
+  FIELD_TABLE_FN: "field_table"
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
+  MODEL_CONFIG_FN: "model_configure"
+  NEMS_CONFIG_FN: "nems.configure"
+
+  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
+  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
+  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
+  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+
+  # These are staged in the exptdir at configuration time
+  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
+  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
+  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
+  FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
   GLOBAL_VAR_DEFNS_FN: "var_defns.sh"
   EXTRN_MDL_VAR_DEFNS_FN: "extrn_mdl_var_defns"
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
+
+  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
+  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the fix file paths
+  #
+  # FIXdir:
+  # Location where fix files will be stored for a given experiment
+  #
+  # FIXam:
+  # Directory containing the fixed files (or symlinks) for various fields on
+  # global grids (which are usually much coarser than the native FV3-LAM grid).
+  #
+  # FIXclim:
+  # Directory containing the MERRA2 aerosol climatology data file and
+  # lookup tables for optics properties
+  #
+  # FIXlam:
+  # Directory containing the fixed files (or symlinks) for the grid,
+  # orography, and surface climatology on the native FV3-LAM grid.
+  #
+  # THOMPSON_MP_CLIMO_FN and _FP:
+  # Name and path of file that contains aerosol climatology data. It can
+  # be used to generate approximate versions of the aerosol fields
+  # needed by Thompson microphysics.  This file will be used to
+  # generate such approximate aerosol fields in the ICs and LBCs if
+  # Thompson MP is included in the physics suite and if the exteranl
+  # model for ICs or LBCs does not already provide these fields.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
+  FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
+  FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
+
+  THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
+  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -565,9 +670,24 @@ workflow:
   # the XML physics suite definition file that are staged in the experiment 
   # directory or the cycle directories under it.
   #
+  # *_FN and *_FP variables set the name and paths to the suite
+  # definition files used for the experiment
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
+  CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
+  CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the field dictionary file name and paths.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIELD_DICT_FN: "fd_nems.yaml"
+  FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
+  FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -771,6 +891,9 @@ nco:
   #
   # OPSROOT:
   # The operations root directory in NCO mode.
+  #
+  # LOGBASEDIR:
+  # Directory in which the log files from the workflow tasks will be placed.
   # 
   # For more information on NCO standards
   #   
@@ -782,7 +905,33 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
-  OPSROOT: ""
+  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT: '{{ OPSROOT }}/com'
+  PACKAGEROOT: '{{ OPSROOT }}/packages'
+  DATAROOT: '{{ OPSROOT }}/tmp'
+  DCOMROOT: '{{ OPSROOT }}/dcom'
+  LOGBASEDIR: '{{ OPSROOT }}/output'
+  EXTROOT: '{{ OPSROOT }}/ext'
+  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # The following are also described in the NCO doc above
+  #
+  #-----------------------------------------------------------------------
+  #
+  DBNROOT: ""
+  SENDECF: false
+  SENDDBN: false
+  SENDDBN_NTC: false
+  SENDCOM: false
+  SENDWEB: false
+  KEEPDATA: true
+  MAILTO: ""
+  MAILCC: ""
+
 
 #----------------------------
 # WORKFLOW SWITCHES config parameters
@@ -857,6 +1006,9 @@ workflow_switches:
   # to be run. If this flag is set, both ensemble-stat point verification
   # and point verification of ensemble-stat output is computed.
   #
+  # RUN_TASK_PLOT_ALLVARS:
+  # Flag that determines whether to run python plotting scripts
+  #
   #-----------------------------------------------------------------------
   #
   RUN_TASK_MAKE_GRID: true
@@ -878,6 +1030,7 @@ workflow_switches:
   RUN_TASK_VX_ENSGRID: false
   RUN_TASK_VX_ENSPOINT: false
 
+  RUN_TASK_PLOT_ALLVARS: false
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -896,7 +1049,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: ""
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else "" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1073,7 +1226,7 @@ task_make_grid:
   # GFDLgrid_NUM_CELLS:
   # Number of points in each of the two horizontal directions (x and y) on
   # each tile of the parent global grid.  Note that the name of this parameter
-  # is really a misnomer because although it has the stirng "RES" (for 
+  # is really a misnomer because although it has the string "RES" (for 
   # "resolution") in its name, it specifies number of grid cells, not grid
   # size (in say meters or kilometers).  However, we keep this name in order
   # to remain consistent with the usage of the word "resolution" in the 
@@ -1177,7 +1330,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: ""
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if workflow_switches.RUN_TASK_MAKE_OROG else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1191,7 +1344,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: ""
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if workflow_switches.RUN_TASK_MAKE_SFC_CLIMO else "" }}'
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1326,8 +1479,8 @@ task_get_extrn_lbcs:
   # the external model started than when the FV3 forecast configured here
   # should start. For example, the forecast should use lateral boundary
   # conditions from the GFS started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS=6.
-  # Note: the default value is model-dependent and set in setup.py
+  # EXTRN_MDL_LBCS_OFFSET_HRS=6. Defaults to 0 except for RAP, which
+  # uses a 3 hour offset.
   #
   # FV3GFS_FILE_FMT_LBCS:
   # If using the FV3GFS model as the source of the LBCs (i.e. if 
@@ -1338,7 +1491,7 @@ task_get_extrn_lbcs:
   #
   EXTRN_MDL_NAME_LBCS: "FV3GFS"
   LBC_SPEC_INTVL_HRS: 6
-  EXTRN_MDL_LBCS_OFFSET_HRS: ""
+  EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
   #-----------------------------------------------------------------------
   #
@@ -1430,16 +1583,18 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
   RUN_FCST_TN: "run_fcst"
-  NNODES_RUN_FCST: ""  # This is calculated in the workflow generation scripts, so no need to set here.
-  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.py
+  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
+  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   WTIME_RUN_FCST: 04:30:00
   MAXTRIES_RUN_FCST: 1
+  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1482,7 +1637,7 @@ task_run_fcst:
   # Set model_configure parameters.  Definitions:
   #
   # DT_ATMOS:
-  # The main forecast model integraton time step.  As described in the 
+  # The main forecast model integration time step.  As described in the 
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
@@ -1490,8 +1645,10 @@ task_run_fcst:
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
   # Default=0: restart files are produced at the end of a forecast run
-  # For example, RESTART_INTERVAL: 1: restart files are produced every hour
-  # with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
   #
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 
@@ -1539,9 +1696,9 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  LAYOUT_X: ""
-  LAYOUT_Y: ""
-  BLOCKSIZE: ""
+  LAYOUT_X: '{{ LAYOUT_X }}'
+  LAYOUT_Y: '{{ LAYOUT_Y }}'
+  BLOCKSIZE: '{{ BLOCKSIZE }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1641,9 +1798,11 @@ task_run_fcst:
   #
   QUILTING: true
   PRINT_ESMF: false
+
+  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
   
-  WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: 20
+  WRTCMP_write_groups: ""
+  WRTCMP_write_tasks_per_group: ""
   
   WRTCMP_output_grid: "''"
   WRTCMP_cen_lon: ""
@@ -1676,7 +1835,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: false
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
 
 #----------------------------
 # POST config parameters
@@ -1751,7 +1910,7 @@ task_run_post:
   #
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
-  POST_OUTPUT_DOMAIN_NAME: ""
+  POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
 
 #----------------------------
 # GET OBS CCPA config parameters
@@ -1795,7 +1954,7 @@ task_run_vx_gridstat:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 1
+  MAXTRIES_VX_GRIDSTAT: 2
 
 #----------------------------
 # VX_GRIDSTAT_REFC config parameters
@@ -1806,7 +1965,7 @@ task_run_vx_gridstat_refc:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 1
+  MAXTRIES_VX_GRIDSTAT_REFC: 2
 
 #----------------------------
 # VX_GRIDSTAT_RETOP config parameters
@@ -1817,7 +1976,7 @@ task_run_vx_gridstat_retop:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 1
+  MAXTRIES_VX_GRIDSTAT_RETOP: 2
 
 #----------------------------
 # VX_GRIDSTAT_03h config parameters
@@ -1828,7 +1987,7 @@ task_run_vx_gridstat_03h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 1
+  MAXTRIES_VX_GRIDSTAT_03h: 2
 
 #----------------------------
 # VX_GRIDSTAT_06h config parameters
@@ -1839,7 +1998,7 @@ task_run_vx_gridstat_06h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 1
+  MAXTRIES_VX_GRIDSTAT_06h: 2
 
 #----------------------------
 # VX_GRIDSTAT_24h config parameters
@@ -1850,7 +2009,7 @@ task_run_vx_gridstat_24h:
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 1
+  MAXTRIES_VX_GRIDSTAT_24h: 2
 
 #----------------------------
 # VX_POINTSTAT config parameters
@@ -1861,22 +2020,22 @@ task_run_vx_pointstat:
   PPN_VX_POINTSTAT: 1
   MEM_VX_POINTSTAT: 2G
   WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 1
+  MAXTRIES_VX_POINTSTAT: 2
 
 #----------------------------
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
   VX_ENSGRID_TN: "run_ensgridvx"
-  MAXTRIES_VX_ENSGRID: 1
+  MAXTRIES_VX_ENSGRID: 2
   VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 1
+  MAXTRIES_VX_ENSGRID_03h: 2
   VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 1
+  MAXTRIES_VX_ENSGRID_06h: 2
   VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 1
+  MAXTRIES_VX_ENSGRID_24h: 2
   VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 1
+  MAXTRIES_VX_ENSGRID_RETOP: 2
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
@@ -1892,7 +2051,7 @@ task_run_vx_ensgrid_refc:
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 1
+  MAXTRIES_VX_ENSGRID_REFC: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN config parameters
@@ -1903,7 +2062,7 @@ task_run_vx_ensgrid_mean:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 1
+  MAXTRIES_VX_ENSGRID_MEAN: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_03h config parameters
@@ -1914,7 +2073,7 @@ task_run_vx_ensgrid_mean_03h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_06h config parameters
@@ -1925,7 +2084,7 @@ task_run_vx_ensgrid_mean_06h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_24h config parameters
@@ -1936,7 +2095,7 @@ task_run_vx_ensgrid_mean_24h:
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB config parameters
@@ -1945,13 +2104,13 @@ task_run_vx_ensgrid_prob:
   VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
   NNODES_VX_ENSGRID_PROB: 1
   VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
+  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
   VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
+  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 1
+  MAXTRIES_VX_ENSGRID_PROB: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_03h config parameters
@@ -1962,7 +2121,7 @@ task_run_vx_ensgrid_prob_03h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 1
+  MAXTRIES_VX_ENSGRID_PROB_03h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_06h config parameters
@@ -1973,7 +2132,7 @@ task_run_vx_ensgrid_prob_06h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 1
+  MAXTRIES_VX_ENSGRID_PROB_06h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_24h config parameters
@@ -1984,7 +2143,7 @@ task_run_vx_ensgrid_prob_24h:
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 1
+  MAXTRIES_VX_ENSGRID_PROB_24h: 2
 
 #----------------------------
 # VX_ENSPOINT config parameters
@@ -1995,7 +2154,7 @@ task_run_vx_enspoint:
   PPN_VX_ENSPOINT: 1
   MEM_VX_ENSPOINT: 2G
   WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 1
+  MAXTRIES_VX_ENSPOINT: 2
 
 #----------------------------
 # VX_ENSPOINT_MEAN config parameters
@@ -2006,7 +2165,7 @@ task_run_vx_enspoint_mean:
   PPN_VX_ENSPOINT_MEAN: 1
   MEM_VX_ENSPOINT_MEAN: 2G
   WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 1
+  MAXTRIES_VX_ENSPOINT_MEAN: 2
 
 #----------------------------
 # VX_ENSPOINT_PROB config parameters
@@ -2017,7 +2176,35 @@ task_run_vx_enspoint_prob:
   PPN_VX_ENSPOINT_PROB: 1
   MEM_VX_ENSPOINT_PROB: 2G
   WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 1
+  MAXTRIES_VX_ENSPOINT_PROB: 2
+
+#----------------------------
+# PLOT_ALLVARS config parameters
+#-----------------------------
+task_plot_allvars:
+  PLOT_ALLVARS_TN: "plot_allvars"
+  NNODES_PLOT_ALLVARS: 1
+  PPN_PLOT_ALLVARS: 24
+  WTIME_PLOT_ALLVARS: 01:00:00
+  MAXTRIES_PLOT_ALLVARS: 1
+  #-------------------------------------------------------------------------
+  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
+  # from postprocessing are located. Make this a template to compare
+  # multiple cycle and dates. COMOUT_REF should end with:
+  #    nco mode: $PDY/$cyc
+  #    community mode: $PDY$cyc/postprd
+  # We don't do this inside the code, so that we can compare nco vs com runs.
+  #-------------------------------------------------------------------------
+  COMOUT_REF: ""
+  #------------------------------
+  # Plot fcts start and increment
+  #------------------------------
+  PLOT_FCST_START: 0
+  PLOT_FCST_INC: 3
+  #-----------------------------------
+  # By default the end is FCST_LEN_HRS
+  #-----------------------------------
+  PLOT_FCST_END: ""
 
 
 #----------------------------
@@ -2032,7 +2219,7 @@ global:
   #
   # USE_CRTM:
   # Flag that defines whether external CRTM coefficient files have been
-  # staged by the user in order to output synthetic statellite products
+  # staged by the user in order to output synthetic satellite products
   # available within the UPP. If this is set to true, then the workflow
   # will check for these files in the directory CRTM_DIR. Otherwise, it is
   # assumed that no satellite fields are being requested in the UPP
@@ -2059,15 +2246,25 @@ global:
   #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
-  # This variable also controls the naming of the ensemble member directories.  
+  # This variable also controls the naming of the ensemble member directories.
   # For example, if this is set to 8, the member directories will be named 
-  # mem1, mem2, ..., mem8. This variable is not used if DO_ENSEMBLE is not 
-  # set to true.
-  # 
+  # mem1, mem2, ..., mem8. Not used if DO_ENSEMBLE is set to false.
+  #
+  # ENSMEM_NAMES:
+  # A list of names for the ensemble member names following the format
+  # mem001, mem002, etc.
+  #
+  # FV3_NML_ENSMEM_FPS:
+  # Paths to the ensemble member corresponding namelists in the
+  # experiment directory
+  #
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 1
+  NUM_ENS_MEMBERS: 0
+  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
+  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
+
   #
   #-----------------------------------------------------------------------
   #

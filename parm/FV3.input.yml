@@ -33,6 +33,36 @@ FV3_RRFS_v1beta:
     iopt_trs: 2
     lsm: 2
     lsoil_lsm: 4
+FV3_WoFS_v0:
+  gfs_physics_nml:
+    do_deep: False
+    imfdeepcnv: 0
+    imfshalcnv: 0
+    iopt_alb: 2
+    iopt_btr: 1
+    iopt_crs: 1
+    iopt_dveg: 2
+    iopt_frz: 1
+    iopt_inf: 1
+    iopt_rad: 1
+    iopt_run: 1
+    iopt_sfc: 1
+    iopt_snf: 4
+    iopt_stc: 1
+    iopt_tbot: 2
+    do_mynnsfclay: True
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    lsm: 1
+    lsoil_lsm: 4
+    imp_physics: 17
+    nssl_cccn: 0.6e+9
+    nssl_hail_on: True
+    nssl_ccn_on: True
+  fv_core_nml:
+    nwat: 7
+  fv_diagnostics_nml:
+    do_hailcast: True
 
 FV3_HRRR:
   fv_core_nml:

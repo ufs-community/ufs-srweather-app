@@ -67,6 +67,7 @@ Workflow task names.
 <!ENTITY VX_ENSPOINT_TN            "{{ vx_enspoint_tn }}">
 <!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
 <!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
+<!ENTITY PLOT_ALLVARS_TN           "{{ plot_allvars_tn }}">
 
 <!--
 Flags that specify whether to run the preprocessing and/or verification tasks.
@@ -110,10 +111,10 @@ Directories and files.
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
-<!ENTITY LOGDIR                   "{{ logdir }}/<cyclestr>@Y@m@d</cyclestr>">
+<!ENTITY LOGDIR                   "{{ logbasedir }}/<cyclestr>@Y@m@d</cyclestr>">
 <!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
 {%- else %}
-<!ENTITY LOGDIR                   "{{ logdir }}">
+<!ENTITY LOGDIR                   "{{ logbasedir }}">
 <!ENTITY LOGEXT                   ".log" >
 {%- endif %}
 <!ENTITY CMPEXT                   "_task_complete.txt">
@@ -302,7 +303,7 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_ics }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
@@ -333,7 +334,7 @@ MODULES_RUN_TASK_FP script.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_lbcs }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
@@ -361,11 +362,8 @@ MODULES_RUN_TASK_FP script.
 {%- if do_ensemble %}
   <metatask name="run_ensemble">
 
-    <var name="{{ ensmem_indx_name }}">
-{%- for m in range(1, num_ens_members+1) -%}
-  {%- set fmtstr=" %0"~ndigits_ensmem_names~"d" -%}
-  {{- fmtstr%m -}}
-{%- endfor %} </var>
+    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
+
 {%- endif %}
 
 {%- if run_task_make_ics %}
@@ -755,6 +753,44 @@ the <task> tag to be identical to the ones above for other output times.
   {%- endif %}
 {%- endif %}
 
+{%- if run_task_plot_allvars %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&PLOT_ALLVARS_TN;" cycledefs="forecast" maxtries="{{ maxtries_plot_allvars }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&PLOT_ALLVARS_TN;" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"</command>
+    <nodes>{{ nnodes_plot_allvars }}:ppn={{ ppn_plot_allvars }}</nodes>
+    <walltime>{{ wtime_plot_allvars }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&PLOT_ALLVARS_TN;</jobname>
+    <join>&LOGDIR;/&PLOT_ALLVARS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+    <dependency>
+        {%- if write_dopost %}
+      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- else %}
+      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        {%- endif %}
+    </dependency>
+
+  </task>
+{%- endif %}
+
 {%- if run_task_get_obs_ccpa %}
 <!--
 ************************************************************************
@@ -765,7 +801,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"</command>
     <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_ccpa }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
@@ -797,7 +833,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"</command>
     <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_mrms }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
@@ -830,7 +866,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"</command>
     <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_ndas }}</memory>
   {%- endif %}
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
@@ -861,7 +897,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -917,7 +953,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -972,7 +1008,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -1027,7 +1063,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -1068,7 +1104,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -1109,7 +1145,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_gridstat }}</walltime>
@@ -1150,7 +1186,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_POINTSTAT"</command>
     <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_pointstat }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_pointstat }}</walltime>
@@ -1208,7 +1244,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1245,7 +1281,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1282,7 +1318,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1319,7 +1355,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1355,7 +1391,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1390,7 +1426,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
@@ -1424,7 +1460,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
@@ -1460,7 +1496,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1496,7 +1532,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
@@ -1532,7 +1568,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1569,7 +1605,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
@@ -1605,7 +1641,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1642,7 +1678,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
@@ -1678,7 +1714,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1714,7 +1750,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1749,7 +1785,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
@@ -1785,7 +1821,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT"</command>
     <nodes>{{ nnodes_vx_enspoint }}:ppn={{ ppn_vx_enspoint }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_enspoint }}</walltime>
@@ -1818,7 +1854,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
     <nodes>{{ nnodes_vx_enspoint_mean }}:ppn={{ ppn_vx_enspoint_mean }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint_mean }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_enspoint_mean }}</walltime>
@@ -1851,7 +1887,7 @@ the <task> tag to be identical to the ones above for other output times.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
     <nodes>{{ nnodes_vx_enspoint_prob }}:ppn={{ ppn_vx_enspoint_prob }}</nodes>
-  {%- if machine not in ["GAEA"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint_prob }}</memory>
   {%- endif %}
     <walltime>{{ wtime_vx_enspoint_prob }}</walltime>
