@@ -490,6 +490,9 @@ Verification Tasks
 
 .. COMMENT: COMMENT: Define "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
 
+Plotting Task
+----------------
+
 ``RUN_TASK_PLOT_ALLVARS:`` (Default: false)
    Flag that determines whether to run python plotting scripts.
 
@@ -1138,7 +1141,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    System directory where the lookup tables for optics properties are located.
 
 ``FIXshp``: (Default: "")
-   System directory where the graphics shapefiles are located.
+   System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapfiles.
 
 ``TOPO_DIR``: (Default: "")
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
@@ -1731,6 +1734,8 @@ Non-default parameters for the ``run_enspointvx_prob`` task are set in the ``tas
 
 ``MAXTRIES_VX_ENSPOINT_PROB``: (Default: 1)
    Maximum number of times to attempt the task.
+
+.. _PlotVars:
 
 PLOT_ALLVARS Configuration Parameters
 ========================================

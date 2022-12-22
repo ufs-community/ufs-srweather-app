@@ -1267,4 +1267,47 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 
 Plot the Output
 ===============
-Two python scripts are provided to generate plots from the :term:`FV3`-LAM post-processed :term:`GRIB2` output. Information on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
+
+.. Add this section above to the Config section before the METplus info!
+
+An optional Python plotting task can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+output over the :term:`CONUS`. It generates plots for a number of variables, including:
+
+* 2-m temperature
+* 2-m dew point temperature
+* 10-m winds
+* 500 hPa heights, winds, and vorticity
+* 250 hPa winds
+* Accumulated precipitation
+* Composite reflectivity
+* Surface-based :term:`CAPE`/:term:`CIN`
+* Max/Min 2-5 km updraft helicity
+* Sea level pressure (SLP)
+
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two different experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
+
+.. _Cartopy:
+
+Cartopy Shapefiles
+---------------------
+
+The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$HOME/ush/machine/macos.yaml`` for a generic MacOS system). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
+
+Additionally, users may need to add or modify certain variables in ``config.yaml``. For example: 
+
+.. code-block:: console
+
+   workflow_switches:
+      RUN_TASK_PLOT_ALLVARS: true
+   task_plot_allvars:
+      COMOUT_REF: </path/to/$EXPTDIR/$CDATE/postprd>
+      PLOT_FCST_START: 0
+      PLOT_FCST_INC: 6
+      PLOT_FCST_END: 12
+
+where ``$EXPTDIR`` is the path to the experiment directory, and ``$CDATE`` is the cycle date. In *community* mode, using default directory names, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables is provided in :numref:`Section %s <PlotVars>`. 
+
+
+.. NOTES:
+   plot_allvars and plot_allvars_diff are done within the same task. The user would need to provide the baseline experiment directory EXPTDIR_REF if diff plots are needed.
