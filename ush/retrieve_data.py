@@ -297,7 +297,6 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     # sfc files needed in fcst when time_offset is not zero.
     if cla.ics_or_lbcs == "LBCS" and isinstance(file_templates, dict):
         for format in ['netcdf', 'nemsio']:
-            print('file temp {0}'.format(file_templates))
             for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
                 if "sfc" in tmpl:
                     del file_templates[format]['fcst'][i]
