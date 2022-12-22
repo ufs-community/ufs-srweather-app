@@ -29,9 +29,9 @@ ctm_pmdiag: true
 #
 #  Input emissions
 #
-emission_sources: anthro fire
+emission_sources: anthro fire pt
 {%- if do_aqm_canopy %} canopy{% endif %}
-{%- if do_aqm_fengsha %} fengsha{% endif %}
+{%- if do_aqm_dust %} dust{% endif %}
 {%- if do_aqm_product %} prod{% endif %}
 
 #
@@ -144,14 +144,14 @@ anthro_species::
 ::
 
 #
-# FENGSHA
+# dust
 #
-fengsha_yn: {{ do_aqm_fengsha | lower }}
-fengsha_type: fengsha
-fengsha_format: netcdf
-fengsha_file: {{ aqm_rc_fengsha_file_fp }}
-fengsha_frequency: monthly
-fengsha_species::
+dust_type: fengsha
+dust_format: netcdf
+dust_file: {{ aqm_rc_dust_file_fp }}
+dust_frequency: monthly
+dust_alpha: 15.0
+dust_species::
     CLAYF       1.00000   clayfrac     1
     SANDF       1.00000   sandfrac     1
     DRAG        1.00000   albedo_drag  1
