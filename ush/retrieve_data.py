@@ -363,11 +363,14 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     unavailable = []
 
     locs_files = pair_locs_with_files(input_locs, file_templates, check_all)
+    
     for mem in members:
-        output_path = f"{cla.output_path}/mem{mem:03d}"
+        if isinstance(mem, list):
+            output_path = f"{cla.output_path}/mem{mem:03d}"
+        else:
+            output_path = cla.output_path
         target_path = fill_template(output_path, cla.cycle_date, mem=mem)
         target_path = create_target_path(target_path, cla, mem)
-
         logging.info(f"Retrieved files will be placed here: \n {target_path}")
         os.chdir(target_path)
 
@@ -521,8 +524,10 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                 cla.cycle_date,
                 mem=mem,
             )
-            
-            output_path = f"{cla.output_path}/mem{mem:03d}"
+            if mem != -1:
+                output_path = f"{cla.output_path}/mem{mem:03d}"
+            else:
+                output_path = cla.output_path
             output_path = fill_template(output_path, cla.cycle_date, mem=mem)
             logging.info(f"Will place files in {os.path.abspath(output_path)}")
             logging.debug(f"CWD: {os.getcwd()}")
@@ -712,7 +717,7 @@ def write_summary_file(cla, data_store, file_templates):
                 [fill_template(tmpl, cla.cycle_date, fcst_hr=fh) for fh in cla.fcst_hrs]
             )
     
-    if hasattr(cla, "members"):
+    if isinstance(cla.members, list):
         for m in cla.members:
             output_path_member = getattr(cla, 'output_path_{0}'.format(str(m)))
             summary_fp = os.path.join(output_path_member, cla.summary_file)
