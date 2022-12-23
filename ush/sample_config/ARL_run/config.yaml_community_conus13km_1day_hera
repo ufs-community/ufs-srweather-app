@@ -26,7 +26,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: true
   RUN_TASK_MAKE_OROG: true
   RUN_TASK_MAKE_SFC_CLIMO: true
-  RUN_TASK_RUN_POST: true
+  RUN_TASK_RUN_POST: false
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
 #  FV3GFS_FILE_FMT_ICS: grib2
@@ -61,10 +61,10 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  DO_AQM_FENGSHA: false
-  AQM_FENGSHA_DIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/Online_CMAQ
-  AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
-  AQM_FENGSHA_FILE_SUFFIX: .nc
+  DO_AQM_FENGSHA: true
+  AQM_DUST_DIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/Online_CMAQ
+  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
+  AQM_DUST_FILE_SUFFIX: .nc
   DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
   AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
@@ -83,3 +83,4 @@ cpl_aqm_parm:
   NUM_SPLIT_NEXUS: 1
   COLDSTART: false
   WARMSTART_CYCLE_DIR: /scratch2/NCEPDEV/stmp3/Jianping.Huang/expt_dirs/uwm_aqm_cs_canopy_a/2019073112
+

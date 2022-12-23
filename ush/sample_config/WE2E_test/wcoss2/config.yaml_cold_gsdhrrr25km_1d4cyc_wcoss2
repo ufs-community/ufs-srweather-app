@@ -27,7 +27,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: true
   RUN_TASK_MAKE_OROG: true
   RUN_TASK_MAKE_SFC_CLIMO: true
-  RUN_TASK_RUN_POST: true
+  RUN_TASK_RUN_POST: false
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
 #  FV3GFS_FILE_FMT_ICS: grib2
@@ -51,7 +51,7 @@ cpl_aqm_parm:
   CPL_AQM: true
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
-  RUN_TASK_NEXUS_GFS_SFC: true
+  RUN_TASK_NEXUS_GFS_SFC: false
   RUN_TASK_NEXUS_EMISSION: true
   RUN_TASK_FIRE_EMISSION: true
   RUN_TASK_POINT_SOURCE: true
@@ -68,7 +68,7 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_SARC401.ncf
-  DO_AQM_FENGSHA: false
+  DO_AQM_DUST: false
   DO_AQM_CANOPY: false
   AQM_FIRE_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/emissions/GSCE/GBBEPx.in.C401/Reprocessed
   AQM_FIRE_FILE_PREFIX: GBBEPx_C401GRID.emissions_v003

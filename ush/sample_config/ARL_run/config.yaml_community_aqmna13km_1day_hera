@@ -14,7 +14,7 @@ workflow:
   DATE_FIRST_CYCL: '2020091512'
   DATE_LAST_CYCL: '2020091512'
   INCR_CYCL_FREQ: 24
-  FCST_LEN_HRS: 6
+  FCST_LEN_HRS: 24
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
@@ -29,7 +29,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: true
+  RUN_TASK_RUN_POST: false
 task_make_grid:
   GRID_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
@@ -48,7 +48,7 @@ task_run_fcst:
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 12
+  RESTART_INTERVAL: 24
   WTIME_RUN_FCST: 02:00:00
   QUILTING: true
   PRINT_ESMF: false
@@ -72,10 +72,10 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  DO_AQM_FENGSHA: false
-  AQM_FENGSHA_DIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/Online_CMAQ
-  AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
-  AQM_FENGSHA_FILE_SUFFIX: .nc
+  DO_AQM_DUST: true
+  AQM_DUST_DIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/FENGSHA/Online_CMAQ
+  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
+  AQM_DUST_FILE_SUFFIX: .nc
   DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
   AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
@@ -94,3 +94,4 @@ cpl_aqm_parm:
   NUM_SPLIT_NEXUS: 1
   RESTART_WORKFLOW: true
   RESTART_CYCLE_DIR: /scratch2/NCEPDEV/stmp3/Jianping.Huang/NCO_OUTPUT/stmp/tmpnwprd/aqm_test_a/2020091412
+

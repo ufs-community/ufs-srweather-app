@@ -122,7 +122,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
        [ "${task_name}" = "bias_correction_o3" ] || \
        [ "${task_name}" = "bias_correction_pm25" ]; then
     module load mod_aqm-utils
-  elif [ "${task_name}" = "nexus_emission" ] || [ "${task_name}" = "nexus_post_split" ]; then
+  elif [ "${task_name}" = "nexus_emission" ] || ([ "${task_name}" = "nexus_post_split" ] && \
+       [ "${machine}" = "wcoss2" ] ); then
     module load mod_nexus
   fi
 else

@@ -83,10 +83,10 @@ cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  DO_AQM_FENGSHA: true
-  AQM_FENGSHA_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
-  AQM_FENGSHA_FILE_PREFIX: FENGSHA_p8_10km_inputs
-  AQM_FENGSHA_FILE_SUFFIX: .nc
+  DO_AQM_DUST: true
+  AQM_DUST_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
+  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
+  AQM_DUST_FILE_SUFFIX: .nc
   DO_AQM_CANOPY: false
   AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
   AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo

@@ -112,6 +112,7 @@ if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
 
   # Link the file to INPUT
   ln_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/INPUT/PT.nc
+
   if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
     print_err_msg_exit "\
 The point source file \"pt-${yyyymmddhh}.nc\" was not generated."
