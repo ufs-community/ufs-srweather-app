@@ -363,9 +363,8 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     unavailable = []
 
     locs_files = pair_locs_with_files(input_locs, file_templates, check_all)
-    
     for mem in members:
-        if isinstance(mem, list):
+        if isinstance(mem, int):
             output_path = f"{cla.output_path}/mem{mem:03d}"
         else:
             output_path = cla.output_path
