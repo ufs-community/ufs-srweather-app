@@ -11,8 +11,8 @@ workflow:
   EXPT_SUBDIR: aqm_test_72h_v16
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2022121500'
-  DATE_LAST_CYCL: '2022121506'
+  DATE_FIRST_CYCL: '2022123000'
+  DATE_LAST_CYCL: '2022123006'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: 72
   PREEXISTING_DIR_METHOD: rename
@@ -96,7 +96,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   DO_AQM_PRODUCT: true
-  AQM_LBCS_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/UFSAQM_NA13km_AM4_LBC_v1
+  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
   AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
   AQM_GEFS_DIR: /lfs/h1/ops/prod/com/gefs/v12.3
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions

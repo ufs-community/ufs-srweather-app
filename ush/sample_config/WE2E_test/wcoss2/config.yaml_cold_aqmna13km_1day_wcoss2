@@ -87,8 +87,8 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   DO_AQM_PRODUCT: true
-  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/RRFS_NA13km_GEOS5_v2
-  AQM_LBCS_FILES: geos5_bndy_v2.c793.2013<MM>.nc
+  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
   AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_aerosol
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
