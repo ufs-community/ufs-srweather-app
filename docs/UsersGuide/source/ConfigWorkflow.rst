@@ -1141,7 +1141,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    System directory where the lookup tables for optics properties are located.
 
 ``FIXshp``: (Default: "")
-   System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapfiles.
+   System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
 
 ``TOPO_DIR``: (Default: "")
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
@@ -1765,7 +1765,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 Additional Parameters
 ------------------------
 
-Typially, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
+Typically, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
 
 ``COMOUT_REF``: (Default: "")
    The directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the COMOUT directory and end with ``$PDY/$cyc``.
