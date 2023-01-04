@@ -534,6 +534,81 @@ Valid values for configuration variables should be consistent with those in the 
 
 To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
+.. _PlotOutput:
+
+Plot the Output
+===============
+
+.. Add this section above to the Config section before the METplus info!
+
+An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+output over the :term:`CONUS`. It generates plots for a number of variables, including:
+
+* 2-m temperature
+* 2-m dew point temperature
+* 10-m winds
+.. * 500 hPa heights, winds, and vorticity --> seems to be omitted?
+* 250 hPa winds
+* Accumulated precipitation
+* Composite reflectivity
+* Surface-based :term:`CAPE`/:term:`CIN`
+* Max/Min 2-5 km updraft helicity
+* Sea level pressure (SLP)
+
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two different experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
+
+.. _Cartopy:
+
+Cartopy Shapefiles
+---------------------
+
+The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$HOME/ush/machine/macos.yaml`` for a generic MacOS system, where ``$HOME`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
+
+Task Configuration
+---------------------
+
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true:
+
+.. code-block:: console
+
+   workflow_switches:
+      RUN_TASK_PLOT_ALLVARS: true
+   
+Plotting Output From a Single Experiment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
+
+.. code-block:: console
+
+   task_plot_allvars:
+      PLOT_FCST_START: 0
+      PLOT_FCST_INC: 6
+      PLOT_FCST_END: 12
+
+If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>`).
+
+.. note::
+   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
+
+The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
+corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
+
+Plotting the Difference Between Two Experiments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
+
+.. code-block:: console
+
+   task_plot_allvars:
+      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+
+In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+
+The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
+
 .. _LinuxMacEnvConfig:
 
 User-Specific Configuration on a Generic Linux/MacOS System
@@ -1260,54 +1335,3 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
-
-
-
-.. _PlotOutput:
-
-Plot the Output
-===============
-
-.. Add this section above to the Config section before the METplus info!
-
-An optional Python plotting task can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
-output over the :term:`CONUS`. It generates plots for a number of variables, including:
-
-* 2-m temperature
-* 2-m dew point temperature
-* 10-m winds
-* 500 hPa heights, winds, and vorticity
-* 250 hPa winds
-* Accumulated precipitation
-* Composite reflectivity
-* Surface-based :term:`CAPE`/:term:`CIN`
-* Max/Min 2-5 km updraft helicity
-* Sea level pressure (SLP)
-
-This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two different experiments. When plotting the difference, the two experiments must be on the same domain and available for 
-the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
-
-.. _Cartopy:
-
-Cartopy Shapefiles
----------------------
-
-The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$HOME/ush/machine/macos.yaml`` for a generic MacOS system). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
-
-Additionally, users may need to add or modify certain variables in ``config.yaml``. For example: 
-
-.. code-block:: console
-
-   workflow_switches:
-      RUN_TASK_PLOT_ALLVARS: true
-   task_plot_allvars:
-      COMOUT_REF: </path/to/$EXPTDIR/$CDATE/postprd>
-      PLOT_FCST_START: 0
-      PLOT_FCST_INC: 6
-      PLOT_FCST_END: 12
-
-where ``$EXPTDIR`` is the path to the experiment directory, and ``$CDATE`` is the cycle date. In *community* mode, using default directory names, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables is provided in :numref:`Section %s <PlotVars>`. 
-
-
-.. NOTES:
-   plot_allvars and plot_allvars_diff are done within the same task. The user would need to provide the baseline experiment directory EXPTDIR_REF if diff plots are needed.

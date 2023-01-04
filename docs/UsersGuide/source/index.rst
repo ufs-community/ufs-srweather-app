@@ -24,6 +24,5 @@ UFS Short-Range Weather App Users Guide
    WE2Etests
    TemplateVars
    VXCases
-   Graphics
    FAQ
    Glossary
