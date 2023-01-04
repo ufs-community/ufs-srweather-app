@@ -542,15 +542,15 @@ Plot the Output
 An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
 
-- 2-m temperature
-- 2-m dew point temperature
-- 10-m winds
-- 250 hPa winds
-- Accumulated precipitation
-- Composite reflectivity
-- Surface-based :term:`CAPE`/:term:`CIN`
-- Max/Min 2-5 km updraft helicity
-- Sea level pressure (SLP)
+* 2-m temperature
+* 2-m dew point temperature
+* 10-m winds
+* 250 hPa winds
+* Accumulated precipitation
+* Composite reflectivity
+* Surface-based :term:`CAPE`/:term:`CIN`
+* Max/Min 2-5 km updraft helicity
+* Sea level pressure (SLP)
 
 .. * 500 hPa heights, winds, and vorticity --> seems to be omitted?
 
