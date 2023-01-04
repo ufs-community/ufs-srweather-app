@@ -21,9 +21,10 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
       * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
+      * :ref:`Optional: Plot the output <PlotOutput>`
+      * :ref:`Optional: Configure METplus Verification Suite <VXConfig>`
 
-   #. :ref:`Run the regional workflow <Run>` 
-   #. :ref:`Optional: Plot the output <PlotOutput>`
+   #. :ref:`Run the regional workflow <Run>`
 
 .. _AppOverallProc:
 
@@ -542,19 +543,19 @@ Plot the Output
 An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
 
-* 2-m temperature
-* 2-m dew point temperature
-* 10-m winds
-* 250 hPa winds
-* Accumulated precipitation
-* Composite reflectivity
-* Surface-based :term:`CAPE`/:term:`CIN`
-* Max/Min 2-5 km updraft helicity
-* Sea level pressure (SLP)
+   * 2-m temperature
+   * 2-m dew point temperature
+   * 10-m winds
+   * 250 hPa winds
+   * Accumulated precipitation
+   * Composite reflectivity
+   * Surface-based :term:`CAPE`/:term:`CIN`
+   * Max/Min 2-5 km updraft helicity
+   * Sea level pressure (SLP)
 
-.. * 500 hPa heights, winds, and vorticity --> seems to be omitted?
+.. COMMENT: * 500 hPa heights, winds, and vorticity --> seems to be omitted? Why?
 
-This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two different experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
 the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
 
 .. _Cartopy:
@@ -562,20 +563,17 @@ the same cycle starting date/time and forecast hours. Other parameters may diffe
 Cartopy Shapefiles
 ^^^^^^^^^^^^^^^^^^^^^
 
-The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$HOME/ush/machine/macos.yaml`` for a generic MacOS system, where ``$HOME`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
+The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$HOME/ush/machine/macos.yaml`` for a generic MacOS system, where ``$HOME`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
 
 Task Configuration
 ^^^^^^^^^^^^^^^^^^^^^
 
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true:
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
 
 .. code-block:: console
 
    workflow_switches:
       RUN_TASK_PLOT_ALLVARS: true
-   
-Plotting Output From a Single Experiment
-````````````````````````````````````````````
 
 Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
 
@@ -591,7 +589,7 @@ If the user chooses not to set these values, the default values will be used (se
 .. note::
    If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
-The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
+When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
 
 Plotting the Difference Between Two Experiments
