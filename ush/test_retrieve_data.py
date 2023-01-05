@@ -124,13 +124,10 @@ class FunctionalTesting(unittest.TestCase):
             retrieve_data.main(args)
 
             # Verify files exist in temp dir
-            print('tmp_dir {0}'.format(tmp_dir))
-            print('ls {0}'.format(tmp_dir))
             for mem in [9, 10]:
                 files_on_disk = glob.glob(
                     os.path.join(tmp_dir, out_path_tmpl.format(mem=mem), "*")
                 )
-                print('fod {0}'.format(files_on_disk))
                 self.assertEqual(len(files_on_disk), 2)
 
     # GEFS Tests
