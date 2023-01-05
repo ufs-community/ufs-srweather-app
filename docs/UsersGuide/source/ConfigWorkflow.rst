@@ -490,6 +490,12 @@ Verification Tasks
 
 .. COMMENT: COMMENT: Define "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
 
+Plotting Task
+----------------
+
+``RUN_TASK_PLOT_ALLVARS:`` (Default: false)
+   Flag that determines whether to run python plotting scripts.
+
 .. _make-grid:
 
 MAKE_GRID Configuration Parameters
@@ -1134,6 +1140,9 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 ``FIXlut``: (Default: "")
    System directory where the lookup tables for optics properties are located.
 
+``FIXshp``: (Default: "")
+   System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
+
 ``TOPO_DIR``: (Default: "")
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
@@ -1726,6 +1735,49 @@ Non-default parameters for the ``run_enspointvx_prob`` task are set in the ``tas
 ``MAXTRIES_VX_ENSPOINT_PROB``: (Default: 1)
    Maximum number of times to attempt the task.
 
+.. _PlotVars:
+
+PLOT_ALLVARS Configuration Parameters
+========================================
+
+Non-default parameters for the ``plot_allvars`` task are set in the ``task_plot_allvars:`` section of the ``config.yaml`` file. 
+
+Basic Task Parameters
+--------------------------
+
+For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
+
+``PLOT_ALLVARS_TN``: (Default: "plot_allvars")
+   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
+
+``NNODES_PLOT_ALLVARS``: (Default: 1)
+   Number of nodes to use for the job.
+
+``PPN_PLOT_ALLVARS``: (Default: 24)
+   Number of :term:`MPI` processes per node.
+
+``WTIME_PLOT_ALLVARS``: (Default: 01:00:00)
+   Maximum time for the task to complete.
+
+``MAXTRIES_PLOT_ALLVARS``: (Default: 1)
+   Maximum number of times to attempt the task.
+
+Additional Parameters
+------------------------
+
+Typically, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
+
+``COMOUT_REF``: (Default: "")
+   The directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the COMOUT directory and end with ``$PDY/$cyc``.
+  
+``PLOT_FCST_START``: (Default: 0)
+   The starting forecast hour for the plotting task. For example, if a forecast starts at 18h/18z, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. If a forecast starts at 18h/18z, but the user only wants plots from the 6th forecast hour on, "starting forecast hour" should be 6.
+
+``PLOT_FCST_INC``: (Default: 3)
+   Forecast hour increment for the plotting task. This may be the same as ``INCR_CYCL_FREQ``, or it may be a multiple of ``INCR_CYCL_FREQ``. For example, if ``INCR_CYCL_FREQ`` is set to 3, there will be forecast output every three hours for the duration of the forecast. If the user wants plots of all of this output, they should set ``PLOT_FCST_INC: 3``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. However, there must be forecast output available at the designated increments to produce the plots. In this example, setting ``PLOT_FCST_INC: 7`` would produce an error because there is only forecast output available for hours 3, 6, 9, ..., etc. 
+  
+``PLOT_FCST_END``: (Default: "")
+   The last forecast hour for the plotting task. For example, if a forecast run for 24 hours, and the user wants plots for each available hour of forecast output, they should set ``PLOT_FCST_END: 24``. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12.
 
 Global Configuration Parameters
 ===================================

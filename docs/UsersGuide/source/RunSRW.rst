@@ -21,9 +21,10 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
       * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
       * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
+      * :ref:`Optional: Plot the output <PlotOutput>`
+      * :ref:`Optional: Configure METplus Verification Suite <VXConfig>`
 
-   #. :ref:`Run the regional workflow <Run>` 
-   #. :ref:`Optional: Plot the output <PlotOutput>`
+   #. :ref:`Run the regional workflow <Run>`
 
 .. _AppOverallProc:
 
@@ -533,6 +534,77 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
 To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
+
+.. _PlotOutput:
+
+Plot the Output
+-----------------
+
+An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
+
+   * 2-m temperature
+   * 2-m dew point temperature
+   * 10-m winds
+   * 250 hPa winds
+   * Accumulated precipitation
+   * Composite reflectivity
+   * Surface-based :term:`CAPE`/:term:`CIN`
+   * Max/Min 2-5 km updraft helicity
+   * Sea level pressure (SLP)
+
+.. COMMENT: * 500 hPa heights, winds, and vorticity --> seems to be omitted? Why?
+
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
+
+.. _Cartopy:
+
+Cartopy Shapefiles
+^^^^^^^^^^^^^^^^^^^^^
+
+The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
+
+Task Configuration
+^^^^^^^^^^^^^^^^^^^^^
+
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
+
+.. code-block:: console
+
+   workflow_switches:
+      RUN_TASK_PLOT_ALLVARS: true
+
+Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
+
+.. code-block:: console
+
+   task_plot_allvars:
+      PLOT_FCST_START: 0
+      PLOT_FCST_INC: 6
+      PLOT_FCST_END: 12
+
+If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>`).
+
+.. note::
+   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
+
+When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
+corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
+
+Plotting the Difference Between Two Experiments
+```````````````````````````````````````````````````
+
+When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
+
+.. code-block:: console
+
+   task_plot_allvars:
+      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+
+In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+
+The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 
 .. _LinuxMacEnvConfig:
 
@@ -1260,11 +1332,3 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
-
-
-
-.. _PlotOutput:
-
-Plot the Output
-===============
-Two python scripts are provided to generate plots from the :term:`FV3`-LAM post-processed :term:`GRIB2` output. Information on how to generate the graphics can be found in :numref:`Chapter %s <Graphics>`.
