@@ -103,7 +103,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = f"mem{{mem:03d}}/mem{{mem:03d}}"
+            out_path_tmpl = f"mem{{mem:03d}}"
 
             # fmt: off
             args = [
@@ -113,7 +113,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--data_stores', 'aws',
                 '--external_model', 'GDAS',
                 '--fcst_hrs', '6', '9', '3',
-                '--output_path', out_path_tmpl,
+                '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_type', 'netcdf',
@@ -139,7 +139,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = f"mem{{mem:03d}}/mem{{mem:03d}}"
+            out_path_tmpl = f"mem{{mem:03d}}"
 
             # fmt: off
             args = [
@@ -149,7 +149,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--data_stores', 'aws',
                 '--external_model', 'GEFS',
                 '--fcst_hrs', '6',
-                '--output_path', out_path_tmpl,
+                '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'ICS',
                 '--debug',
                 '--file_type', 'netcdf',
