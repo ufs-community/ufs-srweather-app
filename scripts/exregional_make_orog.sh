@@ -125,9 +125,9 @@ cd_vrfy "${DATA}"
 # Copy topography and related data files from the system directory (TOPO_DIR)
 # to the temporary directory.
 #
-cp_vrfy ${TOPO_DIR}/thirty.second.antarctic.new.bin fort.15
-cp_vrfy ${TOPO_DIR}/landcover30.fixed .
-cp_vrfy ${TOPO_DIR}/gmted2010.30sec.int fort.235
+ln -s ${TOPO_DIR}/thirty.second.antarctic.new.bin fort.15
+ln -s ${TOPO_DIR}/landcover30.fixed .
+ln -s ${TOPO_DIR}/gmted2010.30sec.int fort.235
 #
 #-----------------------------------------------------------------------
 #
