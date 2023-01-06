@@ -205,7 +205,7 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
     mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07
     mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07/${mm}
     ./nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
-    ./nexus_nei2016_control_tilefix.py -f NEXUS_Config.rc -d ${yyyymmdd}
+    ./nexus_nei2016_control_tilefix.py -f NEXUS_Config.rc -t HEMCO_sa_Time.rc # -d ${yyyymmdd}
 fi
 
 
