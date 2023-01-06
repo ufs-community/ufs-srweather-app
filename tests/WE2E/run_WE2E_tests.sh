@@ -970,6 +970,11 @@ specified for this machine (MACHINE):
     fi
 
     pregen_dir="${pregen_basedir}/${PREDEF_GRID_NAME}"
+    expt_config_str=${expt_config_str}"
+#
+# Directory containing the pregenerated grid files.
+#
+DOMAIN_PREGEN_BASEDIR=\"${pregen_basedir}\""
 
   fi
 #
