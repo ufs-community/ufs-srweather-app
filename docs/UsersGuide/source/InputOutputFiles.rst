@@ -257,7 +257,7 @@ The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` 
 
 Initial Condition/Lateral Boundary Condition File Formats and Source
 -----------------------------------------------------------------------
-The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
+The SRW Application currently supports raw initial and lateral boundary conditions from numerous models (i.e., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR). The data can be provided in three formats: :term:`NEMSIO`, :term:`netCDF`, or :term:`GRIB2`. 
 
 To download the model input data for the 12-hour "out-of-the-box" experiment configuration in ``config.community.yaml`` file, run:
 
@@ -286,7 +286,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: <path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH>
       EXTRN_MDL_DATA_STORES: disk
 
-The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
@@ -296,13 +296,18 @@ When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the da
    * ICs: ``gfs.t{cycle}z.atmanl.nemsio`` and ``gfs.t{cycle}z.sfcanl.nemsio``;
    * LBCs: ``gfs.t{cycle}z.atmf{fhr}.nemsio``
 
+* GDAS (NETCDF):  
+
+   * ICs: ``gdas.t{cycle}z.atmf{fhr}.nc`` and ``gdas.t{cycle}z.sfcf{fhr}.nc``;
+   * LBCs: ``gdas.t{cycle}z.atmf{fhr}.nc``
+
 * RAP (GRIB2): ``rap.t{cycle}z.wrfprsf{fhr}.grib2``
 * HRRR (GRIB2): ``hrrr.t{cycle}z.wrfprsf{fhr}.grib2``
 
 where:
 
    * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
-   * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS data and 2 digits for RAP/HRRR data). 
+   * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS/GDAS data and 2 digits for RAP/HRRR data). 
 
 For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. 
 
@@ -345,6 +350,8 @@ NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model
 
 * GFS (GRIB2 or NEMSIO) - available for the last 10 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/ 
+* GDAS (NETCDF) sfc files - available for the last 2 days
+  https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod
 * NAM - available for the last 8 days
   https://nomads.ncep.noaa.gov/pub/data/nccf/com/nam/prod/  
 * RAP - available for the last 2 days
@@ -355,6 +362,8 @@ NOMADS: https://nomads.ncep.noaa.gov/pub/data/nccf/com/{model}/prod, where model
 AWS S3 Data Buckets:
 
 * GFS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
+* GEFS: https://registry.opendata.aws/noaa-gefs/
+* GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
 * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
 
 Google Cloud:
