@@ -31,16 +31,46 @@ Weather Summary
 A surface boundary associated with a vorticity maximum over the northern Great Plains moved into an unstable environment over Indianapolis, which led to the development of isolated severe thunderstorms before it congealed into a convective line. The moist air remained over the southern half of the area on the following day. The combination of moist air with daily surface heating resulted in isolated thunderstorms that produced small hail. 
 
 **Weather Phenomena:** Numerous tornado and wind reports (6/15) and hail reports (6/16)
-**SPC Storm Reports:** Storm Prediction Center 20190615's Storm Reports (noaa.gov) & Storm Prediction Center 20190616's Storm Reports (noaa.gov)
+**Storm Prediction Center (SPC) Storm Reports:** 
+   * For `20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
+   * For `20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
+
 .. COMMENT: Radar Loop: include image from Google doc
    See https://mesonet.agron.iastate.edu/current/mcview.phtml to produce images.
 
 Data
 -------
 
+The data required for this experiment is the same data used for the out-of-the-box case described in :numref:`Chapter %s <RunSRW>`. It is already available on Level 1 systems (see :numref:`Section %s<Data>` for locations) and can be downloaded from the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`. 
+
+.. Or should this be the Indy-Severe-Weather data?
+
+Load the Regional Workflow
+-------------------------------
+
+Navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional workflow environment:
+
+.. code-block:: console
+   
+   source <path/to/etc/lmod-setup.sh>
+   module use </path/to/ufs-srweather-app/modulefiles>
+   module load wflow_<platform>
+
+Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
+
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
 General Configuration
 -------------------------
+
+The default (or "control") configuration for this experiment is the ``config.community.yaml`` file. Users can copy this file into ``config.yaml`` if they have not done so already:
+
+.. code-block:: console
+
+   cd </path/to/ufs-srweather-app/ush>
+   cp config.community.yaml config.yaml
+
+Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system. 
 
 .. COMMENT: 
    When (fcst start time): 2019-06-16 00z
