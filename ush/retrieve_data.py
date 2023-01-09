@@ -81,7 +81,7 @@ def copy_file(source, destination, copy_cmd):
     """
 
     if not os.path.exists(source):
-        logging.info(f"File does not exist on disk \n {source}")
+        logging.info(f"File does not exist on disk \n {source} \n try using: --input_file_path <your_path>")
         return False
 
     # Using subprocess here because system copy is much faster than
@@ -300,7 +300,7 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
                 if "sfc" in tmpl:
                     del file_templates[format]['fcst'][i]
 
-    if use_cla_tmpl:
+    if use_cla_tmpl or file_templates is None:
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
     if isinstance(file_templates, dict):
@@ -358,6 +358,21 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     input_locs = input_locs if isinstance(input_locs, list) else [input_locs]
 
+    # If the --output_path option wasn't used, lets see if it in in the config file
+    if cla.output_path is None:
+        output_path = cla.config.get(cla.external_model, {}).get(method, {}).get("output_path")
+        logging.debug(f"Configured output_path for {cla.external_model}:{method} is: {output_path}")
+        if output_path is None:
+            raise argparse.ArgumentTypeError(
+                (
+                    f"You must configure a {cla.external_model}:'disk':output_path,"
+                    " or use --output_path option! "
+                )
+            )
+            return unavailable
+        else:
+            cla.output_path=os.path.abspath(output_path)
+
     orig_path = os.getcwd()
     unavailable = []
 
@@ -391,7 +406,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                     )
                     logging.debug(f"Full file path: {input_loc}")
 
-                    if method == "disk":
+                    if method == "disk" or method == "local":
                         if cla.symlink:
                             retrieved = copy_file(input_loc, target_path, "ln -sf")
                         else:
@@ -613,6 +628,7 @@ def config_exists(arg):
         raise argparse.ArgumentTypeError(msg)
 
     with open(arg, "r") as config_path:
+        print(f"Reading config file: {arg}")             # let's print which config file is used
         cfg = yaml.load(config_path, Loader=yaml.SafeLoader)
     return cfg
 
@@ -683,6 +699,7 @@ def setup_logging(debug=False):
     user-defined level for logging in the script."""
 
     level = logging.WARNING
+    level = logging.INFO
     if debug:
         level = logging.DEBUG
 
@@ -737,27 +754,40 @@ def main(argv):
     """
 
     cla = parse_args(argv)
+    if cla.cycle_date is None:
+        cla.cycle_date = to_datetime("1999123100") # set it to something benign
+    if cla.fcst_hrs is None:
+        cla.fcst_hrs = [0]                         # set a default
     cla.fcst_hrs = arg_list_to_range(cla.fcst_hrs)
 
     if cla.members:
         cla.members = arg_list_to_range(cla.members)
 
     setup_logging(cla.debug)
-    print("Running script retrieve_data.py with args:\n", f"{('-' * 80)}\n{('-' * 80)}")
+    print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
     for name, val in cla.__dict__.items():
         if name not in ["config"]:
             print(f"{name:>15s}: {val}")
     print(f"{('-' * 80)}\n{('-' * 80)}")
 
+    # with no --config arg passed, use our default config specs
+    if cla.config is None:
+        logging.info(f"read parm/data_locations.yml")
+        cla.config = config_exists("./parm/data_locations.yml")
+    logging.debug(f"config {cla.config}")
+
     if "disk" in cla.data_stores:
         # Make sure a path was provided.
         if not cla.input_file_path:
-            raise argparse.ArgumentTypeError(
-                (
-                    "You must provide an input_file_path when choosing "
-                    " disk as a data store!"
+            # See if file_path is in the config ...
+            file_path = cla.config.get(cla.external_model, {}).get("disk", {}).get("file_path")
+            if not file_path:
+                raise argparse.ArgumentTypeError(
+                    (
+                        "You must provide an input_file_path when choosing "
+                        " disk as a data store!"
+                    )
                 )
-            )
 
     if "hpss" in cla.data_stores:
         # Make sure hpss module is loaded
@@ -807,6 +837,31 @@ def main(argv):
                 file_templates=file_templates,
                 input_locs=cla.input_file_path,
                 method="disk",
+            )
+
+        elif data_store == "local":
+            # add 'local' to handle files or packages beyond HPSS 
+            # - like locally copying or symlinking tarballs
+            file_templates = get_file_templates(
+                cla,
+                known_data_info,
+                data_store="local", # ... treating local files different than hpss
+                use_cla_tmpl=True,
+            )
+
+            logging.debug(f"User supplied file names are: {file_templates}")
+            # First choice is the User-supplied file path rather than from config specs.
+            if cla.input_file_path is not None:
+                logging.debug(f"User supplied file path is: {cla.input_file_path}")
+            else:
+                cla.input_file_path = store_specs.get("file_path")
+                logging.debug(f"Configured file path is: {cla.input_file_path}")
+            unavailable = get_requested_files(
+                cla,
+                check_all=known_data_info.get("check_all", False),
+                file_templates=file_templates,
+                input_locs=cla.input_file_path,
+                method="local",
             )
 
         elif not store_specs:
@@ -897,10 +952,10 @@ def parse_args(argv):
     # Required
     parser.add_argument(
         "--anl_or_fcst",
-        choices=("anl", "fcst"),
+        choices=("anl", "fcst", "None"),   # Added 'None' for generic packages copied from local disk or remote url
         help="Flag for whether analysis or forecast \
         files should be gathered",
-        required=True,
+        required=False,                    # relaxed this arg option, to enable generic package copying
     )
     parser.add_argument(
         "--config",
@@ -913,13 +968,13 @@ def parse_args(argv):
         "--cycle_date",
         help="Cycle date of the data to be retrieved in YYYYMMDDHH \
         format.",
-        required=True,
+        required=False,                    # relaxed this arg option, and set a benign value when not used
         type=to_datetime,
     )
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk",
+        first. Choices: hpss, nomads, aws, disk, local, remote",     # local and remote are for generic package copying
         nargs="*",
         required=True,
         type=to_lower,
@@ -936,6 +991,7 @@ def parse_args(argv):
             "RAP",
             "RAPx",
             "HRRRx",
+            "GSI-FIX",
         ),
         help="External model label. This input is case-sensitive",
         required=True,
@@ -946,25 +1002,29 @@ def parse_args(argv):
         one fhr will be processed.  If 2 or 3 arguments, a sequence \
         of forecast hours [start, stop, [increment]] will be \
         processed.  If more than 3 arguments, the list is processed \
-        as-is.",
+        as-is. default=[0]",
         nargs="+",
-        required=True,
+        required=False,                    # relaxed this arg option, and set a default value when not used
         type=int,
     )
     parser.add_argument(
         "--output_path",
         help="Path to a location on disk. Path is expected to exist.",
-        required=True,
+        required=False,                    # relaxed this arg option to allow for config setting from "disk" stores
         type=os.path.abspath,
     )
     parser.add_argument(
         "--ics_or_lbcs",
-        choices=("ICS", "LBCS"),
+        choices=("ICS", "LBCS", "None"),   # Added 'None' for generic packages copied from disk or remote
         help="Flag for whether ICS or LBCS.",
-        required=True,
+        required=False,                    # relaxed this arg option, to enable generic packages
     )
 
     # Optional
+    parser.add_argument(
+        "--version",     # for file patterns that dont conform to cycle_date [TBD]
+        help="Version number of package to download, e.g. x.yy.zz",
+    )
     parser.add_argument(
         "--symlink",
         action="store_true",

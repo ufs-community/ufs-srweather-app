@@ -228,6 +228,14 @@ RAP:
     url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
     file_names:
       <<: *rap_file_names
+  local:
+    output_path: /lfs4/HFIP/hfv3gfs/Cameron.Book/bufr_test
+    file_path: /public/data/grids/rap/obs
+    file_names:
+      - "{yyyymmddhh}.rap.t{hh}z.prepbufr.tm00"
+      #bufr:
+        #- "{yyyymmddhh}.rap.t{hh}z.prepbufr.tm00"
+        #- "{yyyymmddhh}.rap.t{hh}z.*.tm00.bufr_d*"
 
 HRRR:
   hpss:

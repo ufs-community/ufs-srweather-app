@@ -40,3 +40,6 @@ data:
       netcdf: /public/data/grids/gfs/anl/netcdf
     RAP: /public/data/grids/rap/full/wrfprs/grib2
     HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
+  obs:
+    RAP:
+      bufr: /public/data/grids/rap/obs
