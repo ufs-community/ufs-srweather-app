@@ -1,3 +1,4 @@
 sphinxcontrib-bibtex
 sphinx_rtd_theme==0.5.1
 docutils==0.17
+Pygments==2.13.0
