@@ -1044,7 +1044,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--file_type",
-        choices=("grib2", "nemsio", "netcdf"),
+        choices=("grib2", "nemsio", "netcdf", "bufr"),
         help="External model file format",
     )
     parser.add_argument(
