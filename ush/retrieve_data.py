@@ -32,6 +32,7 @@ import os
 import shutil
 import subprocess
 import sys
+import glob
 from textwrap import dedent
 import time
 from copy import deepcopy
@@ -219,6 +220,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
         yyyymm=cycle_date.strftime("%Y%m"),
         yyyymmdd=cycle_date.strftime("%Y%m%d"),
         yyyymmddhh=cycle_date.strftime("%Y%m%d%H"),
+        #rap_obs_type=['satwnd', 'rassda'],
     )
 
     if templates_only:
@@ -776,6 +778,14 @@ def main(argv):
         cla.config = config_exists("./parm/data_locations.yml")
     logging.debug(f"config {cla.config}")
 
+    #if "RAP" in cla.external_model:
+    #    for obs_type in glob.glob('/public/data/grids/rap/obs/2023011000.rap.t00z.*.tm00.bufr_d'):
+    #        rap_obs_type=obs_type
+        #rap_obs=['satwind', 'rassda']
+        #for obs_type in rap_obs:
+        #    rap_obs_type=obs_type
+        #    print("rap_obs_type:", rap_obs_type)
+
     if "disk" in cla.data_stores:
         # Make sure a path was provided.
         if not cla.input_file_path:
@@ -952,7 +962,7 @@ def parse_args(argv):
     # Required
     parser.add_argument(
         "--anl_or_fcst",
-        choices=("anl", "fcst", "None"),   # Added 'None' for generic packages copied from local disk or remote url
+        choices=("anl", "fcst", "obs", "None"),   # Added 'None' for generic packages copied from local disk or remote url
         help="Flag for whether analysis or forecast \
         files should be gathered",
         required=False,                    # relaxed this arg option, to enable generic package copying
