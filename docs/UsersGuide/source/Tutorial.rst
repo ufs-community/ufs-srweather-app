@@ -1,8 +1,8 @@
 .. _Tutorial:
 
-==================================
-SRW Application Tutorials
-==================================
+=============
+Tutorials
+=============
 
 This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) built the SRW App successfully and (2) run the out-of-the-box case contained in the ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
 
@@ -31,9 +31,9 @@ Weather Summary
 A surface boundary associated with a vorticity maximum over the northern Great Plains moved into an unstable environment over Indianapolis, which led to the development of isolated severe thunderstorms before it congealed into a convective line. The moist air remained over the southern half of the area on the following day. The combination of moist air with daily surface heating resulted in isolated thunderstorms that produced small hail. 
 
 **Weather Phenomena:** Numerous tornado and wind reports (6/15) and hail reports (6/16)
-**Storm Prediction Center (SPC) Storm Reports:** 
-   * For `20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
-   * For `20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
+
+   * `Storm Prediction Center (SPC) Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
 .. COMMENT: Radar Loop: include image from Google doc
    See https://mesonet.agron.iastate.edu/current/mcview.phtml to produce images.
@@ -41,9 +41,12 @@ A surface boundary associated with a vorticity maximum over the northern Great P
 Data
 -------
 
-The data required for this experiment is the same data used for the out-of-the-box case described in :numref:`Chapter %s <RunSRW>`. It is already available on Level 1 systems (see :numref:`Section %s<Data>` for locations) and can be downloaded from the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`. 
+The data required for this experiment is the same data used for the Indy-Sever-Weather Verification sample case described in :numref:`Chapter %s <VXCases>`. It is already available on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems (see :numref:`Section %s<Data>` for locations) and can be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-.. Or should this be the Indy-Severe-Weather data?
+.. Or should this be the Indy-Severe-Weather data? Specify where in the bucket the data is!
+   https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
+
+   NEED HRRR/RAP data for this tutorial! 
 
 Load the Regional Workflow
 -------------------------------
@@ -53,10 +56,9 @@ Navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional wor
 .. code-block:: console
    
    source <path/to/etc/lmod-setup.sh>
+   # OR: source <path/to/etc/lmod-setup.csh> when running in a csh/tcsh shell
    module use </path/to/ufs-srweather-app/modulefiles>
    module load wflow_<platform>
-
-Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
@@ -177,10 +179,18 @@ After configuring the forecast, users can generate the forecast by running:
 
    ./generate_FV3LAM_wflow.py
 
+To see experiment progress, users should navigate to their experiment directory. Then, use the ``rocotorun`` command to launch new workflow tasks and ``rocotostat`` to check on experiment progress. 
+
+.. code-block:: console
+
+   cd </path/to/expt_dirs/control>
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
 Experiment 2: Comparison
 ---------------------------
 
-Once the control case is running, users can return to the ``config.yaml`` file and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow`` section as follows:
+Once the control case is running, users can return to the ``config.yaml`` file (in ``ufs-srweather-app/ush``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow`` section as follows:
 
 .. code-block:: console
 
@@ -208,10 +218,15 @@ Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:``
    task_plot_allvars:
      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
 
-Setting ``COMOUT_REF`` this way ensures that the plotting task can access the data in the ``EXPT_SUBDIR`` for both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061500/postprd`` and ``test_expt/2019061500/postprd``. 
+Setting ``COMOUT_REF`` this way (i.e., using ``$EXPT_SUBDIR``) ensures that the plotting task can access the forecast output data in both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061500/postprd`` and ``test_expt/2019061500/postprd``. 
 
 Compare Results
 -------------------
+
+Navigate to ``test_expt/2019061500/postprd``. 
+
+
+
 
 Analysis
 -----------
