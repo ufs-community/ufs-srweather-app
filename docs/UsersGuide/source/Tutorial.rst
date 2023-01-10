@@ -318,19 +318,17 @@ Weather Summary
 
 Cold air damming occurs when cold dense air is topographically trapped along the leeward (downwind) side of a mountain. 
 
+**Weather phenomena:** Cold air damming
+
+.. COMMENT:
+   SPC Storm Reports: N/A
+   Radar Loop: N/A
+
 Tutorial Content Coming Soon!
 --------------------------------
 
 .. COMMENT: 
    **Objective:**
-
-   Weather Summary
-   --------------------
-
-   WX Summary: Cold air damming occurs when cold dense air is topographically trapped along the leeward side of the mountain.
-   Weather phenomena: Cold air damming
-   SPC Storm Reports: N/A
-   Radar Loop: N/A
 
    Data
    -------
@@ -362,27 +360,28 @@ Tutorial Content Coming Soon!
       Things still needed:
       We will need a new subconus domain over the southeast. We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
-
-
-
 .. _fcst4:
 
 Sample Forecast #4: Southern Plains Winter Weather Event
 ===========================================================
 
-Coming soon! 
+Weather Summary
+--------------------
+
+A polar vortex brought arctic air to much of the US including Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances that brought several inches of snow to OKC with a lull on February 16th which resulted in the daily record low being broken and is the second coldest temperature on record for OKC.
+   
+**Weather phenomena:** Snow and record-breaking cold temperatures
+
+.. COMMENT:
+   SPC Storm Reports: N/A
+   Radar Loop: 
+
+Tutorial Content Coming Soon!
+-------------------------------
 
 .. COMMENT: 
 
    **Objective:**
-
-   Weather Summary
-   --------------------
-
-   WX Summary: A polar vortex brought arctic air to much of the US including Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances that brought several inches of snow to OKC with a lull on February 16th which resulted in the daily record low being broken and is the second coldest temperature on record for OKC.
-   Weather phenomena: Snow and record-breaking cold temperatures
-   SPC Storm Reports: N/A
-   Radar Loop: 
 
    Data
    -------
@@ -414,32 +413,31 @@ Coming soon!
       We will need a new subconus domain over the southern plains, and to collect the FV3GFS, HRRR, and RAP ICs.
 
 
-
-
 .. _fcst5:
 
 Sample Forecast #5: Halloween Storm
 =======================================
 
-Coming soon!
+Weather Summary
+--------------------
+
+A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
+
+**Weather phenomena:** Snow and record-breaking cold temperatures
+
+.. COMMENT:
+   SPC Storm Reports: 
+   Radar Loop: 
+
+Tutorial Content Coming Soon!
+-------------------------------
 
 .. COMMENT:
 
    **Objective:**
 
-   Weather Summary
-   --------------------
-
-   WX Summary: A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
-   Weather phenomena: Snow and record-breaking cold temperatures
-   SPC Storm Reports: 
-   Radar Loop: 
-
-
    Data
    -------
-
-
 
    Configuration
    ----------------
