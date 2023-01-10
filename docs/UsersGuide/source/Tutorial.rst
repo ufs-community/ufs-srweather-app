@@ -1,7 +1,7 @@
 .. _Tutorial:
 
 ==================================
-SRW Application Tutorial
+SRW Application Tutorials
 ==================================
 
 This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) built the SRW App successfully and (2) run the out-of-the-box case contained in the ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
@@ -60,7 +60,7 @@ Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>``
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
-General Configuration
+Configuration
 -------------------------
 
 The default (or "control") configuration for this experiment is the ``config.community.yaml`` file. Users can copy this file into ``config.yaml`` if they have not done so already:
@@ -70,27 +70,145 @@ The default (or "control") configuration for this experiment is the ``config.com
    cd </path/to/ufs-srweather-app/ush>
    cp config.community.yaml config.yaml
 
-Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system. 
+Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
 
-.. COMMENT: 
-   When (fcst start time): 2019-06-16 00z
-   Config information
-   MACHINE: jet
-   PREDEF_GRID_NAME: SUBCONUS_Ind_3km
-   CCPP_PHYS_SUITE: FV3_GFS_v16
-   FCST_LEN_HRS: 60
-   EXTRN_MDL_NAME_ICS: FV3GFS
-   EXTRN EXTRN_MDL_NAME_LBCS: FV3GFS
-   FV3GFS_FILE_FMT_ICS/LBCS: grib2
-   WTIME_RUN_FCST="04:00:00"
-   EXTRN_MDL_FILES_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/v2p0/input_model_data/FV3GFS/grib2/2019061500
-   EXTRN_MDL_FILES_LBCS: /mnt/lfs4/HFIP/hfv3gfs/Edward.Snyder/SRW-Sample-Case-Indy/expt_dirs/gfs-data
+Experiment 1: Control
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-Experiment 1
-----------------
+Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
-Experiment 2
-----------------
+.. code-block:: console
+
+   user:
+      RUN_ENVIR: community
+      MACHINE: macos
+      ACCOUNT: none
+
+For this tutorial, users do not need to change the ``platform:`` section. The default parameters in this section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Chapter %s <VXCases>`.
+
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDEF_GRID_NAME``, ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``FCST_LEN_HRS``.
+
+.. code-block:: console
+
+   workflow:
+     USE_CRON_TO_RELAUNCH: false
+     EXPT_SUBDIR: control
+     CCPP_PHYS_SUITE: FV3_GFS_v16
+     PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+     DATE_FIRST_CYCL: '2019061500'
+     DATE_LAST_CYCL: '2019061500'
+     FCST_LEN_HRS: 60
+     PREEXISTING_DIR_METHOD: rename
+     VERBOSE: true
+     COMPILER: intel
+
+``EXPT_SUBDIR`` can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", experiment. However, users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative.
+
+.. COMMENT: for EXPT_SUBDIR, are there certain characters that aren't allowed?
+
+This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3-km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
+
+In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019. A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. 
+
+.. COMMENT: Edit above section on reasoning for cycles
+   Maybe the event they are researching is a long-lived event and the user wants to know how the 6, 12, 18 models handled the event or maybe they wanted to see which cycle picked up on the atmospheric changes that lead to an evening's severe thunderstorms. To me, these vars exists so the user won't have to rerun an experiment x-number times, they can run it just once with the cycles they want. 
+
+   Multiple cycles can also be used in research...
+
+In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. This section of ``config.yaml`` will look like this:
+
+.. code-block:: console
+
+   workflow_switches:
+     RUN_TASK_MAKE_GRID: true
+     RUN_TASK_MAKE_OROG: true
+     RUN_TASK_MAKE_SFC_CLIMO: true
+     RUN_TASK_GET_OBS_CCPA: false
+     RUN_TASK_GET_OBS_MRMS: false
+     RUN_TASK_GET_OBS_NDAS: false
+     RUN_TASK_VX_GRIDSTAT: false
+     RUN_TASK_VX_POINTSTAT: false
+     RUN_TASK_VX_ENSGRID: false
+     RUN_TASK_VX_ENSPOINT: false
+     RUN_TASK_PLOT_ALLVARS: true
+
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). This section of the ``config.yaml`` file will look like this:
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: FV3GFS
+     FV3GFS_FILE_FMT_ICS: grib2
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
+   
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). This section of the ``config.yaml`` file will look like this:
+
+.. code-block:: console
+
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: FV3GFS
+     LBC_SPEC_INTVL_HRS: 6
+     FV3GFS_FILE_FMT_LBCS: grib2
+     USE_USER_STAGED_EXTRN_FILES: true
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
+
+In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCST``) from 2:00:00 to 4:00:00. If the ``run_fcst`` task takes longer than four hours to run, it will go DEAD. However, four hours should be more than enough time to run this particular forecast. Depending on the system in use, two hours may be insufficient. This section of the ``config.yaml`` should appear as follows:
+
+.. code-block:: console
+
+   task_run_fcst:
+     WTIME_RUN_FCST: 04:00:00
+     QUILTING: true
+
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 00z on June 15, 2019 through the 60th forecast hour (June 17, 2019 at 12z).
+
+.. code-block:: console
+
+   task_plot_allvars:
+     COMOUT_REF: ""
+     PLOT_FCST_START: 0
+     PLOT_FCST_INC: 6
+     PLOT_FCST_END: 60
+
+After configuring the forecast, users can generate the forecast by running:
+
+.. code-block:: console
+
+   ./generate_FV3LAM_wflow.py
+
+Experiment 2: Comparison
+---------------------------
+
+Once the control case is running, users can return to the ``config.yaml`` file and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow`` section as follows:
+
+.. code-block:: console
+
+   workflow:
+     EXPT_SUBDIR: test_expt
+     CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+
+Additionally, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data:
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+     EXTRN_MDL_NAME_ICS: HRRR
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/HRRR/grib2/${yyyymmddhh}>
+   task_get_extrn_lbcs:
+     EXTRN_MDL_NAME_LBCS: RAP
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/RAP/grib2/${yyyymmddhh}>
+
+.. COMMENT: Why do we use HRRR/RAP data with FV3_RRFS_v1beta?
+
+Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateFiles>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
+
+.. code-block:: console
+
+   task_plot_allvars:
+     COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+
+Setting ``COMOUT_REF`` this way ensures that the plotting task can access the data in the ``EXPT_SUBDIR`` for both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061500/postprd`` and ``test_expt/2019061500/postprd``. 
 
 Compare Results
 -------------------
@@ -111,45 +229,48 @@ Analysis
 Sample Forecast #2: Hurricane Barry
 =======================================
 
-**Objective:**
+Coming soon! 
 
-Weather Summary
---------------------
+.. COMMENT: 
+   **Objective:**
 
-WX Summary: Hurricane Barry made landfall in Louisiana on July 11th as a category one hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and minimum pressure of 992 hPa. 
-Weather phenomena: Flooding, and wind and tornado reports
-SPC Storm Reports: Storm Prediction Center 20190713's Storm Reports (noaa.gov) & Storm Prediction Center 20190714's Storm Reports (noaa.gov)
-Radar Loop: https://en.wikipedia.org/wiki/Hurricane_Barry_(2019)#/media/File:Barry_making_landfall.gif
+   Weather Summary
+   --------------------
 
-Data
--------
+   WX Summary: Hurricane Barry made landfall in Louisiana on July 11th as a category one hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and minimum pressure of 992 hPa. 
+   Weather phenomena: Flooding, and wind and tornado reports
+   SPC Storm Reports: Storm Prediction Center 20190713's Storm Reports (noaa.gov) & Storm Prediction Center 20190714's Storm Reports (noaa.gov)
+   Radar Loop: https://en.wikipedia.org/wiki/Hurricane_Barry_(2019)#/media/File:Barry_making_landfall.gif
+
+   Data
+   -------
 
 
-Configuration
-----------------
+   Configuration
+   ----------------
 
-.. COMMENT:
-   When (fcst start time): 2019-07-12 00z
-   Config information
-   MACHINE: 
-   PREDEF_GRID_NAME: 
-   CCPP_PHYS_SUITE: 
-   FCST_LEN_HRS: 
-   EXTRN_MDL_NAME_ICS: 
-   EXTRN EXTRN_MDL_NAME_LBCS: 
-   FV3GFS_FILE_FMT_ICS/LBCS: nemsio
-   WTIME_RUN_FCST="04:00:00"
-   EXTRN_MDL_FILES_ICS: 
-   EXTRN_MDL_FILES_LBCS: 
+   .. COMMENT:
+      When (fcst start time): 2019-07-12 00z
+      Config information
+      MACHINE: 
+      PREDEF_GRID_NAME: 
+      CCPP_PHYS_SUITE: 
+      FCST_LEN_HRS: 
+      EXTRN_MDL_NAME_ICS: 
+      EXTRN EXTRN_MDL_NAME_LBCS: 
+      FV3GFS_FILE_FMT_ICS/LBCS: nemsio
+      WTIME_RUN_FCST="04:00:00"
+      EXTRN_MDL_FILES_ICS: 
+      EXTRN_MDL_FILES_LBCS: 
 
-Analysis
------------
+   Analysis
+   -----------
 
-.. COMMENT:
-   What to compare?
-   This is an existing case from the UFS Case Studies. Compare hurricane track, intensity, and wind speed after landfall. We can also compare satellite imagery too.
-   Things still needed:
-   We will need a new subconus domain over LA. We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
+   .. COMMENT:
+      What to compare?
+      This is an existing case from the UFS Case Studies. Compare hurricane track, intensity, and wind speed after landfall. We can also compare satellite imagery too.
+      Things still needed:
+      We will need a new subconus domain over LA. We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
 
 
 
@@ -159,47 +280,48 @@ Analysis
 Sample Forecast #3: Cold Air Damming
 ========================================
 
-**Objective:**
+.. COMMENT: 
+   **Objective:**
 
-Weather Summary
---------------------
-
-
-WX Summary: Cold air damming occurs when cold dense air is topographically trapped along the leeward side of the mountain.
-Weather phenomena: Cold air damming
-SPC Storm Reports: N/A
-Radar Loop: N/A
-
-Data
--------
+   Weather Summary
+   --------------------
 
 
-Configuration
-----------------
+   WX Summary: Cold air damming occurs when cold dense air is topographically trapped along the leeward side of the mountain.
+   Weather phenomena: Cold air damming
+   SPC Storm Reports: N/A
+   Radar Loop: N/A
 
-.. COMMENT:
-   When (fcst start time): 2020-02-03 12z
-   Config information
-   MACHINE: 
-   PREDEF_GRID_NAME: 
-   CCPP_PHYS_SUITE: 
-   FCST_LEN_HRS: 
-   EXTRN_MDL_NAME_ICS: 
-   EXTRN EXTRN_MDL_NAME_LBCS: 
-   FV3GFS_FILE_FMT_ICS/LBCS: 
-   WTIME_RUN_FCST="04:00:00"
-   EXTRN_MDL_FILES_ICS: 
-   EXTRN_MDL_FILES_LBCS: 
+   Data
+   -------
 
 
-Analysis
------------
+   Configuration
+   ----------------
 
-.. COMMENT:
-   What to compare?
-   This is an existing case from the UFS Case Studies. Compare surface temperature and wind speed.
-   Things still needed:
-   We will need a new subconus domain over the southeast. We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
+   .. COMMENT:
+      When (fcst start time): 2020-02-03 12z
+      Config information
+      MACHINE: 
+      PREDEF_GRID_NAME: 
+      CCPP_PHYS_SUITE: 
+      FCST_LEN_HRS: 
+      EXTRN_MDL_NAME_ICS: 
+      EXTRN EXTRN_MDL_NAME_LBCS: 
+      FV3GFS_FILE_FMT_ICS/LBCS: 
+      WTIME_RUN_FCST="04:00:00"
+      EXTRN_MDL_FILES_ICS: 
+      EXTRN_MDL_FILES_LBCS: 
+
+
+   Analysis
+   -----------
+
+   .. COMMENT:
+      What to compare?
+      This is an existing case from the UFS Case Studies. Compare surface temperature and wind speed.
+      Things still needed:
+      We will need a new subconus domain over the southeast. We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
 
 
@@ -209,44 +331,48 @@ Analysis
 Sample Forecast #4: Southern Plains Winter Weather Event
 ===========================================================
 
-**Objective:**
+Coming soon! 
 
-Weather Summary
---------------------
+.. COMMENT: 
 
-WX Summary: A polar vortex brought arctic air to much of the US including Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances that brought several inches of snow to OKC with a lull on February 16th which resulted in the daily record low being broken and is the second coldest temperature on record for OKC.
-Weather phenomena: Snow and record-breaking cold temperatures
-SPC Storm Reports: N/A
-Radar Loop: 
+   **Objective:**
 
-Data
--------
+   Weather Summary
+   --------------------
 
+   WX Summary: A polar vortex brought arctic air to much of the US including Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances that brought several inches of snow to OKC with a lull on February 16th which resulted in the daily record low being broken and is the second coldest temperature on record for OKC.
+   Weather phenomena: Snow and record-breaking cold temperatures
+   SPC Storm Reports: N/A
+   Radar Loop: 
 
-Configuration
-----------------
-.. COMMENT:
-   When (fcst start time): 2021-02-15 00z
-   Config information
-   MACHINE: 
-   PREDEF_GRID_NAME: 
-   CCPP_PHYS_SUITE: 
-   FCST_LEN_HRS: 
-   EXTRN_MDL_NAME_ICS: 
-   EXTRN EXTRN_MDL_NAME_LBCS: 
-   FV3GFS_FILE_FMT_ICS/LBCS: 
-   WTIME_RUN_FCST="04:00:00"
-   EXTRN_MDL_FILES_ICS: 
-   EXTRN_MDL_FILES_LBCS: 
+   Data
+   -------
 
 
-Analysis
------------
-.. COMMENT:
-   What to compare?
-   This isn’t an existing UFS Case Study, so initial analysis of various variables like surface temperature, jet stream, and precipitation type should all be considered.
-   Things still needed:
-   We will need a new subconus domain over the southern plains, and to collect the FV3GFS, HRRR, and RAP ICs.
+   Configuration
+   ----------------
+   .. COMMENT:
+      When (fcst start time): 2021-02-15 00z
+      Config information
+      MACHINE: 
+      PREDEF_GRID_NAME: 
+      CCPP_PHYS_SUITE: 
+      FCST_LEN_HRS: 
+      EXTRN_MDL_NAME_ICS: 
+      EXTRN EXTRN_MDL_NAME_LBCS: 
+      FV3GFS_FILE_FMT_ICS/LBCS: 
+      WTIME_RUN_FCST="04:00:00"
+      EXTRN_MDL_FILES_ICS: 
+      EXTRN_MDL_FILES_LBCS: 
+
+
+   Analysis
+   -----------
+   .. COMMENT:
+      What to compare?
+      This isn’t an existing UFS Case Study, so initial analysis of various variables like surface temperature, jet stream, and precipitation type should all be considered.
+      Things still needed:
+      We will need a new subconus domain over the southern plains, and to collect the FV3GFS, HRRR, and RAP ICs.
 
 
 
@@ -256,47 +382,49 @@ Analysis
 Sample Forecast #5: Halloween Storm
 =======================================
 
-**Objective:**
-
-Weather Summary
---------------------
-
-WX Summary: A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
-Weather phenomena: Snow and record-breaking cold temperatures
-SPC Storm Reports: 
-Radar Loop: 
-
-
-Data
--------
-
-
-
-Configuration
-----------------
 .. COMMENT:
-   When (fcst start time): 2019-10-28 12Z
-   Config information
-   MACHINE: 
-   PREDEF_GRID_NAME: 
-   CCPP_PHYS_SUITE: 
-   FCST_LEN_HRS: 
-   EXTRN_MDL_NAME_ICS: 
-   EXTRN EXTRN_MDL_NAME_LBCS: 
-   FV3GFS_FILE_FMT_ICS/LBCS: 
-   WTIME_RUN_FCST="04:00:00"
-   EXTRN_MDL_FILES_ICS: 
-   EXTRN_MDL_FILES_LBCS: 
+
+   **Objective:**
+
+   Weather Summary
+   --------------------
+
+   WX Summary: A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
+   Weather phenomena: Snow and record-breaking cold temperatures
+   SPC Storm Reports: 
+   Radar Loop: 
 
 
-Analysis
------------
+   Data
+   -------
 
-.. COMMENT: 
-   What to compare?
-   This is an existing UFS Case Study. Look at the synoptic dynamics, surface wind and temperatures, and moisture profiles.
-   Things still needed:
-   We will need a new subconus domain over the north east. We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
+
+
+   Configuration
+   ----------------
+   .. COMMENT:
+      When (fcst start time): 2019-10-28 12Z
+      Config information
+      MACHINE: 
+      PREDEF_GRID_NAME: 
+      CCPP_PHYS_SUITE: 
+      FCST_LEN_HRS: 
+      EXTRN_MDL_NAME_ICS: 
+      EXTRN EXTRN_MDL_NAME_LBCS: 
+      FV3GFS_FILE_FMT_ICS/LBCS: 
+      WTIME_RUN_FCST="04:00:00"
+      EXTRN_MDL_FILES_ICS: 
+      EXTRN_MDL_FILES_LBCS: 
+
+
+   Analysis
+   -----------
+
+   .. COMMENT: 
+      What to compare?
+      This is an existing UFS Case Study. Look at the synoptic dynamics, surface wind and temperatures, and moisture profiles.
+      Things still needed:
+      We will need a new subconus domain over the north east. We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
 
 
