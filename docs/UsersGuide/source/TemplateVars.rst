@@ -1,8 +1,8 @@
 .. _TemplateVars:
 
-===============================================================
-Using Template Variables in the Experiment Configuration Files
-===============================================================
+======================
+Template Variables
+======================
 
 The SRW App's experiment configuration system supports the use of template variables
 in ``config_defaults.yaml`` and ``config.yaml``. A template variable --- or "template" --- is an experiment configuration variable that contains references to values of other variables. 
