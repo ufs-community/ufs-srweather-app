@@ -35,6 +35,11 @@ A surface boundary associated with a vorticity maximum over the northern Great P
    * `Storm Prediction Center (SPC) Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
+.. figure:: _static/IndySevereWeather21z.gif
+   :alt: Radar animation of severe weather over Indianapolis on June 15, 2019. 
+
+   *Severe Weather Over Indianapolis*
+
 .. COMMENT: Radar Loop: include image from Google doc
    See https://mesonet.agron.iastate.edu/current/mcview.phtml to produce images.
 
@@ -55,8 +60,8 @@ Navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional wor
 
 .. code-block:: console
    
-   source <path/to/etc/lmod-setup.sh>
-   # OR: source <path/to/etc/lmod-setup.csh> when running in a csh/tcsh shell
+   source <path/to/etc/lmod-setup.sh> <platform>
+   # OR: source <path/to/etc/lmod-setup.csh> <platform> when running in a csh/tcsh shell
    module use </path/to/ufs-srweather-app/modulefiles>
    module load wflow_<platform>
 
@@ -76,6 +81,15 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
 
 Experiment 1: Control
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. Hint:: 
+   
+   To open the configuration file in the command line, users may run the command:
+
+   ..code-block::
+      vi config.yaml
+
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead.
 
 Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
@@ -244,22 +258,29 @@ Analysis
 Sample Forecast #2: Hurricane Barry
 =======================================
 
-Coming soon! 
+Weather Summary
+--------------------
+
+Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and minimum pressure of 992 hPa. 
+
+**Weather Phenomena:** Flooding, wind, and tornado reports
+
+   * `Storm Prediction Center (SPC) Storm Report for 20190713 <https://www.spc.noaa.gov/climo/reports/190713_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
+
+.. figure:: _static/HurricaneBarry_Making_Landfall.gif
+   :alt: Radar animation of Hurricane Barry making landfall. 
+
+   *Hurricane Barry Making Landfall*
+
+Tutorial Content Coming Soon! 
+-------------------------------
 
 .. COMMENT: 
    **Objective:**
 
-   Weather Summary
-   --------------------
-
-   WX Summary: Hurricane Barry made landfall in Louisiana on July 11th as a category one hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and minimum pressure of 992 hPa. 
-   Weather phenomena: Flooding, and wind and tornado reports
-   SPC Storm Reports: Storm Prediction Center 20190713's Storm Reports (noaa.gov) & Storm Prediction Center 20190714's Storm Reports (noaa.gov)
-   Radar Loop: https://en.wikipedia.org/wiki/Hurricane_Barry_(2019)#/media/File:Barry_making_landfall.gif
-
    Data
    -------
-
 
    Configuration
    ----------------
@@ -287,20 +308,24 @@ Coming soon!
       Things still needed:
       We will need a new subconus domain over LA. We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
 
-
-
-
 .. _fcst3:
 
 Sample Forecast #3: Cold Air Damming
 ========================================
+
+Weather Summary
+-----------------
+
+Cold air damming occurs when cold dense air is topographically trapped along the leeward (downwind) side of a mountain. 
+
+Tutorial Content Coming Soon!
+--------------------------------
 
 .. COMMENT: 
    **Objective:**
 
    Weather Summary
    --------------------
-
 
    WX Summary: Cold air damming occurs when cold dense air is topographically trapped along the leeward side of the mountain.
    Weather phenomena: Cold air damming
@@ -309,7 +334,6 @@ Sample Forecast #3: Cold Air Damming
 
    Data
    -------
-
 
    Configuration
    ----------------
@@ -396,6 +420,8 @@ Coming soon!
 
 Sample Forecast #5: Halloween Storm
 =======================================
+
+Coming soon!
 
 .. COMMENT:
 
