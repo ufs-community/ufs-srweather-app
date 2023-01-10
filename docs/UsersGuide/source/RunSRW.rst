@@ -537,8 +537,8 @@ To configure an experiment and python environment for a general Linux or Mac sys
 
 .. _PlotOutput:
 
-Plot the Output
------------------
+Plotting Configuration (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
@@ -561,12 +561,12 @@ the same cycle starting date/time and forecast hours. Other parameters may diffe
 .. _Cartopy:
 
 Cartopy Shapefiles
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
 
 Task Configuration
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
 
@@ -593,7 +593,7 @@ When plotting output from a single experiment, no further adjustments are necess
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
 
 Plotting the Difference Between Two Experiments
-```````````````````````````````````````````````````
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
 When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
 
