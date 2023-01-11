@@ -114,15 +114,17 @@ ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
 Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
 POST_STEP
 
-fhr=01
-case ${cyc} in
-  00) endfhr=06;;
-  06) endfhr=72;;
-  12) endfhr=72;;
-  18) endfhr=06;;
-esac
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
 
-while [ ${fhr} -le ${endfhr} ]; do
+fhr=01
+while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
   fhr9=$( printf "%02d" "${fhr}" )
 
   if [ "${fhr9}" -le "07" ]; then

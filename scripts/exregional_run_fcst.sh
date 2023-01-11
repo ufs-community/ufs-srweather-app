@@ -583,22 +583,22 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy -rf "${COMIN}/RESTART"
-  if [ "$(ls -A ${DATA}/RESTART)" ]; then
-    mv_vrfy ${DATA}/RESTART ${COMIN}
-    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    rm_vrfy -rf "${COMIN}/RESTART"
+    if [ "$(ls -A ${DATA}/RESTART)" ]; then
+      mv_vrfy ${DATA}/RESTART ${COMIN}
+      ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+    fi
   fi
 
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
-    if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
-      for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-        mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-        mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-      done
-    fi
+  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
+    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    done
   fi
 fi
 #
@@ -661,7 +661,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fi
     done
 
-    if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then	
+    if [ "${CPL_AQM}" = "TRUE" ]; then	
       mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
       mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi
