@@ -126,19 +126,19 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDE
 
    Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative directory name.
 
 .. COMMENT: for EXPT_SUBDIR, are there certain characters that aren't allowed?
 
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
-``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL:`` In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019 at 12h00 UTC (or 12z). A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. Multiple cycles can also be used in research to compare how models with different start times handled a particular weather event without needing to run several forecasts separately. 
+``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL:`` In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019 at 12h00 UTC (or 12z). A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. Multiple cycles can also be used in research to compare how models with different start times handled a particular weather event without running several forecasts separately. 
 
 .. COMMENT: Verify info on cycles
 
-``FCST_LEN_HRS:`` This variable indicates how long the forecast should run. Here, the forecast will run for 24 hours to 
+``FCST_LEN_HRS:`` This variable indicates how long the forecast should run. Here, the forecast will run for 24 hours to capture the most severe portions of the storm. 
 
-In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. This section of ``config.yaml`` will look like this:
+In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
 
 .. code-block:: console
 
@@ -155,7 +155,7 @@ In the ``workflow_switches:`` section, turn the plotting task on by changing ``R
      RUN_TASK_VX_ENSPOINT: false
      RUN_TASK_PLOT_ALLVARS: true
 
-In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). This section of the ``config.yaml`` file will look like this:
+In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
 .. code-block:: console
 
@@ -165,7 +165,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
    
-Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). This section of the ``config.yaml`` file will look like this:
+Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
 
 .. code-block:: console
 
@@ -176,7 +176,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
 
-In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCST``) from 2:00:00 to 4:00:00. If the ``run_fcst`` task takes longer than four hours to run, it will go DEAD. However, four hours should be more than enough time to run this particular forecast. Depending on the system in use, two hours may be insufficient. This section of the ``config.yaml`` should appear as follows:
+In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCST``) from 2:00:00 to 4:00:00. If the ``run_fcst`` task takes longer than four hours to run, it will go DEAD. However, four hours should be more than enough time to run this particular forecast. Depending on the system in use, two hours will likely be insufficient. 
 
 .. code-block:: console
 
@@ -184,7 +184,7 @@ In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCS
      WTIME_RUN_FCST: 04:00:00
      QUILTING: true
 
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 12z on June 15, 2019 (the 0th forecast hour) through the 24th forecast hour (June 17, 2019 at 12z).
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 12z on June 15, 2019 (the 0th forecast hour) through the 24th forecast hour (June 16, 2019 at 12z).
 
 .. code-block:: console
 
@@ -193,6 +193,8 @@ Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it 
      #PLOT_FCST_START: 0
      PLOT_FCST_INC: 6
      #PLOT_FCST_END: 24
+
+.. COMMENT: Remove PLOT_FCST_START & PLOT_FCST_END?
 
 After configuring the forecast, users can generate the forecast by running:
 
@@ -210,7 +212,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. note::
 
-   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command above. 
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command. 
 
 Experiment 2: Comparison
 ---------------------------
@@ -222,6 +224,14 @@ Once the control case is running, users can return to the ``config.yaml`` file (
    workflow:
      EXPT_SUBDIR: test_expt
      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+
+Users may opt for a different ``EXPT_SUBDIR`` name if they prefer. 
+
+``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
+
+.. note:: 
+   
+   Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
 
 Additionally, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data:
 
