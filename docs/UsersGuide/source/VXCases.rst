@@ -201,7 +201,7 @@ Compare
 
 Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against the forecast results provided in the ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>`. This directory contains the forecast output and plots from NOAA developers under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
 
-Qualitative Comparision of the Plots
+Qualitative Comparison of the Plots
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Comparing the plots is relatively straightforward since they are in ``.png`` format, and most computers can render them in their default image viewer. :numref:`Table %s <AvailablePlots>` lists plots that are available every 6 hours of the forecast (where ``hhh`` is replaced by the three-digit forecast hour): 
