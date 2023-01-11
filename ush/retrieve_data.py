@@ -960,6 +960,13 @@ def parse_args(argv):
         required=False,                    # relaxed this arg option, to enable generic package copying
     )
     parser.add_argument(
+        "--machine",
+        choices=("jet"),  
+        help="Flag for which machine path(s) to use \
+        if retrieving local data files", 
+        required=False,                    # relaxed this arg option, to enable generic package copying
+    )
+    parser.add_argument(
         "--config",
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
@@ -1046,7 +1053,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--file_type",
-        choices=("grib2", "nemsio", "netcdf", "bufr"),
+        choices=("grib2", "nemsio", "netcdf", "bufr", "prepbufr"),
         help="External model file format",
     )
     parser.add_argument(

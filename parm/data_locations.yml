@@ -120,12 +120,12 @@ FV3GFS:
     file_names:
       <<: *gfs_file_names
   local:
-    output_path: /lfs4/HFIP/hfv3gfs/Cameron.Book/bufr_test
-    file_path: /public/data/grids/gfs/prepbufr
-    file_names:
-      obs:
-        - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
-
+    machine: jet
+      file_path: /public/data/grids/gfs/prepbufr
+      file_names:
+        prepbufr:
+          obs:
+            - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
 GDAS:
   hpss:
     protocol: htar
@@ -267,8 +267,7 @@ RAP:
         - rap.t{hh}z.ssmisu.tm00.bufr_d
 
   local:
-    #JET
-    output_path: /lfs4/HFIP/hfv3gfs/Cameron.Book/bufr_test
+    machine: jet
     file_path: /public/data/grids/rap/obs
     file_names:
       obs:
@@ -302,7 +301,6 @@ RAP:
         - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
-
 
 HRRR:
   hpss:
@@ -357,11 +355,3 @@ GSI-FIX:
     url: https://epic-sandbox-srw.s3.amazonaws.com
     file_names:
       - gsi-fix.{yy}.{mm}.{dd}.tar.gz
-
-Reflectivity:
-  local:
-    output_path:
-    file_path: /public/data/radar/nssl/mrms/conus
-    file_names:
-      obs:
-        - MergedReflectivityQC_00.50_{YYYYMMDD}-{HH}{mm}{ss}.{obs_appendix}
