@@ -86,7 +86,8 @@ Experiment 1: Control
    
    To open the configuration file in the command line, users may run the command:
 
-   ..code-block::
+   .. code-block:: console
+
       vi config.yaml
 
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead.
@@ -111,12 +112,18 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDE
      EXPT_SUBDIR: control
      CCPP_PHYS_SUITE: FV3_GFS_v16
      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
-     DATE_FIRST_CYCL: '2019061500'
-     DATE_LAST_CYCL: '2019061500'
-     FCST_LEN_HRS: 60
+     DATE_FIRST_CYCL: '2019061512'
+     DATE_LAST_CYCL: '2019061512'
+     FCST_LEN_HRS: 24
      PREEXISTING_DIR_METHOD: rename
      VERBOSE: true
      COMPILER: intel
+
+.. COMMENT: I tried w/ 2019061500 and 36 hours bc 2019061512 wasn't available.
+
+.. note::
+
+   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks. However, not all systems have :term:`cron`. 
 
 ``EXPT_SUBDIR`` can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", experiment. However, users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative.
 
@@ -177,15 +184,15 @@ In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCS
      WTIME_RUN_FCST: 04:00:00
      QUILTING: true
 
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 00z on June 15, 2019 through the 60th forecast hour (June 17, 2019 at 12z).
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 12z on June 15, 2019 (the 0th forecast hour) through the 24th forecast hour (June 17, 2019 at 12z).
 
 .. code-block:: console
 
    task_plot_allvars:
      COMOUT_REF: ""
-     PLOT_FCST_START: 0
+     #PLOT_FCST_START: 0
      PLOT_FCST_INC: 6
-     PLOT_FCST_END: 60
+     #PLOT_FCST_END: 24
 
 After configuring the forecast, users can generate the forecast by running:
 
@@ -321,13 +328,20 @@ Sample Forecast #3: Cold Air Damming
 Weather Summary
 -----------------
 
-Cold air damming occurs when cold dense air is topographically trapped along the leeward (downwind) side of a mountain. 
+Cold air damming occurs when cold dense air is topographically trapped along the leeward (downwind) side of a mountain. Starting on February 3, 2020, weather conditions leading to cold air damming began to develop east of the Appalachian mountains. By February 6-7, 2020, this cold air damming caused high winds, flash flood advisories, and wintery conditions. 
 
-**Weather phenomena:** Cold air damming
+**Weather Phenomena:** Cold air damming
 
-.. COMMENT:
-   SPC Storm Reports: N/A
-   Radar Loop: N/A
+   * `Storm Prediction Center (SPC) Storm Report for 20200205 <https://www.spc.noaa.gov/climo/reports/200205_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20200206 <https://www.spc.noaa.gov/climo/reports/200206_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20200207 <https://www.spc.noaa.gov/climo/reports/200207_rpts.html>`__ 
+
+.. figure:: _static/ColdAirDamming.gif
+   :alt: Radar animation of cold air damming in the southern Appalachian mountains. 
+
+   *Cold Air Damming in the Appalachian Mountains*
+
+.. COMMENT: Check accuracy of this section. The UFS case study starts on Feb. 3 and doesn't include any radar or storm reports: https://ufs-case-studies.readthedocs.io/en/develop/2020CAD.html
 
 Tutorial Content 
 -------------------
@@ -377,7 +391,7 @@ Weather Summary
 
 A polar vortex brought arctic air to much of the U.S. and Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances between February 14, 2021 at 06z and February 17, 2021 at 06z that brought several inches of snow to Oklahoma City. A lull on February 16, 2021 resulted in record daily low temperatures. 
    
-**Weather phenomena:** Snow and record-breaking cold temperatures
+**Weather Phenomena:** Snow and record-breaking cold temperatures
 
 .. figure:: _static/SouthernPlainsWinterWeather.gif
    :alt: Radar animation of the Southern Plains Winter Weather Event centered over Oklahoma City. Animation starts on February 14, 2021 at 6h00 UTC and ends on February 17, 2021 at 6h00 UTC. 
@@ -433,11 +447,13 @@ Weather Summary
 
 A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
 
-**Weather phenomena:** Snow and record-breaking cold temperatures
+**Weather Phenomena:** Snow and record-breaking cold temperatures
+   * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
 
-.. COMMENT:
-   SPC Storm Reports: 
-   Radar Loop: 
+.. figure:: _static/HalloweenStorm.gif
+   :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
+
+   *Halloween Storm 2019*
 
 Tutorial Content
 -------------------
