@@ -220,13 +220,14 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
         yyyymm=cycle_date.strftime("%Y%m"),
         yyyymmdd=cycle_date.strftime("%Y%m%d"),
         yyyymmddhh=cycle_date.strftime("%Y%m%d%H"),
+        yyjjjhh=cycle_date.strftime("%y%j%H"),
         #rap_obs_type=['satwnd', 'rassda'],
     )
 
     if templates_only:
         return f'{",".join((format_values.keys()))}'
     return template_str.format(**format_values)
-
+    
 
 def create_target_path(target_path):
 
@@ -785,7 +786,7 @@ def main(argv):
         #for obs_type in rap_obs:
         #    rap_obs_type=obs_type
         #    print("rap_obs_type:", rap_obs_type)
-
+    print("Julian Day:", cla.cycle_date.strftime("%j"))
     if "disk" in cla.data_stores:
         # Make sure a path was provided.
         if not cla.input_file_path:

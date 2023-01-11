@@ -119,6 +119,12 @@ FV3GFS:
     url: https://noaa-gfs-bdp-pds.s3.amazonaws.com/gfs.{yyyymmdd}/{hh}/atmos
     file_names:
       <<: *gfs_file_names
+  local:
+    output_path: /lfs4/HFIP/hfv3gfs/Cameron.Book/bufr_test
+    file_path: /public/data/grids/gfs/prepbufr
+    file_names:
+      obs:
+        - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
 
 GDAS:
   hpss:

@@ -79,3 +79,11 @@ RAP:
         - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
+
+FV3GFS:
+  local:
+    output_path: /lfs4/HFIP/hfv3gfs/Cameron.Book/bufr_test
+    file_path: /public/data/grids/gfs/prepbufr
+    file_names:
+      obs:
+        - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
