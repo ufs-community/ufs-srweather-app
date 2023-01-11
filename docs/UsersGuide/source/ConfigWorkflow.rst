@@ -427,6 +427,8 @@ A standard set of environment variables has been established for *nco* mode to s
 ``OPSROOT``: (Default: "")
   The operations root directory in *nco* mode.
 
+.. _workflow-switches:
+
 WORKFLOW SWITCHES Configuration Parameters
 =============================================
 
@@ -688,6 +690,8 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
 
 ``SFC_CLIMO_DIR``: (Default: "")
    The directory containing pre-generated surface climatology files to use when ``MAKE_SFC_CLIMO_TN`` is set to false.
+
+.. _task_get_extrn_ics:
 
 GET_EXTRN_ICS Configuration Parameters
 =========================================
