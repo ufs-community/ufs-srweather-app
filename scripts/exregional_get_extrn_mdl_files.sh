@@ -56,7 +56,7 @@ or lateral boundary conditions for the FV3.
 #
 set -x
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
-  if [ ${TIME_OFFSET_HRS} -eq 0 ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+  if [ ${TIME_OFFSET_HRS} -eq 0 ]; then
     anl_or_fcst="anl"
   else
     anl_or_fcst="fcst"
