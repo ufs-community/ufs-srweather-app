@@ -71,6 +71,14 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   anl_or_fcst="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
+  if [ "${FCST_LEN_HRS}" = "-1" ]; then
+    for i_cdate in "${!ALL_CDATES[@]}"; do
+      if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+        FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+        break
+      fi
+    done
+  fi
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}

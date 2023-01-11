@@ -24,13 +24,14 @@ from fill_jinja_template import fill_jinja_template
 
 
 def create_model_configure_file(
-    cdate, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
+    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
 ):
     """Creates a model configuration file in the specified
     run directory
 
     Args:
         cdate: cycle date
+        fcst_len_hrs: forecast length in hours
         run_dir: run directory
         sub_hourly_post
         dt_subhourly_post_mnts
@@ -85,7 +86,7 @@ def create_model_configure_file(
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
-        "nhours_fcst": FCST_LEN_HRS,
+        "nhours_fcst": fcst_len_hrs,
         "dt_atmos": DT_ATMOS,
         "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
@@ -252,6 +253,14 @@ def parse_args(argv):
     )
 
     parser.add_argument(
+        "-f",
+        "--fcst_len_hrs",
+        dest="fcst_len_hrs",
+        required=True,
+        help="Forecast length in hours.",
+    )
+
+    parser.add_argument(
         "-s",
         "--sub-hourly-post",
         dest="sub_hourly_post",
@@ -294,6 +303,7 @@ if __name__ == "__main__":
     create_model_configure_file(
         run_dir=args.run_dir,
         cdate=str_to_type(args.cdate),
+        fcst_len_hrs=str_to_type(args.fcst_len_hrs),
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
@@ -307,6 +317,7 @@ class Testing(unittest.TestCase):
             create_model_configure_file(
                 run_dir=path,
                 cdate=datetime(2021, 1, 1),
+                fcst_len_cdate=72,
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
                 dt_atmos=1,

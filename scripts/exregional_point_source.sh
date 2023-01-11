@@ -66,6 +66,14 @@ eval ${PRE_TASK_CMDS}
 nprocs=$(( LAYOUT_X*LAYOUT_Y ))
 ppn_run_aqm="${PPN_POINT_SOURCE}"
 omp_num_threads_run_aqm="${OMP_NUM_THREADS_POINT_SOURCE}"
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"
 

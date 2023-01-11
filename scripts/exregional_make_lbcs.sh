@@ -101,6 +101,19 @@ fi
 DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
+LBC_SPEC_FCST_HRS=()
+for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( ${FCST_LEN_HRS}+${LBC_SPEC_INTVL_HRS} )) ); do
+  LBC_SPEC_FCST_HRS+=("$i_lbc")
+done
 #
 #-----------------------------------------------------------------------
 #
