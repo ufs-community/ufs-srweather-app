@@ -55,7 +55,7 @@ On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-P
 Load the Regional Workflow
 -------------------------------
 
-Navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional workflow environment:
+To load the regional workflow environment, run:
 
 .. code-block:: console
    
@@ -69,17 +69,25 @@ After loading the workflow, users should follow the instructions printed to the 
 Configuration
 -------------------------
 
-The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file. Users can copy this file into ``config.yaml`` if they have not already done so:
+Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file in that directory. Users can copy this file into ``config.yaml`` if they have not already done so:
 
 .. code-block:: console
 
    cd </path/to/ufs-srweather-app/ush>
    cp config.community.yaml config.yaml
 
-Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
+Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. 
+
+.. code-block:: console
+
+   export USH=/path/to/ufs-srweather-app/ush
+
+Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. 
 
 Experiment 1: Control
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpts below. 
 
 .. Hint:: 
    
@@ -100,9 +108,11 @@ Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variab
       MACHINE: macos
       ACCOUNT: none
 
-For this tutorial, users do not need to change the ``platform:`` section. The default parameters in this section pertain to METplus verification, which is not addressed in this tutorial. For more information on verification, see :numref:`Chapter %s <VXCases>`.
+For a detailed understanding of these variables, see :numref:`Section %s <user>`.
 
-In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDEF_GRID_NAME``, ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``FCST_LEN_HRS``.
+Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in this section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Chapter %s <VXCases>`.
+
+In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
 
 .. code-block:: console
 
@@ -111,14 +121,12 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDE
      EXPT_SUBDIR: control
      CCPP_PHYS_SUITE: FV3_GFS_v16
      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
-     DATE_FIRST_CYCL: '2019061512'
-     DATE_LAST_CYCL: '2019061512'
-     FCST_LEN_HRS: 24
+     DATE_FIRST_CYCL: '2019061518'
+     DATE_LAST_CYCL: '2019061518'
+     FCST_LEN_HRS: 12
      PREEXISTING_DIR_METHOD: rename
      VERBOSE: true
      COMPILER: intel
-
-.. COMMENT: I tried w/ 2019061500 and 36 hours bc 2019061512 wasn't available.
 
 .. _CronNote:
 
@@ -132,11 +140,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDE
 
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
-``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL:`` In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019 at 12h00 UTC (or 12z). A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. Multiple cycles can also be used in research to compare how models with different start times handled a particular weather event without running several forecasts separately. 
-
-.. COMMENT: Verify info on cycles
-
-``FCST_LEN_HRS:`` This variable indicates how long the forecast should run. Here, the forecast will run for 24 hours to capture the most severe portions of the storm. 
+For a detailed understanding of the ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
 In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
 
@@ -155,6 +159,8 @@ In the ``workflow_switches:`` section, turn the plotting task on by changing ``R
      RUN_TASK_VX_ENSPOINT: false
      RUN_TASK_PLOT_ALLVARS: true
 
+For a detailed understanding of the ``workflow-switches:`` variables, see :numref:`Section %s <workflow-switches>`.
+
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
 .. code-block:: console
@@ -164,7 +170,9 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      FV3GFS_FILE_FMT_ICS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
-   
+
+For a detailed understanding of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`.
+
 Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
 
 .. code-block:: console
@@ -176,25 +184,17 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
 
-In the ``task_run_fcst:`` section, change the forecast walltime (``WTIME_RUN_FCST``) from 2:00:00 to 4:00:00. If the ``run_fcst`` task takes longer than four hours to run, it will go DEAD. However, four hours should be more than enough time to run this particular forecast. Depending on the system in use, two hours will likely be insufficient. 
+For a detailed understanding of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
-.. code-block:: console
+Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
 
-   task_run_fcst:
-     WTIME_RUN_FCST: 04:00:00
-     QUILTING: true
-
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START`` and ``PLOT_FCST_END`` explicitly, but these can be omitted since the values below are the same as the default values. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 12z on June 15, 2019 (the 0th forecast hour) through the 24th forecast hour (June 16, 2019 at 12z).
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z).
 
 .. code-block:: console
 
    task_plot_allvars:
      COMOUT_REF: ""
-     #PLOT_FCST_START: 0
      PLOT_FCST_INC: 6
-     #PLOT_FCST_END: 24
-
-.. COMMENT: Remove PLOT_FCST_START & PLOT_FCST_END?
 
 After configuring the forecast, users can generate the forecast by running:
 
@@ -210,14 +210,18 @@ To see experiment progress, users should navigate to their experiment directory.
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
+Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above regularly and repeatedly to continue submitting workflow tasks and receiving progress updates. 
+
 .. note::
 
-   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command. 
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
 
 Experiment 2: Comparison
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the control case is running, users can return to the ``config.yaml`` file (in ``ufs-srweather-app/ush``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow`` section as follows:
+Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow:`` section as follows:
+
+.. COMMENT: If not using cron, they should probably finish the experiment first... right?
 
 .. code-block:: console
 
@@ -225,15 +229,15 @@ Once the control case is running, users can return to the ``config.yaml`` file (
      EXPT_SUBDIR: test_expt
      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
 
-Users may opt for a different ``EXPT_SUBDIR`` name if they prefer. 
+``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be overwritten. ``test_expt`` is suggested. 
 
 ``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
 
-.. note:: 
+.. hint:: 
    
    Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
 
-Additionally, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data:
+Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data. Users will need to change the following lines in each section:
 
 .. code-block:: console
 
@@ -244,26 +248,92 @@ Additionally, users will need to modify the data parameters in ``task_get_extrn_
      EXTRN_MDL_NAME_LBCS: RAP
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/RAP/grib2/${yyyymmddhh}>
 
-HRRR and RAP data are more appropriate for use with the FV3_RRFS_v1beta physics scheme because these datasets are higher resolution and contain variables that more accurately represent small-scale atmospheric phenomena. RRFS and HRRR physics schemes focus on these small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta or similar physics suites (e.g., FV3_HRRR), which focus on high-resolution, storm-scale predictions. 
+HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these models and their datasets use the same physics parameterizations that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
 
 .. COMMENT: Verify above explanation w/Jeff/Gerard
 
-Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateFiles>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
+Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
 
 .. code-block:: console
 
    task_plot_allvars:
      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
 
-Setting ``COMOUT_REF`` this way (i.e., using ``$EXPT_SUBDIR``) ensures that the plotting task can access the forecast output data in both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061500/postprd`` and ``test_expt/2019061500/postprd``. 
+Setting ``COMOUT_REF`` this way (i.e., using environment variables such as ``$EXPT_SUBDIR``) ensures that the plotting task can access the forecast output data in both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061518/postprd`` and ``test_expt/2019061518/postprd``. 
+
+After configuring the forecast, users can generate the second forecast by running:
+
+.. code-block:: console
+
+   ./generate_FV3LAM_wflow.py
+
+To see experiment progress, users should navigate to their experiment directory. As in the first forecast, they can then use the following commands to launch new workflow tasks and check on experiment progress. 
+
+.. code-block:: console
+
+   cd </path/to/expt_dirs/test_expt>
+   rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+   rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+.. note::
+
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
 
 Compare Results
 -------------------
 
-Navigate to ``test_expt/2019061500/postprd``. This directory contains the post-processed data generated by UPP from the forecast. 
+Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-processed data generated by UPP from the forecast. After the ``plot_allvars`` task completes, this directory will contain .png images for several forecast variables including 2-m temperature, 2-m dew point temperature, 10-m winds, accumulated precipitation, composite reflectivity, and surface-based CAPE/CIN. Plots with a ``_diff`` label in the file name are plots from the control forecast. 
+
+Copy ``.png`` Files onto Local System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. 
+
+.. attention::
+   
+   Users who are running an experiment on their local system can skip this section. 
+
+Users can run the ``scp`` command to copy files from a remote system to their local system. The structure of the command is:
+
+.. code-block:: console
+
+   scp [OPTION] [user@]SRC_HOST:]file1 [user@]DEST_HOST:]file2
+
+Here, ``SRC_HOST`` refers to the (HPC or cloud) system where the ``.png`` files are currently located. ``DEST_HOST`` refers to the user's local system. 
+
+
+
+
+Local files should be specified using an absolute or relative path, while remote file names should include a user and host specification.
+
+scp -i /path-to/EPIC_RSA.pem ubuntu@your-ip-address:~/GST_test/grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/2019061518/postprd/*diffs*.png .
+
+scp aws:"/lustre/$USER/expt_dirs/GST_lowres/2019061518/postprd/*.png" .
+
+scp -P 2372 User.Name@localhost:/path/to/expt_dirs/test_expt/2019061518/postprd/*.png" .
+
+scp -P 2372 Gillian.Petro@localhost:/scratch1/NCEPDEV/nems/Gillian.Petro/expt_dirs/NamelistFiles/*.nml ~
+
+scp -P 32207 Gillian.Petro@localhost:/lfs4/HFIP/hfv3gfs/Gillian.Petro/expt_dirs/control/2019061518/postprd/*.png ./images
+
+
+ 
+
+
+Compare Images
+^^^^^^^^^^^^^^^^^^
+
 
 .. COMMENT: Include images of postprd data/pngs!
 
+.. figure:: _static/placeholder.png
+      :width: 1200
+      :align: center
+
+      *Placeholder Label*
+
+    * Conclusion: 
+      .. Example: MRW_GFSv16beta more correctly forecasts the surface low than MRW_GFSv15p2.
 
 Analysis
 -----------
@@ -273,7 +343,7 @@ FV3_GFS_v16 physics is best used for larger scale weather phenomena, like jet st
 
 .. COMMENT:
    What to compare?
-   This is a new UFS Case Study so there isn’t a predefined analysis. Examining the mid-level and surface dynamics along with convective variables would be a good place to start. 
+   No predefined analysis. Examining the mid-level and surface dynamics along with convective variables would be a good place to start. 
 
 
 
