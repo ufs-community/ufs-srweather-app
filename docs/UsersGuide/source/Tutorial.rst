@@ -46,11 +46,10 @@ A surface boundary associated with a vorticity maximum over the northern Great P
 Data
 -------
 
-The data required for this experiment is the same data used for the Indy-Severe-Weather Verification sample case described in :numref:`Chapter %s <VXCases>`. It is already available on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems (see :numref:`Section %s<Data>` for locations) and can be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
+On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-.. Or should this be the Indy-Severe-Weather data? Specify where in the bucket the data is!
+.. COMMENT: Specify where in the bucket the data is!
    https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
-
    NEED HRRR/RAP data for this tutorial! 
 
 Load the Regional Workflow
@@ -70,7 +69,7 @@ After loading the workflow, users should follow the instructions printed to the 
 Configuration
 -------------------------
 
-The default (or "control") configuration for this experiment is the ``config.community.yaml`` file. Users can copy this file into ``config.yaml`` if they have not done so already:
+The default (or "control") configuration for this experiment is based on the ``config.community.yaml`` file. Users can copy this file into ``config.yaml`` if they have not already done so:
 
 .. code-block:: console
 
@@ -101,7 +100,7 @@ Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variab
       MACHINE: macos
       ACCOUNT: none
 
-For this tutorial, users do not need to change the ``platform:`` section. The default parameters in this section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Chapter %s <VXCases>`.
+For this tutorial, users do not need to change the ``platform:`` section. The default parameters in this section pertain to METplus verification, which is not addressed in this tutorial. For more information on verification, see :numref:`Chapter %s <VXCases>`.
 
 In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDEF_GRID_NAME``, ``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL``, and ``FCST_LEN_HRS``.
 
@@ -121,22 +120,23 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR``, ``PREDE
 
 .. COMMENT: I tried w/ 2019061500 and 36 hours bc 2019061512 wasn't available.
 
+.. _CronNote:
+
 .. note::
 
-   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks. However, not all systems have :term:`cron`. 
+   Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
 
-``EXPT_SUBDIR`` can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", experiment. However, users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative.
 
 .. COMMENT: for EXPT_SUBDIR, are there certain characters that aren't allowed?
 
-This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3-km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
+``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
-In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019. A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. 
+``DATE_FIRST_CYCL``, ``DATE_LAST_CYCL:`` In this experiment, ``DATE_FIRST_CYCL`` and ``DATE_LAST_CYCL`` are the same: June 15, 2019 at 12h00 UTC (or 12z). A cycle refers to the hour of the day on which a forecast is started. This experiment has a single cycle. Multiple cycles are typically used with :term:`data assimilation` to update/adjust a forecast based on new data/observations. Multiple cycles can also be used in research to compare how models with different start times handled a particular weather event without needing to run several forecasts separately. 
 
-.. COMMENT: Edit above section on reasoning for cycles
-   Maybe the event they are researching is a long-lived event and the user wants to know how the 6, 12, 18 models handled the event or maybe they wanted to see which cycle picked up on the atmospheric changes that lead to an evening's severe thunderstorms. To me, these vars exists so the user won't have to rerun an experiment x-number times, they can run it just once with the cycles they want. 
+.. COMMENT: Verify info on cycles
 
-   Multiple cycles can also be used in research...
+``FCST_LEN_HRS:`` This variable indicates how long the forecast should run. Here, the forecast will run for 24 hours to 
 
 In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. This section of ``config.yaml`` will look like this:
 
@@ -207,6 +207,10 @@ To see experiment progress, users should navigate to their experiment directory.
    cd </path/to/expt_dirs/control>
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+
+.. note::
+
+   When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command above. 
 
 Experiment 2: Comparison
 ---------------------------
