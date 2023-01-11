@@ -9,6 +9,9 @@ The UFS SRW App User's Guide associated with the development branch is at: https
 For instructions on how to clone the repository, build the code, and run the workflow, see:
 https://github.com/ufs-community/ufs-srweather-app/wiki/Getting-Started
 
+For a debugging guide for users and developers in the field of Earth System Modeling, please see:
+https://epic.noaa.gov/wp-content/uploads/2022/12/Debugging-Guide.pdf
+
 UFS Development Team. (2022, Nov. 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.1.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
 
 [![Python unittests](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml/badge.svg)](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml)

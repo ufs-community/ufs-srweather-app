@@ -90,7 +90,7 @@ class Testing(unittest.TestCase):
             dely=3000.0,
             constants=dict(
                 RADIUS_EARTH=6371200.0,
-                DEGS_PER_RADIAN=57.2957795131,
+                DEGS_PER_RADIAN=57.29577951308232087679,
             ),
         )
 
@@ -104,8 +104,8 @@ class Testing(unittest.TestCase):
                 0.0,
                 6,
                 0.999,
-                0.013489400626200717,
-                0.013489400626200717,
+                0.013489400626196555,
+                0.013489400626196555,
                 -1760,
                 -1050,
             ],
