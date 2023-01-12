@@ -28,3 +28,10 @@ platform:
 data:
   ics_lbcs:
     FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
+
+GSI-fix:
+  local:
+    output_path: ./sorc/gsi
+    file_path: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_gsi
+    file_names:
+      - gsi-fix.22.07.27.tar.gz
