@@ -248,18 +248,26 @@ if [ "${VERBOSE}" = true ] ; then
   settings
 fi
 
-# Check out external components for Online-CMAQ =============================
+# Check out external components ===============================================
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ -d "${SRW_DIR}/sorc/arl_nexus" ]; then
-    printf "Extra external components already exist. This step will be skipped.\n"
-  else  
-    printf "... Checking out extra components for Online-CMAQ ...\n"
-    ./manage_externals/checkout_externals -e externals/Externals_AQM.cfg
-    if [ "${CANOPY}" = true ]; then
-      printf "... Replace ufs-weather-model with the canopy version ...\n"
+    printf "!!! Extra external components already exist. This step is skipped.\n"
+  else
+    if [ -d "${SRW_DIR}/sorc/gsi" ]; then
+      printf "!!! FV3-LAM components exist. The existing components are removed.\n"
       rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
-      ./manage_externals/checkout_externals -e externals/Externals_canopy.cfg
-    fi
+      rm -rf "${SRW_DIR}/sorc/UFS_UTILS"
+      rm -rf "${SRW_DIR}/sorc/UPP"  
+      rm -rf "${SRW_DIR}/sorc/gsi"
+      rm -rf "${SRW_DIR}/sorc/rrfs_utl"
+    fi 
+    printf "... Checking out external components for Online-CMAQ ...\n"
+    ./manage_externals/checkout_externals -e Externals_AQM.cfg
+  fi
+  if [ "${CANOPY}" = true ]; then
+    printf "... Replace ufs-weather-model with the canopy version ...\n"
+    rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
+    ./manage_externals/checkout_externals -e externals/Externals_canopy.cfg
   fi
 
   if [ "${DEFAULT_BUILD}" = true ]; then
@@ -270,6 +278,13 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
     BUILD_POST_STAT="on"
   else
     BUILD_POST_STAT="off"
+  fi
+else
+  if [ -d "${SRW_DIR}/sorc/ufs-weather-model" ]; then
+    printf "!!! External components already exist. This step is skipped.\n"
+  else  
+    printf "... Checking out external components for FV3-LAM ...\n"  
+    ./manage_externals/checkout_externals
   fi
 fi
 
