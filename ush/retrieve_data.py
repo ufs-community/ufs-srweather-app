@@ -961,7 +961,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--machine",
-        choices=("jet"),  
+        choices=("jet", "hera"),  
         help="Flag for which machine path(s) to use \
         if retrieving local data files", 
         required=False,                    # relaxed this arg option, to enable generic package copying
