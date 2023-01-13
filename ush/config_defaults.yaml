@@ -51,9 +51,14 @@ user:
   # ACCOUNT:
   # The account under which to submit jobs to the queue.
   #
+  # SERVICE_ACCOUNT:
+  # The account under which to submit non-reservation jobs to the queue.
+  # Defaults to ACCOUNT if not set.
+  #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
+  SERVICE_ACCOUNT: ""
 
   HOMEdir: '{{ user.HOMEdir }}'
   USHdir: '{{ user.USHdir }}'
@@ -158,6 +163,47 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
+  # PARTITION_GRAPHICS
+  # Partition to which graphics tasks are submitted
+  #
+  # QUEUE_GRAPHICS
+  # Queue for graphics tasks
+  #
+  # PARTITION_ANALYSIS
+  # Partion to which analysis tasks are submitted
+  #
+  # QUEUE_ANALYSIS:
+  # The queue or QOS to which the task that runs a analysis is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # PARTITION_PRDGEN:
+  # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+  # the partition to which the task that remaps output grids is submitted.  If 
+  # this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.  This is not used if SCHED is not set to 
+  # "slurm".
+  #
+  # QUEUE_PRDGEN:
+  # The queue or QOS to which the task that prodgen is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # PARTITION_POST:
+  # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+  # the partition to which the task that upp is submitted.
+  #
+  # QUEUE_POST:
+  # The queue or QOS to which the task that upp is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # RESERVATION:
+  # The reservation for major tasks.  
+  #
+  # RESERVATION_POST:
+  # The reservation for post tasks.  
+  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
@@ -167,6 +213,8 @@ platform:
   WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
   BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
   RUN_VER_FN: 'run.ver.{{ user.MACHINE|lower() }}'
+  RESERVATION: ""
+  RESERVATION_POST: ""
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -174,6 +222,14 @@ platform:
   QUEUE_HPSS: ""
   PARTITION_FCST: ""
   QUEUE_FCST: ""
+  PARTITION_GRAPHICS: ""
+  QUEUE_GRAPHICS: ""
+  PARTITION_ANALYSIS: ""
+  QUEUE_ANALYSIS: ""
+  PARTITION_PRDGEN: ""
+  QUEUE_PRDGEN: ""
+  PARTITION_POST: ""
+  QUEUE_POST: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -627,6 +683,8 @@ workflow:
   GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
   WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
   WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+
+  PYTHON_GRAPHICS_YML_FN: "rrfs_subset.yml"
   #
   #-----------------------------------------------------------------------
   #
@@ -789,12 +847,104 @@ workflow:
   # FCST_LEN_HRS:
   # The length of each forecast, in integer hours.
   #
+  # STARTYEAR,STARTMONTH,STARTDAY,STARTHOUR:
+  # Year,month,day and hour of the first cycle in the set of forecasts to run
+  # ENDYEAR,ENDMONTH,ENDDAY,ENDHOUR
+  # Year,month,day and hour of the last cycle in the set of forecasts to run
+  #
+  # CYCL_HRS:
+  # An array containing the hours of the day at which to launch forecasts.
+  # Forecasts are launched at these hours on each day from DATE_FIRST_CYCL
+  # to DATE_LAST_CYCL, inclusive.  Each element of this array must be a 
+  # two-digit string representing an integer that is less than or equal to
+  # 23, e.g. "00", "03", "12", "23".
+  #
+  # CYCL_HRS_SPINSTART:
+  # An array containing the hours of the day at which the spin up cycle starts.
+  #
+  # CYCL_HRS_PRODSTART:
+  # An array containing the hours of the day at which the product cycle starts,
+  # from cold start input or from spin-up cycle forcast
+  #
+  # CYCL_HRS_PRODSTART_ENS:
+  # An array containing the hours of the day at which the product cycle starts,
+  # from cold start input or from spin-up cycle forcast, for the ensemble.
+  # this is only needed for locating the RRFS ensemble files for the the deterministic hybrid analysis.
+  #
+  # CYCL_HRS_RECENTER:
+  # An array containing the hours of the day at which the ensemble recenter is on
+  #
+  # CYCL_HRS_STOCH
+  # An array containing the hours of the day at which the stochastics physcis is on
+  # this might include: SPPT, SHUM, SKEB, SPP, LSM_SPP
+  #
+  # BOUNDARY_LEN_HRS
+  # The length of boundary condition for normal forecast, in integer hours.
+  #
+  # BOUNDARY_LONG_LEN_HRS
+  # The length of boundary condition for long forecast, in integer hours.
+  #
+  # BOUNDARY_PROC_GROUP_NUM
+  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
+  #
+  # FCST_LEN_HRS_SPINUP:
+  # The length of each forecast in spin up cycles, in integer hours.
+  #
+  # FCST_LEN_HRS_CYCLES:
+  # The length of forecast for each cycle, in integer hours.
+  # When it empty, all forecast will be FCST_LEN_HRS
+  #
+  # DA_CYCLE_INTERV:
+  # Data assimilation cycle interval, in integer hours for now.
+  #
+  # RESTART_INTERVAL:
+  # Set up frequenency or list of the forecast hours that FV3 should
+  # generate the restart files.
+  #
+  # RESTART_INTERVAL_LONG:
+  # Set up frequenency or list of the forecast hours that FV3 should
+  # generate the restart files.
+  #
+  # POSTPROC_LEN_HRS:
+  # The length of post process, in integer hours.
+  #
+  # POSTPROC_LONG_LEN_HRS:
+  # The length of long post process, in integer hours.
+  #
+  # CYCL_HRS_HYB_FV3LAM_ENS:
+  # An array containing the hours of the day at which the GSI hybrid using FV3LAM ensemeble.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
   DATE_LAST_CYCL: "YYYYMMDDHH"
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
+  STARTYEAR: 2022
+  STARTMONTH: 10
+  STARTDAY: 21
+  STARTHOUR: 00
+  ENDYEAR: 2022
+  ENDMONTH: 10
+  ENDDAY: 21
+  ENDHOUR: 23
+  CYCL_HRS: [ "HH1", "HH2"]
+  CYCL_HRS_SPINSTART: [ "HH1", "HH2" ]
+  CYCL_HRS_PRODSTART: [ "HH1", "HH2" ]
+  CYCL_HRS_PRODSTART_ENS: [ "HH1", "HH2" ]
+  CYCL_HRS_RECENTER: [ "HH1", "HH2" ]
+  CYCL_HRS_STOCH: [ "HH1", "HH2" ]
+  BOUNDARY_LEN_HRS: 0
+  BOUNDARY_LONG_LEN_HRS: 0
+  BOUNDARY_PROC_GROUP_NUM: 1
+  POSTPROC_LEN_HRS: 1
+  POSTPROC_LONG_LEN_HRS: 1
+  FCST_LEN_HRS_SPINUP: 1
+  FCST_LEN_HRS_CYCLES: []
+  DA_CYCLE_INTERV: 3
+  RESTART_INTERVAL: "3,6"
+  RESTART_INTERVAL_LONG: "3,6"
+  CYCL_HRS_HYB_FV3LAM_ENS: [ "99" ]
   #
   #-----------------------------------------------------------------------
   #
@@ -838,10 +988,20 @@ workflow:
   # messages are printed to out.  Note that if DEBUG is set to TRUE, then
   # VERBOSE will also get reset to TRUE if it isn't already.
   #
+  # SAVE_CYCLE_LOG:
+  # This is a flag that determines whether or not save
+  # the information related to data assimilation cycling, such as background
+  # used in each cycle
+  #
   #-----------------------------------------------------------------------
   #
   VERBOSE: true
   DEBUG: false
+  SAVE_CYCLE_LOG: true
+
+  #-----------------------------------------------------------------------
+  #
+  #
   #
   #-----------------------------------------------------------------------
   #
@@ -866,6 +1026,165 @@ workflow:
 
   GET_OBS: "get_obs"
   VX_TN: "run_vx"
+
+#----------------------------------
+# Start times for different setups
+#----------------------------------
+start_time:
+  START_TIME_SPINUP: 01:10:00
+  START_TIME_PROD: 02:20:00
+  START_TIME_CONVENTIONAL_SPINUP: 00:40:00
+  START_TIME_LATE_ANALYSIS: 01:40:00
+  START_TIME_CONVENTIONAL: 00:40:00
+  START_TIME_NSSLMOSIAC: 00:45:00
+  START_TIME_LIGHTNINGNC: 00:45:00
+  START_TIME_PROCSMOKE: 00:45:00
+
+#----------------------------------
+# Cycle definiton for each group
+#----------------------------------
+cycle_defs:
+  #-----------------------------------------------------------------------
+  #
+  # Set cycle definition for each group.  The cycle definition sets the cycle
+  # time that the group will run. It has two way to set up:
+  #  1) 00 HHs DDs MMs YYYYs *
+  #       HHs can be "01-03/01" or "01,02,03" or "*"
+  #       DDs,MMs can be "01-03" or "01,02,03" or "*"
+  #       YYYYs can be "2020-2021" or "2020,2021" or "*"
+  #  2)   start_time(YYYYMMDDHH00) end_time(YYYYMMDDHH00) interval(HH:MM:SS)
+  #       for example: 202104010000 202104310000 12:00:00
+  #  The default cycle definition is:
+  #     "00 01 01 01 2100 *"
+  #  which will likely never get to run.
+  #
+  # Definitions:
+  #
+  # AT_START_CYCLEDEF:
+  # cycle definition for "at start" group
+  # This group runs: make_grid, make_orog, make_sfc_climo
+  #
+  # INITIAL_CYCLEDEF:
+  # cycle definition for "initial" group
+  # This group runs get_extrn_ics, make_ics
+  #
+  # BOUNDARY_CYCLEDEF:
+  # cycle definition for "boundary" group
+  # This group runs: get_extrn_lbcs,make_lbcs
+  #
+  # BOUNDARY_LONG_CYCLEDEF:
+  # cycle definition for "boundary_long" group
+  # This group runs: get_extrn_lbcs_long,make_lbcs
+  #
+  # SPINUP_CYCLEDEF:
+  # cycle definition for spin-up cycle group
+  # This group runs: anal_gsi_input_spinup and data process, run_fcst_spinup, run_post_spinup
+  #
+  # PROD_CYCLEDEF:
+  # cycle definition for product cycle group
+  # This group runs: anal_gsi_input and data process, run_fcst, python_skewt, run_post, run_clean
+  #
+  # SAVEINPUT_CYCLEDEF:
+  # cycle definition for saving INPUT files
+  # This group runs: saveinput
+  #
+  # RECENTER_CYCLEDEF:
+  # cycle definition for recenter cycle group
+  # This group runs: recenter
+  #
+  # PRODLONG_CYCLEDEF:
+  # same as PROD_CYCLEDEF, but for long forecast 
+  #
+  # ARCHIVE_CYCLEDEF:
+  # cycle definition for "archive" group
+  # This group runs: run_archive
+  #
+  #-----------------------------------------------------------------------
+  #
+  CYCLEDAY: "*"
+  CYCLEMONTH: "*"
+  AT_START_CYCLEDEF: "00 01 01 01 2100 *"
+  INITIAL_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_LONG_CYCLEDEF: "00 01 01 01 2100 *"
+  SPINUP_CYCLEDEF: "00 01 01 01 2100 *"
+  PROD_CYCLEDEF: "00 01 01 01 2100 *"
+  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
+  PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
+  ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
+  SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
+
+#----------------------------------
+# GSI namelist parameters
+#----------------------------------
+gsi:
+  #
+  #-------------------------------------------------------------------------------------
+  #      GSI Namelist parameters configurable across differnt applications
+  # if we need to tune one GSI namelist parameter, we can elevate it to a shell variable
+  # and assign value in config.sh and give it a default value in config_default.sh
+  # In realtime testing, don't need to regenerate the whole workflow, you can tweak 
+  # $EXPTDIR/var_defns.sh and $FIX_GSI/gsiparm.anl.sh to make sure the change is
+  # expected and then put it back into config.sh and config_default.sh
+  #       (need to follow FORTRAN namelist convetion)
+  #-------------------------------------------------------------------------------------
+  # &SETUP  and &BKGERR
+  niter1: 50
+  niter2: 50
+  l_obsprvdiag: .false.
+  diag_radardbz: .false.
+  write_diag_2: .false.
+  bkgerr_vs: 1.0
+  bkgerr_hzscl: 0.7,1.4,2.80     #no trailing ,
+  usenewgfsberror: .true.
+  netcdf_diag: .false.
+  binary_diag: .true.
+  
+  # &HYBRID_ENSEMBLE
+  readin_localization: .true.     #if true, it overwrites the "beta1_inv/ens_h/ens_v" setting
+  beta1_inv: 0.15                 #beata_inv is 1-ensemble_wgt
+  ens_h: 110
+  ens_v: 3
+  regional_ensemble_option: 1     #1 for GDAS ; 5 for FV3LAM ensemble
+  grid_ratio_fv3: 2.0             #fv3 resolution 3km, so analysis: 3*2: 6km
+  grid_ratio_ens: 3               #if analysis is 3km, then ensemble: 3*3: 9km. GDAS ensemble is 20km
+  i_en_perts_io: 1                #0 or 1: original file   3: pre-processed ensembles
+  q_hyb_ens: .false.
+  ens_fast_read: .false.
+  
+  # &RAPIDREFRESH_CLDSURF
+  l_PBL_pseudo_SurfobsT: .false.
+  l_PBL_pseudo_SurfobsQ: .false.
+  i_use_2mQ4B: 0
+  i_use_2mT4B: 0
+  i_T_Q_adjust: 1
+  l_rtma3d: .false.
+  i_precip_vertical_check: 0
+  #-----------------------------------------------------------------------
+  # HYBENSMEM_NMIN:
+  #    Minimum number of ensemble members required a hybrid GSI analysis 
+  #
+  HYBENSMEM_NMIN: 80
+  ANAVINFO_FN: "anavinfo.rrfs"
+  ANAVINFO_DBZ_FN: "anavinfo.rrfs_dbz"
+  ENKF_ANAVINFO_FN: "anavinfo.rrfs"
+  ENKF_ANAVINFO_DBZ_FN: "anavinfo.enkf.rrfs_dbz"
+  CONVINFO_FN: "convinfo.rrfs"
+  BERROR_FN: "rap_berror_stats_global_RAP_tune" #under $FIX_GSI
+  OBERROR_FN: "errtable.rrfs"
+  HYBENSINFO_FN: "hybens_info.rrfs"
+  AIRCRAFT_REJECT: ""
+  SFCOBS_USELIST: ""
+  #
+  #-----------------------------------------------------------------------
+  # default namelist for nonvar cloud analysis
+  cld_bld_hgt: 1200.0
+  l_precip_clear_only: .false.
+  l_qnr_from_qr: .false.
+  #
+  #-----------------------------------------------------------------------
+  # default weighting for control analysis in ensemble recentering
+  beta_recenter: 1.0
 
 #----------------------------
 # NCO specific variables
@@ -901,6 +1220,42 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  # (where yyyymmdd and hh are as described above), the directory in which
+  # the forecast output files will be placed will be:
+  #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
+  # 
+  # Setup default observation locations for data assimilation:
+  #
+  #    OBSPATH:   observation BUFR file path
+  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
+  #    LIGHTNING_ROOT: location of lightning observations
+  #    ENKF_FCSTL: location of global ensemble forecast
+  #    FFG_DIR: location of flash flood guidance for QPF comparison
+  #
+  # Setup default locations for global SST and update time:
+  #   SST_ROOT: locations of global SST
+  #   SST_update_hour: cycle time for updating SST 
+  #
+  # Setup default locations for GVF and update time:
+  #   GVF_ROOT: locations of GVF observations
+  #   GVF_update_hour: cycle time for updating GVF 
+  #
+  # Setup default locations for IMS snow/ice and update time:
+  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
+  #   SNOWICE_update_hour: cycle time for updating snow/ice 
+  #
+  # Setup default resource data locations for soil surgery and time:
+  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
+  #   SOIL_SURGERY_time: cycle time for soil surgery 
+  #
+  # Setup default locations for FIRE_RRFS files and update time
+  #  FIRE_RAVE_DIR
+  #  FIRE_RRFS_update_hour
+  #
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -910,7 +1265,9 @@ nco:
   envir: "para"
   NET: "rrfs"
   RUN: "rrfs"
+  TAG: "dev_grid"
   model_ver: "v1.0.0"
+
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'
@@ -920,6 +1277,57 @@ nco:
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  # New additions from RRFS_dev1
+  #
+  ENSCTRL_COMIN: ""
+  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
+  ENSCTRL_COMROOT: ""
+  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
+  ENSCTRL_COMOUT_DIR: '{{ ENSCTRL_COMOUT_BASEDIR}}/{{ RUN }}.@Y@m@d/@H'
+  RRFSE_NWGES: ""
+  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
+  NWGES: ""
+  NWGES_BASEDIR: '{{ NWGES }}'
+  ENSCTRL_NWGES: ""
+  ENSCTRL_NWGES_BASEDIR: '{{ ENSCRTL_NWGES}}'
+  RRFS_NWGES: ""
+
+  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
+  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
+  NCL_HOME: "/home/rtrr/RRFS/graphics"
+  NCL_REGION: "conus"
+  MODEL: "NO MODEL CHOSEN"
+  
+  OBSPATH: "/public/data/grids/rap/obs"
+  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
+  LIGHTNING_ROOT: "/public/data/lightning"
+  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
+  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
+  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
+  SST_update_hour: 99
+  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
+  GVF_update_hour: 99
+  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
+  SNOWICE_update_hour: 99
+  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
+  SOIL_SURGERY_time: 9999999999
+  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
+  FIRE_RRFS_update_hour: 99
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # FG_ROOTDIR:
+  #  First Guess Root Directory, APP will find corresponding first guess
+  #  fields from this directory. RRFS will find FG under NWGES_BASEDIR,
+  #  but we needs to explicitly specify where to find FG for RTMA.
+  #  So this parameter only matters for RTMA
+  #
+  #-----------------------------------------------------------------------
+  #
+  FG_ROOTDIR: ""
 
   #
   #-----------------------------------------------------------------------
@@ -1037,6 +1445,16 @@ workflow_switches:
   RUN_TASK_VX_ENSPOINT: false
 
   RUN_TASK_PLOT_ALLVARS: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # IS_RTMA:
+  #   If true, some ICs,LBCs,GSI rocoto tasks will be turned off
+  #
+  #-----------------------------------------------------------------------
+  #
+  IS_RTMA: false
+
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -1456,6 +1874,7 @@ task_get_extrn_ics:
 #-----------------------------
 task_get_extrn_lbcs:
   GET_EXTRN_LBCS_TN: "get_extrn_lbcs"
+  GET_EXTRN_LBCS_LONG_TN: "get_extrn_lbcs_long"
   NNODES_GET_EXTRN_LBCS: 1
   PPN_GET_EXTRN_LBCS: 1
   MEM_GET_EXTRN_LBCS: 2G
@@ -1499,6 +1918,27 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # LBCS_SEARCH_HRS:
+  #  When search boundary conditions tasks from previous cycles in prep_cyc step,
+  #  For example: 0 means search start for the same cycle lbcs task.
+  #               1 means search start for 1-h previous cycle lbcs task.
+  #               2 means search start for 2-h previous cycle lbcs task.
+  #
+  # EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS:
+  #  When search boundary conditions from previous cycles in prep_start step,
+  #  the search will start at cycle before (this parameter) of current cycle.
+  #  For example: 0 means search start at the same cycle lbcs directory.
+  #               1 means search start at 1-h previous cycle  lbcs directory.
+  #               2 means search start at 2-h previous cycle  lbcs directory.
+  #
+  #-----------------------------------------------------------------------
+  #
+  LBCS_SEARCH_HRS: 6
+  EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS: 0
+  #
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_SYSBASEDIR_LBCS:
@@ -1531,6 +1971,176 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
   EXTRN_MDL_FILES_LBCS: ""
+
+#----------------------------
+# PREPSTART config parameters
+#-----------------------------
+task_run_prepstart:
+  PREP_START_TN: "prep_start"
+  PREP_CYC_TN: "prep_cyc"
+  PREP_CYC_SPINUP_TN: "prep_cyc_spinup"
+  PREP_CYC_PROD_TN: "prep_cyc_prod"
+  PREP_CYC_ENSMEAN_TN: "prep_cyc_ensmean"
+  CALC_ENSMEAN_TN: "calc_ensmean"
+  NNODES_RUN_PREPSTART: 1
+  PPN_RUN_PREPSTART: 1
+  MEM_RUN_PREPSTART: 24G
+  WTIME_RUN_PREPSTART: 00:10:00
+  WTIME_RUN_PREPSTART_ENSMEAN: 00:10:00
+  MAXTRIES_RUN_PREPSTART: 1
+
+#----------------------------
+# PROCESS RADARREF config parameters
+#-----------------------------
+task_process_radarref:
+  PROCESS_RADAR_REF_TN: "process_radarref"
+  RADAR_REFL2TTEN_TN: "radar_refl2tten"
+  NNODES_PROCESS_RADARREF: 2
+  PPN_PROCESS_RADARREF: 24
+  WTIME_PROCESS_RADARREF: 00:30:00
+  MAXTRIES_PROCESS_RADARREF: 1
+
+  RADAR_REF_THINNING: 1
+
+#----------------------------
+# PROCESS LIGHTNING config parameters
+#-----------------------------
+task_process_lightning:
+  PROCESS_LIGHTNING_TN: "process_lightning"
+  NNODES_PROCESS_LIGHTNING: 1
+  PPN_PROCESS_LIGHTNING: 1
+  MEM_PROCESS_LIGHTNING: 2G
+  WTIME_PROCESS_LIGHTNING: 00:30:00
+  MAXTRIES_PROCESS_LIGHTNING: 1
+
+#----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufr:
+  PROCESS_BUFR_TN: "process_bufr"
+  NNODES_PROCESS_BUFR: 1
+  PPN_PROCESS_BUFR: 1
+  MEM_PROCESS_BUFR: 20G
+  WTIME_PROCESS_BUFR: 00:30:00
+  MAXTRIES_PROCESS_BUFR: 1
+
+#----------------------------
+# PROCESS SMOKE config parameters
+#-----------------------------
+task_process_smoke:
+  PROCESS_SMOKE_TN: "process_smoke"
+  NNODES_PROCESS_SMOKE: 1
+  PPN_PROCESS_SMOKE: 1
+  MEM_PROCESS_SMOKE: 80G
+  WTIME_PROCESS_SMOKE: 00:30:00
+  MAXTRIES_PROCESS_SMOKE: 1
+
+#----------------------------
+# ANAL config parameters
+#-----------------------------
+task_run_anal:
+  ANAL_GSI_TN: "anal_gsi_input"
+  OBSERVER_GSI_TN: "observer_gsi"
+  OBSERVER_GSI_ENSMEAN_TN: "observer_gsi_ensmean"
+  NNODES_RUN_ANAL: 16
+  PPN_RUN_ANAL: 24
+  WTIME_RUN_ANAL: 00:30:00
+  MAXTRIES_RUN_ANAL: 1
+
+#----------------------------
+# POSTANAL config parameters
+#-----------------------------
+task_run_postanal:
+  POSTANAL_TN: "postanal_input"
+  NNODES_RUN_POSTANAL: 1
+  PPN_RUN_POSTANAL: 1
+  WTIME_RUN_POSTANAL: 00:30:00
+  MAXTRIES_RUN_POSTANAL: 1
+
+#----------------------------
+# CLDANAL_NONVAR config parameters
+#-----------------------------
+task_run_nonvarcldanl:
+  CLDANL_NONVAR_TN: "cldanl_nonvar"
+  NNODES_RUN_NONVARCLDANL: 1
+  PPN_RUN_NONVARCLDANL: 1
+  MEM_RUN_NONVARCLDANL: 20G
+  WTIME_RUN_NONVARCLDANL: 00:30:00
+  MAXTRIES_RUN_NONVARCLDANL: 1
+
+#----------------------------
+# JEDI ENVAR IODA config parameters
+#-----------------------------
+task_run_jedi_envar_ioda:
+  JEDI_ENVAR_IODA_TN: "jedi_envar_ioda"
+  NNODES_RUN_JEDI_ENVAR_IODA: 1
+  PPN_RUN_JEDI_ENVAR_IODA: 1
+  MEM_RUN_JEDI_ENVAR_IODA: 20G
+  WTIME_RUN_JEDI_ENVAR_IODA: 00:30:00
+  MAXTRIES_RUN_JEDI_ENVAR_IODA: 1
+
+#----------------------------
+# RUN ENKF config parameters
+#-----------------------------
+task_run_enkf:
+  RUN_ENKF_TN: "run_enkf"
+  NNODES_RUN_ENKF: 90
+  PPN_RUN_ENKF: 1
+  WTIME_RUN_ENKF: 01:00:00
+  MAXTRIES_RUN_ENKF: 1
+
+#----------------------------
+# RECENTER config parameters
+#-----------------------------
+task_run_recenter:
+  RUN_RECENTER_TN: "run_recenter"
+  NNODES_RUN_RECENTER: 2
+  PPN_RUN_RECENTER: 20
+  WTIME_RUN_RECENTER: 01:00:00
+  MAXTRIES_RUN_RECENTER: 1
+
+#----------------------------
+# SAVE RESTART config parameters
+#-----------------------------
+task_save_restart:
+  SAVE_RESTART_TN: "save_restart"
+  NNODES_SAVE_RESTART: 1
+  PPN_SAVE_RESTART: 1
+  MEM_SAVE_RESTART: 2G
+  WTIME_SAVE_RESTART: 00:15:00
+  MAXTRIES_SAVE_RESTART: 1
+
+#----------------------------
+# SAVE INPUT config parameters
+#-----------------------------
+task_save_input:
+  SAVE_INPUT_TN: "save_input"
+  NNODES_SAVE_INPUT: 1
+  PPN_SAVE_INPUT: 1
+  MEM_SAVE_INPUT: 2G
+  WTIME_SAVE_INPUT: 00:15:00
+  MAXTRIES_SAVE_INPUT: 1
+
+#----------------------------
+# RUN PRDGEN config parameters
+#-----------------------------
+task_run_prdgen:
+  RUN_PRDGEN_TN: "run_prdgen"
+  NNODES_RUN_PRDGEN: 1
+  PPN_RUN_PRDGEN: 1
+  MEM_RUN_PRDGEN: 24G
+  WTIME_RUN_PRDGEN: 00:40:00
+  MAXTRIES_RUN_PRDGEN: 1
+
+#----------------------------
+# RUN BUFRSND config parameters
+#-----------------------------
+task_run_bufrsnd:
+  RUN_BUFRSND_TN: "run_bufrsnd"
+  NNODES_RUN_BUFRSND: 1
+  PPN_RUN_BUFRSND: 28
+  WTIME_RUN_BUFRSND: 00:45:00
+  MAXTRIES_RUN_BUFRSND: 1
 
 #----------------------------
 # MAKE ICS config parameters
@@ -2216,6 +2826,47 @@ task_plot_allvars:
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
 
+#----------------------------
+# GRAPHICS config parameters
+#-----------------------------
+task_run_graphics:
+  RUN_GRAPHICS_TN: "run_graphics"
+  NNODES_RUN_GRAPHICS: 1
+  PPN_RUN_GRAPHICS: 12
+  WTIME_RUN_GRAPHICS: 00:30:00
+  MAXTRIES_RUN_GRAPHICS: 1
+
+#----------------------------
+# CLEAN config parameters
+#-----------------------------
+task_run_clean:
+  RUN_CLEAN_TN: "run_clean"
+  NNODES_RUN_CLEAN: 1
+  PPN_RUN_CLEAN: 1
+  MEM_RUN_CLEAN: 2G
+  WTIME_RUN_CLEAN: 00:15:00
+  MAXTRIES_RUN_CLEAN: 1
+
+#----------------------------
+# ARCHIVE config parameters
+#-----------------------------
+task_run_archive:
+  RUN_ARCHIVE_TN: "run_archive"
+  NNODES_RUN_ARCHIVE: 1
+  PPN_RUN_ARCHIVE: 1
+  MEM_RUN_ARCHIVE: 24G
+  WTIME_RUN_ARCHIVE: 23:00:00
+  MAXTRIES_RUN_ARCHIVE: 1
+
+#----------------------------
+# ENSPOST config parameters
+#-----------------------------
+task_run_enspost:
+  RUN_ENSPOST_TN: "run_enspost"
+  NNODES_RUN_ENSPOST: 1
+  PPN_RUN_ENSPOST: 1
+  WTIME_RUN_ENSPOST: 00:30:00
+  MAXTRIES_RUN_ENSPOST: 1
 
 #----------------------------
 # global config parameters
@@ -2244,6 +2895,100 @@ global:
   USE_CRTM: false
   CRTM_DIR: ""
   #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set additional output grids for wgrib2 remapping, if any 
+  # Space-separated list of strings, e.g., ( "130" "242" "clue" )
+  # Default is no additional grids
+  #
+  # Current options as of 23 Apr 2021:
+  #  "130"   (CONUS 13.5 km)
+  #  "200"   (Puerto Rico 16 km)
+  #  "221"   (North America 32 km)
+  #  "242"   (Alaska 11.25 km)
+  #  "243"   (Pacific 0.4-deg)
+  #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
+  #  "hrrr"  (HRRR 3-km CONUS grid)
+  #  "hrrre" (HRRRE 3-km CONUS grid)
+  #  "rrfsak" (RRFS 3-km Alaska grid)
+  #  "hrrrak" (HRRR 3-km Alaska grid)
+  #
+  #-----------------------------------------------------------------------
+  #
+  ADDNL_OUTPUT_GRIDS: []
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with defining a customized post configuration 
+  # file.
+  #
+  # USE_CUSTOM_POST_CONFIG_FILE:
+  # Flag that determines whether a user-provided custom configuration file
+  # should be used for post-processing the model data. If this is set to
+  # "TRUE", then the workflow will use the custom post-processing (UPP) 
+  # configuration file specified in CUSTOM_POST_CONFIG_FP. Otherwise, a 
+  # default configuration file provided in the EMC_post repository will be 
+  # used.
+  #
+  # CUSTOM_POST_CONFIG_FP:
+  # The full path to the custom post flat file, including filename, to be 
+  # used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
+  # is set to "TRUE".
+  #
+  # CUSTOM_POST_PARAMS_FP:
+  # The full path to the custom post params file, including filename, to be 
+  # used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
+  # is set to "TRUE".
+  #
+  # POST_FULL_MODEL_NAME
+  # The full module name required by UPP and set in the itag file
+  #
+  # POST_SUB_MODEL_NAME
+  # The SUB module name required by UPP and set in the itag file
+  #
+  # TESTBED_FIELDS_FN
+  # The file which lists grib2 fields to be extracted to bgsfc for testbed
+  # Empty string means no need to generate bgsfc for testbed
+  #
+  #-----------------------------------------------------------------------
+  #
+  USE_CUSTOM_POST_CONFIG_FILE: false
+  CUSTOM_POST_CONFIG_FP: ""
+  CUSTOM_POST_PARAMS_FP: ""
+  POST_FULL_MODEL_NAME: "FV3R"
+  POST_SUB_MODEL_NAME: "NONE"
+  TESTBED_FIELDS_FN: ""
+  TESTBED_FIELDS_FN2: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the tiles (or subdomains) for creating graphics in a Rocoto metatask.
+  # Do not include references to the grids that are produced in separate grib
+  # files (set with ADDNL_OUTPUT_GRIDS above). Those will be added in setup.sh
+  #
+  # TILE_LABELS
+  # A space separated list (string is fine, no need for array) of the labels
+  # applied to the groupings of tiles to be run as a single batch jobs. For
+  # example, you may label the set of tiles SE,NE,SC,NC,SW,NW as "regions", and
+  # the full input domain as "full" if you wanted those to run in two domains. The
+  # length must match the length of TILE_SETS.
+  #
+  # TILE_SETS
+  # A space separated list of tile groupings to plot. Space-separated sets
+  # indicate which ones will be grouped in a single batch job, comma sepated items
+  # are the tiles to be plotted in that batch job. For example:
+  #    TILE_SETS="full SW,SC,SE NW,NC,NE"
+  #    TILE_LABELS="full southern_regions northern_regions"
+  # would plot maps for the full domain in a batch job separately from the
+  # southern regions, using a third batch job for the northern regions. The
+  # space-separated list must match the length of TILE_LABELS.
+  #
+  #-----------------------------------------------------------------------
+  #
+  TILE_LABELS: "full"
+  TILE_SETS: "full"
+  #
   #-----------------------------------------------------------------------
   #
   # Set parameters associated with running ensembles.  Definitions:
@@ -2267,14 +3012,76 @@ global:
   # FV3_NML_ENSMEM_FPS:
   # Paths to the ensemble member corresponding namelists in the
   # experiment directory
+  # 
+  # DO_ENSCONTROL: 
+  # In ensemble mode, whether or not to run member 1 as control member
   #
+  # DO_GSIOBSERVER:
+  # Decide whether or not to run GSI observer
+  #
+  # DO_ENKFUPDATE:
+  # Decide whether or not to run EnKF update for the ensemble members
+  #
+  # DO_ENKF_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity EnKF update for the ensemble members
+  #
+  # DO_ENVAR_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity hybrid analysis
+  #
+  # DO_RECENTER:
+  # Decide whether or not to run recenter for the ensemble members
+  #
+  # DO_SAVE_INPUT:
+  # Decide whether or not to run save_input after the DA analysis  
+  #
+  # DO_ENS_GRAPHICS:
+  # Flag to turn on/off ensemble graphics. Turns OFF deterministic
+  # graphics.
+  #
+  # DO_ENSPOST:
+  # Flag to turn on/off python ensemble postprocessing for WPC testbeds.
+  #
+  # DO_ENSINIT:
+  # Decide whether or not to do ensemble initialization by running 1 timestep ensemble
+  # forecast and recentering on the deterministic analysis
+  #
+  # DO_ENSFCST:
+  # Flag that determines whether to run ensemble free forecasts (for
+  # each set of specified cycles).  If this is set to "TRUE", NUM_ENS_MEMBERS_FCST
+  # forecasts are run for each specified cycle, each with a different set of stochastic
+  # seed values. 
+  #
+  # NUM_ENS_MEMBERS_FCST:
+  # The number of ensemble members to run forecast if DO_ENSFCST is set to "TRUE",
+  # This variable also controls the naming of the ensemble member directories.  
+  # For example, if this is set to "8", the member directories will be named 
+  # mem1, mem2, ..., mem8.  If it is set to "08" (note the leading zero), 
+  # the member directories will be named mem01, mem02, ..., mem08.  Note, 
+  # however, that after reading in the number of characters in this string
+  # (in order to determine how many leading zeros, if any, should be placed
+  # in the names of the member directories), the workflow generation scripts
+  # strip away those leading zeros.  Thus, in the variable definitions file 
+  # (GLOBAL_VAR_DEFNS_FN), this variable appear with its leading zeros 
+  # stripped.  This variable is not used if DO_ENSEMBLE is not set to "TRUE".
+  # 
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
+  NUM_ENS_MEMBERS_FCST: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-
+  DO_ENSFCST: false
+  DO_ENSCONTROL: false
+  DO_GSIOBSERVER: false
+  DO_ENKFUPDATE: false
+  DO_ENKF_RADAR_REF: false
+  DO_ENVAR_RADAR_REF: false
+  DO_RECENTER: false
+  DO_ENS_GRAPHICS: false
+  DO_ENSPOST: false
+  DO_ENSINIT: false
+  DO_SAVE_INPUT: false
   #
   #-----------------------------------------------------------------------
   #
@@ -2374,4 +3181,176 @@ global:
   HALO_BLEND: 10
   #
   #-----------------------------------------------------------------------
+  # 
+  # PRINT_DIFF_PGR:
+  # Option to turn on/off pressure tendency diagnostic
   #
+  #-----------------------------------------------------------------------
+  #
+  PRINT_DIFF_PGR: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with running data assimilation.  Definitions:
+  #
+  # DO_DACYCLE:
+  # Flag that determines whether to run a data assimilation cycle.
+  #
+  # DO_SURFACE_CYCLE:
+  # Flag that determines whether to continue cycle surface fields.
+  #
+  # SURFACE_CYCLE_DELAY_HRS:
+  # The surface cycle usually happens in cold start cycle. But there is
+  # a need to delay surface cycle to the warm start cycle following the
+  # cold start cycle. This one sets how many hours we want the surface
+  # cycle being delayed.
+  #
+  # DO_SOIL_ADJUST:
+  # Flag that determines whether to adjust soil T and Q based on
+  # the lowest level T/Q analysis increments.
+  #
+  # DO_UPDATE_BC:
+  # Flag that determines whether to update boundary conditions based on the 
+  # analysis results
+  #
+  # DO_RADDA:
+  # Flag that determines whether to assimilate satellite radiance data
+  #
+  # DO_BUFRSND:
+  # Decide whether or not to run EMC BUFR sounding
+  #
+  # USE_RRFSE_ENS:
+  # Use rrfse ensemble for hybrid analysis
+  #
+  # DO_SMOKE_DUST
+  #     Flag turn on smoke and dust for RRFS-SD
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_DACYCLE: false
+  DO_SURFACE_CYCLE: false
+  SURFACE_CYCLE_DELAY_HRS: 1
+  DO_SOIL_ADJUST: false
+  DO_UPDATE_BC: false
+  DO_RADDA: false
+  DO_BUFRSND: false
+  USE_RRFSE_ENS: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with running retrospective experiments.  Definitions:
+  #
+  # DO_RETRO:
+  # Flag turn on the retrospective experiments.
+  #
+  # DO_SPINUP:
+  # Flag turn on the spin-up cycle.
+  #
+  # LBCS_ICS_ONLY:
+  # Flag turn on the runs prepare boundary and cold start initial conditions in
+  #      retrospective experiments.
+  #
+  # DO_POST_SPINUP:
+  # Flag turn on the UPP for spin-up cycle.
+  #
+  # DO_POST_PROD:
+  # Flag turn on the UPP for prod cycle.
+  #
+  # DO_PARALLEL_PRDGEN:
+  # Flag turn on parallel wgrib2 runs in prdgen .
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_RETRO: false
+  DO_SPINUP: false
+  LBCS_ICS_ONLY: false
+  DO_POST_SPINUP: false
+  DO_POST_PROD: true
+  DO_PARALLEL_PRDGEN: false
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # GWD_HRRRsuite_BASEDIR:
+  # Temporary workflow variable specifies the base directory in which to 
+  # look for certain fixed orography statistics files needed only by the 
+  # gravity wave drag parameterization in the FV3_HRRR physics suite.  This 
+  # variable is added in order to avoid including hard-coded paths in the 
+  # workflow scripts.  Currently, the workflow simply copies the necessary 
+  # files from a subdirectory under this directory (named according to the 
+  # specified predefined grid) to the orography directory (OROG_DIR) under 
+  # the experiment directory.  
+  #
+  # Note that this variable is only used when using the FV3_HRRR physics 
+  # suite.  It should be removed from the workflow once there is a script 
+  # or code available that generates these files for any grid.
+  #
+  #-----------------------------------------------------------------------
+  #
+  GWD_HRRRsuite_BASEDIR: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for JEDI options
+  # DO_JEDI_ENVAR_IODA:
+  #      Flag turn on the JEDI-IODA converters for EnVAR.  It requires GSI 
+  #      to produce NetCDF diag files
+  #-----------------------------------------------------------------------
+  #
+  DO_JEDI_ENVAR_IODA: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for analysis options
+  # DO_NONVAR_CLDANAL: 
+  #     Flag turn on the non-var cloud analysis.
+  # DO_REFL2TTEN: 
+  #     Flag turn on the radar reflectivity to temperature tendenecy.
+  # DO_NLDN_LGHT
+  #     Flag turn on processing NLDN NetCDF lightning data
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_NONVAR_CLDANAL: false
+  DO_REFL2TTEN: false
+  DO_NLDN_LGHT: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for observation preprocess.
+  # RADARREFL_MINS:
+  #   minute from the hour that the NSSL mosaic files will be searched for 
+  #      data preprocess
+  # RADARREFL_TIMELEVEL:
+  #   time level (minute) from the hour that the NSSL mosaic files will be generated 
+  #
+  #-----------------------------------------------------------------------
+  #
+  RADARREFL_MINS: [0, 1, 2, 3]
+  RADARREFL_TIMELEVEL: [0]
+  
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for cleaning the real-time and retrospective runs.
+  # CLEAN_OLDPROD_HRS:
+  #   the product under com directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDLOG_HRS
+  #   the log files under com directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDRUN_HRS
+  #   the run directory under tmpnwprd directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDFCST_HRS
+  #   the fv3lam forecast netcdf files forecast run directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDSTMP_HRS
+  #   the postprd GRIB-2 files from cycles older than (current cycle - this hour) will be cleaned 
+  #-----------------------------------------------------------------------
+  #
+  
+  CLEAN_OLDPROD_HRS: 72
+  CLEAN_OLDLOG_HRS: 72
+  CLEAN_OLDRUN_HRS: 48
+  CLEAN_OLDFCST_HRS: 24
+  CLEAN_OLDSTMPPOST_HRS: 24
+  CLEAN_NWGES_HRS: 72

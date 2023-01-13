@@ -13,11 +13,18 @@ See README.xml_templating.md for information on using the Templating mechanisms.
 <!--
 Parameters needed by the job scheduler.
 -->
-<!ENTITY ACCOUNT       "{{ account }}">
-<!ENTITY SCHED         "{{ sched }}">
-<!ENTITY QUEUE_DEFAULT "{{ queue_default }}">
-<!ENTITY QUEUE_HPSS    "{{ queue_hpss }}">
-<!ENTITY QUEUE_FCST    "{{ queue_fcst }}">
+<!ENTITY ACCOUNT            "{{ account }}">
+<!ENTITY SERVICE_ACCOUNT    "{{ service_account }}">
+<!ENTITY SCHED              "{{ sched }}">
+<!ENTITY QUEUE_DEFAULT      "{{ queue_default }}">
+<!ENTITY QUEUE_HPSS         "{{ queue_hpss }}">
+<!ENTITY QUEUE_FCST         "{{ queue_fcst }}">
+<!ENTITY QUEUE_POST         "{{ queue_post }}">
+<!ENTITY QUEUE_PRDGEN       "{{ queue_prdgen }}">
+<!ENTITY QUEUE_ANALYSIS     "{{ queue_analysis }}">
+<!ENTITY QUEUE_GRAPHICS     "{{ queue_graphics }}">
+<!ENTITY RRFS_RESERVE       {% if reservation %}"--reservation={{ reservation }}"{% else %}""{% endif %}>
+<!ENTITY RRFS_POST_RESERVE  {% if reservation_post %}"--reservation={{ reservation_post }}"{% else %}""{% endif %}>
 
 <!--
 Workflow task names.
@@ -32,14 +39,49 @@ Workflow task names.
 <!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
 <!ENTITY GET_EXTRN_ICS_TN          "{{ get_extrn_ics_tn }}">
 <!ENTITY GET_EXTRN_LBCS_TN         "{{ get_extrn_lbcs_tn }}">
+<!ENTITY GET_EXTRN_LBCS_LONG_TN    "{{ get_extrn_lbcs_long_tn }}">
 <!ENTITY MAKE_ICS_TN               "{{ make_ics_tn }}">
 <!ENTITY MAKE_LBCS_TN              "{{ make_lbcs_tn }}">
 <!ENTITY RUN_FCST_TN               "{{ run_fcst_tn }}">
 <!ENTITY RUN_POST_TN               "{{ run_post_tn }}">
+<!ENTITY RUN_PRDGEN_TN             "{{ run_prdgen_tn }}">
+<!ENTITY RUN_BUFRSND_TN            "{{ run_bufrsnd_tn }}">
+<!ENTITY ANAL_GSI_TN               "{{ anal_gsi_tn }}">
+<!ENTITY POSTANAL_TN               "{{ postanal_tn }}">
+<!ENTITY OBSERVER_GSI_ENSMEAN_TN   "{{ observer_gsi_ensmean_tn }}">
+<!ENTITY OBSERVER_GSI_TN           "{{ observer_gsi_tn }}">
+<!ENTITY PREP_CYC_SPINUP_TN        "{{ prep_cyc_spinup_tn }}">
+<!ENTITY PREP_CYC_PROD_TN          "{{ prep_cyc_prod_tn }}">
+<!ENTITY PREP_CYC_TN               "{{ prep_cyc_tn }}">
+<!ENTITY CALC_ENSMEAN_TN           "{{ calc_ensmean_tn }}">
+
+<!ENTITY PROCESS_RADAR_REF_TN      "{{ process_radar_ref_tn }}">
+<!ENTITY PROCESS_LIGHTNING_TN      "{{ process_lightning_tn }}">
+<!ENTITY PROCESS_BUFR_TN           "{{ process_bufr_tn }}">
+<!ENTITY RADAR_REFL2TTEN_TN        "{{ radar_refl2tten_tn }}">
+<!ENTITY CLDANL_NONVAR_TN          "{{ cldanl_nonvar_tn }}">
+<!ENTITY SAVE_RESTART_TN           "{{ save_restart_tn }}">
+<!ENTITY SAVE_INPUT_TN             "{{ save_input_tn }}">
+<!ENTITY JEDI_ENVAR_IODA_TN        "{{ jedi_envar_ioda_tn }}">
+<!ENTITY PROCESS_SMOKE_TN          "{{ process_smoke_tn }}">
+
+<!ENTITY RUN_PREPSTART_TN          "run_prepstart">
+<!ENTITY RUN_ANAL_TN               "run_anal_gsi">
+<!ENTITY HYBRID_RADAR_REF_TN       "hybrid_radar_ref">
+<!ENTITY RUN_ENKFUPDT_TN           "run_enkfupdt">
+<!ENTITY ENKF_RADAR_REF_TN         "enkf_radarref">
+<!ENTITY RUN_BUFR_TN               "run_bufr">
+<!ENTITY RUN_NCL_TN                "run_ncl">
+<!ENTITY RUN_NCL_ZIP_TN            "run_ncl_zip">
+<!ENTITY RUN_SMOKE_TN              "run_proc_smoke">
+
+<!ENTITY TAG                       "{{ tag }}">
+
 <!ENTITY GET_OBS                   "{{ get_obs }}">
 <!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
 <!ENTITY GET_OBS_NDAS_TN           "{{ get_obs_ndas_tn }}">
 <!ENTITY GET_OBS_MRMS_TN           "{{ get_obs_mrms_tn }}">
+<!ENTITY PROCESS_BUFR_TN           "{{ process_bufr_tn }}">
 <!ENTITY VX_TN                     "{{ vx_tn }}">
 <!ENTITY VX_GRIDSTAT_TN            "{{ vx_gridstat_tn }}">
 <!ENTITY VX_GRIDSTAT_REFC_TN       "{{ vx_gridstat_refc_tn }}">
@@ -96,6 +138,19 @@ Directories and files.
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
 <!ENTITY EXPTDIR                  "{{ exptdir }}">
 
+<!ENTITY OBSPATH                  "{{ obspath }}">
+<!ENTITY NWGES_BASEDIR            "{{ nwges_basedir }}">
+<!ENTITY ENSCTRL_COMIN_BASEDIR    "{{ ensctrl_comin_basedir }}">
+<!ENTITY ENSCTRL_NWGES_BASEDIR    "{{ ensctrl_nwges_basedir }}">
+<!ENTITY ENSCTRL_COMOUT_BASEDIR   "{{ ensctrl_comout_basedir }}">
+<!ENTITY ENSCTRL_COMOUT_DIR       "{{ ensctrl_comout_dir }}">
+<!ENTITY RRFSE_FG_ROOT            "{{ rrfse_nwges_basedir }}">
+{%- if is_rtma %}
+<!ENTITY FG_ROOT                  "{{ fg_rootdir }}">
+{%- else %}
+<!ENTITY FG_ROOT                  "{{ nwges_basedir }}">
+{%- endif %}
+
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
@@ -136,29 +191,133 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 -->
 
 {%- if partition_default is not none %}
-<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>{{ partition_default }}</partition>">
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>{{ partition_default }}</partition><native>&RRFS_RESERVE;</native>">
 {%- else %}
 <!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue>">
 {%- endif %}
 {%- if partition_hpss is not none %}
-<!ENTITY RSRV_HPSS    "<account>&ACCOUNT;</account><queue>&QUEUE_HPSS;</queue><partition>{{ partition_hpss }}</partition>">
+<!ENTITY RSRV_HPSS    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_HPSS;</queue><partition>{{ partition_hpss }}</partition><native>&RRFS_POST_RESERVE;</native>">
 {%- else %}
-<!ENTITY RSRV_HPSS    "<account>&ACCOUNT;</account><queue>&QUEUE_HPSS;</queue>">
+<!ENTITY RSRV_HPSS    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_HPSS;</queue>">
 {%- endif %}
 {%- if partition_fcst is not none %}
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue><partition>{{ partition_fcst }}</partition>">
 {%- else %}
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue>">
 {%- endif %}
+{%- if partition_analysis is not none %}
+<!ENTITY RSRV_ANALYSIS    "<account>&ACCOUNT;</account><queue>&QUEUE_ANALYSIS;</queue><partition>{{ partition_analysis }}</partition>">
+<!ENTITY RSRV_ENKF    "<account>&ACCOUNT;</account><queue>&QUEUE_ANALYSIS;</queue><partition>{{ partition_analysis }}</partition><native>&RRFS_RESERVE;</native>">
+{%- else %}
+<!ENTITY RSRV_ANALYSIS    "<account>&ACCOUNT;</account><queue>&QUEUE_ANALYSIS;</queue>">
+<!ENTITY RSRV_ENKF    "<account>&ACCOUNT;</account><queue>&QUEUE_ANALYSIS;</queue>">
+{%- endif %}
+{%- if partition_post is not none %}
+<!ENTITY RSRV_POST    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_POST;</queue><partition>{{ partition_post }}</partition><native>&RRFS_POST_RESERVE;</native>">
+{%- else %}
+<!ENTITY RSRV_POST    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_POST;</queue>">
+{%- endif %}
+{%- if partition_prdgen is not none %}
+<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition><native>&RRFS_POST_RESERVE;</native>">
+{%- else %}
+<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue>">
+{%- endif %}
+{%- if partition_graphics is not none %}
+{%- if do_ens_graphics %}
+<!ENTITY RSRV_GRAPHICS   "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_GRAPHICS;</queue><partition>{{ partition_graphics }}</partition><native>&RRFS_POST_RESERVE;</native>">
+{%- else %}
+<!ENTITY RSRV_GRAPHICS   "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_GRAPHICS;</queue><partition>{{ partition_graphics }}</partition><native>&RRFS_POST_RESERVE;</native>">
+{%- endif %}
+{%- else %}
+<!ENTITY RSRV_GRAPHICS   "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_GRAPHICS;</queue><native>--exclusive</native>">
+{%- endif %}
+
+<!-- FROM RRFS_dev1 -->
+{% if do_retro %}
+<!ENTITY DEADLINE_PRE      "999:00:00">
+<!ENTITY DEADLINE_ANAL     "999:00:00">
+<!ENTITY DEADLINE_FCST     "999:30:00">
+<!ENTITY DEADLINE_POST     "999:00:00">
+<!ENTITY DEADLINE_GRAPHICS "999:00:00">
+<!ENTITY DEADLINE_RECENTER "999:00:00">
+<!ENTITY DEADLINE_SAVE_RESTART "999:00:00">
+{% else %}
+<!ENTITY DEADLINE_PRE      "16:00:00">
+<!ENTITY DEADLINE_ANAL     "16:00:00">
+<!ENTITY DEADLINE_FCST     "23:30:00">
+<!ENTITY DEADLINE_POST     "24:00:00">
+<!ENTITY DEADLINE_GRAPHICS "24:00:00">
+<!ENTITY DEADLINE_RECENTER "24:00:00">
+<!ENTITY DEADLINE_SAVE_RESTART "24:00:00">
+{% endif %}
+
+<!ENTITY START_TIME_SPINUP "{{ start_time_spinup }}">
+<!ENTITY START_TIME_PROD "{{ start_time_prod }}">
+<!ENTITY START_TIME_CONVENTIONAL_SPINUP "{{ start_time_conventional_spinup }}">
+<!ENTITY START_TIME_LATE_ANALYSIS "{{ start_time_late_analysis }}">
+<!ENTITY START_TIME_CONVENTIONAL "{{ start_time_conventional }}">
+<!ENTITY START_TIME_NSSLMOSIAC   "{{ start_time_nsslmosiac }}">
+<!ENTITY START_TIME_LIGHTNINGNC  "{{ start_time_lightningnc }}">
+<!ENTITY START_TIME_PROCSMOKE  "{{ start_time_procsmoke }}">
+
+{%- if do_retro %}
+<!ENTITY WALL_LIMIT_PRE ''>
+<!ENTITY WALL_LIMIT_ANAL ''>
+<!ENTITY WALL_LIMIT_FCST ''>
+<!ENTITY WALL_LIMIT_POST ''>
+<!ENTITY WALL_LIMIT_BUFR ''>
+<!ENTITY WALL_LIMIT_GRAPHICS ''>
+<!ENTITY WALL_LIMIT_RECENTER ''>
+<!ENTITY WALL_LIMIT_SAVE_RESTART ''>
+{% else %}
+<!ENTITY WALL_LIMIT_PRE '<deadline><cyclestr offset="&DEADLINE_PRE;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_ANAL '<deadline><cyclestr offset="&DEADLINE_ANAL;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_FCST '<deadline><cyclestr offset="&DEADLINE_FCST;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_POST '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_BUFR '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_BUFRSND '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_GRAPHICS '<deadline><cyclestr offset="&DEADLINE_GRAPHICS;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_RECENTER '<deadline><cyclestr offset="&DEADLINE_RECENTER;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_SAVE_RESTART '<deadline><cyclestr offset="&DEADLINE_SAVE_RESTART;">@Y@m@d@H@M</cyclestr></deadline>'>
+{% endif %}
+
+<!ENTITY STARTYEAR  "{{ startyear }}">
+<!ENTITY STARTMONTH "{{ startmonth }}">
+<!ENTITY STARTDAY   "{{ startday }}">
+<!ENTITY STARTHOUR  "{{ starthour }}">
+
+<!ENTITY ENDYEAR  "{{ endyear }}">
+<!ENTITY ENDMONTH "{{ endmonth }}">
+<!ENTITY ENDDAY   "{{ endday }}">
+<!ENTITY ENDHOUR  "{{ endhour }}">
 
 ]>
 
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20" taskthrottle="{{ taskthrottle }}">
+{%- if do_retro %}
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="5" taskthrottle="{{ taskthrottle }}">
+{% else %}
+<workflow realtime="T" scheduler="&SCHED;" cyclethrottle="24" taskthrottle="{{ taskthrottle }}" cyclelifespan="01:00:00:00">
+{%- endif %}
 {# Double quotes are required inside the strftime! Expect an error from reading the template if using single quotes. #}
   <cycledef group="at_start">{{ cdate_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
-  <cycledef group="forecast">
-    {{- date_first_cycl ~ " " ~ date_last_cycl ~ " " ~ cycl_freq -}}
-  </cycledef>
+  <cycledef group="forecast">{{- date_first_cycl ~ " " ~ date_last_cycl ~ " " ~ cycl_freq -}}</cycledef>
+
+  <!-- from RRFS_dev1 -->
+  <!-- <cycledef group="at_start">{{ at_start_cycledef }} </cycledef> -->
+  <cycledef group="initial"> {{ initial_cycledef }} </cycledef>
+  <cycledef group="boundary"> {{ boundary_cycledef }} </cycledef>
+  <cycledef group="boundary_long"> {{ boundary_long_cycledef }} </cycledef>
+
+  <cycledef group="spinupcyc"> {{ spinup_cycledef }} </cycledef>
+  <cycledef group="prodcyc"> {{ prod_cycledef }} </cycledef>
+  <cycledef group="prodcyc_long"> {{ prodlong_cycledef }} </cycledef>
+
+{%- if do_save_input %}
+  <cycledef group="saveinputcyc"> {{ saveinput_cycledef }} </cycledef>
+{%- endif %}
+  <cycledef group="recentercyc"> {{ recenter_cycledef }} </cycledef>
+  <cycledef group="archive">  {{ archive_cycledef }} </cycledef> 
+  <!-- from RRFS_dev1 -->
 
   <log>
   {%- if run_envir == "nco"  %}
@@ -293,11 +452,414 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_get_extrn_ics %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if not do_ensfcst %}
+
+<!-- beginning of meta block for prod spinup  -->
+<metatask name="data_preprocessing">
+  
+{%- if do_spinup %}
+  <var name="cycletype">spinupcyc prodcyc,prodcyc_long</var>
+  <var name="type">spinup prod</var>
+{% else %}
+  <var name="cycletype">prodcyc,prodcyc_long</var>
+  <var name="type">prod</var>
+{%- endif %}
+
+{%- if do_smoke_dust %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&PROCESS_SMOKE_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_smoke }}">
+
+    &RSRV_DEFAULT;
+    &WALL_LIMIT_ANAL;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_SMOKE_TN;" "&JOBSdir;/JREGIONAL_PROCESS_SMOKE"</command>
+
+    <nodes>{{ nnodes_process_smoke }}:ppn={{ ppn_process_smoke }}</nodes>
+    <walltime>{{ wtime_process_smoke }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_process_smoke }}</memory>
+  {%- endif %}
+
+    <jobname>&TAG;_&PROCESS_SMOKE_TN;_#type#</jobname>
+    <join><cyclestr>&LOGDIR;/&PROCESS_SMOKE_TN;_#type#_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
+    <envar><name>NWGES_DIR</name><value>&NWGES_BASEDIR;</value></envar>
+
+    <dependency>
+      <and>
+        <timedep><cyclestr offset="&START_TIME_PROCSMOKE;">@Y@m@d@H@M00</cyclestr></timedep>
+      </and>
+    </dependency>
+
+  </task>
+{%- endif %}
+
+{%- if do_nonvar_cldanal or do_refl2tten or do_enkf_radar_ref or do_envar_radar_ref %}
+<!--
+************************************************************************
+************************************************************************
+--> 
+  <task name="&PROCESS_RADAR_REF_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_radarref }}">
+    
+    &RSRV_DEFAULT;
+    &WALL_LIMIT_ANAL;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_ANAL_TN;" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"</command>
+      
+    <nodes>{{ nnodes_process_radarref }}:ppn={{ ppn_process_radarref }}</nodes>
+    <walltime>{{ wtime_process_radarref }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+
+    <jobname>&TAG;_&PROCESS_RADAR_REF_TN;_#type#</jobname>
+    <join><cyclestr>&LOGDIR;/&PROCESS_RADAR_REF_TN;_#type#_@Y@m@d@H.log</cyclestr></join>
+        
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>RADAR_REF_THINNING</name><value>{{ radar_ref_thinning }}</value></envar>
+    <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
+        
+    <dependency>
+      <and>
+        <timedep><cyclestr offset="&START_TIME_NSSLMOSIAC;">@Y@m@d@H@M00</cyclestr></timedep>
+      </and>
+    </dependency>
+
+  </task>
+
+{%- if do_nldn_lght %}
+<!--
+     ************************************************************************
+************************************************************************
+-->
+  <task name="&PROCESS_LIGHTNING_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_lightning }}">
+
+    &RSRV_DEFAULT;
+    &WALL_LIMIT_ANAL;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_ANAL_TN;" "&JOBSdir;/JREGIONAL_PROCESS_LIGHTNING"</command>
+
+    <nodes>{{ nnodes_process_lightning }}:ppn={{ ppn_process_lightning }}</nodes>
+    <walltime>{{ wtime_process_lightning }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+
+    <jobname>&TAG;_&PROCESS_LIGHTNING_TN;_#type#</jobname>
+    <join><cyclestr>&LOGDIR;/&PROCESS_LIGHTNING_TN;_#type#_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <timedep><cyclestr offset="&START_TIME_LIGHTNINGNC;">@Y@m@d@H@M00</cyclestr></timedep>
+      </and>
+    </dependency>
+
+  </task>
+{%- endif %}
+
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&PROCESS_BUFR_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_bufr }}">
+
+    &RSRV_DEFAULT;
+    &WALL_LIMIT_ANAL;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_ANAL_TN;" "&JOBSdir;/JREGIONAL_PROCESS_BUFR"</command>
+
+    <nodes>{{ nnodes_process_bufr }}:ppn={{ ppn_process_bufr }}</nodes>
+    <walltime>{{ wtime_process_bufr }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_process_bufr }}</memory>
+  {%- endif %}
+    <jobname>&TAG;_&PROCESS_BUFR_TN;_#type#</jobname>
+    <join><cyclestr>&LOGDIR;/&PROCESS_BUFR_TN;_#type#_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+
+
+    <dependency>
+      <and>
+        <timedep><cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr></timedep>
+      </and>
+    </dependency>
+
+  </task>
+
+{%- endif %}
+</metatask>
+
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{% if not is_rtma %}
+{%- if do_ensemble %}
+ <metatask name="run_ensemble_pre">
+
+  <var name="{{ ensmem_indx_name }}">
+    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  {%- if do_enscontrol %}
+    <var name="subdirGE">/gec00{% for m in range(2, num_ens_members+1) %}{{ " /gep%02d"%m }}{% endfor %}</var>
+    <var name="memNameWRF">_mem0000{% for m in range(2, num_ens_members+1) %}{{ " _mem%04d"%m }}{% endfor %} </var>
+  {%- else %}
+    <var name="subdirGE">{% for m in range(1, num_ens_members+1) %}{{ " /gep%02d"%m }}{% endfor %}</var>
+    <var name="memNameWRF">{% for m in range(1, num_ens_members+1) %}{{ " _mem%04d"%m }}{% endfor %} </var>
+    <var name="memNameGDAS">{% for m in range(1, num_ens_members+1) %}{{ " mem%03d"%m }}{% endfor %} </var>
+  {%- endif %}
+    <var name="subdirGDAS">{% for m in range(1, num_ens_members+1) %}{{ " /mem%03d"%m }}{% endfor %}</var>
+{%- endif %}
+
+
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if run_task_get_extrn_ics %}
+
+  <task name="&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}" cycledefs="initial" maxtries="{{ maxtries_get_extrn_ics }}">
+
+    &WALL_LIMIT_PRE;
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    &RESOURCES_GET_EXTRN_ICS;
+    <walltime>&WALLTIME_GET_EXTRN_ICS;</walltime>
+    &NODESIZE_ALL;
+    <jobname>&TAG;_&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+    <envar><name>GEFS_INPUT_SUBDIR</name><value>#subdirGE#</value></envar>
+    <envar><name>WRF_MEM_NAME</name><value>#memNameWRF#</value></envar>
+    <envar><name>GDASENKF_INPUT_SUBDIR</name><value>#subdirGDAS#</value></envar>
+    <envar><name>GDAS_MEM_NAME</name><value>#memNameGDAS#</value></envar>
+
+    <dependency>
+      {%- if machine in ["WCOSS2"]  %}
+      {%- if fv3gfs_file_fmt_ics in ["netcdf"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % extrn_mdl_ics_offset_hrs }}.nc</cyclestr></datadep>
+      {% else %}
+      {%- if extrn_mdl_name_ics in ["GEFS"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/gefs.@Y@m@d/@H/atmos/pgrb2bp5/#subdirGE#.t@Hz.pgrb2b.0p50.f{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {% else %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {%- endif %}
+      {%- endif %}
+      {%- elif machine in ["ORION"]  %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@y@j@H000{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {% else %}
+      {%- if extrn_mdl_name_ics in ["GEFS"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/#subdirGE#/@y@j@H000{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {%- elif extrn_mdl_name_ics in ["GDASENKF"] %}
+      <and>
+      {%- if machine in ["HERA"] %}
+        <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.atmf00{{ extrn_mdl_ics_offset_hrs }}.nc</cyclestr></datadep>
+        <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.sfcf00{{ extrn_mdl_ics_offset_hrs }}.nc</cyclestr></datadep>
+      {%- elif machine in ["JET"] %}
+        <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@y@j@H00.gdas.t@Hz.atmf00{{ extrn_mdl_ics_offset_hrs }}.#memNameGDAS#.nc</cyclestr></datadep>
+        <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@y@j@H00.gdas.t@Hz.sfcf00{{ extrn_mdl_ics_offset_hrs }}.#memNameGDAS#.nc</cyclestr></datadep>
+      {%- endif %}
+      </and>
+      {%- elif extrn_mdl_name_ics in ["HRRRDAS"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@Y@m@d@H/postprd#memNameWRF#/wrfnat#memNameWRF#_00.grib2</cyclestr></datadep>
+      {%- else %}
+      {%- if machine in ["JET"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@y@j@H000{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {%- elif machine in ["HERA"] %}
+      <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/@y@j@H000{{ "%03d" % extrn_mdl_ics_offset_hrs }}</cyclestr></datadep>
+      {%- endif %}
+      {%- endif %}
+      {%- endif %}
+    </dependency>
+
+  </task>
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if run_task_get_extrn_lbcs %}
+
+  <task name="&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}" cycledefs="boundary" maxtries="{{ maxtries_get_extrn_lbcs }}">
+
+    &WALL_LIMIT_PRE;
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    &RESOURCES_GET_EXTRN_LBCS;
+    <walltime>&WALLTIME_GET_EXTRN_LBCS;</walltime>
+    &NODESIZE_ALL;
+    <jobname>&TAG;_&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>{{ extrn_mdl_name_lbcs }}</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+    <envar><name>BOUNDARY_LEN</name><value>{{ boundary_len_hrs }}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+    <envar><name>GEFS_INPUT_SUBDIR</name><value>#subdirGE#</value></envar>
+    <envar><name>GDASENKF_INPUT_SUBDIR</name><value>#subdirGDAS#</value></envar>
+    <envar><name>GDAS_MEM_NAME</name><value>#memNameGDAS#</value></envar>
+
+    <dependency>
+       <and>
+         {%- for h in range(extrn_mdl_lbcs_offset_hrs, boundary_len_hrs+extrn_mdl_lbcs_offset_hrs+1, lbc_spec_intvl_hrs) %}
+         {%- if machine in ["WCOSS2"]  %}
+         {%- if fv3gfs_file_fmt_lbcs in ["netcdf"]  %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr></datadep>
+         {%- else %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr></datadep>
+         {%- endif %}
+         {%- elif machine in ["ORION"]  %}
+         {%- if fv3gfs_file_fmt_lbcs in ["netcdf"]  %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr></datadep>
+         {%- else %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr></datadep>
+         {%- endif %}
+         {%- elif machine in ["ORION"]  %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- else %}
+         {%- if extrn_mdl_name_lbcs in ["GEFS"] %}
+         <datadep age="00:00:05:00"> <cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/#subdirGE#/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- elif extrn_mdl_name_lbcs in ["GDASENKF"] %}
+         {%- if machine in ["HERA"] %}
+          <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.sfcf{{ "%03d" % h }}.nc</cyclestr></datadep>
+         {%- elif machine in ["JET"] %}
+          <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H00.gdas.t@Hz.atmf{{ "%03d" % h }}.#memNameGDAS#.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H00.gdas.t@Hz.sfcf{{ "%03d" % h }}.#memNameGDAS#.nc</cyclestr></datadep>
+         {%- endif %}
+         {%- else %}
+         {%- if machine in ["JET"] %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- elif machine in ["HERA"] %}
+         <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- endif %}
+         {%- endif %}
+         {%- endif %}
+         {%- endfor %}
+       </and>
+    </dependency>
+
+  </task>
+
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if run_task_get_extrn_lbcs %}
+
+  <task name="&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}" cycledefs="boundary_long" maxtries="{{ maxtries_get_extrn_lbcs }}">
+
+    &WALL_LIMIT_PRE;
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    &RESOURCES_GET_EXTRN_LBCS;
+    <walltime>&WALLTIME_GET_EXTRN_LBCS;</walltime>
+    &NODESIZE_ALL;
+
+    <jobname>&TAG;_&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}</jobname>
+    <join><cyclestr>&LOGDIR;/&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>EXTRN_MDL_NAME</name><value>{{ extrn_mdl_name_lbcs }}</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+    <envar><name>BOUNDARY_LEN</name><value>{{ boundary_len_hrs }}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+    <envar><name>GEFS_INPUT_SUBDIR</name><value>#subdirGE#</value></envar>
+    <envar><name>GDASENKF_INPUT_SUBDIR</name><value>#subdirGDAS#</value></envar>
+    <envar><name>GDAS_MEM_NAME</name><value>#memNameGDAS#</value></envar>
+
+    <dependency>
+       <and>
+         {%- for h in range(extrn_mdl_lbcs_offset_hrs, boundary_long_len_hrs+extrn_mdl_lbcs_offset_hrs+1, lbc_spec_intvl_hrs) %}
+         {%- if machine in ["WCOSS2"] %}
+         <datadep age="00:00:05:00"><cyclestr>{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr></datadep>
+         {%- elif machine in ["ORION"]  %}
+         <datadep age="00:00:05:00"><cyclestr>{{ extrn_mdl_sysbasedir_lbcs }}/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr></datadep>
+         {%- else %}
+         {%- if extrn_mdl_name_lbcs in ["GEFS"] %}
+         <datadep age="00:00:05:00"> <cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/#subdirGE#/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- else %}
+         <datadep age="00:00:05:00"> <cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_lbcs }}/@y@j@H000{{ "%03d" % h }}</cyclestr></datadep>
+         {%- endif %}
+         {%- endif %}
+         {%- endfor %}
+       </and>
+    </dependency>
+
+  </task>
+
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+<!--
+************************************************************************
+************************************************************************
+-->
+<!---
+{%- if run_task_get_extrn_ics %}
   <task name="&GET_EXTRN_ICS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
@@ -324,11 +886,14 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_get_extrn_lbcs %}
+-->
+
 <!--
 ************************************************************************
 ************************************************************************
 -->
+<!--
+{%- if run_task_get_extrn_lbcs %}
   <task name="&GET_EXTRN_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
@@ -355,17 +920,12 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+-->
+
 <!--
 ************************************************************************
 ************************************************************************
 -->
-{%- if do_ensemble %}
-  <metatask name="run_ensemble">
-
-    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
-
-{%- endif %}
-
 {%- if run_task_make_ics %}
   <task name="&MAKE_ICS_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_ics }}">
 
@@ -458,11 +1018,29 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_run_fcst %}
+
+{% if do_ensemble %}
+</metatask>
+{% endif %}
+
+{%- endif %}
+
+
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_ensemble %}
+  <metatask name="run_ensemble">
+
+    <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
+
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if run_task_run_fcst %}
   <task name="&RUN_FCST_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
@@ -1834,15 +2412,6 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
-
-    <dependency>
-      <metataskdep metatask="run_ensemble"/>
-    </dependency>
-
   </task>
 
 <!--
