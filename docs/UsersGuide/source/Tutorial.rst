@@ -16,8 +16,6 @@ Users can run through the entire set of tutorials or jump to the one that intere
 
 Each section provides a summary of the weather event and instructions for configuring an experiment. 
 
-.. COMMENT: See sample forecast case details in this Google doc: https://docs.google.com/document/d/1TFjSAyI3jBmhzfZBmlIZz5NonBDDTi8x_-g-QVbvMOo/edit
-
 .. _fcst1:
 
 Sample Forecast #1: Severe Weather Over Indianapolis
@@ -35,10 +33,10 @@ A surface boundary associated with a vorticity maximum over the northern Great P
    * `Storm Prediction Center (SPC) Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
-.. figure:: _static/IndySevereWeather21z.gif
-   :alt: Radar animation of severe weather over Indianapolis on June 15, 2019 starting at 21z. The animation shows areas of heavy rain and tornado reports moving from west to east over Indianapolis. 
+.. figure:: _static/IndySevereWeather18z.gif
+   :alt: Radar animation of severe weather over Indianapolis on June 15, 2019 starting at 18z. The animation shows areas of heavy rain and tornado reports moving from west to east over Indianapolis. 
 
-   *Severe Weather Over Indianapolis Starting at 21z*
+   *Severe Weather Over Indianapolis Starting at 18z*
 
 .. COMMENT: Radar Loop: include image from Google doc
    See https://mesonet.agron.iastate.edu/current/mcview.phtml to produce images.
@@ -243,14 +241,19 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: HRRR
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/HRRR/grib2/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}>
    task_get_extrn_lbcs:
      EXTRN_MDL_NAME_LBCS: RAP
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/RAP/grib2/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}>
+     EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
+
+.. COMMENT: Verify whether to add EXTRN_MDL_LBCS_OFFSET_HRS: 0 --> or '-0'?
 
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these models and their datasets use the same physics parameterizations that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
 
 .. COMMENT: Verify above explanation w/Jeff/Gerard
+
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable 
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
 
@@ -316,6 +319,10 @@ Note that ``*.png`` will copy all files ending in ``.png``. The ``.`` at the end
 .. 
    scp -i /path-to/EPIC_RSA.pem ubuntu@your-ip-address:~/GST_test/grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/2019061518/postprd/*diffs*.png .
 
+   scp Gillian.Petro@54.235.118.65:/lustre/Gillian.Petro/expt_dirs/test_expt/2019061518/postprd/*.png ./plots
+
+   
+
 
 
  
@@ -367,6 +374,9 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
    :alt: Radar animation of Hurricane Barry making landfall. 
 
    *Hurricane Barry Making Landfall*
+
+
+.. COMMENT: See sample forecast case details in this Google doc: https://docs.google.com/document/d/1TFjSAyI3jBmhzfZBmlIZz5NonBDDTi8x_-g-QVbvMOo/edit
 
 Tutorial Content
 -------------------
