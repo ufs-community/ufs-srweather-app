@@ -774,6 +774,7 @@ Set parameters associated with NOMADS online data.
 ``NOMADS_file_type``: (Default: "nemsio")
    Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
+.. _task_get_extrn_lbcs:
 
 GET_EXTRN_LBCS Configuration Parameters
 ==========================================
@@ -1778,7 +1779,7 @@ Typically, the following parameters must be set explicitly by the user in the co
    The starting forecast hour for the plotting task. For example, if a forecast starts at 18h/18z, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. If a forecast starts at 18h/18z, but the user only wants plots from the 6th forecast hour on, "starting forecast hour" should be 6.
 
 ``PLOT_FCST_INC``: (Default: 3)
-   Forecast hour increment for the plotting task. This may be the same as ``INCR_CYCL_FREQ``, or it may be a multiple of ``INCR_CYCL_FREQ``. For example, if ``INCR_CYCL_FREQ`` is set to 3, there will be forecast output every three hours for the duration of the forecast. If the user wants plots of all of this output, they should set ``PLOT_FCST_INC: 3``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. However, there must be forecast output available at the designated increments to produce the plots. In this example, setting ``PLOT_FCST_INC: 7`` would produce an error because there is only forecast output available for hours 3, 6, 9, ..., etc. 
+   Forecast hour increment for the plotting task. This may be the same as ``LBC_SPEC_INTVL_HRS``, or it may be a multiple of ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to 3, there will be forecast output every three hours for the duration of the forecast. If the user wants plots of all of this output, they should set ``PLOT_FCST_INC: 3``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. However, there must be forecast output available at the designated increments to produce the plots. In this example, setting ``PLOT_FCST_INC: 7`` would produce an error because there is only forecast output available for hours 3, 6, 9, ..., etc. 
   
 ``PLOT_FCST_END``: (Default: "")
    The last forecast hour for the plotting task. For example, if a forecast run for 24 hours, and the user wants plots for each available hour of forecast output, they should set ``PLOT_FCST_END: 24``. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12.
