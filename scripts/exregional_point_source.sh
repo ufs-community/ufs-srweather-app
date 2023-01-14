@@ -115,8 +115,7 @@ PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 #-----------------------------------------------------------------------
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  cp_vrfy ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py stack-pt-merge.py
-  python3 stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
+  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
 
   # bail if error 
   if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then

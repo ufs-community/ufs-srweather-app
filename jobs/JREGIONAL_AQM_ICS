@@ -3,9 +3,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script generates both the initial conditions (ICs) and the lateral
-# boundary conditions (LBCs) files for the air quality model (AQM) from
-# files stored either in the system directory or on mass storage (HPSS).
+# This script adds extra species for air quality modeling (AQM) to the 
+# initial conditions (ICs).
 #
 #-----------------------------------------------------------------------
 #
@@ -19,7 +18,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #

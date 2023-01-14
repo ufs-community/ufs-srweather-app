@@ -111,9 +111,7 @@ print_info_msg "
     FV3 IC file: \"${gfs_ic_file}\""
 
 cp_vrfy ${gfs_ic_file} ${wrk_ic_file}
-cp_vrfy ${HOMEdir}/sorc/AQM-utils/python_utils/add_aqm_ics.py add_aqm_ics.py
-
-python3 add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
+python3 ${HOMEdir}/sorc/AQM-utils/python_utils/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 
 ncatted -a checksum,,d,s, tmp1.nc  || print_err_msg_exit "\
 Call to NCATTED returned with nonzero exit code."

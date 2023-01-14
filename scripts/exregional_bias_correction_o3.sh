@@ -94,7 +94,7 @@ yyyy_m2=${PDYm2:0:4}
 yyyymm_m2=${PDYm2:0:6}
 yyyy_m3=${PDYm3:0:4}
 yyyymm_m3=${PDYm3:0:6}
-
+ 
 #
 #-----------------------------------------------------------------------
 #
@@ -104,6 +104,15 @@ yyyymm_m3=${PDYm3:0:6}
 #
 if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
+fi
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
 fi
 
 #-----------------------------------------------------------------------------
@@ -135,16 +144,10 @@ fi
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
 #-----------------------------------------------------------------------------
 
-case $cyc in
-  00) bc_interp_hr=06;;
-  06) bc_interp_hr=72;;
-  12) bc_interp_hr=72;;
-  18) bc_interp_hr=06;;
-esac
-
+FCST_LEN_HRS=$( printf "%03d" ${FCST_LEN_HRS} )
 ic=1
 while [ $ic -lt 120 ]; do
-  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc ]; then
+  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f${FCST_LEN_HRS}.nc ]; then
     echo "cycle ${cyc} post1 is done!"
     break
   else
@@ -153,7 +156,7 @@ while [ $ic -lt 120 ]; do
 done
 
 if [ $ic -ge 120 ]; then
-  print_err_msg_exit "FATAL ERROR - COULD NOT LOCATE:${NET}.${cycle}.chem_sfc.f0${bc_interp_hr}.nc"
+  print_err_msg_exit "FATAL ERROR - COULD NOT LOCATE:${NET}.${cycle}.chem_sfc.f${FCST_LEN_HRS}.nc"
 fi
 
 # remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
@@ -180,7 +183,7 @@ cp_vrfy ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
-${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
 POST_STEP
 
 cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
@@ -193,7 +196,7 @@ mkdir_vrfy -p ${DATA}/data/sites
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
  
 PREP_STEP
-${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
 POST_STEP
 
 cp_vrfy ${DATA}/out/ozone.corrected* ${COMIN}
@@ -220,7 +223,7 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
 POST_STEP
 
@@ -285,7 +288,7 @@ EOF1
     # write out grib2 format 
     #-------------------------------------------------
     PREP_STEP
-    ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} || print_err_msg_exit "\
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
     Call to executable to run AQM_POST_MAXI_BIAS_COR_GRIB2 returned with nonzero exit code."
     POST_STEP
 
@@ -336,17 +339,10 @@ EOF1
 fi
 
 #-------------------------------------
-fhr=01
-case $cyc in
-  00) endfhr=06;;
-  06) endfhr=72;;
-  12) endfhr=72;;
-  18) endfhr=06;;
-esac
-
 rm_vrfy -rf tmpfile
 
-while [ "${fhr}" -le "${endfhr}" ]; do
+fhr=01
+while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
   fhr2d=$( printf "%02d" "${fhr}" )
   
   cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
