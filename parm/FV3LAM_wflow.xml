@@ -696,6 +696,9 @@ MODULES_RUN_TASK_FP script.
     <envar><name>GDAS_MEM_NAME</name><value>#memNameGDAS#</value></envar>
 
     <dependency>
+      <and>
+      <true></true>      
+
       {%- if machine in ["WCOSS2"]  %}
       {%- if fv3gfs_file_fmt_ics in ["netcdf"] %}
       <datadep age="00:00:05:00"><cyclestr offset="-{{ extrn_mdl_ics_offset_hrs }}:00:00">{{ extrn_mdl_sysbasedir_ics }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % extrn_mdl_ics_offset_hrs }}.nc</cyclestr></datadep>
@@ -731,6 +734,7 @@ MODULES_RUN_TASK_FP script.
       {%- endif %}
       {%- endif %}
       {%- endif %}
+      </and>
     </dependency>
 
   </task>
@@ -778,6 +782,7 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
        <and>
+         <true></true>
          {%- for h in range(extrn_mdl_lbcs_offset_hrs, boundary_len_hrs+extrn_mdl_lbcs_offset_hrs+1, lbc_spec_intvl_hrs) %}
          {%- if machine in ["WCOSS2"]  %}
          {%- if fv3gfs_file_fmt_lbcs in ["netcdf"]  %}
@@ -862,6 +867,7 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
        <and>
+         <true></true>
          {%- for h in range(extrn_mdl_lbcs_offset_hrs, boundary_long_len_hrs+extrn_mdl_lbcs_offset_hrs+1, lbc_spec_intvl_hrs) %}
          {%- if machine in ["WCOSS2"] %}
          <datadep age="00:00:05:00"><cyclestr>{{ extrn_mdl_sysbasedir_lbcs }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr></datadep>
