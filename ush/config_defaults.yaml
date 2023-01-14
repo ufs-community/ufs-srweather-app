@@ -2058,7 +2058,6 @@ task_run_anal:
   NCORES_RUN_OBSERVER: 4
   WTIME_RUN_ANAL: 00:30:00
   MAXTRIES_RUN_ANAL: 1
-  MAXTRIES_ANAL_GSI: 1
   OMP_NUM_THREADS_RUN_ANAL: 1
 
 #----------------------------
@@ -2070,7 +2069,6 @@ task_run_postanal:
   PPN_RUN_POSTANAL: 1
   WTIME_RUN_POSTANAL: 00:30:00
   MAXTRIES_RUN_POSTANAL: 1
-  MAXTRIES_POSTANAL: 1
 
 #----------------------------
 # CLDANAL_NONVAR config parameters

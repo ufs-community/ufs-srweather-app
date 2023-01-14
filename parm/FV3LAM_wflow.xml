@@ -64,6 +64,8 @@ Workflow task names.
 <!ENTITY SAVE_INPUT_TN             "{{ save_input_tn }}">
 <!ENTITY JEDI_ENVAR_IODA_TN        "{{ jedi_envar_ioda_tn }}">
 <!ENTITY PROCESS_SMOKE_TN          "{{ process_smoke_tn }}">
+<!ENTITY RUN_CLEAN_TN              "{{ run_clean_tn }}">
+<!ENTITY RUN_ARCHIVE_TN            "{{ run_archive_tn }}">
 
 <!ENTITY RUN_PREPSTART_TN          "run_prepstart">
 <!ENTITY RUN_ANAL_TN               "run_anal_gsi">
@@ -1260,7 +1262,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&ANAL_GSI_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&ANAL_GSI_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -1353,7 +1355,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&POSTANAL_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_postanal }}">
+  <task name="&POSTANAL_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_postanal }}">
 
     &RSRV_DEFAULT;
     &WALL_LIMIT_POST;
@@ -1397,7 +1399,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&HYBRID_RADAR_REF_TN;_spinup" cycledefs="spinupcyc" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&HYBRID_RADAR_REF_TN;_spinup" cycledefs="spinupcyc" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -2030,7 +2032,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&OBSERVER_GSI_ENSMEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&OBSERVER_GSI_ENSMEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -2098,7 +2100,7 @@ MODULES_RUN_TASK_FP script.
    {%- endfor %} </var>
  {%- endif %}
 
-  <task name="&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -2311,7 +2313,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&ANAL_GSI_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&ANAL_GSI_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -2411,7 +2413,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&POSTANAL_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_postanal }}">
+  <task name="&POSTANAL_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_postanal }}">
 
     &RSRV_DEFAULT;
     &WALL_LIMIT_POST;
@@ -2455,7 +2457,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&HYBRID_RADAR_REF_TN;_prod" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_anal_gsi }}">
+  <task name="&HYBRID_RADAR_REF_TN;_prod" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
     &WALL_LIMIT_ANAL;
@@ -2797,7 +2799,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>RESTART_HRS</name><value><cyclestr>{{ restart_interval }}</cyclestr></value></envar>
@@ -2829,7 +2831,7 @@ MODULES_RUN_TASK_FP script.
           <streq><left>{{ h }}</left><right><cyclestr>@H</cyclestr></right></streq>
           {%- endfor %}
           </or>
-          <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr></datadep>
+          <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr></datadep>
          </and>
          <and>
           {%- for h in cycl_hrs_recenter %}
@@ -2886,7 +2888,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>RESTART_HRS</name><value><cyclestr>{{ restart_interval_long }}</cyclestr></value></envar>
@@ -2916,7 +2918,7 @@ MODULES_RUN_TASK_FP script.
           <streq><left>{{ h }}</left><right><cyclestr>@H</cyclestr></right></streq>
           {%- endfor %}
           </or>
-          <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr></datadep>
+          <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr></datadep>
          </and>
          <and>
           {%- for h in cycl_hrs_recenter %}
@@ -2972,7 +2974,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -2981,8 +2983,8 @@ MODULES_RUN_TASK_FP script.
         <and>
           <timedep><cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr></timedep>
           <or>
-            <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/coupler.res</cyclestr></datadep>
-            <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr></datadep>
+            <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/coupler.res</cyclestr></datadep>
+            <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr></datadep>
           </or>
         </and>
       </dependency>
@@ -3018,7 +3020,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -3027,8 +3029,8 @@ MODULES_RUN_TASK_FP script.
         <and>
           <timedep><cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr></timedep>
           <or>
-            <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/coupler.res</cyclestr></datadep>
-            <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr></datadep>
+            <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/coupler.res</cyclestr></datadep>
+            <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr></datadep>
           </or>
         </and>
       </dependency>
@@ -3078,13 +3080,13 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
       <dependency>
-          <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/logf#fhr#</cyclestr></datadep>
+          <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/logf#fhr#</cyclestr></datadep>
       </dependency>
 
     </task>
@@ -3125,13 +3127,13 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
       <dependency>
-         <datadep age="01:30"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/logf#fhr#</cyclestr></datadep>
+         <datadep age="01:30"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H{{ slash_ensmem_subdir }}/fcst_fv3lam/logf#fhr#</cyclestr></datadep>
       </dependency>
 
     </task>
@@ -3170,7 +3172,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
@@ -3208,7 +3210,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
@@ -3248,12 +3250,12 @@ MODULES_RUN_TASK_FP script.
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-        <envar><name>CYCLE_DIR</name><value><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>TMMARK</name><value>tm00</value></envar>
 
         <dependency>
-          <datadep age="00:10"><cyclestr>&CYCLE_BASEDIR;/@Y@m@d@H/fcst_fv3lam/logf{{ "%03d" % postproc_long_len_hrs }}</cyclestr></datadep>
+          <datadep age="00:10"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/fcst_fv3lam/logf{{ "%03d" % postproc_long_len_hrs }}</cyclestr></datadep>
         </dependency>
 
   </task>
@@ -3349,7 +3351,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&CLEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
+  <task name="&RUN_CLEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_POST;
 
@@ -3358,8 +3360,8 @@ MODULES_RUN_TASK_FP script.
     <nodes> 1:ppn=1</nodes>
     <walltime>00:15:00</walltime>
 
-    <jobname>&TAG;_&CLEAN_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&CLEAN_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&TAG;_&RUN_CLEAN_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_CLEAN_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -3386,7 +3388,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&ARCHIVE_TN;_ens" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
+  <task name="&RUN_ARCHIVE_TN;_ens" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_HPSS;
 
@@ -3396,8 +3398,8 @@ MODULES_RUN_TASK_FP script.
     <walltime>23:00:00</walltime>
     <memory>24G</memory>
 
-    <jobname>&TAG;_&ARCHIVE_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -3417,7 +3419,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
+  <task name="&RUN_ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_HPSS;
 
@@ -3427,8 +3429,8 @@ MODULES_RUN_TASK_FP script.
     <walltime>08:00:00</walltime>
     <memory>24G</memory>
 
-    <jobname>&TAG;_&ARCHIVE_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -3448,7 +3450,7 @@ MODULES_RUN_TASK_FP script.
      ************************************************************************
 ************************************************************************
 -->
-  <task name="&ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
+  <task name="&RUN_ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_HPSS;
 
@@ -3457,8 +3459,8 @@ MODULES_RUN_TASK_FP script.
     <nodes>1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
 
-    <jobname>&TAG;_&ARCHIVE_TN;</jobname>
-    <join><cyclestr>&LOGDIR;/&ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
+    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <join><cyclestr>&LOGDIR;/&RUN_ARCHIVE_TN;_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
