@@ -48,6 +48,7 @@ data files from disk or HPSS.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 DATA="${DATA}/tmp_GFS_SFC"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
@@ -129,15 +130,15 @@ else
   done
 
   # Retrieve data from A file up to FCST_LEN_HRS=39
-  htar_log_fn="log.htar_a_get.${yyyymmdd}_${hh}"
   htar -tvf ${gfs_sfc_tar_fp}
-  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} >& ${htar_log_fn} || \
+  PREP_STEP
+  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
 file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
 details:
-  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\"
-  htar_log_fn = \"${htar_log_fn}\""
+  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\""
+  POST_STEP
 
   # Retireve data from B file when FCST_LEN_HRS>=40
   if [ "${FCST_LEN_HRS}" -ge "40" ]; then
@@ -149,17 +150,15 @@ details:
       gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
       gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"  
     done
-
-    htar_log_fn="log.htar_b_get.${yyyymmdd}_${hh}"
     htar -tvf ${gfs_sfc_tar_fp}
-    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} >& ${htar_log_fn} || \
+    PREP_STEP
+    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
 file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
 details:
-  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\"
-  htar_log_fn = \"${htar_log_fn}\""
-
+  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\""
+    POST_STEP
   fi
   # Move retrieved files to staging directory
   mv_vrfy ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}

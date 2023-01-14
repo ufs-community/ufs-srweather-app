@@ -9,7 +9,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -76,7 +76,7 @@ mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-time $SCRIPTSdir/exregional_nexus_post_split.sh || \
+$SCRIPTSdir/exregional_nexus_post_split.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

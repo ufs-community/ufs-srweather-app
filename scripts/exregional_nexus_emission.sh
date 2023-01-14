@@ -61,6 +61,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 #
 #-----------------------------------------------------------------------
 #
+set -x
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_NEXUS_EMISSION*PPN_NEXUS_EMISSION ))
@@ -191,94 +192,86 @@ NEXUS_INPUT_BASE_DIR=${NEXUS_INPUT_DIR}
 # 
 # modify time configuration file
 #
-cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py .
-echo ${start_date} ${end_date} # ${cyc}
-./nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
+python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
 
 #
 #---------------------------------------------------------------------
 #
 # set the root directory to the temporary directory
 #
-cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_root_parser.py .
-./nexus_root_parser.py -f ${DATA}/NEXUS_Config.rc -d ${DATAinput}
+python3 ${ARL_NEXUS_DIR}/utils/python/nexus_root_parser.py -f ${DATA}/NEXUS_Config.rc -d ${DATAinput}
 
 #
 #----------------------------------------------------------------------
 # Get all the files needed (TEMPORARILY JUST COPY FROM THE DIRECTORY)
 #
 if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
-    cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_linker.py .
-    cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_control_tilefix.py .
-    mkdir_vrfy -p ${DATAinput}/NEI2016v1
-    mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07
-    mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07/${mm}
-    ./nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
-    ./nexus_nei2016_control_tilefix.py -f NEXUS_Config.rc -t HEMCO_sa_Time.rc # -d ${yyyymmdd}
+  mkdir_vrfy -p ${DATAinput}/NEI2016v1
+  mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07
+  mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07/${mm}
+  python3 ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
+  python3 ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_control_tilefix.py -f ${DATA}/NEXUS_Config.rc -t ${DATA}/HEMCO_sa_Time.rc # -d ${yyyymmdd}
 fi
 
-
-
 if [ "${TIMEZONES}" = "TRUE" ]; then # TIME ZONES
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/TIMEZONES ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/TIMEZONES ${DATAinput}/
 fi
 
 if [ "${MASKS}" = "TRUE" ]; then # MASKS
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MASKS ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MASKS ${DATAinput}/
 fi
 
 if [ "${CEDS}" = "TRUE" ]; then #CEDS
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/CEDS ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/CEDS ${DATAinput}/
 fi
 
 if [ "${HTAP2010}" = "TRUE" ]; then #CEDS2014
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/HTAP ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/HTAP ${DATAinput}/
 fi
 
 if [ "${OMIHTAP}" = "TRUE" ]; then #CEDS2014
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/OMI-HTAP_2019 ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/OMI-HTAP_2019 ${DATAinput}/
 fi
 
 if [ "${NOAAGMD}" = "TRUE" ]; then #NOAA_GMD
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/NOAA_GMD ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/NOAA_GMD ${DATAinput}/
 fi
 
 if [ "${SOA}" = "TRUE" ]; then #SOA
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/SOA ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/SOA ${DATAinput}/
 fi
 
 if [ "${EDGAR}" = "TRUE" ]; then #EDGARv42
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/EDGARv42 ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/EDGARv42 ${DATAinput}/
 fi
 
 if [ "${MEGAN}" = "TRUE" ]; then #MEGAN
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MEGAN ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MEGAN ${DATAinput}/
 fi
 
 if [ "${OLSON_MAP}" = "TRUE" ]; then #OLSON_MAP
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/OLSON_MAP ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/OLSON_MAP ${DATAinput}/
 fi
 
 if [ "${Yuan_XLAI}" = "TRUE" ]; then #Yuan_XLAI
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/Yuan_XLAI ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/Yuan_XLAI ${DATAinput}/
 fi
 
 if [ "${GEOS}" = "TRUE" ]; then #GEOS
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/GEOS_0.5x0.625 ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/GEOS_0.5x0.625 ${DATAinput}/
 fi
 
 if [ "${AnnualScalar}" = "TRUE" ]; then #ANNUAL_SCALAR
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/AnnualScalar ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/AnnualScalar ${DATAinput}/
 fi
 
 if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
-    ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}/
+  ln_vrfy -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}/
 fi
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
-    cp_vrfy ${ARL_NEXUS_DIR}/utils/python/nexus_gfs_bio.py .
-    mkdir_vrfy -p $${DATAinput}/GFS_SFC
-    ./nexus_gfs_bio.py -i GFS_SFC/gfs.t??z.sfcf???.nc -o GFS_SFC_MEGAN_INPUT.nc
+  mkdir_vrfy -p ${DATAinput}/GFS_SFC
+  python3 ${ARL_NEXUS_DIR}/utils/python/nexus_gfs_bio.py -i ${DATA}/GFS_SFC/gfs.t??z.sfcf???.nc -o ${DATA}/GFS_SFC_MEGAN_INPUT.nc
 fi
 
 #

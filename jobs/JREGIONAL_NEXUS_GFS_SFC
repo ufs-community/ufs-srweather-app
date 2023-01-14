@@ -17,7 +17,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -51,8 +51,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies or fetches RAVE fire
-emission data files from disk, or HPSS.
+This is the J-job script for the task that copies or fetches GFS surface
+data files from disk, or HPSS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------

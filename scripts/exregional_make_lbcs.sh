@@ -111,7 +111,7 @@ if [ "${FCST_LEN_HRS}" = "-1" ]; then
   done
 fi
 LBC_SPEC_FCST_HRS=()
-for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( ${FCST_LEN_HRS}+${LBC_SPEC_INTVL_HRS} )) ); do
+for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
   LBC_SPEC_FCST_HRS+=("$i_lbc")
 done
 #
