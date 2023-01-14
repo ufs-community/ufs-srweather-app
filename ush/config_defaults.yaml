@@ -1043,7 +1043,7 @@ start_time:
 #----------------------------------
 # Cycle definiton for each group
 #----------------------------------
-cycle_defs:
+cycledefs:
   #-----------------------------------------------------------------------
   #
   # Set cycle definition for each group.  The cycle definition sets the cycle
@@ -1994,13 +1994,23 @@ task_run_prepstart:
 #-----------------------------
 task_process_radarref:
   PROCESS_RADAR_REF_TN: "process_radarref"
-  RADAR_REFL2TTEN_TN: "radar_refl2tten"
   NNODES_PROCESS_RADARREF: 2
   PPN_PROCESS_RADARREF: 24
   WTIME_PROCESS_RADARREF: 00:30:00
   MAXTRIES_PROCESS_RADARREF: 1
 
   RADAR_REF_THINNING: 1
+
+#----------------------------
+# REF2TTEN config parameters
+#-----------------------------
+task_run_ref2tten:
+  RADAR_REFL2TTEN_TN: "radar_refl2tten"
+  NNODES_RUN_REF2TTEN: 1
+  PPN_RUN_REF2TTEN: 1
+  MEM_RUN_REF2TTEN: 20G
+  WTIME_RUN_REF2TTEN: 00:30:00
+  MAXTRIES_RUN_REF2TTEN: 1
 
 #----------------------------
 # PROCESS LIGHTNING config parameters
@@ -2044,8 +2054,12 @@ task_run_anal:
   OBSERVER_GSI_ENSMEAN_TN: "observer_gsi_ensmean"
   NNODES_RUN_ANAL: 16
   PPN_RUN_ANAL: 24
+  NCORES_RUN_ANAL: 4
+  NCORES_RUN_OBSERVER: 4
   WTIME_RUN_ANAL: 00:30:00
   MAXTRIES_RUN_ANAL: 1
+  MAXTRIES_ANAL_GSI: 1
+  OMP_NUM_THREADS_RUN_ANAL: 1
 
 #----------------------------
 # POSTANAL config parameters
@@ -2056,6 +2070,7 @@ task_run_postanal:
   PPN_RUN_POSTANAL: 1
   WTIME_RUN_POSTANAL: 00:30:00
   MAXTRIES_RUN_POSTANAL: 1
+  MAXTRIES_POSTANAL: 1
 
 #----------------------------
 # CLDANAL_NONVAR config parameters
@@ -2086,6 +2101,7 @@ task_run_enkf:
   RUN_ENKF_TN: "run_enkf"
   NNODES_RUN_ENKF: 90
   PPN_RUN_ENKF: 1
+  NCORES_RUN_ENKF: 4
   WTIME_RUN_ENKF: 01:00:00
   MAXTRIES_RUN_ENKF: 1
 
@@ -2209,6 +2225,8 @@ task_run_fcst:
   NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
   PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   WTIME_RUN_FCST: 04:30:00
+  WTIME_RUN_FCST_LONG: 04:30:00
+  WTIME_RUN_FCST_SPINUP: 00:30:00
   MAXTRIES_RUN_FCST: 1
   FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
   #
@@ -2292,6 +2310,11 @@ task_run_fcst:
   # BLOCKSIZE:
   # The amount of data that is passed into the cache at a time.
   #
+  # IO_LAYOUT_X,IO_LAYOUT_Y:
+  # When wrtie out restrat files, how many subdomain files will be write in
+  # x and y directory. Right now, please always set IO_LAYOUT_X=1.
+  # LAYOUT_Y/IO_LAYOUT_Y needs to be a integer number.
+  #
   # Here, we set these parameters to null strings.  This is so that, for 
   # any one of these parameters:
   #
@@ -2315,6 +2338,8 @@ task_run_fcst:
   LAYOUT_X: '{{ LAYOUT_X }}'
   LAYOUT_Y: '{{ LAYOUT_Y }}'
   BLOCKSIZE: '{{ BLOCKSIZE }}'
+  IO_LAYOUT_X: '{{ IO_LAYOUT_X }}'
+  IO_LAYOUT_Y: '{{ IO_LAYOUT_Y }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -2452,6 +2477,57 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # FH_DFI_RADAR:
+  # the forecast hour to use radar tten, this is used  to set the fh_dfi_radar 
+  # parameter in input.nml, e.g. FH_DFI_RADAR="0.0,0.25,0.5,0.75,1.0"
+  # will set fh_dfi_radar = 0.0,0.25,0.5,0.75,1.0 in input.nml* and
+  # it tells the model to read at the 0, 15, 30, 45 minutes,
+  # and apply radar tten from 0-60 minutes of forecasts.
+  #
+  # Here, we set these parameters to null strings.  This is so that, for 
+  # any one of these parameters:
+  #
+  # 1) If the experiment is using a predefined grid, then if the user 
+  #    sets the parameter in the user-specified experiment configuration 
+  #    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
+  #    Otherwise, the default value of the parameter for that predefined 
+  #    grid will be used.
+  #
+  # 2) If the experiment is not using a predefined grid (i.e. it is using
+  #    a custom grid whose parameters are specified in the experiment 
+  #    configuration file), then the user must specify a value for the 
+  #    parameter in that configuration file.  Otherwise, the parameter 
+  #    will remain set to a null string, and the experiment generation 
+  #    will fail because the generation scripts check to ensure that all 
+  #    the parameters defined in this section are set to non-empty strings
+  #    before creating the experiment directory.
+  #
+  #
+  # NFHOUT: 
+  # Output frequency in hours after forecast hour "nfhmax_hf".
+  #
+  # NFHMAX_HF:
+  # Number of forecast hours until output frequency "nfhout" takes affect. 
+  #
+  # NFHOUT_HF:
+  # Output frequency in hours until forecast hour "nfhmax_hf".
+  #
+  # NSOUT
+  #   setup frequency of writing out forecast files in time steps
+  # NSOUT_MIN
+  #   setup frequency of writing out forecast files in minutes
+  #
+  #-----------------------------------------------------------------------
+  #
+  FH_DFI_RADAR: -20000000000
+  NFHOUT: 1
+  NFHMAX_HF: 60
+  NFHOUT_HF: 1
+  NSOUT: 0
+  NSOUT_MIN: 0
 
 #----------------------------
 # POST config parameters
