@@ -1308,7 +1308,9 @@ nco:
   NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
   NCL_HOME: "/home/rtrr/RRFS/graphics"
   NCL_REGION: "conus"
-  MODEL: "NO MODEL CHOSEN"
+  #--- MODEL is aready defined in SRW so remove/rename
+  # it once we figure out the purpose in RRFS_dev1
+  #MODEL: "NO MODEL CHOSEN"
   
   OBSPATH: "/public/data/grids/rap/obs"
   OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
