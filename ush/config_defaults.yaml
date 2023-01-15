@@ -261,11 +261,17 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
+  # SCHED_NATIVE_CMD
   # Allows an extra parameter to be passed to SCHEDULER (SLURM/PBSPRO) via 
   # XML Native command
   #
+  # TAG
+  # Append all task names of the workflow with this name if specified
+  #
+  #-----------------------------------------------------------------------
+  #
   SCHED_NATIVE_CMD: ""
-
+  TAG: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1270,7 +1276,6 @@ nco:
   envir: "para"
   NET: "rrfs"
   RUN: "rrfs"
-  TAG: "dev_grid"
   model_ver: "v1.0.0"
 
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'

@@ -77,7 +77,11 @@ Workflow task names.
 <!ENTITY RUN_NCL_ZIP_TN            "run_ncl_zip">
 <!ENTITY RUN_SMOKE_TN              "run_proc_smoke">
 
+{%- if tag  %}
 <!ENTITY TAG                       "{{ tag }}">
+{%- else %}
+<!ENTITY TAG                       "">
+{%- endif %}
 
 <!ENTITY GET_OBS                   "{{ get_obs }}">
 <!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
@@ -402,7 +406,7 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_GRID_TN;</jobname>
+    <jobname>&TAG;&MAKE_GRID_TN;</jobname>
     <join>&LOGDIR;/&MAKE_GRID_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -427,7 +431,7 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_OROG_TN;</jobname>
+    <jobname>&TAG;&MAKE_OROG_TN;</jobname>
     <join>&LOGDIR;/&MAKE_OROG_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -460,7 +464,7 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_make_sfc_climo }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
+    <jobname>&TAG;&MAKE_SFC_CLIMO_TN;</jobname>
     <join>&LOGDIR;/&MAKE_SFC_CLIMO_TN;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -525,7 +529,7 @@ MODULES_RUN_TASK_FP script.
     <memory>{{ mem_process_smoke }}</memory>
   {%- endif %}
 
-    <jobname>&TAG;_&PROCESS_SMOKE_TN;_#type#</jobname>
+    <jobname>&TAG;&PROCESS_SMOKE_TN;_#type#</jobname>
     <join>&LOGDIR;/&PROCESS_SMOKE_TN;_#type#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -565,7 +569,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&PROCESS_RADAR_REF_TN;_#type#</jobname>
+    <jobname>&TAG;&PROCESS_RADAR_REF_TN;_#type#</jobname>
     <join>&LOGDIR;/&PROCESS_RADAR_REF_TN;_#type#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
         
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -603,7 +607,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&PROCESS_LIGHTNING_TN;_#type#</jobname>
+    <jobname>&TAG;&PROCESS_LIGHTNING_TN;_#type#</jobname>
     <join>&LOGDIR;/&PROCESS_LIGHTNING_TN;_#type#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -641,7 +645,7 @@ MODULES_RUN_TASK_FP script.
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_process_bufr }}</memory>
   {%- endif %}
-    <jobname>&TAG;_&PROCESS_BUFR_TN;_#type#</jobname>
+    <jobname>&TAG;&PROCESS_BUFR_TN;_#type#</jobname>
     <join>&LOGDIR;/&PROCESS_BUFR_TN;_#type#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -713,7 +717,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
 
-    <jobname>&TAG;_&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -795,7 +799,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
 
-    <jobname>&TAG;_&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -882,7 +886,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
 
-    <jobname>&TAG;_&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1074,7 +1078,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&PREP_CYC_SPINUP_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&PREP_CYC_SPINUP_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&PREP_CYC_SPINUP_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1160,7 +1164,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_fcst }}</walltime>
 
-    <jobname>&TAG;_&RUN_FCST_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&RUN_FCST_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&RUN_FCST_TN;_ensinit{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1204,7 +1208,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&SAVE_RESTART_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
+      <jobname>&TAG;&SAVE_RESTART_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
       <join>&LOGDIR;/&SAVE_RESTART_TN;_ensinit{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1245,7 +1249,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&PREP_CYC_SPINUP_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&PREP_CYC_SPINUP_TN;_ensinit{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&PREP_CYC_SPINUP_TN;_ensinit{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1283,7 +1287,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname><cyclestr>&TAG;_&RUN_RECENTER_TN;_spinup</cyclestr></jobname>
+    <jobname>&TAG;&RUN_RECENTER_TN;_spinup</jobname>
     <join>&LOGDIR;/&RUN_RECENTER_TN;_spinup<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1339,7 +1343,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&ANAL_GSI_TN;_spinup{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&ANAL_GSI_TN;_spinup{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&ANAL_GSI_TN;{{ uscore_ensmem_name }}_spinup<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1423,7 +1427,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&POSTANAL_TN;_spinup{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&POSTANAL_TN;_spinup{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&POSTANAL_TN;{{ uscore_ensmem_name }}_spinup_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1476,7 +1480,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&HYBRID_RADAR_REF_TN;_spinup</jobname>
+    <jobname>&TAG;&HYBRID_RADAR_REF_TN;_spinup</jobname>
     <join>&LOGDIR;/&HYBRID_RADAR_REF_TN;_spinup<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1536,7 +1540,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&RADAR_REFL2TTEN_TN;_spinup</jobname>
+    <jobname>&TAG;&RADAR_REFL2TTEN_TN;_spinup</jobname>
     <join>&LOGDIR;/&RADAR_REFL2TTEN_TN;_spinup<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1582,7 +1586,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&JEDI_ENVAR_IODA_TN;_spinup</jobname>
+    <jobname>&TAG;&JEDI_ENVAR_IODA_TN;_spinup</jobname>
     <join>&LOGDIR;/&JEDI_ENVAR_IODA_TN;_spinup<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1625,7 +1629,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&CLDANL_NONVAR_TN;_spinup{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&CLDANL_NONVAR_TN;_spinup{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&CLDANL_NONVAR_TN;_spinup{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1707,7 +1711,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_fcst }}</walltime>
 
-    <jobname>&TAG;_&RUN_FCST_TN;_spinup{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&RUN_FCST_TN;_spinup{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&RUN_FCST_TN;_spinup{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1781,7 +1785,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&SAVE_RESTART_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1836,7 +1840,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_POST_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_POST_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_POST_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1876,7 +1880,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_PRDGEN_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_PRDGEN_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_PRDGEN_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1948,7 +1952,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&PREP_CYC_PROD_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&PREP_CYC_PROD_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&PREP_CYC_PROD_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2079,7 +2083,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&CALC_ENSMEAN_TN;</jobname>
+    <jobname>&TAG;&CALC_ENSMEAN_TN;</jobname>
     <join>&LOGDIR;/&CALC_ENSMEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2130,7 +2134,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&OBSERVER_GSI_ENSMEAN_TN;</jobname>
+    <jobname>&TAG;&OBSERVER_GSI_ENSMEAN_TN;</jobname>
     <join>&LOGDIR;/&OBSERVER_GSI_ENSMEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2197,7 +2201,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2249,7 +2253,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname><cyclestr>&TAG;_&RUN_ENKFUPDT_TN;</cyclestr></jobname>
+    <jobname>&TAG;&RUN_ENKFUPDT_TN;</jobname>
     <join>&LOGDIR;/&RUN_ENKFUPDT_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2290,7 +2294,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname><cyclestr>&TAG;_&ENKF_RADAR_REF_TN;</cyclestr></jobname>
+    <jobname>&TAG;&ENKF_RADAR_REF_TN;</jobname>
     <join>&LOGDIR;/&ENKF_RADAR_REF_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2339,7 +2343,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname><cyclestr>&TAG;_&RUN_RECENTER_TN;</cyclestr></jobname>
+    <jobname>&TAG;&RUN_RECENTER_TN;</jobname>
     <join>&LOGDIR;/&RUN_RECENTER_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2417,7 +2421,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&ANAL_GSI_TN;_prod{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&ANAL_GSI_TN;_prod{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&ANAL_GSI_TN;{{ uscore_ensmem_name }}_prod_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2509,7 +2513,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&POSTANAL_TN;_prod{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&POSTANAL_TN;_prod{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&POSTANAL_TN;{{ uscore_ensmem_name }}_prod<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2562,7 +2566,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_anal }}</walltime>
 
-    <jobname>&TAG;_&HYBRID_RADAR_REF_TN;_prod</jobname>
+    <jobname>&TAG;&HYBRID_RADAR_REF_TN;_prod</jobname>
     <join>&LOGDIR;/&HYBRID_RADAR_REF_TN;_prod_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2622,7 +2626,7 @@ MODULES_RUN_TASK_FP script.
     <memory>{{ mem_run_ref2tten }}</memory>
     <nodesize>&NCORES_PER_NODE;</nodesize>
 
-    <jobname>&TAG;_&RADAR_REFL2TTEN_TN;_prod</jobname>
+    <jobname>&TAG;&RADAR_REFL2TTEN_TN;_prod</jobname>
     <join>&LOGDIR;/&RADAR_REFL2TTEN_TN;_prod_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2669,7 +2673,7 @@ MODULES_RUN_TASK_FP script.
     <memory>{{ mem_run_jedi_envar_ioda }}</memory>
     <nodesize>&NCORES_PER_NODE;</nodesize>
 
-    <jobname>&TAG;_&JEDI_ENVAR_IODA_TN;_prod</jobname>
+    <jobname>&TAG;&JEDI_ENVAR_IODA_TN;_prod</jobname>
     <join>&LOGDIR;/&JEDI_ENVAR_IODA_TN;_prod_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2714,7 +2718,7 @@ MODULES_RUN_TASK_FP script.
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
 
-    <jobname>&TAG;_&CLDANL_NONVAR_TN;_prod{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&CLDANL_NONVAR_TN;_prod{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&CLDANL_NONVAR_TN;_prod{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2797,7 +2801,7 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_save_restart }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
 
-    <jobname>&TAG;_&SAVE_INPUT_TN;{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&SAVE_INPUT_TN;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&SAVE_INPUT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2877,7 +2881,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_fcst }}</walltime>
 
-    <jobname>&TAG;_&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -2977,7 +2981,7 @@ MODULES_RUN_TASK_FP script.
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_fcst_long }}</walltime>
 
-    <jobname>&TAG;_&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}</jobname>
+    <jobname>&TAG;&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&RUN_FCST_TN;_prod{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3063,7 +3067,7 @@ MODULES_RUN_TASK_FP script.
       <walltime>{{ wtime_save_restart }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
 
-      <jobname>&TAG;_&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3109,7 +3113,7 @@ MODULES_RUN_TASK_FP script.
       <walltime>{{ wtime_save_restart }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
 
-      <jobname>&TAG;_&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&SAVE_RESTART_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3174,7 +3178,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3224,7 +3228,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3269,7 +3273,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3310,7 +3314,7 @@ MODULES_RUN_TASK_FP script.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;_&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&TAG;&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3376,7 +3380,7 @@ later below for other output times.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3447,7 +3451,7 @@ for other output times.
         <nodesize>&NCORES_PER_NODE;</nodesize>
         <native>&SCHED_NATIVE_CMD;</native>
 
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+        <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
 	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3522,10 +3526,10 @@ always zero).
         <nodesize>&NCORES_PER_NODE;</nodesize>
         <native>&SCHED_NATIVE_CMD;</native>
         {%- if sub_hourly_post %}
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+        <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
 	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
         {%- else %}
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+        <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
 	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
         {%- endif %}
 
@@ -3600,7 +3604,7 @@ the <task> tag to be identical to the ones above for other output times.
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <jobname>&TAG;&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
       <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3651,7 +3655,7 @@ the <task> tag to be identical to the ones above for other output times.
         <walltime>{{ wtime_run_bufrsnd }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
 
-        <jobname>&TAG;_&RUN_BUFRSND_TN;</jobname>
+        <jobname>&TAG;&RUN_BUFRSND_TN;</jobname>
         <join>&LOGDIR;/&RUN_BUFRSND_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3695,7 +3699,7 @@ the <task> tag to be identical to the ones above for other output times.
       <walltime>{{ wtime_run_fcst_long }}</walltime>
       <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
 
-      <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
+      <jobname>&TAG;python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
       <join>&LOGDIR;/python{{ uscore_ensmem_name }}_#tilelabel#&LOGEXT;</join>
       <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
 
@@ -3733,7 +3737,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_run_fcst_long }}</walltime>
     <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
 
-    <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_skewts</jobname>
+    <jobname>&TAG;python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_skewts</jobname>
     <join>&LOGDIR;/python_skewts{{ uscore_ensmem_name }}<cyclestr>_@H</cyclestr>&LOGEXT;</join>
     <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
 
@@ -3777,7 +3781,7 @@ the <task> tag to be identical to the ones above for other output times.
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&PLOT_ALLVARS_TN;</jobname>
+    <jobname>&TAG;&PLOT_ALLVARS_TN;</jobname>
     <join>&LOGDIR;/&PLOT_ALLVARS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3816,7 +3820,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_CCPA_TN;</jobname>
+    <jobname>&TAG;&GET_OBS_CCPA_TN;</jobname>
     <join>&LOGDIR;/&GET_OBS_CCPA_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3847,7 +3851,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_MRMS_TN;</jobname>
+    <jobname>&TAG;&GET_OBS_MRMS_TN;</jobname>
     <join>&LOGDIR;/&GET_OBS_MRMS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3879,7 +3883,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_NDAS_TN;</jobname>
+    <jobname>&TAG;&GET_OBS_NDAS_TN;</jobname>
     <join>&LOGDIR;/&GET_OBS_NDAS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3909,7 +3913,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -3964,7 +3968,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_REFC_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_REFC_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4018,7 +4022,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_RETOP_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_RETOP_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4072,7 +4076,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_03h_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_03h_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4112,7 +4116,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_06h_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_06h_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4152,7 +4156,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_24h_TN;</jobname>
+    <jobname>&TAG;&VX_GRIDSTAT_24h_TN;</jobname>
     <join>&LOGDIR;/&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4192,7 +4196,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_pointstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_POINTSTAT_TN;</jobname>
+    <jobname>&TAG;&VX_POINTSTAT_TN;</jobname>
     <join>&LOGDIR;/&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4254,7 +4258,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4290,7 +4294,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_03h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_03h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4326,7 +4330,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_06h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_06h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4362,7 +4366,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_24h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_24h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4397,7 +4401,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_REFC_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_REFC_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4432,7 +4436,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_RETOP_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_RETOP_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4466,7 +4470,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_MEAN_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4502,7 +4506,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4537,7 +4541,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_03h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_MEAN_03h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4572,7 +4576,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_03h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_03h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4609,7 +4613,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_06h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_MEAN_06h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4645,7 +4649,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_06h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_06h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4682,7 +4686,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_24h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_MEAN_24h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_MEAN_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4718,7 +4722,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_24h_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_24h_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4757,7 +4761,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_REFC_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_REFC_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4792,7 +4796,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_RETOP_TN;</jobname>
+    <jobname>&TAG;&VX_ENSGRID_PROB_RETOP_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSGRID_PROB_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4828,7 +4832,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_enspoint }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_TN;</jobname>
+    <jobname>&TAG;&VX_ENSPOINT_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSPOINT_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4860,7 +4864,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_enspoint_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_MEAN_TN;</jobname>
+    <jobname>&TAG;&VX_ENSPOINT_MEAN_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSPOINT_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4893,7 +4897,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_vx_enspoint_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_PROB_TN;</jobname>
+    <jobname>&TAG;&VX_ENSPOINT_PROB_TN;</jobname>
     <join>&LOGDIR;/&VX_ENSPOINT_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4930,7 +4934,7 @@ the <task> tag to be identical to the ones above for other output times.
     <nodes> 1:ppn=1</nodes>
     <walltime>00:15:00</walltime>
 
-    <jobname>&TAG;_&RUN_CLEAN_TN;</jobname>
+    <jobname>&TAG;&RUN_CLEAN_TN;</jobname>
     <join>&LOGDIR;/&RUN_CLEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4972,7 +4976,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>23:00:00</walltime>
     <memory>24G</memory>
 
-    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -5003,7 +5007,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>08:00:00</walltime>
     <memory>24G</memory>
 
-    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -5037,7 +5041,7 @@ the <task> tag to be identical to the ones above for other output times.
     <nodes>1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
 
-    <jobname>&TAG;_&RUN_ARCHIVE_TN;</jobname>
+    <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -5091,7 +5095,7 @@ the <task> tag to be identical to the ones above for other output times.
       <walltime>{{ wtime_run_fcst }}</walltime>
       <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
 
-      <jobname>&TAG;_python_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
+      <jobname>&TAG;python_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
       <join>&LOGDIR;/python_#tilelabel#&LOGEXT;</join>
       <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
 
@@ -5144,7 +5148,7 @@ the <task> tag to be identical to the ones above for other output times.
       <walltime>{{ wtime_run_enspost }}</walltime>
       <nodes>{{ nnodes_run_enspost }}:ppn={{ ppn_run_enspost }}</nodes>
 
-      <jobname>&TAG;_enspost_<cyclestr>@H</cyclestr>_#fhr#</jobname>
+      <jobname>&TAG;enspost_<cyclestr>@H</cyclestr>_#fhr#</jobname>
       <join>&LOGDIR;/enspost_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
       <command>&LOAD_MODULES_RUN_TASK_FP; "run_enspost" "&JOBSdir;/JREGIONAL_RUN_ENSPOST"</command>
 
@@ -5184,7 +5188,7 @@ the <task> tag to be identical to the ones above for other output times.
     <walltime>{{ wtime_run_enspost }}</walltime>
     <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
 
-    <jobname>&TAG;_python_<cyclestr>@H</cyclestr>_enspost_maps</jobname>
+    <jobname>&TAG;python_<cyclestr>@H</cyclestr>_enspost_maps</jobname>
     <join>&LOGDIR;/python_enspost_maps&LOGEXT;</join>
     <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
 
