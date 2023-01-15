@@ -679,8 +679,7 @@ MODULES_RUN_TASK_FP script.
 {%- if do_ensemble %}
  <metatask name="run_ensemble_pre">
 
-  <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
   {%- if do_enscontrol %}
     <var name="subdirGE">/gec00{% for m in range(2, num_ens_members+1) %}{{ " /gep%02d"%m }}{% endfor %}</var>
     <var name="memNameWRF">_mem0000{% for m in range(2, num_ens_members+1) %}{{ " _mem%04d"%m }}{% endfor %} </var>
@@ -865,6 +864,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_rrfs_dev %}
 {%- if run_task_get_extrn_lbcs %}
 
   <task name="&GET_EXTRN_LBCS_LONG_TN;{{ uscore_ensmem_name }}" cycledefs="boundary_long" maxtries="{{ maxtries_get_extrn_lbcs }}">
@@ -923,6 +923,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 
+{%- endif %}
 {%- endif %}
 <!--
 ************************************************************************
@@ -1054,8 +1055,7 @@ MODULES_RUN_TASK_FP script.
 
 {%- if do_ensemble %}
  <metatask name="run_ensemble">
-  <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
 {%- endif %}
 
 <!--
@@ -1929,8 +1929,7 @@ MODULES_RUN_TASK_FP script.
 
 {%- if do_ensemble %}
  <metatask name="run_ensemble">
-  <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
 {%- endif %}
 
 <!--
@@ -2171,11 +2170,7 @@ MODULES_RUN_TASK_FP script.
 -->
  {%- if do_ensemble %}
  <metatask name="run_ensemble_observer">
-   <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}
-    {%- set fmtstr=" %03d" -%}
-    {{- fmtstr%m -}}
-   {%- endfor %} </var>
+   <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
  {%- endif %}
 <!--
 ************************************************************************
@@ -2392,8 +2387,7 @@ MODULES_RUN_TASK_FP script.
 {% if do_rrfs_dev %}
 {% if do_ensemble %}
  <metatask name="run_ensemble">
-  <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
 {%- endif %}
 
 {%- if do_dacycle %}
@@ -2855,8 +2849,7 @@ MODULES_RUN_TASK_FP script.
 -->
 {% if do_ensemble %}
  <metatask name="run_ensemble">
-  <var name="{{ ensmem_indx_name }}">
-    {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
+  <var name="{{ ensmem_indx_name }}">{% for m in range(1, num_ens_members+1) %}{{ "%03d " % m }}{% endfor %}</var>
 {%- endif %}
 
 <!--
@@ -2962,6 +2955,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_rrfs_dev %}
   <task name="&RUN_FCST_TN;_prod_long{{ uscore_ensmem_name }}" cycledefs="prodcyc_long" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
@@ -3046,6 +3040,7 @@ MODULES_RUN_TASK_FP script.
       {%- endif %}
     </dependency>
   </task>
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -3337,183 +3332,12 @@ MODULES_RUN_TASK_FP script.
 
     </task>
   </metatask>
-{%- endif %}
-
 <!--
 ************************************************************************
 ************************************************************************
 -->
-{% if do_bufrsnd %}
-  <task name="&RUN_BUFRSND_TN;" cycledefs="prodcyc_long" maxtries="1">
+{%- else %}
 
-        &RSRV_POST;
-        &WALL_LIMIT_BUFRSND;
-
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_BUFRSND_TN;" "&JOBSdir;/JREGIONAL_BUFRSND"</command>
-
-        <nodes>{{ nnodes_run_bufrsnd }}:ppn={{ ppn_run_bufrsnd }}</nodes>
-        <walltime>{{ wtime_run_bufrsnd }}</walltime>
-        <nodesize>&NCORES_PER_NODE;</nodesize>
-
-        <jobname>&TAG;_&RUN_BUFRSND_TN;</jobname>
-        <join>&LOGDIR;/&RUN_BUFRSND_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
-
-        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-        <envar><name>USHdir</name><value>&USHdir;</value></envar>
-        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-        <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-        <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
-
-        <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
-        <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
-        <envar><name>TMMARK</name><value>tm00</value></envar>
-
-        <dependency>
-          <datadep age="00:10"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/fcst_fv3lam/logf{{ "%03d" % postproc_long_len_hrs }}</cyclestr></datadep>
-        </dependency>
-
-  </task>
-{%- endif %}
-<!--
-************************************************************************
-************************************************************************
--->
-{%- if machine in ["JET", "HERA"]  %}
-{%- if not do_ensemble %}
-<!--
-************************************************************************
-************************************************************************
--->
-  <metatask name="python_maps">
-
-    <var name="tilelabel"> {{ tile_labels }} </var>
-    <var name="tileset"> {{ tile_sets }} </var>
-    <task name="python_maps{{ uscore_ensmem_name }}_#tilelabel#" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
-
-      &RSRV_GRAPHICS;
-      &WALL_LIMIT_GRAPHICS;
-
-      <walltime>{{ wtime_run_fcst_long }}</walltime>
-      <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
-
-      <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
-      <join>&LOGDIR;/python{{ uscore_ensmem_name }}_#tilelabel#&LOGEXT;</join>
-      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
-
-      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-      <envar><name>USHdir</name><value>&USHdir;</value></envar>
-      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-      <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
-
-      <envar><name>GRAPHICS_TYPE</name><value>maps</value></envar>
-      <envar><name>TILES</name><value>#tileset#</value></envar>
-      <envar><name>TILELABEL</name><value>#tilelabel#</value></envar>
-      <envar><name>ENSCTRL_COMOUT_BASEDIR</name><value>&ENSCTRL_COMOUT_BASEDIR;</value></envar>
-
-      <dependency>
-        <or>
-          <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000"/>
-          <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000_long"/>
-        </or>
-      </dependency>
-    </task>
-  </metatask>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="python_skewts{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
-
-    &RSRV_GRAPHICS;
-    &WALL_LIMIT_GRAPHICS;
-
-    <walltime>{{ wtime_run_fcst_long }}</walltime>
-    <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
-
-    <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_skewts</jobname>
-    <join>&LOGDIR;/python_skewts{{ uscore_ensmem_name }}<cyclestr>_@H</cyclestr>&LOGEXT;</join>
-    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
-
-    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-    <envar><name>USHdir</name><value>&USHdir;</value></envar>
-    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
-
-    <envar><name>GRAPHICS_TYPE</name><value>skewts</value></envar>
-    <envar><name>ENSCTRL_COMOUT_BASEDIR</name><value>&ENSCTRL_COMOUT_BASEDIR;</value></envar>
-
-    <dependency>
-      <or>
-        <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000"/>
-        <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000_long"/>
-      </or>
-    </dependency>
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-{%- endif %}
-{%- endif %}
-<!--
-************************************************************************
-************************************************************************
--->
-{%- if run_task_run_fcst %}
-  <task name="&RUN_FCST_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_run_fcst }}">
-
-    &RSRV_FCST;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSdir;/JREGIONAL_RUN_FCST"</command>
-  {%- if machine in ["JET", "HERA", "LINUX"]  %}
-    <cores>{{ ncores_run_fcst }}</cores>
-    <native>{{ native_run_fcst }}</native>
-  {%- elif machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}:tpp={{ omp_num_threads_run_fcst }}</nodes>
-    <native>&SCHED_NATIVE_CMD;</native>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
-  {%- else %}
-    <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}</nodes>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
-  {%- endif %}
-    <native>&SCHED_NATIVE_CMD;</native>
-    <walltime>{{ wtime_run_fcst }}</walltime>
-    <jobname>&RUN_FCST_TN;{{ uscore_ensmem_name }}</jobname>
-    <join>&LOGDIR;/&RUN_FCST_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
-
-    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
-    <envar><name>USHdir</name><value>&USHdir;</value></envar>
-    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
-    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
-    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
-
-    <dependency>
-      <and>
-        <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
-        <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
-      </and>
-    </dependency>
-
-  </task>
-{%- endif %}
-
-<!--
-************************************************************************
-************************************************************************
--->
 {%- if run_task_run_post %}
   {%- if sub_hourly_post %}
 <!--
@@ -3810,6 +3634,134 @@ the <task> tag to be identical to the ones above for other output times.
 -->
 {%- endif %}
 
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{% if do_bufrsnd %}
+  <task name="&RUN_BUFRSND_TN;" cycledefs="prodcyc_long" maxtries="1">
+
+        &RSRV_POST;
+        &WALL_LIMIT_BUFRSND;
+
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_BUFRSND_TN;" "&JOBSdir;/JREGIONAL_BUFRSND"</command>
+
+        <nodes>{{ nnodes_run_bufrsnd }}:ppn={{ ppn_run_bufrsnd }}</nodes>
+        <walltime>{{ wtime_run_bufrsnd }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+
+        <jobname>&TAG;_&RUN_BUFRSND_TN;</jobname>
+        <join>&LOGDIR;/&RUN_BUFRSND_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+        <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+        <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
+        <envar><name>TMMARK</name><value>tm00</value></envar>
+
+        <dependency>
+          <datadep age="00:10"><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/fcst_fv3lam/logf{{ "%03d" % postproc_long_len_hrs }}</cyclestr></datadep>
+        </dependency>
+
+  </task>
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if machine in ["JET", "HERA"]  %}
+{%- if not do_ensemble %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <metatask name="python_maps">
+
+    <var name="tilelabel"> {{ tile_labels }} </var>
+    <var name="tileset"> {{ tile_sets }} </var>
+    <task name="python_maps{{ uscore_ensmem_name }}_#tilelabel#" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
+
+      &RSRV_GRAPHICS;
+      &WALL_LIMIT_GRAPHICS;
+
+      <walltime>{{ wtime_run_fcst_long }}</walltime>
+      <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
+
+      <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
+      <join>&LOGDIR;/python{{ uscore_ensmem_name }}_#tilelabel#&LOGEXT;</join>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+      <envar><name>GRAPHICS_TYPE</name><value>maps</value></envar>
+      <envar><name>TILES</name><value>#tileset#</value></envar>
+      <envar><name>TILELABEL</name><value>#tilelabel#</value></envar>
+      <envar><name>ENSCTRL_COMOUT_BASEDIR</name><value>&ENSCTRL_COMOUT_BASEDIR;</value></envar>
+
+      <dependency>
+        <or>
+          <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000"/>
+          <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000_long"/>
+        </or>
+      </dependency>
+    </task>
+  </metatask>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="python_skewts{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
+
+    &RSRV_GRAPHICS;
+    &WALL_LIMIT_GRAPHICS;
+
+    <walltime>{{ wtime_run_fcst_long }}</walltime>
+    <nodes>{{ nnodes_run_graphics }}:ppn={{ ppn_run_graphics }}</nodes>
+
+    <jobname>&TAG;_python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_skewts</jobname>
+    <join>&LOGDIR;/python_skewts{{ uscore_ensmem_name }}<cyclestr>_@H</cyclestr>&LOGEXT;</join>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+    <envar><name>GRAPHICS_TYPE</name><value>skewts</value></envar>
+    <envar><name>ENSCTRL_COMOUT_BASEDIR</name><value>&ENSCTRL_COMOUT_BASEDIR;</value></envar>
+
+    <dependency>
+      <or>
+        <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000"/>
+        <taskdep task="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f000_long"/>
+      </or>
+    </dependency>
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- endif %}
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -4883,8 +4835,16 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
-  </task>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
 <!--
 ************************************************************************
 ************************************************************************

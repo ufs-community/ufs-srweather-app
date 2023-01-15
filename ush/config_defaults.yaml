@@ -3332,11 +3332,11 @@ global:
   #
   #-----------------------------------------------------------------------
   #
-  DO_RETRO: false
+  DO_RETRO: true # Turn this on temporarily
   DO_SPINUP: false
   LBCS_ICS_ONLY: false
   DO_POST_SPINUP: false
-  DO_POST_PROD: true
+  DO_POST_PROD: false # Turn this off temporarily
   DO_PARALLEL_PRDGEN: false
 
   # Temporary flag to turn off RRFS_dev1 preprocessing steps
