@@ -953,8 +953,8 @@ workflow:
   FCST_LEN_HRS_SPINUP: 1
   FCST_LEN_HRS_CYCLES: []
   DA_CYCLE_INTERV: 3
-  RESTART_INTERVAL: [3, 6]
-  RESTART_INTERVAL_LONG: [3, 6]
+  RESTART_INTERVAL: 0 # was 3,6 in rrfs_dev
+  RESTART_INTERVAL_LONG: 0 # was 3.6 in rrfs_dev
   CYCL_HRS_HYB_FV3LAM_ENS: [ "99" ]
   #
   #-----------------------------------------------------------------------
