@@ -954,7 +954,7 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&GET_EXTRN_ICS_TN;"/>
+        <taskdep task="&GET_EXTRN_ICS_TN;{{ uscore_ensmem_name }}"/>
         <or>
 <!--          <taskdep task="&MAKE_GRID_TN;"/> -->
           <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
@@ -2943,7 +2943,7 @@ MODULES_RUN_TASK_FP script.
       {%- else %}
          <and>
            <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
-           <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
+           <metataskdep metatask="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
          </and>
       {%- endif %}
 
