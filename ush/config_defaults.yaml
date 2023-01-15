@@ -898,8 +898,13 @@ workflow:
   # Data assimilation cycle interval, in integer hours for now.
   #
   # RESTART_INTERVAL:
-  # Set up frequenency or list of the forecast hours that FV3 should
-  # generate the restart files.
+  # frequency of the output restart files (unit:hour). 
+  # Default=0: restart files are produced at the end of a forecast run
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
+  #
   #
   # RESTART_INTERVAL_LONG:
   # Set up frequenency or list of the forecast hours that FV3 should
@@ -2274,14 +2279,6 @@ task_run_fcst:
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
   #
-  # RESTART_INTERVAL:
-  # frequency of the output restart files (unit:hour). 
-  # Default=0: restart files are produced at the end of a forecast run
-  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
-  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
-  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
-  # fh = 1, 2, and 5.
-  #
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 
   # [i.e. calling the Unified Post Processor (UPP) from within the weather 
@@ -2292,7 +2289,6 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
-  RESTART_INTERVAL: 0
   WRITE_DOPOST: false
 
   #

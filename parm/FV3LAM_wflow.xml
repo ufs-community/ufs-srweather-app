@@ -471,6 +471,12 @@ MODULES_RUN_TASK_FP script.
   <var name="type">prod</var>
 {%- endif %}
 
+    <task name="dummy" cycledefs="#cycletype#"  maxtries="1">
+        <command>echo "I am a dummy task, ignore me!"</command>
+        <nodes>1:ppn=1</nodes>
+        <walltime>08:00:00</walltime>
+    </task>
+
 {%- if do_smoke_dust %}
 <!--
 ************************************************************************
@@ -2963,7 +2969,7 @@ MODULES_RUN_TASK_FP script.
 -->
   <metatask name="&SAVE_RESTART_TN;_prod">
 
-    <var name="fhr"> {{ restart_interval }} </var>
+    <var name="fhr"> {% for i in restart_interval %}{{ i }} {% endfor %} </var>
 
     <task name="&SAVE_RESTART_TN;_prod{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc" maxtries="{{ maxtries_save_restart }}">
 
@@ -3009,7 +3015,7 @@ MODULES_RUN_TASK_FP script.
 
   <metatask name="&SAVE_RESTART_TN;_prod_long">
 
-    <var name="fhr"> {{ restart_interval_long }} </var>
+    <var name="fhr"> {% for i in restart_interval_long %}{{ i }} {% endfor %} </var>
 
     <task name="&SAVE_RESTART_TN;_prod_long{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc_long" maxtries="{{ maxtries_save_restart }}">
 
