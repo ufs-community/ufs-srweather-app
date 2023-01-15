@@ -120,7 +120,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         ensmem_indx_name = ""
         uscore_ensmem_name = ""
         slash_ensmem_subdir = ""
-        if expt_config["global"]["DO_ENSEMBLE"]:
+        if expt_config["workflow_switches"]["DO_ENSEMBLE"]:
             ensmem_indx_name = "mem"
             uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
             slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"

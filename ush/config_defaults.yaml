@@ -1453,6 +1453,165 @@ workflow_switches:
   #
   #-----------------------------------------------------------------------
   #
+  # Set parameters associated with running retrospective experiments.  Definitions:
+  #
+  # DO_RRFS_DEV:
+  # Flag to turn on RRFS dev workflow. Should be removed
+  # in the future once SRW and RRFS dev workflows are completely integrated
+  #
+  # DO_RETRO:
+  # Flag turn on the retrospective experiments.
+  #
+  # DO_SPINUP:
+  # Flag turn on the spin-up cycle.
+  #
+  # DO_POST_SPINUP:
+  # Flag turn on the UPP for spin-up cycle.
+  #
+  # DO_POST_PROD:
+  # Flag turn on the UPP for prod cycle.
+  #
+  # DO_PARALLEL_PRDGEN:
+  # Flag turn on parallel wgrib2 runs in prdgen .
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
+  DO_RETRO: true # Turn this on temporarily
+  DO_POST_PROD: false # Turn this off temporarily
+  DO_SPINUP: false
+  DO_POST_SPINUP: false
+  DO_PARALLEL_PRDGEN: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with ensembles.  Definitions:
+  #
+  # DO_ENSEMBLE:
+  # Flag that determines whether to run a set of ensemble forecasts (for
+  # each set of specified cycles).  If this is set to true, NUM_ENS_MEMBERS
+  # forecasts are run for each cycle, each with a different set of stochastic
+  # seed values.  Otherwise, a single forecast is run for each cycle.
+  #
+  # DO_ENSCONTROL: 
+  # In ensemble mode, whether or not to run member 1 as control member
+  #
+  # DO_GSIOBSERVER:
+  # Decide whether or not to run GSI observer
+  #
+  # DO_ENKFUPDATE:
+  # Decide whether or not to run EnKF update for the ensemble members
+  #
+  # DO_ENKF_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity EnKF update for the ensemble members
+  #
+  # DO_ENVAR_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity hybrid analysis
+  #
+  # DO_RECENTER:
+  # Decide whether or not to run recenter for the ensemble members
+  #
+  # DO_SAVE_INPUT:
+  # Decide whether or not to run save_input after the DA analysis  
+  #
+  # DO_ENS_GRAPHICS:
+  # Flag to turn on/off ensemble graphics. Turns OFF deterministic
+  # graphics.
+  #
+  # DO_ENSPOST:
+  # Flag to turn on/off python ensemble postprocessing for WPC testbeds.
+  #
+  # DO_ENSINIT:
+  # Decide whether or not to do ensemble initialization by running 1 timestep ensemble
+  # forecast and recentering on the deterministic analysis
+  #
+  # DO_ENSFCST:
+  # Flag that determines whether to run ensemble free forecasts (for
+  # each set of specified cycles).  If this is set to "TRUE", NUM_ENS_MEMBERS_FCST
+  # forecasts are run for each specified cycle, each with a different set of stochastic
+  # seed values. 
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_ENSEMBLE: false
+  DO_ENSFCST: false
+  DO_ENSCONTROL: false
+  DO_GSIOBSERVER: false
+  DO_ENKFUPDATE: false
+  DO_ENKF_RADAR_REF: false
+  DO_ENVAR_RADAR_REF: false
+  DO_RECENTER: false
+  DO_ENS_GRAPHICS: false
+  DO_ENSPOST: false
+  DO_ENSINIT: false
+  DO_SAVE_INPUT: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with running data assimilation.  Definitions:
+  #
+  # DO_DACYCLE:
+  # Flag that determines whether to run a data assimilation cycle.
+  #
+  # DO_SURFACE_CYCLE:
+  # Flag that determines whether to continue cycle surface fields.
+  #
+  # DO_SOIL_ADJUST:
+  # Flag that determines whether to adjust soil T and Q based on
+  # the lowest level T/Q analysis increments.
+  #
+  # DO_UPDATE_BC:
+  # Flag that determines whether to update boundary conditions based on the 
+  # analysis results
+  #
+  # DO_RADDA:
+  # Flag that determines whether to assimilate satellite radiance data
+  #
+  # DO_BUFRSND:
+  # Decide whether or not to run EMC BUFR sounding
+  #
+  # DO_SMOKE_DUST
+  # Flag turn on smoke and dust for RRFS-SD
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_DACYCLE: false
+  DO_SURFACE_CYCLE: false
+  DO_SOIL_ADJUST: false
+  DO_UPDATE_BC: false
+  DO_RADDA: false
+  DO_BUFRSND: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for JEDI options
+  # DO_JEDI_ENVAR_IODA:
+  #      Flag turn on the JEDI-IODA converters for EnVAR.  It requires GSI 
+  #      to produce NetCDF diag files
+  #-----------------------------------------------------------------------
+  #
+  DO_JEDI_ENVAR_IODA: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for analysis options
+  # DO_NONVAR_CLDANAL: 
+  #     Flag turn on the non-var cloud analysis.
+  # DO_REFL2TTEN: 
+  #     Flag turn on the radar reflectivity to temperature tendenecy.
+  # DO_NLDN_LGHT
+  #     Flag turn on processing NLDN NetCDF lightning data
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_NONVAR_CLDANAL: false
+  DO_REFL2TTEN: false
+  DO_NLDN_LGHT: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
   # IS_RTMA:
   #   If true, some ICs,LBCs,GSI rocoto tasks will be turned off
   #
@@ -3063,12 +3222,6 @@ global:
   #
   # Set parameters associated with running ensembles.  Definitions:
   #
-  # DO_ENSEMBLE:
-  # Flag that determines whether to run a set of ensemble forecasts (for
-  # each set of specified cycles).  If this is set to true, NUM_ENS_MEMBERS
-  # forecasts are run for each cycle, each with a different set of stochastic
-  # seed values.  Otherwise, a single forecast is run for each cycle.
-  #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
   # This variable also controls the naming of the ensemble member directories.
@@ -3083,44 +3236,6 @@ global:
   # Paths to the ensemble member corresponding namelists in the
   # experiment directory
   # 
-  # DO_ENSCONTROL: 
-  # In ensemble mode, whether or not to run member 1 as control member
-  #
-  # DO_GSIOBSERVER:
-  # Decide whether or not to run GSI observer
-  #
-  # DO_ENKFUPDATE:
-  # Decide whether or not to run EnKF update for the ensemble members
-  #
-  # DO_ENKF_RADAR_REF:
-  # Decide whether or not to run Radar Reflectivity EnKF update for the ensemble members
-  #
-  # DO_ENVAR_RADAR_REF:
-  # Decide whether or not to run Radar Reflectivity hybrid analysis
-  #
-  # DO_RECENTER:
-  # Decide whether or not to run recenter for the ensemble members
-  #
-  # DO_SAVE_INPUT:
-  # Decide whether or not to run save_input after the DA analysis  
-  #
-  # DO_ENS_GRAPHICS:
-  # Flag to turn on/off ensemble graphics. Turns OFF deterministic
-  # graphics.
-  #
-  # DO_ENSPOST:
-  # Flag to turn on/off python ensemble postprocessing for WPC testbeds.
-  #
-  # DO_ENSINIT:
-  # Decide whether or not to do ensemble initialization by running 1 timestep ensemble
-  # forecast and recentering on the deterministic analysis
-  #
-  # DO_ENSFCST:
-  # Flag that determines whether to run ensemble free forecasts (for
-  # each set of specified cycles).  If this is set to "TRUE", NUM_ENS_MEMBERS_FCST
-  # forecasts are run for each specified cycle, each with a different set of stochastic
-  # seed values. 
-  #
   # NUM_ENS_MEMBERS_FCST:
   # The number of ensemble members to run forecast if DO_ENSFCST is set to "TRUE",
   # This variable also controls the naming of the ensemble member directories.  
@@ -3136,22 +3251,10 @@ global:
   # 
   #-----------------------------------------------------------------------
   #
-  DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
   NUM_ENS_MEMBERS_FCST: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  DO_ENSFCST: false
-  DO_ENSCONTROL: false
-  DO_GSIOBSERVER: false
-  DO_ENKFUPDATE: false
-  DO_ENKF_RADAR_REF: false
-  DO_ENVAR_RADAR_REF: false
-  DO_RECENTER: false
-  DO_ENS_GRAPHICS: false
-  DO_ENSPOST: false
-  DO_ENSINIT: false
-  DO_SAVE_INPUT: false
   #
   #-----------------------------------------------------------------------
   #
@@ -3263,85 +3366,31 @@ global:
   #
   # Set parameters associated with running data assimilation.  Definitions:
   #
-  # DO_DACYCLE:
-  # Flag that determines whether to run a data assimilation cycle.
-  #
-  # DO_SURFACE_CYCLE:
-  # Flag that determines whether to continue cycle surface fields.
-  #
   # SURFACE_CYCLE_DELAY_HRS:
   # The surface cycle usually happens in cold start cycle. But there is
   # a need to delay surface cycle to the warm start cycle following the
   # cold start cycle. This one sets how many hours we want the surface
   # cycle being delayed.
   #
-  # DO_SOIL_ADJUST:
-  # Flag that determines whether to adjust soil T and Q based on
-  # the lowest level T/Q analysis increments.
-  #
-  # DO_UPDATE_BC:
-  # Flag that determines whether to update boundary conditions based on the 
-  # analysis results
-  #
-  # DO_RADDA:
-  # Flag that determines whether to assimilate satellite radiance data
-  #
-  # DO_BUFRSND:
-  # Decide whether or not to run EMC BUFR sounding
-  #
   # USE_RRFSE_ENS:
   # Use rrfse ensemble for hybrid analysis
   #
-  # DO_SMOKE_DUST
-  #     Flag turn on smoke and dust for RRFS-SD
-  #
   #-----------------------------------------------------------------------
   #
-  DO_DACYCLE: false
-  DO_SURFACE_CYCLE: false
   SURFACE_CYCLE_DELAY_HRS: 1
-  DO_SOIL_ADJUST: false
-  DO_UPDATE_BC: false
-  DO_RADDA: false
-  DO_BUFRSND: false
   USE_RRFSE_ENS: false
-  DO_SMOKE_DUST: false
   #
   #-----------------------------------------------------------------------
   #
   # Set parameters associated with running retrospective experiments.  Definitions:
   #
-  # DO_RETRO:
-  # Flag turn on the retrospective experiments.
-  #
-  # DO_SPINUP:
-  # Flag turn on the spin-up cycle.
-  #
   # LBCS_ICS_ONLY:
   # Flag turn on the runs prepare boundary and cold start initial conditions in
   #      retrospective experiments.
   #
-  # DO_POST_SPINUP:
-  # Flag turn on the UPP for spin-up cycle.
-  #
-  # DO_POST_PROD:
-  # Flag turn on the UPP for prod cycle.
-  #
-  # DO_PARALLEL_PRDGEN:
-  # Flag turn on parallel wgrib2 runs in prdgen .
-  #
   #-----------------------------------------------------------------------
   #
-  DO_RETRO: true # Turn this on temporarily
-  DO_SPINUP: false
   LBCS_ICS_ONLY: false
-  DO_POST_SPINUP: false
-  DO_POST_PROD: false # Turn this off temporarily
-  DO_PARALLEL_PRDGEN: false
-
-  # Temporary flag to turn off RRFS_dev1 preprocessing steps
-  DO_RRFS_DEV: false
-
   #
   #-----------------------------------------------------------------------
   #
@@ -3362,33 +3411,6 @@ global:
   #-----------------------------------------------------------------------
   #
   GWD_HRRRsuite_BASEDIR: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Parameters for JEDI options
-  # DO_JEDI_ENVAR_IODA:
-  #      Flag turn on the JEDI-IODA converters for EnVAR.  It requires GSI 
-  #      to produce NetCDF diag files
-  #-----------------------------------------------------------------------
-  #
-  DO_JEDI_ENVAR_IODA: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Parameters for analysis options
-  # DO_NONVAR_CLDANAL: 
-  #     Flag turn on the non-var cloud analysis.
-  # DO_REFL2TTEN: 
-  #     Flag turn on the radar reflectivity to temperature tendenecy.
-  # DO_NLDN_LGHT
-  #     Flag turn on processing NLDN NetCDF lightning data
-  #
-  #-----------------------------------------------------------------------
-  #
-  DO_NONVAR_CLDANAL: false
-  DO_REFL2TTEN: false
-  DO_NLDN_LGHT: false
-  DO_SMOKE_DUST: false
   #
   #-----------------------------------------------------------------------
   #
