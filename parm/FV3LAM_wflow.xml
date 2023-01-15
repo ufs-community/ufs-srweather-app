@@ -295,6 +295,11 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 
 ]>
 
+<!--
+************************************************************************
+************************************************************************
+-->
+
 {%- if do_retro %}
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="5" taskthrottle="{{ taskthrottle }}">
 {% else %}
@@ -302,7 +307,11 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 {%- endif %}
 {# Double quotes are required inside the strftime! Expect an error from reading the template if using single quotes. #}
 
-  <!-- SRW cycledefs -->
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if not do_rrfs_dev %}
   <cycledef group="at_start">{{ cdate_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
   <cycledef group="initial">{{ cdate_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
 
@@ -319,7 +328,11 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
   <cycledef group="recentercyc"> {{ date_first_cycl ~ " " ~ date_last_cycl ~ " " ~ cycl_freq }} </cycledef>
   <cycledef group="archive">  {{ date_first_cycl ~ " " ~ date_last_cycl ~ " " ~ cycl_freq }} </cycledef> 
 
-  <!-- from RRFS_dev1
+{%- else -%}
+<!--
+************************************************************************
+************************************************************************
+-->
   <cycledef group="at_start">{{ at_start_cycledef }} </cycledef>
   <cycledef group="initial"> {{ initial_cycledef }} </cycledef>
   <cycledef group="boundary"> {{ boundary_cycledef }} </cycledef>
@@ -334,7 +347,12 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 {%- endif %}
   <cycledef group="recentercyc"> {{ recenter_cycledef }} </cycledef>
   <cycledef group="archive">  {{ archive_cycledef }} </cycledef> 
-  -->
+
+{%- endif -%}
+<!--
+************************************************************************
+************************************************************************
+-->
 
   <log>
   {%- if run_envir == "nco"  %}
@@ -371,11 +389,11 @@ J-job then uses exec to run the J-job (while also terminating the LOAD_-
 MODULES_RUN_TASK_FP script.
 -->
 
-{%- if run_task_make_grid %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_make_grid %}
   <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_grid }}">
 
     &RSRV_DEFAULT;
@@ -396,11 +414,11 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_make_orog %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_make_orog %}
   <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_orog }}">
 
     &RSRV_DEFAULT;
@@ -429,11 +447,11 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-{%- if run_task_make_sfc_climo %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_make_sfc_climo %}
   <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_sfc_climo }}">
 
     &RSRV_DEFAULT;
@@ -474,6 +492,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 -->
 {%- if not do_ensfcst %}
+{%- if do_rrfs_dev %}
 
 <!-- beginning of meta block for prod spinup  -->
 <metatask name="data_preprocessing">
@@ -486,17 +505,11 @@ MODULES_RUN_TASK_FP script.
   <var name="type">prod</var>
 {%- endif %}
 
-    <task name="dummy" cycledefs="#cycletype#"  maxtries="1">
-        <command>echo "I am a dummy task, ignore me!"</command>
-        <nodes>1:ppn=1</nodes>
-        <walltime>08:00:00</walltime>
-    </task>
-
-{%- if do_smoke_dust %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_smoke_dust %}
   <task name="&PROCESS_SMOKE_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_smoke }}">
 
     &RSRV_DEFAULT;
@@ -573,12 +586,11 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
-{%- if do_nldn_lght %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_nldn_lght %}
   <task name="&PROCESS_LIGHTNING_TN;_#type#" cycledefs="#cycletype#"  maxtries="{{ maxtries_process_lightning }}">
 
     &RSRV_DEFAULT;
@@ -611,7 +623,6 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -649,16 +660,22 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
 {%- endif %}
 </metatask>
+<!-- end of meta block for prod spinup  -->
 
+{%- endif %}
 {%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
 {% if not is_rtma %}
+
 {%- if do_ensemble %}
  <metatask name="run_ensemble_pre">
 
@@ -674,7 +691,6 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <var name="subdirGDAS">{% for m in range(1, num_ens_members+1) %}{{ " /mem%03d"%m }}{% endfor %}</var>
 {%- endif %}
-
 
 <!--
 ************************************************************************
@@ -1017,6 +1033,10 @@ MODULES_RUN_TASK_FP script.
   </task>
 </metatask>
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {% if do_ensemble %}
 </metatask>
@@ -1028,14 +1048,15 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 -->
 {%- if not do_ensfcst %}
+
+<!-- beginning of spinup block  -->
+{%- if do_spinup %}
+
 {%- if do_ensemble %}
  <metatask name="run_ensemble">
   <var name="{{ ensmem_indx_name }}">
     {%- for m in range(1, num_ens_members+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
 {%- endif %}
-
-{%- if do_spinup %}
-<!-- beginning of spinup block  -->
 
 <!--
 ************************************************************************
@@ -1115,7 +1136,7 @@ MODULES_RUN_TASK_FP script.
 
 {% if do_ensinit -%}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&RUN_FCST_TN;_ensinit{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_fcst }}">
@@ -1169,7 +1190,7 @@ MODULES_RUN_TASK_FP script.
 
   </task> 
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
     <task name="&SAVE_RESTART_TN;_ensinit{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_save_restart }}">
@@ -1209,7 +1230,7 @@ MODULES_RUN_TASK_FP script.
 
     </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&PREP_CYC_SPINUP_TN;_ensinit{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_prepstart }}">
@@ -1248,7 +1269,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&RUN_RECENTER_TN;_spinup" cycledefs="spinupcyc" maxtries="{{ maxtries_run_recenter }}">
@@ -1294,7 +1315,7 @@ MODULES_RUN_TASK_FP script.
 {%- if not do_ensemble %}
 {%- if do_dacycle %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&ANAL_GSI_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_anal }}">
@@ -1387,7 +1408,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&POSTANAL_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_postanal }}">
@@ -1429,11 +1450,11 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 
-{%- if do_envar_radar_ref %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_envar_radar_ref %}
   <task name="&HYBRID_RADAR_REF_TN;_spinup" cycledefs="spinupcyc" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
@@ -1489,16 +1510,19 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
 {% endif -%}
-
-{% endif -%}
-
-{%- if do_refl2tten %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+
+{% endif -%}
+
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if do_refl2tten %}
   <task name="&RADAR_REFL2TTEN_TN;_spinup" cycledefs="spinupcyc"  maxtries="{{ maxtries_run_ref2tten }}">
 
     &RSRV_DEFAULT;
@@ -1539,14 +1563,12 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
 {%- endif %}
-
-{%- if do_jedi_envar_ioda %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_jedi_envar_ioda %}
   <task name="&JEDI_ENVAR_IODA_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc"  maxtries="{{ maxtries_run_jedi_envar_ioda }}">
 
     &RSRV_DEFAULT;
@@ -1583,14 +1605,13 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
 {%- endif %}
 
-{%- if do_nonvar_cldanal %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_nonvar_cldanal %}
   <task name="&CLDANL_NONVAR_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc"  maxtries="{{ maxtries_run_nonvarcldanl }}">
 
     &RSRV_DEFAULT;
@@ -1655,11 +1676,14 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
-{%- endif %}
 {%- endif %}
 <!--
-     ************************************************************************
+************************************************************************
+************************************************************************
+-->
+{%- endif %}
+<!--
+************************************************************************
 ************************************************************************
 -->
   <task name="&RUN_FCST_TN;_spinup{{ uscore_ensmem_name }}" cycledefs="spinupcyc" maxtries="{{ maxtries_run_fcst }}">
@@ -1788,15 +1812,18 @@ MODULES_RUN_TASK_FP script.
 
   </metatask>
 
-{% if do_post_spinup %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{% if do_post_spinup %}
   <metatask name="&RUN_POST_TN;_spinup{{ uscore_ensmem_name }}">
 
     <var name="fhr"> {% for h in range(0, fcst_len_hrs_spinup+1) %}{{ " %03d" % h  }}{% endfor %} </var>
-
+<!--
+************************************************************************
+************************************************************************
+-->
     <task name="&RUN_POST_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#" cycledefs="spinupcyc" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_POST;
@@ -1833,7 +1860,7 @@ MODULES_RUN_TASK_FP script.
 
     </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
     <task name="&RUN_PRDGEN_TN;_spinup{{ uscore_ensmem_name }}_f#fhr#" cycledefs="spinupcyc" maxtries="{{ maxtries_run_prdgen }}">
@@ -1871,16 +1898,24 @@ MODULES_RUN_TASK_FP script.
       </dependency>
 
     </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   </metatask>
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+
+{%- if do_ensemble %}
+</metatask>
 {%- endif %}
 
 <!-- end of spinup block -->
 {%- endif %}
 
-{%- if do_ensemble %}
-</metatask>
-{%- endif %}
 
 {%- endif %}  <!-- not do_ensfcst -->
 
@@ -1890,6 +1925,8 @@ MODULES_RUN_TASK_FP script.
 -->
 
 <!-- beginning of prod block -->
+{%- if do_rrfs_dev %}
+
 {%- if do_ensemble %}
  <metatask name="run_ensemble">
   <var name="{{ ensmem_indx_name }}">
@@ -2015,15 +2052,20 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_ensemble %}
 </metatask>
+{%- endif %}
 {%- endif %}
 
 {%- if not do_ensfcst %}
 {%- if do_gsiobserver %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&CALC_ENSMEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_prepstart }}">
@@ -2065,7 +2107,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&OBSERVER_GSI_ENSMEAN_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
@@ -2124,7 +2166,7 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
  {%- if do_ensemble %}
@@ -2135,7 +2177,10 @@ MODULES_RUN_TASK_FP script.
     {{- fmtstr%m -}}
    {%- endfor %} </var>
  {%- endif %}
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="&OBSERVER_GSI_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
@@ -2183,17 +2228,21 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_ensemble %}
   </metatask>
 {%- endif %}
 {%- endif %}
 
-{%- if do_enkfupdate %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_enkfupdate %}
   <task name="&RUN_ENKFUPDT_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_enkf }}">
     &RSRV_ENKF;
     &WALL_LIMIT_ANAL;
@@ -2230,11 +2279,11 @@ MODULES_RUN_TASK_FP script.
 
 {%- endif %}
 
-{%- if do_enkf_radar_ref %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_enkf_radar_ref %}
   <task name="&ENKF_RADAR_REF_TN;" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_enkf }}">
     &RSRV_ENKF;
     &WALL_LIMIT_ANAL;
@@ -2279,12 +2328,11 @@ MODULES_RUN_TASK_FP script.
   </task>
 
 {%- endif %}
-
-{%- if do_recenter %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_recenter %}
   <task name="&RUN_RECENTER_TN;" cycledefs="recentercyc" maxtries="{{ maxtries_run_recenter }}">
     &RSRV_ENKF;
     &WALL_LIMIT_RECENTER;
@@ -2337,7 +2385,11 @@ MODULES_RUN_TASK_FP script.
   </task>
 
 {%- endif %}
-
+<!--
+************************************************************************
+************************************************************************
+-->
+{% if do_rrfs_dev %}
 {% if do_ensemble %}
  <metatask name="run_ensemble">
   <var name="{{ ensmem_indx_name }}">
@@ -2345,8 +2397,9 @@ MODULES_RUN_TASK_FP script.
 {%- endif %}
 
 {%- if do_dacycle %}
+
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&ANAL_GSI_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
@@ -2445,8 +2498,9 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&POSTANAL_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_postanal }}">
@@ -2488,11 +2542,11 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 
-{%- if do_envar_radar_ref %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_envar_radar_ref %}
   <task name="&HYBRID_RADAR_REF_TN;_prod" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_anal }}">
 
     &RSRV_ANALYSIS;
@@ -2548,16 +2602,20 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
 {% endif -%}
 
-{% endif -%}
-
-{%- if do_refl2tten %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+
+{% endif -%}
+
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if do_refl2tten %}
   <task name="&RADAR_REFL2TTEN_TN;_prod" cycledefs="prodcyc,prodcyc_long"  maxtries="{{ maxtries_run_ref2tten }}">
 
     &RSRV_DEFAULT;
@@ -2600,11 +2658,11 @@ MODULES_RUN_TASK_FP script.
 
 {%- endif %}
 
-{%- if do_jedi_envar_ioda %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_jedi_envar_ioda %}
   <task name="&JEDI_ENVAR_IODA_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long"  maxtries="{{ maxtries_run_jedi_envar_ioda }}">
 
     &RSRV_DEFAULT;
@@ -2644,11 +2702,11 @@ MODULES_RUN_TASK_FP script.
 
 {%- endif %}
 
-{%- if do_nonvar_cldanal %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_nonvar_cldanal %}
   <task name="&CLDANL_NONVAR_TN;_prod{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long"  maxtries="{{ maxtries_run_nonvarcldanl }}">
 
     &RSRV_DEFAULT;
@@ -2713,19 +2771,23 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
-
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_ensemble %}
  </metatask>
 {%- endif %}
 {%- endif %}
+{%- endif %}
 
-{%- if do_save_input and do_ensemble %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_save_input and do_ensemble %}
  <metatask name="save_ensda_output">
   <var name="{{ ensmem_indx_name }}">
     {%- for m in range(1, num_ens_members_fcst+1) -%}{%- set fmtstr=" %03d" -%}{{- fmtstr%m -}}{%- endfor %} </var>
@@ -2787,7 +2849,6 @@ MODULES_RUN_TASK_FP script.
   </task>
  </metatask>
 {%- endif %}
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -2884,13 +2945,23 @@ MODULES_RUN_TASK_FP script.
         <taskdep task="&RUN_ENKFUPDT_TN;"/>
        {%- endif %}
       {%- else %}
-      <taskdep task="&PREP_CYC_TN;_prod{{ uscore_ensmem_name }}"/>
+      {%- if do_rrfs_dev %}
+         <taskdep task="&PREP_CYC_TN;_prod{{ uscore_ensmem_name }}"/>
+      {%- else %}
+         <and>
+           <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
+           <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
+         </and>
+      {%- endif %}
+
       {%- endif %}
     </dependency>
 
   </task>
-
-<!-- ******************************************************************* -->
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="&RUN_FCST_TN;_prod_long{{ uscore_ensmem_name }}" cycledefs="prodcyc_long" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
@@ -2974,15 +3045,14 @@ MODULES_RUN_TASK_FP script.
       <taskdep task="&PREP_CYC_TN;_prod{{ uscore_ensmem_name }}"/>
       {%- endif %}
     </dependency>
-
   </task>
-
-{%- if not do_ensfcst %}
-{%- if not is_rtma %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if not do_ensfcst %}
+{%- if not is_rtma %}
+{%- if do_rrfs_dev %}
   <metatask name="&SAVE_RESTART_TN;_prod">
 
     <var name="fhr"> {% for i in restart_interval %}{{ i }} {% endfor %} </var>
@@ -3076,10 +3146,15 @@ MODULES_RUN_TASK_FP script.
   </metatask>
 {%- endif %}
 {%- endif %}
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_post_prod %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
@@ -3128,7 +3203,10 @@ MODULES_RUN_TASK_FP script.
     </task>
   </metatask>
   </metatask>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}_long">
 
     <var name="fullfhr"> {% for h in range(0, postproc_long_len_hrs+1) %}{{ " %03d" % h  }}{% endfor %} </var>
@@ -3176,7 +3254,7 @@ MODULES_RUN_TASK_FP script.
   </metatask>
   </metatask>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
 <metatask name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}">
@@ -3218,7 +3296,10 @@ MODULES_RUN_TASK_FP script.
 
     </task>
   </metatask>
-
+<!--
+************************************************************************
+************************************************************************
+-->
 <metatask name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_long">
     <var name="fhr"> {% for h in range(0, postproc_long_len_hrs+1) %}{{ " %03d" % h  }}{% endfor %} </var>
     <task name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#_long" cycledefs="prodcyc_long" maxtries="{{ maxtries_run_prdgen }}">
@@ -3258,11 +3339,11 @@ MODULES_RUN_TASK_FP script.
   </metatask>
 {%- endif %}
 
-{% if do_bufrsnd %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{% if do_bufrsnd %}
   <task name="&RUN_BUFRSND_TN;" cycledefs="prodcyc_long" maxtries="1">
 
         &RSRV_POST;
@@ -3296,11 +3377,14 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
-
+<!--
+************************************************************************
+************************************************************************
+-->
 {%- if machine in ["JET", "HERA"]  %}
 {%- if not do_ensemble %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <metatask name="python_maps">
@@ -3342,7 +3426,7 @@ MODULES_RUN_TASK_FP script.
     </task>
   </metatask>
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="python_skewts{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_post }}">
@@ -3376,10 +3460,12 @@ MODULES_RUN_TASK_FP script.
       </or>
     </dependency>
   </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
 {%- endif %}
 {%- endif %}
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -3444,10 +3530,17 @@ and use the variables fhr and fmn.  This allows the block of code inside
 the <task> tag (except for the dependencies) to be identical to the ones 
 later below for other output times.
 -->
+<!--
+************************************************************************
+************************************************************************
+-->
   <metatask>
-
     <var name="fhr">000</var>
     <var name="fmn">00</var>
+<!--
+************************************************************************
+************************************************************************
+-->
     <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="prodcyc" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
@@ -3490,8 +3583,15 @@ names in the dependencies.
       </dependency>
 
     </task>
-
+<!--
+************************************************************************
+************************************************************************
+-->
   </metatask>
+<!--
+************************************************************************
+************************************************************************
+-->
 
 <!--
 Define the post-processing tasks for the second through last output minutes
@@ -3508,6 +3608,10 @@ for other output times.
     <metatask>
 
       <var name="fmn">{% for min in range(delta_min, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+<!--
+************************************************************************
+************************************************************************
+-->
       <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="prodcyc" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
@@ -3544,12 +3648,20 @@ for other output times.
         </dependency>
 
       </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 
     </metatask>
 
   </metatask>
   {%- endif %}
 
+<!--
+************************************************************************
+************************************************************************
+-->
   <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
   {%- if sub_hourly_post %}
 <!--
@@ -3559,6 +3671,10 @@ output hours (and all output minutes for each such hour).
     <var name="fhr">{% for h in range(1, fcst_len_hrs) %}{{ " %03d" % h }}{% endfor %}</var>
     <metatask>
       <var name="fmn">{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
+<!--
+************************************************************************
+************************************************************************
+-->
       <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="prodcyc" maxtries="{{ maxtries_run_post }}">
   {%- else %}
 <!--
@@ -3620,6 +3736,10 @@ always zero).
         </dependency>
 
       </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 
     {%- if sub_hourly_post %}
     </metatask>
@@ -3627,7 +3747,10 @@ always zero).
     {%- endif %}
   </metatask>
 
-  {%- if sub_hourly_post %}
+<!--
+************************************************************************
+************************************************************************
+-->
 <!--
 Define the post-processing task for the last model output time.  The 
 forecast hour corresponding to this output time is the length of the 
@@ -3640,6 +3763,7 @@ Note that we wrap this task in a metatask in order to be able to declare
 and use the variables fhr and fmn.  This allows the block of code inside
 the <task> tag to be identical to the ones above for other output times.
 -->
+  {%- if sub_hourly_post %}
   <metatask>
 
     <var name="fhr">{{ "%03d" % fcst_len_hrs }}</var>
@@ -3680,13 +3804,17 @@ the <task> tag to be identical to the ones above for other output times.
 
   </metatask>
   {%- endif %}
-{%- endif %}
-
-{%- if run_task_plot_allvars %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- endif %}
+
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- if run_task_plot_allvars %}
   <task name="&PLOT_ALLVARS_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_plot_allvars }}">
 
     &RSRV_DEFAULT;
@@ -3720,11 +3848,11 @@ the <task> tag to be identical to the ones above for other output times.
   </task>
 {%- endif %}
 
-{%- if run_task_get_obs_ccpa %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_get_obs_ccpa %}
   <task name="&GET_OBS_CCPA_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_get_obs_ccpa }}">
 
     &RSRV_HPSS;
@@ -3751,12 +3879,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_get_obs_mrms %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_get_obs_mrms %}
   <task name="&GET_OBS_MRMS_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_get_obs_mrms }}">
 
     &RSRV_HPSS;
@@ -3784,12 +3911,11 @@ the <task> tag to be identical to the ones above for other output times.
  
   </task>
 {%- endif %}
-
-{%- if run_task_get_obs_ndas %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_get_obs_ndas %}
   <task name="&GET_OBS_NDAS_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_get_obs_ndas }}">
 
     &RSRV_HPSS;
@@ -3815,12 +3941,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat %}
   <task name="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat }}">
 
     &RSRV_DEFAULT;
@@ -3871,12 +3996,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat %}
   <task name="&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat_refc }}">
 
     &RSRV_DEFAULT;
@@ -3926,12 +4050,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat %}
   <task name="&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat_retop }}">
 
     &RSRV_DEFAULT;
@@ -3981,12 +4104,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat and fcst_len_hrs >= 3 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat and fcst_len_hrs >= 3 %}
   <task name="&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat_03h }}">
 
     &RSRV_DEFAULT;
@@ -4022,12 +4144,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat and fcst_len_hrs >= 6 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat and fcst_len_hrs >= 6 %}
   <task name="&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat_06h }}">
 
     &RSRV_DEFAULT;
@@ -4063,12 +4184,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_gridstat and fcst_len_hrs >= 24 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_gridstat and fcst_len_hrs >= 24 %}
   <task name="&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_gridstat_24h }}">
 
     &RSRV_DEFAULT;
@@ -4104,12 +4224,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-
-{%- if run_task_vx_pointstat %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_pointstat %}
   <task name="&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="prodcyc" maxtries="{{ maxtries_vx_pointstat }}">
     &RSRV_DEFAULT;
 
@@ -4158,16 +4277,20 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_ensemble %}
   </metatask>
 {%- endif %}
 
-{%- if run_task_vx_ensgrid %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if run_task_vx_ensgrid %}
   <task name="&VX_ENSGRID_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid }}">
 
     &RSRV_DEFAULT;
@@ -4199,12 +4322,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 
-{%- if fcst_len_hrs >= 3 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
+{%- if fcst_len_hrs >= 3 %}
   <task name="&VX_ENSGRID_03h_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_03h }}">
 
     &RSRV_DEFAULT;
@@ -4236,12 +4358,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-{%- if fcst_len_hrs >= 6 %}   
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
+{%- if fcst_len_hrs >= 6 %}   
   <task name="&VX_ENSGRID_06h_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_06h }}">
 
     &RSRV_DEFAULT;
@@ -4273,12 +4394,11 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
-{%- if fcst_len_hrs >= 24 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
+{%- if fcst_len_hrs >= 24 %}
   <task name="&VX_ENSGRID_24h_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_24h }}">
 
     &RSRV_DEFAULT;
@@ -4314,7 +4434,6 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
-
 <task name="&VX_ENSGRID_REFC_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_refc }}">
 
     &RSRV_DEFAULT;
@@ -4450,12 +4569,11 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-{%- if fcst_len_hrs >= 3 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
+{%- if fcst_len_hrs >= 3 %}
   <task name="&VX_ENSGRID_MEAN_03h_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_mean_03h }}">
 
     &RSRV_DEFAULT;
@@ -4486,7 +4604,6 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -4523,12 +4640,12 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
+
 {%- if fcst_len_hrs >= 6 %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
   <task name="&VX_ENSGRID_MEAN_06h_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_mean_06h }}">
 
     &RSRV_DEFAULT;
@@ -4668,12 +4785,15 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 {%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
-
   <task name="&VX_ENSGRID_PROB_REFC_TN;" cycledefs="prodcyc" maxtries="{{ maxtries_vx_ensgrid_prob_refc }}">
 
     &RSRV_DEFAULT;
@@ -4830,7 +4950,13 @@ the <task> tag to be identical to the ones above for other output times.
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+{%- endif %}
 
+{%- if do_rrfs_dev -%}
 <!--
 ************************************************************************
 ************************************************************************
@@ -4864,14 +4990,18 @@ the <task> tag to be identical to the ones above for other output times.
 {%- endif %}
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if machine in ["JET", "HERA"]  %}
 
-{%- if do_ensemble %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
+{%- if do_ensemble %}
   <task name="&RUN_ARCHIVE_TN;_ens" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_HPSS;
@@ -4900,7 +5030,7 @@ the <task> tag to be identical to the ones above for other output times.
 
 {%- else %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&RUN_ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
@@ -4927,11 +5057,15 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 {%- endif %}
 
 {%- if machine in ["WCOSS2"]  %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <task name="&RUN_ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
@@ -4974,11 +5108,15 @@ the <task> tag to be identical to the ones above for other output times.
 
   </task>
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {% if do_ensemble and do_ens_graphics %}
 {%- if machine in ["JET", "HERA"] %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <metatask name="ensemble_maps">
@@ -5025,10 +5163,14 @@ the <task> tag to be identical to the ones above for other output times.
 
 {%- endif %}
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 {%- if do_ensemble and do_ensfcst and do_enspost %}
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
   <metatask name="enspost">
@@ -5070,7 +5212,7 @@ the <task> tag to be identical to the ones above for other output times.
   </metatask>
 
 <!--
-     ************************************************************************
+************************************************************************
 ************************************************************************
 -->
 {% if machine in ["JET", "HERA"] %}
@@ -5107,8 +5249,11 @@ the <task> tag to be identical to the ones above for other output times.
       <metataskdep metatask='enspost'/>
     </dependency>
   </task>
-
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 
 <!-- end of prod block -->
 {%- endif %}

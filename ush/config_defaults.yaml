@@ -3339,6 +3339,9 @@ global:
   DO_POST_PROD: true
   DO_PARALLEL_PRDGEN: false
 
+  # Temporary flag to turn off RRFS_dev1 preprocessing steps
+  DO_RRFS_DEV: false
+
   #
   #-----------------------------------------------------------------------
   #
