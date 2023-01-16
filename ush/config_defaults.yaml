@@ -423,16 +423,6 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # CPL:
-  # Flag indicating whether another component should run in coupled mode
-  # with the forecast.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
-  #
-  #-----------------------------------------------------------------------
-  #
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:

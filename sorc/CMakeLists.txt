@@ -15,10 +15,15 @@ message(STATUS "BUILD_RRFS_UTILS ........ ${BUILD_RRFS_UTILS}")
 message(STATUS "BUILD_NEXUS ............. ${BUILD_NEXUS}")
 message(STATUS "BUILD_AQM_UTILS ......... ${BUILD_AQM_UTILS}")
 
-if (BUILD_UFS)
-  set(UFS_DEPEND "ufs-weather-model")
-else()
+# Set dependency of ufs weather model only for coupled model
+if (NOT APP)
   set(UFS_DEPEND "")
+else()
+  if (BUILD_UFS)
+    set(UFS_DEPEND "ufs-weather-model")
+  else()
+    set(UFS_DEPEND "")
+  endif()
 endif()
 
 # Build UFS weather model
