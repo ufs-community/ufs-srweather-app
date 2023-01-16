@@ -770,8 +770,9 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     # If using external CRTM fix files to allow post-processing of synthetic
     # satellite products from the UPP, make sure the CRTM fix file directory exists.
-    if global_sect.get("USE_CRTM"):
-        crtm_dir = global_sect.get("CRTM_DIR")
+    platform_sect = expt_config["platform"]
+    if platform_sect.get("FIXcrtm"):
+        crtm_dir = platform_sect.get("FIXcrtm")
         try:
             # os.path.exists returns exception if passed None, so use
             # "try/except" to catch it and the non-existence of a
@@ -781,7 +782,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                     dedent(
                         f"""
                     USE_CRTM has been set, but the external CRTM fix file directory:
-                    CRTM_DIR = {crtm_dir}
+                    FIXcrtm = {FIXcrtm}
                     could not be found."""
                     )
                 ) from None
@@ -790,7 +791,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 dedent(
                     f"""
                 USE_CRTM has been set, but the external CRTM fix file
-                directory (CRTM_DIR) is None.
+                directory (FIXcrtm) is None.
                 """
                 )
             ) from None

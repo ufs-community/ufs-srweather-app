@@ -109,20 +109,20 @@ fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
 cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
+  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
+  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
+  cp_vrfy ${FIXcrtm}/fix/SpcCoeff/Big_Endian/*.bin ./
+  cp_vrfy ${FIXcrtm}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
   print_info_msg "
 ====================================================================
-Copying the external CRTM fix files from CRTM_DIR to the temporary
+Copying the external CRTM fix files from FIXcrtm to the temporary
 work directory (DATA_FHR):
-  CRTM_DIR = \"${CRTM_DIR}\"
+  FIXcrtm = \"${FIXcrtm}\"
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi

@@ -430,6 +430,18 @@ platform:
   # FIXsfc:
   # System directory where surface climatology data is located
   #
+  # FIXgsi:
+  # System directory where GSI fixed files are loacated
+  #
+  # FIXsmoke:
+  # System directory where smoke and dust fixed files are loacated
+  #
+  # FIXbufr:
+  # System directory where bufrsnd fixed files are loacated
+  #
+  # FIXcrtm:
+  # System directory where CRTM fixed files are loacated
+  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -438,6 +450,10 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
+  FIXgsi: ""
+  FIXsmoke: ""
+  FIXbufr: ""
+  FIXcrtm: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -3118,18 +3134,13 @@ global:
   # Flag that defines whether external CRTM coefficient files have been
   # staged by the user in order to output synthetic satellite products
   # available within the UPP. If this is set to true, then the workflow
-  # will check for these files in the directory CRTM_DIR. Otherwise, it is
+  # will check for these files in the directory FIXcrtm. Otherwise, it is
   # assumed that no satellite fields are being requested in the UPP
   # configuration.
-  #
-  # CRTM_DIR:
-  # This is the path to the top CRTM fix file directory. This is only used
-  # if USE_CRTM is set to true.
   #
   #-----------------------------------------------------------------------
   #
   USE_CRTM: false
-  CRTM_DIR: ""
   #
   #
   #-----------------------------------------------------------------------

@@ -75,7 +75,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_process_bufr.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_process_bufr.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
