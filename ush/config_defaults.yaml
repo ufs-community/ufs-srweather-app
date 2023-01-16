@@ -451,6 +451,59 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Setup default observation locations for data assimilation:
+  #
+  #    OBSPATH:   observation BUFR file path
+  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
+  #    LIGHTNING_ROOT: location of lightning observations
+  #    ENKF_FCSTL: location of global ensemble forecast
+  #    FFG_DIR: location of flash flood guidance for QPF comparison
+  #
+  # Setup default locations for global SST and update time:
+  #   SST_ROOT: locations of global SST
+  #   SST_update_hour: cycle time for updating SST 
+  #
+  # Setup default locations for GVF and update time:
+  #   GVF_ROOT: locations of GVF observations
+  #   GVF_update_hour: cycle time for updating GVF 
+  #
+  # Setup default locations for IMS snow/ice and update time:
+  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
+  #   SNOWICE_update_hour: cycle time for updating snow/ice 
+  #
+  # Setup default resource data locations for soil surgery and time:
+  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
+  #   SOIL_SURGERY_time: cycle time for soil surgery 
+  #
+  # Setup default locations for FIRE_RRFS files and update time
+  #  FIRE_RAVE_DIR
+  #  FIRE_RRFS_update_hour
+  #
+  #-----------------------------------------------------------------------
+  #
+  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
+  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
+  NCL_HOME: "/home/rtrr/RRFS/graphics"
+  OBSPATH: "/public/data/grids/rap/obs"
+  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
+  LIGHTNING_ROOT: "/public/data/lightning"
+  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
+  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
+  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
+  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
+  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
+  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
+  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
+
+  NCL_REGION: "conus"
+  SST_update_hour: 99
+  GVF_update_hour: 99
+  SNOWICE_update_hour: 99
+  SOIL_SURGERY_time: 9999999999
+  FIRE_RRFS_update_hour: 99
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -1013,10 +1066,6 @@ workflow:
 
   #-----------------------------------------------------------------------
   #
-  #
-  #
-  #-----------------------------------------------------------------------
-  #
   # COMPILER:
   # Type of compiler invoked during the build step. Currently, this must 
   # be set manually; it is not inherited from the build system in the 
@@ -1348,34 +1397,6 @@ nco:
   # the forecast output files will be placed will be:
   #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
   # 
-  # Setup default observation locations for data assimilation:
-  #
-  #    OBSPATH:   observation BUFR file path
-  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
-  #    LIGHTNING_ROOT: location of lightning observations
-  #    ENKF_FCSTL: location of global ensemble forecast
-  #    FFG_DIR: location of flash flood guidance for QPF comparison
-  #
-  # Setup default locations for global SST and update time:
-  #   SST_ROOT: locations of global SST
-  #   SST_update_hour: cycle time for updating SST 
-  #
-  # Setup default locations for GVF and update time:
-  #   GVF_ROOT: locations of GVF observations
-  #   GVF_update_hour: cycle time for updating GVF 
-  #
-  # Setup default locations for IMS snow/ice and update time:
-  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
-  #   SNOWICE_update_hour: cycle time for updating snow/ice 
-  #
-  # Setup default resource data locations for soil surgery and time:
-  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
-  #   SOIL_SURGERY_time: cycle time for soil surgery 
-  #
-  # Setup default locations for FIRE_RRFS files and update time
-  #  FIRE_RAVE_DIR
-  #  FIRE_RRFS_update_hour
-  #
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -1412,30 +1433,6 @@ nco:
   ENSCTRL_NWGES: ""
   ENSCTRL_NWGES_BASEDIR: '{{ ENSCRTL_NWGES}}'
   RRFS_NWGES: ""
-
-  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
-  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
-  NCL_HOME: "/home/rtrr/RRFS/graphics"
-  NCL_REGION: "conus"
-  #--- MODEL is aready defined in SRW so remove/rename
-  # it once we figure out the purpose in RRFS_dev1
-  #MODEL: "NO MODEL CHOSEN"
-  
-  OBSPATH: "/public/data/grids/rap/obs"
-  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
-  LIGHTNING_ROOT: "/public/data/lightning"
-  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
-  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
-  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
-  SST_update_hour: 99
-  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
-  GVF_update_hour: 99
-  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
-  SNOWICE_update_hour: 99
-  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
-  SOIL_SURGERY_time: 9999999999
-  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
-  FIRE_RRFS_update_hour: 99
 
   #
   #-----------------------------------------------------------------------
