@@ -265,13 +265,9 @@ platform:
   # Allows an extra parameter to be passed to SCHEDULER (SLURM/PBSPRO) via 
   # XML Native command
   #
-  # TAG
-  # Append all task names of the workflow with this name if specified
-  #
   #-----------------------------------------------------------------------
   #
   SCHED_NATIVE_CMD: ""
-  TAG: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -463,11 +459,16 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # WORKFLOW_ID
   # Unique ID for workflow run that will be set in setup.py
+  #
+  # TAG
+  # Append all task names of the workflow with this name if specified
   #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_ID: ""
+  TAG: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1038,327 +1039,6 @@ workflow:
   GET_OBS: "get_obs"
   VX_TN: "run_vx"
 
-#----------------------------------
-# Start times for different setups
-#----------------------------------
-start_time:
-  START_TIME_SPINUP: 01:10:00
-  START_TIME_PROD: 02:20:00
-  START_TIME_CONVENTIONAL_SPINUP: 00:40:00
-  START_TIME_LATE_ANALYSIS: 01:40:00
-  START_TIME_CONVENTIONAL: 00:40:00
-  START_TIME_NSSLMOSIAC: 00:45:00
-  START_TIME_LIGHTNINGNC: 00:45:00
-  START_TIME_PROCSMOKE: 00:45:00
-
-#----------------------------------
-# Cycle definiton for each group
-#----------------------------------
-cycledefs:
-  #-----------------------------------------------------------------------
-  #
-  # Set cycle definition for each group.  The cycle definition sets the cycle
-  # time that the group will run. It has two way to set up:
-  #  1) 00 HHs DDs MMs YYYYs *
-  #       HHs can be "01-03/01" or "01,02,03" or "*"
-  #       DDs,MMs can be "01-03" or "01,02,03" or "*"
-  #       YYYYs can be "2020-2021" or "2020,2021" or "*"
-  #  2)   start_time(YYYYMMDDHH00) end_time(YYYYMMDDHH00) interval(HH:MM:SS)
-  #       for example: 202104010000 202104310000 12:00:00
-  #  The default cycle definition is:
-  #     "00 01 01 01 2100 *"
-  #  which will likely never get to run.
-  #
-  # Definitions:
-  #
-  # AT_START_CYCLEDEF:
-  # cycle definition for "at start" group
-  # This group runs: make_grid, make_orog, make_sfc_climo
-  #
-  # INITIAL_CYCLEDEF:
-  # cycle definition for "initial" group
-  # This group runs get_extrn_ics, make_ics
-  #
-  # BOUNDARY_CYCLEDEF:
-  # cycle definition for "boundary" group
-  # This group runs: get_extrn_lbcs,make_lbcs
-  #
-  # BOUNDARY_LONG_CYCLEDEF:
-  # cycle definition for "boundary_long" group
-  # This group runs: get_extrn_lbcs_long,make_lbcs
-  #
-  # SPINUP_CYCLEDEF:
-  # cycle definition for spin-up cycle group
-  # This group runs: anal_gsi_input_spinup and data process, run_fcst_spinup, run_post_spinup
-  #
-  # PROD_CYCLEDEF:
-  # cycle definition for product cycle group
-  # This group runs: anal_gsi_input and data process, run_fcst, python_skewt, run_post, run_clean
-  #
-  # SAVEINPUT_CYCLEDEF:
-  # cycle definition for saving INPUT files
-  # This group runs: saveinput
-  #
-  # RECENTER_CYCLEDEF:
-  # cycle definition for recenter cycle group
-  # This group runs: recenter
-  #
-  # PRODLONG_CYCLEDEF:
-  # same as PROD_CYCLEDEF, but for long forecast 
-  #
-  # ARCHIVE_CYCLEDEF:
-  # cycle definition for "archive" group
-  # This group runs: run_archive
-  #
-  #-----------------------------------------------------------------------
-  #
-  CYCLEDAY: "*"
-  CYCLEMONTH: "*"
-  AT_START_CYCLEDEF: "00 01 01 01 2100 *"
-  INITIAL_CYCLEDEF: "00 01 01 01 2100 *"
-  BOUNDARY_CYCLEDEF: "00 01 01 01 2100 *"
-  BOUNDARY_LONG_CYCLEDEF: "00 01 01 01 2100 *"
-  SPINUP_CYCLEDEF: "00 01 01 01 2100 *"
-  PROD_CYCLEDEF: "00 01 01 01 2100 *"
-  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
-  PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
-  ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
-  SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
-
-#----------------------------------
-# GSI namelist parameters
-#----------------------------------
-gsi:
-  #
-  #-------------------------------------------------------------------------------------
-  #      GSI Namelist parameters configurable across differnt applications
-  # if we need to tune one GSI namelist parameter, we can elevate it to a shell variable
-  # and assign value in config.sh and give it a default value in config_default.sh
-  # In realtime testing, don't need to regenerate the whole workflow, you can tweak 
-  # $EXPTDIR/var_defns.sh and $FIX_GSI/gsiparm.anl.sh to make sure the change is
-  # expected and then put it back into config.sh and config_default.sh
-  #       (need to follow FORTRAN namelist convetion)
-  #-------------------------------------------------------------------------------------
-  # &SETUP  and &BKGERR
-  niter1: 50
-  niter2: 50
-  l_obsprvdiag: .false.
-  diag_radardbz: .false.
-  write_diag_2: .false.
-  bkgerr_vs: 1.0
-  bkgerr_hzscl: 0.7,1.4,2.80     #no trailing ,
-  usenewgfsberror: .true.
-  netcdf_diag: .false.
-  binary_diag: .true.
-  
-  # &HYBRID_ENSEMBLE
-  readin_localization: .true.     #if true, it overwrites the "beta1_inv/ens_h/ens_v" setting
-  beta1_inv: 0.15                 #beata_inv is 1-ensemble_wgt
-  ens_h: 110
-  ens_v: 3
-  regional_ensemble_option: 1     #1 for GDAS ; 5 for FV3LAM ensemble
-  grid_ratio_fv3: 2.0             #fv3 resolution 3km, so analysis: 3*2: 6km
-  grid_ratio_ens: 3               #if analysis is 3km, then ensemble: 3*3: 9km. GDAS ensemble is 20km
-  i_en_perts_io: 1                #0 or 1: original file   3: pre-processed ensembles
-  q_hyb_ens: .false.
-  ens_fast_read: .false.
-  
-  # &RAPIDREFRESH_CLDSURF
-  l_PBL_pseudo_SurfobsT: .false.
-  l_PBL_pseudo_SurfobsQ: .false.
-  i_use_2mQ4B: 0
-  i_use_2mT4B: 0
-  i_T_Q_adjust: 1
-  l_rtma3d: .false.
-  i_precip_vertical_check: 0
-  #-----------------------------------------------------------------------
-  # HYBENSMEM_NMIN:
-  #    Minimum number of ensemble members required a hybrid GSI analysis 
-  #
-  HYBENSMEM_NMIN: 80
-  ANAVINFO_FN: "anavinfo.rrfs"
-  ANAVINFO_DBZ_FN: "anavinfo.rrfs_dbz"
-  ENKF_ANAVINFO_FN: "anavinfo.rrfs"
-  ENKF_ANAVINFO_DBZ_FN: "anavinfo.enkf.rrfs_dbz"
-  CONVINFO_FN: "convinfo.rrfs"
-  BERROR_FN: "rap_berror_stats_global_RAP_tune" #under $FIX_GSI
-  OBERROR_FN: "errtable.rrfs"
-  HYBENSINFO_FN: "hybens_info.rrfs"
-  AIRCRAFT_REJECT: ""
-  SFCOBS_USELIST: ""
-  #
-  #-----------------------------------------------------------------------
-  # default namelist for nonvar cloud analysis
-  cld_bld_hgt: 1200.0
-  l_precip_clear_only: .false.
-  l_qnr_from_qr: .false.
-  #
-  #-----------------------------------------------------------------------
-  # default weighting for control analysis in ensemble recentering
-  beta_recenter: 1.0
-
-#----------------------------
-# NCO specific variables
-#-----------------------------
-nco:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco").  Definitions:
-  #
-  # envir, NET, model_ver, RUN:
-  # Standard environment variables defined in the NCEP Central Operations WCOSS
-  # Implementation Standards document as follows:
-  #
-  #   envir:
-  #   Set to "test" during the initial testing phase, "para" when running
-  #   in parallel (on a schedule), and "prod" in production.
-  #
-  #   NET:
-  #   Model name (first level of com directory structure)
-  #
-  #   model_ver:
-  #   Version number of package in three digits (second level of com directory)
-  #
-  #   RUN:
-  #   Name of model run (third level of com directory structure).
-  #   In general, same as $NET
-  #
-  # OPSROOT:
-  # The operations root directory in NCO mode.
-  #
-  # LOGBASEDIR:
-  # Directory in which the log files from the workflow tasks will be placed.
-  # 
-  # NWGES:
-  # The beginning portion of the directory that will contain the output 
-  # files from the forecast for a given cycle.  For a cycle 
-  # that starts on the date specified by yyyymmdd and hour specified by hh
-  # (where yyyymmdd and hh are as described above), the directory in which
-  # the forecast output files will be placed will be:
-  #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
-  # 
-  # Setup default observation locations for data assimilation:
-  #
-  #    OBSPATH:   observation BUFR file path
-  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
-  #    LIGHTNING_ROOT: location of lightning observations
-  #    ENKF_FCSTL: location of global ensemble forecast
-  #    FFG_DIR: location of flash flood guidance for QPF comparison
-  #
-  # Setup default locations for global SST and update time:
-  #   SST_ROOT: locations of global SST
-  #   SST_update_hour: cycle time for updating SST 
-  #
-  # Setup default locations for GVF and update time:
-  #   GVF_ROOT: locations of GVF observations
-  #   GVF_update_hour: cycle time for updating GVF 
-  #
-  # Setup default locations for IMS snow/ice and update time:
-  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
-  #   SNOWICE_update_hour: cycle time for updating snow/ice 
-  #
-  # Setup default resource data locations for soil surgery and time:
-  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
-  #   SOIL_SURGERY_time: cycle time for soil surgery 
-  #
-  # Setup default locations for FIRE_RRFS files and update time
-  #  FIRE_RAVE_DIR
-  #  FIRE_RRFS_update_hour
-  #
-  # For more information on NCO standards
-  #   
-  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
-  #
-  #-----------------------------------------------------------------------
-  #
-  envir: "para"
-  NET: "rrfs"
-  RUN: "rrfs"
-  model_ver: "v1.0.0"
-
-  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT: '{{ OPSROOT }}/com'
-  PACKAGEROOT: '{{ OPSROOT }}/packages'
-  DATAROOT: '{{ OPSROOT }}/tmp'
-  DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{{ OPSROOT }}/output'
-  EXTROOT: '{{ OPSROOT }}/ext'
-  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
-  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
-
-  #
-  # New additions from RRFS_dev1
-  #
-  ENSCTRL_COMIN: ""
-  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
-  ENSCTRL_COMROOT: ""
-  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
-  ENSCTRL_COMOUT_DIR: '{{ ENSCTRL_COMOUT_BASEDIR}}/{{ RUN }}.@Y@m@d/@H'
-  RRFSE_NWGES: ""
-  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
-  NWGES: ""
-  NWGES_BASEDIR: '{{ NWGES }}'
-  ENSCTRL_NWGES: ""
-  ENSCTRL_NWGES_BASEDIR: '{{ ENSCRTL_NWGES}}'
-  RRFS_NWGES: ""
-
-  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
-  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
-  NCL_HOME: "/home/rtrr/RRFS/graphics"
-  NCL_REGION: "conus"
-  #--- MODEL is aready defined in SRW so remove/rename
-  # it once we figure out the purpose in RRFS_dev1
-  #MODEL: "NO MODEL CHOSEN"
-  
-  OBSPATH: "/public/data/grids/rap/obs"
-  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
-  LIGHTNING_ROOT: "/public/data/lightning"
-  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
-  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
-  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
-  SST_update_hour: 99
-  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
-  GVF_update_hour: 99
-  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
-  SNOWICE_update_hour: 99
-  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
-  SOIL_SURGERY_time: 9999999999
-  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
-  FIRE_RRFS_update_hour: 99
-
-  #
-  #-----------------------------------------------------------------------
-  #
-  # FG_ROOTDIR:
-  #  First Guess Root Directory, APP will find corresponding first guess
-  #  fields from this directory. RRFS will find FG under NWGES_BASEDIR,
-  #  but we needs to explicitly specify where to find FG for RTMA.
-  #  So this parameter only matters for RTMA
-  #
-  #-----------------------------------------------------------------------
-  #
-  FG_ROOTDIR: ""
-
-  #
-  #-----------------------------------------------------------------------
-  #
-  # The following are also described in the NCO doc above
-  #
-  #-----------------------------------------------------------------------
-  #
-  DBNROOT: ""
-  SENDECF: false
-  SENDDBN: false
-  SENDDBN_NTC: false
-  SENDCOM: false
-  SENDWEB: false
-  KEEPDATA: true
-  MAILTO: ""
-  MAILCC: ""
-
-
 #----------------------------
 # WORKFLOW SWITCHES config parameters
 #-----------------------------
@@ -1625,6 +1305,327 @@ workflow_switches:
   #-----------------------------------------------------------------------
   #
   IS_RTMA: false
+
+#----------------------------
+# NCO specific variables
+#-----------------------------
+nco:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
+  # set to "nco").  Definitions:
+  #
+  # envir, NET, model_ver, RUN:
+  # Standard environment variables defined in the NCEP Central Operations WCOSS
+  # Implementation Standards document as follows:
+  #
+  #   envir:
+  #   Set to "test" during the initial testing phase, "para" when running
+  #   in parallel (on a schedule), and "prod" in production.
+  #
+  #   NET:
+  #   Model name (first level of com directory structure)
+  #
+  #   model_ver:
+  #   Version number of package in three digits (second level of com directory)
+  #
+  #   RUN:
+  #   Name of model run (third level of com directory structure).
+  #   In general, same as $NET
+  #
+  # OPSROOT:
+  # The operations root directory in NCO mode.
+  #
+  # LOGBASEDIR:
+  # Directory in which the log files from the workflow tasks will be placed.
+  # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  # (where yyyymmdd and hh are as described above), the directory in which
+  # the forecast output files will be placed will be:
+  #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
+  # 
+  # Setup default observation locations for data assimilation:
+  #
+  #    OBSPATH:   observation BUFR file path
+  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
+  #    LIGHTNING_ROOT: location of lightning observations
+  #    ENKF_FCSTL: location of global ensemble forecast
+  #    FFG_DIR: location of flash flood guidance for QPF comparison
+  #
+  # Setup default locations for global SST and update time:
+  #   SST_ROOT: locations of global SST
+  #   SST_update_hour: cycle time for updating SST 
+  #
+  # Setup default locations for GVF and update time:
+  #   GVF_ROOT: locations of GVF observations
+  #   GVF_update_hour: cycle time for updating GVF 
+  #
+  # Setup default locations for IMS snow/ice and update time:
+  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
+  #   SNOWICE_update_hour: cycle time for updating snow/ice 
+  #
+  # Setup default resource data locations for soil surgery and time:
+  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
+  #   SOIL_SURGERY_time: cycle time for soil surgery 
+  #
+  # Setup default locations for FIRE_RRFS files and update time
+  #  FIRE_RAVE_DIR
+  #  FIRE_RRFS_update_hour
+  #
+  # For more information on NCO standards
+  #   
+  #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
+  #
+  #-----------------------------------------------------------------------
+  #
+  envir: "para"
+  NET: "rrfs"
+  RUN: "rrfs"
+  model_ver: "v1.0.0"
+
+  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT: '{{ OPSROOT }}/com'
+  PACKAGEROOT: '{{ OPSROOT }}/packages'
+  DATAROOT: '{{ OPSROOT }}/tmp'
+  DCOMROOT: '{{ OPSROOT }}/dcom'
+  LOGBASEDIR: '{{ OPSROOT }}/output'
+  EXTROOT: '{{ OPSROOT }}/ext'
+  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  # New additions from RRFS_dev1
+  #
+  ENSCTRL_COMIN: ""
+  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
+  ENSCTRL_COMROOT: ""
+  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
+  ENSCTRL_COMOUT_DIR: '{{ ENSCTRL_COMOUT_BASEDIR}}/{{ RUN }}.@Y@m@d/@H'
+  RRFSE_NWGES: ""
+  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
+  NWGES: ""
+  NWGES_BASEDIR: '{{ NWGES }}'
+  ENSCTRL_NWGES: ""
+  ENSCTRL_NWGES_BASEDIR: '{{ ENSCRTL_NWGES}}'
+  RRFS_NWGES: ""
+
+  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
+  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
+  NCL_HOME: "/home/rtrr/RRFS/graphics"
+  NCL_REGION: "conus"
+  #--- MODEL is aready defined in SRW so remove/rename
+  # it once we figure out the purpose in RRFS_dev1
+  #MODEL: "NO MODEL CHOSEN"
+  
+  OBSPATH: "/public/data/grids/rap/obs"
+  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
+  LIGHTNING_ROOT: "/public/data/lightning"
+  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
+  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
+  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
+  SST_update_hour: 99
+  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
+  GVF_update_hour: 99
+  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
+  SNOWICE_update_hour: 99
+  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
+  SOIL_SURGERY_time: 9999999999
+  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
+  FIRE_RRFS_update_hour: 99
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # FG_ROOTDIR:
+  #  First Guess Root Directory, APP will find corresponding first guess
+  #  fields from this directory. RRFS will find FG under NWGES_BASEDIR,
+  #  but we needs to explicitly specify where to find FG for RTMA.
+  #  So this parameter only matters for RTMA
+  #
+  #-----------------------------------------------------------------------
+  #
+  FG_ROOTDIR: ""
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # The following are also described in the NCO doc above
+  #
+  #-----------------------------------------------------------------------
+  #
+  DBNROOT: ""
+  SENDECF: false
+  SENDDBN: false
+  SENDDBN_NTC: false
+  SENDCOM: false
+  SENDWEB: false
+  KEEPDATA: true
+  MAILTO: ""
+  MAILCC: ""
+
+
+#----------------------------------
+# Start times for different setups
+#----------------------------------
+start_time:
+  START_TIME_SPINUP: 01:10:00
+  START_TIME_PROD: 02:20:00
+  START_TIME_CONVENTIONAL_SPINUP: 00:40:00
+  START_TIME_LATE_ANALYSIS: 01:40:00
+  START_TIME_CONVENTIONAL: 00:40:00
+  START_TIME_NSSLMOSIAC: 00:45:00
+  START_TIME_LIGHTNINGNC: 00:45:00
+  START_TIME_PROCSMOKE: 00:45:00
+
+#----------------------------------
+# Cycle definiton for each group
+#----------------------------------
+cycledefs:
+  #-----------------------------------------------------------------------
+  #
+  # Set cycle definition for each group.  The cycle definition sets the cycle
+  # time that the group will run. It has two way to set up:
+  #  1) 00 HHs DDs MMs YYYYs *
+  #       HHs can be "01-03/01" or "01,02,03" or "*"
+  #       DDs,MMs can be "01-03" or "01,02,03" or "*"
+  #       YYYYs can be "2020-2021" or "2020,2021" or "*"
+  #  2)   start_time(YYYYMMDDHH00) end_time(YYYYMMDDHH00) interval(HH:MM:SS)
+  #       for example: 202104010000 202104310000 12:00:00
+  #  The default cycle definition is:
+  #     "00 01 01 01 2100 *"
+  #  which will likely never get to run.
+  #
+  # Definitions:
+  #
+  # AT_START_CYCLEDEF:
+  # cycle definition for "at start" group
+  # This group runs: make_grid, make_orog, make_sfc_climo
+  #
+  # INITIAL_CYCLEDEF:
+  # cycle definition for "initial" group
+  # This group runs get_extrn_ics, make_ics
+  #
+  # BOUNDARY_CYCLEDEF:
+  # cycle definition for "boundary" group
+  # This group runs: get_extrn_lbcs,make_lbcs
+  #
+  # BOUNDARY_LONG_CYCLEDEF:
+  # cycle definition for "boundary_long" group
+  # This group runs: get_extrn_lbcs_long,make_lbcs
+  #
+  # SPINUP_CYCLEDEF:
+  # cycle definition for spin-up cycle group
+  # This group runs: anal_gsi_input_spinup and data process, run_fcst_spinup, run_post_spinup
+  #
+  # PROD_CYCLEDEF:
+  # cycle definition for product cycle group
+  # This group runs: anal_gsi_input and data process, run_fcst, python_skewt, run_post, run_clean
+  #
+  # SAVEINPUT_CYCLEDEF:
+  # cycle definition for saving INPUT files
+  # This group runs: saveinput
+  #
+  # RECENTER_CYCLEDEF:
+  # cycle definition for recenter cycle group
+  # This group runs: recenter
+  #
+  # PRODLONG_CYCLEDEF:
+  # same as PROD_CYCLEDEF, but for long forecast 
+  #
+  # ARCHIVE_CYCLEDEF:
+  # cycle definition for "archive" group
+  # This group runs: run_archive
+  #
+  #-----------------------------------------------------------------------
+  #
+  CYCLEDAY: "*"
+  CYCLEMONTH: "*"
+  AT_START_CYCLEDEF: "00 01 01 01 2100 *"
+  INITIAL_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_LONG_CYCLEDEF: "00 01 01 01 2100 *"
+  SPINUP_CYCLEDEF: "00 01 01 01 2100 *"
+  PROD_CYCLEDEF: "00 01 01 01 2100 *"
+  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
+  PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
+  ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
+  SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
+
+#----------------------------------
+# GSI namelist parameters
+#----------------------------------
+gsi:
+  #
+  #-------------------------------------------------------------------------------------
+  #      GSI Namelist parameters configurable across differnt applications
+  # if we need to tune one GSI namelist parameter, we can elevate it to a shell variable
+  # and assign value in config.sh and give it a default value in config_default.sh
+  # In realtime testing, don't need to regenerate the whole workflow, you can tweak 
+  # $EXPTDIR/var_defns.sh and $FIX_GSI/gsiparm.anl.sh to make sure the change is
+  # expected and then put it back into config.sh and config_default.sh
+  #       (need to follow FORTRAN namelist convetion)
+  #-------------------------------------------------------------------------------------
+  # &SETUP  and &BKGERR
+  niter1: 50
+  niter2: 50
+  l_obsprvdiag: .false.
+  diag_radardbz: .false.
+  write_diag_2: .false.
+  bkgerr_vs: 1.0
+  bkgerr_hzscl: 0.7,1.4,2.80     #no trailing ,
+  usenewgfsberror: .true.
+  netcdf_diag: .false.
+  binary_diag: .true.
+  
+  # &HYBRID_ENSEMBLE
+  readin_localization: .true.     #if true, it overwrites the "beta1_inv/ens_h/ens_v" setting
+  beta1_inv: 0.15                 #beata_inv is 1-ensemble_wgt
+  ens_h: 110
+  ens_v: 3
+  regional_ensemble_option: 1     #1 for GDAS ; 5 for FV3LAM ensemble
+  grid_ratio_fv3: 2.0             #fv3 resolution 3km, so analysis: 3*2: 6km
+  grid_ratio_ens: 3               #if analysis is 3km, then ensemble: 3*3: 9km. GDAS ensemble is 20km
+  i_en_perts_io: 1                #0 or 1: original file   3: pre-processed ensembles
+  q_hyb_ens: .false.
+  ens_fast_read: .false.
+  
+  # &RAPIDREFRESH_CLDSURF
+  l_PBL_pseudo_SurfobsT: .false.
+  l_PBL_pseudo_SurfobsQ: .false.
+  i_use_2mQ4B: 0
+  i_use_2mT4B: 0
+  i_T_Q_adjust: 1
+  l_rtma3d: .false.
+  i_precip_vertical_check: 0
+  #-----------------------------------------------------------------------
+  # HYBENSMEM_NMIN:
+  #    Minimum number of ensemble members required a hybrid GSI analysis 
+  #
+  HYBENSMEM_NMIN: 80
+  ANAVINFO_FN: "anavinfo.rrfs"
+  ANAVINFO_DBZ_FN: "anavinfo.rrfs_dbz"
+  ENKF_ANAVINFO_FN: "anavinfo.rrfs"
+  ENKF_ANAVINFO_DBZ_FN: "anavinfo.enkf.rrfs_dbz"
+  CONVINFO_FN: "convinfo.rrfs"
+  BERROR_FN: "rap_berror_stats_global_RAP_tune" #under $FIX_GSI
+  OBERROR_FN: "errtable.rrfs"
+  HYBENSINFO_FN: "hybens_info.rrfs"
+  AIRCRAFT_REJECT: ""
+  SFCOBS_USELIST: ""
+  #
+  #-----------------------------------------------------------------------
+  # default namelist for nonvar cloud analysis
+  cld_bld_hgt: 1200.0
+  l_precip_clear_only: .false.
+  l_qnr_from_qr: .false.
+  #
+  #-----------------------------------------------------------------------
+  # default weighting for control analysis in ensemble recentering
+  beta_recenter: 1.0
 
 #----------------------------
 # MAKE GRID config parameters
