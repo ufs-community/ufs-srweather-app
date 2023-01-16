@@ -1601,7 +1601,7 @@ gsi:
   #-----------------------------------------------------------------------
   # HYBENSMEM_NMIN:
   #    Minimum number of ensemble members required a hybrid GSI analysis 
-  #
+  #-----------------------------------------------------------------------
   HYBENSMEM_NMIN: 80
   ANAVINFO_FN: "anavinfo.rrfs"
   ANAVINFO_DBZ_FN: "anavinfo.rrfs_dbz"
@@ -1616,12 +1616,14 @@ gsi:
   #
   #-----------------------------------------------------------------------
   # default namelist for nonvar cloud analysis
+  #-----------------------------------------------------------------------
   cld_bld_hgt: 1200.0
   l_precip_clear_only: .false.
   l_qnr_from_qr: .false.
   #
   #-----------------------------------------------------------------------
   # default weighting for control analysis in ensemble recentering
+  #-----------------------------------------------------------------------
   beta_recenter: 1.0
 
 #----------------------------
