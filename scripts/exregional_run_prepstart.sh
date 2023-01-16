@@ -53,7 +53,7 @@ specified cycle.
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_RUN_PREPSTART*PPN_RUN_PREPSTART))
+nprocs=$((NNODES_RUN_PREPSTART*PPN_RUN_PREPSTART))
 
 gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #

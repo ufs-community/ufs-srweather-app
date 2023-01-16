@@ -20,7 +20,7 @@ platform:
   FIXgsi: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/gsi"
 workflow:
   TAG: RRFS_CONUS_3km_
-  USE_CRON_TO_RELAUNCH: false
+  USE_CRON_TO_RELAUNCH: true
   EXPT_SUBDIR: RRFS_CONUS_3km
   CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: RRFS_CONUS_3km
@@ -73,8 +73,6 @@ nco:
   envir: para
   model_ver: v1.0
   RUN: RRFS_conus_3km
-  NWGES: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/nco_dirs/nwges"
-  RRFSE_NWGES: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/nco_dirs/nwges"
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2

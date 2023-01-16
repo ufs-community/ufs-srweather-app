@@ -1437,18 +1437,17 @@ nco:
   #
   # New additions from RRFS_dev1
   #
-  ENSCTRL_COMIN: ""
+  ENSCTRL_COMIN: '{{ COMIN_BASEDIR}}'
   ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
-  ENSCTRL_COMROOT: ""
+  ENSCTRL_COMROOT: '{{ COMROOT }}'
   ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
   ENSCTRL_COMOUT_DIR: '{{ ENSCTRL_COMOUT_BASEDIR}}/{{ RUN }}.@Y@m@d/@H'
-  RRFSE_NWGES: ""
+  RRFSE_NWGES: '{{ COMROOT }}/nwges'
   RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
-  NWGES: ""
+  NWGES: '{{ COMROOT }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
-  ENSCTRL_NWGES: ""
-  ENSCTRL_NWGES_BASEDIR: '{{ ENSCRTL_NWGES}}'
-  RRFS_NWGES: ""
+  ENSCTRL_NWGES: '{{ COMROOT }}/nwges'
+  ENSCTRL_NWGES_BASEDIR: '{{ ENSCTRL_NWGES}}'
 
   #
   #-----------------------------------------------------------------------
