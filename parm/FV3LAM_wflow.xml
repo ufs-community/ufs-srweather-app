@@ -540,6 +540,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 
     <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>NWGES_DIR</name><value>&NWGES_BASEDIR;</value></envar>
 
@@ -580,6 +581,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 
     <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>RADAR_REF_THINNING</name><value>{{ radar_ref_thinning }}</value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
         
@@ -618,6 +620,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 
     <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -656,6 +659,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
 
     <envar><name>CYCLE_TYPE</name><value><cyclestr>#type#</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -1095,6 +1099,8 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
  {%- if do_ensinit %}
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr>ensinit</cyclestr></value></envar>
+ {%- else %}
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
  {%- endif %}
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
 
@@ -1304,6 +1310,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ENSCTRL_COMIN_ROOT</name><value><cyclestr>&ENSCTRL_COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -1359,6 +1366,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -1443,6 +1451,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SATBIAS_DIR</name><value><cyclestr>&NWGES_BASEDIR;/satbias</cyclestr></value></envar>
@@ -1496,6 +1505,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SATBIAS_DIR</name><value><cyclestr>&NWGES_BASEDIR;/satbias</cyclestr></value></envar>
@@ -1554,6 +1564,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
 
     <dependency>
@@ -1600,6 +1611,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
 
     <dependency>
@@ -1643,6 +1655,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
 
     <dependency>
@@ -1725,6 +1738,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>RESTART_HRS</name><value><cyclestr>1</cyclestr></value></envar>
   
@@ -1801,6 +1815,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
       <dependency>
         <and>
@@ -1856,6 +1871,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
       <dependency>
@@ -1895,6 +1911,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
       <envar><name>TMMARK</name><value>tm00</value></envar>
 
       <dependency>
@@ -1968,6 +1985,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>FG_ROOT</name><value><cyclestr>&FG_ROOT;</cyclestr></value></envar>
     <envar><name>LBCS_ROOT</name><value><cyclestr>&FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
 
     <dependency>
@@ -2097,6 +2115,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>nens</name><value>{{ num_ens_members }}</value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
 
@@ -2437,6 +2456,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SATBIAS_DIR</name><value><cyclestr>&NWGES_BASEDIR;/satbias</cyclestr></value></envar>
@@ -2529,6 +2549,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SATBIAS_DIR</name><value><cyclestr>&NWGES_BASEDIR;/satbias</cyclestr></value></envar>
@@ -2582,6 +2603,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>ANALYSIS</cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>SATBIAS_DIR</name><value><cyclestr>&NWGES_BASEDIR;/satbias</cyclestr></value></envar>
@@ -2640,6 +2662,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
 
     <dependency>
@@ -2687,6 +2710,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 
@@ -2732,6 +2756,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
 
     <dependency>
@@ -2816,6 +2841,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
     <dependency>
        {%- if do_recenter %}
@@ -2895,6 +2921,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>RESTART_HRS</name><value><cyclestr>{{ restart_interval }}</cyclestr></value></envar>
   
@@ -2995,6 +3022,7 @@ MODULES_RUN_TASK_FP script.
 
     <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+    <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
     <envar><name>RESTART_HRS</name><value><cyclestr>{{ restart_interval_long }}</cyclestr></value></envar>
   
@@ -3083,6 +3111,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
       <dependency>
         <and>
@@ -3129,6 +3158,7 @@ MODULES_RUN_TASK_FP script.
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
 
       <dependency>
         <and>
