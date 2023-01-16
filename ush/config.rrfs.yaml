@@ -1,0 +1,119 @@
+metadata:
+  description: >-
+    Sample config file for RRFS_dev1 import to SRW.
+user:
+  RUN_ENVIR: nco
+  MACHINE: hera
+  ACCOUNT: zrtrr
+  RESERVATION: ""
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  EXPT_SUBDIR: RRFS_CONUS_3km
+  CCPP_PHYS_SUITE: FV3_HRRR
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
+  DATE_FIRST_CYCL: '2021073000'
+  DATE_LAST_CYCL: '2021073000'
+  FCST_LEN_HRS: 3
+  FCST_LEN_HRS_SPINUP: 1
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+  CYCL_HRS: [0, 12]
+  CYCL_HRS_SPINSTART: [3, 15]
+  CYCL_HRS_PRODSTART: [9, 21]
+  FCST_LEN_HRS_CYCLES: []
+  DA_CYCL_INTERV: 1
+  RESTART_INTERVAL: 1
+  TAG: RRFS_CONUS_3km_
+workflow_switches:
+  RUN_TASK_MAKE_GRID: false
+  RUN_TASK_MAKE_OROG: false
+  RUN_TASK_MAKE_SFC_CLIMO: false
+  RUN_TASK_PLOT_ALLVARS: false
+  DO_DACYCLE: true
+  DO_SURFACE_CYCLE: true
+  DO_SPINUP: true
+  DO_RETRO: true
+  DO_NONVAR_CLDANAL: true
+  DO_REFL2TTEN: false
+  DO_SOIL_ADJUST: true
+  DO_RADDA: false
+  DO_BUFRSND: false
+cycledefs:
+  CYCLEMONTH: "7"
+  CYCLEDAY: "24-30"
+  INITIAL_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0300 ", workflow.DATE_LAST_CYCL, "2300 12:00:00"]|path_join }}'
+  BOUNDARY_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0000 ", workflow.DATE_LAST_CYCL, "2300 06:00:00"]|path_join }}'
+  PROD_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0900 ", workflow.DATE_LAST_CYCL, "2300 01:00:00"]|path_join }}'
+  POSTPROC_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0900 ", workflow.DATE_LAST_CYCL, "2300 01:00:00"]|path_join }}'
+  POSTPROC_LONG_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0900 ", workflow.DATE_LAST_CYCL, "2300 03:00:00"]|path_join }}'
+  ARCHIVE_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL, "0700 ", workflow.DATE_LAST_CYCL, "2300 24:00:00"]|path_join }}'
+  SPINUP_CYCLEDEF: '{{ ["00 03-08,15-20", cycledefs.CYCLEDAY, " ", cycledefs.CYCLEMONTH, "2021 *"]|path_join }}'
+gsi:
+  HYBENSMEM_NMIN: 66
+nco:
+  NET: RRFS_CONUS
+  envir: para
+  model_ver: v1.0
+  RUN: RRFS_conus_3km
+  SST_update_hour: 1
+  GVF_update_hour: 4
+  SNOWICE_update_hour: 0
+  ARCHIVEDIR: "/1year/BMC/wrfruc/rrfs_dev1"
+  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
+  NCL_HOME: "/home/rtrr/RRFS/graphics"
+  NCL_REGION: "conus"
+  #MODEL: "RRFS_conus_3km"
+  NWGES: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/nco_dirs/nwges"
+  RRFSE_NWGES: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/nco_dirs/nwges"
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+  EXTRN_MDL_ICS_OFFSET_HRS: 3
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  FV3GFS_FILE_FMT_LBCS: grib2
+  LBC_SPEC_INTVL_HRS: 1
+  EXTRN_MDL_LBCS_OFFSET_HRS: 6
+  BOUNDARY_LEN_HRS: 18
+task_make_ics:
+  NNODES_MAKE_ICS: 3
+  PPN_MAKE_ICS: 20
+task_make_lbcs:
+  NNODES_MAKE_LBCS: 3
+  PPN_MAKE_LBCS: 20
+  WTIME_MAKE_LBCS: 02:00:00
+task_run_fcst:
+  DT_ATMOS: 60
+  WRITE_DOPOST: true
+  QUILTING: true
+  IO_LAYOUT_Y: 1
+  WTIME_RUN_FCST: 02:45:00
+task_run_post:
+  NNODES_RUN_POST: 1
+  PPN_RUN_POST: 40
+  USE_CUSTOM_POST_CONFIG_FILE: true
+task_run_anal:
+  NCORES_RUN_ANAL: 240
+  NCORES_RUN_OBSERVER: 80
+task_run_ref2tten:
+  PPN_RUN_REF2TTEN: 1
+task_run_nonvarcldanl:
+  PPN_RUN_NONVARCLDANL: '{{ task_run_fcst.IO_LAYOUT_Y }}'
+task_plot_allvars:
+  COMOUT_REF: ""
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: conus_25km
+global:
+  NUM_ENS_MEMBERS: 9
+  HALO_BLEND: 20
+  PRINT_DIFF_PGR: true
+  ADDNL_OUTPUT_GRIDS: []
+  TILE_LABELS: "CONUS_REGIONS"
+  TILE_SETS: "full NE,NC,NW,SE,SC,SW"
+  RADARREFL_TIMELEVEL: [0]
+  FH_DFI_RADAR: "0.0,0.25,0.5"
+  TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"
+  TESTBED_FIELDS_FN2: "testbed_fields_bgrd3d.txt"
+  CUSTOM_POST_CONFIG_FP: "/fix/upp/postxconfig-NT-fv3lam_rrfs.txt"
+  CUSTOM_POST_PARAMS_FP: "/fix/upp/params_grib2_tbl_new"
