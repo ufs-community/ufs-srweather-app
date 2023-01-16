@@ -40,3 +40,17 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+  ARCHIVEDIR: ""
+  NCARG_ROOT: ""
+  NCL_HOME: ""
+  OBSPATH: "/scratch2/BMC/zrtrr/rli/data/obs_rap"
+  OBSPATH_NSSLMOSIAC: "/scratch2/BMC/zrtrr/rli/data/reflectivity"
+  LIGHTNING_ROOT: "/scratch2/BMC/zrtrr/rli/data/lightning"
+  ENKF_FCST: "/scratch2/BMC/zrtrr/rli/data/enkf/atm"
+  FFG_DIR: ""
+  SST_ROOT: ""
+  GVF_ROOT: ""
+  IMSSNOW_ROOT: ""
+  RAPHRR_SOIL_ROOT: ""
+  FIRE_RAVE_DIR: ""
+

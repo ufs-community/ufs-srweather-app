@@ -78,7 +78,7 @@ Getting into working directory for BUFR obseration process ..."
 
 cd_vrfy ${DATA}
 
-fixgriddir=$FIX_GSI/${PREDEF_GRID_NAME}
+fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
 
 print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
 
@@ -96,7 +96,7 @@ cp_vrfy ${fixgriddir}/fv3_grid_spec          fv3sar_grid_spec.nc
 #   copy bufr table
 #
 #-----------------------------------------------------------------------
-BUFR_TABLE=${FIX_GSI}/prepobs_prep_RAP.bufrtable
+BUFR_TABLE=${FIXgsi}/prepobs_prep_RAP.bufrtable
 cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 
 #-----------------------------------------------------------------------

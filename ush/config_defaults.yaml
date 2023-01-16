@@ -500,19 +500,19 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  ARCHIVEDIR: "/5year/BMC/wrfruc/rrfs_dev1"
-  NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
-  NCL_HOME: "/home/rtrr/RRFS/graphics"
-  OBSPATH: "/public/data/grids/rap/obs"
-  OBSPATH_NSSLMOSIAC: "/public/data/radar/mrms"
-  LIGHTNING_ROOT: "/public/data/lightning"
-  ENKF_FCST: "/lfs4/BMC/public/data/grids/enkf/atm"
-  FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
-  SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
-  GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
-  IMSSNOW_ROOT: "/public/data/grids/ncep/snow/ims96/grib2"
-  RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/rtwbl/mhu/wcoss/nco/com"
-  FIRE_RAVE_DIR: "/lfs4/BMC/public/data/grids/nesdis/3km_fire_emissions"
+  ARCHIVEDIR: ""
+  NCARG_ROOT: ""
+  NCL_HOME: ""
+  OBSPATH: ""
+  OBSPATH_NSSLMOSIAC: ""
+  LIGHTNING_ROOT: ""
+  ENKF_FCST: ""
+  FFG_DIR: ""
+  SST_ROOT: ""
+  GVF_ROOT: ""
+  IMSSNOW_ROOT: ""
+  RAPHRR_SOIL_ROOT: ""
+  FIRE_RAVE_DIR: ""
 
   NCL_REGION: "conus"
   SST_update_hour: 99

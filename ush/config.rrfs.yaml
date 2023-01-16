@@ -9,7 +9,6 @@ user:
   SERVICE_ACCOUNT: zrtrr
 platform:
   RESERVATION: ""
-  DOMAIN_PREGEN_BASEDIR: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/lam"
   SST_update_hour: 1
   GVF_update_hour: 4
   SNOWICE_update_hour: 0
@@ -17,6 +16,8 @@ platform:
   NCARG_ROOT: "/apps/ncl/6.5.0-CentOS6.10_64bit_nodap_gnu447"
   NCL_HOME: "/home/rtrr/RRFS/graphics"
   NCL_REGION: "conus"
+  DOMAIN_PREGEN_BASEDIR: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/lam"
+  FIXgsi: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/gsi"
 workflow:
   TAG: RRFS_CONUS_3km_
   USE_CRON_TO_RELAUNCH: false

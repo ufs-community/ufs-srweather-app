@@ -61,12 +61,12 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-
 if [ ${CYCLE_TYPE} == "spinup" ]; then
   DATA="${DATA:-${COMIN}/process_bufr_spinup}"
 else
   DATA="${DATA:-${COMIN}/process_bufr}"
 fi
+mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
