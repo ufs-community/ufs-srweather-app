@@ -55,6 +55,7 @@ eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
 
+gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #
 #-----------------------------------------------------------------------
 #
@@ -112,8 +113,6 @@ list_iolayout=$(seq 0 $n_iolayouty)
 #
 print_info_msg "$VERBOSE" "
 Getting into working directory for radar reflectivity process ..."
-
-gridspec_dir=${NWGES_BASEDIR}/grid_spec
 
 for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
   bigmin=$( printf %2.2i $bigmin )
