@@ -9,6 +9,14 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
+  PARTITION_GRAPHICS: null
+  QUEUE_GRAPHICS: batch
+  PARTITION_ANALYSIS: null
+  QUEUE_ANALYSIS: batch
+  PARTITION_PRDGEN: null
+  QUEUE_PRDGEN: batch
+  PARTITION_POST: null
+  QUEUE_POST: batch
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01} --oversubscribe
   RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
   RUN_CMD_SERIAL: time

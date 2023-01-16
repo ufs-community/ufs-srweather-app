@@ -6,6 +6,7 @@ user:
   RUN_ENVIR: nco
   MACHINE: hera
   ACCOUNT: zrtrr
+  SERVICE_ACCOUNT: zrtrr
 platform:
   RESERVATION: ""
   DOMAIN_PREGEN_BASEDIR: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/lam"
