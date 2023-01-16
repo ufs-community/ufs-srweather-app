@@ -1331,7 +1331,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -1468,7 +1468,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -2122,7 +2122,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -2189,7 +2189,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -2409,7 +2409,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -2554,7 +2554,7 @@ MODULES_RUN_TASK_FP script.
 
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_anal }}</cores>
-    <native>&SHED_NATIVE_CMD; &RRFS_RESERVE;</native>
+    <native>&SCHED_NATIVE_CMD; &RRFS_RESERVE;</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_anal }}:ppn={{ ppn_run_anal }}:tpp={{ omp_num_threads_run_anal }}</nodes>
     <native>&SCHED_NATIVE_CMD;</native>
@@ -3054,7 +3054,7 @@ MODULES_RUN_TASK_FP script.
 {%- if do_rrfs_dev %}
   <metatask name="&SAVE_RESTART_TN;_prod">
 
-    <var name="fhr"> {% for i in restart_interval %}{{ i }} {% endfor %} </var>
+    <var name="fhr"> {{ restart_interval }} </var>
 
     <task name="&SAVE_RESTART_TN;_prod{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc" maxtries="{{ maxtries_save_restart }}">
 
@@ -3100,7 +3100,7 @@ MODULES_RUN_TASK_FP script.
 
   <metatask name="&SAVE_RESTART_TN;_prod_long">
 
-    <var name="fhr"> {% for i in restart_interval_long %}{{ i }} {% endfor %} </var>
+    <var name="fhr"> {{ restart_interval_long }} </var>
 
     <task name="&SAVE_RESTART_TN;_prod_long{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc_long" maxtries="{{ maxtries_save_restart }}">
 
