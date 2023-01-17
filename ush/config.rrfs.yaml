@@ -53,9 +53,7 @@ workflow_switches:
   DO_SOIL_ADJUST: true
   DO_RADDA: false
   DO_BUFRSND: false
-  # for rrfs_dev
   DO_RRFS_DEV: true
-  DO_RETRO: true
   DO_POST_SPINUP: true
   DO_POST_PROD: true
 cycledefs:

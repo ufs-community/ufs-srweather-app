@@ -191,11 +191,11 @@ cd_vrfy ${DATA}
 if [ ${BKTYPE} -eq 1 ] ; then  # cold start, use prepare cold strat initial files from ics
     bkpath=${LBCS_ROOT}/$YYYYMMDD$HH${SLASH_ENSMEM_SUBDIR}/ics
     if [ -r "${bkpath}/gfs_data.tile7.halo0.nc" ]; then
-      cp_vrfy ${bkpath}/gfs_bndy.tile7.000.nc gfs_bndy.tile7.000.nc        
+      cp_vrfy ${bkpath}/gfs_bndy.tile7.f000.nc gfs_bndy.tile7.000.nc        
       cp_vrfy ${bkpath}/gfs_ctrl.nc gfs_ctrl.nc        
       cp_vrfy ${bkpath}/gfs_data.tile7.halo0.nc gfs_data.tile7.halo0.nc        
       cp_vrfy ${bkpath}/sfc_data.tile7.halo0.nc sfc_data.tile7.halo0.nc        
-      ln_vrfy -s ${bkpath}/gfs_bndy.tile7.000.nc bk_gfs_bndy.tile7.000.nc
+      ln_vrfy -s ${bkpath}/gfs_bndy.tile7.f000.nc bk_gfs_bndy.tile7.000.nc
       ln_vrfy -s ${bkpath}/gfs_data.tile7.halo0.nc bk_gfs_data.tile7.halo0.nc
       ln_vrfy -s ${bkpath}/sfc_data.tile7.halo0.nc bk_sfc_data.tile7.halo0.nc
       print_info_msg "$VERBOSE" "cold start from $bkpath"

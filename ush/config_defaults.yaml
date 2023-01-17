@@ -1437,11 +1437,11 @@ nco:
   #
   # New additions from RRFS_dev1
   #
-  NWGES: '{{ COMROOT }}/nwges'
+  NWGES: '{{ OPSROOT }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
-  RRFSE_NWGES: '{{ COMROOT }}/nwges'
+  RRFSE_NWGES: '{{ OPSROOT }}/nwges'
   RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
-  ENSCTRL_NWGES: '{{ COMROOT }}/nwges'
+  ENSCTRL_NWGES: '{{ OPSROOT }}/nwges'
   ENSCTRL_NWGES_BASEDIR: '{{ ENSCTRL_NWGES}}'
 
   ENSCTRL_COMIN: '{{ COMIN_BASEDIR}}'

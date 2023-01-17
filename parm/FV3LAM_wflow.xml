@@ -149,14 +149,13 @@ Directories and files.
 <!ENTITY ENSCTRL_COMIN_BASEDIR    "{{ ensctrl_comin_basedir }}">
 <!ENTITY ENSCTRL_NWGES_BASEDIR    "{{ ensctrl_nwges_basedir }}">
 <!ENTITY ENSCTRL_COMOUT_BASEDIR   "{{ ensctrl_comout_basedir }}">
-<!ENTITY ENSCTRL_COMOUT_DIR       "{{ ensctrl_comout_dir }}">
+<!ENTITY ENSCTRL_COMOUT_DIR       "{{ ensctrl_comout_basedir }}/{{ run }}.<cyclestr>@Y@m@d@H</cyclestr>">
 <!ENTITY RRFSE_FG_ROOT            "{{ rrfse_nwges_basedir }}">
 {%- if is_rtma %}
 <!ENTITY FG_ROOT                  "{{ fg_rootdir }}">
 {%- else %}
 <!ENTITY FG_ROOT                  "{{ nwges_basedir }}">
 {%- endif %}
-
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
@@ -956,9 +955,10 @@ MODULES_RUN_TASK_FP script.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+    <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -1012,6 +1012,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
+    <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>bcgrp</name><value>#bcgrp#</value></envar>
     <envar><name>bcgrpnum</name><value>{{ boundary_proc_group_num }}</value></envar>
 
