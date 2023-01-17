@@ -14,5 +14,6 @@ ush/__pycache__/
 ush/config.yaml
 ush/python_utils/__pycache__/
 ush/*.swp
+.github/CONDEOWNERS
 
 *.swp
