@@ -20,7 +20,7 @@ platform:
   FIXgsi: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/gsi"
 workflow:
   TAG: RRFS_CONUS_3km_
-  USE_CRON_TO_RELAUNCH: true
+  USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: RRFS_CONUS_3km
   CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: RRFS_CONUS_3km

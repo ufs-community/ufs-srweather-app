@@ -496,6 +496,16 @@ located in the following directory:
   fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
   mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+  ln_vrfy ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc \
+          ${INPUT_DATA_NWGES}/gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+
 done
 #
 #-----------------------------------------------------------------------
