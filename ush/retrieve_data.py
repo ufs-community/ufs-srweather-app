@@ -999,6 +999,7 @@ def parse_args(argv):
             "NAM",
             "RAP",
             "RAPx",
+            "RAP_obs",
             "HRRRx",
             "GSI-FIX",
         ),
