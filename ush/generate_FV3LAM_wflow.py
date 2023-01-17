@@ -40,19 +40,20 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
+def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
     Args:
-        ushdir  (str): The full path of the ush/ directory where this script is located
-        logfile (str): The name of the file where logging is written
+        ushdir  (str) : The full path of the ush/ directory where this script is located
+        logfile (str) : The name of the file where logging is written
+        debug   (bool): Enable extra output for debugging
     Returns:
         None
     """
 
     # Set up logging to write to screen and logfile
-    setup_logging(logfile)
+    setup_logging(logfile, debug)
 
     # Check python version and presence of some non-standard packages
     check_python_version()
@@ -67,7 +68,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir)
+    expt_config = setup(ushdir,debug=debug)
 
     verbose = expt_config["workflow"]["VERBOSE"]
     #
@@ -745,10 +746,12 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     mv_vrfy(logfile, EXPTDIR)
 
 
-def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
+def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
+    
+    If debug = True, print all messages to both screen and log file.
     """
     logging.basicConfig(
         level=logging.DEBUG,
@@ -757,8 +760,17 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
         filemode="w",
     )
     logging.debug(f"Finished setting up debug file logging in {logfile}")
+
+    # If there are already multiple handlers, that means generate_FV3LAM_workflow was called from another function.
+    # In that case, do not change the console (print-to-screen) logging.
+    if len(logging.getLogger().handlers) > 1:
+        return
+
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    if debug:
+        console.setLevel(logging.DEBUG)
+    else:
+        console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
 

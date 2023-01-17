@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 sys.path.append("../../ush")
 
+from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
     print_err_msg_exit,
     cp_vrfy,
@@ -91,15 +92,15 @@ def run_we2e_tests(HOMEdir, args) -> None:
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
-        test_cfg['user'].update({"machine": args.machine})
-        test_cfg['user'].update({"account": args.account})
+        test_cfg['user'].update({"MACHINE": args.machine})
+        test_cfg['user'].update({"ACCOUNT": args.account})
         if args.run_envir is not None:
             test_cfg['user'].update({"RUN_ENVIR": args.run_envir})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
         test_cfg['platform'].update({"BUILD_MOD_FN": args.modulefile})
-        test_cfg['workflow'].update({"compiler": args.compiler})
+        test_cfg['workflow'].update({"COMPILER": args.compiler})
         if args.expt_basedir:
             test_cfg['workflow'].update({"EXPT_BASEDIR": args.expt_basedir})
         test_cfg['workflow'].update({"EXPT_SUBDIR": test_name})
@@ -116,10 +117,14 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
-#        if 'task_get_extrn_ics' in test_cfg:
-#            check_task_get_extrn_ics(test_cfg,machine_defaults)
-#        if 'task_get_extrn_lbcs' in test_cfg:
-#            check_task_get_extrn_lbcs(test_cfg,machine_defaults)
+        if 'task_get_extrn_ics' in test_cfg:
+            logging.debug(test_cfg['task_get_extrn_ics'])
+            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_ics(test_cfg,machine_defaults)
+            logging.debug(test_cfg['task_get_extrn_ics'])
+        if 'task_get_extrn_lbcs' in test_cfg:
+            logging.debug(test_cfg['task_get_extrn_lbcs'])
+            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults)
+            logging.debug(test_cfg['task_get_extrn_lbcs'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
@@ -127,57 +132,113 @@ def run_we2e_tests(HOMEdir, args) -> None:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.debug(f"Calling workflow generation function for test {test_name}\n")
+        generate_FV3LAM_wflow(USHdir, debug=args.debug)
 
     logging.info("calling script that monitors rocoto jobs, prints summary")
 
-def check_task_get_extrn_ics(cfg: dict, mach: dict) -> None:
+
+
+def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
     """
-    Function for checking and overwriting various settings in task_get_extrn_ics section of test config yaml
+    Function for checking and updating various settings in task_get_extrn_ics section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
     Returns:
-        None
+        cfg_ics : Updated dictionary for task_get_extrn_ics section of test config
     """
 
-    # If EXTRN_MDL_SYSBASEDIR_ICS not specified, do nothing and return
-    if 'EXTRN_MDL_SYSBASEDIR_ICS' not in cfg['task_get_extrn_ics']:
-        return
+    #Make our lives easier by shortening some dictionary calls 
+    cfg_ics = cfg['task_get_extrn_ics']
+
+    # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
+    if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_ics:
+        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified in task_get_extrn_ics section of config')
+        return cfg_ics
+    elif not cfg_ics['USE_USER_STAGED_EXTRN_FILES']:
+        logging.debug(f'USE_USER_STAGED_EXTRN_FILES is false for task_get_extrn_ics section of config')
+        return cfg_ics
 
     # If EXTRN_MDL_SYSBASEDIR_ICS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg['task_get_extrn_ics']['EXTRN_MDL_SYSBASEDIR_ICS'] == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
-            cfg['task_get_extrn_ics']['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
-        else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
+    if 'EXTRN_MDL_SYSBASEDIR_ICS' in cfg_ics:
+        if cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] == "set_to_non_default_location_in_testing_script":
+            if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
+                if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
+                    raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
+                cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
+            else:
+                raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
+            return cfg_ics
 
-def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> None:
+    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
+    cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
+    if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
+        raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
+                       "has not been specified in the machine file for this platform")
+    elif not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
+        raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
+                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
+                                does not exist."""))
+
+    # Different input data types have different directory structures, so set the data directory accordingly
+    if cfg_ics['EXTRN_MDL_NAME_ICS'] == 'FV3GFS':
+        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                    f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/${{yyyymmddhh}}"
+    else:
+        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/${{yyyymmddhh}}"
+
+    return cfg_ics
+
+def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
     """
-    Function for checking and overwriting various settings in task_get_extrn_lbcs section of test config yaml
+    Function for checking and updating various settings in task_get_extrn_lbcs section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
     Returns:
-        None
+        cfg_lbcs : Updated dictionary for task_get_extrn_lbcs section of test config
     """
 
-    # If EXTRN_MDL_SYSBASEDIR_LBCS not specified, do nothing and return
-    if 'EXTRN_MDL_SYSBASEDIR_LBCS' not in cfg['task_get_extrn_lbcs']:
-        return
+    #Make our lives easier by shortening some dictionary calls 
+    cfg_lbcs = cfg['task_get_extrn_lbcs']
+
+    # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
+    if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_lbcs:
+        return cfg_lbcs
+    elif not cfg_lbcs['USE_USER_STAGED_EXTRN_FILES']:
+        return cfg_lbcs
 
     # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg['task_get_extrn_lbcs']['EXTRN_MDL_SYSBASEDIR_LBCS'] == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
-            cfg['task_get_extrn_lbcs']['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
-        else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
+    if 'EXTRN_MDL_SYSBASEDIR_LBCS' in cfg_lbcs:
+        if cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] == "set_to_non_default_location_in_testing_script":
+            if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
+                if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
+                    raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
+                cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
+            else:
+                raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
+            return cfg_lbcs
 
+    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
+    cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
+    if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
+        raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
+                       "has not been specified in the machine file for this platform")
+    elif not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
+        raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
+                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
+                                does not exist."""))
+
+    # Different input data types have different directory structures, so set the data directory accordingly
+    if cfg_lbcs['EXTRN_MDL_NAME_LBCS'] == 'FV3GFS':
+        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
+    else:
+        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/${{yyyymmddhh}}"
+
+    return cfg_lbcs
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
@@ -198,6 +259,7 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
        console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
+
 
 
 if __name__ == "__main__":
