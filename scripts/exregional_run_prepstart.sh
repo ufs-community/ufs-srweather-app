@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prepstart" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_prepstart|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
