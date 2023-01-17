@@ -133,11 +133,7 @@ else
   htar -tvf ${gfs_sfc_tar_fp}
   PREP_STEP
   htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
-htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
-file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
-details:
-  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\""
+    print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
   POST_STEP
 
   # Retireve data from B file when FCST_LEN_HRS>=40
@@ -153,11 +149,7 @@ details:
     htar -tvf ${gfs_sfc_tar_fp}
     PREP_STEP
     htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
-htar file reading operation (\"htar -xvf ...\") failed.  Check the log 
-file htar_log_fn in the staging directory (gfs_sfc_staging_dir) for 
-details:
-  gfs_sfc_staging_dir = \"${GFS_SFC_STAGING_DIR}\""
+    print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
     POST_STEP
   fi
   # Move retrieved files to staging directory
