@@ -138,7 +138,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
     for test in tests_to_run:
         #Starting with test yaml template, fill in user-specified and machine- and 
         # test-specific options, then write resulting complete config.yaml
-        test_name = os.path.basename(test)
+        test_name = os.path.basename(test).split('.')[1]
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
