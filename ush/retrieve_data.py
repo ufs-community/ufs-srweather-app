@@ -37,7 +37,7 @@ import time
 from copy import deepcopy
 
 import yaml
-
+import re
 
 def clean_up_output_dir(expected_subdir, local_archive, output_path, source_paths):
 
@@ -226,14 +226,13 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     return template_str.format(**format_values)
 
 
-def create_target_path(target_path, cla, mem):
+def create_target_path(target_path):
 
     """
     Append target path and create directory for ensemble members
     """
     if not os.path.exists(target_path):
         os.makedirs(target_path)
-    setattr(cla, 'output_path_{0}'.format(mem), target_path)
     return target_path
 
 
@@ -346,7 +345,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     members = kwargs.get("members", "")
     members = members if isinstance(members, list) else [members]
-
+    
     check_all = kwargs.get("check_all", False)
 
     logging.info(f"Getting files named like {file_templates}")
@@ -364,12 +363,9 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     locs_files = pair_locs_with_files(input_locs, file_templates, check_all)
     for mem in members:
-        if isinstance(mem, int):
-            output_path = f"{cla.output_path}/mem{mem:03d}"
-        else:
-            output_path = cla.output_path
-        target_path = fill_template(output_path, cla.cycle_date, mem=mem)
-        target_path = create_target_path(target_path, cla, mem)
+        target_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
+        target_path = create_target_path(target_path)
+
         logging.info(f"Retrieved files will be placed here: \n {target_path}")
         os.chdir(target_path)
 
@@ -523,11 +519,8 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                 cla.cycle_date,
                 mem=mem,
             )
-            if mem != -1:
-                output_path = f"{cla.output_path}/mem{mem:03d}"
-            else:
-                output_path = cla.output_path
-            output_path = fill_template(output_path, cla.cycle_date, mem=mem)
+            
+            output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
             logging.info(f"Will place files in {os.path.abspath(output_path)}")
             logging.debug(f"CWD: {os.getcwd()}")
 
@@ -537,7 +530,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cla.cycle_date,
                     mem=mem,
                 )
-                output_path = create_target_path(output_path, cla, mem)
+                output_path = create_target_path(output_path)
                 logging.info(f"Will place files in {os.path.abspath(output_path)}")
 
             source_paths = []
@@ -704,43 +697,23 @@ def write_summary_file(cla, data_store, file_templates):
     the data was retrieved, write a bash summary file that is needed by
     the workflow elements downstream."""
 
-    files = []
-    for tmpl in file_templates:
-        if isinstance(tmpl, list):
+    members =  cla.members if isinstance(cla.members, list) else [-1]
+    for mem in members:
+        files = []
+        for tmpl in file_templates:
+            tmpl = tmpl if isinstance(tmpl, list) else [tmpl]
             for t in tmpl:
                 files.extend(
-                    [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=cla.members[0]) for fh in cla.fcst_hrs]
+                    [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=mem) for fh in cla.fcst_hrs]
                 )
-        else:
-            files.extend(
-                [fill_template(tmpl, cla.cycle_date, fcst_hr=fh) for fh in cla.fcst_hrs]
-            )
-    
-    if isinstance(cla.members, list):
-        for m in cla.members:
-            output_path_member = getattr(cla, 'output_path_{0}'.format(str(m)))
-            summary_fp = os.path.join(output_path_member, cla.summary_file)
-            logging.info(f"Writing a summary file to {summary_fp}")
-            file_contents = dedent(
-                f"""
-                DATA_SRC={data_store}
-                EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
-                EXTRN_MDL_STAGING_DIR={output_path_member}
-                EXTRN_MDL_FNS=( {' '.join(files)} )
-                EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
-                """
-            )
-            logging.info(f"Contents: {file_contents}")
-            with open(summary_fp, "w") as summary:
-                summary.write(file_contents)
-    else:
-        summary_fp = os.path.join(cla.output_path, cla.summary_file)
+        output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
+        summary_fp = os.path.join(output_path, cla.summary_file)
         logging.info(f"Writing a summary file to {summary_fp}")
         file_contents = dedent(
             f"""
             DATA_SRC={data_store}
             EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
-            EXTRN_MDL_STAGING_DIR={cla.output_path}
+            EXTRN_MDL_STAGING_DIR={output_path}
             EXTRN_MDL_FNS=( {' '.join(files)} )
             EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
             """
