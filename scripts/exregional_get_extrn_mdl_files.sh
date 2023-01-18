@@ -93,6 +93,10 @@ hh=${yyyymmddhh:8:2}
 # Set to use the pre-defined data paths in the machine file (ush/machine/).
 PDYext=${yyyymmdd}
 cycext=${hh}
+
+# Set an empty members directory
+mem_dir=""
+
 #
 #-----------------------------------------------------------------------
 #
@@ -137,7 +141,8 @@ if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   --symlink"
 fi
 
-if [ "${EXTRN_MDL_NAME}" == "GEFS" ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+if [ $DO_ENSEMBLE == "TRUE" ] ; then
+  mem_dir="/mem{mem:03d}"
   member_list=(1 ${NUM_ENS_MEMBERS})
   additional_flags="$additional_flags \
   --members ${member_list[@]}"
@@ -164,7 +169,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
   --ics_or_lbcs ${ICS_OR_LBCS} \
-  --output_path ${EXTRN_MDL_STAGING_DIR} \
+  --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
@@ -181,40 +186,77 @@ ${cmd}
 #
 #-----------------------------------------------------------------------
 #
+function filename_mod() {
+    # Function that modifies the filenames
+    fn_mod=$(echo "$1" |
+             sed "s|{mem:02d}|$num|g" |
+             sed "s|t{hh}|t${hh}|g" |
+             sed "s|f{fcst_hr:03d}|f`printf %03d $fcst_hr`|g" |
+             sed "s|f{fcst_hr:02d}|f`printf %02d $fcst_hr`|g" )
+    echo $fn_mod
+}
+
 if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
+    # Use grep command to fetch the variations of GEFS filenames from data_locations.yml
+    filenames_lines=(8 9 10)
+    filenames=(2 4)
+    fn_list=()
+    for line in "${filenames_lines[@]}"; do
+        for name in "${filenames[@]}"; do
+            filename=$( grep -A$line 'GEFS' ${PARMdir}/data_locations.yml |
+                        tail -n1 |
+                        awk -F "'" "{ print $ $name }" )
+            fn_list+=( "$filename" )
+        done
+    done
+
+    # This block of code sets the forecast hour range based on ICS/LBCS
+    if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
+        fcst_hrs_tmp=( $fcst_hrs )
+        all_fcst_hrs_array=( $(seq ${fcst_hrs_tmp[0]} ${fcst_hrs_tmp[2]} ${fcst_hrs_tmp[1]}) )
+    else
+        all_fcst_hrs_array=( ${fcst_hrs} )
+    fi
+
+    # Loop through ensemble member numbers and forecast hours
     for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
-        if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-            fcst_hrs_tmp=( $fcst_hrs )
-            fcst_hrs_ary=( $(seq ${fcst_hrs_tmp[0]} ${fcst_hrs_tmp[2]} ${fcst_hrs_tmp[1]}) )
-        else
-            fcst_hrs_ary=( ${fcst_hrs} )
-        fi
-            for fcst_hr in "${fcst_hrs_ary[@]}"; do
-                fn_list_1=( "gep$num.t${hh}z.pgrb2a.0p50.f`printf %03d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2b.0p50.f`printf %03d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
-                fn_list_2=( "gep$num.t${hh}z.pgrb2af`printf %02d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2bf`printf %02d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
-                fn_list_3=( "gep$num.t${hh}z.pgrb2af`printf %03d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2bf`printf %03d $fcst_hr`" \
-                        "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
-                fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
-
-                base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
-
-                for fn in "${fn_lists[@]}"; do
-                    fn_str="$fn[@]"
-                    fn_ary=( "${!fn_str}" )
-                    if [ -f "$base_path/${fn_ary[0]}" ] && [ -f "$base_path/${fn_ary[1]}" ]; then
-                        cat $base_path/${fn_ary[0]} $base_path/${fn_ary[1]} > $base_path/${fn_ary[2]}
-                        merged_fn+=( "${fn_ary[2]}" )
-                    fi
-                done
+        for fcst_hr in "${all_fcst_hrs_array[@]}"; do
+            # Loop through GEFS filenames and call the filename_mod to get properly formatted names
+            # Then store results as a list
+            for fn in ${fn_list[@]}; do
+                mod_fn=$(filename_mod $fn)
+                mod_fn_list+=( $mod_fn )
             done
-            merged_fn_str="( ${merged_fn[@]} )"
-            sed -i "s|EXTRN_MDL_FNS=.*|EXTRN_MDL_FNS=${merged_fn_str}|g" $base_path/${EXTRN_DEFNS}
-            merged_fn=()
+            # Define filename lists used to check if files exist
+            fn_list_1=( ${mod_fn_list[0]} ${mod_fn_list[1]}
+                       "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
+            fn_list_2=( ${mod_fn_list[2]} ${mod_fn_list[3]}
+                       "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
+            fn_list_3=( ${mod_fn_list[4]} ${mod_fn_list[5]}
+                       "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
+            #echo ${fn_list_1[@]}
+            fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
+
+            base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
+            printf "Looking for files in $base_path\n"
+
+            # Look for filenames, if they exist, merge files together
+            for fn in "${fn_lists[@]}"; do
+                fn_str="$fn[@]"
+                fn_array=( "${!fn_str}" )
+                if [ -f "$base_path/${fn_array[0]}" ] && [ -f "$base_path/${fn_array[1]}" ]; then
+                    printf "Found files: ${fn_array[0]} and ${fn_array[1]} \nCreating new file: ${fn_array[2]}\n"
+                    cat $base_path/${fn_array[0]} $base_path/${fn_array[1]} > $base_path/${fn_array[2]}
+                    merged_fn+=( "${fn_array[2]}" )
+                fi
+            done
+        done
+        # If merge files exist, update the extrn_defn file
+        merged_fn_str="( ${merged_fn[@]} )"
+        printf "Merged files are: ${merged_fn_str} \nUpdating ${EXTRN_DEFNS}\n\n"
+        sed -i "s|EXTRN_MDL_FNS=.*|EXTRN_MDL_FNS=${merged_fn_str}|g" $base_path/${EXTRN_DEFNS}
+        merged_fn=()
+        mod_fn_list=()
     done
 fi
 #
