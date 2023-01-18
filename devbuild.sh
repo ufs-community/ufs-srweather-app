@@ -15,8 +15,8 @@ OPTIONS
       compiler to use; default depends on platform
       (e.g. intel | gnu | cray | gccgfortran)
   -a, --app=APPLICATION
-      weather model application to build
-      (e.g. ATM | ATMW | S2S | S2SW)
+      weather model application to build; for example, ATMAQ for Online-CMAQ
+      (e.g. ATM | ATMAQ | ATMW | S2S | S2SW)
   --ccpp="CCPP_SUITE1,CCPP_SUITE2..."
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
   --enable-options="OPTION1,OPTION2,..."
@@ -87,6 +87,8 @@ Settings:
   BUILD_UPP=${BUILD_UPP}
   BUILD_GSI=${BUILD_GSI}
   BUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}
+  BUILD_NEXUS=${BUILD_NEXUS}
+  BUILD_AQM_UTILS=${BUILD_AQM_UTILS}
 
 EOF_SETTINGS
 }
@@ -101,6 +103,7 @@ usage_error () {
 # default settings
 LCL_PID=$$
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+BIN_DIR="${SRW_DIR}/bin"
 MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${SRW_DIR}/build"
 INSTALL_DIR=${SRW_DIR}
@@ -123,6 +126,8 @@ BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
 BUILD_GSI="off"
 BUILD_RRFS_UTILS="off"
+BUILD_NEXUS="off"
+BUILD_AQM_UTILS="off"
 
 # Make options
 CLEAN=false
@@ -182,6 +187,8 @@ while :; do
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
     gsi) DEFAULT_BUILD=false; BUILD_GSI="on" ;;
     rrfs_utils) DEFAULT_BUILD=false; BUILD_RRFS_UTILS="on" ;;
+    nexus) DEFAULT_BUILD=false; BUILD_NEXUS="on" ;;
+    aqm_utils) DEFAULT_BUILD=false; BUILD_AQM_UTILS="on" ;;
     # unknown
     -?*|?*) usage_error "Unknown option $1" ;;
     *) break
@@ -200,6 +207,7 @@ fi
 APPLICATION="${APPLICATION^^}"
 PLATFORM="${PLATFORM,,}"
 COMPILER="${COMPILER,,}"
+EXTERNALS="${EXTERNALS^^}"
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
@@ -235,6 +243,42 @@ printf "COMPILER=${COMPILER}\n" >&2
 # print settings
 if [ "${VERBOSE}" = true ] ; then
   settings
+fi
+
+# Check out external components ===============================================
+if [ "${APPLICATION}" = "ATMAQ" ]; then
+  if [ -d "${SRW_DIR}/sorc/arl_nexus" ]; then
+    printf "!!! Extra external components already exist. This step is skipped.\n"
+  else
+    if [ -d "${SRW_DIR}/sorc/gsi" ]; then
+      printf "!!! FV3-LAM components exist. The existing components are removed.\n"
+      rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
+      rm -rf "${SRW_DIR}/sorc/UFS_UTILS"
+      rm -rf "${SRW_DIR}/sorc/UPP"  
+      rm -rf "${SRW_DIR}/sorc/gsi"
+      rm -rf "${SRW_DIR}/sorc/rrfs_utl"
+    fi 
+    printf "... Checking out external components for Online-CMAQ ...\n"
+    ./manage_externals/checkout_externals -e Externals_AQM.cfg
+  fi
+
+  if [ "${DEFAULT_BUILD}" = true ]; then
+    BUILD_NEXUS="on"
+    BUILD_AQM_UTILS="on"
+    BUILD_UPP="off"
+  fi
+  if [ "${PLATFORM}" = "wcoss2" ]; then
+    BUILD_POST_STAT="on"
+  else
+    BUILD_POST_STAT="off"
+  fi
+else
+  if [ -d "${SRW_DIR}/sorc/ufs-weather-model" ]; then
+    printf "!!! External components already exist. This step is skipped.\n"
+  else  
+    printf "... Checking out external components for FV3-LAM ...\n"  
+    ./manage_externals/checkout_externals
+  fi
 fi
 
 # source version file only if it is specified in versions directory
@@ -304,7 +348,8 @@ CMAKE_SETTINGS="\
  -DBUILD_UFS_UTILS=${BUILD_UFS_UTILS}\
  -DBUILD_UPP=${BUILD_UPP}\
  -DBUILD_GSI=${BUILD_GSI}\
- -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}"
+ -DBUILD_NEXUS=${BUILD_NEXUS}\
+ -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}"
 
 if [ ! -z "${APPLICATION}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DAPP=${APPLICATION}"
@@ -317,6 +362,29 @@ if [ ! -z "${ENABLE_OPTIONS}" ]; then
 fi
 if [ ! -z "${DISABLE_OPTIONS}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DDISABLE_OPTIONS=${DISABLE_OPTIONS}"
+fi
+if [ "${APPLICATION}" = "ATMAQ" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCPL_AQM=ON -DBUILD_POST_STAT=${BUILD_POST_STAT}"
+
+  # Copy module files to designated directory
+  EXTRN_BUILD_MOD_DIR="${SRW_DIR}/modulefiles/extrn_comp_build"
+  mkdir -p ${EXTRN_BUILD_MOD_DIR}
+  if [ "${BUILD_UFS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-weather-model.lua"
+    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_common.lua" ${EXTRN_BUILD_MOD_DIR}
+  fi
+  if [ "${BUILD_UFS_UTILS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/UFS_UTILS/modulefiles/build.${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-utils.lua"
+  fi
+  if [ "${BUILD_UPP}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/UPP/modulefiles/${PLATFORM}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_upp.lua" 
+  fi
+  if [ "${BUILD_NEXUS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/AQM-utils/parm/nexus_modulefiles/${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_nexus.lua"
+  fi
+  if [ "${BUILD_AQM_UTILS}" = "on" ]; then
+    cp "${SRW_DIR}/sorc/AQM-utils/modulefiles/build_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_aqm-utils.lua"
+  fi
 fi
 
 # make settings
@@ -391,6 +459,16 @@ if [ $USE_SUB_MODULES = true ]; then
     fi
     if [ $BUILD_RRFS_UTILS = "on" ]; then
         printf "... Loading RRFS_UTILS modules ...\n"
+        load_module ""
+    fi
+    if [ $BUILD_NEXUS = "on" ]; then
+        printf "... Loading NEXUS modules ...\n"
+        module use ${SRW_DIR}/sorc/arl_nexus/modulefiles
+        load_module ""
+    fi
+    if [ $BUILD_AQM_UTILS = "on" ]; then
+        printf "... Loading AQM-utils modules ...\n"
+        module use ${SRW_DIR}/sorc/AQM-utils/modulefiles
         load_module ""
     fi
 else
