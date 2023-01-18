@@ -70,8 +70,12 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   anl_or_fcst="fcst"
-  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
-  last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
+  end_hr=$FCST_LEN_HRS
+  if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
+     end_hr=$BOUNDARY_LEN_HRS
+  fi
+  first_time=$((TIME_OFFSET_HRS))
+  last_time=$((TIME_OFFSET_HRS + end_hr))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
   if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then

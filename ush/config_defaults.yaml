@@ -2400,7 +2400,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
+  LBC_SPEC_FCST_HRS: '( {% for h in range(0, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + [workflow.FCST_LEN_HRS, workflow.BOUNDARY_LEN_HRS]|max, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
