@@ -117,7 +117,9 @@ PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
   python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
 
-  # bail if error 
+  # Link the file to INPUT
+  mv_vrfy ${INPUT_DATA}/INPUT/PT.nc ${DATA}/pt-${yyyymmddhh}.nc 
+
   if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
     print_err_msg_exit "\
 The point source file \"pt-${yyyymmddhh}.nc\" was not generated."
@@ -125,51 +127,6 @@ The point source file \"pt-${yyyymmddhh}.nc\" was not generated."
     print_info_msg "The intermediate file \"pt-${yyyymmddhh}.nc\" exists."
   fi
 fi
-
-#
-#----------------------------------------------------------------------
-#
-# Export input parameters of PT_SOURCE executable
-#
-#-----------------------------------------------------------------------
-#
-export NX=${ESGgrid_NX}
-export NY=${ESGgrid_NY}
-export LAYOUT_X
-export LAYOUT_Y
-export TOPO="${NEXUS_FIX_DIR}/${NEXUS_GRID_FN}"
-export PT_IN="${DATA}/pt-${yyyymmddhh}.nc"
-
-#
-#----------------------------------------------------------------------
-#
-# Temporary output directory for PT_SOURCE executable
-#
-#-----------------------------------------------------------------------
-#
-mkdir_vrfy -p "${DATA}/PT"
-
-#
-#----------------------------------------------------------------------
-#
-# Execute PT_SOURCE
-#
-#-----------------------------------------------------------------------
-#
-PREP_STEP
-eval ${RUN_CMD_AQM} ${EXECdir}/decomp-ptemis-mpi ${REDIRECT_OUT_ERR} || \
-print_err_msg_exit "\
-Call to execute PT_SOURCE for Online-CMAQ failed."
-POST_STEP
-
-#
-#-----------------------------------------------------------------------
-#
-# Move output to INPUT_DATA directory.
-#
-#-----------------------------------------------------------------------
-#
-mv_vrfy "${DATA}/PT" ${INPUT_DATA}
 
 #
 #-----------------------------------------------------------------------
