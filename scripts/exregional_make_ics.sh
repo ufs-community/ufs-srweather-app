@@ -651,7 +651,7 @@ for i in ${INPUT_DATA}/*.nc; do
     prefix="${NET}.${cycle}${dot_ensmem}."
     file=${file#"$prefix"}
     file=${file/f000/000}
-    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file#"$prefix"}
+    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file}
 done
 #
 #-----------------------------------------------------------------------

@@ -18,6 +18,7 @@ platform:
   NCL_REGION: "conus"
   DOMAIN_PREGEN_BASEDIR: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/lam"
   FIXgsi: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/gsi"
+  FIXcrtm: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/crtm/CRTM_v2.3.0"
 workflow:
   TAG: RRFS_CONUS_3km_
   USE_CRON_TO_RELAUNCH: false
