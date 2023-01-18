@@ -118,7 +118,7 @@ if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
   python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
 
   # Link the file to INPUT
-  ln_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/INPUT/PT.nc
+  mv_vrfy ${INPUT_DATA}/INPUT/PT.nc ${DATA}/pt-${yyyymmddhh}.nc 
 
   if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
     print_err_msg_exit "\
