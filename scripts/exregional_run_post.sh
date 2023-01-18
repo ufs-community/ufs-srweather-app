@@ -167,7 +167,7 @@ fi
 # Set the names of the forecast model's write-component output files.
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
+    DATAFCST=$DATAROOT/${TAG}run_fcst${dot_ensmem/./_}.${share_pid}
 else
     DATAFCST=$DATA
 fi

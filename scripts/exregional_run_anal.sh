@@ -101,18 +101,23 @@ AIR_REJECT_FN=$(date +%Y%m%d -d "${START_DATE} -1 day")_rejects.txt
 cd_vrfy ${DATA}
 
 fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
-if [ ${CYCLE_TYPE} == "spinup" ]; then
-  if [ ${MEM_TYPE} == "MEAN" ]; then
-    bkpath=${COMIN}/ensmean/fcst_fv3lam_spinup/INPUT
-  else
-    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup/INPUT
-  fi
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    bkpath=$DATAROOT/${TAG}prep_cyc_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
 else
-  if [ ${MEM_TYPE} == "MEAN" ]; then
-    bkpath=${COMIN}/ensmean/fcst_fv3lam/INPUT
-  else
-    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam/INPUT
-  fi
+    if [ ${CYCLE_TYPE} == "spinup" ]; then
+      if [ ${MEM_TYPE} == "MEAN" ]; then
+        bkpath=${COMIN}/ensmean/fcst_fv3lam_spinup/INPUT
+      else
+        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup/INPUT
+      fi
+    else
+      if [ ${MEM_TYPE} == "MEAN" ]; then
+        bkpath=${COMIN}/ensmean/fcst_fv3lam/INPUT
+      else
+        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam/INPUT
+      fi
+    fi
 fi
 # decide background type
 if [ -r "${bkpath}/coupler.res" ]; then
@@ -623,18 +628,17 @@ fi
 # CRTM Spectral and Transmittance coefficients
 #
 #-----------------------------------------------------------------------
-CRTMFIX=${FIX_CRTM}
-emiscoef_IRwater=${CRTMFIX}/Nalli.IRwater.EmisCoeff.bin
-emiscoef_IRice=${CRTMFIX}/NPOESS.IRice.EmisCoeff.bin
-emiscoef_IRland=${CRTMFIX}/NPOESS.IRland.EmisCoeff.bin
-emiscoef_IRsnow=${CRTMFIX}/NPOESS.IRsnow.EmisCoeff.bin
-emiscoef_VISice=${CRTMFIX}/NPOESS.VISice.EmisCoeff.bin
-emiscoef_VISland=${CRTMFIX}/NPOESS.VISland.EmisCoeff.bin
-emiscoef_VISsnow=${CRTMFIX}/NPOESS.VISsnow.EmisCoeff.bin
-emiscoef_VISwater=${CRTMFIX}/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=${CRTMFIX}/FASTEM6.MWwater.EmisCoeff.bin
-aercoef=${CRTMFIX}/AerosolCoeff.bin
-cldcoef=${CRTMFIX}/CloudCoeff.bin
+emiscoef_IRwater=${FIXcrtm}/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=${FIXcrtm}/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=${FIXcrtm}/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=${FIXcrtm}/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=${FIXcrtm}/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=${FIXcrtm}/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=${FIXcrtm}/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=${FIXcrtm}/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=${FIXcrtm}/FASTEM6.MWwater.EmisCoeff.bin
+aercoef=${FIXcrtm}/AerosolCoeff.bin
+cldcoef=${FIXcrtm}/CloudCoeff.bin
 
 ln -s ${emiscoef_IRwater} Nalli.IRwater.EmisCoeff.bin
 ln -s $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin
@@ -651,8 +655,8 @@ ln -s $cldcoef  ./CloudCoeff.bin
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in $(awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq) ;do
-   ln -s ${CRTMFIX}/${file}.SpcCoeff.bin ./
-   ln -s ${CRTMFIX}/${file}.TauCoeff.bin ./
+   ln -s ${FIXcrtm}/${file}.SpcCoeff.bin ./
+   ln -s ${FIXcrtm}/${file}.TauCoeff.bin ./
 done
 
 #-----------------------------------------------------------------------
@@ -779,6 +783,7 @@ if [ ! -f "${exec_fp}" ]; then
 The executable specified in exec_fp does not exist:
   exec_fp = \"${exec_fp}\"
 Build lightning process and rerun."
+fi
 #
 #-----------------------------------------------------------------------
 #
