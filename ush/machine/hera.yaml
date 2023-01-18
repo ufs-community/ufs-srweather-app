@@ -53,4 +53,5 @@ platform:
   IMSSNOW_ROOT: "/scratch2/BMC/zrtrr/rli/data/snow/ims96/grib2"
   RAPHRR_SOIL_ROOT: ""
   FIRE_RAVE_DIR: ""
-
+  AIRCRAFT_REJECT: "/scratch2/BMC/zrtrr/rli/data/amdar_reject_lists"
+  SFCOBS_USELIST: "/scratch2/BMC/zrtrr/rli/data/mesonet_uselists"
