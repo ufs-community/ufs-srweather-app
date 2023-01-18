@@ -182,7 +182,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.debug(f"Calling workflow generation function for test {test_name}\n")
-        generate_FV3LAM_wflow(USHdir, debug=args.debug)
+        generate_FV3LAM_wflow(USHdir,logfile=f"{USHdir}/log.generate_FV3LAM_wflow",debug=args.debug)
 
     logging.info("calling script that monitors rocoto jobs, prints summary")
 
@@ -321,12 +321,15 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
     """
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(name)-16s %(levelname)-8s %(message)s",
-        filename=logfile,
-        filemode="w",
-    )
+    logging.getLogger().setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(name)-16s %(levelname)-8s %(message)s")
+
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logging.getLogger().addHandler(fh)
+
     logging.debug(f"Finished setting up debug file logging in {logfile}")
     console = logging.StreamHandler()
     if debug:

@@ -753,12 +753,14 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     
     If debug = True, print all messages to both screen and log file.
     """
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(name)-22s %(levelname)-8s %(message)s",
-        filename=logfile,
-        filemode="w",
-    )
+    logging.getLogger().setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
+
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logging.getLogger().addHandler(fh)
     logging.debug(f"Finished setting up debug file logging in {logfile}")
 
     # If there are already multiple handlers, that means generate_FV3LAM_workflow was called from another function.
