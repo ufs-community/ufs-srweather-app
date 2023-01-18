@@ -38,6 +38,7 @@ from copy import deepcopy
 
 import yaml
 
+
 def clean_up_output_dir(expected_subdir, local_archive, output_path, source_paths):
 
     """Remove expected sub-directories and existing_archive files on
@@ -343,8 +344,8 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     """
 
     members = kwargs.get("members", "")
-    members = members if isinstance(members, list) else [members] 
-    
+    members = members if isinstance(members, list) else [members]
+
     check_all = kwargs.get("check_all", False)
 
     logging.info(f"Getting files named like {file_templates}")
@@ -518,7 +519,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                 cla.cycle_date,
                 mem=mem,
             )
-            
+
             output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
             logging.info(f"Will place files in {os.path.abspath(output_path)}")
             logging.debug(f"CWD: {os.getcwd()}")
