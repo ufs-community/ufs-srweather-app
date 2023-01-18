@@ -488,12 +488,7 @@ MODULES_RUN_TASK_FP script.
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&POINT_SOURCE_TN;" "&JOBSdir;/JREGIONAL_POINT_SOURCE"</command>
-  {%- if machine in ["WCOSS2"]  %}
-    <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}:tpp={{ omp_num_threads_point_source }}</nodes>
-    <native>&SCHED_NATIVE_CMD;</native>
-  {%- else %}
     <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}</nodes>    
-  {%- endif %}
     <walltime>{{ wtime_point_source }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&POINT_SOURCE_TN;</jobname>

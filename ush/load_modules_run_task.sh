@@ -117,7 +117,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     module load mod_ufs-weather-model
   elif [ "${task_name}" = "run_post" ]; then
     module load mod_upp
-  elif [ "${task_name}" = "aqm_lbcs" ] || [ "${task_name}" = "point_source" ] || \
+  elif [ "${task_name}" = "aqm_lbcs" ] || \
        [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \
        [ "${task_name}" = "bias_correction_o3" ] || \
        [ "${task_name}" = "bias_correction_pm25" ]; then

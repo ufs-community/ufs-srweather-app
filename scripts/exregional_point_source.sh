@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_grid|task_run_fcst|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_fcst|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -47,25 +47,12 @@ This is the ex-script for the task that runs PT_SOURCE.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_POINT_SOURCE}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_POINT_SOURCE}
-export OMP_STACKSIZE=${OMP_STACKSIZE_POINT_SOURCE}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( LAYOUT_X*LAYOUT_Y ))
-ppn_run_aqm="${PPN_POINT_SOURCE}"
-omp_num_threads_run_aqm="${OMP_NUM_THREADS_POINT_SOURCE}"
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
@@ -76,16 +63,6 @@ if [ "${FCST_LEN_HRS}" = "-1" ]; then
 fi
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"
-
-if [ -z "${RUN_CMD_AQM:-}" ] ; then
-  print_err_msg_exit "\
-  Run command was not set in machine file. \
-  Please set RUN_CMD_AQM for your platform"
-else
-  RUN_CMD_AQM=$(eval echo ${RUN_CMD_AQM})
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_AQM}\'."
-fi
 
 #
 #-----------------------------------------------------------------------
@@ -116,17 +93,10 @@ PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
   python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
-
-  # Link the file to INPUT
-  mv_vrfy ${INPUT_DATA}/INPUT/PT.nc ${DATA}/pt-${yyyymmddhh}.nc 
-
-  if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
-    print_err_msg_exit "\
-The point source file \"pt-${yyyymmddhh}.nc\" was not generated."
-  else
-    print_info_msg "The intermediate file \"pt-${yyyymmddhh}.nc\" exists."
-  fi
 fi
+
+# Move to COMIN
+mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
 
 #
 #-----------------------------------------------------------------------

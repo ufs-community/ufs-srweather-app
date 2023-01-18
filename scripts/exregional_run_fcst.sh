@@ -275,6 +275,14 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   symlink="NEXUS_Expt.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
+
+  # create symlink to PT for point source in Online-CMAQ
+  if [ "${RUN_TASK_POINT_SOURCE}" = "TRUE" ]; then
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+    symlink="PT.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+	                       relative="${relative_link_flag}"
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -532,14 +540,9 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
   # create an intermediate symlink to RESTART
   ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
-
-  # create symlink to PT for point source in Online-CMAQ
-  if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_TASK_POINT_SOURCE}" = "TRUE" ]; then
-    ln_vrfy -sf "${INPUT_DATA}/PT" "${DATA}/PT"
-  fi
 fi
 #
 #-----------------------------------------------------------------------
