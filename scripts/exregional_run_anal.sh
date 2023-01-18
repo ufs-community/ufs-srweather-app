@@ -565,6 +565,7 @@ if [[ ${GSI_TYPE} == "ANALYSIS" && ${OB_TYPE} == "radardbz" ]]; then
   q_hyb_ens=.true.
   if_model_dbz=.true.
 fi
+beta1_inv=0.0 #---Daniel: hack until GSI version update ---#
 CONVINFO=${FIXgsi}/${CONVINFO_FN}
 HYBENSINFO=${FIXgsi}/${HYBENSINFO_FN}
 OBERROR=${FIXgsi}/${OBERROR_FN}
