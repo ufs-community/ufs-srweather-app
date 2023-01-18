@@ -62,17 +62,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_PRE_POST_STAT}
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-
-if [ -z "${RUN_CMD_SERIAL:-}" ] ; then
-  print_err_msg_exit "\
-  Run command was not set in machine file. \
-  Please set RUN_CMD_SERIAL for your platform"
-else
-  RUN_CMD_SERIAL=$(eval echo ${RUN_CMD_SERIAL})
-  print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
-fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -81,20 +70,21 @@ fi
 #-----------------------------------------------------------------------
 #
 DATA="${DATA}/tmp_PRE_POST_STAT"
+rm_vrfy -r $DATA
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
-set -x
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
 
 ist=1
-case ${cyc} in
-  00) est=06;;
-  06) est=72;;
-  12) est=72;;
-  18) est=06;;
-esac
-
-while [ "$ist" -le "${est}" ]; do
+while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   hst=$( printf "%03d" "${ist}" )
 
   rm_vrfy -f ${DATA}/tmp*nc
@@ -116,9 +106,8 @@ while [ "$ist" -le "${est}" ]; do
   (( ist=ist+1 ))
 done
 
-
 ist=1
-while [ "${ist}" -le "${est}" ]; do
+while [ "${ist}" -le "${FCST_LEN_HRS}" ]; do
   hst=$( printf "%03d" "${ist}" )
   ic=0
   while [ $ic -lt 900 ]; do

@@ -120,6 +120,8 @@ else
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
     export COMINext="${EXTROOT}/${PDY}${cyc}"
 fi
+export COMIN_PDY="${COMIN_BASEDIR}/${RUN}.${PDY}"
+export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 
 #
 #-----------------------------------------------------------------------

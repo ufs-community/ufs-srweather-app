@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, AQM_NA_13km, NCO mode, 1cycle a day
+  description: config for Online-CMAQ, AQM_NA_13km, NCO mode, 6h/72h forecast, 4cycles a day
 user:
   RUN_ENVIR: nco
   MACHINE: wcoss2
@@ -11,10 +11,15 @@ workflow:
   EXPT_SUBDIR: aqm_test_72h_v16
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2022123000'
-  DATE_LAST_CYCL: '2022123006'
+  DATE_FIRST_CYCL: '2023010900'
+  DATE_LAST_CYCL: '2023010918'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 72
+  FCST_LEN_HRS: -1
+  FCST_LEN_CYCL:
+    - 6
+    - 72
+    - 72
+    - 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
@@ -52,7 +57,7 @@ task_run_fcst:
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 6
+  RESTART_INTERVAL: 6 18
   WTIME_RUN_FCST: 04:00:00
   QUILTING: true
   PRINT_ESMF: false

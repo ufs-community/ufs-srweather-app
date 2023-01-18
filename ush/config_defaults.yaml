@@ -88,6 +88,10 @@ platform:
   # The number of cores available per node on the compute platform, now 
   # configurable for all platforms.
   #
+  # TASKTHROTTLE:
+  # The number of active tasks run simultaneously. For linux/mac setting this
+  # to 1 makes sense
+  #
   # BUILD_MOD_FN:
   # Name of alternative build module file to use if using an
   # unsupported platform. Is set automatically for supported machines.
@@ -159,6 +163,7 @@ platform:
   #
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
+  TASKTHROTTLE: 1000
   BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
   WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
   BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
@@ -415,16 +420,6 @@ workflow:
   #-----------------------------------------------------------------------
   #
   RELATIVE_LINK_FLAG: "--relative"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # CPL:
-  # Flag indicating whether another component should run in coupled mode
-  # with the forecast.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -794,12 +789,23 @@ workflow:
   # FCST_LEN_HRS:
   # The length of each forecast, in integer hours.
   #
+  # FCST_LEN_CYCL:
+  # The length of forecast for each cycle date in integer hours.
+  # This is valid only when FCST_LEN_HRS = -1.
+  # This pattern is recurred for all cycle dates.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
   DATE_LAST_CYCL: "YYYYMMDDHH"
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
+  FCST_LEN_CYCL:
+    - 6
+    - 12
+    - 12
+    - 6
+
   #
   #-----------------------------------------------------------------------
   #
@@ -1594,7 +1600,6 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters

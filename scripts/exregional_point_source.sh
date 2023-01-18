@@ -66,6 +66,14 @@ eval ${PRE_TASK_CMDS}
 nprocs=$(( LAYOUT_X*LAYOUT_Y ))
 ppn_run_aqm="${PPN_POINT_SOURCE}"
 omp_num_threads_run_aqm="${OMP_NUM_THREADS_POINT_SOURCE}"
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"
 
@@ -107,8 +115,7 @@ PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 #-----------------------------------------------------------------------
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  cp_vrfy ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py stack-pt-merge.py
-  python3 stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
+  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
 
   # Link the file to INPUT
   ln_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/INPUT/PT.nc

@@ -115,7 +115,7 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} || print_err_msg_exit "\
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
 POST_STEP
 
@@ -219,7 +219,7 @@ EOF1
   fi
 
   PREP_STEP
-  ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} || print_err_msg_exit "\
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
   Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
   POST_STEP
 

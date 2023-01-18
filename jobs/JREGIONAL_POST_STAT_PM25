@@ -17,7 +17,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -62,8 +62,6 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 
-export COMIN_PDY="${COMIN_PDY:-${COMIN_BASEDIR}/${RUN}.${PDY}}"
-export COMIN_PDYm1="${COMIN_PDYm1:-${COMIN_BASEDIR}/${RUN}.${PDYm1}}"
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
 #
 #-----------------------------------------------------------------------

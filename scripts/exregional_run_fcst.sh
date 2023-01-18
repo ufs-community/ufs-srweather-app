@@ -74,6 +74,16 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -492,6 +502,7 @@ fi
 python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
+  --fcst_len_hrs "${FCST_LEN_HRS}" \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
@@ -572,22 +583,22 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  rm_vrfy -rf "${COMIN}/RESTART"
-  if [ "$(ls -A ${DATA}/RESTART)" ]; then
-    mv_vrfy ${DATA}/RESTART ${COMIN}
-    ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    rm_vrfy -rf "${COMIN}/RESTART"
+    if [ "$(ls -A ${DATA}/RESTART)" ]; then
+      mv_vrfy ${DATA}/RESTART ${COMIN}
+      ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+    fi
   fi
 
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
-    if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
-      for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-        mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-        mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-      done
-    fi
+  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
+    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    done
   fi
 fi
 #
@@ -650,7 +661,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fi
     done
 
-    if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then	
+    if [ "${CPL_AQM}" = "TRUE" ]; then	
       mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
       mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi

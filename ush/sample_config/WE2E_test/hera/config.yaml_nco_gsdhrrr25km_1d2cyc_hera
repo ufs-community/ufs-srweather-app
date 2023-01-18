@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode, 6hr forecast, 2cycles a day, on HERA
+  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode, 6h/12h forecast, 4cycles a day, on HERA
 user:
   RUN_ENVIR: nco
   MACHINE: hera
@@ -12,9 +12,12 @@ workflow:
   PREDEF_GRID_NAME: GSD_HRRR_25km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080500'
-  DATE_LAST_CYCL: '2019080506'
+  DATE_LAST_CYCL: '2019080518'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 12
+  FCST_LEN_HRS: -1
+  FCST_LEN_CYCL:
+    - 6
+    - 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel

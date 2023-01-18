@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Emulates slurm's sacct
+if [[ "$1" = "--jobs="* ]]; then
+  PIDS="${1:7}"
+  PIDS="${PIDS//,/' '}"
+elif [[ -f .job_database ]]; then
+  PIDS=$(cat .job_database | grep submitted | sort -u -k1,1 |  awk '{print $3}')
+fi
+
+# Output info the way rocoto calls sacct
+FMT="%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n"
+echo "JobID|User|JobName|Partition|Priority|Submit|Start|End|NCPUS|ExitCode|State"
+
+for pid in ${PIDS}; do
+
+   t_sub="N/A"
+   t_start=$t_sub
+   t_end=$t_sub
+   name=$pid
+   user=${USER:-user}
+   exitc=0
+   state="UNKNOWN"
+
+   v=$(cat .job_database | grep "pid $pid submitted" | awk '{print $1" "$5}')
+   if [ ! -z "$v" ]; then
+      state="PENDING"
+      read name t_sub <<< "$v"
+      v=$(cat .job_database | grep "pid $pid started" | awk '{print $5" "$7}')
+      if [ ! -z "$v" ]; then
+         state="RUNNING"
+         read t_start t_end<<< "$v"
+      fi
+      v=$(cat .job_database | grep "pid $pid ended" | awk '{print $5" "$7}')
+      if [ ! -z "$v" ]; then
+         state="COMPLETED"
+         read t_end exitc <<< "$v"
+      fi
+   fi
+
+   printf "$FMT" $pid ${user:0:30} ${name:0:30} linux 0.1 $t_sub $t_start $t_end 1 $exitc $state 
+done
