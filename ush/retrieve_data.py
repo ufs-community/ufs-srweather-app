@@ -37,7 +37,6 @@ import time
 from copy import deepcopy
 
 import yaml
-import re
 
 def clean_up_output_dir(expected_subdir, local_archive, output_path, source_paths):
 
@@ -344,7 +343,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     """
 
     members = kwargs.get("members", "")
-    members = members if isinstance(members, list) else [members]
+    members = members if isinstance(members, list) else [members] 
     
     check_all = kwargs.get("check_all", False)
 
