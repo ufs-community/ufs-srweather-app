@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export fms_ver=2022.04
+export crtm_ver=2.4.0
+export pio_ver=2.5.7
