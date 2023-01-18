@@ -394,7 +394,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
 "GDAS")
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="FV3GFS"
+  external_model="GFS"
   input_type="gaussian_netcdf"
   convert_nst=False
   fn_atm="${EXTRN_MDL_FNS[0]}"
