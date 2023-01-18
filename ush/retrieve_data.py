@@ -630,7 +630,6 @@ def config_exists(arg):
         raise argparse.ArgumentTypeError(msg)
 
     with open(arg, "r") as config_path:
-        print(f"Reading config file: {arg}")             # let's print which config file is used
         cfg = yaml.load(config_path, Loader=yaml.SafeLoader)
     return cfg
 
