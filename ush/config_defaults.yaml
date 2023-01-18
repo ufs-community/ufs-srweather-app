@@ -2245,7 +2245,9 @@ task_run_anal:
   NCORES_RUN_OBSERVER: 4
   WTIME_RUN_ANAL: 00:30:00
   MAXTRIES_RUN_ANAL: 1
+  KMP_AFFINITY_RUN_ANAL: "scatter"
   OMP_NUM_THREADS_RUN_ANAL: 1
+  OMP_STACKSIZE_RUN_ANAL: "1024m"
 
 #----------------------------
 # POSTANAL config parameters

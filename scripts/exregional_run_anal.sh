@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_anal" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_anal|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -47,6 +47,16 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
+# Set OpenMP variables.
+#
+#-----------------------------------------------------------------------
+#
+export KMP_AFFINITY=${KMP_AFFINITY_RUN_ANAL}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_ANAL}
+export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_ANAL}
+#
+#-----------------------------------------------------------------------
+#
 # Load modules.
 #
 #-----------------------------------------------------------------------
@@ -56,10 +66,6 @@ eval ${PRE_TASK_CMDS}
 nprocs=$((NNODES_RUN_ANAL*PPN_RUN_ANAL))
 
 gridspec_dir=${NWGES_BASEDIR}/grid_spec
-
-# move these somewhere else later?
-export OMP_NUM_THREADS=1
-export OMP_STACKSIZE=1024M
 #
 #-----------------------------------------------------------------------
 #
@@ -94,7 +100,7 @@ AIR_REJECT_FN=$(date +%Y%m%d -d "${START_DATE} -1 day")_rejects.txt
 
 cd_vrfy ${DATA}
 
-fixgriddir=$FIX_GSI/${PREDEF_GRID_NAME}
+fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
 if [ ${CYCLE_TYPE} == "spinup" ]; then
   if [ ${MEM_TYPE} == "MEAN" ]; then
     bkpath=${COMIN}/ensmean/fcst_fv3lam_spinup/INPUT
@@ -123,7 +129,7 @@ fi
 #
 echo "regional_ensemble_option is ",${regional_ensemble_option:-1}
 
-print_info_msg "$VERBOSE" "FIX_GSI is $FIX_GSI"
+print_info_msg "$VERBOSE" "FIXgsi is $FIXgsi"
 print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
 print_info_msg "$VERBOSE" "default bkpath is $bkpath"
 print_info_msg "$VERBOSE" "background type is is $BKTYPE"
@@ -185,7 +191,7 @@ if  [[ ${regional_ensemble_option:-1} -eq 1 ]]; then #using GDAS
   loops="009"    # or 009s for GFSv15
   ftype="nc"  # or nemsio for GFSv15
   foundgdasens="false"
-  cat "no ens found" >> filelist03
+  echo "no ens found" >> filelist03
 
   case $MACHINE in
 
@@ -533,15 +539,15 @@ done
 #
 #-----------------------------------------------------------------------
 
-ANAVINFO=${FIX_GSI}/${ANAVINFO_FN}
+ANAVINFO=${FIXgsi}/${ANAVINFO_FN}
 if [ ${DO_ENKF_RADAR_REF} == "TRUE" ]; then
-  ANAVINFO=${FIX_GSI}/${ANAVINFO_DBZ_FN}
+  ANAVINFO=${FIXgsi}/${ANAVINFO_DBZ_FN}
   diag_radardbz=.true.
   beta1_inv=0.0
   if_model_dbz=.true.
 fi
 if [[ ${GSI_TYPE} == "ANALYSIS" && ${OB_TYPE} == "radardbz" ]]; then
-  ANAVINFO=${FIX_GSI}/${ENKF_ANAVINFO_DBZ_FN}
+  ANAVINFO=${FIXgsi}/${ENKF_ANAVINFO_DBZ_FN}
   miter=1
   niter1=100
   niter2=0
@@ -554,15 +560,15 @@ if [[ ${GSI_TYPE} == "ANALYSIS" && ${OB_TYPE} == "radardbz" ]]; then
   q_hyb_ens=.true.
   if_model_dbz=.true.
 fi
-CONVINFO=${FIX_GSI}/${CONVINFO_FN}
-HYBENSINFO=${FIX_GSI}/${HYBENSINFO_FN}
-OBERROR=${FIX_GSI}/${OBERROR_FN}
-BERROR=${FIX_GSI}/${BERROR_FN}
+CONVINFO=${FIXgsi}/${CONVINFO_FN}
+HYBENSINFO=${FIXgsi}/${HYBENSINFO_FN}
+OBERROR=${FIXgsi}/${OBERROR_FN}
+BERROR=${FIXgsi}/${BERROR_FN}
 
-SATINFO=${FIX_GSI}/global_satinfo.txt
-OZINFO=${FIX_GSI}/global_ozinfo.txt
-PCPINFO=${FIX_GSI}/global_pcpinfo.txt
-ATMS_BEAMWIDTH=${FIX_GSI}/atms_beamwidth.txt
+SATINFO=${FIXgsi}/global_satinfo.txt
+OZINFO=${FIXgsi}/global_ozinfo.txt
+PCPINFO=${FIXgsi}/global_pcpinfo.txt
+ATMS_BEAMWIDTH=${FIXgsi}/atms_beamwidth.txt
 
 # Fixed fields
 cp_vrfy ${ANAVINFO} anavinfo
@@ -576,8 +582,8 @@ cp_vrfy $ATMS_BEAMWIDTH atms_beamwidth.txt
 cp_vrfy ${HYBENSINFO} hybens_info
 
 # Get surface observation provider list
-if [ -r ${FIX_GSI}/gsd_sfcobs_provider.txt ]; then
-  cp_vrfy ${FIX_GSI}/gsd_sfcobs_provider.txt gsd_sfcobs_provider.txt
+if [ -r ${FIXgsi}/gsd_sfcobs_provider.txt ]; then
+  cp_vrfy ${FIXgsi}/gsd_sfcobs_provider.txt gsd_sfcobs_provider.txt
 else
   print_info_msg "$VERBOSE" "Warning: gsd surface observation provider does not exist!" 
 fi
@@ -690,19 +696,19 @@ if [ ${DO_RADDA} == "TRUE" ]; then
     satcounter=` expr $satcounter + 1 `
   done
 
-  ## if satbias files (go back to previous 10 dyas) are not available from ${SATBIAS_DIR}, use satbias files from the ${FIX_GSI} 
+  ## if satbias files (go back to previous 10 dyas) are not available from ${SATBIAS_DIR}, use satbias files from the ${FIXgsi} 
   if [ $satcounter -eq $maxcounter ]; then
-    if [ -r ${FIX_GSI}/rrfs.gdas_satbias ]; then
-      echo "using satllite satbias_in files from ${FIX_GSI}"     
-      cp_vrfy ${FIX_GSI}/rrfs.starting_satbias ./satbias_in
+    if [ -r ${FIXgsi}/rrfs.gdas_satbias ]; then
+      echo "using satllite satbias_in files from ${FIXgsi}"     
+      cp_vrfy ${FIXgsi}/rrfs.starting_satbias ./satbias_in
     fi
-    if [ -r ${FIX_GSI}/rrfs.gdas_satbias_pc ]; then
-      echo "using satllite satbias_pc files from ${FIX_GSI}"     
-      cp_vrfy ${FIX_GSI}/rrfs.starting_satbias_pc ./satbias_pc
+    if [ -r ${FIXgsi}/rrfs.gdas_satbias_pc ]; then
+      echo "using satllite satbias_pc files from ${FIXgsi}"     
+      cp_vrfy ${FIXgsi}/rrfs.starting_satbias_pc ./satbias_pc
     fi
-    if [ -r ${FIX_GSI}/rrfs.gdas_radstat ]; then
-      echo "using satllite radstat files from ${FIX_GSI}"     
-      cp_vrfy ${FIX_GSI}/rrfs.starting_radstat ./radstat.rrfs
+    if [ -r ${FIXgsi}/rrfs.gdas_radstat ]; then
+      echo "using satllite radstat files from ${FIXgsi}"     
+      cp_vrfy ${FIXgsi}/rrfs.starting_radstat ./radstat.rrfs
     fi
   fi
 
@@ -753,7 +759,7 @@ else
   n_iolayouty=$(($IO_LAYOUT_Y))
 fi
 
-. ${FIX_GSI}/gsiparm.anl.sh
+. ${FIXgsi}/gsiparm.anl.sh
 cat << EOF > gsiparm.anl
 $gsi_namelist
 EOF
@@ -765,18 +771,14 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-gsi_exec="${EXECDIR}/gsi.x"
+exec_fn="gsi.x"
+exec_fp="$EXECdir/${exec_fn}"
 
-if [ -f $gsi_exec ]; then
-  print_info_msg "$VERBOSE" "
-Copying the GSI executable to the run directory..."
-  cp_vrfy ${gsi_exec} ${DATA}/gsi.x
-else
+if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
-The GSI executable specified in GSI_EXEC does not exist:
-  GSI_EXEC = \"$gsi_exec\"
-Build GSI and rerun."
-fi
+The executable specified in exec_fp does not exist:
+  exec_fp = \"${exec_fp}\"
+Build lightning process and rerun."
 #
 #-----------------------------------------------------------------------
 #
@@ -795,8 +797,10 @@ fi
 #-----------------------------------------------------------------------
 #
 # comment out for testing
-$APRUN ./gsi.x < gsiparm.anl > stdout 2>&1 || print_err_msg_exit "\
+PREP_STEP
+eval $RUN_CMD_UTILS ${exec_fp} < gsiparm.anl ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run GSI returned with nonzero exit code."
+POST_STEP
 
 if [ ${GSI_TYPE} == "ANALYSIS" ]; then
   if [ ${OB_TYPE} == "radardbz" ]; then
@@ -889,7 +893,11 @@ if [ $netcdf_diag = ".true." ]; then
    for type in $listall_cnv; do
       count=$(ls pe*.${type}_${loop}.nc4 | wc -l)
       if [[ $count -gt 0 ]]; then
-         ${APRUN} ${nc_diag_cat} -o diag_${type}_${string}.${YYYYMMDDHH}.nc4 pe*.${type}_${loop}.nc4
+         PREP_STEP
+         eval $RUN_CMD_UTILS ${nc_diag_cat} -o diag_${type}_${string}.${YYYYMMDDHH}.nc4 pe*.${type}_${loop}.nc4 || print_err_msg "\
+         Call to ${nc_diag_cat} returned with nonzero exit code."
+         POST_STEP
+
          cp diag_${type}_${string}.${YYYYMMDDHH}.nc4 $COMOUT
          echo "diag_${type}_${string}.${YYYYMMDDHH}.nc4*" >> listcnv
          numfile_cnv=`expr ${numfile_cnv} + 1`
@@ -899,7 +907,10 @@ if [ $netcdf_diag = ".true." ]; then
    for type in $listall_rad; do
       count=$(ls pe*.${type}_${loop}.nc4 | wc -l)
       if [[ $count -gt 0 ]]; then
-         ${APRUN} ${nc_diag_cat} -o diag_${type}_${string}.${YYYYMMDDHH}.nc4 pe*.${type}_${loop}.nc4
+         PREP_STEP
+         eval $RUN_CMD_UTILS ${nc_diag_cat} -o diag_${type}_${string}.${YYYYMMDDHH}.nc4 pe*.${type}_${loop}.nc4 || print_err_msg "\
+         Call to ${nc_diag_cat} returned with nonzero exit code."
+         POST_STEP
          cp diag_${type}_${string}.${YYYYMMDDHH}.nc4 $COMOUT
          echo "diag_${type}_${string}.${YYYYMMDDHH}.nc4*" >> listrad
          numfile_rad=`expr ${numfile_rad} + 1`
