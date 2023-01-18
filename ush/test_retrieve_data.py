@@ -113,7 +113,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--data_stores', 'aws',
                 '--external_model', 'GDAS',
                 '--fcst_hrs', '6', '9', '3',
-                '--output_path', tmp_dir,
+                '--output_path', out_path_tmpl,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_type', 'netcdf',
@@ -126,7 +126,7 @@ class FunctionalTesting(unittest.TestCase):
             # Verify files exist in temp dir
             for mem in [9, 10]:
                 files_on_disk = glob.glob(
-                    os.path.join(tmp_dir, out_path_tmpl.format(mem=mem), "*")
+                    os.path.join(out_path_tmpl.format(mem=mem), "*")
                 )
                 self.assertEqual(len(files_on_disk), 2)
 
@@ -148,7 +148,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--data_stores', 'aws',
                 '--external_model', 'GEFS',
                 '--fcst_hrs', '6',
-                '--output_path', tmp_dir,
+                '--output_path', out_path_tmpl,
                 '--ics_or_lbcs', 'ICS',
                 '--debug',
                 '--file_type', 'netcdf',
@@ -161,7 +161,7 @@ class FunctionalTesting(unittest.TestCase):
             # Verify files exist in temp dir
             for mem in [1, 2]:
                 files_on_disk = glob.glob(
-                    os.path.join(tmp_dir, out_path_tmpl.format(mem=mem), "*")
+                    os.path.join(out_path_tmpl.format(mem=mem), "*")
                 )
                 self.assertEqual(len(files_on_disk), 2)
 
