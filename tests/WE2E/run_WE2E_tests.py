@@ -6,19 +6,14 @@ import glob
 import argparse
 import logging
 from textwrap import dedent
-from datetime import datetime, timedelta
+from datetime import datetime
 
+from monitor_jobs import monitor_jobs
 sys.path.append("../../ush")
 
 from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
     print_err_msg_exit,
-    cp_vrfy,
-    cd_vrfy,
-    rm_vrfy,
-    ln_vrfy,
-    mkdir_vrfy,
-    mv_vrfy,
     run_command,
     date_to_str,
     define_macos_utilities,
@@ -48,9 +43,6 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
     # Set up logging to write to screen and logfile
     setup_logging(debug=args.debug)
-
-    # Check python version and presence of some non-standard packages
-    check_python_version()
 
     # Set some important directories
     USHdir=HOMEdir + '/ush'
@@ -135,11 +127,16 @@ def run_we2e_tests(HOMEdir, args) -> None:
     logging.debug(f"Loading machine defaults file {machine_file}")
     machine_defaults = load_config_file(machine_file)
 
+    # Set up dictionary for job monitoring yaml
+    if not args.use_cron_to_relaunch:
+        monitor_yaml = dict()
+
     for test in tests_to_run:
         #Starting with test yaml template, fill in user-specified and machine- and 
         # test-specific options, then write resulting complete config.yaml
         test_name = os.path.basename(test).split('.')[1]
         logging.debug(f"For test {test_name}, constructing config.yaml")
+        logging.info(os.getcwd())
         test_cfg = load_config_file(test)
 
         test_cfg['user'].update({"MACHINE": args.machine})
@@ -176,15 +173,34 @@ def run_we2e_tests(HOMEdir, args) -> None:
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults)
             logging.debug(test_cfg['task_get_extrn_lbcs'])
 
+
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(USHdir + "/config.yaml","w+") as f:
+        with open(USHdir + "/config.yaml","w") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.debug(f"Calling workflow generation function for test {test_name}\n")
-        generate_FV3LAM_wflow(USHdir,logfile=f"{USHdir}/log.generate_FV3LAM_wflow",debug=args.debug)
+        expt_dir = generate_FV3LAM_wflow(USHdir,logfile=f"{USHdir}/log.generate_FV3LAM_wflow",debug=args.debug)
 
-    logging.info("calling script that monitors rocoto jobs, prints summary")
+        # If this job is not using crontab, we need to add an entry to monitor.yaml
+        if 'USE_CRON_TO_RELAUNCH' not in test_cfg['workflow']:
+            test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
+        if not test_cfg['workflow']['USE_CRON_TO_RELAUNCH']:
+            logging.debug(f'Creating entry for job {test_name} in job monitoring dict') 
+            monitor_yaml[test_name] = dict()
+            monitor_yaml[test_name].update({"expt_dir": expt_dir})
+            monitor_yaml[test_name].update({"status": "CREATED"})
+
+    if not args.use_cron_to_relaunch:
+        logging.info("calling function that monitors jobs, prints summary")
+        monitor_file = monitor_jobs(monitor_yaml, args.debug)
+
+        logging.info("All experiments are complete")
+        logging.info(f"Summary of results available in {monitor_file}")
+
+
+
+
 
 def check_tests(tests: list) -> list:
     """
@@ -343,6 +359,9 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
 
 if __name__ == "__main__":
 
+    # Check python version and presence of some non-standard packages
+    check_python_version()
+
     #Get the "Home" directory, two levels above this one
     HOMEdir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     logfile='log.run_WE2E_tests'
@@ -368,7 +387,7 @@ if __name__ == "__main__":
     parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments', default='')
     parser.add_argument('--expt_basedir', type=str, help='Explicitly set EXPT_BASEDIR for all experiments')
     parser.add_argument('--exec_subdir', type=str, help='Explicitly set EXEC_SUBDIR for all experiments')
-    parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments')
+    parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this option disables the "monitor" script functionality')
     parser.add_argument('--cron_relaunch_intvl_mnts', type=str, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
     parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
