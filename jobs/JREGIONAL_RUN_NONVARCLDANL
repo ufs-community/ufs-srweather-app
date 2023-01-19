@@ -81,7 +81,7 @@ mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_nonvarcldanl.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_run_nonvarcldanl.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------

@@ -101,10 +101,14 @@ if [ ${CYCLE_TYPE} == "spinup" ]; then
 else
   cycle_tag=""
 fi
-if [ ${MEM_TYPE} == "MEAN" ]; then
-    bkpath=${COMIN}/ensmean/fcst_fv3lam${cycle_tag}/INPUT
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    bkpath=$DATAROOT/${TAG}prep_cyc_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
 else
-    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam${cycle_tag}/INPUT
+    if [ ${MEM_TYPE} == "MEAN" ]; then
+        bkpath=${COMIN}/ensmean/fcst_fv3lam${cycle_tag}/INPUT
+    else
+        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam${cycle_tag}/INPUT
+    fi
 fi
 
 n_iolayouty=$(($IO_LAYOUT_Y-1))
@@ -146,7 +150,11 @@ fi
 #
 #-----------------------------------------------------------------------
 
-process_bufr_path=${COMIN}/process_bufr${cycle_tag}
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    process_bufr_path=$DATAROOT/${TAG}process_bufr_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
+else
+    process_bufr_path=${COMIN}/process_bufr${cycle_tag}
+fi
 
 obs_files_source[0]=${process_bufr_path}/NASALaRC_cloud4fv3.bin
 obs_files_target[0]=NASALaRC_cloud4fv3.bin
@@ -265,7 +273,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-exec_fn="fv3lam_nonvarcldanal.exe"
+exec_fn="fv3lam_nonvarcldana.exe"
 exec_fp="$EXECdir/${exec_fn}"
 
 if [ ! -f "${exec_fp}" ]; then
