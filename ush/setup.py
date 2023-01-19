@@ -289,7 +289,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     """
 
     logger = logging.getLogger(__name__)
-    cd_vrfy(USHdir)
 
     # print message
     log_info(
@@ -1288,7 +1287,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
 
     # loop through the flattened expt_config and check validity of params
-    cfg_v = load_config_file("valid_param_vals.yaml")
+    cfg_v = load_config_file(os.path.join(USHdir, "valid_param_vals.yaml"))
     for k, v in flatten_dict(expt_config).items():
         if v is None or v == "":
             continue

@@ -40,7 +40,7 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
+def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
@@ -49,7 +49,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         logfile (str) : The name of the file where logging is written
         debug   (bool): Enable extra output for debugging
     Returns:
-        None
+        EXPTDIR (str) : The full path of the directory where this experiment has been generated
     """
 
     # Set up logging to write to screen and logfile
@@ -682,20 +682,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
 
-    # Note workflow generation completion
-    log_info(
-        f"""
-        ========================================================================
-        ========================================================================
-
-        Experiment generation completed.  The experiment directory is:
-
-          EXPTDIR='{EXPTDIR}'
-
-        ========================================================================
-        ========================================================================
-        """
-    )
     #
     # -----------------------------------------------------------------------
     #
@@ -745,6 +731,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # If we got to this point everything was successful: move the log file to the experiment directory.
     mv_vrfy(logfile, EXPTDIR)
 
+    return EXPTDIR
+
 
 def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """
@@ -785,7 +773,7 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        generate_FV3LAM_wflow(USHdir, wflow_logfile)
+        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile)
     except:
         logging.exception(
             dedent(
@@ -799,6 +787,21 @@ if __name__ == "__main__":
                 """
             )
         )
+    
+    # Note workflow generation completion
+    log_info(
+        f"""
+        ========================================================================
+        ========================================================================
+
+        Experiment generation completed.  The experiment directory is:
+
+          EXPTDIR='{EXPTDIR}'
+
+        ========================================================================
+        ========================================================================
+        """
+    )
 
 
 class Testing(unittest.TestCase):
