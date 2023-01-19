@@ -21,7 +21,7 @@ Each section provides a summary of the weather event and instructions for config
 Sample Forecast #1: Severe Weather Over Indianapolis
 =======================================================
 
-**Objective:** Modify physics options and compare forecast outputs. 
+**Objective:** Modify physics options and compare forecast outputs for similar experiments using the graphics plotting task. 
 
 Weather Summary
 --------------------
@@ -38,17 +38,14 @@ A surface boundary associated with a vorticity maximum over the northern Great P
 
    *Severe Weather Over Indianapolis Starting at 18z*
 
-.. COMMENT: Radar Loop: include image from Google doc
-   See https://mesonet.agron.iastate.edu/current/mcview.phtml to produce images.
-
 Data
 -------
 
 On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 .. COMMENT: Specify where in the bucket the data is!
-   https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
-   NEED HRRR/RAP data for this tutorial! 
+   NEED HRRR/RAP data added to `develop` location across L1 platforms for this tutorial! (Currently only available on AWS under v2p1, not develop!)
+
 
 Load the Regional Workflow
 -------------------------------
@@ -64,6 +61,15 @@ To load the regional workflow environment, run:
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
+For example, a user on Hera may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username in the form Firstname.Lastname):
+
+.. code-block:: console
+   
+   source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
+   module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles>
+   module load wflow_hera
+   conda activate regional_workflow
+
 Configuration
 -------------------------
 
@@ -74,7 +80,7 @@ Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") 
    cd </path/to/ufs-srweather-app/ush>
    cp config.community.yaml config.yaml
 
-Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. 
+Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
 
 .. code-block:: console
 
@@ -95,7 +101,7 @@ Edit the configuration file (``config.yaml``) to include the variables and value
 
       vi config.yaml
 
-   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead.
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit the file. Users may opt to use their preferred code editor instead.
 
 Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
@@ -138,9 +144,9 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
-For a detailed understanding of the ``workflow:`` variables, see :numref:`Section %s <workflow>`.
+For a detailed understanding of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
-In the ``workflow_switches:`` section, turn the plotting task on by changing ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
+In the ``workflow_switches:`` section, turn on the plotting task by changing ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
 
 .. code-block:: console
 
@@ -194,10 +200,28 @@ Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it 
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
 
-After configuring the forecast, users can generate the forecast by running:
+Because the plotting scripts are designed to
+
+Navigate to the ``/scripts`` directory: 
 
 .. code-block:: console
 
+   cd /path/to/ufs-srweather-app/scripts
+
+Edit the two plotting files. Modify line #417 of ``exregional_plot_allvars.py`` and line #441 of ``exregional_plot_allvars_diff.py`` to say:
+
+.. code-block:: console
+
+   domains = ["regional"]  # Other option is 'conus'
+
+..
+   After configuring the forecast, users can generate the forecast by running:
+
+After adjusting the plotting scripts, return to ``$USH`` and generate the forecast:
+
+.. code-block:: console
+
+   cd $USH
    ./generate_FV3LAM_wflow.py
 
 To see experiment progress, users should navigate to their experiment directory. Then, use the ``rocotorun`` command to launch new workflow tasks and ``rocotostat`` to check on experiment progress. 
@@ -253,7 +277,18 @@ HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta p
 
 .. COMMENT: Verify above explanation w/Jeff/Gerard
 
-``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable 
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a forecast that was started earlier than the start of the current forecast configured here. It is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier. To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
+
+.. COMMENT: Why does it do this for RAP?!
+
+.. COMMENT: Increase wall time for run post?
+   task_run_post:
+     WTIME_RUN_POST: 00:30:00
+
+.. COMMENT: Change exregional_plot_allvars.py and/or exregional_plot_allvars_diff.py to plot on subconus!
+
+   # (if dom == 'conus' block)
+        domains = ["conus"]  # Other option is 'regional'
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
 
@@ -298,7 +333,7 @@ Users who are working on the cloud or on an HPC cluster may want to copy the ``.
    
    Users who are running an experiment on their local system can skip this section and continue to the :ref:`next section <ComparePlots>`. 
 
-Users can run the ``scp`` command to securely copy files from a remote system to their local system. The structure of the command is:
+Users can run the ``scp`` command in a new Terminal/command prompt window to securely copy files from a remote system to their local system. The structure of the command is:
 
 .. code-block:: console
 
@@ -312,7 +347,7 @@ If an ssh tunnel is already established between the local system and a remote sy
 
    scp -P 2372 User.Name@localhost:/path/to/expt_dirs/test_expt/2019061518/postprd/*.png .
    OR
-   scp User.Name@:your-ip-address"/lustre/$USER/expt_dirs/GST_lowres/2019061518/postprd/*.png" /Users/username/Downloads/forecast_images
+   scp username@your-ip-address:/lustre/$USER/expt_dirs/GST_lowres/2019061518/postprd/*.png /Users/username/Downloads/forecast_images
 
 Note that ``*.png`` will copy all files ending in ``.png``. The ``.`` at the end of the command means that the file(s) will be copied into the user's local working directory. 
 
@@ -320,6 +355,8 @@ Note that ``*.png`` will copy all files ending in ``.png``. The ``.`` at the end
    scp -i /path-to/EPIC_RSA.pem ubuntu@your-ip-address:~/GST_test/grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/2019061518/postprd/*diffs*.png .
 
    scp Gillian.Petro@54.235.118.65:/lustre/Gillian.Petro/expt_dirs/test_expt/2019061518/postprd/*.png ./plots
+
+   */2 * * * * cd /contrib/Gillian.Petro/expt_dirs/test_expt && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
 
    
 
@@ -437,6 +474,11 @@ Cold air damming occurs when cold dense air is topographically trapped along the
    *Cold Air Damming in the Appalachian Mountains*
 
 .. COMMENT: Check accuracy of this section. The UFS case study starts on Feb. 3 and doesn't include any radar or storm reports: https://ufs-case-studies.readthedocs.io/en/develop/2020CAD.html
+   Articles:
+   https://www.weather.gov/jkl/20200206_floodsnow
+   https://www.inscc.utah.edu/~steenburgh/classes/5210/lecture_notes/ColdAirDamming.pdf
+   https://journals.ametsoc.org/view/journals/wefo/31/2/waf-d-15-0049_1.xml
+
 
 Tutorial Content 
 -------------------
@@ -549,6 +591,10 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
 
    *Halloween Storm 2019*
+
+.. COMMENT: 
+   Articles: https://www.weather.gov/btv/The-Halloween-2019-Significant-Flooding-and-High-Wind-Event
+
 
 Tutorial Content
 -------------------
