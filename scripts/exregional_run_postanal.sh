@@ -99,13 +99,13 @@ if [ ${CYCLE_TYPE} == "spinup" ]; then
   if [ ${MEM_TYPE} == "MEAN" ]; then
     bkpath=${COMIN}/ensmean/fcst_fv3lam_spinup/INPUT
   else
-    bkpath=${COMIN}${slash_ensmem_subdir}/fcst_fv3lam_spinup/INPUT
+    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup/INPUT
   fi
 else
   if [ ${MEM_TYPE} == "MEAN" ]; then
     bkpath=${COMIN}/ensmean/fcst_fv3lam/INPUT
   else
-    bkpath=${COMIN}${slash_ensmem_subdir}/fcst_fv3lam/INPUT
+    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam/INPUT
   fi
 fi
 # decide background type

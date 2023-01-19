@@ -78,7 +78,8 @@ fi
 #use the analysis working directory for post analaysis
 if [ "${RUN_ENVIR}" = "nco" ]; then
   rm -rf $DATA
-  DATA=$DATAROOT/${TAG}run_fcst${dot_ensmem/./_}.${share_pid}
+  DATA=$DATAROOT/${TAG}anal_gsi_input_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
+  cd_vrfy $DATA
 fi
 
 if [ ${GSI_TYPE} == "OBSERVER" ]; then
