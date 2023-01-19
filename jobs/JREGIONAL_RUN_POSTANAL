@@ -1,0 +1,142 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This J-JOB script runs the applications after analysis 
+#
+#-----------------------------------------------------------------------
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_postanal" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh "TRUE"
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+This is the J-job script for the task that runs a analysis with FV3 for 
+the specified cycle.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Create the working directory under the cycle directory.
+#
+#-----------------------------------------------------------------------
+# CYCLE_TYPE is to indicate which type of cycle this job for:
+#   spinup: this job is for spin-up cycles
+#   others(prod): this job is for product cycle
+#
+CYCLE_TYPE=${CYCLE_TYPE:-prod}
+OBSERVER_NWGES_DIR=""
+
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  analworkname="_gsi_spinup"
+else
+  analworkname="_gsi"
+fi
+
+if [[ ! -v OB_TYPE ]]; then
+  export OB_TYPE="conv"
+fi
+
+#use the analysis working directory for post analaysis
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  rm -rf $DATA
+  DATA=$DATAROOT/${TAG}run_fcst${dot_ensmem/./_}.${share_pid}
+fi
+
+if [ ${GSI_TYPE} == "OBSERVER" ]; then
+  if [ ${MEM_TYPE} == "MEAN" ]; then
+    DATA="${DATA:-${COMIN}/ensmean/observer${analworkname}}"
+    SLASH_ENSMEM_SUBDIR=""
+    export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analworkname}"
+  else
+    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}}"
+    export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
+  fi
+  mkdir_vrfy -p ${OBSERVER_NWGES_DIR}
+else
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analworkname}}"
+fi
+
+if [[ ! -d ${DATA} ]]; then
+    echo "cannot find analysis directory"
+    exit 
+fi
+#
+#-----------------------------------------------------------------------
+#
+# create COMOUT directory
+#
+#-----------------------------------------------------------------------
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/$cyc${SLASH_ENSMEM_SUBDIR}"
+  if [ ${CYCLE_TYPE} == "spinup" ]; then
+    COMOUT="${COMOUT_BASEDIR}/$RUN.$PDY/${cyc}_spinup${SLASH_ENSMEM_SUBDIR}"
+  fi
+  mkdir_vrfy -p "${COMOUT}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_run_postanal.sh || print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
