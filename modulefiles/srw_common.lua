@@ -29,3 +29,4 @@ load("wrf_io/1.2.0")
 
 load("ncio/1.1.2")
 load("wgrib2/2.0.8")
+load("ncdiag/1.0.0")
