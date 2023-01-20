@@ -249,7 +249,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # Copy or symlink fix files
     #
     if SYMLINK_FIX_FILES:
-
         log_info(
             f"""
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
@@ -258,7 +257,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             verbose=verbose,
         )
 
-        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
+        ln_vrfy(f"""-fsn '{FIXgsm}/'* '{FIXam}'""")
     else:
 
         log_info(
@@ -269,8 +268,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             verbose=verbose,
         )
 
-        check_for_preexist_dir_file(FIXam, "delete")
-        mkdir_vrfy("-p", FIXam)
         mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
 
         num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
