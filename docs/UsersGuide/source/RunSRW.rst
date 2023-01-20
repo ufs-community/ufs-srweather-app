@@ -595,14 +595,14 @@ corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518`
 Plotting the Difference Between Two Experiments
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
-When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
+When plotting the difference between two experiments (``expt1`` and ``expt2``), users must set the ``COMOUT_REF`` template variable in ``expt2``'s ``config.yaml`` file to point at forecast output from the ``expt1`` directory. For example, in *community* mode, users can set ``COMOUT_REF`` as follows in the ``expt2`` configuration file:
 
 .. code-block:: console
 
    task_plot_allvars:
-      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+      COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
 
-In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`` and ``expt2``. In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
 
 The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 
