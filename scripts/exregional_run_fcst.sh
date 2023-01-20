@@ -194,7 +194,9 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_RAP" ]  || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15_thompson_mynn_lam3km" ]; then
 
   fileids=( "ss" "ls" )
   for fileid in "${fileids[@]}"; do
@@ -232,34 +234,99 @@ of the current run directory (DATA), where
 cd_vrfy ${DATA}/INPUT
 
 #
+# Forecast background
+#
+BKTYPE=1    # cold start using INPUT
+if [ -r ${DATA}/INPUT/coupler.res ] ; then
+  BKTYPE=0  # cycling using RESTART
+fi
+print_info_msg "$VERBOSE" "
+The forecast has BKTYPE $BKTYPE (1:cold start ; 0 cycling)"
+
+n_iolayouty=$(($IO_LAYOUT_Y-1))
+list_iolayout=$(seq 0 $n_iolayouty)
+
+#
 # The symlinks to be created point to files in the same directory (INPUT),
 # so it's most straightforward to use relative paths.
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+if [ ${BKTYPE} -eq 1 ]; then
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+else
+    target="fv_core.res.tile1.nc"
+fi
 symlink="gfs_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
+if [ -f "${target}.0000" ]; then
+  for ii in ${list_iolayout}
+  do
+    iii=$(printf %4.4i $ii)
+    create_symlink_to_file target="$target.${iii}" symlink="$symlink.${iii}" \
                        relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="sfc_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
+  done
+else
+    create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
+fi
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-symlink="gfs_ctrl.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-
-for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+#
+# Symlink sfc data
+#
+if [ ${BKTYPE} -eq 1 ]; then
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
-done
+else
+  if [ -f "sfc_data.nc.0000" ] || [ -f "sfc_data.nc" ]; then
+    print_info_msg "$VERBOSE" "
+    sfc_data.nc is available at INPUT directory"
+  else
+    print_err_msg_exit "\
+    sfc_data.nc is not available for cycling"
+  fi
+fi
 
+#
+# Symlink gfs_ctrl and bndy data
+#
+if [ $DO_RRFS_DEV ]; then
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  
+  
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                           relative="${relative_link_flag}"
+  done
+fir
+
+#
+# Smoke and dust
+#
+if [ "${DO_SMOKE_DUST}" = "TRUE" ]; then
+  ln_vrfy -snf  ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc  ${DATA}/INPUT/dust12m_data.nc
+  ln_vrfy -snf  ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc      ${DATA}/INPUT/emi_data.nc
+  yyyymmddhh=${cdate:0:10}
+  echo ${yyyymmddhh}
+  if [ ${cycle_type} == "spinup" ]; then
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00_spinup.nc
+  else
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00.nc
+  fi
+  echo "try to use smoke file=",${smokefile}
+  if [ -f ${smokefile} ]; then
+    ln_vrfy -snf ${smokefile} ${DATA}/INPUT/SMOKE_RRFS_data.nc
+  else
+    ln_vrfy -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${DATA}/INPUT/SMOKE_RRFS_data.nc
+    echo "smoke file is not available, use dummy_24hr_smoke.nc instead"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -540,6 +607,26 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     done
   done
 
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Save grid_spec files for restart subdomain.
+#
+#-----------------------------------------------------------------------
+#
+if [ ${BKTYPE} -eq 1 ] && [ ${n_iolayouty} -ge 1 ]; then
+  for ii in ${list_iolayout}
+  do
+    iii=$(printf %4.4i $ii)
+    if [ -f "grid_spec.nc.${iii}" ]; then
+      cp_vrfy grid_spec.nc.${iii} ${gridspec_dir}/fv3_grid_spec.${iii}
+    else
+      print_err_msg_exit "\
+      Cannot create symlink because target does not exist:
+      target = \"grid_spec.nc.$iii\""
+    fi
+  done
 fi
 #
 #-----------------------------------------------------------------------
