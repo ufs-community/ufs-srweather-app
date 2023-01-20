@@ -513,6 +513,8 @@ platform:
   IMSSNOW_ROOT: ""
   RAPHRR_SOIL_ROOT: ""
   FIRE_RAVE_DIR: ""
+  AIRCRAFT_REJECT: ""
+  SFCOBS_USELIST: ""
 
   NCL_REGION: "conus"
   SST_update_hour: 99
@@ -1627,8 +1629,6 @@ gsi:
   BERROR_FN: "rap_berror_stats_global_RAP_tune" #under $FIX_GSI
   OBERROR_FN: "errtable.rrfs"
   HYBENSINFO_FN: "hybens_info.rrfs"
-  AIRCRAFT_REJECT: ""
-  SFCOBS_USELIST: ""
   #
   #-----------------------------------------------------------------------
   # default namelist for nonvar cloud analysis
