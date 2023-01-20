@@ -50,23 +50,23 @@ On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-P
 Load the Regional Workflow
 -------------------------------
 
-To load the regional workflow environment, run:
+To load the regional workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
    
-   source <path/to/etc/lmod-setup.sh> <platform>
-   # OR: source <path/to/etc/lmod-setup.csh> <platform> when running in a csh/tcsh shell
+   source etc/lmod-setup.sh <platform>
+   # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
    module use </path/to/ufs-srweather-app/modulefiles>
    module load wflow_<platform>
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
+where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-For example, a user on Hera may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username in the form Firstname.Lastname):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username in the form Firstname.Lastname):
 
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
-   module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles>
+   module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
    module load wflow_hera
    conda activate regional_workflow
 
@@ -86,7 +86,7 @@ Users can save the location of the ``ush`` directory in an environment variable 
 
    export USH=/path/to/ufs-srweather-app/ush
 
-Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. 
+Users should substitute ``/path/to/ufs-srweather-app/ush`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $USH``, and it will take them to the ``ush`` directory. The variable will need to be reset for each login session. 
 
 Experiment 1: Control
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -200,9 +200,7 @@ Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it 
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
 
-Because the plotting scripts are designed to
-
-Navigate to the ``/scripts`` directory: 
+Because the plotting scripts are designed to generate plots over the entire CONUS, users will need to modify the code to generate plots for the smaller SUBCONUS_Ind_3km domain. To do this, navigate to the ``ufs-srweather-app/scripts`` directory: 
 
 .. code-block:: console
 
@@ -279,16 +277,14 @@ HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta p
 
 ``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a forecast that was started earlier than the start of the current forecast configured here. It is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier. To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
-.. COMMENT: Why does it do this for RAP?!
+Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_POST``) for the postprocessing tasks. The wall time is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others, the post-processing time exceeds 15 minutes, so the tasks fail. 
 
-.. COMMENT: Increase wall time for run post?
+.. code-block:: console
+
    task_run_post:
-     WTIME_RUN_POST: 00:30:00
+     WTIME_RUN_POST: 00:20:00
 
-.. COMMENT: Change exregional_plot_allvars.py and/or exregional_plot_allvars_diff.py to plot on subconus!
-
-   # (if dom == 'conus' block)
-        domains = ["conus"]  # Other option is 'regional'
+.. COMMENT: Why does it take longer to post-process RAP?!
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). The path to the forecast output must be set using single quotes as shown below:
 
@@ -296,6 +292,9 @@ Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:``
 
    task_plot_allvars:
      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+     COMOUT_REF: '/path/to/expt_dirs/control/${PDY}${cyc}/postprd'
+
+.. COMMENT: Fix COMOUT_REF definition
 
 Setting ``COMOUT_REF`` this way (i.e., using environment variables such as ``$EXPT_SUBDIR``) ensures that the plotting task can access the forecast output data in both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to both ``control/2019061518/postprd`` and ``test_expt/2019061518/postprd``. 
 
