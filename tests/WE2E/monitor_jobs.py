@@ -6,8 +6,11 @@ import glob
 import argparse
 import logging
 import subprocess
+import sqlite3
 from textwrap import dedent
 from datetime import datetime
+from contextlib import closing
+from collections import namedtuple
 
 sys.path.append("../../ush")
 
@@ -48,20 +51,34 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
     starttime = datetime.now()
     monitor_file = f'monitor_jobs_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
     logging.info(f"Writing information for all experiments to {monitor_file}")
-    with open(monitor_file,"w") as f:
-        f.write("### WARNING ###\n")
-        f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY monitor_jobs.py\n")
-        f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
-        f.writelines(cfg_to_yaml_str(expt_dict))
+
+    write_monitor_file(monitor_file,expt_dict)
 
     # Perform initial setup for each experiment
     logging.info("Checking tests available for monitoring...")
     num_expts = 0
     print(expt_dict)
     for expt in expt_dict:
-        logging.info(f"Starting experiment {expt} running")
+        logging.debug(f"Starting experiment {expt} running")
         num_expts += 1
-        subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.db", "-v 10"])
+        rocoto_db = f"{expt_dict[expt]['expt_dir']}/FV3LAM_wflow.db"
+        subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"])
+        logging.debug(f"Reading database for experiment {expt}, populating experiment dictionary")
+        try:
+            db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
+        except:
+            logging.warning(f"Unable to read database {rocoto_db}\nWill not track experiment {expt}")
+            expt_dict[expt]["status"] = "ERROR"
+            continue
+        for task in db:
+            # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
+            # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
+            cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
+            expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
+#        expt_dict[expt] = update_expt_status(expt_dict[expt]["status"])
+
+    write_monitor_file(monitor_file,expt_dict)
+
 
     endtime = datetime.now()
     total_walltime = endtime - starttime
@@ -69,6 +86,65 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
     logging.info(f'All {num_expts} experiments finished in {str(total_walltime)}')
 
     return monitor_file
+
+
+def update_expt_status(expt_dict: dict) -> dict:
+    """
+    This function reads the dictionary showing the status of a given experiment (as read from the
+    rocoto database file) and uses a simple set of rules to combine the statuses of every task into 
+    a useful "status" for the whole experiment.
+
+    Experiment "status" levels explained:
+    CREATED: The experiments have been created, but the monitor script has not yet processed them.
+             This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
+             should never see this status in this function. Including just for completeness sake.
+    SUBMITTING: All jobs are in status SUBMITTING. This is a normal state; we will continue to
+             monitor this experiment.
+    ERROR:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
+             We will continue to monitor this experiment until all tasks are either status DEAD or
+             status SUCCEEDED (see next entry).
+    DEAD:    One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We
+             will no longer monitor this experiment.
+    UNKNOWN: One or more tasks are at status UNKNOWN, meaning that rocoto has failed to track the
+             job associated with that task. This will require manual intervention to solve, so we
+             will no longer monitor this experiment.
+    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED or
+             SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
+    QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUCCEEDED.
+             This is a normal state; we will continue to monitor this experiment.
+    SUCCEEDED: All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are
+             unsubmitted jobs remaining.
+    COMPLETE:All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle
+             to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
+    """
+
+#    for task in expt_dict:
+#        if expt_dict
+
+
+def write_monitor_file(monitor_file: str, expt_dict: dict):
+    try:
+        with open(monitor_file,"w") as f:
+            f.write("### WARNING ###\n")
+            f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY monitor_jobs.py\n")
+            f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
+            f.writelines(cfg_to_yaml_str(expt_dict))
+    except:
+        logging.fatal("\n********************************\n")
+        logging.fatal(f"WARNING WARNING WARNING\nFailure occurred while writing monitor file {monitor_file}")
+        logging.fatal("File may be corrupt or invalid for re-run!!")
+        logging.fatal("\n********************************\n")
+        raise
+
+def sqlite_read(db: str, ex: str) -> list:
+#    # Create Named Tuple for better data organization
+#    Task = namedtuple("taskname","cycle","state")
+
+    with closing(sqlite3.connect(db)) as connection:
+        with closing(connection.cursor()) as cur:
+            db = cur.execute(ex).fetchall()
+    return db
+
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
