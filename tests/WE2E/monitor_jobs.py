@@ -69,15 +69,48 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
         except:
             logging.warning(f"Unable to read database {rocoto_db}\nWill not track experiment {expt}")
             expt_dict[expt]["status"] = "ERROR"
+            num_expts -= 1
             continue
         for task in db:
             # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
             # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
             cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
             expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
-#        expt_dict[expt] = update_expt_status(expt_dict[expt]["status"])
+        expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
 
     write_monitor_file(monitor_file,expt_dict)
+
+    logging.info(f'Setup complete; monitoring {num_expts} experiments')
+
+    #Make a copy of experiment dictionary; will use this copy to monitor active experiments
+    running_expts = expt_dict
+
+    i = 0
+    while running_expts:
+        i += 1
+        for expt in running_expts:
+            logging.debug(f"Updating status of {expt}")
+            rocoto_db = f"{running_expts[expt]['expt_dir']}/FV3LAM_wflow.db"
+            subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"])
+            try:
+                db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
+            except:
+                logging.warning(f"Unable to read database {rocoto_db}\nWill not track experiment {expt}")
+                expt_dict[expt]["status"] = "ERROR"
+                continue
+            for task in db:
+                # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
+                # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
+                cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
+                expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
+            expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
+            running_expts[expt] = expt_dict[expt]
+            if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
+                logging.debug(f'Experiment {expt} is {running_expts[expt]["status"]}; will no longer monitor.')
+                running_expts.pop(expt)
+        write_monitor_file(monitor_file,expt_dict)
+        logging.debug(f"Finished loop {i}")
+        
 
 
     endtime = datetime.now()
@@ -88,7 +121,7 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
     return monitor_file
 
 
-def update_expt_status(expt_dict: dict) -> dict:
+def update_expt_status(expt: dict, name: str) -> dict:
     """
     This function reads the dictionary showing the status of a given experiment (as read from the
     rocoto database file) and uses a simple set of rules to combine the statuses of every task into 
@@ -98,19 +131,21 @@ def update_expt_status(expt_dict: dict) -> dict:
     CREATED: The experiments have been created, but the monitor script has not yet processed them.
              This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
              should never see this status in this function. Including just for completeness sake.
-    SUBMITTING: All jobs are in status SUBMITTING. This is a normal state; we will continue to
-             monitor this experiment.
-    ERROR:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
+    SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will 
+             continue to monitor this experiment.
+    DYING:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
              We will continue to monitor this experiment until all tasks are either status DEAD or
              status SUCCEEDED (see next entry).
     DEAD:    One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We
              will no longer monitor this experiment.
-    UNKNOWN: One or more tasks are at status UNKNOWN, meaning that rocoto has failed to track the
+    ERROR:   One or more tasks are at status UNKNOWN, meaning that rocoto has failed to track the
              job associated with that task. This will require manual intervention to solve, so we
              will no longer monitor this experiment.
-    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED or
-             SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
-    QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUCCEEDED.
+             This status may also appear if we fail to read the rocoto database file.
+    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED, SUBMITTED,
+             or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
+    QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUBMITTED or
+             SUCCEEDED.
              This is a normal state; we will continue to monitor this experiment.
     SUCCEEDED: All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are
              unsubmitted jobs remaining.
@@ -118,8 +153,47 @@ def update_expt_status(expt_dict: dict) -> dict:
              to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
     """
 
-#    for task in expt_dict:
-#        if expt_dict
+    #If we are no longer tracking this experiment, return unchanged
+    if expt["status"] in ['DEAD','ERROR','COMPLETE']:
+        return expt
+    statuses = list()
+    for task in expt:
+        # Skip non-task entries
+        if task in ["expt_dir","status"]:
+            continue
+        statuses.append(expt[task])
+
+    print(statuses)
+
+    if "DEAD" in statuses:
+        if ( "RUNNING" in statuses ) or ( "SUBMITTING" in statuses ) or ( "QUEUED" in statuses ):
+            expt["status"] = "DYING"
+        else:
+            expt["status"] = "DEAD"
+        return expt
+
+    if "UNKNOWN" in statuses:
+        expt["status"] = "ERROR" 
+
+    if "RUNNING" in statuses:
+        expt["status"] = "RUNNING"
+    elif "QUEUED" in statuses:
+        expt["status"] = "QUEUED"
+    elif "SUBMITTING" in statuses:
+        expt["status"] = "SUBMITTING"
+    elif "SUCCEEDED" in statuses:
+        if expt["status"] == "SUCCEEDED":
+            expt["status"] = "COMPLETE"
+        else:
+            expt["status"] = "SUCCEEDED"
+    else:
+        logging.fatal("Some kind of horrible thing has happened")
+        raise ValueError(dedent(f"""Some kind of horrible thing has happened to the experiment status
+              for experiment {name}
+              status is {expt["status"]}
+              all task statuses are {statuses}"""))
+
+    return expt
 
 
 def write_monitor_file(monitor_file: str, expt_dict: dict):
