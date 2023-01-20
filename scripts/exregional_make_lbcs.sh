@@ -339,7 +339,12 @@ fi
 #-----------------------------------------------------------------------
 #
 num_fhrs="${#EXTRN_MDL_FHRS[@]}"
-for (( i=0; i<${num_fhrs}; i++ )); do
+bcgrp10=${bcgrp#0}
+bcgrpnum10=${bcgrpnum#0}
+for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
+  i=$(( ii + bcgrp10 ))
+  if [ ${i} -lt ${num_fhrs} ]; then
+    echo " group ${bcgrp10} processes member ${i}"
 #
 # Get the forecast hour of the external model.
 #
@@ -506,6 +511,7 @@ located in the following directory:
   ln_vrfy -sf ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc \
           ${INPUT_DATA_NWGES}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
 
+  fi
 done
 #
 #-----------------------------------------------------------------------
