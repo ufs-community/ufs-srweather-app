@@ -35,7 +35,7 @@
     checker_tr = .false.
     filtered_terrain = .true.
     gfs_dwinds = .true.
-    levp = 65
+    levp = 66
     nt_checker = 0
 /
 
@@ -94,14 +94,15 @@
     make_nh = .true.
     mountain = .false.
     n_split = 5
-    n_sponge = 24
+    n_sponge = 9
+    sg_cutoff = 10000.0
     n_zs_filter = 0
     na_init = 1
     ncep_ic = .false.
     nggps_ic = .true.
     no_dycore = .false.
     nord = 3
-    npz = 64
+    npz = 65
     nrows_blend = 10
     ntiles = 1
     nudge_qv = .false.
