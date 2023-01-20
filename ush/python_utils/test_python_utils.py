@@ -49,11 +49,6 @@ class Testing(unittest.TestCase):
     def test_check_var_valid_value(self):
         self.assertTrue(check_var_valid_value("rice", ["egg", "spam", "rice"]))
 
-    def test_count_files(self):
-        (_, target_cnt, _) = run_command("ls -l *.py | wc -l")
-        cnt = count_files("py")
-        self.assertEqual(cnt, int(target_cnt))
-
     def test_filesys_cmds(self):
         dPATH = f"{self.PATH}/test_data/dir"
         mkdir_vrfy(dPATH)
@@ -63,26 +58,8 @@ class Testing(unittest.TestCase):
         cmd_vrfy(f"rm -rf {dPATH}")
         self.assertFalse(os.path.exists("tt.py"))
 
-    def test_get_charvar_from_netcdf(self):
-        FILE = f"{self.PATH}/test_data/sample.nc"
-        val = get_charvar_from_netcdf(FILE, "pressure")
-        self.assertTrue(val and (val.split()[0], "955.5,"))
-
     def test_run_command(self):
         self.assertEqual(run_command("echo hello"), (0, "hello", ""))
-
-    def test_get_elem_inds(self):
-        arr = ["egg", "spam", "egg", "rice", "egg"]
-        self.assertEqual(get_elem_inds(arr, "egg", "first"), 0)
-        self.assertEqual(get_elem_inds(arr, "egg", "last"), 4)
-        self.assertEqual(get_elem_inds(arr, "egg", "all"), [0, 2, 4])
-
-    def test_interpol_to_arbit_CRES(self):
-        RES = 800
-        RES_array = [5, 25, 40, 60, 80, 100, 400, 700, 1000, 1500, 2800, 3000]
-        prop_array = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.65, 0.7, 1.0, 1.1, 1.2, 1.3]
-        prop = interpol_to_arbit_CRES(RES, RES_array, prop_array)
-        self.assertAlmostEqual(prop, 0.8)
 
     def test_create_symlink_to_file(self):
         TARGET = f"{self.PATH}/test_python_utils.py"

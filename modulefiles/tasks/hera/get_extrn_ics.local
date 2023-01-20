@@ -1,7 +1,0 @@
-#%Module#####################################################
-## Module file for get_extrn_ics task.
-#############################################################
-
-module load hpss
-
-module load miniconda_regional_workflow

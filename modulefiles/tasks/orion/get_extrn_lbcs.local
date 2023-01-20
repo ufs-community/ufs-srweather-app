@@ -1,5 +1,0 @@
-#%Module#####################################################
-## Module file for get_extrn_lbcs task.
-#############################################################
-
-module load miniconda_regional_workflow

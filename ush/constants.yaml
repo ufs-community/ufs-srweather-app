@@ -7,7 +7,7 @@ constants:
   #-----------------------------------------------------------------------
   #
   PI_GEOM: 3.14159265358979323846264338327
-  DEGS_PER_RADIAN: 57.2957795131
+  DEGS_PER_RADIAN: 57.29577951308232087679
   RADIUS_EARTH: 6371200.0
   #
   #-----------------------------------------------------------------------
@@ -30,6 +30,15 @@ constants:
   #    the boundary of the domain.
   #
   # Note that the regional grid is referred to as "tile 7" in the code.
+  # Therefore, we will set the constants to a regional, tile 7 with
+  # these config options:
+  #
+  # GTYPE:
+  # Grid type string, set to regional for SRW
+  #
+  # TILE_RGNL: 7
+  # Tile number set to 7 for a regional grid in SRW
+  #
   # We will let:
   #
   # * NH0 denote the width (in units of number of cells on tile 7) of
@@ -45,6 +54,8 @@ constants:
   #
   #-----------------------------------------------------------------------
   #
+  GTYPE: regional
+  TILE_RGNL: 7
   NH0: 0
   NH3: 3
   NH4: 4

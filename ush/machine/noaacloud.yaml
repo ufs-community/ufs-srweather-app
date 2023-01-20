@@ -5,30 +5,26 @@ platform:
   CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ccpa/proc
   MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/mrms/proc
   NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_App/develop/obs_data/ndas/proc
-  METPLUS_PATH: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/metplus-4.1.0-t4mkmbg
+  METPLUS_PATH: /contrib/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/metplus
   MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/ufs-srw-dev.intel/install/intel/2021.3.0/met-10.1.0-mqwqjxt
+  MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/met
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -np $nprocs
+  SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  BUILD_MOD_FN: wflow_noaacloud
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /contrib/EPIC/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /contrib/EPIC/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-task_make_orog:
-  TOPO_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
-task_get_extrn_ics:
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_get_extrn_lbcs:
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_run_fcst:
   FIXaer: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_lut
+  FIXorg: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /contrib/EPIC/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /contrib/EPIC/UFS_SRW_App/develop/NaturalEarth
+  EXTRN_MDL_DATA_STORES: aws nomads
 data:
-  FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
+  ics_lbcs:
+    FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}

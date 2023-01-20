@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -166,13 +166,13 @@ fi
 #
 # Set the names of the forecast model's write-component output files.
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
-    dyn_file="${DATA}/dynf${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA}/phyf${fhr}${mnts_secs_str}.nc"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
 else
-    dyn_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-    phy_file="${DATA_SHARED}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+    DATAFCST=$DATA
 fi
+dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -291,6 +291,12 @@ for fid in "${fids[@]}"; do
 done
 
 rm_vrfy -rf ${DATA_FHR}
+
+# Delete the forecast directory
+fhr_l=$(printf "%03d" $FCST_LEN_HRS)
+if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ] && [ $fhr = $fhr_l ]; then
+   rm -rf $DATAFCST
+fi
 #
 #-----------------------------------------------------------------------
 #

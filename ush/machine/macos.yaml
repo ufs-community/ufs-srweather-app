@@ -1,19 +1,31 @@
 platform:
-  WORKFLOW_MANAGER: none
+  WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 8
-  SCHED: none
-  RUN_CMD_FCST: 'mpirun -n ${PE_MEMBER01} '
-  RUN_CMD_POST: 'mpirun -n 4 '
+  TASKTHROTTLE: 1
+  SCHED: slurm
+  CCPA_OBS_DIR: /Users/username/DATA/UFS/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /Users/username/DATA/UFS/obs_data/mrms/proc
+  NDAS_OBS_DIR: /Users/username/DATA/UFS/obs_data/ndas/proc
+  DOMAIN_PREGEN_BASEDIR: /Users/username/DATA/UFS/FV3LAM_pregen
+  METPLUS_PATH: ""
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: ""
+  RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
+  RUN_CMD_POST: mpirun
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: mpirun -n 4
-  PRE_TASK_CMDS: '{ ulimit -a; }'
-task_make_orog:
-  TOPO_DIR: /Users/username/DATA/UFS/fix/fix_orog
-task_make_sfc_climo:
-  SFC_CLIMO_INPUT_DIR: /Users/username/DATA/UFS/fix/fix_sfc_climo
-task_run_fcst:
+  RUN_CMD_UTILS: mpirun
+  PRE_TASK_CMDS: '{ ulimit -a; ulimit -s unlimited; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /Users/username/DATA/UFS/input_model_data
+  TEST_PREGEN_BASEDIR: /Users/username/DATA/UFS/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /Users/username/DATA/UFS/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /Users/username/DATA/UFS/dummy_FV3GFS_sys_dir
   FIXaer: /Users/username/DATA/UFS/fix/fix_aer
   FIXgsm: /Users/username/DATA/UFS/fix/fix_am
   FIXlut: /Users/username/DATA/UFS/fix/fix_lut
+  FIXorg: /Users/username/DATA/UFS/fix/fix_orog
+  FIXsfc: /Users/username/DATA/UFS/fix/fix_sfc_climo
+  FIXshp: /Users/username/DATA/UFS/NaturalEarth
+  EXTRN_MDL_DATA_STORES: aws nomads
 data:
-  FV3GFS: /Users/username/DATA/UFS/FV3GFS
+  ics_lbcs:
+    FV3GFS: /Users/username/DATA/UFS/FV3GFS

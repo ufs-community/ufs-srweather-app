@@ -43,7 +43,7 @@ HOMEdir=${scrfunc_dir%/*/*}
 #
 #-----------------------------------------------------------------------
 #
-USHdir="$HOMEdir/ush"
+export USHdir="$HOMEdir/ush"
 TESTSdir="$HOMEdir/tests"
 WE2Edir="$TESTSdir/WE2E"
 #
@@ -62,6 +62,18 @@ WE2Edir="$TESTSdir/WE2E"
 #-----------------------------------------------------------------------
 #
 . ${WE2Edir}/get_WE2Etest_names_subdirs_descs.sh
+#
+#-----------------------------------------------------------------------
+#
+# Run python checks
+#
+#-----------------------------------------------------------------------
+#
+python3 $USHdir/check_python_version.py
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -384,6 +396,16 @@ The argument \"machine\" specifying the machine or platform on which to
 run the WE2E tests was not specified in the call to this script.  \
 ${help_msg}"
 fi
+  # Cheyenne-specific test limitation
+
+if [ "${machine,,}" = "cheyenne" ]; then
+  use_cron_to_relaunch=FALSE
+  echo "
+Due to system limitations, the 'use_cron_to_relaunch' command can not be used on
+the '${machine}' machine. Setting this variable to false.
+
+"
+fi
 
 if [ -z "${account}" ]; then
   print_err_msg_exit "\
@@ -418,10 +440,24 @@ elif [ -n "${tests_file}" ] || [ -n "${test_type}" ] ; then
   # one managed in the repo
 
   if [ -n "${test_type}" ] ; then
-    # Check for a pre-defined set. It could be machine dependent or not.
-    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+    # Check for a pre-defined set. It could be machine dependent or has the mode
+    # (community or nco), or default
+    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.nco
     if [ ! -f ${user_spec_tests_fp} ]; then
-        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+        user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}.com
+        if [ ! -f ${user_spec_tests_fp} ]; then
+            user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}.${compiler}
+            if [ ! -f ${user_spec_tests_fp} ]; then
+                user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}.${machine}
+                if [ ! -f ${user_spec_tests_fp} ]; then
+                    user_spec_tests_fp=${scrfunc_dir}/machine_suites/${test_type}
+                fi
+            fi
+        else
+            run_envir=${run_envir:-"community"}
+        fi
+    else
+        run_envir=${run_envir:-"nco"}
     fi
   elif [ -n "${tests_file}" ] ; then
     user_spec_tests_fp=$( readlink -f "${tests_file}" )
@@ -761,7 +797,12 @@ Please correct and rerun."
 #
 #-----------------------------------------------------------------------
 #
+
+  # Save the environment variable since a default will override when
+  # sourced.
+  save_USHdir=${USHdir}
   source_config ${USHdir}/config_defaults.yaml
+  USHdir=${save_USHdir}
   MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
   source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
@@ -889,6 +930,20 @@ RUN_ENVIR=${run_envir}"
 fi
 
 #
+# Eval DATE_FIRST/LAST_CYCL commands
+#
+if [[ $DATE_FIRST_CYCL != [0-9]* ]]; then
+  DATE_FIRST_CYCL=$(eval ${DATE_FIRST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_FIRST_CYCL=${DATE_FIRST_CYCL}"
+fi
+if [[ $DATE_LAST_CYCL != [0-9]* ]]; then
+  DATE_LAST_CYCL=$(eval ${DATE_LAST_CYCL})
+  expt_config_str=${expt_config_str}"
+DATE_LAST_CYCL=${DATE_LAST_CYCL}"
+fi
+
+#
 #-----------------------------------------------------------------------
 #
 # Modifications to the experiment configuration file if the WE2E test 
@@ -915,6 +970,11 @@ specified for this machine (MACHINE):
     fi
 
     pregen_dir="${pregen_basedir}/${PREDEF_GRID_NAME}"
+    expt_config_str=${expt_config_str}"
+#
+# Directory containing the pregenerated grid files.
+#
+DOMAIN_PREGEN_BASEDIR=\"${pregen_basedir}\""
 
   fi
 #
@@ -972,13 +1032,11 @@ model_ver="we2e""
 #
 # Set OPSROOT.
 #
-    OPSROOT=${opsroot:-$( readlink -f "$HOMEdir/../nco_dirs" )}
-
     expt_config_str=${expt_config_str}"
 #
 # Set NCO mode OPSROOT
 #
-OPSROOT=\"${OPSROOT}\""
+OPSROOT=\"${opsroot:-$OPSROOT}\""
 
   fi
 #
@@ -1266,12 +1324,47 @@ exist or is not a directory:
 #
 #-----------------------------------------------------------------------
 #
-  $USHdir/generate_FV3LAM_wflow.py || \
+  $USHdir/generate_FV3LAM_wflow.py
+
+  if [ $? != 0 ] ; then
     print_err_msg_exit "\
 Could not generate an experiment for the test specified by test_name:
   test_name = \"${test_name}\""
+  fi
 
 done
+
+# Print notes about monitoring/running jobs if use_cron_to_relaunch = FALSE
+topdir=${scrfunc_dir%/*/*/*}
+expt_dirs_fullpath="${topdir}/expt_dirs"
+
+echo "
+  ========================================================================
+  ========================================================================
+
+  All experiments have been generated in the directory
+  ${expt_dirs_fullpath}
+
+  ========================================================================
+  ========================================================================
+"
+
+if [ "${use_cron_to_relaunch,,}" = "false" ]; then
+  echo "
+
+The variable 'use_cron_to_relaunch' has been set to FALSE. Jobs will not be automatically run via crontab.
+
+You can run each task manually in the experiment directory:
+(${expt_dirs_fullpath})
+
+Or you can use the 'run_srw_tests.py' script in the ush/ directory:
+
+  cd $USHdir
+  ./run_srw_tests.py -e=${expt_dirs_fullpath}
+
+"
+fi
+
 #
 #-----------------------------------------------------------------------
 #

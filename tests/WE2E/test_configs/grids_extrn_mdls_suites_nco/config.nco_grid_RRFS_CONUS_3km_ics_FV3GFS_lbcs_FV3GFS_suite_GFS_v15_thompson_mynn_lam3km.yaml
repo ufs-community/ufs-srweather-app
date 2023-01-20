@@ -7,6 +7,7 @@ user:
   RUN_ENVIR: nco
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15_thompson_mynn_lam3km
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2019061500'
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
@@ -23,5 +24,4 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
-  PREDEF_GRID_NAME: RRFS_CONUS_3km
   USE_MERRA_CLIMO: true

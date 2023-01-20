@@ -3,8 +3,8 @@
 #----------------------------
 metadata:
   description: >-
-    Default configuration for an experiment. The valid values each parameter
-    takes are specified in valid_param_vals.yaml
+    Default configuration for an experiment. The valid values for most of the
+    parameters are specified in valid_param_vals.yaml
   version: !!str '1.0'
 #----------------------------
 # USER config parameters
@@ -38,7 +38,6 @@ user:
   #
   #-----------------------------------------------------------------------
   #
-  # mach_doc_start
   # Set machine and queue parameters.  Definitions:
   #
   # MACHINE:
@@ -46,7 +45,7 @@ user:
   # supported platform, and you want to use the Rocoto workflow manager,
   # you will need set MACHINE: "linux" and WORKFLOW_MANAGER: "rocoto". This
   # combination will assume a Slurm batch manager when generating the XML.
-  # Please see ush/valid_param_vals.sh for a full list of supported
+  # Please see ush/valid_param_vals.yaml for a full list of supported
   # platforms.
   #
   # ACCOUNT:
@@ -54,7 +53,20 @@ user:
   #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
-  ACCOUNT: "project_name"
+  ACCOUNT: ""
+
+  HOMEdir: '{{ user.HOMEdir }}'
+  USHdir: '{{ user.USHdir }}'
+  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
+  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
+  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
+  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
+  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
+  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
+  METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
+  MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
+  UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
 
 #----------------------------
 # PLATFORM config parameters
@@ -72,13 +84,12 @@ platform:
   # the XML. Valid options: "rocoto" or "none"
   #
   # NCORES_PER_NODE:
-  # The number of cores available per node on the compute platform. Set
-  # for supported platforms in setup.sh, but is now also configurable for
-  # all platforms.
+  # The number of cores available per node on the compute platform, now 
+  # configurable for all platforms.
   #
-  # LMOD_PATH:
-  # Path to the LMOD sh file on your Linux system. Is set automatically
-  # for supported machines.
+  # TASKTHROTTLE:
+  # The number of active tasks run simultaneously. For linux/mac setting this
+  # to 1 makes sense
   #
   # BUILD_MOD_FN:
   # Name of alternative build module file to use if using an
@@ -147,17 +158,15 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
-  # mach_doc_end
-  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
   NCORES_PER_NODE: ""
-  LMOD_PATH: ""
-  BUILD_MOD_FN: ""
-  WFLOW_MOD_FN: ""
-  BUILD_VER_FN: ""
-  RUN_VER_FN: ""
+  TASKTHROTTLE: 1000
+  BUILD_MOD_FN: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}'
+  WFLOW_MOD_FN: 'wflow_{{ user.MACHINE|lower() }}'
+  BUILD_VER_FN: 'build.ver.{{ user.MACHINE|lower() }}'
+  RUN_VER_FN: 'run.ver.{{ user.MACHINE|lower() }}'
   SCHED: ""
   PARTITION_DEFAULT: ""
   QUEUE_DEFAULT: ""
@@ -177,13 +186,14 @@ platform:
   # will run without MPI.
   #
   # RUN_CMD_FCST:
-  # The run command for the model forecast step. This will be appended to 
-  # the end of the variable definitions file, so it can reference other 
-  # variables.
+  # The run command for the model forecast step. 
   #
   # RUN_CMD_POST:
   # The run command for post-processing (UPP). Can be left blank for smaller 
   # domains, in which case UPP will run without MPI.
+  #
+  # RUN_CMD_SERIAL:
+  # The run command for some serial jobs 
   #
   #-----------------------------------------------------------------------
   #
@@ -211,8 +221,14 @@ platform:
   # MET_INSTALL_DIR:
   # Location to top-level directory of MET installation.
   #
+  # MET_BIN_EXEC:
+  # Subdirectory containing MET binaries e.g. "bin"
+  #
   # METPLUS_PATH:
   # Location to top-level directory of METplus installation.
+  #
+  # MET_BIN_EXEC
+  # Name of subdirectory where METplus executables are installed.
   #
   # CCPA_OBS_DIR:
   # User-specified location of top-level directory where CCPA hourly
@@ -328,13 +344,55 @@ platform:
   PRE_TASK_CMDS: ""
   #
   #-----------------------------------------------------------------------
-  # Test directories
+  # Test directories used in run_WE2E script
   #-----------------------------------------------------------------------
   #
   TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
+  #
+  # FIXgsm:
+  # System directory in which the majority of fixed (i.e. time-independent) 
+  # files that are needed to run the FV3-LAM model are located
+  #
+  # FIXaer:
+  # System directory where MERRA2 aerosol climatology files are located
+  #
+  # FIXlut:
+  # System directory where the lookup tables for optics properties are located
+  #
+  # FIXorg:
+  # System directory where orography data is located
+  #
+  # FIXsfc:
+  # System directory where surface climatology data is located
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXgsm: ""
+  FIXaer: ""
+  FIXlut: ""
+  FIXorg: ""
+  FIXsfc: ""
+  FIXshp: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # EXTRN_MDL_DATA_STORES:
+  # A list of data stores where the scripts should look for external model
+  # data. The list is in priority order. If disk information is provided
+  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
+  # the disk location will be highest priority. Options are disk, hpss,
+  # aws, and nomads.
+  #
+  #-----------------------------------------------------------------------
+  #
+  EXTRN_MDL_DATA_STORES: ""
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -348,6 +406,25 @@ workflow:
   #-----------------------------------------------------------------------
   #
   WORKFLOW_ID: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # How to make links. Relative links by default. Empty string for
+  # absolute paths in links.
+  #
+  #-----------------------------------------------------------------------
+  #
+  RELATIVE_LINK_FLAG: "--relative"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # CPL:
+  # Flag indicating whether another component should run in coupled mode
+  # with the forecast.
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -367,10 +444,12 @@ workflow:
   #
   USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
+  CRONTAB_LINE: ""
+  LOAD_MODULES_RUN_TASK_FP: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}'
+
   #
   #-----------------------------------------------------------------------
   #
-  # dir_doc_start
   # Set directories.  Definitions:
   #
   # EXPT_BASEDIR:
@@ -388,16 +467,15 @@ workflow:
   # This cannot be empty.  If set to a null string here, it must be set to
   # a (non-empty) value in the user-defined experiment configuration file.
   #
-  # dir_doc_end
-  #
   # EXEC_SUBDIR:
   # The name of the subdirectory of ufs-srweather-app where executables are
   # installed.
   #-----------------------------------------------------------------------
   #
-  EXPT_BASEDIR: ""
-  EXPT_SUBDIR: ""
+  EXPT_BASEDIR: '{{ workflow.EXPT_BASEDIR }}'
+  EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
+  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -448,9 +526,10 @@ workflow:
   # directory (EXECDIR; this is set during experiment generation).
   #
   # DIAG_TABLE_TMPL_FN:
-  # Name of a template file that specifies the output fields of the forecast 
-  # model (ufs-weather-model: diag_table) followed by [dot_ccpp_phys_suite]. 
-  # Its default value is the name of the file that the ufs weather model 
+  # Name of a template file that specifies the output fields of the
+  # forecast model (ufs-weather-model: diag_table) followed by the name
+  # of the ccpp_phys_suite.  Its default value is the name of the file
+  # that the ufs weather model 
   # expects to read in.
   #
   # FIELD_TABLE_TMPL_FN:
@@ -511,20 +590,79 @@ workflow:
   FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
   FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
+  FV3_NML_FN: "input.nml"
   FV3_EXEC_FN: "ufs_model"
   
-  DATA_TABLE_TMPL_FN: ""
-  DIAG_TABLE_TMPL_FN: ""
-  FIELD_TABLE_TMPL_FN: ""
-  MODEL_CONFIG_TMPL_FN: ""
-  NEMS_CONFIG_TMPL_FN: ""
-  
+  DATA_TABLE_FN: "data_table"
+  DIAG_TABLE_FN: "diag_table"
+  FIELD_TABLE_FN: "field_table"
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
+  MODEL_CONFIG_FN: "model_configure"
+  NEMS_CONFIG_FN: "nems.configure"
+
+  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
+  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
+  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
+  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+
+  # These are staged in the exptdir at configuration time
+  DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
+  FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
+  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
+  FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
   GLOBAL_VAR_DEFNS_FN: "var_defns.sh"
   EXTRN_MDL_VAR_DEFNS_FN: "extrn_mdl_var_defns"
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
+
+  GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
+  WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
+  WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the fix file paths
+  #
+  # FIXdir:
+  # Location where fix files will be stored for a given experiment
+  #
+  # FIXam:
+  # Directory containing the fixed files (or symlinks) for various fields on
+  # global grids (which are usually much coarser than the native FV3-LAM grid).
+  #
+  # FIXclim:
+  # Directory containing the MERRA2 aerosol climatology data file and
+  # lookup tables for optics properties
+  #
+  # FIXlam:
+  # Directory containing the fixed files (or symlinks) for the grid,
+  # orography, and surface climatology on the native FV3-LAM grid.
+  #
+  # THOMPSON_MP_CLIMO_FN and _FP:
+  # Name and path of file that contains aerosol climatology data. It can
+  # be used to generate approximate versions of the aerosol fields
+  # needed by Thompson microphysics.  This file will be used to
+  # generate such approximate aerosol fields in the ICs and LBCs if
+  # Thompson MP is included in the physics suite and if the exteranl
+  # model for ICs or LBCs does not already provide these fields.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
+  FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
+  FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
+
+  THOMPSON_MP_CLIMO_FN: "Thompson_MP_MONTHLY_CLIMO.nc"
+  THOMPSON_MP_CLIMO_FP: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -537,9 +675,24 @@ workflow:
   # the XML physics suite definition file that are staged in the experiment 
   # directory or the cycle directories under it.
   #
+  # *_FN and *_FP variables set the name and paths to the suite
+  # definition files used for the experiment
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
+  CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
+  CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
+  CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the field dictionary file name and paths.
+  #
+  #-----------------------------------------------------------------------
+  #
+  FIELD_DICT_FN: "fd_nems.yaml"
+  FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
+  FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -579,6 +732,40 @@ workflow:
   #-----------------------------------------------------------------------
   #
   GRID_GEN_METHOD: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
+  # grid, as follows:
+  #
+  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
+  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
+  #   the write-component grid parameters are set to predefined values for 
+  #   the specified grid, overwriting any settings of these parameters in 
+  #   the user-specified experiment configuration file.  In addition, if 
+  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
+  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
+  #   they are also set to predefined values for the specified grid.
+  #
+  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
+  #   is providing the native grid parameters in the user-specified 
+  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
+  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
+  #   and the write-component grid parameters as well as the time step 
+  #   forecast model's main time step DT_ATMOS and the computational 
+  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
+  #   configuration file; otherwise, the values of all of these parameters 
+  #   in this default experiment configuration file will be used.
+  #
+  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
+  # commonly used set of grid-dependent parameters.  The predefined grid 
+  # parameters are specified in the script 
+  #
+  #   $HOMEdir/ush/set_predef_grid_params.py
+  #
+  #-----------------------------------------------------------------------
+  #
+  PREDEF_GRID_NAME: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -658,18 +845,26 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # COMPILER:
-  # Type of compiler invoked during the build step. 
+  # Type of compiler invoked during the build step. Currently, this must 
+  # be set manually; it is not inherited from the build system in the 
+  # ufs-srweather-app directory.
+  #
+  # SYMLINK_FIX_FILES:
+  # Symlink fix files to experiment directory if true; otherwise copy the files.
+  #
+  # GET_OBS:
+  # Task modulefile name for all get_obs_* tasks
+  #
+  # VX_TN:
+  # Task modulefile name for all verification tasks
   #
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
+  SYMLINK_FIX_FILES: true
 
-  #is this the right place?
   GET_OBS: "get_obs"
   VX_TN: "run_vx"
-  VX_ENSGRID_TN: "run_ensgridvx"
-  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 1
 
 #----------------------------
 # NCO specific variables
@@ -701,6 +896,9 @@ nco:
   #
   # OPSROOT:
   # The operations root directory in NCO mode.
+  #
+  # LOGBASEDIR:
+  # Directory in which the log files from the workflow tasks will be placed.
   # 
   # For more information on NCO standards
   #   
@@ -712,7 +910,33 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
-  OPSROOT: ""
+  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT: '{{ OPSROOT }}/com'
+  PACKAGEROOT: '{{ OPSROOT }}/packages'
+  DATAROOT: '{{ OPSROOT }}/tmp'
+  DCOMROOT: '{{ OPSROOT }}/dcom'
+  LOGBASEDIR: '{{ OPSROOT }}/output'
+  EXTROOT: '{{ OPSROOT }}/ext'
+  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # The following are also described in the NCO doc above
+  #
+  #-----------------------------------------------------------------------
+  #
+  DBNROOT: ""
+  SENDECF: false
+  SENDDBN: false
+  SENDDBN_NTC: false
+  SENDCOM: false
+  SENDWEB: false
+  KEEPDATA: true
+  MAILTO: ""
+  MAILCC: ""
+
 
 #----------------------------
 # WORKFLOW SWITCHES config parameters
@@ -758,6 +982,18 @@ workflow_switches:
   # RUN_TASK_RUN_POST:
   # Flag that determines whether the RUN_POST_TN task is to be run.
   # 
+  # RUN_TASK_GET_OBS_CCPA:
+  # Flag that determines whether to run the GET_OBS_CCPA_TN task, which
+  # retrieves the CCPA hourly precipitation files used by METplus from NOAA HPSS. 
+  # 
+  # RUN_TASK_GET_OBS_MRMS:
+  # Flag that determines whether to run the GET_OBS_MRMS_TN task, which
+  # retrieves the MRMS composite reflectivity files used by METplus from NOAA HPSS. 
+  #
+  # RUN_TASK_GET_OBS_NDAS:
+  # Flag that determines whether to run the GET_OBS_NDAS_TN task, which
+  # retrieves the NDAS PrepBufr files used by METplus from NOAA HPSS. 
+  #
   # RUN_TASK_VX_GRIDSTAT:
   # Flag that determines whether the grid-stat verification task is to be
   # run.
@@ -774,6 +1010,9 @@ workflow_switches:
   # Flag that determines whether the ensemble point verification task is
   # to be run. If this flag is set, both ensemble-stat point verification
   # and point verification of ensemble-stat output is computed.
+  #
+  # RUN_TASK_PLOT_ALLVARS:
+  # Flag that determines whether to run python plotting scripts
   #
   #-----------------------------------------------------------------------
   #
@@ -796,6 +1035,7 @@ workflow_switches:
   RUN_TASK_VX_ENSGRID: false
   RUN_TASK_VX_ENSPOINT: false
 
+  RUN_TASK_PLOT_ALLVARS: false
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -814,8 +1054,96 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: ""
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else "" }}'
   #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters specific to the "ESGgrid" method of generating a regional
+  # grid (i.e. for GRID_GEN_METHOD set to "ESGgrid").  Definitions:
+  #
+  # ESGgrid_LON_CTR:
+  # The longitude of the center of the grid (in degrees).
+  #
+  # ESGgrid_LAT_CTR:
+  # The latitude of the center of the grid (in degrees).
+  #
+  # ESGgrid_DELX:
+  # The cell size in the zonal direction of the regional grid (in meters).
+  #
+  # ESGgrid_DELY:
+  # The cell size in the meridional direction of the regional grid (in 
+  # meters).
+  #
+  # ESGgrid_NX:
+  # The number of cells in the zonal direction on the regional grid.
+  #
+  # ESGgrid_NY:
+  # The number of cells in the meridional direction on the regional grid.
+  #
+  # ESGgrid_WIDE_HALO_WIDTH:
+  # The width (in units of number of grid cells) of the halo to add around
+  # the regional grid before shaving the halo down to the width(s) expected
+  # by the forecast model.  
+  #
+  # ESGgrid_PAZI:
+  # The rotational parameter for the ESG grid (in degrees).
+  #
+  # In order to generate grid files containing halos that are 3-cell and
+  # 4-cell wide and orography files with halos that are 0-cell and 3-cell
+  # wide (all of which are required as inputs to the forecast model), the
+  # grid and orography tasks first create files with halos around the regional
+  # domain of width ESGgrid_WIDE_HALO_WIDTH cells.  These are first stored 
+  # in files.  The files are then read in and "shaved" down to obtain grid
+  # files with 3-cell-wide and 4-cell-wide halos and orography files with
+  # 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  For this reason, we
+  # refer to the original halo that then gets shaved down as the "wide" 
+  # halo, i.e. because it is wider than the 0-cell-wide, 3-cell-wide, and
+  # 4-cell-wide halos that we will eventually end up with.  Note that the
+  # grid and orography files with the wide halo are only needed as intermediates
+  # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
+  # they are not needed by the forecast model.  
+  # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
+  #       variable.  Just set it in the function set_gridparams_ESGgrid.py.
+  #
+  # Note that:
+  #
+  # 1) If the experiment is using one of the predefined grids (i.e. if 
+  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined
+  #    grids), then:
+  #
+  #    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
+  #       these parameters will not be used and thus do not need to be reset
+  #       to non-empty strings.
+  #
+  #    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
+  #       these parameters will get reset to the values for that grid.  
+  #       This will happen regardless of whether or not they are assigned 
+  #       values in the user-specified experiment configuration file, i.e. 
+  #       any values they may be assigned in the experiment configuration 
+  #       file will be overwritten.
+  #
+  # 2) If the experiment is not using one of the predefined grids (i.e. if 
+  #    PREDEF_GRID_NAME is set to a null string), then:
+  #
+  #    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
+  #       experiment configuration file, then these parameters will not be 
+  #       used and thus do not need to be reset to non-empty strings.
+  #
+  #    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
+  #       experiment configuration file, then these parameters must be set
+  #       in that configuration file.
+  #
+  #-----------------------------------------------------------------------
+  #
+  ESGgrid_LON_CTR: ""
+  ESGgrid_LAT_CTR: ""
+  ESGgrid_DELX: ""
+  ESGgrid_DELY: ""
+  ESGgrid_NX: ""
+  ESGgrid_NY: ""
+  ESGgrid_WIDE_HALO_WIDTH: ""
+  ESGgrid_PAZI: ""
+
   #-----------------------------------------------------------------------
   #
   # Set parameters specific to the "GFDLgrid" method of generating a regional
@@ -903,7 +1231,7 @@ task_make_grid:
   # GFDLgrid_NUM_CELLS:
   # Number of points in each of the two horizontal directions (x and y) on
   # each tile of the parent global grid.  Note that the name of this parameter
-  # is really a misnomer because although it has the stirng "RES" (for 
+  # is really a misnomer because although it has the string "RES" (for 
   # "resolution") in its name, it specifies number of grid cells, not grid
   # size (in say meters or kilometers).  However, we keep this name in order
   # to remain consistent with the usage of the word "resolution" in the 
@@ -995,94 +1323,6 @@ task_make_grid:
   GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G: ""
   GFDLgrid_USE_NUM_CELLS_IN_FILENAMES: ""
   #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters specific to the "ESGgrid" method of generating a regional
-  # grid (i.e. for GRID_GEN_METHOD set to "ESGgrid").  Definitions:
-  #
-  # ESGgrid_LON_CTR:
-  # The longitude of the center of the grid (in degrees).
-  #
-  # ESGgrid_LAT_CTR:
-  # The latitude of the center of the grid (in degrees).
-  #
-  # ESGgrid_DELX:
-  # The cell size in the zonal direction of the regional grid (in meters).
-  #
-  # ESGgrid_DELY:
-  # The cell size in the meridional direction of the regional grid (in 
-  # meters).
-  #
-  # ESGgrid_NX:
-  # The number of cells in the zonal direction on the regional grid.
-  #
-  # ESGgrid_NY:
-  # The number of cells in the meridional direction on the regional grid.
-  #
-  # ESGgrid_WIDE_HALO_WIDTH:
-  # The width (in units of number of grid cells) of the halo to add around
-  # the regional grid before shaving the halo down to the width(s) expected
-  # by the forecast model.  
-  #
-  # ESGgrid_PAZI:
-  # The rotational parameter for the ESG grid (in degrees).
-  #
-  # In order to generate grid files containing halos that are 3-cell and
-  # 4-cell wide and orography files with halos that are 0-cell and 3-cell
-  # wide (all of which are required as inputs to the forecast model), the
-  # grid and orography tasks first create files with halos around the regional
-  # domain of width ESGgrid_WIDE_HALO_WIDTH cells.  These are first stored 
-  # in files.  The files are then read in and "shaved" down to obtain grid
-  # files with 3-cell-wide and 4-cell-wide halos and orography files with
-  # 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  For this reason, we
-  # refer to the original halo that then gets shaved down as the "wide" 
-  # halo, i.e. because it is wider than the 0-cell-wide, 3-cell-wide, and
-  # 4-cell-wide halos that we will eventually end up with.  Note that the
-  # grid and orography files with the wide halo are only needed as intermediates
-  # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
-  # they are not needed by the forecast model.  
-  # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
-  #       variable.  Just set it in the function set_gridparams_ESGgrid.sh.
-  #
-  # Note that:
-  #
-  # 1) If the experiment is using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined
-  #    grids), then:
-  #
-  #    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
-  #       these parameters will not be used and thus do not need to be reset
-  #       to non-empty strings.
-  #
-  #    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
-  #       these parameters will get reset to the values for that grid.  
-  #       This will happen regardless of whether or not they are assigned 
-  #       values in the user-specified experiment configuration file, i.e. 
-  #       any values they may be assigned in the experiment configuration 
-  #       file will be overwritten.
-  #
-  # 2) If the experiment is not using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to a null string), then:
-  #
-  #    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
-  #       experiment configuration file, then these parameters will not be 
-  #       used and thus do not need to be reset to non-empty strings.
-  #
-  #    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
-  #       experiment configuration file, then these parameters must be set
-  #       in that configuration file.
-  #
-  #-----------------------------------------------------------------------
-  #
-  ESGgrid_LON_CTR: ""
-  ESGgrid_LAT_CTR: ""
-  ESGgrid_DELX: ""
-  ESGgrid_DELY: ""
-  ESGgrid_NX: ""
-  ESGgrid_NY: ""
-  ESGgrid_WIDE_HALO_WIDTH: ""
-  ESGgrid_PAZI: ""
-  
 #----------------------------
 # MAKE OROG config parameters
 #-----------------------------
@@ -1095,8 +1335,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: ""
-  TOPO_DIR: ""
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if workflow_switches.RUN_TASK_MAKE_OROG else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1110,8 +1349,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: ""
-  SFC_CLIMO_INPUT_DIR: ""
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if workflow_switches.RUN_TASK_MAKE_SFC_CLIMO else "" }}'
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1120,6 +1358,7 @@ task_get_extrn_ics:
   GET_EXTRN_ICS_TN: "get_extrn_ics"
   NNODES_GET_EXTRN_ICS: 1
   PPN_GET_EXTRN_ICS: 1
+  MEM_GET_EXTRN_ICS: 2G
   WTIME_GET_EXTRN_ICS: 00:45:00
   MAXTRIES_GET_EXTRN_ICS: 1
   #
@@ -1161,6 +1400,11 @@ task_get_extrn_ics:
   # these files is constructed depends on the user-specified external model
   # for ICs, i.e. EXTRN_MDL_NAME_ICS.
   #
+  # Note that this must be defined as a null string here so that if it is 
+  # specified by the user in the experiment configuration file, it remains 
+  # set to those values, and if not, it gets set to machine-dependent 
+  # values.
+  #
   #-----------------------------------------------------------------------
   # 
   EXTRN_MDL_SYSBASEDIR_ICS: ''
@@ -1171,7 +1415,7 @@ task_get_extrn_ics:
   #
   # USE_USER_STAGED_EXTRN_FILES:
   # Flag that determines whether or not the workflow will look for the 
-  # external model files needed for generating LBCs in user-specified
+  # external model files needed for generating ICs in user-specified
   # directories.
   #
   # EXTRN_MDL_SOURCE_BASEDIR_ICS:
@@ -1200,34 +1444,11 @@ task_get_extrn_ics:
   # Or for FV3GFS grib files:
   #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} )
   #
-  # EXTRN_MDL_DATA_STORES:
-  # A list of data stores where the scripts should look for external model
-  # data. The list is in priority order. If disk information is provided
-  # via USE_USER_STAGED_EXTRN_FILES or a known location on the platform,
-  # the disk location will be highest priority. Options are disk, hpss,
-  # aws, and nomads.
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_ICS: ""
   EXTRN_MDL_FILES_ICS: ""
-  EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set NOMADS online data associated parameters. Definitions:
-  #
-  # NOMADS:
-  # Flag controlling whether or not using NOMADS online data.
-  #
-  # NOMADS_file_type:
-  # Flag controlling the format of data.
-  #
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
 
 #----------------------------
 # EXTRN LBCS config parameters
@@ -1236,6 +1457,7 @@ task_get_extrn_lbcs:
   GET_EXTRN_LBCS_TN: "get_extrn_lbcs"
   NNODES_GET_EXTRN_LBCS: 1
   PPN_GET_EXTRN_LBCS: 1
+  MEM_GET_EXTRN_LBCS: 2G
   WTIME_GET_EXTRN_LBCS: 00:45:00
   MAXTRIES_GET_EXTRN_LBCS: 1
   #
@@ -1243,8 +1465,8 @@ task_get_extrn_lbcs:
   #
   # EXTRN_MDL_NAME_LBCS:
   #`The name of the external model that will provide fields from which 
-  # lateral boundary condition (LBC) files will be generated for input into
-  # the forecast model.
+  # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
+  # file) will be generated for input into the forecast model.
   #
   # LBC_SPEC_INTVL_HRS:
   # The interval (in integer hours) with which LBC files will be generated.
@@ -1262,9 +1484,8 @@ task_get_extrn_lbcs:
   # the external model started than when the FV3 forecast configured here
   # should start. For example, the forecast should use lateral boundary
   # conditions from the GFS started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS=6.
-  # Note: the default value is model-dependent and set in
-  # set_extrn_mdl_params.sh
+  # EXTRN_MDL_LBCS_OFFSET_HRS=6. Defaults to 0 except for RAP, which
+  # uses a 3 hour offset.
   #
   # FV3GFS_FILE_FMT_LBCS:
   # If using the FV3GFS model as the source of the LBCs (i.e. if 
@@ -1275,16 +1496,16 @@ task_get_extrn_lbcs:
   #
   EXTRN_MDL_NAME_LBCS: "FV3GFS"
   LBC_SPEC_INTVL_HRS: 6
-  EXTRN_MDL_LBCS_OFFSET_HRS: ""
+  EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_SYSBASEDIR_LBCS:
   # Same as EXTRN_MDL_SYSBASEDIR_ICS but for LBCs.
   #
-  # Note that these must be defined as null strings here so that if they 
-  # are specified by the user in the experiment configuration file, they 
-  # remain set to those values, and if not, they get set to machine-dependent 
+  # Note that this must be defined as a null string here so that if it is 
+  # specified by the user in the experiment configuration file, it remains 
+  # set to those values, and if not, it gets set to machine-dependent 
   # values.
   #
   #-----------------------------------------------------------------------
@@ -1304,23 +1525,11 @@ task_get_extrn_lbcs:
   # EXTRN_MDL_FILES_LBCS:
   # Analogous to EXTRN_MDL_FILES_ICS but for LBCs instead of ICs.
   #
-  # EXTRN_MDL_DATA_STORES:
-  # Analogous to EXTRN_MDL_DATA_STORES in ICS but for LBCs
-  #
   #-----------------------------------------------------------------------
   #
   USE_USER_STAGED_EXTRN_FILES: false
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: ""
   EXTRN_MDL_FILES_LBCS: ""
-  EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  # Analogus to NOMADS for ICSs
-  #-----------------------------------------------------------------------
-  #
-  NOMADS: false
-  NOMADS_file_type: "nemsio"
-
 
 #----------------------------
 # MAKE ICS config parameters
@@ -1379,17 +1588,18 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: []
+  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
   RUN_FCST_TN: "run_fcst"
-  NNODES_RUN_FCST: ""  # This is calculated in the workflow generation scripts, so no need to set here.
-  PPN_RUN_FCST: ""    # will be calculated from NCORES_PER_NODE and OMP_NUM_THREADS in setup.sh
+  NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
+  PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   WTIME_RUN_FCST: 04:30:00
   MAXTRIES_RUN_FCST: 1
+  FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1432,7 +1642,7 @@ task_run_fcst:
   # Set model_configure parameters.  Definitions:
   #
   # DT_ATMOS:
-  # The main forecast model integraton time step.  As described in the 
+  # The main forecast model integration time step.  As described in the 
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
@@ -1440,8 +1650,10 @@ task_run_fcst:
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
   # Default=0: restart files are produced at the end of a forecast run
-  # For example, RESTART_INTERVAL: 1: restart files are produced every hour
-  # with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
   #
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 
@@ -1489,9 +1701,9 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  LAYOUT_X: ""
-  LAYOUT_Y: ""
-  BLOCKSIZE: ""
+  LAYOUT_X: '{{ LAYOUT_X }}'
+  LAYOUT_Y: '{{ LAYOUT_Y }}'
+  BLOCKSIZE: '{{ BLOCKSIZE }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1499,8 +1711,17 @@ task_run_fcst:
   #
   # QUILTING:
   # Flag that determines whether or not to use the write component for 
-  # writing output files to disk.
+  # writing output files to disk. The regional grid requires the use of 
+  # the write component, so users should not change the default value. 
   #
+  # PRINT_ESMF:
+  # Flag for whether or not to output extra (debugging) information from
+  # ESMF routines. Must be true or false. Note that the write
+  # component uses ESMF library routines to interpolate from the native
+  # forecast model grid to the user-specified output grid (which is defined 
+  # in the model configuration file "model_configure" in the forecast's  
+  # run directory).
+  # 
   # WRTCMP_write_groups:
   # The number of write groups (i.e. groups of MPI tasks) to use in the
   # write component.
@@ -1508,21 +1729,85 @@ task_run_fcst:
   # WRTCMP_write_tasks_per_group:
   # The number of MPI tasks to allocate for each write group.
   #
-  # PRINT_ESMF:
-  # Flag for whether or not to output extra (debugging) information from
-  # ESMF routines.  Must be true or false.  Note that the write
-  # component uses ESMF library routines to interpolate from the native
-  # forecast model grid to the user-specified output grid (which is defined 
-  # in the model configuration file MODEL_CONFIG_FN in the forecast's run 
-  # directory).
+  # WRTCMP_output_grid:
+  # Sets the type (coordinate system) of the write component grid. The 
+  # default empty string forces the user to set a valid value for 
+  # WRTCMP_output_grid in config.yaml if specifying a *custom* grid. When 
+  # creating an experiment with a user-defined grid, this parameter must 
+  # be specified or the experiment will fail. 
+  #
+  # WRTCMP_cen_lon:
+  # Longitude (in degrees) of the center of the write component grid. Can 
+  # usually be set to the corresponding value from the native grid.
+  #
+  # WRTCMP_cen_lat:
+  # Latitude (in degrees) of the center of the write component grid. Can 
+  # usually be set to the corresponding value from the native grid.
+  # WRTCMP_lon_lwr_left:
+  # Longitude (in degrees) of the center of the lower-left (southwest) 
+  # cell on the write component grid. If using the "rotated_latlon" 
+  # coordinate system, this is expressed in terms of the rotated longitude. 
+  # Must be set manually when running an experiment with a user-defined grid.
+  #
+  # WRTCMP_lat_lwr_left:
+  # Latitude (in degrees) of the center of the lower-left (southwest) cell 
+  # on the write component grid. If using the "rotated_latlon" coordinate 
+  # system, this is expressed in terms of the rotated latitude. Must be set 
+  # manually when running an experiment with a user-defined grid.
+  # 
+  # -----------------------------------------------------------------------
+  # 
+  # WRTCMP_lon_upr_rght:
+  # Longitude (in degrees) of the center of the upper-right (northeast) cell 
+  # on the write component grid (expressed in terms of the rotated longitude).
+  #
+  # WRTCMP_lat_upr_rght:
+  # Latitude (in degrees) of the center of the upper-right (northeast) cell 
+  # on the write component grid (expressed in terms of the rotated latitude).
+  #
+  # WRTCMP_dlon:
+  # Size (in degrees) of a grid cell on the write component grid (expressed 
+  # in terms of the rotated longitude).
+  #
+  # WRTCMP_dlat:
+  # Size (in degrees) of a grid cell on the write component grid (expressed 
+  # in terms of the rotated latitude).
+  #
+  # -----------------------------------------------------------------------
+  # 
+  # WRTCMP_stdlat1:
+  # First standard latitude (in degrees) in definition of Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_stdlat2:
+  # Second standard latitude (in degrees) in definition of Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_nx:
+  # Number of grid points in the x-coordinate of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_ny:
+  # Number of grid points in the y-coordinate of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_dx:
+  # Grid cell size (in meters) along the x-axis of the Lambert conformal 
+  # projection.
+  #
+  # WRTCMP_dy:
+  # Grid cell size (in meters) along the y-axis of the Lambert conformal 
+  # projection. 
   #
   #-----------------------------------------------------------------------
   #
   QUILTING: true
   PRINT_ESMF: false
+
+  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
   
-  WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: 20
+  WRTCMP_write_groups: ""
+  WRTCMP_write_tasks_per_group: ""
   
   WRTCMP_output_grid: "''"
   WRTCMP_cen_lon: ""
@@ -1550,231 +1835,12 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
-  # grid, as follows:
-  #
-  # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
-  #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
-  #   the write-component grid parameters are set to predefined values for 
-  #   the specified grid, overwriting any settings of these parameters in 
-  #   the user-specified experiment configuration file.  In addition, if 
-  #   the time step DT_ATMOS and the computational parameters LAYOUT_X, 
-  #   LAYOUT_Y, and BLOCKSIZE are not specified in that configuration file, 
-  #   they are also set to predefined values for the specified grid.
-  #
-  # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   is providing the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
-  #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
-  #   and the write-component grid parameters as well as the time step 
-  #   forecast model's main time step DT_ATMOS and the computational 
-  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
-  #   configuration file; otherwise, the values of all of these parameters 
-  #   in this default experiment configuration file will be used.
-  #
-  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
-  # commonly used set of grid-dependent parameters.  The predefined grid 
-  # parameters are specified in the script 
-  #
-  #   $HOMEdir/ush/set_predef_grid_params.sh
-  #
-  #-----------------------------------------------------------------------
-  #
-  PREDEF_GRID_NAME: ""
-  #
-  #-----------------------------------------------------------------------
-  #
   # Flag that determines whether MERRA2 aerosol climatology data and
   # lookup tables for optics properties are obtained
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set the array parameter containing the names of all the fields that the
-  # MAKE_SFC_CLIMO_TN task generates on the native FV3-LAM grid.
-  #
-  #-----------------------------------------------------------------------
-  #
-  SFC_CLIMO_FIELDS: [
-  "facsf",
-  "maximum_snow_albedo",
-  "slope_type",
-  "snowfree_albedo",
-  "soil_type",
-  "substrate_temperature",
-  "vegetation_greenness",
-  "vegetation_type"
-  ]
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set parameters associated with the fixed (i.e. static) files.  Definitions:
-  #
-  # FIXgsm:
-  # System directory in which the majority of fixed (i.e. time-independent) 
-  # files that are needed to run the FV3-LAM model are located
-  #
-  # FIXaer:
-  # System directory where MERRA2 aerosol climatology files are located
-  #
-  # FIXlut:
-  # System directory where the lookup tables for optics properties are located
-  #
-  # FNGLAC, ..., FNMSKH:
-  # Names of (some of the) global data files that are assumed to exist in 
-  # a system directory specified (this directory is machine-dependent; 
-  # the experiment generation scripts will set it and store it in the 
-  # variable FIXgsm).  These file names also appear directly in the forecast 
-  # model's input namelist file.
-  #
-  # FIXgsm_FILES_TO_COPY_TO_FIXam:
-  # If not running in NCO mode, this array contains the names of the files
-  # to copy from the FIXgsm system directory to the FIXam directory under
-  # the experiment directory.  Note that the last element has a dummy value.
-  # This last element will get reset by the workflow generation scripts to
-  # the name of the ozone production/loss file to copy from FIXgsm.  The
-  # name of this file depends on the ozone parameterization being used, 
-  # and that in turn depends on the CCPP physics suite specified for the 
-  # experiment.  Thus, the CCPP physics suite XML must first be read in to
-  # determine the ozone parameterizaton and then the name of the ozone 
-  # production/loss file.  These steps are carried out elsewhere (in one 
-  # of the workflow generation scripts/functions).
-  #
-  # FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
-  # This array is used to set some of the namelist variables in the forecast 
-  # model's namelist file that represent the relative or absolute paths of 
-  # various fixed files (the first column of the array, where columns are 
-  # delineated by the pipe symbol "|") to the full paths to these files in 
-  # the FIXam directory derived from the corresponding workflow variables 
-  # containing file names (the second column of the array).
-  #
-  # FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-  # This array is used to set some of the namelist variables in the forecast 
-  # model's namelist file that represent the relative or absolute paths of 
-  # various fixed files (the first column of the array, where columns are 
-  # delineated by the pipe symbol "|") to the full paths to surface climatology 
-  # files (on the native FV3-LAM grid) in the FIXlam directory derived from 
-  # the corresponding surface climatology fields (the second column of the 
-  # array).
-  #
-  # CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
-  # This array specifies the mapping to use between the symlinks that need
-  # to be created in each cycle directory (these are the "files" that FV3
-  # looks for) and their targets in the FIXam directory.  The first column
-  # of the array specifies the symlink to be created, and the second column
-  # specifies its target file in FIXam (where columns are delineated by the
-  # pipe symbol "|").
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Because the default values are dependent on the platform, we set these
-  # to a null string which will then be overwritten in setup.sh unless the
-  # user has specified a different value in config.sh
-  #
-  SYMLINK_FIX_FILES: true
-  FIXgsm: ""
-  FIXaer: ""
-  FIXlut: ""
-  
-  FNGLAC: &FNGLAC "global_glacier.2x2.grb"
-  FNMXIC: &FNMXIC "global_maxice.2x2.grb"
-  FNTSFC: &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
-  FNSNOC: &FNSNOC "global_snoclim.1.875.grb"
-  FNZORC: &FNZORC "igbp"
-  FNAISC: &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
-  FNSMCC: &FNSMCC "global_soilmgldas.t126.384.190.grb"
-  FNMSKH: &FNMSKH "seaice_newland.grb"
-  
-  FIXgsm_FILES_TO_COPY_TO_FIXam: [
-  *FNGLAC,
-  *FNMXIC,
-  *FNTSFC,
-  *FNSNOC,
-  *FNAISC,
-  *FNSMCC,
-  *FNMSKH,
-  "global_climaeropac_global.txt",
-  "fix_co2_proj/global_co2historicaldata_2010.txt",
-  "fix_co2_proj/global_co2historicaldata_2011.txt",
-  "fix_co2_proj/global_co2historicaldata_2012.txt",
-  "fix_co2_proj/global_co2historicaldata_2013.txt",
-  "fix_co2_proj/global_co2historicaldata_2014.txt",
-  "fix_co2_proj/global_co2historicaldata_2015.txt",
-  "fix_co2_proj/global_co2historicaldata_2016.txt",
-  "fix_co2_proj/global_co2historicaldata_2017.txt",
-  "fix_co2_proj/global_co2historicaldata_2018.txt",
-  "fix_co2_proj/global_co2historicaldata_2019.txt",
-  "fix_co2_proj/global_co2historicaldata_2020.txt",
-  "fix_co2_proj/global_co2historicaldata_2021.txt",
-  "global_co2historicaldata_glob.txt",
-  "co2monthlycyc.txt",
-  "global_h2o_pltc.f77",
-  "global_hyblev.l65.txt",
-  "global_zorclim.1x1.grb",
-  "global_sfc_emissivity_idx.txt",
-  "global_tg3clim.2.6x1.5.grb",
-  "global_solarconstant_noaa_an.txt",
-  "global_albedo4.1x1.grb",
-  "geo_em.d01.lat-lon.2.5m.HGT_M.nc",
-  "HGT.Beljaars_filtered.lat-lon.30s_res.nc",
-  "replace_with_FIXgsm_ozone_prodloss_filename"
-  ]
-  
-  #
-  # It is possible to remove this as a workflow variable and make it only
-  # a local one since it is used in only one script.
-  #
-  FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING: [
-  !join_str ["FNGLAC | ",*FNGLAC],
-  !join_str ["FNMXIC | ",*FNMXIC],
-  !join_str ["FNTSFC | ",*FNTSFC],
-  !join_str ["FNSNOC | ",*FNSNOC],
-  !join_str ["FNAISC | ",*FNAISC],
-  !join_str ["FNSMCC | ",*FNSMCC],
-  !join_str ["FNMSKH | ",*FNMSKH]
-  ]
-  #"FNZORC | $FNZORC",
-  
-  FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING: [
-  "FNALBC  | snowfree_albedo",
-  "FNALBC2 | facsf",
-  "FNTG3C  | substrate_temperature",
-  "FNVEGC  | vegetation_greenness",
-  "FNVETC  | vegetation_type",
-  "FNSOTC  | soil_type",
-  "FNVMNC  | vegetation_greenness",
-  "FNVMXC  | vegetation_greenness",
-  "FNSLPC  | slope_type",
-  "FNABSC  | maximum_snow_albedo"
-  ]
-  
-  CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING: [
-  "aerosol.dat                | global_climaeropac_global.txt",
-  "co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt",
-  "co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt",
-  "co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt",
-  "co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt",
-  "co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt",
-  "co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt",
-  "co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt",
-  "co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt",
-  "co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt",
-  "co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt",
-  "co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt",
-  "co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt",
-  "co2historicaldata_glob.txt | global_co2historicaldata_glob.txt",
-  "co2monthlycyc.txt          | co2monthlycyc.txt",
-  "global_h2oprdlos.f77       | global_h2o_pltc.f77",
-  "global_albedo4.1x1.grb     | global_albedo4.1x1.grb",
-  "global_zorclim.1x1.grb     | global_zorclim.1x1.grb",
-  "global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb",
-  "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
-  "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-  "global_o3prdlos.f77        | "
-  ]
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
 
 #----------------------------
 # POST config parameters
@@ -1849,7 +1915,7 @@ task_run_post:
   #
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
-  POST_OUTPUT_DOMAIN_NAME: ""
+  POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
 
 #----------------------------
 # GET OBS CCPA config parameters
@@ -1858,6 +1924,7 @@ task_get_obs_ccpa:
   GET_OBS_CCPA_TN: "get_obs_ccpa"
   NNODES_GET_OBS_CCPA: 1
   PPN_GET_OBS_CCPA: 1
+  MEM_GET_OBS_CCPA: 2G
   WTIME_GET_OBS_CCPA: 00:45:00
   MAXTRIES_GET_OBS_CCPA: 1
 
@@ -1868,6 +1935,7 @@ task_get_obs_mrms:
   GET_OBS_MRMS_TN: "get_obs_mrms"
   NNODES_GET_OBS_MRMS: 1
   PPN_GET_OBS_MRMS: 1
+  MEM_GET_OBS_MRMS: 2G
   WTIME_GET_OBS_MRMS: 00:45:00
   MAXTRIES_GET_OBS_MRMS: 1
 
@@ -1878,6 +1946,7 @@ task_get_obs_ndas:
   GET_OBS_NDAS_TN: "get_obs_ndas"
   NNODES_GET_OBS_NDAS: 1
   PPN_GET_OBS_NDAS: 1
+  MEM_GET_OBS_NDAS: 2G
   WTIME_GET_OBS_NDAS: 02:00:00
   MAXTRIES_GET_OBS_NDAS: 1
 
@@ -1888,8 +1957,9 @@ task_run_vx_gridstat:
   VX_GRIDSTAT_TN: "run_gridstatvx"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 1
+  MAXTRIES_VX_GRIDSTAT: 2
 
 #----------------------------
 # VX_GRIDSTAT_REFC config parameters
@@ -1898,8 +1968,9 @@ task_run_vx_gridstat_refc:
   VX_GRIDSTAT_REFC_TN: "run_gridstatvx_refc"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 1
+  MAXTRIES_VX_GRIDSTAT_REFC: 2
 
 #----------------------------
 # VX_GRIDSTAT_RETOP config parameters
@@ -1908,8 +1979,9 @@ task_run_vx_gridstat_retop:
   VX_GRIDSTAT_RETOP_TN: "run_gridstatvx_retop"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 1
+  MAXTRIES_VX_GRIDSTAT_RETOP: 2
 
 #----------------------------
 # VX_GRIDSTAT_03h config parameters
@@ -1918,8 +1990,9 @@ task_run_vx_gridstat_03h:
   VX_GRIDSTAT_03h_TN: "run_gridstatvx_03h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 1
+  MAXTRIES_VX_GRIDSTAT_03h: 2
 
 #----------------------------
 # VX_GRIDSTAT_06h config parameters
@@ -1928,8 +2001,9 @@ task_run_vx_gridstat_06h:
   VX_GRIDSTAT_06h_TN: "run_gridstatvx_06h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 1
+  MAXTRIES_VX_GRIDSTAT_06h: 2
 
 #----------------------------
 # VX_GRIDSTAT_24h config parameters
@@ -1938,8 +2012,9 @@ task_run_vx_gridstat_24h:
   VX_GRIDSTAT_24h_TN: "run_gridstatvx_24h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
+  MEM_VX_GRIDSTAT: 2G
   WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 1
+  MAXTRIES_VX_GRIDSTAT_24h: 2
 
 #----------------------------
 # VX_POINTSTAT config parameters
@@ -1948,27 +2023,28 @@ task_run_vx_pointstat:
   VX_POINTSTAT_TN: "run_pointstatvx"
   NNODES_VX_POINTSTAT: 1
   PPN_VX_POINTSTAT: 1
+  MEM_VX_POINTSTAT: 2G
   WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 1
+  MAXTRIES_VX_POINTSTAT: 2
 
 #----------------------------
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
+  VX_ENSGRID_TN: "run_ensgridvx"
+  MAXTRIES_VX_ENSGRID: 2
   VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 1
+  MAXTRIES_VX_ENSGRID_03h: 2
   VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 1
+  MAXTRIES_VX_ENSGRID_06h: 2
   VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 1
+  MAXTRIES_VX_ENSGRID_24h: 2
   VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 1
-  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 1
+  MAXTRIES_VX_ENSGRID_RETOP: 2
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
+  MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID: 1
 
 
 #----------------------------
@@ -1978,8 +2054,9 @@ task_run_vx_ensgrid_refc:
   VX_ENSGRID_REFC_TN: "run_ensgridvx_refc"
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
+  MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 1
+  MAXTRIES_VX_ENSGRID_REFC: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN config parameters
@@ -1988,8 +2065,9 @@ task_run_vx_ensgrid_mean:
   VX_ENSGRID_MEAN_TN: "run_ensgridvx_mean"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
+  MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 1
+  MAXTRIES_VX_ENSGRID_MEAN: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_03h config parameters
@@ -1998,8 +2076,9 @@ task_run_vx_ensgrid_mean_03h:
   VX_ENSGRID_MEAN_03h_TN: "run_ensgridvx_mean_03h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
+  MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_06h config parameters
@@ -2008,8 +2087,9 @@ task_run_vx_ensgrid_mean_06h:
   VX_ENSGRID_MEAN_06h_TN: "run_ensgridvx_mean_06h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
+  MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
 
 #----------------------------
 # VX_ENSGRID_MEAN_24h config parameters
@@ -2018,8 +2098,9 @@ task_run_vx_ensgrid_mean_24h:
   VX_ENSGRID_MEAN_24h_TN: "run_ensgridvx_mean_24h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
+  MEM_VX_ENSGRID_MEAN: 2G
   WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 1
+  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB config parameters
@@ -2027,9 +2108,14 @@ task_run_vx_ensgrid_mean_24h:
 task_run_vx_ensgrid_prob:
   VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
   NNODES_VX_ENSGRID_PROB: 1
+  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
+  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
+  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
+  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
   PPN_VX_ENSGRID_PROB: 1
+  MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 1
+  MAXTRIES_VX_ENSGRID_PROB: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_03h config parameters
@@ -2038,8 +2124,9 @@ task_run_vx_ensgrid_prob_03h:
   VX_ENSGRID_PROB_03h_TN: "run_ensgridvx_prob_03h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
+  MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 1
+  MAXTRIES_VX_ENSGRID_PROB_03h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_06h config parameters
@@ -2048,8 +2135,9 @@ task_run_vx_ensgrid_prob_06h:
   VX_ENSGRID_PROB_06h_TN: "run_ensgridvx_prob_06h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
+  MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 1
+  MAXTRIES_VX_ENSGRID_PROB_06h: 2
 
 #----------------------------
 # VX_ENSGRID_PROB_24h config parameters
@@ -2058,8 +2146,9 @@ task_run_vx_ensgrid_prob_24h:
   VX_ENSGRID_PROB_24h_TN: "run_ensgridvx_prob_24h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
+  MEM_VX_ENSGRID_PROB: 2G
   WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 1
+  MAXTRIES_VX_ENSGRID_PROB_24h: 2
 
 #----------------------------
 # VX_ENSPOINT config parameters
@@ -2068,8 +2157,9 @@ task_run_vx_enspoint:
   VX_ENSPOINT_TN: "run_enspointvx"
   NNODES_VX_ENSPOINT: 1
   PPN_VX_ENSPOINT: 1
+  MEM_VX_ENSPOINT: 2G
   WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 1
+  MAXTRIES_VX_ENSPOINT: 2
 
 #----------------------------
 # VX_ENSPOINT_MEAN config parameters
@@ -2078,8 +2168,9 @@ task_run_vx_enspoint_mean:
   VX_ENSPOINT_MEAN_TN: "run_enspointvx_mean"
   NNODES_VX_ENSPOINT_MEAN: 1
   PPN_VX_ENSPOINT_MEAN: 1
+  MEM_VX_ENSPOINT_MEAN: 2G
   WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 1
+  MAXTRIES_VX_ENSPOINT_MEAN: 2
 
 #----------------------------
 # VX_ENSPOINT_PROB config parameters
@@ -2088,8 +2179,37 @@ task_run_vx_enspoint_prob:
   VX_ENSPOINT_PROB_TN: "run_enspointvx_prob"
   NNODES_VX_ENSPOINT_PROB: 1
   PPN_VX_ENSPOINT_PROB: 1
+  MEM_VX_ENSPOINT_PROB: 2G
   WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 1
+  MAXTRIES_VX_ENSPOINT_PROB: 2
+
+#----------------------------
+# PLOT_ALLVARS config parameters
+#-----------------------------
+task_plot_allvars:
+  PLOT_ALLVARS_TN: "plot_allvars"
+  NNODES_PLOT_ALLVARS: 1
+  PPN_PLOT_ALLVARS: 24
+  WTIME_PLOT_ALLVARS: 01:00:00
+  MAXTRIES_PLOT_ALLVARS: 1
+  #-------------------------------------------------------------------------
+  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
+  # from postprocessing are located. Make this a template to compare
+  # multiple cycle and dates. COMOUT_REF should end with:
+  #    nco mode: $PDY/$cyc
+  #    community mode: $PDY$cyc/postprd
+  # We don't do this inside the code, so that we can compare nco vs com runs.
+  #-------------------------------------------------------------------------
+  COMOUT_REF: ""
+  #------------------------------
+  # Plot fcts start and increment
+  #------------------------------
+  PLOT_FCST_START: 0
+  PLOT_FCST_INC: 3
+  #-----------------------------------
+  # By default the end is FCST_LEN_HRS
+  #-----------------------------------
+  PLOT_FCST_END: ""
 
 
 #----------------------------
@@ -2104,7 +2224,7 @@ global:
   #
   # USE_CRTM:
   # Flag that defines whether external CRTM coefficient files have been
-  # staged by the user in order to output synthetic statellite products
+  # staged by the user in order to output synthetic satellite products
   # available within the UPP. If this is set to true, then the workflow
   # will check for these files in the directory CRTM_DIR. Otherwise, it is
   # assumed that no satellite fields are being requested in the UPP
@@ -2131,21 +2251,25 @@ global:
   #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
-  # This variable also controls the naming of the ensemble member directories.  
-  # For example, if this is set to "8", the member directories will be named 
-  # mem1, mem2, ..., mem8.  If it is set to "08" (note the leading zero), 
-  # the member directories will be named mem01, mem02, ..., mem08.  Note, 
-  # however, that after reading in the number of characters in this string
-  # (in order to determine how many leading zeros, if any, should be placed
-  # in the names of the member directories), the workflow generation scripts
-  # strip away those leading zeros.  Thus, in the variable definitions file 
-  # (GLOBAL_VAR_DEFNS_FN), this variable appear with its leading zeros 
-  # stripped.  This variable is not used if DO_ENSEMBLE is not set to true.
-  # 
+  # This variable also controls the naming of the ensemble member directories.
+  # For example, if this is set to 8, the member directories will be named 
+  # mem1, mem2, ..., mem8. Not used if DO_ENSEMBLE is set to false.
+  #
+  # ENSMEM_NAMES:
+  # A list of names for the ensemble member names following the format
+  # mem001, mem002, etc.
+  #
+  # FV3_NML_ENSMEM_FPS:
+  # Paths to the ensemble member corresponding namelists in the
+  # experiment directory
+  #
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 1
+  NUM_ENS_MEMBERS: 0
+  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
+  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
+
   #
   #-----------------------------------------------------------------------
   #
@@ -2184,7 +2308,7 @@ global:
   #
   # Set default SPP stochastic physics options. Each SPP option is an array, 
   # applicable (in order) to the scheme/parameter listed in SPP_VAR_LIST. 
-  # Enter each value of the array in config.sh as shown below without commas
+  # Enter each value of the array in config.yaml as shown below without commas
   # or single quotes (e.g., SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd" ). 
   # Both commas and single quotes will be added by Jinja when creating the
   # namelist.
