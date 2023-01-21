@@ -79,27 +79,29 @@ fi
 if [ "${RUN_ENVIR}" = "nco" ]; then
   rm -rf $DATA
   DATA=$DATAROOT/${TAG}anal_gsi_input_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
-  cd_vrfy $DATA
-fi
-
-if [ ${GSI_TYPE} == "OBSERVER" ]; then
-  if [ ${MEM_TYPE} == "MEAN" ]; then
-    DATA="${DATA:-${COMIN}/ensmean/observer${analworkname}}"
-    SLASH_ENSMEM_SUBDIR=""
-    export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analworkname}"
-  else
-    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}}"
-    export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
-  fi
-  mkdir_vrfy -p ${OBSERVER_NWGES_DIR}
 else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analworkname}}"
+  if [ ${GSI_TYPE} == "OBSERVER" ]; then
+    if [ ${MEM_TYPE} == "MEAN" ]; then
+      DATA="${COMIN}/ensmean/observer${analworkname}"
+      SLASH_ENSMEM_SUBDIR=""
+      export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analworkname}"
+    else
+      DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
+      export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
+    fi
+    mkdir_vrfy -p ${OBSERVER_NWGES_DIR}
+  else
+    DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analworkname}"
+  fi
+
+  if [[ ! -d ${DATA} ]]; then
+      echo "cannot find analysis directory"
+      exit 
+  fi
 fi
 
-if [[ ! -d ${DATA} ]]; then
-    echo "cannot find analysis directory"
-    exit 
-fi
+cd_vrfy $DATA
+
 #
 #-----------------------------------------------------------------------
 #

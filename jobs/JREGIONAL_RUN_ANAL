@@ -77,11 +77,11 @@ if [[ ! -v OB_TYPE ]]; then
 fi
 if [ ${GSI_TYPE} == "OBSERVER" ]; then
   if [ ${MEM_TYPE} == "MEAN" ]; then
-    DATA="${DATA:-${COMIN}/ensmean/observer${analworkname}}"
+    DATA="${DATA:-${COMIN}}/ensmean/observer${analworkname}"
     SLASH_ENSMEM_SUBDIR=""
     export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analworkname}"
   else
-    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}}"
+    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/observer${analworkname}"
     export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
   fi
   mkdir_vrfy -p ${OBSERVER_NWGES_DIR}

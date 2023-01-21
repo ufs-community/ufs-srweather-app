@@ -67,15 +67,27 @@ the specified cycle.
 #
 CYCLE_TYPE=${CYCLE_TYPE:-prod}
 CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
+
+# Use the forecast INPUT directory as working directory
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    cd_vrfy $DATAROOT
+    rm -rf ${DATA}
+    DATA=$DATAROOT/${TAG}run_fcst_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
+else
+    DATA=${COMIN}${SLASH_ENSMEM_SUBDIR}
+fi
+
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup/INPUT}"
+  DATA="${DATA}/fcst_fv3lam_spinup/INPUT"
   if [ ${DO_ENSINIT} == "TRUE" ] && [ ${CYCLE_SUBTYPE} == "ensinit" ]; then
-     DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_ensinit/INPUT}"
+     DATA="${DATA}/fcst_fv3lam_ensinit/INPUT"
   fi
 else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam/INPUT}"
+  DATA="${DATA}/fcst_fv3lam/INPUT"
 fi
+
 mkdir_vrfy -p ${DATA}
+cd_vrfy ${DATA}
 #
 #
 #-----------------------------------------------------------------------

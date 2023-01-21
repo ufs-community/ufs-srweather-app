@@ -103,23 +103,18 @@ cd_vrfy ${DATA}
 
 fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
 
+# set background path
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    bkpath=$DATAROOT/${TAG}prep_cyc_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
+    bkpath=$DATAROOT/${TAG}run_fcst_${CYCLE_TYPE}${SLASH_ENSMEM_SUBDIR/\//_}.${share_pid}
 else
-    if [ ${CYCLE_TYPE} == "spinup" ]; then
-      if [ ${MEM_TYPE} == "MEAN" ]; then
-        bkpath=${COMIN}/ensmean/fcst_fv3lam_spinup/INPUT
-      else
-        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup/INPUT
-      fi
-    else
-      if [ ${MEM_TYPE} == "MEAN" ]; then
-        bkpath=${COMIN}/ensmean/fcst_fv3lam/INPUT
-      else
-        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam/INPUT
-      fi
-    fi
+    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}
 fi
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+    bkpath=${bkpath}/fcst_fv3lam_spinup/INPUT
+else
+    bkpath=${bkpath}/fcst_fv3lam/INPUT
+fi
+
 # decide background type
 if [ -r "${bkpath}/coupler.res" ]; then
   BKTYPE=0              # warm start

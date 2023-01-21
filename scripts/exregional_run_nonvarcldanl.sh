@@ -96,19 +96,23 @@ print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
 #
 #-----------------------------------------------------------------------
 
+# set background path
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    bkpath=$DATAROOT/${TAG}run_fcst_${CYCLE_TYPE}${SLASH_ENSMEM_SUBDIR/\//_}.${share_pid}
+else
+    bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}
+fi
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+    bkpath=${bkpath}/fcst_fv3lam_spinup/INPUT
+else
+    bkpath=${bkpath}/fcst_fv3lam/INPUT
+fi
+
+# cycle tag
 if [ ${CYCLE_TYPE} == "spinup" ]; then
   cycle_tag="_spinup"
 else
   cycle_tag=""
-fi
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    bkpath=$DATAROOT/${TAG}prep_cyc_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
-else
-    if [ ${MEM_TYPE} == "MEAN" ]; then
-        bkpath=${COMIN}/ensmean/fcst_fv3lam${cycle_tag}/INPUT
-    else
-        bkpath=${COMIN}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam${cycle_tag}/INPUT
-    fi
 fi
 
 n_iolayouty=$(($IO_LAYOUT_Y-1))
