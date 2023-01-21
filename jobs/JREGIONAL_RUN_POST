@@ -63,13 +63,8 @@ on the output files corresponding to a specified forecast hour.
 #-----------------------------------------------------------------------
 #
 CYCLE_TYPE=${CYCLE_TYPE:-prod}
+CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
 
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA}/fcst_fv3lam_spinup"
-else
-  DATA="${DATA}/fcst_fv3lam"
-fi
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
