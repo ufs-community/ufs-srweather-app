@@ -244,6 +244,11 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
     #Make our lives easier by shortening some dictionary calls 
     cfg_ics = cfg['task_get_extrn_ics']
 
+    # If RUN_TASK_GET_EXTRN_ICS is false, do nothing and return
+    if 'workflow_switches' in cfg:
+        if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
+            return cfg_ics
+
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_ics:
         logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified in task_get_extrn_ics section of config')
@@ -276,9 +281,10 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
     # Different input data types have different directory structures, so set the data directory accordingly
     if cfg_ics['EXTRN_MDL_NAME_ICS'] == 'FV3GFS':
         cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/${{yyyymmddhh}}"
+                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/{cfg_ics['FV3GFS_FILE_FMT_ICS']}/${{yyyymmddhh}}"
     else:
-        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/${{yyyymmddhh}}"
+        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/${{yyyymmddhh}}"
 
     return cfg_ics
 
@@ -295,6 +301,11 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
 
     #Make our lives easier by shortening some dictionary calls 
     cfg_lbcs = cfg['task_get_extrn_lbcs']
+
+    # If RUN_TASK_GET_EXTRN_LBCS is false, do nothing and return
+    if 'workflow_switches' in cfg:
+        if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
+            return cfg_lbcs
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_lbcs:
@@ -326,9 +337,10 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
     # Different input data types have different directory structures, so set the data directory accordingly
     if cfg_lbcs['EXTRN_MDL_NAME_LBCS'] == 'FV3GFS':
         cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
+                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/{cfg_lbcs['FV3GFS_FILE_FMT_LBCS']}/${{yyyymmddhh}}"
     else:
-        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/${{yyyymmddhh}}"
+        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
 
     return cfg_lbcs
 
