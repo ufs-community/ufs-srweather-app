@@ -2,9 +2,9 @@
 
 .. _SSHIntro:
 
-================================================
-Introduction to SSH Tunnels
-================================================
+======================================
+Introduction to SSH & Data Transfer
+======================================
 
 .. attention:: 
 
@@ -155,7 +155,7 @@ For example, users can adjust one of the following commands for use on their sys
 
 .. code-block:: console
 
-   scp username@your-ip-address:/path/to/file_or_directory_1 /path/to/file_or_directory_2
+   scp username@your-IP-address:/path/to/file_or_directory_1 /path/to/file_or_directory_2
    # OR
    scp -P 12345 username@localhost:/path/to/file_or_directory_1 path/to/file_or_directory_2
    
