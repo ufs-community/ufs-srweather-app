@@ -85,44 +85,48 @@ rm_vrfy -f fort.*
 cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
+  post_params_fp="${CUSTOM_POST_PARAMS_FP}"
   print_info_msg "
 ====================================================================
 Copying the user-defined post flat file specified by CUSTOM_POST_CONFIG_FP
 to the temporary work directory (DATA_FHR):
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
+  CUSTOM_POST_PARAMS_FP = \"${CUSTOM_POST_PARAMS_FP}\"
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
   if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
+    post_parms_fp="/please/set/aqm/parms/grib2/file"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    post_params_fp="${PARMdir}/parm/params_grib2_tbl_new"
   fi
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
 temporary work directory (DATA_FHR):
   post_config_fp = \"${post_config_fp}\"
+  post_params_fp = \"${post_params_fp}\"
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+cp_vrfy ${post_parms_fp}  ./params_grib2_tbl_new
+#
+#-----------------------------------------------------------------------
+#
+# Symlink CRTM fix files
+#
+#-----------------------------------------------------------------------
+#
 if [ ${USE_CRTM} = "TRUE" ]; then
-  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
-  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
-  cp_vrfy ${FIXcrtm}/fix/SpcCoeff/Big_Endian/*.bin ./
-  cp_vrfy ${FIXcrtm}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
+  ln_vrfy -snf ${FIXcrtmupp}/*bin ./
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from FIXcrtm to the temporary
 work directory (DATA_FHR):
-  FIXcrtm = \"${FIXcrtm}\"
+  FIXcrtmupp = \"${FIXcrtmupp}\"
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
@@ -197,14 +201,52 @@ fileName='${dyn_file}'
 IOFORM='netcdf'
 grib='grib2'
 DateStr='${post_yyyy}-${post_mm}-${post_dd}_${post_hh}:${post_mn}:00'
-MODELNAME='FV3R'
+MODELNAME='${POST_FULL_MODEL_NAME}'
+SUBMODELNAME='${POST_SUB_MODEL_NAME}'
 fileNameFlux='${phy_file}'
+fileNameFlat='postxconfig-NT.txt'
 /
 
  &NAMPGB
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
  /
 EOF
+#
+#-----------------------------------------------------------------------
+#
+# Run wgrib2
+#
+#-----------------------------------------------------------------------
+#
+if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km_HRRRIC" ]; then
+  grid_specs_rrfs="lambert:-97.5:38.500000 237.826355:1746:3000 21.885885:1014:3000"
+elif [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ]; then
+  grid_specs_rrfs="lambert:-97.5:38.500000 237.280472:1799:3000 21.138123:1059:3000"
+elif [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
+  grid_specs_rrfs="rot-ll:247.000000:-35.000000:0.000000 299.000000:4881:0.025000 -37.0000000:2961:0.025000"
+elif [ ${PREDEF_GRID_NAME} = "GSD_RAP13km" ]; then
+  grid_specs_rrfs="rot-ll:254.000000:-36.000000:0.000000 304.174600:956:0.1169118 -48.5768500:831:0.1170527"
+fi
+if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km_HRRRIC" ] || \
+   [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ] || \
+   [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ] || \
+   [ ${PREDEF_GRID_NAME} = "GSD_RAP13km" ]; then
+
+  if [ -f ${FFG_DIR}/latest.FFG ]; then
+    cp_vrfy ${FFG_DIR}/latest.FFG .
+    wgrib2 latest.FFG -match "0-12 hour" -end -new_grid_interpolation bilinear -new_grid_winds grid -new_grid ${grid_specs_rrfs} ffg_12h.grib2
+    wgrib2 latest.FFG -match "0-6 hour" -end -new_grid_interpolation bilinear -new_grid_winds grid -new_grid ${grid_specs_rrfs} ffg_06h.grib2
+    wgrib2 latest.FFG -match "0-3 hour" -end -new_grid_interpolation bilinear -new_grid_winds grid -new_grid ${grid_specs_rrfs} ffg_03h.grib2
+    wgrib2 latest.FFG -match "0-1 hour" -end -new_grid_interpolation bilinear -new_grid_winds grid -new_grid ${grid_specs_rrfs} ffg_01h.grib2
+  fi
+  for ayear in 100y 10y 5y 2y ; do
+    for ahour in 01h 03h 06h 12h 24h; do
+      if [ -f ${FIXupp}/${PREDEF_GRID_NAME}/ari${ayear}_${ahour}.grib2 ]; then
+        ln_vrfy -snf ${FIXupp}/${PREDEF_GRID_NAME}/ari${ayear}_${ahour}.grib2 ari${ayear}_${ahour}.grib2
+      fi
+    done
+  done
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -231,6 +273,8 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
+
+#
 # Set variables needed in constructing the names of the grib2 files
 # generated by UPP.
 #
@@ -240,14 +284,24 @@ if [ ${len_fhr} -eq 2 ]; then
 elif [ ${len_fhr} -eq 3 ]; then
   if [ "${fhr:0:1}" = "0" ]; then
     post_fhr="${fhr:1}"
-# What should happen in the "else" case?  Would just setting post_fhr to 
-# fhr work?  Need to test.
   else
-    print_err_msg_exit "\
-The \${fhr} variable contains a 3-digit integer whose first digit is not
-0.  In this case, it is not clear how to set the variable post_fhr used
-in constructing the grib2 file names generated by UPP:
-  fhr = \"$fhr\""
+    post_fhr="${fhr}"
+  fi
+elif [ ${len_fhr} -eq 9 ]; then
+  if [ "${fhr:0:1}" = "0" ]; then
+    if [ ${post_min} -eq 00 ]; then
+      post_fhr="${fhr:1:2}"
+      subh_fhr="${fhr:0:3}"
+    else
+      post_fhr="${fhr:1:2}.${fhr:4:2}"
+    fi
+  else
+    if [ ${post_min} -eq 00 ]; then
+      post_fhr="${fhr:0:3}"
+      subh_fhr="${fhr:0:3}"
+    else
+      post_fhr="${fhr:0:3}.${fhr:4:2}"
+    fi
   fi
 else
   print_err_msg_exit "\
@@ -255,6 +309,7 @@ The \${fhr} variable contains too few or too many characters:
   fhr = \"$fhr\""
 fi
 
+# set post minutes
 post_mn_or_null=""
 dot_post_mn_or_null=""
 if [ "${post_mn}" != "00" ]; then
@@ -292,8 +347,28 @@ done
 
 rm_vrfy -rf ${DATA_FHR}
 
+#
+# background files
+#
+bgdawp=${postprd_dir}/${NET}.t${cyc}z.bgdawpf${subh_fhr}.${tmmark}.grib2
+bgrd3d=${postprd_dir}/${NET}.t${cyc}z.bgrd3df${subh_fhr}.${tmmark}.grib2
+bgsfc=${postprd_dir}/${NET}.t${cyc}z.bgsfcf${subh_fhr}.${tmmark}.grib2
+bgifi=${postprd_dir}/${NET}.t${cyc}z.bgifif${subh_fhr}.${tmmark}.grib2
+
+wgrib2 PRSLEV.GrbF${post_fhr} -set center 7 -grib ${bgdawp}
+wgrib2 NATLEV.GrbF${post_fhr} -set center 7 -grib ${bgrd3d}
+if [ -f IFIFIP.GrbF${post_fhr} ]; then
+  wgrib2 IFIFIP.GrbF${post_fhr} -set center 7 -grib ${bgifi}
+fi
+
+#
 # Delete the forecast directory
-fhr_l=$(printf "%03d" $FCST_LEN_HRS)
+#
+if [ $CYCLE_TYPE = "spinup" ]; then
+   fhr_l=$(printf "%03d" $FCST_LEN_HRS_SPINUP)
+else
+   fhr_l=$(printf "%03d" $FCST_LEN_HRS)
+fi
 if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ] && [ $fhr = $fhr_l ]; then
    rm -rf $DATAFCST
 fi

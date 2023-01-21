@@ -442,6 +442,9 @@ platform:
   # FIXcrtm:
   # System directory where CRTM fixed files are loacated
   #
+  # FIXcrtmupp:
+  # System directory where CRTM fixed files specifically for UPP are loacated
+  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -454,6 +457,7 @@ platform:
   FIXsmoke: ""
   FIXbufr: ""
   FIXcrtm: ""
+  FIXcrtmupp: ""
   #
   #-----------------------------------------------------------------------
   #

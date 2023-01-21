@@ -62,7 +62,14 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
+CYCLE_TYPE=${CYCLE_TYPE:-prod}
+
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA}/fcst_fv3lam_spinup"
+else
+  DATA="${DATA}/fcst_fv3lam"
+fi
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
@@ -90,11 +97,22 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
-  export COMOUT="${DATA}/postprd"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  if [ ${CYCLE_TYPE} = "spinup" ]; then
+    export COMOUT="${COMOUT}_spinup${SLASH_ENSMEM_SUBDIR}/postprd"
+  else
+    export COMOUT="${COMOUT}${SLASH_ENSMEM_SUBDIR}/postprd"
+  fi
+else
+  if [ ${CYCLE_TYPE} = "spinup" ]; then
+    export COMOUT="${DATA}/postprd_spinup"
+  else
+    export COMOUT="${DATA}/postprd"
+  fi
 fi
 mkdir_vrfy -p "${COMOUT}"
 
+# subhourly post
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
