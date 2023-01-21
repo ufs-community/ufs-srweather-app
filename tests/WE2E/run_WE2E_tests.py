@@ -136,7 +136,6 @@ def run_we2e_tests(HOMEdir, args) -> None:
         # test-specific options, then write resulting complete config.yaml
         test_name = os.path.basename(test).split('.')[1]
         logging.debug(f"For test {test_name}, constructing config.yaml")
-        logging.info(os.getcwd())
         test_cfg = load_config_file(test)
 
         test_cfg['user'].update({"MACHINE": args.machine})
@@ -166,11 +165,11 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
         if 'task_get_extrn_ics' in test_cfg:
             logging.debug(test_cfg['task_get_extrn_ics'])
-            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_ics(test_cfg,machine_defaults)
+            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_ics(test_cfg,machine_defaults,config_defaults)
             logging.debug(test_cfg['task_get_extrn_ics'])
         if 'task_get_extrn_lbcs' in test_cfg:
             logging.debug(test_cfg['task_get_extrn_lbcs'])
-            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults)
+            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults,config_defaults)
             logging.debug(test_cfg['task_get_extrn_lbcs'])
 
 
@@ -230,13 +229,14 @@ def check_tests(tests: list) -> list:
 
 
 
-def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
+def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
     """
     Function for checking and updating various settings in task_get_extrn_ics section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
+        dflt : Dictionary loaded from default config file
     Returns:
         cfg_ics : Updated dictionary for task_get_extrn_ics section of test config
     """
@@ -246,8 +246,9 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
 
     # If RUN_TASK_GET_EXTRN_ICS is false, do nothing and return
     if 'workflow_switches' in cfg:
-        if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
-            return cfg_ics
+        if 'RUN_TASK_GET_EXTRN_ICS' in cfg['workflow_switches']:
+            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
+                return cfg_ics
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_ics:
@@ -280,6 +281,8 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
 
     # Different input data types have different directory structures, so set the data directory accordingly
     if cfg_ics['EXTRN_MDL_NAME_ICS'] == 'FV3GFS':
+        if 'FV3GFS_FILE_FMT_ICS' not in cfg_ics:
+            cfg_ics['FV3GFS_FILE_FMT_ICS'] = dflt['task_get_extrn_ics']['FV3GFS_FILE_FMT_ICS']
         cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
                                                   f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/{cfg_ics['FV3GFS_FILE_FMT_ICS']}/${{yyyymmddhh}}"
     else:
@@ -288,13 +291,14 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict) -> dict:
 
     return cfg_ics
 
-def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
+def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
     """
     Function for checking and updating various settings in task_get_extrn_lbcs section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
+        dflt : Dictionary loaded from default config file
     Returns:
         cfg_lbcs : Updated dictionary for task_get_extrn_lbcs section of test config
     """
@@ -304,8 +308,9 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
 
     # If RUN_TASK_GET_EXTRN_LBCS is false, do nothing and return
     if 'workflow_switches' in cfg:
-        if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
-            return cfg_lbcs
+        if 'RUN_TASK_GET_EXTRN_LBCS' in cfg['workflow_switches']:
+            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
+                return cfg_lbcs
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_lbcs:
@@ -336,6 +341,8 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict) -> dict:
 
     # Different input data types have different directory structures, so set the data directory accordingly
     if cfg_lbcs['EXTRN_MDL_NAME_LBCS'] == 'FV3GFS':
+        if 'FV3GFS_FILE_FMT_LBCS' not in cfg_lbcs:
+            cfg_lbcs['FV3GFS_FILE_FMT_LBCS'] = dflt['task_get_extrn_lbcs']['FV3GFS_FILE_FMT_LBCS']
         cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
                                                     f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/{cfg_lbcs['FV3GFS_FILE_FMT_LBCS']}/${{yyyymmddhh}}"
     else:
