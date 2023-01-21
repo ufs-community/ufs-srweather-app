@@ -73,6 +73,14 @@ def create_model_configure_file(
     dot_cpl_dot = f".{lowercase(str(CPL))}."
     dot_write_dopost = f".{lowercase(str(WRITE_DOPOST))}."
     #
+    # Set the forecast hour length for this cycle
+    # Todo:"ensinit" cycle
+    #
+    if CYCLE_TYPE == "spinup":
+        FCST_LEN_HRS_cycle = FCST_LEN_HRS_SPINUP
+    else:
+        FCST_LEN_HRS_cycle = FCST_LEN_HRS 
+    #
     # -----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -88,7 +96,7 @@ def create_model_configure_file(
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
-        "nhours_fcst": (FCST_LEN_HRS_SPINUP if CYCLE_TYPE == "spinup" else FCST_LEN_HRS),
+        "nhours_fcst": FCST_LEN_HRS_cycle,
         "dt_atmos": DT_ATMOS,
         "cpl": dot_cpl_dot,
         "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
