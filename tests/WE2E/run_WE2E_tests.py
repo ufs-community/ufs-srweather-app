@@ -65,7 +65,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
             tests_to_check = user_spec_tests
         except:
             # If not a valid test name, check if it is a test suite
-            if user_spec_tests == 'all':
+            if user_spec_tests[0] == 'all':
                 alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
                 tests_to_check = []
                 for f in alltests:
@@ -73,17 +73,17 @@ def run_we2e_tests(HOMEdir, args) -> None:
                     filename = filename[7:-5]
                     tests_to_check.append(filename)
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
-            elif user_spec_tests == 'fundamental' or user_spec_tests == 'comprehensive':
+            elif user_spec_tests[0] == 'fundamental' or user_spec_tests[0] == 'comprehensive':
                 # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
-                testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}.nco"
+                testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
-                    testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}.com"
+                    testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}.com"
                     if not os.path.isfile(testfilename):
-                        testfilename = f"machine_suites/{user_spec_tests}.{args.machine}.{args.compiler}"
+                        testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}"
                         if not os.path.isfile(testfilename):
-                            testfilename = f"machine_suites/{user_spec_tests}.{args.machine}"
+                            testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}"
                             if not os.path.isfile(testfilename):
-                                testfilename = f"machine_suites/{user_spec_tests}"
+                                testfilename = f"machine_suites/{user_spec_tests[0]}"
                     else:
                         if not run_envir:
                             run_envir = 'community'
@@ -97,10 +97,10 @@ def run_we2e_tests(HOMEdir, args) -> None:
                 
                 logging.debug(f"Reading test file: {testfilename}")
                 tests_to_check = list(open(testfilename))
-                logging.debug(f"Will check {user_spec_tests} tests:\n{tests_to_check}")
+                logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
-                if os.path.isfile(user_spec_tests):
+                if os.path.isfile(user_spec_tests[0]):
                     tests_to_check = list(open(user_spec_tests))
                 else:
                     raise FileNotFoundError(dedent(f"""
