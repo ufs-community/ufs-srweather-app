@@ -66,6 +66,7 @@ eval ${PRE_TASK_CMDS}
 nprocs=$((NNODES_RUN_ANAL*PPN_RUN_ANAL))
 
 gridspec_dir=${NWGES_BASEDIR}/grid_spec
+mkdir_vrfy -p ${gridspec_dir}
 #
 #-----------------------------------------------------------------------
 #

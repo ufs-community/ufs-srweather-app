@@ -75,7 +75,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+CYCLE_TYPE=${CYCLE_TYPE:-prod}
+CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup}"
+  if  [ ${CYCLE_SUBTYPE} == "ensinit" ]; then
+    DATA="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_ensinit}"
+  fi
+else
+  DATA="${DATA:-${CYCLE_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam}"
+fi
 mkdir_vrfy -p ${DATA}/INPUT
 mkdir_vrfy -p ${DATA}/RESTART
 #

@@ -74,6 +74,8 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
+
+gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #
 #-----------------------------------------------------------------------
 #
@@ -291,7 +293,7 @@ fi
 #
 # Symlink gfs_ctrl and bndy data
 #
-if [ $DO_RRFS_DEV ]; then
+if [ $DO_RRFS_DEV = "FALSE" ]; then
   target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
   symlink="gfs_ctrl.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
@@ -304,7 +306,7 @@ if [ $DO_RRFS_DEV ]; then
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"
   done
-fir
+fi
 
 #
 # Smoke and dust
@@ -314,7 +316,7 @@ if [ "${DO_SMOKE_DUST}" = "TRUE" ]; then
   ln_vrfy -snf  ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc      ${DATA}/INPUT/emi_data.nc
   yyyymmddhh=${cdate:0:10}
   echo ${yyyymmddhh}
-  if [ ${cycle_type} == "spinup" ]; then
+  if [ ${CYCLE_TYPE} == "spinup" ]; then
     smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00_spinup.nc
   else
     smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00.nc
@@ -379,6 +381,7 @@ for (( i=0; i<${num_symlinks}; i++ )); do
                          relative="${relative_link_flag}"
 
 done
+
 #
 #-----------------------------------------------------------------------
 #
@@ -535,6 +538,28 @@ python3 $USHdir/create_diag_table_file.py \
 Call to function to create a diag table file for the current cycle's 
 (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+#
+#-----------------------------------------------------------------------
+#
+# If INPUT/phy_data.nc exists, convert it from NetCDF4 to NetCDF3
+# (happens for cycled runs, not cold-started)
+#
+#-----------------------------------------------------------------------
+#
+if [[ -f phy_data.nc ]] ; then
+  echo "convert phy_data.nc from NetCDF4 to NetCDF3"
+  cd INPUT
+  rm -f phy_data.nc3 phy_data.nc4
+  cp -fp phy_data.nc phy_data.nc4
+  if ( ! time ( module purge ; module load intel szip hdf5 netcdf nco ; module list ; set -x ; ncks -3 --64 phy_data.nc4 phy_data.nc3) ) ; then
+    mv -f phy_data.nc4 phy_data.nc
+    rm -f phy_data.nc3
+    echo "NetCDF 4=>3 conversion failed. :-( Continuing with NetCDF 4 data."
+  else
+    mv -f phy_data.nc3 phy_data.nc
+  fi
+  cd ..
+fi
 #
 #-----------------------------------------------------------------------
 #
