@@ -503,6 +503,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     if "data" in expt_config:
         expt_config.pop("data")
 
+    # If RUN_TASK_GET_EXTRN_ICS and RUN_TASK_GET_EXTRN_LBCS are False, set
+    # USE_USER_STAGED_EXTRN_FILES to false
+    workflow_switches = expt_config["workflow_switches"]
+    if not workflow_switches.get("RUN_TASK_GET_EXTRN_ICS"):
+        get_extrn_ics['USE_USER_STAGED_EXTRN_FILES'] = False
+    if not workflow_switches.get("RUN_TASK_GET_EXTRN_LBCS"):
+        get_extrn_lbcs['USE_USER_STAGED_EXTRN_FILES'] = False
+
+
     # Check for the user-specified directories for external model files if
     # USE_USER_STAGED_EXTRN_FILES is set to TRUE
     task_keys = zip(
@@ -1047,7 +1056,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config["workflow_switches"]
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = global_sect["DO_ENSEMBLE"]
