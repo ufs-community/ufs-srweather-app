@@ -4,7 +4,7 @@
 Tutorials
 =============
 
-This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) built the SRW App successfully and (2) run the out-of-the-box case contained in the ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
+This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in the ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
 
 Users can run through the entire set of tutorials or jump to the one that interests them most. The five tutorials address different skills:
 
@@ -249,7 +249,7 @@ Once the control case is running, users can return to the ``config.yaml`` file (
      EXPT_SUBDIR: test_expt
      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
 
-``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be overwritten. ``test_expt`` is suggested. 
+``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be overwritten. ``test_expt`` is used here, but the user may select a different name if desired. 
 
 ``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
 
@@ -379,7 +379,7 @@ Analysis
 
 Sea Level Pressure
 `````````````````````
-In the Sea Level Pressure (SLP) plot, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour 000, so the difference plot is entirely white. 
+In the Sea Level Pressure (SLP) plot, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
 
 .. figure:: _static/plots/slp_diff_regional_f000.png
       :width: 1200
@@ -406,12 +406,37 @@ The predictions diverge further by f012, where a solid section of light blue in 
 Composite Reflectivity
 ``````````````````````````
 
+Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.weather.gov/jetstream/refl for more information!
+
+At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of Indianapolis covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. 
+
 .. figure:: _static/plots/refc_diff_regional_f000.png
       :width: 1200
       :align: center
 
-      *Placeholder Label*
+      *Composite Reflectivity at f000*
 
+As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving northeast of Indianapolis. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
+
+.. COMMENT: Ask Jeff/Gerard/other SMEs for better wording of analysis
+
+.. _refc006:
+
+.. figure:: _static/plots/refc_diff_regional_f006.png
+      :width: 1200
+      :align: center
+
+      *Composite reflectivity at f006 shows storm gathering strength*
+
+By forecast hour 12, __________________________________
+
+.. COMMENT: What do I say here?
+
+.. figure:: _static/plots/refc_diff_regional_f012.png
+      :width: 1200
+      :align: center
+
+      *Composite Reflectivity at f012*
 
 Updraft Helicity
 ````````````````````
@@ -431,6 +456,12 @@ CAPE/CIN
 
       *Placeholder Label*
 
+Try It!
+----------
+
+Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control!
+
+Users may also consider running the experiment with a different grid. 
 
 .. _fcst2:
 
