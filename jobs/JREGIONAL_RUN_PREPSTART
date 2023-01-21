@@ -70,8 +70,6 @@ CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
 
 # Use the forecast INPUT directory as working directory
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    cd_vrfy $DATAROOT
-    rm -rf ${DATA}
     DATA=$DATAROOT/${TAG}run_fcst_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
 else
     DATA=${COMIN}${SLASH_ENSMEM_SUBDIR}
