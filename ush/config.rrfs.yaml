@@ -19,6 +19,7 @@ platform:
   DOMAIN_PREGEN_BASEDIR: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/lam"
   FIXgsi: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/gsi"
   FIXcrtm: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/crtm/CRTM_v2.3.0"
+  FIXcrtmupp: "/scratch2/BMC/gsd-hpcs/Daniel.Abdi/rrfs_dev/ufs-srweather-app/regional_workflow/fix/crtm/CRTM_v2.4.0"
 workflow:
   TAG: RRFS_CONUS_3km_
   USE_CRON_TO_RELAUNCH: false
@@ -110,6 +111,11 @@ task_run_post:
   NNODES_RUN_POST: 1
   PPN_RUN_POST: 40
   USE_CUSTOM_POST_CONFIG_FILE: true
+  POST_OUTPUT_DOMAIN_NAME: conus_25km
+  CUSTOM_POST_CONFIG_FP: '{{ [platform.FIXcrtmupp, "upp/postxconfig-NT-fv3lam_rrfs.txt"]|path_join }}'
+  CUSTOM_POST_PARAMS_FP: '{{ [platform.FIXcrtmupp, "upp/params_grib2_tbl_new"]|path_join }}'
+  TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"
+  TESTBED_FIELDS_FN2: "testbed_fields_bgrd3d.txt"
 task_run_anal:
   NCORES_RUN_ANAL: 240
   NCORES_RUN_OBSERVER: 80
@@ -119,8 +125,6 @@ task_run_nonvarcldanl:
   PPN_RUN_NONVARCLDANL: '{{ task_run_fcst.IO_LAYOUT_Y }}'
 task_plot_allvars:
   COMOUT_REF: ""
-task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: conus_25km
 global:
   NUM_ENS_MEMBERS: 9
   HALO_BLEND: 20
@@ -129,7 +133,3 @@ global:
   TILE_LABELS: "full"
   TILE_SETS: "full"
   RADARREFL_TIMELEVEL: [0]
-  TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"
-  TESTBED_FIELDS_FN2: "testbed_fields_bgrd3d.txt"
-  CUSTOM_POST_CONFIG_FP: "/fix/upp/postxconfig-NT-fv3lam_rrfs.txt"
-  CUSTOM_POST_PARAMS_FP: "/fix/upp/params_grib2_tbl_new"

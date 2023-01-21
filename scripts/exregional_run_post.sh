@@ -97,10 +97,10 @@ to the temporary work directory (DATA_FHR):
 else
   if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
-    post_parms_fp="/please/set/aqm/parms/grib2/file"
+    post_parms_fp="${PARMdir}/upp/params_grib2_tbl_new_cmaq"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
-    post_params_fp="${PARMdir}/parm/params_grib2_tbl_new"
+    post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
   fi
   print_info_msg "
 ====================================================================
@@ -350,10 +350,10 @@ rm_vrfy -rf ${DATA_FHR}
 #
 # background files
 #
-bgdawp=${postprd_dir}/${NET}.t${cyc}z.bgdawpf${subh_fhr}.${tmmark}.grib2
-bgrd3d=${postprd_dir}/${NET}.t${cyc}z.bgrd3df${subh_fhr}.${tmmark}.grib2
-bgsfc=${postprd_dir}/${NET}.t${cyc}z.bgsfcf${subh_fhr}.${tmmark}.grib2
-bgifi=${postprd_dir}/${NET}.t${cyc}z.bgifif${subh_fhr}.${tmmark}.grib2
+bgdawp=${COMOUT}/${NET}.t${cyc}z.bgdawpf${subh_fhr}.${tmmark}.grib2
+bgrd3d=${COMOUT}/${NET}.t${cyc}z.bgrd3df${subh_fhr}.${tmmark}.grib2
+bgsfc=${COMOUT}/${NET}.t${cyc}z.bgsfcf${subh_fhr}.${tmmark}.grib2
+bgifi=${COMOUT}/${NET}.t${cyc}z.bgifif${subh_fhr}.${tmmark}.grib2
 
 wgrib2 PRSLEV.GrbF${post_fhr} -set center 7 -grib ${bgdawp}
 wgrib2 NATLEV.GrbF${post_fhr} -set center 7 -grib ${bgrd3d}
