@@ -382,7 +382,6 @@ Sea Level Pressure
 In the Sea Level Pressure (SLP) plot, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
 
 .. figure:: _static/plots/slp_diff_regional_f000.png
-      :width: 1200
       :align: center
 
       *Difference Plot for Sea Level Pressure at f000*
@@ -390,7 +389,6 @@ In the Sea Level Pressure (SLP) plot, the ``control`` and ``test_expt`` plots ar
 As the forecast continues, the results begin to diverge, as evidenced by the spattering of light blue dispersed across the f006 SLP plot. 
 
 .. figure:: _static/plots/slp_diff_regional_f006.png
-      :width: 1200
       :align: center
 
       *Difference Plot for Sea Level Pressure at f006*
@@ -398,7 +396,6 @@ As the forecast continues, the results begin to diverge, as evidenced by the spa
 The predictions diverge further by f012, where a solid section of light blue in the top left corner of the difference plot indicates that to the northwest of Indianapolis, the predictions for the ``control`` forecast were slightly lower than the predictions for the ``test_expt`` forecast. 
 
 .. figure:: _static/plots/slp_diff_regional_f012.png
-      :width: 1200
       :align: center
 
       *Difference Plot for Sea Level Pressure at f012*
@@ -438,8 +435,10 @@ By forecast hour 12, __________________________________
 
       *Composite Reflectivity at f012*
 
-CAPE/CIN
-``````````````
+Surface-Based CAPE/CIN
+``````````````````````````
+
+Surface-based Convective Available Potential Energy (CAPE) 
 
 .. figure:: _static/plots/sfcape_diff_regional_f000.png
       :width: 1200
@@ -448,6 +447,10 @@ CAPE/CIN
       *Placeholder Label*
 
 .. COMMENT: See https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
+   CAPE = Convective Available Potential Energy. CAPE is a measure of instability through the depth of the atmosphere, and is related to updraft strength in thunderstorms. SPC forecasters often refer to "weak instability" (CAPE less than 1000 Jkg-1), "moderate instability" (CAPE from 1000-2500 Jkg-1), "strong instability" (CAPE from 2500-4000 Jkg-1), and "extreme instability" (CAPE greater than 4000 Jkg-1). The CAPE in the sample sounding above is about 3200 Jkg-1 lifting the "virtual" surface parcel. In the real world, CAPE is usually an overestimate of updraft strength due to water loading and entrainment of unsaturated environmental air.
+
+   CIN = convective inhibition. Convective inhibition represents the "negative" area on a sounding that must be overcome for storm initiation. The CIN in the sample sounding above is about 20 Jkg-1, lifting the "virtual" surface parcel.
+
    Also: https://www.weather.gov/ilx/swop-severetopics-CAPE
 
 Updraft Helicity
