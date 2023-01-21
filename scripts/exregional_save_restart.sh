@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_save_restart" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_save_restart|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -56,7 +56,7 @@ yyyymmdd=${CDATE:0:8}
 hh=${CDATE:8:2}
 cyc=$hh
 
-save_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${FHR} hours" "+%Y%m%d%H" )
+save_time=$( date --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
 save_yyyy=${save_time:0:4}
 save_mm=${save_time:4:2}
 save_dd=${save_time:6:2}
@@ -121,23 +121,23 @@ if [ -r "$DATA/RESTART/${restart_prefix}.coupler.res" ]; then
   for file in ${filelist}; do
     mv_vrfy $DATA/RESTART/${restart_prefix}.${file} ${OUTPUT_DIR}/RESTART/${restart_prefix}.${file}
   done
-  echo " ${FHR} forecast from ${yyyymmdd}${hh} is ready " #> ${OUTPUT_DIR}/RESTART/restart_done_f${FHR}
+  echo " ${fhr} forecast from ${yyyymmdd}${hh} is ready " #> ${OUTPUT_DIR}/RESTART/restart_done_f${fhr}
 else
 
   FCST_LEN_HRS_thiscycle=${FCST_LEN_HRS}
   if [ ${CYCLE_TYPE} == "spinup" ]; then
     FCST_LEN_HRS_thiscycle=${FCST_LEN_HRS_SPINUP}
   else
-    num_FHRs=( "${#FCST_LEN_HRS_CYCLES[@]}" )
+    num_fhrs=( "${#FCST_LEN_HRS_CYCLES[@]}" )
     ihh=`expr ${hh} + 0`
-    if [ ${num_FHRs} -gt ${ihh} ]; then
+    if [ ${num_fhrs} -gt ${ihh} ]; then
        FCST_LEN_HRS_thiscycle=${FCST_LEN_HRS_CYCLES[${ihh}]}
     fi
   fi
   print_info_msg "$VERBOSE" " The forecast length for cycle (\"${hh}\") is
                  ( \"${FCST_LEN_HRS_thiscycle}\") "
 
-  if [ -r "$DATA/RESTART/coupler.res" ] && ([ ${FHR} -eq ${FCST_LEN_HRS_thiscycle} ] || [ ${CYCLE_SUBTYPE} == "ensinit" ]) ; then
+  if [ -r "$DATA/RESTART/coupler.res" ] && ([ ${fhr} -eq ${FCST_LEN_HRS_thiscycle} ] || [ ${CYCLE_SUBTYPE} == "ensinit" ]) ; then
     if [ "${IO_LAYOUT_Y}" == "1" ]; then
       for file in ${filelistn}; do
         mv_vrfy $DATA/RESTART/${file} ${OUTPUT_DIR}/RESTART/${restart_prefix}.${file}
@@ -154,9 +154,9 @@ else
     for file in ${filelist}; do
        mv_vrfy $DATA/RESTART/${file} ${OUTPUT_DIR}/RESTART/${restart_prefix}.${file}
     done
-    echo " ${FHR} forecast from ${yyyymmdd}${hh} is ready " #> ${OUTPUT_DIR}/RESTART/restart_done_f${FHR}
+    echo " ${fhr} forecast from ${yyyymmdd}${hh} is ready " #> ${OUTPUT_DIR}/RESTART/restart_done_f${fhr}
   else
-    echo "This forecast hour does not need to save restart: ${yyyymmdd}${hh}f${FHR}"
+    echo "This forecast hour does not need to save restart: ${yyyymmdd}${hh}f${fhr}"
   fi
 fi
 #
@@ -168,7 +168,7 @@ fi
 #
 print_info_msg "
 ========================================================================
-save restart for forecast hour $FHR completed successfully.
+save restart for forecast hour $fhr completed successfully.
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
 ========================================================================"

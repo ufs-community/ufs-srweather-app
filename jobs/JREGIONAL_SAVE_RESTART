@@ -81,14 +81,14 @@ fi
 
 if [ ${CYCLE_TYPE} == "spinup" ]; then
   DATA="${DATA}/fcst_fv3lam_spinup"
-  OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup"
+  export OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup"
   if [ ${CYCLE_SUBTYPE} == "ensinit" ]; then
     DATA="${DATA}/fcst_fv3lam_ensinit"
-    OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_ensinit"
+    export OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_ensinit"
   fi
 else
   DATA="${DATA}/fcst_fv3lam"
-  OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam"
+  export OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam"
 fi
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
@@ -103,12 +103,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export FHR=$( printf "%s" "${FHR}" | sed -n -r -e "s/^([0-9]+)$/\1/p" )
-if [ -z "$FHR" ]; then
+export fhr=$( printf "%s" "${fhr}" | sed -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
   print_err_msg_exit "\
 The forecast hour (fhr) must be a non-empty string consisting of only 
 digits:
-  fhr = \"${FHR}\""
+  fhr = \"${fhr}\""
 fi
 #
 #-----------------------------------------------------------------------
