@@ -83,7 +83,7 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
     logging.info(f'Setup complete; monitoring {num_expts} experiments')
 
     #Make a copy of experiment dictionary; will use this copy to monitor active experiments
-    running_expts = expt_dict
+    running_expts = expt_dict.copy()
 
     i = 0
     while running_expts:
@@ -115,7 +115,10 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
             subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
 
         write_monitor_file(monitor_file,expt_dict)
-        logging.debug(f"Finished loop {i}")
+        endtime = datetime.now()
+        total_walltime = endtime - starttime
+
+        logging.debug(f"Finished loop {i}\nWalltime so far is {str(total_walltime)}")
         
         #Slow things down just a tad between loops so experiments behave better
         time.sleep(5)
