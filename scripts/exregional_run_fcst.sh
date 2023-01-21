@@ -255,7 +255,7 @@ list_iolayout=$(seq 0 $n_iolayouty)
 relative_link_flag="FALSE"
 
 if [ ${BKTYPE} -eq 1 ]; then
-    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+    target="${INPUT_DATA}/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
 else
     target="fv_core.res.tile1.nc"
 fi
@@ -276,7 +276,7 @@ fi
 # Symlink sfc data
 #
 if [ ${BKTYPE} -eq 1 ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  target="${INPUT_DATA}/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="sfc_data.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
@@ -294,14 +294,14 @@ fi
 # Symlink gfs_ctrl and bndy data
 #
 if [ $DO_RRFS_DEV = "FALSE" ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  target="${INPUT_DATA}/gfs_ctrl.nc"
   symlink="gfs_ctrl.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
   
   
   for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    target="${INPUT_DATA}/gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
     symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"
