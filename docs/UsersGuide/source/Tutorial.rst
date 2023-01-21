@@ -408,7 +408,7 @@ Composite Reflectivity
 
 Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.weather.gov/jetstream/refl for more information!
 
-At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of Indianapolis covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. 
+At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. 
 
 .. figure:: _static/plots/refc_diff_regional_f000.png
       :width: 1200
@@ -418,7 +418,7 @@ At f000, the ``test_expt`` plot (top left) is showing more severe weather than t
 
 As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving northeast of Indianapolis. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
 
-.. COMMENT: Ask Jeff/Gerard/other SMEs for better wording of analysis
+.. COMMENT: Ask Jeff/Gerard/other SMEs for better wording of analysis. What to say about diff plot?
 
 .. _refc006:
 
@@ -438,15 +438,6 @@ By forecast hour 12, __________________________________
 
       *Composite Reflectivity at f012*
 
-Updraft Helicity
-````````````````````
-
-.. figure:: _static/plots/uh25_diff_regional_f006.png
-      :width: 1200
-      :align: center
-
-      *Placeholder Label*
-
 CAPE/CIN
 ``````````````
 
@@ -456,12 +447,24 @@ CAPE/CIN
 
       *Placeholder Label*
 
+.. COMMENT: See https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
+   Also: https://www.weather.gov/ilx/swop-severetopics-CAPE
+
+Updraft Helicity
+````````````````````
+
+Helicity measures the rotation in a storm's updraft (rising) air. Significant rotation increases the probability that the storm will become a supercell thunderstorm or a tornado. See http://ww2010.atmos.uiuc.edu/(Gh)/guides/mtr/svr/modl/fcst/params/hel.rxml for more details on updraft helicity. 
+
+.. figure:: _static/plots/uh25_diff_regional_f006.png
+      :width: 1200
+      :align: center
+
+      *Placeholder Label*
+
 Try It!
 ----------
 
 Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control!
-
-Users may also consider running the experiment with a different grid. 
 
 .. _fcst2:
 
