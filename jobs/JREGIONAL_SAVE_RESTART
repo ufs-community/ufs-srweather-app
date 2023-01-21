@@ -1,0 +1,139 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script runs the save_restart to save restart files to nwges
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "task_save_restart" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Set the run directory.
+#
+#-----------------------------------------------------------------------
+# CYCLE_TYPE is to indicate which type of cycle this job for:
+#   spinup: this job is for spin-up cycles
+#   others(prod): this job is for product cycle
+#
+# NWGES_DIR is the directory in which the model restart file will be saved
+#
+CYCLE_TYPE=${CYCLE_TYPE:-prod}
+CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
+
+
+# Use the forecast INPUT directory as working directory
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    cd_vrfy $DATAROOT
+    rm -rf ${DATA}
+    DATA=$DATAROOT/${TAG}run_fcst_${CYCLE_TYPE}${dot_ensmem/./_}.${share_pid}
+else
+    DATA=${COMIN}${SLASH_ENSMEM_SUBDIR}
+fi
+
+
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA}/fcst_fv3lam_spinup"
+  OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_spinup"
+  if [ ${CYCLE_SUBTYPE} == "ensinit" ]; then
+    DATA="${DATA}/fcst_fv3lam_ensinit"
+    OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam_ensinit"
+  fi
+else
+  DATA="${DATA}/fcst_fv3lam"
+  OUTPUT_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/fcst_fv3lam"
+fi
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+   mkdir_vrfy -p "${OUTPUT_DIR}/RESTART"
+   mkdir_vrfy -p "${OUTPUT_DIR}/INPUT"
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Make sure that fhr is a non-empty string consisting of only digits.  
+#
+#-----------------------------------------------------------------------
+#
+export FHR=$( printf "%s" "${FHR}" | sed -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$FHR" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only 
+digits:
+  fhr = \"${FHR}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_save_restart.sh || print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
