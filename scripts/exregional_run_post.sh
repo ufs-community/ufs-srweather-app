@@ -332,20 +332,6 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 cd_vrfy "${COMOUT}"
 
 #
-# background files
-#
-bgdawp=${COMOUT}/${NET}.${cycle}.bgdawpf${subh_fhr}.${TMMARK}.grib2
-bgrd3d=${COMOUT}/${NET}.${cycle}.bgrd3df${subh_fhr}.${TMMARK}.grib2
-bgsfc=${COMOUT}/${NET}.${cycle}.bgsfcf${subh_fhr}.${TMMARK}.grib2
-bgifi=${COMOUT}/${NET}.${cycle}.bgifif${subh_fhr}.${TMMARK}.grib2
-
-wgrib2 ${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix} -set center 7 -grib ${bgdawp}
-wgrib2 ${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix} -set center 7 -grib ${bgrd3d}
-if [ -f ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} ]; then
-  wgrib2 ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} -set center 7 -grib ${bgifi}
-fi
-
-#
 # Loop through the two files that UPP
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
@@ -367,6 +353,20 @@ for fid in "${fids[@]}"; do
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done
+
+#
+# background files
+#
+bgdawp=${COMOUT}/${NET}.${cycle}.bgdawpf${subh_fhr}.${TMMARK}.grib2
+bgrd3d=${COMOUT}/${NET}.${cycle}.bgrd3df${subh_fhr}.${TMMARK}.grib2
+bgsfc=${COMOUT}/${NET}.${cycle}.bgsfcf${subh_fhr}.${TMMARK}.grib2
+bgifi=${COMOUT}/${NET}.${cycle}.bgifif${subh_fhr}.${TMMARK}.grib2
+
+wgrib2 ${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix} -set center 7 -grib ${bgdawp}
+wgrib2 ${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix} -set center 7 -grib ${bgrd3d}
+if [ -f ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} ]; then
+  wgrib2 ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} -set center 7 -grib ${bgifi}
+fi
 
 # remove DATA_FHR
 rm_vrfy -rf ${DATA_FHR}
