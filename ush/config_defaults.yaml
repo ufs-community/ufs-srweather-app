@@ -754,6 +754,11 @@ workflow:
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+  FV3_NML_FN: "input.nml" # until we figure out how to do splitext on $FV3_NML_BASE_SUITE_FN using jinja2
+  FV3_NML_CYCSFC_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}'
+  FV3_NML_RESTART_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}'
+  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
+  FV3_NML_RESTART_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"

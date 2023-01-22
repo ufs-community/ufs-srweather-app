@@ -403,7 +403,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     lsoil = 4
     if (EXTRN_MDL_NAME_ICS == "HRRR" or 
         EXTRN_MDL_NAME_ICS == "RAP" or
-        EXTRN_MDL_NAME_ICS == "HRRRDAS" or
+        EXTRN_MDL_NAME_ICS == "HRRRDAS"
         ) and (
         SDF_USES_RUC_LSM
     ):
