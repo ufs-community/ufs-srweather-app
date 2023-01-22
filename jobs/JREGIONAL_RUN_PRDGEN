@@ -18,7 +18,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prdgen" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_prdgen|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -119,7 +119,7 @@ cd_vrfy "${DATA_FHR}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSDIR/exregional_run_prdgen.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_run_prdgen.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
