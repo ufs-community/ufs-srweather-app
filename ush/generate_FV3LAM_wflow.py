@@ -401,7 +401,10 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
     lsoil = 4
-    if (EXTRN_MDL_NAME_ICS == "HRRR" or EXTRN_MDL_NAME_ICS == "RAP") and (
+    if (EXTRN_MDL_NAME_ICS == "HRRR" or 
+        EXTRN_MDL_NAME_ICS == "RAP" or
+        EXTRN_MDL_NAME_ICS == "HRRRDAS" or
+        ) and (
         SDF_USES_RUC_LSM
     ):
         lsoil = 9
@@ -432,6 +435,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
+        "regional_bcs_from_gsi": False,
+        "write_restart_with_bcs": False,
         #
         # Question:
         # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
@@ -444,6 +449,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "npx": npx,
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
+        "io_layout": [IO_LAYOUT_X, IO_LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
     }
     settings["gfs_physics_nml"] = {
@@ -457,6 +463,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "n_var_lndp": N_VAR_LNDP,
         "lndp_type": LNDP_TYPE,
         "fhcyc": FHCYC_LSM_SPP_OR_NOT,
+        "print_diff_pgr": PRINT_DIFF_PGR,
+        "rrfs_sd": DO_SMOKE_DUST,
     }
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -667,6 +675,66 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
         set_FV3nml_sfc_climo_filenames()
 
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Generate namelist for DA cycle
+    #
+    # -----------------------------------------------------------------------
+    #
+    if DO_DACYCLE or DO_ENKFUPDATE:
+
+        if SDF_USES_RUC_LSM:
+            lsoil = 9
+
+        lupdatebc = False
+        if DO_UPDATE_BC:
+            lupdatebc = False   # not ready for setting this to true yet
+        
+        settings = {}
+        settings["fv_core_nml"] = {
+            "external_ic": False,
+            "make_nh": False,
+            "na_init": 0,
+            "nggps_ic": False,
+            "mountain": True,
+            "regional_bcs_from_gsi": lupdatebc,
+            "warm_start": True,
+        }
+        settings["gfs_physics_nml"] = {
+            "lsoil": lsoil or None
+            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
+        }
+        #
+        # populate the namelist file
+        #
+        try:
+            set_namelist(
+                [
+                    "-q",
+                    "-n",
+                    FV3_NML_FP,
+                    "-u",
+                    settings_str,
+                    "-o",
+                    FV3_NML_RESTART_FP,
+                ]
+            )
+        except:
+            logging.exception(
+                dedent(
+                    f"""
+                    Call to python script set_namelist.py to generate an FV3 namelist file
+                    failed.  Parameters passed to this script are:
+                      Full path to output namelist file:
+                        FV3_NML_FP = '{FV3_NML_FP}'
+                      Full path to output namelist file for DA:
+                        FV3_NML_RESTART_FP = '{FV3_NML_RESTART_FP}'
+                      Namelist settings specified on command line:\n
+                        settings =\n\n"""
+                )
+                + settings_str
+            )
     #
     # -----------------------------------------------------------------------
     #
