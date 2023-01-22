@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prepstart|task_get_extrn_lbcs|task_make_ics" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_prepstart|task_run_fcst|task_get_extrn_lbcs|task_make_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -370,7 +370,7 @@ if [ ${HH} -eq ${SNOWICE_update_hour} ] && [ ${CYCLE_TYPE} == "prod" ] ; then
      ln_vrfy -sf ./latest.SNOW_IMS                imssnow2
 
      if [ "${IO_LAYOUT_Y}" == "1" ]; then
-       ln_vrfy -sf ${FIX_GSI}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
+       ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
      else
        for ii in ${list_iolayout}
        do
@@ -432,7 +432,7 @@ if [ ${HH} -eq ${SST_update_hour} ] && [ ${CYCLE_TYPE} == "prod" ] ; then
    if [ -r "latest.SST" ]; then
      cp_vrfy ${FIXgsm}/RTG_SST_landmask.dat                RTG_SST_landmask.dat
      ln_vrfy -sf ./latest.SST                                  SSTRTG
-     cp_vrfy ${FIX_GSI}/${PREDEF_GRID_NAME}/fv3_akbk       fv3_akbk
+     cp_vrfy ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_akbk       fv3_akbk
 
 cat << EOF > sst.namelist
 &setup
@@ -444,7 +444,7 @@ cat << EOF > sst.namelist
 /
 EOF
      if [ "${IO_LAYOUT_Y}" == "1" ]; then
-       ln_vrfy -sf ${FIX_GSI}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
+       ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
        ${EXECdir}/process_updatesst.exe > stdout_sstupdate 2>&1
      else
        for ii in ${list_iolayout}
@@ -661,11 +661,11 @@ if [ ${HH} -eq ${GVF_update_hour} ] && [ ${CYCLE_TYPE} == "spinup" ]; then
 
    if [ -r "${latestGVF}" ]; then
       cp_vrfy ${latestGVF} ./GVF-WKL-GLB.grib2
-      ln_vrfy -sf ${FIX_GSI}/gvf_VIIRS_4KM.MAX.1gd4r.new  gvf_VIIRS_4KM.MAX.1gd4r.new
-      ln_vrfy -sf ${FIX_GSI}/gvf_VIIRS_4KM.MIN.1gd4r.new  gvf_VIIRS_4KM.MIN.1gd4r.new
+      ln_vrfy -sf ${FIXgsi}/gvf_VIIRS_4KM.MAX.1gd4r.new  gvf_VIIRS_4KM.MAX.1gd4r.new
+      ln_vrfy -sf ${FIXgsi}/gvf_VIIRS_4KM.MIN.1gd4r.new  gvf_VIIRS_4KM.MIN.1gd4r.new
 
       if [ "${IO_LAYOUT_Y}" == "1" ]; then
-        ln_vrfy -sf ${FIX_GSI}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
+        ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
         ${EXECdir}/update_GVF.exe > stdout_updateGVF 2>&1
       else
         for ii in ${list_iolayout}
@@ -811,15 +811,14 @@ rrfsfile='sfc_data.nc'
 /
 EOF
 
-   exect="use_raphrrr_sfc.exe"
-   if [ -f ${EXECdir}/$exect ]; then
-     print_info_msg "$VERBOSE" "
-     Copying the surface surgery executable to the run directory..."
-     cp_vrfy ${EXECdir}/${exect} ${exect}
+   exec_fn="use_raphrrr_sfc.exe"
+   exec_fp="$EXECdir/${exec_fn}"
+
+   if [ ! -f ${exec_fp} ]; then
 
      if [ "${IO_LAYOUT_Y}" == "1" ]; then
-       ln_vrfy -sf ${FIX_GSI}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
-       ./${exect} > stdout_sfc_sugery 2>&1 || print_info_msg "\
+       ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
+       ${exec_fp} > stdout_sfc_sugery 2>&1 || print_info_msg "\
        Call to executable to run surface surgery returned with nonzero exit code."
      else
        for ii in ${list_iolayout}
@@ -827,7 +826,7 @@ EOF
          iii=$(printf %4.4i $ii)
          ln_vrfy -sf ${gridspec_dir}/fv3_grid_spec.${iii}  fv3_grid_spec
          ln_vrfy -sf sfc_data.nc.${iii} sfc_data.nc
-         ./${exect} > stdout_sfc_sugery.${iii} 2>&1 || print_info_msg "\
+         ${exec_fp} > stdout_sfc_sugery.${iii} 2>&1 || print_info_msg "\
          Call to executable to run surface surgery returned with nonzero exit code."
          ls -l > list_sfc_sugery.${iii}
        done
@@ -837,11 +836,12 @@ EOF
      if [ ${SAVE_CYCLE_LOG} == "TRUE" ] ; then
        echo "${YYYYMMDDHH}(${CYCLE_TYPE}): run surface surgery" >> ${EXPTDIR}/log.cycles
      fi
+
    else
      print_info_msg "\
-     The executable specified in exect does not exist:
-     exect = \"${EXECdir}/$exect\"
-     Build executable and rerun."
+        The executable specified in exect does not exist:
+          exec_fp = \"${exec_fp}\"
+        Build executable and rerun."
    fi
 fi
 fi
@@ -857,11 +857,11 @@ if [ "${USE_FVCOM}" = "TRUE" ] || [ ${SFC_CYC} -eq 2 ] ; then
 
 # Remap the FVCOM output from the 5 lakes onto the RRFS grid
   if [ "${PREP_FVCOM}" = "TRUE" ]; then
-    ${SCRIPTSDIR}/exregional_prep_fvcom.sh \
+    ${SCRIPTSdir}/exregional_prep_fvcom.sh \
                   DATA="${DATA}" \
                   FIXLAM="${FIXLAM}" \
                   FVCOM_DIR="${FVCOM_DIR}" \
-              YYYYJJJHH="${YYYYJJJHH}" \
+                  YYYYJJJHH="${YYYYJJJHH}" \
                   YYYYMMDD="${YYYYMMDD}" \
                   YYYYMMDDm1="${YYYYMMDDm1}" \
                   HH="${HH}" || \
