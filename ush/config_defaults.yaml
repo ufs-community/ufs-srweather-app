@@ -2341,6 +2341,9 @@ task_run_prdgen:
   MEM_RUN_PRDGEN: 24G
   WTIME_RUN_PRDGEN: 00:40:00
   MAXTRIES_RUN_PRDGEN: 1
+  KMP_AFFINITY_RUN_PRDGEN: "scatter"
+  OMP_NUM_THREADS_RUN_PRDGEN: 1
+  OMP_STACKSIZE_RUN_PRDGEN: "1024m"
 
 #----------------------------
 # RUN BUFRSND config parameters
