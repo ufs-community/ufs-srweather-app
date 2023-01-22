@@ -378,24 +378,24 @@ if [ ${HH} -eq ${SNOWICE_update_hour} ] && [ ${CYCLE_TYPE} == "prod" ] ; then
          ln_vrfy -sf ${gridspec_dir}/fv3_grid_spec.${iii}  fv3_grid_spec.${iii}
        done
      fi
-#
-# copy executable
-#
-     snowice_exec_fn="process_imssnow_fv3lam.exe"
-     snowice_exec_fp="$EXECdir/${snowice_exec_fn}"
-     if [ ! -f "${snowice_exec_fp}" ]; then
+     #
+     # run snowice
+     #
+     exec_fn="process_imssnow_fv3lam.exe"
+     exec_fp="$EXECdir/${snowice_exec_fn}"
+     if [ ! -f "${exec_fp}" ]; then
       print_err_msg_exit "\
 The executable (snowice_exec_fn) for processing snow/ice data onto FV3-LAM
 native grid does not exist:
-  snowice_exec_fp= \"${snowice_exec_fp}\"
+  exec_fp= \"${exec_fp}\"
 Please ensure that you have built this executable."
      fi
 
      PREP_STEP
-     eval $RUN_CMD_UTILS ${snowice_exec_fp}  ${IO_LAYOUT_Y} ${REDIRECT_OUT_ERR} || \
+     eval $RUN_CMD_UTILS ${exec_fp}  ${IO_LAYOUT_Y} ${REDIRECT_OUT_ERR} || \
      print_err_msg_exit "\
  Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
-   snowice_exe = \"${snowice_exec_fp}\"
+   snowice_exe = \"${exec_fp}\"
  The following variables were being used:
    list_iolayout = \"${list_iolayout}\""
      POST_STEP
@@ -443,16 +443,42 @@ cat << EOF > sst.namelist
   ihr=${HH}
 /
 EOF
+     #
+     # run update sst
+     #
+     exec_fn="process_updatesst.exe"
+     exec_fp="$EXECdir/${exec_fn}"
+     if [ ! -f "${exec_fp}" ]; then
+        print_err_msg_exit "\
+The executable (exec_fn) for updateing sst does not exist:
+  exec_fp= \"${exec_fp}\"
+Please ensure that you have built this executable."
+     fi
+
      if [ "${IO_LAYOUT_Y}" == "1" ]; then
        ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
-       ${EXECdir}/process_updatesst.exe > stdout_sstupdate 2>&1
+
+       PREP_STEP
+       eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+       print_err_msg_exit "\
+ Call to executable to modify sst fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+       POST_STEP
+
      else
        for ii in ${list_iolayout}
        do
          iii=$(printf %4.4i $ii)
          ln_vrfy -sf ${gridspec_dir}/fv3_grid_spec.${iii}  fv3_grid_spec
          ln_vrfy -sf sfc_data.nc.${iii} sfc_data.nc
-         ${EXECdir}/process_updatesst.exe > stdout_sstupdate.${iii} 2>&1
+
+         PREP_STEP
+         eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+         print_err_msg_exit "\
+ Call to executable to modify sst fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+         POST_STEP
+
          ls -l > list_sstupdate.${iii}
        done
        rm -f sfc_data.nc
@@ -602,13 +628,29 @@ if [ ${SFC_CYC} -eq 1 ] || [ ${SFC_CYC} -eq 2 ] ; then  # cycle surface fields
               print_info_msg "Warning: cannot do surface cycle in cold start with sudomain restart files"
             fi
           else
+            exec_fn="update_ice.exe"
+            exec_fp="$EXECdir/${exec_fn}"
+            if [ ! -f "${exec_fp}" ]; then
+               print_err_msg_exit "\
+The executable (exec_fn) for updating ice does not exist:
+  exec_fp= \"${exec_fp}\"
+Please ensure that you have built this executable."
+            fi
+
             if [ "${IO_LAYOUT_Y}" == "1" ]; then 
               cp_vrfy ${checkfile}  ${restart_prefix_find}sfc_data.nc
               mv sfc_data.nc gfsice.sfc_data.nc
               mv ${restart_prefix_find}sfc_data.nc sfc_data.nc
               ncatted -a checksum,,d,, sfc_data.nc
               if [ "${if_update_ice}" == "TRUE" ]; then
-                ${EXECdir}/update_ice.exe > stdout_cycleICE 2>&1
+
+                PREP_STEP
+                eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+                print_err_msg_exit "\
+ Call to executable to modify ice fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+                POST_STEP
+
               fi
             else
               checkfile=${bkpath_find}/${restart_prefix_find}sfc_data.nc
@@ -627,7 +669,14 @@ if [ ${SFC_CYC} -eq 1 ] || [ ${SFC_CYC} -eq 2 ] ; then  # cycle surface fields
                 ln_vrfy -sf sfc_data.nc.${iii} sfc_data.nc
                 ln_vrfy -sf gfsice.sfc_data.nc.${iii} gfsice.sfc_data.nc
                 if [ "${if_update_ice}" == "TRUE" ]; then
-                  ${EXECdir}/update_ice.exe > stdout_cycleICE.${iii} 2>&1
+
+                  PREP_STEP
+                  eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+                  print_err_msg_exit "\
+ Call to executable to modify ice fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+                  POST_STEP
+
                 fi
               done
               rm -f sfc_data.nc gfsice.sfc_data.nc
@@ -664,16 +713,39 @@ if [ ${HH} -eq ${GVF_update_hour} ] && [ ${CYCLE_TYPE} == "spinup" ]; then
       ln_vrfy -sf ${FIXgsi}/gvf_VIIRS_4KM.MAX.1gd4r.new  gvf_VIIRS_4KM.MAX.1gd4r.new
       ln_vrfy -sf ${FIXgsi}/gvf_VIIRS_4KM.MIN.1gd4r.new  gvf_VIIRS_4KM.MIN.1gd4r.new
 
+      exec_fn="update_GVF.exe"
+      exec_fp="$EXECdir/${exec_fn}"
+      if [ ! -f "${exec_fp}" ]; then
+         print_err_msg_exit "\
+The executable (exec_fn) for updating GVF does not exist:
+  exec_fp= \"${exec_fp}\"
+Please ensure that you have built this executable."
+      fi
+
       if [ "${IO_LAYOUT_Y}" == "1" ]; then
         ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
-        ${EXECdir}/update_GVF.exe > stdout_updateGVF 2>&1
+
+        PREP_STEP
+        eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || \
+        print_err_msg_exit "\
+ Call to executable to modify GVF fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+        POST_STEP
+
       else
         for ii in ${list_iolayout}
         do
           iii=$(printf %4.4i $ii)
           ln_vrfy -sf ${gridspec_dir}/fv3_grid_spec.${iii}  fv3_grid_spec
           ln_vrfy -sf sfc_data.nc.${iii} sfc_data.nc
-          ${EXECdir}/update_GVF.exe > stdout_updateGVF.${iii} 2>&1
+
+          PREP_STEP
+          eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || \
+          print_err_msg_exit "\
+ Call to executable to modify GVF fields for FV3-LAM failed:
+   exec_fp = \"${exec_fp}\""
+          POST_STEP
+
           ls -l > list_updateGVF.${iii}
         done
         rm -f sfc_data.nc
@@ -811,23 +883,41 @@ rrfsfile='sfc_data.nc'
 /
 EOF
 
-   exec_fn="use_raphrrr_sfc.exe"
+   exec_fn="use_raphrr_sfc.exe"
    exec_fp="$EXECdir/${exec_fn}"
+   if [ ! -f "${exec_fp}" ]; then
+      print_err_msg_exit "\
+The executable (exec_fn) does not exist:
+  exec_fp= \"${exec_fp}\"
+Please ensure that you have built this executable."
+   fi
 
    if [ ! -f ${exec_fp} ]; then
 
      if [ "${IO_LAYOUT_Y}" == "1" ]; then
        ln_vrfy -sf ${FIXgsi}/${PREDEF_GRID_NAME}/fv3_grid_spec  fv3_grid_spec
-       ${exec_fp} > stdout_sfc_sugery 2>&1 || print_info_msg "\
-       Call to executable to run surface surgery returned with nonzero exit code."
+
+       PREP_STEP
+       eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+       print_err_msg_exit "\
+ Call to executable to run surface surgery failed:
+   exec_fp = \"${exec_fp}\""
+       POST_STEP
+
      else
        for ii in ${list_iolayout}
        do
          iii=$(printf %4.4i $ii)
          ln_vrfy -sf ${gridspec_dir}/fv3_grid_spec.${iii}  fv3_grid_spec
          ln_vrfy -sf sfc_data.nc.${iii} sfc_data.nc
-         ${exec_fp} > stdout_sfc_sugery.${iii} 2>&1 || print_info_msg "\
-         Call to executable to run surface surgery returned with nonzero exit code."
+
+         PREP_STEP
+         eval $RUN_CMD_SERIAL ${exec_fp} ${REDIRECT_OUT_ERR} || \
+         print_err_msg_exit "\
+ Call to executable to run surface surgery failed:
+   exec_fp = \"${exec_fp}\""
+         POST_STEP
+
          ls -l > list_sfc_sugery.${iii}
        done
        rm -f sfc_data.nc
@@ -853,7 +943,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_FVCOM}" = "TRUE" ] || [ ${SFC_CYC} -eq 2 ] ; then
+#if [ "${USE_FVCOM}" = "TRUE" ] || [ ${SFC_CYC} -eq 2 ] ; then  !Daniel: Use this when updated code works
+if [ "${USE_FVCOM}" = "TRUE" ] ; then
 
 # Remap the FVCOM output from the 5 lakes onto the RRFS grid
   if [ "${PREP_FVCOM}" = "TRUE" ]; then
@@ -873,7 +964,6 @@ if [ "${USE_FVCOM}" = "TRUE" ] || [ ${SFC_CYC} -eq 2 ] ; then
     FVCOM_DIR=${DATA}/fvcom_remap
   fi
 
-  set -x
   latest_fvcom_file="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ${HH} -gt 12 ]; then 
     starttime_fvcom="$(date +%Y%m%d -d "${START_DATE}") 12"
@@ -903,16 +993,6 @@ Please check the following user defined variables:
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
     fvcom_time="${YYYY}-${MM}-${DD}T${HH}:00:00.000000"
-    fvcom_exec_fn="fvcom_to_FV3"
-    fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
-    if [ ! -f "${fvcom_exec_fp}" ]; then
-      print_err_msg_exit "\
-The executable (fvcom_exec_fp) for processing FVCOM data onto FV3-LAM
-native grid does not exist:
-  fvcom_exec_fp = \"${fvcom_exec_fp}\"
-Please ensure that you've built this executable."
-    fi
-    cp_vrfy ${fvcom_exec_fp} .
 
 # decide surface
     if [ ${BKTYPE} -eq 1 ] ; then
@@ -923,12 +1003,21 @@ Please ensure that you've built this executable."
       surface_file='sfc_data.nc'
     fi
 
-#
+    exec_fn="fvcom_to_FV3"
+    exec_fp="$EXECdir/${exec_fn}"
+    if [ ! -f "${exec_fp}" ]; then
+      print_err_msg_exit "\
+The executable (exec_fp) for processing FVCOM data onto FV3-LAM
+native grid does not exist:
+  exec_fp = \"${exec_fp}\"
+Please ensure that you've built this executable."
+    fi
+
     PREP_STEP
-    eval $RUN_CMD_UTILS ${fvcom_exec_fn} ${surface_file} fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} ${IO_LAYOUT_Y} ${REDIRECT_OUT_ERR} || \
+    eval $RUN_CMD_UTILS ${exec_fp} ${surface_file} fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} ${IO_LAYOUT_Y} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
-  fvcom_exe = \"${fvcom_exec_fn}\"
+  fvcom_exe = \"${exec_fn}\"
 The following variables were being used:
   FVCOM_DIR = \"${FVCOM_DIR}\"
   FVCOM_FILE = \"${FVCOM_FILE}\"

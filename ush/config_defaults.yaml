@@ -2384,6 +2384,9 @@ task_make_ics:
   # Setting this to "cold" will read in the sfc_data.nc generated from 
   # chgres_cube in the make_ics portion of the workflow.
   #
+  # PREP_FVCOM:
+  # Flag set to interpolate FVCOM data to the desired FV3-LAM grid.
+  #
   # FVCOM_DIR:
   # User defined directory where FVCOM data already interpolated to FV3-LAM
   # grid is located. File name in this path should be "fvcom.nc" to allow
@@ -2396,6 +2399,7 @@ task_make_ics:
   #------------------------------------------------------------------------
   #
   USE_FVCOM: false
+  PREP_FVCOM: false
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
