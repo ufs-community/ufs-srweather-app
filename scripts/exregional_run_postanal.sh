@@ -154,7 +154,7 @@ EOF
     exec_fp = \"${exec_fp}\"
   Build lightning process and rerun."
   fi
-  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} $APRUN || print_err_msg_exit "\
+  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
   Call to executable to run adjust soil returned with nonzero exit code."
 
 fi
