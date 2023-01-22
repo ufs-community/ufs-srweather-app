@@ -314,7 +314,7 @@ else
       for file in ${filelistn}; do
         ncatted -a checksum,,d,, ${file}
       done
-      ncatted -O -a source,global,c,c,'FV3GFS GAUSSIAN NETCDF FILE' fv_core.res.tile1.nc
+      #ncatted -O -a source,global,c,c,'FV3GFS GAUSSIAN NETCDF FILE' fv_core.res.tile1.nc
     else
       for file in ${filelistn}; do
         for ii in $list_iolayout
@@ -323,11 +323,11 @@ else
           ncatted -a checksum,,d,, ${file}.${iii}
         done
       done
-      for ii in $list_iolayout
-      do
-        iii=$(printf %4.4i $ii)
-        ncatted -O -a source,global,c,c,'FV3GFS GAUSSIAN NETCDF FILE' fv_core.res.tile1.nc.${iii}
-      done
+      #for ii in $list_iolayout
+      #do
+      #  iii=$(printf %4.4i $ii)
+      #  ncatted -O -a source,global,c,c,'FV3GFS GAUSSIAN NETCDF FILE' fv_core.res.tile1.nc.${iii}
+      #done
     fi
     ncatted -a checksum,,d,, fv_core.res.nc
 
