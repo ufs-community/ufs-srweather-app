@@ -8,11 +8,11 @@ This chapter walks users through experiment configuration options for various se
 
 Users can run through the entire set of tutorials or jump to the one that interests them most. The five tutorials address different skills:
 
-   #. :ref:`Severe Weather Over Indianapolis <fcst1>`
-   #. :ref:`Hurricane Barry <fcst2>`
-   #. :ref:`Cold Air Damming <fcst3>`
-   #. :ref:`Southern Plains Winter Weather Event <fcst4>`
-   #. :ref:`Halloween Storm <fcst5>`
+   #. :ref:`Severe Weather Over Indianapolis <fcst1>`: Change physics suites and compare graphics plots. 
+   #. :ref:`Cold Air Damming <fcst2>`: Coming soon!
+   #. :ref:`Southern Plains Winter Weather Event <fcst3>`: Coming soon!
+   #. :ref:`Halloween Storm <fcst4>`: Coming soon!
+   #. :ref:`Hurricane Barry <fcst5>`: Coming soon!
 
 Each section provides a summary of the weather event and instructions for configuring an experiment. 
 
@@ -43,8 +43,7 @@ Data
 
 On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-.. COMMENT: Specify where in the bucket the data is! Ask Sylvia to add HRRR/RAP data to Bucket. 
-   NEED HRRR/RAP data added to `develop` location across L1 platforms for this tutorial! (Currently only available on AWS under v2p1, not develop!)
+.. COMMENT: Specify where in the bucket the data is! Ask Sylvia to add HRRR/RAP data to Bucket. NEED HRRR/RAP data added to `develop` location across L1 platforms for this tutorial! (Currently only available on AWS under v2p1, not develop!)
 
 
 Load the Regional Workflow
@@ -430,7 +429,7 @@ As the forecast progresses, the radar images resemble each other more (see :numr
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
-At forecast hour 12, the ``test_expt`` plot again shows some areas of high composite reflectivity in dark red, whereas the ``control`` plot shows an overall decrease in composite reflectivity values. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
+At forecast hour 12, the ``test_expt`` plot again shows some areas of high composite reflectivity in dark red, whereas the ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
 
 .. figure:: _static/plots/refc_diff_regional_f012.png
       :align: center
@@ -445,7 +444,7 @@ Surface-Based CAPE/CIN
 Background
 """"""""""""
 
-The National Weather Service (:term:`NWS`) defines Surface-based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS, What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
+The National Weather Service (:term:`NWS`) defines Surface-Based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS, What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
 
 According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html>`__, Convective Inhibition (CIN) "represents the 'negative' area on a sounding that must be overcome for storm initiation." In effect, it measures negative buoyancy (-B) --- the opposite of CAPE, which measures positive buoyancy (B or B+) of an air parcel. 
 
@@ -455,7 +454,7 @@ According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/me
 Interpreting the Plots
 """"""""""""""""""""""""
 
-CAPE measures appear on the plots in color and range in value from 100-5000 Joules per kilogram (J/kg) with lower values represented by cool colors and higher values represented by warm colors. In general, values of approximately 1000 J/kg can lead to severe thunderstorms, although this is dependent on season and location. 
+CAPE measures are represented on the plots using color. They range in value from 100-5000 Joules per kilogram (J/kg). Lower values are represented by cool colors and higher values are represented by warm colors. In general, values of approximately 1000+ J/kg can lead to severe thunderstorms, although this is also dependent on season and location. 
 
 CIN measures are displayed on the plots using hatch marks:
 
@@ -474,7 +473,7 @@ At the 0th forecast hour, the ``test_expt`` plot (below, left) shows lower value
 
       *CAPE/CIN Difference Plot at f000*
 
-At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall and higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the plot indicates where ``control`` predictions are lower than the ``test_expt`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
+At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall. Both plots also predict higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the difference plot indicates where ``test_expt`` predictions are higher than the ``control`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f006.png
       :width: 1200
@@ -482,7 +481,7 @@ At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasti
 
       *CAPE/CIN Difference Plot at f006*
 
-At the 12th forecast hour, the ``control`` plot suggests that CAPE is decreasing overall. ``test_expt``, however, shows that several areas of high CAPE remain, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
+At the 12th forecast hour, the ``control`` plot indicates that CAPE may be decreasing overall. ``test_expt``, however, shows that areas of high CAPE remain and continue to grow, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f012.png
       :width: 1200
@@ -499,55 +498,7 @@ Users may find the difference plots for :term:`updraft helicity` particularly in
 
 .. _fcst2:
 
-Sample Forecast #2: Hurricane Barry
-=======================================
-
-Weather Summary
---------------------
-
-Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and a minimum pressure of 992 hPa. 
-
-**Weather Phenomena:** Flooding, wind, and tornado reports
-
-   * `Storm Prediction Center (SPC) Storm Report for 20190713 <https://www.spc.noaa.gov/climo/reports/190713_rpts.html>`__ 
-   * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
-
-.. figure:: _static/HurricaneBarry_Making_Landfall.gif
-   :alt: Radar animation of Hurricane Barry making landfall. 
-
-   *Hurricane Barry Making Landfall*
-
-
-.. COMMENT: See sample forecast case details in this Google doc: https://docs.google.com/document/d/1TFjSAyI3jBmhzfZBmlIZz5NonBDDTi8x_-g-QVbvMOo/edit
-
-Tutorial Content
--------------------
-
-Coming Soon!
-
-.. COMMENT: 
-   **Objective:**
-
-   Data
-   -------
-
-   Configuration
-   ----------------
-
-   When (fcst start time): 2019-07-12 00z
-   FV3GFS_FILE_FMT_ICS/LBCS: nemsio
-   WTIME_RUN_FCST="04:00:00"
-
-   Analysis
-   -----------
-
-   Compare: Hurricane track, intensity, and wind speed after landfall? Satellite imagery?
-   Need: New subconus domain over LA. 
-   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
-
-.. _fcst3:
-
-Sample Forecast #3: Cold Air Damming
+Sample Forecast #2: Cold Air Damming
 ========================================
 
 .. COMMENT: 
@@ -600,9 +551,9 @@ Coming Soon!
    Need: New subconus domain over the southeast. 
    Data: We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
-.. _fcst4:
+.. _fcst3:
 
-Sample Forecast #4: Southern Plains Winter Weather Event
+Sample Forecast #3: Southern Plains Winter Weather Event
 ===========================================================
 
 Weather Summary
@@ -642,9 +593,9 @@ Coming Soon!
    Compare/Analyze: Variables like surface temperature, jet stream, and precipitation type? 
    Need: New subconus domain over the southern plains, plus FV3GFS, HRRR, and RAP ICs.
 
-.. _fcst5:
+.. _fcst4:
 
-Sample Forecast #5: Halloween Storm
+Sample Forecast #4: Halloween Storm
 =======================================
 
 Weather Summary
@@ -687,3 +638,51 @@ Coming Soon!
    Compare/Analyze: Synoptic dynamics, surface wind and temperatures, and moisture profiles.
    Need: New subconus domain over the north east. 
    Data: We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
+
+.. _fcst5:
+
+Sample Forecast #5: Hurricane Barry
+=======================================
+
+Weather Summary
+--------------------
+
+Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurricane. It produced widespread flooding in the region and had a peak wind speed of 72 mph and a minimum pressure of 992 hPa. 
+
+**Weather Phenomena:** Flooding, wind, and tornado reports
+
+   * `Storm Prediction Center (SPC) Storm Report for 20190713 <https://www.spc.noaa.gov/climo/reports/190713_rpts.html>`__ 
+   * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
+
+.. figure:: _static/HurricaneBarry_Making_Landfall.gif
+   :alt: Radar animation of Hurricane Barry making landfall. 
+
+   *Hurricane Barry Making Landfall*
+
+
+.. COMMENT: See sample forecast case details in this Google doc: https://docs.google.com/document/d/1TFjSAyI3jBmhzfZBmlIZz5NonBDDTi8x_-g-QVbvMOo/edit
+
+Tutorial Content
+-------------------
+
+Coming Soon!
+
+.. COMMENT: 
+   **Objective:**
+
+   Data
+   -------
+
+   Configuration
+   ----------------
+
+   When (fcst start time): 2019-07-12 00z
+   FV3GFS_FILE_FMT_ICS/LBCS: nemsio
+   WTIME_RUN_FCST="04:00:00"
+
+   Analysis
+   -----------
+
+   Compare: Hurricane track, intensity, and wind speed after landfall? Satellite imagery?
+   Need: New subconus domain over LA. Add some HWRF/HMON physics suite options in the SRW App, which HAFS has. Appropriate namelist options have to be set by the App. Then point users to HAFS, and note that HAFS has additional nesting support that is available (but not set up yet for use in the SRW App, even though it could be used).
+   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
