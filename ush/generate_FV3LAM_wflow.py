@@ -464,7 +464,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "lndp_type": LNDP_TYPE,
         "fhcyc": FHCYC_LSM_SPP_OR_NOT,
         "print_diff_pgr": PRINT_DIFF_PGR,
-        "rrfs_sd": DO_SMOKE_DUST,
+        #"rrfs_sd": DO_SMOKE_DUST,  # probably needs ufs-weather-model update
     }
     #
     # Add to "settings" the values of those namelist variables that specify
