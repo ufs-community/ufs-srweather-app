@@ -35,23 +35,25 @@ from python_utils import (
 from check_python_version import check_python_version
 
 
-def monitor_jobs(expt_dict: dict, debug: bool) -> str:
+def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
 
     Args:
-        expt_dict (dict): A dictionary containing the information needed to run
-                          one or more experiments. See example file monitor_jobs.yaml
-        debug     (bool): Enable extra output for debugging
+        expt_dict   (dict): A dictionary containing the information needed to run
+                            one or more experiments. See example file monitor_jobs.yaml
+        monitor_file (str): [optional]
+        debug       (bool): [optional] Enable extra output for debugging
     Returns:
         monitor_file (str): The name of the file used for job monitoring (when script
                             is finish, this contains results/summary)
 
     """
 
-    # Write monitor_file, which will contain information on each monitored experiment
     starttime = datetime.now()
-    monitor_file = f'monitor_jobs_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
-    logging.info(f"Writing information for all experiments to {monitor_file}")
+    # Write monitor_file, which will contain information on each monitored experiment
+    if not monitor_file:
+        monitor_file = f'monitor_jobs_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
+        logging.info(f"Writing information for all experiments to {monitor_file}")
 
     write_monitor_file(monitor_file,expt_dict)
 
@@ -62,8 +64,7 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
         logging.info(f"Starting experiment {expt} running")
         num_expts += 1
         rocoto_db = f"{expt_dict[expt]['expt_dir']}/FV3LAM_wflow.db"
-        rr = subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
-        logging.debug(f' RR1 = {rr}')
+        subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
         logging.debug(f"Reading database for experiment {expt}, populating experiment dictionary")
         try:
             db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
@@ -78,6 +79,8 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
             cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
             expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
         expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
+        #Run rocotorun again to get around weird subprocess problem?
+        subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
 
     write_monitor_file(monitor_file,expt_dict)
 
@@ -99,8 +102,11 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
                 expt_dict[expt]["status"] = "ERROR"
                 continue
             # Run "rocotorun" here to give the database time to be fully written
-            rr = subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
-            logging.debug(f' RR2 = {rr}')
+            subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
+#            rr = subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
+#            logging.debug(f' RR2 = {rr}')
+            #Run rocotorun again to get around weird subprocess problem?
+            subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
             for task in db:
                 # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
                 # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
@@ -263,19 +269,19 @@ if __name__ == "__main__":
     #Parse arguments
     parser = argparse.ArgumentParser(description="Script for monitoring and running jobs in a specified experiment, as specified in a yaml configuration file\n")
 
-    parser.add_argument('yaml_file', type=str, help='YAML-format file specifying the information of jobs to be run; for an example file, see monitor_jobs.yaml', required=True)
+    parser.add_argument('-y', '--yaml_file', type=str, help='YAML-format file specifying the information of jobs to be run; for an example file, see monitor_jobs.yaml', required=True)
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
 
     args = parser.parse_args()
 
     setup_logging(logfile,args.debug)
 
-    #NEED TO ADD LOGIC TO READ INPUT FILE HEREu
+    expt_dict = load_config_file(args.yaml_file)
 
     #Call main function
 
     try:
-        monitor_jobs(expt_dict, yaml_file, args.debug)
+        monitor_jobs(expt_dict,args.yaml_file, args.debug)
     except:
         logging.exception(
             dedent(
