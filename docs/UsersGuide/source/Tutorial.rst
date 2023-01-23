@@ -457,7 +457,9 @@ According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/me
 Interpreting the Plots
 """"""""""""""""""""""""
 
-CAPE measures appear on the plots in color and range in value from 100-5000 Joules per kilogram (J/kg) with lower values represented by cool colors and higher values represented by warm colors. CIN measures are displayed on the plots using hatch marks:
+CAPE measures appear on the plots in color and range in value from 100-5000 Joules per kilogram (J/kg) with lower values represented by cool colors and higher values represented by warm colors. In general, values of approximately 1000 J/kg can lead to severe thunderstorms, although this is dependent on season and location. 
+
+CIN measures are displayed on the plots using hatch marks:
 
    * ``*`` means CIN <= -500 J/kg
    * ``+`` means -500 < CIN <= -250 J/kg
@@ -466,7 +468,7 @@ CAPE measures appear on the plots in color and range in value from 100-5000 Joul
 
 In general, the higher the CIN values are (i.e., the closer they are to zero), the lower the convective inhibition and the greater the likelihood that a storm will develop. Low CIN values (corresponding to high convective inhibition) make it unlikely that a storm will develop even in the presence of high CAPE. 
 
-.. COMMENT: 
+At the 0th forecast hour, the ``test_expt`` plot (below, left) shows lower values of CAPE and higher values of CIN than in the ``control`` plot (below, right). This means that ``test_expt`` is projecting lower potential energy available for a storm but also lower inhibition, which means that less energy would be required for a storm to develop. The difference between the two plots is particularly evident in the southwest corner of the difference plot, which shows a 1000+ J/kg difference between the two plots. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f000.png
       :width: 1200
@@ -474,7 +476,7 @@ In general, the higher the CIN values are (i.e., the closer they are to zero), t
 
       *CAPE/CIN Difference Plot at f000*
 
-At the 0th forecast hour, the ``test_expt`` plot (left) shows lower values of CAPE and higher values of CIN than in the ``control`` plot. This means that ``test_expt`` is projecting lower potential energy available for a storm but also lower inhibition, which means that less energy would be required for a storm to develop. The difference between the two plots is particularly evident in the southwest corner of the difference plot, which shows a 1000+ J/kg difference between the two plots. 
+At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall and higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the plot indicates where ``control`` predictions are lower than the ``test_expt`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f006.png
       :width: 1200
@@ -482,15 +484,13 @@ At the 0th forecast hour, the ``test_expt`` plot (left) shows lower values of CA
 
       *CAPE/CIN Difference Plot at f006*
 
-At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall and higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the plot indicates where ``control`` predictions are lower than the ``test_expt`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
+At the 12th forecast hour, the ``control`` plot suggests that CAPE is decreasing overall. ``test_expt``, however, shows that several areas of high CAPE remain, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f012.png
       :width: 1200
       :align: center
 
       *CAPE/CIN Difference Plot at f012*
-
-At the 12th forecast hour, the ``control`` plot suggests that CAPE is decreasing overall. ``test_expt``, however, shows that several areas of high CAPE remain, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
 Try It!
 ----------
