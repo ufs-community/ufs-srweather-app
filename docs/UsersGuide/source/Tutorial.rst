@@ -482,13 +482,15 @@ At the 0th forecast hour, the ``test_expt`` plot (left) shows lower values of CA
 
       *CAPE/CIN Difference Plot at f006*
 
-At the 6th forecast hour, 
+At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall and higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the plot indicates where ``control`` predictions are lower than the ``test_expt`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
 
 .. figure:: _static/plots/sfcape_diff_regional_f012.png
       :width: 1200
       :align: center
 
       *CAPE/CIN Difference Plot at f012*
+
+At the 12th forecast hour, the ``control`` plot suggests that CAPE is decreasing overall. ``test_expt``, however, shows that several areas of high CAPE remain, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
 Try It!
 ----------
