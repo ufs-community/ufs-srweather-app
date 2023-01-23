@@ -26,7 +26,7 @@ try:
 except ModuleNotFoundError:
     pass
 # The rest of the formats: JSON/SHELL/INI/XML do not need
-# external pakcages
+# external packages
 import json
 import os
 import re
@@ -398,8 +398,6 @@ def cfg_to_xml_str(cfg):
 ##################
 # CONFIG utils
 ##################
-
-
 def flatten_dict(dictionary, keys=None):
     """Flatten a recursive dictionary (e.g.yaml/json) to be one level deep
 

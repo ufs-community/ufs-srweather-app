@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Emulates slurm's sbatch
+
+FD=${1:-/dev/stdin}
+
+#parse log file
+LOG=`grep "#SBATCH -o" $FD | awk '{ print $3 }'`
+if [ -z "$LOG" ]; then
+   LOG=/dev/null
+fi
+
+#parse time
+TIM=`grep "#SBATCH -t" $FD | awk '{ print $3 }'`
+if [ -z "$TIM" ]; then
+   SECS=
+   CTIM=
+else
+   SECS=`echo $TIM | awk 'BEGIN { FS = ":" } ; { secs = $1 * 3600 + $2 * 60 + $3; print secs };'`
+   CTIM="timeout ${SECS}s"
+fi
+
+#parse job name
+JOBNAME=`grep "#SBATCH --job-name" $FD | awk 'BEGIN { FS = "=" }; { print $2 }'`
+if [ -z "$JOBNAME" ]; then
+   JOBNAME="default"
+fi
+
+#command
+CMD="`cat $FD`"
+
+#execute job in background
+bash -c "\
+   ds=\$(date --utc +%Y-%m-%d:%H:%M:%S); \
+   de=\$(date --utc -d '$SECS sec' +%Y-%m-%d:%H:%M:%S); \
+   echo $JOBNAME pid \$$ started \$ds ends \$de >>.job_database; \
+   \
+   ${CTIM} ${CMD} &>$LOG; \
+   excode=\$?; \
+   \
+   de=\$(date --utc +%Y-%m-%d:%H:%M:%S); \
+   echo $JOBNAME pid \$$ ended \$de exitcode \$excode >>.job_database;" &
+
+#submission info
+pid=$!
+dsub=$(date --utc +%Y-%m-%d:%H:%M:%S)
+echo $JOBNAME pid $pid submitted $dsub >>.job_database
+echo "Submitted batch job "$pid

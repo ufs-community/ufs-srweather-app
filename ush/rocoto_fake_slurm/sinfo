@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Emulates slurm's sinfo
+exec lscpu

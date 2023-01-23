@@ -65,14 +65,6 @@ Among other techniques, MET provides the capability to compute standard verifica
 
 METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (ESRL), and NOAA/Environmental Modeling Center (:term:`EMC`), and it is open to community contributions.
 
-
-Visualization Example
-=====================
-A Python script is provided to create basic visualizations of the model output. The script is designed to output graphics in PNG format for several standard meteorological variables
-when using the pre-defined :term:`CONUS` domain. A difference plotting script is also included to visually compare two runs for the same domain and resolution. These scripts are provided only as an example for users familiar with Python. They may be used to perform a visual check to verify that the application is producing reasonable results. 
-
-After running ``manage_externals/checkout_externals``, the visualization scripts will be available in the ``ufs-srweather-app/ush/Python`` directory. Usage information and instructions are described in :numref:`Chapter %s <Graphics>` and are also included at the top of each script. 
-
 Build System and Workflow
 =========================
 
@@ -81,7 +73,9 @@ The SRW Application has a portable build system and a user-friendly, modular, an
 An umbrella CMake-based build system is used for building the components necessary for running the end-to-end SRW Application, including the UFS Weather Model and the pre- and post-processing software. Additional libraries necessary for the application (e.g., :term:`NCEPLIBS-external` and :term:`NCEPLIBS`) are not included in the SRW Application build system but are available pre-built on pre-configured platforms. On other systems, they can be installed via the HPC-Stack (see :doc:`HPC-Stack Documentation <hpc-stack:index>`). There is a small set of system libraries and utilities that are assumed to be present on the target computer: the CMake build software; a Fortran, C, and C++ compiler; and an :term:`MPI` library.
 
 Once built, the provided experiment generator script can be used to create a Rocoto-based
-workflow file that will run each task in the system in the proper sequence (see :numref:`Chapter %s <RocotoInfo>` or the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more information on Rocoto). If Rocoto and/or a batch system is not present on the available platform, the individual components can be run in a stand-alone, command line fashion with provided run scripts. The generated namelist for the atmospheric model can be modified in order to vary settings such as forecast starting and ending dates, forecast length hours, the :term:`CCPP` physics suite, integration time step, history file output frequency, and more. It also allows for configuration of other elements of the workflow; for example, users can choose whether to run some or all of the pre-processing, forecast model, and post-processing steps.
+workflow file that will run each task in the system in the proper sequence (see :numref:`Chapter %s <RocotoInfo>` or the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__ for more information on Rocoto). If Rocoto and/or a batch system is not present on the available platform, the individual components can be run in a stand-alone, command line fashion with provided run scripts. The generated namelist for the atmospheric model can be modified in order to vary settings such as forecast starting and ending dates, forecast length hours, the :term:`CCPP` physics suite, integration time step, history file output frequency, and more. It also allows for configuration of other elements of the workflow; for example, users can choose whether to run some or all of the pre-processing, forecast model, and post-processing steps. 
+
+An optional Python plotting task is also included to create basic visualizations of the model output. The task outputs graphics in PNG format for several standard meteorological variables on the pre-defined :term:`CONUS` domain. A difference plotting option is also included to visually compare two runs for the same domain and resolution. These plots may be used to perform a visual check to verify that the application is producing reasonable results. Configuration instructions are provided in :numref:`Section %s <PlotOutput>`. 
 
 The latest SRW Application release has been tested on a variety of platforms widely used by researchers, such as the NOAA Research and Development High-Performance Computing Systems (RDHPCS), including Hera, Orion, and Jet; the National Center for Atmospheric Research (:term:`NCAR`) Cheyenne system; and generic Linux and MacOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited-test (Level 3), and build-only (Level 4) platforms. Each level is further described below.
 
