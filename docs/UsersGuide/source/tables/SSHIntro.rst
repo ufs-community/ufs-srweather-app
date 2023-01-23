@@ -10,7 +10,7 @@ Introduction to SSH & Data Transfer
 
    Note that all port numbers, IP addresses, and SSH keys included in this chapter are placeholders and do not refer to known systems. They are used purely for illustrative purposes, and users should modify the commands to correspond to their actual systems. 
 
-A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between the two systems. Many HPC platforms, including NOAA `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__, are accessed via SSH from the user's own computer. 
+A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between two systems. Many HPC platforms, including NOAA `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__, are accessed via SSH from the user's own computer via SSH. 
 
 .. attention:: 
 
@@ -32,7 +32,7 @@ To generate an SSH key, open a terminal window and run:
 
 Hit enter three times to accept defaults, or if customization is desired:
 
-   * Enter file in which to save the key (for example: ~/.ssh/id_rsa)
+   * Enter the file in which to save the key (for example: ``~/.ssh/id_rsa``)
    * Enter passphrase (empty for no passphrase)
    * Enter same passphrase again
 
@@ -47,10 +47,10 @@ SSH into a Remote Machine
 
 This process differs somewhat from system to system. However, this section provides general guidance. 
 
-Create/Edit an SHH Configuration File (``~/.ssh/config``)
+Create/Edit an SSH Configuration File (``~/.ssh/config``)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SSH ``config`` file is located in the hidden ``.ssh`` directory if it exists. If it does not exist, opening it will create the file. In a terminal window, run:
+If it exists, the SSH ``config`` file is located in the hidden ``.ssh`` directory. If it does not exist, opening it will create the file. In a terminal window, run:
 
 .. code-block:: console
 
@@ -61,7 +61,7 @@ Press ``i`` to edit the file, and add an entry in the following format:
 .. code-block:: console
 
    Host <name_of_your_choice>
-     Hostname <host name or IP address>
+     Hostname <host_name_or_IP_address>
      User <Username>
      IdentityFile ~/.ssh/<key_name>
 
@@ -80,7 +80,7 @@ Concretely, a user logging into an AWS cluster might enter something similar to 
      User Jane.Doe
      IdentityFile ~/.ssh/id_rsa
 
-Users attempting to authenticate via ssh on GitHub might create the following block instead:
+Users attempting to authenticate via SSH on GitHub might create the following code block instead:
 
 .. code-block:: console
    
@@ -98,7 +98,7 @@ To SSH into the remote system, simply run:
 
    ssh <Host> 
 
-where <Host> is the "name_of_your_choice" that was added to the ``config`` file. For example, a user logging into the AWS cluster above would type:
+where ``<Host>`` is the "name_of_your_choice" that was added to the ``config`` file. For example, a user logging into the AWS cluster above would type:
 
 .. code-block:: console
 
@@ -110,7 +110,7 @@ In some cases, the user may be asked if they want to connect:
 
 .. code-block:: console
 
-   The authenticity of host '30.40.500.60 (30.40.500.60)' can't be established.
+   The authenticity of host '50.60.700.80 (50.60.700.80)' can't be established.
    ECDSA key fingerprint is SHA256:a0ABbC4cdeDEfFghi+j3kGHlO5mnIJKLMop7NOqPrQR.
    Are you sure you want to continue connecting (yes/no/[fingerprint])? 
 
@@ -124,13 +124,13 @@ Data Transfer via SSH
 Introduction
 ---------------
 
-Users who are working on a remote cloud or HPC system may want to copy files (e.g. graphics plots) onto their local system to view in their preferred image viewer. Users can run the ``scp`` command in a new terminal/command prompt window to securely copy these files from their remote system to their local system. The structure of the command is:
+Users who are working on a remote cloud or HPC system may want to copy files (e.g., graphics plots) to or from their local system. Users can run the ``scp`` command in a new terminal/command prompt window to securely copy these files from their remote system to their local system or vice versa. The structure of the command is:
 
 .. code-block:: console
 
    scp [OPTION] [user@]SRC_HOST:]file1 [user@]DEST_HOST:]file2
 
-Here, ``SRC_HOST`` refers to the (HPC or cloud) system where the ``.png`` files are currently located. ``DEST_HOST`` refers to the user's local system. ``file1`` is the file or directory to copy, and ``file2`` is the location that the file or directory should be copied to on the local system. 
+Here, ``SRC_HOST`` refers to the system where the files are currently located. ``DEST_HOST`` refers to the system that the files will be moved to. ``file1`` is the path to the file or directory to copy, and ``file2`` is the location that the file or directory should be copied to on the ``DEST_HOST`` system. 
 
 .. _SSHDownload:
 
@@ -139,19 +139,11 @@ Download the Data from a Remote System to a Local System
 
 .. note:: 
 
-   Users should transfer data to or from non-`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. 
+   Users should transfer data to or from non-`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS CommonDocs Wiki <https://rdhpcs-common-docs.rdhpcs.noaa.gov/wiki/index.php/Transferring_Data>`__.
 
 .. COMMENT: Add link to RDHPCS docs?
 
-To download data, users can run the secure copy (``scp``) command in a new terminal/command prompt window to securely copy files from a remote system to their local system. The structure of the command is:
-
-.. code-block:: console
-
-   scp [OPTION] [user@]SRC_HOST:]file1 [user@]DEST_HOST:]file2
-
-Here, ``SRC_HOST`` refers to the (HPC or cloud) system where the ``.png`` files are currently located. ``DEST_HOST`` refers to the user's local system. ``file1`` is the file or directory to copy, and ``file2`` is the location that the file or directory should be copied to on the local system. 
-
-For example, users can adjust one of the following commands for use on their system:
+To download data using ``scp``, users can typically adjust one of the following commands for use on their system:
 
 .. code-block:: console
 
@@ -167,16 +159,14 @@ Users who know the IP address of their remote system can use the first command. 
 
 This command will copy all files ending in ``.png`` from the remote ``test_community/2019061518/postprd/`` experiment subdirectory into Jane Doe's local ``plots`` directory. 
 
-Users who know their ``localhost`` port number should use the second command. For example:
+Users who know their ``localhost`` port number should use the second command and, if requested, enter the password to the remote system. For example:
 
 .. code-block:: console
 
    scp -P 3355 Jane.Doe@localhost:/lustre/Jane.Doe/expt_dirs/test_community/2019061518/postprd/*.png .
 
-If requested, enter the password to the remote system. 
-
-This command will copy all files ending in ``.png`` from the ``test_community/2019061518/postprd/`` experiment subdirectory on a remote HPC system into Jane Doe's present working directory (``.``). If Jane Doe is working in the ``/Users/janedoe/plots``, then ``.`` refers to that directory; if she is in her local ``ufs-srweather-app`` directory, then ``.`` refers to that directory, and the files will be downloaded there instead. 
+This command will copy all files ending in ``.png`` from the ``test_community/2019061518/postprd/`` experiment subdirectory on a remote HPC system into Jane Doe's present working directory (``.``). 
 
 .. attention:: 
 
-   Note that the instructions on this page assume that users are working on a UNIX-like system (i.e., Linux or MacOS). They may not work as-is on Windows systems, but users can adapt them for Windows or use a tool such as Cygwin, which enables the use of UNIX-like commands on Windows. Users may also consider installing a virtual machine such as VirtualBox. 
+   Note that all port numbers, IP addresses, and SSH keys included in this chapter are placeholders and do not refer to known systems. They are used purely for illustrative purposes, and users should modify the commands to correspond to their actual systems. 
