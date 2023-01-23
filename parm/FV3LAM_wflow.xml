@@ -5001,7 +5001,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
 
-    <command>&JOBSdir;/../scripts/exregional_archive_ens.ksh</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_RUN_ARCHIVE"</command>
 
     <nodes> 1:ppn=1</nodes>
     <walltime>23:00:00</walltime>
@@ -5032,7 +5032,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
 
-    <command>&JOBSdir;/../scripts/exregional_archive.ksh</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_RUN_ARCHIVE"</command>
 
     <nodes> 1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
@@ -5067,7 +5067,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_HPSS;
 
-    <command>&JOBSdir;/../scripts/exregional_archive_emc.ksh</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_RUN_ARCHIVE"</command>
 
     <nodes>1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
