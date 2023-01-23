@@ -232,6 +232,9 @@ Glossary
    Umbrella repository
       A repository that houses external code, or "externals," from additional repositories.
 
+   Updraft helicity
+      Helicity measures the rotation in a storm's updraft (rising) air. Significant rotation increases the probability that the storm will become a supercell thunderstorm or a tornado. See http://ww2010.atmos.uiuc.edu/(Gh)/guides/mtr/svr/modl/fcst/params/hel.rxml for more details on updraft helicity. 
+
    UPP
       The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 
       post-process raw output from a variety of :term:`NCEP`'s :term:`NWP` models, including the :term:`FV3`.
