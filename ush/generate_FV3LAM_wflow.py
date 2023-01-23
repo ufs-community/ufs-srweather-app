@@ -678,6 +678,55 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # -----------------------------------------------------------------------
     #
+    # Generate namelist for surface cycle
+    #  Deleted in newer RRFS_dev version so here for testing only
+    #
+    # -----------------------------------------------------------------------
+    #
+    if DO_SURFACE_CYCLE:
+        if SDF_USES_RUC_LSM:
+            lsoil=9
+        settings = {}
+        settings["gfs_physics_nml"] = {
+            "lsoil": lsoil or None
+            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
+        }
+
+        settings_str = cfg_to_yaml_str(settings)
+        #
+        # populate the namelist file
+        #
+        try:
+            set_namelist(
+                [
+                    "-q",
+                    "-n",
+                    FV3_NML_FP,
+                    "-u",
+                    settings_str,
+                    "-o",
+                    FV3_NML_CYCSFC_FP,
+                ]
+            )
+        except:
+            logging.exception(
+                dedent(
+                    f"""
+                    Call to python script set_namelist.py to generate an FV3 namelist file
+                    failed.  Parameters passed to this script are:
+                      Full path to output namelist file:
+                        FV3_NML_FP = '{FV3_NML_FP}'
+                      Full path to output namelist file for DA:
+                        FV3_NML_RESTART_FP = '{FV3_NML_CYCSFC_FP}'
+                      Namelist settings specified on command line:\n
+                        settings =\n\n"""
+                )
+                + settings_str
+            )
+      
+    #
+    # -----------------------------------------------------------------------
+    #
     # Generate namelist for DA cycle
     #
     # -----------------------------------------------------------------------
@@ -705,6 +754,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             "lsoil": lsoil or None
             #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
         }
+
+        settings_str = cfg_to_yaml_str(settings)
         #
         # populate the namelist file
         #
