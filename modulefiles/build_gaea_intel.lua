@@ -5,15 +5,14 @@ the NOAA RDHPC machine Gaea using Intel-2022.1.2
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Gaea ]===])
 
-module load PrgEnv-intel/6.0.5
-module rm intel
-module rm cray-mpich
-module rm netcdf
-module load intel/18.0.6.288
-module load cray-mpich/7.7.11
-module load cray-python/3.7.3.2
-# Needed at runtime:
-module load alps
+load("PrgEnv-intel/6.0.5")
+unload("intel")
+unload("cray-mpich")
+unload("netcdf")
+load("intel/18.0.6.288")
+load("cray-mpich/7.7.11")
+load("cray-python/3.7.3.2")
+load("alps")
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
 
