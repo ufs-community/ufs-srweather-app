@@ -449,7 +449,7 @@ Background
 
 The National Weather Service (:term:`NWS`) defines Surface-based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS, What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
 
-According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html>`__, Convective Inhibition (CIN) "represents the 'negative' area on a sounding that must be overcome for storm initiation." 
+According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html>`__, Convective Inhibition (CIN) "represents the 'negative' area on a sounding that must be overcome for storm initiation." In effect, it measures negative buoyancy (-B) --- the opposite of CAPE, which measures positive buoyancy (B or B+) of an air parcel. 
 
 ..
    More CAPE/CIN info: https://www.e-education.psu.edu/files/meteo361/image/Section4/cape_primer0301.html
@@ -457,29 +457,45 @@ According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/me
 Interpreting the Plots
 """"""""""""""""""""""""
 
+CAPE measures appear on the plots in color and range in value from 100-5000 Joules per kilogram (J/kg) with lower values represented by cool colors and higher values represented by warm colors. CIN measures are displayed on the plots using hatch marks:
+
+   * ``*`` means CIN <= -500 J/kg
+   * ``+`` means -500 < CIN <= -250 J/kg
+   * ``/`` means -250 < CIN <= -100 J/kg
+   * ``.`` means -100 < CIN <= -25 J/kg
+
+In general, the higher the CIN values are (i.e., the closer they are to zero), the lower the convective inhibition and the greater the likelihood that a storm will develop. Low CIN values (corresponding to high convective inhibition) make it unlikely that a storm will develop even in the presence of high CAPE. 
+
+.. COMMENT: 
+
 .. figure:: _static/plots/sfcape_diff_regional_f000.png
       :width: 1200
       :align: center
 
-      *Placeholder Label*
+      *CAPE/CIN Difference Plot at f000*
 
+At the 0th forecast hour, the ``test_expt`` plot (left) shows lower values of CAPE and higher values of CIN than in the ``control`` plot. This means that ``test_expt`` is projecting lower potential energy available for a storm but also lower inhibition, which means that less energy would be required for a storm to develop. The difference between the two plots is particularly evident in the southwest corner of the difference plot, which shows a 1000+ J/kg difference between the two plots. 
 
-
-Updraft Helicity
-````````````````````
-
-Helicity measures the rotation in a storm's updraft (rising) air. Significant rotation increases the probability that the storm will become a supercell thunderstorm or a tornado. See http://ww2010.atmos.uiuc.edu/(Gh)/guides/mtr/svr/modl/fcst/params/hel.rxml for more details on updraft helicity. 
-
-.. figure:: _static/plots/uh25_diff_regional_f006.png
+.. figure:: _static/plots/sfcape_diff_regional_f006.png
       :width: 1200
       :align: center
 
-      *Placeholder Label*
+      *CAPE/CIN Difference Plot at f006*
+
+At the 6th forecast hour, 
+
+.. figure:: _static/plots/sfcape_diff_regional_f012.png
+      :width: 1200
+      :align: center
+
+      *CAPE/CIN Difference Plot at f012*
 
 Try It!
 ----------
 
-Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control!
+Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control! 
+
+In particular, the difference plots for :term:`updraft helicity` may prove informative. The FV3_GFS_v16 physics suite does not contain updraft helicity output in its ``diag_table`` files, so the difference plot for this tutorial is empty. However, high updraft helicity values increase the probability that a storm will become a supercell thunderstorm or a tornado. Comparing the results from two physics suites that measure this parameter can therefore prove insightful. 
 
 .. _fcst2:
 
