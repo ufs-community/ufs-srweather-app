@@ -444,11 +444,18 @@ By forecast hour 12, __________________________________. The ``test_expt`` plot 
 Surface-Based CAPE/CIN
 ``````````````````````````
 
-https://www.weather.gov/ilx/swop-severetopics-CAPE 
+Background
+""""""""""""
 
-The National Weather Service (:term:`NWS`) defines Surface-based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft."
+The National Weather Service (:term:`NWS`) defines Surface-based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS, What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
 
-Convective Inhibition (CIN) "represents the "negative" area on a sounding that must be overcome for storm initiation." 
+According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html>`__, Convective Inhibition (CIN) "represents the 'negative' area on a sounding that must be overcome for storm initiation." 
+
+..
+   More CAPE/CIN info: https://www.e-education.psu.edu/files/meteo361/image/Section4/cape_primer0301.html
+
+Interpreting the Plots
+""""""""""""""""""""""""
 
 .. figure:: _static/plots/sfcape_diff_regional_f000.png
       :width: 1200
@@ -456,12 +463,7 @@ Convective Inhibition (CIN) "represents the "negative" area on a sounding that m
 
       *Placeholder Label*
 
-.. COMMENT: See https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html
-   CAPE = Convective Available Potential Energy. CAPE is a measure of instability through the depth of the atmosphere, and is related to updraft strength in thunderstorms. SPC forecasters often refer to "weak instability" (CAPE less than 1000 Jkg-1), "moderate instability" (CAPE from 1000-2500 Jkg-1), "strong instability" (CAPE from 2500-4000 Jkg-1), and "extreme instability" (CAPE greater than 4000 Jkg-1). The CAPE in the sample sounding above is about 3200 Jkg-1 lifting the "virtual" surface parcel. In the real world, CAPE is usually an overestimate of updraft strength due to water loading and entrainment of unsaturated environmental air.
 
-   CIN = convective inhibition. Convective inhibition represents the "negative" area on a sounding that must be overcome for storm initiation. The CIN in the sample sounding above is about 20 Jkg-1, lifting the "virtual" surface parcel.
-
-   Also: https://www.weather.gov/ilx/swop-severetopics-CAPE
 
 Updraft Helicity
 ````````````````````
