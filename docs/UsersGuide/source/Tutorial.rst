@@ -43,7 +43,7 @@ Data
 
 On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-.. COMMENT: Specify where in the bucket the data is!
+.. COMMENT: Specify where in the bucket the data is! Ask Sylvia to add HRRR/RAP data to Bucket. 
    NEED HRRR/RAP data added to `develop` location across L1 platforms for this tutorial! (Currently only available on AWS under v2p1, not develop!)
 
 
@@ -54,14 +54,13 @@ To load the regional workflow environment, source the lmod-setup file. Then load
 
 .. code-block:: console
    
-   source etc/lmod-setup.sh <platform>
-   # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
-   module use </path/to/ufs-srweather-app/modulefiles>
+   source etc/lmod-setup.sh <platform> # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username in the form Firstname.Lastname):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username):
 
 .. code-block:: console
    
@@ -77,7 +76,7 @@ Navigate to the ``ufs-srweather-app/ush`` directory. The default (or "control") 
 
 .. code-block:: console
 
-   cd </path/to/ufs-srweather-app/ush>
+   cd /path/to/ufs-srweather-app/ush
    cp config.community.yaml config.yaml
 
 Users can save the location of the ``ush`` directory in an environment variable (``$USH``). This makes it easier to navigate between directories later. For example:
@@ -101,7 +100,7 @@ Edit the configuration file (``config.yaml``) to include the variables and value
 
       vi config.yaml
 
-   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit the file. Users may opt to use their preferred code editor instead.
+   To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq`` to write the changes to the file and exit/quit the file. Users may opt to use their preferred code editor instead.
 
 Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variables. For example, when running on a personal MacOS device, users might set:
 
@@ -146,7 +145,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 For a detailed understanding of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
-In the ``workflow_switches:`` section, turn on the plotting task by changing ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
+In the ``workflow_switches:`` section, turn on the plotting task by setting ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
 
 .. code-block:: console
 
@@ -173,7 +172,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      EXTRN_MDL_NAME_ICS: FV3GFS
      FV3GFS_FILE_FMT_ICS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed understanding of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`.
 
@@ -186,7 +185,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      LBC_SPEC_INTVL_HRS: 6
      FV3GFS_FILE_FMT_LBCS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed understanding of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
@@ -212,7 +211,11 @@ Edit the two plotting files. Modify line #417 of ``exregional_plot_allvars.py`` 
 
    domains = ["regional"]  # Other option is 'conus'
 
-..
+.. hint::
+
+   When using the ``vi`` editor to open the file, users can type ``/regional`` to search for the correct line of the file. Hit the ``n`` key to move to the next instance of "regional" in the file. 
+
+.. COMMENT:
    After configuring the forecast, users can generate the forecast by running:
 
 After adjusting the plotting scripts, return to ``$USH`` and generate the forecast:
@@ -226,7 +229,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. code-block:: console
 
-   cd </path/to/expt_dirs/control>
+   cd /path/to/expt_dirs/control
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
@@ -235,6 +238,14 @@ Users will need to rerun the ``rocotorun`` and ``rocotostat`` commands above reg
 .. note::
 
    When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
+
+Users can save the location of the ``control`` directory in an environment variable (``$CONTROL``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export CONTROL=/path/to/expt_dirs/control
+
+Users should substitute ``/path/to/expt_dirs/control`` with the actual path on their system. As long as a user remains logged into their system, they can run ``cd $CONTROL``, and it will take them to the ``control`` experiment directory. The variable will need to be reset for each login session. 
 
 Experiment 2: Test
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -263,21 +274,21 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: HRRR
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}
    task_get_extrn_lbcs:
      EXTRN_MDL_NAME_LBCS: RAP
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}>
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
      EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
 
 .. COMMENT: Verify whether to add EXTRN_MDL_LBCS_OFFSET_HRS: 0 --> or '-0'?
 
-HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these models and their datasets use the same physics parameterizations that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
+HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
 
 .. COMMENT: Verify above explanation w/Jeff/Gerard
 
-``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a forecast that was started earlier than the start of the current forecast configured here. It is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier. To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a previous forecast run that was started earlier than the start time of the current forecast configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
-Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_POST``) for the postprocessing tasks. The wall time is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others, the post-processing time exceeds 15 minutes, so the tasks fail. 
+Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_POST``) for the postprocessing tasks. The wall time is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
 
 .. code-block:: console
 
@@ -293,7 +304,7 @@ Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:``
    task_plot_allvars:
      COMOUT_REF: '${EXPT_BASEDIR}/control/${PDY}${cyc}/postprd'
 
-Setting ``COMOUT_REF`` this way (i.e., using environment variables such as ``$EXPT_SUBDIR``) ensures that the plotting task can access the forecast output data in both the ``control`` directory and the ``test_expt`` directory. ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to ``control/2019061518/postprd`` and compare those plots against the ones in ``test_expt/2019061518/postprd``. 
+Here, ``$EXPT_BASEDIR`` is the path to the main experiment directory (named ``expt_dirs`` by default). ``$PDY`` refers to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. ``postprd`` contains the post-processed data from the experiment. Therefore, ``COMOUT_REF`` will refer to ``control/2019061518/postprd`` and compare those plots against the ones in ``test_expt/2019061518/postprd``. 
 
 After configuring the forecast, users can generate the second forecast by running:
 
@@ -301,11 +312,11 @@ After configuring the forecast, users can generate the second forecast by runnin
 
    ./generate_FV3LAM_wflow.py
 
-To see experiment progress, users should navigate to their experiment directory. As in the first forecast, they can then use the following commands to launch new workflow tasks and check on experiment progress. 
+To see experiment progress, users should navigate to their experiment directory. As in the first forecast, the following commands allow users to launch new workflow tasks and check on experiment progress. 
 
 .. code-block:: console
 
-   cd </path/to/expt_dirs/test_expt>
+   cd /path/to/expt_dirs/test_expt
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
@@ -313,12 +324,10 @@ To see experiment progress, users should navigate to their experiment directory.
 
    When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
 
-.. COMMENT: Add section on saving exptdir as $CONTROL
-
 Compare and Analyze Results
 -----------------------------
 
-Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-processed data generated by the UPP from the forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables including 2-m temperature, 2-m dew point temperature, 10-m winds, accumulated precipitation, composite reflectivity, and surface-based CAPE/CIN. Plots with a ``_diff`` label in the file name are plots that compare the control forecast and the test_expt forecast. 
+Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-processed data generated by the UPP from the forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables including 2-m temperature, 2-m dew point temperature, 10-m winds, accumulated precipitation, composite reflectivity, and surface-based CAPE/CIN. Plots with a ``_diff`` label in the file name are plots that compare the ``control`` forecast and the ``test_expt`` forecast. 
 
 Copy ``.png`` Files onto Local System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -333,7 +342,7 @@ In summary, users can run the ``scp`` command in a new terminal/command prompt w
    # OR
    scp -P 12345 username@localhost:/path/to/file_or_directory_1 path/to/file_or_directory_2
 
-Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems. For examples, see the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
+Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
 
 .. _ComparePlots:
 
@@ -370,7 +379,7 @@ The plots generated by the experiment cover a variety of variables. After downlo
 
 Each difference plotting ``.png`` file contains three subplots. The plot for the second experiment (``test_expt``) appears in the top left corner, and the plot for the first experiment (``control``) appears in the top right corner. The difference plot that compares both experiments appear at the bottom. Areas of white signify no difference between the plots. Therefore, if the forecast output from both experiments is exactly the same, the difference plot will show a white square (see :ref:`Sea Level Pressure <slp>` for an example). If the forecast output from both experiments is extremely different, the plot will show lots of color. 
 
-In general, it is expected that the results for ``test_expt`` (using FV3_RRFS_v1beta physics and HRRR/RAP data) will be more accurate than the results for ``control`` (using FV3_GFS_v16 physics and FV3GFS data) because the physics in ``test_expt`` is designed for high-resolution, storm-scale prediction over a short period of time. The ``control`` experiment physics is better for predicting the evolution of larger scale weather phenomena, like jet stream movement and cyclone development, since the cumulus physics in the FV3_GFS_v16 suite is not configured to run at the 3-km resolution.
+In general, it is expected that the results for ``test_expt`` (using FV3_RRFS_v1beta physics and HRRR/RAP data) will be more accurate than the results for ``control`` (using FV3_GFS_v16 physics and FV3GFS data) because the physics in ``test_expt`` is designed for high-resolution, storm-scale prediction over a short period of time. The ``control`` experiment physics is better for predicting the evolution of larger scale weather phenomena, like jet stream movement and cyclone development, since the cumulus physics in the FV3_GFS_v16 suite is not configured to run at 3-km resolution.
 
 Analysis
 ^^^^^^^^^^^
@@ -379,14 +388,14 @@ Analysis
 
 Sea Level Pressure
 `````````````````````
-In the Sea Level Pressure (SLP) plot, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
+In the Sea Level Pressure (SLP) plots, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
 
 .. figure:: _static/plots/slp_diff_regional_f000.png
       :align: center
 
       *Difference Plot for Sea Level Pressure at f000*
 
-As the forecast continues, the results begin to diverge, as evidenced by the spattering of light blue dispersed across the f006 SLP plot. 
+As the forecast continues, the results begin to diverge, as evidenced by the spattering of light blue dispersed across the f006 SLP difference plot. 
 
 .. figure:: _static/plots/slp_diff_regional_f006.png
       :align: center
@@ -403,34 +412,31 @@ The predictions diverge further by f012, where a solid section of light blue in 
 Composite Reflectivity
 ``````````````````````````
 
-Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.weather.gov/jetstream/refl for more information!
+Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.weather.gov/jetstream/refl for more information on composite reflectivity!
 
-At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. 
+At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. The ``test_expt`` plot has significantly more areas with high composite reflectivity values. 
 
 .. figure:: _static/plots/refc_diff_regional_f000.png
-      :width: 1200
       :align: center
 
       *Composite Reflectivity at f000*
 
-As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving northeast of Indianapolis. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
+As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east of Indianapolis. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
 
 .. COMMENT: Ask Jeff/Gerard/other SMEs for better wording of analysis. What to say about diff plot?
 
 .. _refc006:
 
 .. figure:: _static/plots/refc_diff_regional_f006.png
-      :width: 1200
       :align: center
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
-By forecast hour 12, __________________________________
+By forecast hour 12, __________________________________. The ``test_expt`` plot again shows some higher-energy areas in dark red that the ``control`` plot does not have.
 
 .. COMMENT: What do I say here?
 
 .. figure:: _static/plots/refc_diff_regional_f012.png
-      :width: 1200
       :align: center
 
       *Composite Reflectivity at f012*
@@ -438,7 +444,11 @@ By forecast hour 12, __________________________________
 Surface-Based CAPE/CIN
 ``````````````````````````
 
-Surface-based Convective Available Potential Energy (CAPE) 
+https://www.weather.gov/ilx/swop-severetopics-CAPE 
+
+The National Weather Service (:term:`NWS`) defines Surface-based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft."
+
+Convective Inhibition (CIN) "represents the "negative" area on a sounding that must be overcome for storm initiation." 
 
 .. figure:: _static/plots/sfcape_diff_regional_f000.png
       :width: 1200

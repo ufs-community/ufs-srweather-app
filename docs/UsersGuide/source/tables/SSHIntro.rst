@@ -141,8 +141,6 @@ Download the Data from a Remote System to a Local System
 
    Users should transfer data to or from non-`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS CommonDocs Wiki <https://rdhpcs-common-docs.rdhpcs.noaa.gov/wiki/index.php/Transferring_Data>`__.
 
-.. COMMENT: Add link to RDHPCS docs?
-
 To download data using ``scp``, users can typically adjust one of the following commands for use on their system:
 
 .. code-block:: console
@@ -150,7 +148,9 @@ To download data using ``scp``, users can typically adjust one of the following 
    scp username@your-IP-address:/path/to/file_or_directory_1 /path/to/file_or_directory_2
    # OR
    scp -P 12345 username@localhost:/path/to/file_or_directory_1 path/to/file_or_directory_2
-   
+
+To copy an entire directory, use ``scp -r`` instead of ``scp``. 
+
 Users who know the IP address of their remote system can use the first command. For example: 
 
 .. code-block:: console
