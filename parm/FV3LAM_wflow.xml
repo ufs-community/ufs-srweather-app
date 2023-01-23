@@ -4964,6 +4964,8 @@ the <task> tag to be identical to the ones above for other output times.
 
     <nodes> 1:ppn=1</nodes>
     <walltime>00:15:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
 
     <jobname>&TAG;&RUN_CLEAN_TN;</jobname>
     <join>&LOGDIR;/&RUN_CLEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
@@ -5006,6 +5008,8 @@ the <task> tag to be identical to the ones above for other output times.
     <nodes> 1:ppn=1</nodes>
     <walltime>23:00:00</walltime>
     <memory>24G</memory>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
 
     <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
@@ -5037,6 +5041,8 @@ the <task> tag to be identical to the ones above for other output times.
     <nodes> 1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
     <memory>24G</memory>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
 
     <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
@@ -5071,6 +5077,8 @@ the <task> tag to be identical to the ones above for other output times.
 
     <nodes>1:ppn=1</nodes>
     <walltime>08:00:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
 
     <jobname>&TAG;&RUN_ARCHIVE_TN;</jobname>
     <join>&LOGDIR;/&RUN_ARCHIVE_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>

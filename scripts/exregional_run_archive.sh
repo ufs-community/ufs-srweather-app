@@ -59,13 +59,13 @@ year=$(date +%Y -d "${currentime} 24 hours ago")
 
 
 cd ${COMOUT_BASEDIR}
-set -A XX `ls -d ${RUN}.$year$month$day/* | sort -r`
+declare -a XX=$(ls -d ${RUN}.$year$month$day/* | sort -r)
 runcount=${#XX[*]}
 if [[ $runcount -gt 0 ]];then
 
   hsi mkdir -p $ARCHIVEDIR/$year/$month/$day
 
-  for onerun in ${XX[*]};do
+  for onerun in ${XX[*]}; do
 
     echo "Archive files from ${onerun}"
     hour=${onerun##*/}
@@ -76,7 +76,7 @@ if [[ $runcount -gt 0 ]];then
       cp -rsv ${COMOUT_BASEDIR}/${onerun}/nclprd/* $COMOUT_BASEDIR/stage/$year$month$day$hour/nclprd
     fi
 
-    set -A YY `ls -d ${COMOUT_BASEDIR}/${onerun}/*bg*tm*`
+    YY=$(ls -d ${COMOUT_BASEDIR}/${onerun}/*bg*tm*)
     postcount=${#YY[*]}
     echo $postcount
     if [[ $postcount -gt 0 ]];then
@@ -97,7 +97,7 @@ fi
 rmdir $COMOUT_BASEDIR/stage
 
 cd ${NWGES_BASEDIR}
-set -A YY `ls -d ${year}${month}${day}?? | sort -r`
+declare -a YY=$(ls -d ${year}${month}${day}?? | sort -r)
 runcount=${#YY[*]}
 if [[ $runcount -gt 0 ]];then
 
