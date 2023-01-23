@@ -272,11 +272,7 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
      EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
 
-.. COMMENT: Verify whether to add EXTRN_MDL_LBCS_OFFSET_HRS: 0 --> or '-0'?
-
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
-
-.. COMMENT: Verify above explanation w/Jeff/Gerard
 
 ``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a previous forecast run that was started earlier than the start time of the current forecast configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
@@ -420,8 +416,6 @@ At f000, the ``test_expt`` plot (top left) is showing more severe weather than t
 
 As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
 
-.. COMMENT: Ask Jeff/Gerard/other SMEs for better wording of analysis. What to say about diff plot?
-
 .. _refc006:
 
 .. figure:: _static/plots/refc_diff_regional_f006.png
@@ -501,9 +495,6 @@ Users may find the difference plots for :term:`updraft helicity` particularly in
 Sample Forecast #2: Cold Air Damming
 ========================================
 
-.. COMMENT: 
-   **Objective:** Modify the number and distribution of vertical levels.
-
 Weather Summary
 -----------------
 
@@ -520,36 +511,10 @@ Cold air damming occurs when cold dense air is topographically trapped along the
 
    *Precipitation Resulting from Cold Air Damming East of the Appalachian Mountains*
 
-.. COMMENT: Check accuracy of this section. The UFS case study starts on Feb. 3 and doesn't include any radar or storm reports: https://ufs-case-studies.readthedocs.io/en/develop/2020CAD.html
-   Articles:
-   https://www.weather.gov/jkl/20200206_floodsnow
-   https://www.inscc.utah.edu/~steenburgh/classes/5210/lecture_notes/ColdAirDamming.pdf
-   https://journals.ametsoc.org/view/journals/wefo/31/2/waf-d-15-0049_1.xml
-
-
 Tutorial Content 
 -------------------
 
 Coming Soon!
-
-.. COMMENT: 
-   **Objective:**
-
-   Data
-   -------
-
-   Configuration
-   ----------------
-
-   When (fcst start time): 2020-02-03 12z
-   WTIME_RUN_FCST="04:00:00"
-
-   Analysis
-   -----------
-
-   Compare/Analyze: This is an existing case from the UFS Case Studies. Compare surface temperature and wind speed.
-   Need: New subconus domain over the southeast. 
-   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
 .. _fcst3:
 
@@ -573,26 +538,6 @@ Tutorial Content
 
 Coming Soon!
 
-.. COMMENT: 
-
-   **Objective:**
-
-   Data
-   -------
-
-
-   Configuration
-   ----------------
-   
-   When (fcst start time): 2021-02-15 00z
-   WTIME_RUN_FCST="04:00:00"
-
-   Analysis
-   -----------
-   
-   Compare/Analyze: Variables like surface temperature, jet stream, and precipitation type? 
-   Need: New subconus domain over the southern plains, plus FV3GFS, HRRR, and RAP ICs.
-
 .. _fcst4:
 
 Sample Forecast #4: Halloween Storm
@@ -611,33 +556,10 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
    *Halloween Storm 2019*
 
-.. COMMENT: 
-   Articles: https://www.weather.gov/btv/The-Halloween-2019-Significant-Flooding-and-High-Wind-Event
-
-
 Tutorial Content
 -------------------
 
 Coming Soon!
-
-.. COMMENT:
-
-   **Objective:**
-
-   Data
-   -------
-
-   Configuration
-   ----------------
-   When (fcst start time): 2019-10-28 12Z
-   WTIME_RUN_FCST="04:00:00"
-
-   Analysis
-   -----------
-
-   Compare/Analyze: Synoptic dynamics, surface wind and temperatures, and moisture profiles.
-   Need: New subconus domain over the north east. 
-   Data: We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
 .. _fcst5:
 
@@ -659,30 +581,7 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
 
    *Hurricane Barry Making Landfall*
 
-
-.. COMMENT: See sample forecast case details in this Google doc: https://docs.google.com/document/d/1TFjSAyI3jBmhzfZBmlIZz5NonBDDTi8x_-g-QVbvMOo/edit
-
 Tutorial Content
 -------------------
 
 Coming Soon!
-
-.. COMMENT: 
-   **Objective:**
-
-   Data
-   -------
-
-   Configuration
-   ----------------
-
-   When (fcst start time): 2019-07-12 00z
-   FV3GFS_FILE_FMT_ICS/LBCS: nemsio
-   WTIME_RUN_FCST="04:00:00"
-
-   Analysis
-   -----------
-
-   Compare: Hurricane track, intensity, and wind speed after landfall? Satellite imagery?
-   Need: New subconus domain over LA. Add some HWRF/HMON physics suite options in the SRW App, which HAFS has. Appropriate namelist options have to be set by the App. Then point users to HAFS, and note that HAFS has additional nesting support that is available (but not set up yet for use in the SRW App, even though it could be used).
-   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
