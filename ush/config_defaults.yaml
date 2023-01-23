@@ -2535,8 +2535,8 @@ task_run_fcst:
   LAYOUT_X: '{{ LAYOUT_X }}'
   LAYOUT_Y: '{{ LAYOUT_Y }}'
   BLOCKSIZE: '{{ BLOCKSIZE }}'
-  IO_LAYOUT_X: '{{ IO_LAYOUT_X }}'
-  IO_LAYOUT_Y: '{{ IO_LAYOUT_Y }}'
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------
   #

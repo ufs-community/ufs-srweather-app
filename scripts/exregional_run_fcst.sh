@@ -491,8 +491,48 @@ cat > itag <<EOF
 EOF
 fi
 
+#
+#-----------------------------------------------------------------------
+#
+# Choose namelist file to use
+#
+#-----------------------------------------------------------------------
+#
+STOCH="FALSE"
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
+
+   for cyc_start in "${CYCL_HRS_STOCH[@]}"; do
+     if [ ${HH} -eq ${cyc_start} ]; then 
+       STOCH="TRUE"
+     fi
+   done
+
+fi
+
+if [ ${BKTYPE} -eq 0 ]; then
+  # cycling, using namelist for cycling forecast
+  if [ "${STOCH}" == "TRUE" ]; then
+    ln_vrfy -sf ${FV3_NML_RESTART_STOCH_FP} ${DATA}/${FV3_NML_FN}
+   else
+    ln_vrfy -sf ${FV3_NML_RESTART_FP} ${DATA}/${FV3_NML_FN}
+  fi
+else
+  if [ -f "INPUT/cycle_surface.done" ]; then
+    # namelist for cold start with surface cycle
+    ln_vrfy -sf ${FV3_NML_CYCSFC_FP} ${DATA}/${FV3_NML_FN}
+  else
+    # cold start, using namelist for cold start
+    if [ "${STOCH}" == "TRUE" ]; then
+      ln_vrfy -sf ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+     else
+      ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+    fi
+  fi
+fi
+
+if [ "$STOCH" == "TRUE" ]; then
+  cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
@@ -500,11 +540,8 @@ Call to function to create the ensemble-based namelist for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-else
-  create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${DATA}/${FV3_NML_FN}" \
-                         relative="${relative_link_flag}"
 fi
+
 #
 #-----------------------------------------------------------------------
 #
