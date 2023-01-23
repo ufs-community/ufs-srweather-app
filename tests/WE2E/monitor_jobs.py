@@ -59,10 +59,11 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
     logging.info("Checking tests available for monitoring...")
     num_expts = 0
     for expt in expt_dict:
-        logging.debug(f"Starting experiment {expt} running")
+        logging.info(f"Starting experiment {expt} running")
         num_expts += 1
         rocoto_db = f"{expt_dict[expt]['expt_dir']}/FV3LAM_wflow.db"
-        subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
+        rr = subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
+        logging.debug(f' RR1 = {rr}')
         logging.debug(f"Reading database for experiment {expt}, populating experiment dictionary")
         try:
             db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
@@ -98,7 +99,8 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
                 expt_dict[expt]["status"] = "ERROR"
                 continue
             # Run "rocotorun" here to give the database time to be fully written
-            subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
+            rr = subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
+            logging.debug(f' RR2 = {rr}')
             for task in db:
                 # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
                 # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
@@ -107,12 +109,11 @@ def monitor_jobs(expt_dict: dict, debug: bool) -> str:
             expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
             running_expts[expt] = expt_dict[expt]
             if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
-                logging.debug(f'Experiment {expt} is {running_expts[expt]["status"]}; will no longer monitor.')
+                logging.info(f'Experiment {expt} is {running_expts[expt]["status"]}; will no longer monitor.')
                 running_expts.pop(expt)
                 continue
             logging.debug(f'Experiment {expt} status is {expt_dict[expt]["status"]}')
 
-            subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
 
         write_monitor_file(monitor_file,expt_dict)
         endtime = datetime.now()
