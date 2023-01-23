@@ -139,8 +139,6 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 ``EXPT_SUBDIR:`` This variable can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative directory name.
 
-.. COMMENT: for EXPT_SUBDIR, are there certain characters that aren't allowed?
-
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
 For a detailed understanding of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
@@ -215,9 +213,6 @@ Edit the two plotting files. Modify line #417 of ``exregional_plot_allvars.py`` 
 
    When using the ``vi`` editor to open the file, users can type ``/regional`` to search for the correct line of the file. Hit the ``n`` key to move to the next instance of "regional" in the file. 
 
-.. COMMENT:
-   After configuring the forecast, users can generate the forecast by running:
-
 After adjusting the plotting scripts, return to ``$USH`` and generate the forecast:
 
 .. code-block:: console
@@ -251,8 +246,6 @@ Experiment 2: Test
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Once the control case is running, users can return to the ``config.yaml`` file (in ``$USH``) and adjust the parameters for a new forecast. Most of the variables will remain the same. However, users will need to adjust ``EXPT_SUBDIR`` and ``CCPP_PHYS_SUITE`` in the ``workflow:`` section as follows:
-
-.. COMMENT: If not using cron, they should probably finish the experiment first... right?
 
 .. code-block:: console
 
@@ -295,8 +288,6 @@ Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_
    task_run_post:
      WTIME_RUN_POST: 00:20:00
 
-.. COMMENT: Why does it take longer to post-process RAP?!
-
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). ``COMOUT_REF`` should provide the path to the ``control`` experiment forecast output using single quotes as shown below:
 
 .. code-block:: console
@@ -323,6 +314,11 @@ To see experiment progress, users should navigate to their experiment directory.
 .. note::
 
    When using cron to automate the workflow submission (as described :ref:`above <CronNote>`), users can omit the ``rocotorun`` command and simply use ``rocotostat`` to check on progress periodically. 
+
+.. note::
+   
+   If users have not automated their workflow using cron, they will need to ensure that they continue issuing ``rocotorun`` commands to launch all of the tasks in each experiment. While switching between experiment directories to run ``rocotorun`` and ``rocotostat`` commands in both is possible, it may be easier to finish the ``control`` experiment's tasks before starting on ``test_expt``. 
+
 
 Compare and Analyze Results
 -----------------------------
@@ -536,33 +532,24 @@ Coming Soon!
    Configuration
    ----------------
 
-   .. COMMENT:
-      When (fcst start time): 2019-07-12 00z
-      Config information
-      MACHINE: 
-      PREDEF_GRID_NAME: 
-      CCPP_PHYS_SUITE: 
-      FCST_LEN_HRS: 
-      EXTRN_MDL_NAME_ICS: 
-      EXTRN EXTRN_MDL_NAME_LBCS: 
-      FV3GFS_FILE_FMT_ICS/LBCS: nemsio
-      WTIME_RUN_FCST="04:00:00"
-      EXTRN_MDL_FILES_ICS: 
-      EXTRN_MDL_FILES_LBCS: 
+   When (fcst start time): 2019-07-12 00z
+   FV3GFS_FILE_FMT_ICS/LBCS: nemsio
+   WTIME_RUN_FCST="04:00:00"
 
    Analysis
    -----------
 
-   .. COMMENT:
-      What to compare?
-      This is an existing case from the UFS Case Studies. Compare hurricane track, intensity, and wind speed after landfall. We can also compare satellite imagery too.
-      Things still needed:
-      We will need a new subconus domain over LA. We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
+   Compare: Hurricane track, intensity, and wind speed after landfall? Satellite imagery?
+   Need: New subconus domain over LA. 
+   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite, but we will need HRRR and RAP ICs if we want to use the RRFS_v1beta physics suite.
 
 .. _fcst3:
 
 Sample Forecast #3: Cold Air Damming
 ========================================
+
+.. COMMENT: 
+   **Objective:** Modify the number and distribution of vertical levels.
 
 Weather Summary
 -----------------
@@ -576,9 +563,9 @@ Cold air damming occurs when cold dense air is topographically trapped along the
    * `Storm Prediction Center (SPC) Storm Report for 20200207 <https://www.spc.noaa.gov/climo/reports/200207_rpts.html>`__ 
 
 .. figure:: _static/ColdAirDamming.gif
-   :alt: Radar animation of cold air damming in the southern Appalachian mountains. 
+   :alt: Radar animation of precipitation resulting from cold air damming in the southern Appalachian mountains. 
 
-   *Cold Air Damming in the Appalachian Mountains*
+   *Precipitation Resulting from Cold Air Damming East of the Appalachian Mountains*
 
 .. COMMENT: Check accuracy of this section. The UFS case study starts on Feb. 3 and doesn't include any radar or storm reports: https://ufs-case-studies.readthedocs.io/en/develop/2020CAD.html
    Articles:
@@ -601,29 +588,15 @@ Coming Soon!
    Configuration
    ----------------
 
-   .. COMMENT:
-      When (fcst start time): 2020-02-03 12z
-      Config information
-      MACHINE: 
-      PREDEF_GRID_NAME: 
-      CCPP_PHYS_SUITE: 
-      FCST_LEN_HRS: 
-      EXTRN_MDL_NAME_ICS: 
-      EXTRN EXTRN_MDL_NAME_LBCS: 
-      FV3GFS_FILE_FMT_ICS/LBCS: 
-      WTIME_RUN_FCST="04:00:00"
-      EXTRN_MDL_FILES_ICS: 
-      EXTRN_MDL_FILES_LBCS: 
-
+   When (fcst start time): 2020-02-03 12z
+   WTIME_RUN_FCST="04:00:00"
 
    Analysis
    -----------
 
-   .. COMMENT:
-      What to compare?
-      This is an existing case from the UFS Case Studies. Compare surface temperature and wind speed.
-      Things still needed:
-      We will need a new subconus domain over the southeast. We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
+   Compare/Analyze: This is an existing case from the UFS Case Studies. Compare surface temperature and wind speed.
+   Need: New subconus domain over the southeast. 
+   Data: We have nemsio IC data, which would work for the GFS_v16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
 
 .. _fcst4:
 
@@ -657,29 +630,15 @@ Coming Soon!
 
    Configuration
    ----------------
-   .. COMMENT:
-      When (fcst start time): 2021-02-15 00z
-      Config information
-      MACHINE: 
-      PREDEF_GRID_NAME: 
-      CCPP_PHYS_SUITE: 
-      FCST_LEN_HRS: 
-      EXTRN_MDL_NAME_ICS: 
-      EXTRN EXTRN_MDL_NAME_LBCS: 
-      FV3GFS_FILE_FMT_ICS/LBCS: 
-      WTIME_RUN_FCST="04:00:00"
-      EXTRN_MDL_FILES_ICS: 
-      EXTRN_MDL_FILES_LBCS: 
-
+   
+   When (fcst start time): 2021-02-15 00z
+   WTIME_RUN_FCST="04:00:00"
 
    Analysis
    -----------
-   .. COMMENT:
-      What to compare?
-      This isn’t an existing UFS Case Study, so initial analysis of various variables like surface temperature, jet stream, and precipitation type should all be considered.
-      Things still needed:
-      We will need a new subconus domain over the southern plains, and to collect the FV3GFS, HRRR, and RAP ICs.
-
+   
+   Compare/Analyze: Variables like surface temperature, jet stream, and precipitation type? 
+   Need: New subconus domain over the southern plains, plus FV3GFS, HRRR, and RAP ICs.
 
 .. _fcst5:
 
@@ -717,55 +676,12 @@ Coming Soon!
 
    Configuration
    ----------------
-   .. COMMENT:
-      When (fcst start time): 2019-10-28 12Z
-      Config information
-      MACHINE: 
-      PREDEF_GRID_NAME: 
-      CCPP_PHYS_SUITE: 
-      FCST_LEN_HRS: 
-      EXTRN_MDL_NAME_ICS: 
-      EXTRN EXTRN_MDL_NAME_LBCS: 
-      FV3GFS_FILE_FMT_ICS/LBCS: 
-      WTIME_RUN_FCST="04:00:00"
-      EXTRN_MDL_FILES_ICS: 
-      EXTRN_MDL_FILES_LBCS: 
-
+   When (fcst start time): 2019-10-28 12Z
+   WTIME_RUN_FCST="04:00:00"
 
    Analysis
    -----------
 
-   .. COMMENT: 
-      What to compare?
-      This is an existing UFS Case Study. Look at the synoptic dynamics, surface wind and temperatures, and moisture profiles.
-      Things still needed:
-      We will need a new subconus domain over the north east. We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
-
-
-
-
-
-
-
-
-
-.. COMMENT: TICKET INFO (AUS-220)
-   Add forecast grading capability. SRW sample forecasts graded accorded to skill - come up with a framework so that people can try running the same forecast with their changes
-
-   Goal: users can download everything they need, they have exactly the configuration we use to generate the forecast, they have our forecasts, and some tools to judge the skill of the forecast. 
-
-   Start with small, high resolution case (like Indianapolis) 200x200 so we can run tests cases. If it shows promise then we can run at 3km.
-   Jeff/Curtis/Jacob/Ligia can help determine good cases to run
-   How long to run the forecast - 3-6 hours?
-   Identify and setup the input data needed to run those scenarios
-   Data fetch from HPSS
-   Generate grids - can move the center lat/lon of the Indy grid - day or two x4
-   Boundary conditions - make sure model includes the grid
-   Fix files
-   Dates boundary and initial conditions
-   Observations for those dates
-   Make the input data publicly available
-   Run each scenario and post the forecast results somewhere
-   Determine how to determine skill - can we use the scorecards (usually done on ensemble forecasts)? POC - Jeff, Michelle Herald, Will Mayfield, Mike Kavulich
-   Implement & document skill determination
-   Documentation
+   Compare/Analyze: Synoptic dynamics, surface wind and temperatures, and moisture profiles.
+   Need: New subconus domain over the north east. 
+   Data: We have nemsio IC data, which would work for the GFS_V16 physics suite. We also have access to the HRRR and RAP ICs through a provided script.
