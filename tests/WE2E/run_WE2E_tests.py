@@ -6,35 +6,25 @@ import glob
 import argparse
 import logging
 from textwrap import dedent
-from datetime import datetime
 
-from monitor_jobs import monitor_jobs
 sys.path.append("../../ush")
 
 from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
-    run_command,
-    date_to_str,
-    define_macos_utilities,
-    create_symlink_to_file,
-    check_for_preexist_dir_file,
     cfg_to_yaml_str,
-    find_pattern_in_str,
-    set_env_var,
-    get_env_var,
-    lowercase,
     load_config_file,
-    cfg_to_yaml_str
 )
 
 from check_python_version import check_python_version
 
+from monitor_jobs import monitor_jobs
 
-def run_we2e_tests(HOMEdir, args) -> None:
+
+def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
 
     Args:
-        HOMEdir  (str): The full path of the top-level app directory
+        homedir  (str): The full path of the top-level app directory
         args : The argparse.Namespace object containing command-line arguments
     Returns:
         None
@@ -44,7 +34,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
     setup_logging(debug=args.debug)
 
     # Set some important directories
-    USHdir=HOMEdir + '/ush'
+    ushdir=homedir + '/ush'
 
     # Set some variables based on input arguments
     run_envir = args.run_envir
@@ -92,7 +82,6 @@ def run_we2e_tests(HOMEdir, args) -> None:
                         run_envir = 'nco'
                         logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
                                        'Setting run_envir = {run_envir} for all tests')
-                
                 logging.debug(f"Reading test file: {testfilename}")
                 tests_to_check = list(open(testfilename))
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
@@ -117,11 +106,11 @@ def run_we2e_tests(HOMEdir, args) -> None:
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
 
-    config_default_file = USHdir + '/config_defaults.yaml'
+    config_default_file = ushdir + '/config_defaults.yaml'
     logging.debug(f"Loading config defaults file {config_default_file}")
     config_defaults = load_config_file(config_default_file)
 
-    machine_file = USHdir + '/machine/' + args.machine + '.yaml'
+    machine_file = ushdir + '/machine/' + args.machine + '.yaml'
     logging.debug(f"Loading machine defaults file {machine_file}")
     machine_defaults = load_config_file(machine_file)
 
@@ -130,7 +119,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
         monitor_yaml = dict()
 
     for test in tests_to_run:
-        #Starting with test yaml template, fill in user-specified and machine- and 
+        #Starting with test yaml template, fill in user-specified and machine- and
         # test-specific options, then write resulting complete config.yaml
         test_name = os.path.basename(test).split('.')[1]
         logging.debug(f"For test {test_name}, constructing config.yaml")
@@ -173,14 +162,14 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(USHdir + "/config.yaml","w") as f:
+        with open(ushdir + "/config.yaml","w") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.debug(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
-        expt_dir = generate_FV3LAM_wflow(USHdir,logfile=f"{USHdir}/log.generate_FV3LAM_wflow",debug=args.debug)
+        expt_dir = generate_FV3LAM_wflow(ushdir,logfile=f"{ushdir}/log.generate_FV3LAM_wflow",debug=args.debug)
         if args.quiet:
             if args.debug:
                 console_handler.setLevel(logging.DEBUG)
@@ -190,7 +179,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
         if 'USE_CRON_TO_RELAUNCH' not in test_cfg['workflow']:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
         if not test_cfg['workflow']['USE_CRON_TO_RELAUNCH']:
-            logging.debug(f'Creating entry for job {test_name} in job monitoring dict') 
+            logging.debug(f'Creating entry for job {test_name} in job monitoring dict')
             monitor_yaml[test_name] = dict()
             monitor_yaml[test_name].update({"expt_dir": expt_dir})
             monitor_yaml[test_name].update({"status": "CREATED"})
@@ -260,7 +249,7 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
         cfg_ics : Updated dictionary for task_get_extrn_ics section of test config
     """
 
-    #Make our lives easier by shortening some dictionary calls 
+    #Make our lives easier by shortening some dictionary calls
     cfg_ics = cfg['task_get_extrn_ics']
 
     # If RUN_TASK_GET_EXTRN_ICS is false, do nothing and return
@@ -273,7 +262,7 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_ics:
         logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified in task_get_extrn_ics section of config')
         return cfg_ics
-    elif not cfg_ics['USE_USER_STAGED_EXTRN_FILES']:
+    if not cfg_ics['USE_USER_STAGED_EXTRN_FILES']:
         logging.debug(f'USE_USER_STAGED_EXTRN_FILES is false for task_get_extrn_ics section of config')
         return cfg_ics
 
@@ -293,7 +282,7 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
     if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
         raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
                        "has not been specified in the machine file for this platform")
-    elif not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
+    if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
         raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
                                 TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
                                 does not exist."""))
@@ -322,7 +311,7 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
         cfg_lbcs : Updated dictionary for task_get_extrn_lbcs section of test config
     """
 
-    #Make our lives easier by shortening some dictionary calls 
+    #Make our lives easier by shortening some dictionary calls
     cfg_lbcs = cfg['task_get_extrn_lbcs']
 
     # If RUN_TASK_GET_EXTRN_LBCS is false, do nothing and return
@@ -334,7 +323,7 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_lbcs:
         return cfg_lbcs
-    elif not cfg_lbcs['USE_USER_STAGED_EXTRN_FILES']:
+    if not cfg_lbcs['USE_USER_STAGED_EXTRN_FILES']:
         return cfg_lbcs
 
     # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
@@ -353,7 +342,7 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
     if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
         raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
                        "has not been specified in the machine file for this platform")
-    elif not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
+    if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
         raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
                                 TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
                                 does not exist."""))
@@ -387,9 +376,9 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
     logging.debug(f"Finished setting up debug file logging in {logfile}")
     console = logging.StreamHandler()
     if debug:
-       console.setLevel(logging.DEBUG)
+        console.setLevel(logging.DEBUG)
     else:
-       console.setLevel(logging.INFO)
+        console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
 
@@ -401,7 +390,7 @@ if __name__ == "__main__":
     check_python_version()
 
     #Get the "Home" directory, two levels above this one
-    HOMEdir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    homedir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     logfile='log.run_WE2E_tests'
 
     #Parse arguments
@@ -419,7 +408,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
-    parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will helpkeep the screen uncluttered')
+    parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will help keep the screen uncluttered')
 
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
@@ -442,7 +431,7 @@ if __name__ == "__main__":
     #Call main function
 
     try:
-        run_we2e_tests(HOMEdir,args)
+        run_we2e_tests(homedir,args)
     except:
         logging.exception(
             dedent(

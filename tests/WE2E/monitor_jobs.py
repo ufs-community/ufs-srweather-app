@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import sys
-import glob
 import argparse
 import logging
 import subprocess
@@ -11,23 +9,10 @@ import time
 from textwrap import dedent
 from datetime import datetime
 from contextlib import closing
-from collections import namedtuple
 
 sys.path.append("../../ush")
 
-from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
-    print_err_msg_exit,
-    run_command,
-    date_to_str,
-    define_macos_utilities,
-    create_symlink_to_file,
-    check_for_preexist_dir_file,
-    cfg_to_yaml_str,
-    find_pattern_in_str,
-    set_env_var,
-    get_env_var,
-    lowercase,
     load_config_file,
     cfg_to_yaml_str
 )
@@ -251,9 +236,9 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
     logging.debug(f"Finished setting up debug file logging in {logfile}")
     console = logging.StreamHandler()
     if debug:
-       console.setLevel(logging.DEBUG)
+        console.setLevel(logging.DEBUG)
     else:
-       console.setLevel(logging.INFO)
+        console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
 
