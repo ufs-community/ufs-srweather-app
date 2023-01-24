@@ -548,7 +548,7 @@ Weather Summary
 
 A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
 
-**Weather Phenomena:** Snow and record-breaking cold temperatures
+**Weather Phenomena:** Flooding and high winds
    * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
 
 .. figure:: _static/HalloweenStorm.gif
