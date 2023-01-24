@@ -1158,7 +1158,7 @@ The regional workflow can be run using standalone shell scripts in cases where t
 
    When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the regional workflow (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<platform>_<compiler>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
 
-#. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
+#. ``cd`` into the experiment directory that has been created after generating the regional workflow (:numref:`Section %s <GenerateWorkflow>`). For example, from ``ush``, presuming default directory settings:
 
    .. code-block:: console
       
@@ -1180,11 +1180,43 @@ The regional workflow can be run using standalone shell scripts in cases where t
    
    before running the wrapper scripts.
 
-#. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
+#. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script. If ``SRW=<path/to>/ufs-srweather-app``, then
 
    .. code-block:: console
 
-      cp <path/to>/ufs-srweather-app/ush/wrappers/* .
+      cp $SRW/ush/wrappers/* .
+
+   Substitute shell-script headers in all run_*.sh scripts as following using ``gsed`` on MacOS or ``sed`` on Linux:
+
+   .. code-block:: console
+
+      gsed -i -e "s|\/bin\/sh|\/usr\/bin\/env bash|" run_*.sh    # MacOS
+
+   .. code-block:: console
+
+      sed -i -e "s|\/bin\/sh|\/usr\/bin\/env bash|" run_*.sh    # Linux
+
+   Note that if you attempt to copy-paste the above commands, the double quotes in the ``sed`` or ``gsed`` commands may not be copied properly to your terminal window. It is safer to retype the double-quotes in a terminal. Alternatively, you could use the text editor to replace the shell-script headers (the first line) to ``#!/usr/bin/env bash``. 
+
+#. Substitutions of Bash script headers are also needed for scripts in directories ``$SRW/jobs`` and ``$SRW/scripts``. Similarly to the previous step, the substitution could use streamline editor ``gsed`` on MacOS, ``sed`` on Linux, or any text editor.  
+
+   .. code-block:: console
+
+      gsed -i -e "s|\/bin\/bash|\/usr\/bin\/env bash|" $SRW/jobs/JREGIONAL_*     # MacOS
+      gsed -i -e "s|\/bin\/bash|\/usr\/bin\/env bash|" $SRW/scripts/exregional*  # MacOS
+
+   .. code-block:: console
+
+      sed -i -e "s|\/bin\/bash|\/usr\/bin\/env bash|" $SRW/jobs/JREGIONAL_*      # Linux
+      sed -i -e "s|\/bin\/bash|\/usr\/bin\/env bash|" $SRW/scripts/exregional*   # Linux
+
+#. Set ulimit to soft resource limits, using either ``sed`` or ``gsed`` as in previous steps:  
+
+   .. code-block:: console
+
+      ulimit -S -s unlimited
+      gsed -i -e "s|ulimit \-s|ulimit \-S \-s|" $SRW/scripts/exregional*   # MacOS
+      sed -i -e "s|ulimit \-s|ulimit \-S \-s|" $SRW/scripts/exregional*    # Linux
 
 #. Set the ``OMP_NUM_THREADS`` variable. 
 
@@ -1257,7 +1289,7 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
    If any of the scripts return an error that "Primary job terminated normally, but one process returned a non-zero exit code," there may not be enough space on one node to run the process. On an HPC system, the user will need to allocate a(nother) compute node. The process for doing so is system-dependent, and users should check the documentation available for their HPC system. Instructions for allocating a compute node on NOAA HPC systems can be viewed in :numref:`Section %s <WorkOnHPC>` as an example. 
 
 .. note::
-   On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
+   On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
 
 
 
