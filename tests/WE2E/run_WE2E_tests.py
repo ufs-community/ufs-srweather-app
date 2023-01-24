@@ -212,6 +212,9 @@ def check_tests(tests: list) -> list:
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
     tests_to_run=[]
     for test in tests:
+        # Skip blank/empty testnames; this avoids failure if newlines or spaces are included
+        if test.isspace():
+            continue
         match=False
         # Search for exact config file name to avoid accidental partial matches
         test_config='config.' + test.rstrip() + '.yaml'
@@ -231,7 +234,9 @@ def check_tests(tests: list) -> list:
                                 test file ({os.path.realpath(testfile)}) that is also included in the
                                 test list. Only the latter test will be run."""))
                 tests_to_run.remove(testfile)
-                
+    if len(tests_to_run) != len(set(tests_to_run)):
+        logging.warning("\nWARNING: Duplicate test names were found in list. Removing duplicates and continuing.\n")
+        tests_to_run = list(set(tests_to_run))
     return tests_to_run
 
 
