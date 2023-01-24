@@ -158,9 +158,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
             if not (v is None or v == ""):
                 cfg_d[sect][k] = str_to_list(v)
 
-    for k, v in cfg_d["task_run_fcst"].items():
-        print(f"*** {k}: {v}")
-
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
         "EXPT_SUBDIR",
