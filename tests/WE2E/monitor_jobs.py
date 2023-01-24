@@ -79,7 +79,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
             cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
             expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
         expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
-        #Run rocotorun again to get around weird subprocess problem?
+        #Run rocotorun again to get around rocotobqserver proliferation issue
         subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
 
     write_monitor_file(monitor_file,expt_dict)
@@ -103,9 +103,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
                 continue
             # Run "rocotorun" here to give the database time to be fully written
             subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
-#            rr = subprocess.run(["rocotorun", f"-w {running_expts[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"],capture_output=True,text=True)
-#            logging.debug(f' RR2 = {rr}')
-            #Run rocotorun again to get around weird subprocess problem?
+            #Run rocotorun again to get around rocotobqserver proliferation issue
             subprocess.run(["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"])
             for task in db:
                 # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
