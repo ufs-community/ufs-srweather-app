@@ -13,7 +13,6 @@ sys.path.append("../../ush")
 
 from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
-    print_err_msg_exit,
     run_command,
     date_to_str,
     define_macos_utilities,
@@ -52,7 +51,6 @@ def run_we2e_tests(HOMEdir, args) -> None:
 
     # If args.tests is a list of length more than one, we assume it is a list of test names
     if len(args.tests) > 1:
-        print(len(args.tests))
         tests_to_check=args.tests
         logging.debug(f"User specified a list of tests:\n{tests_to_check}")
     else:
@@ -101,7 +99,7 @@ def run_we2e_tests(HOMEdir, args) -> None:
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
                 if os.path.isfile(user_spec_tests[0]):
-                    tests_to_check = list(open(user_spec_tests))
+                    tests_to_check = list(open(user_spec_tests[0]))
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
@@ -215,16 +213,25 @@ def check_tests(tests: list) -> list:
     tests_to_run=[]
     for test in tests:
         match=False
-        #Search for exact config file name to avoid accidental partial matches
+        # Search for exact config file name to avoid accidental partial matches
         test_config='config.' + test.rstrip() + '.yaml'
         for testfile in testfiles:
             if test_config in testfile:
                 logging.debug(f"found test {test}")
                 match=True
-                tests_to_run.append(testfile)
+                tests_to_run.append(os.path.abspath(testfile))
         if not match:
             raise Exception(f"Could not find test {test}")
-
+    # Because some test files are symlinks to other tests, check that we don't
+    # include the same test twice
+    for testfile in tests_to_run.copy():
+        if os.path.islink(testfile):
+            if os.path.realpath(testfile) in tests_to_run:
+                logging.warning(dedent(f"""WARNING: test file {testfile} is a symbolic link to a
+                                test file ({os.path.realpath(testfile)}) that is also included in the
+                                test list. Only the latter test will be run."""))
+                tests_to_run.remove(testfile)
+                
     return tests_to_run
 
 
