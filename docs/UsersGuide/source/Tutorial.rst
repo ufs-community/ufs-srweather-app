@@ -414,7 +414,7 @@ At f000, the ``test_expt`` plot (top left) is showing more severe weather than t
 
       *Composite Reflectivity at f000*
 
-As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. The ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. 
+As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. Thus both forecasts do a good job of picking up on the convection. However, the ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. It appears that the ``test_expt`` case was able to resolve more discrete storms over northwest Indiana and in the squall line. The ``control`` plot has less definition and depicts widespread storms concentrated together over the center of the state. 
 
 .. _refc006:
 
@@ -423,7 +423,7 @@ As the forecast progresses, the radar images resemble each other more (see :numr
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
-At forecast hour 12, the ``test_expt`` plot again shows some areas of high composite reflectivity in dark red, whereas the ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
+At forecast hour 12, the plots for each forecast show a similar evolution of the storm with both resolving a squall line. The ``test_expt`` plot shows a more intense squall line with discrete cells (areas of high composite reflectivity in dark red), which could lead to severe weather. The ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. It also orients the squall line more northward with less intensity, possibly due to the previous runs' convection cooling the atmosphere. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
 
 .. figure:: _static/plots/refc_diff_regional_f012.png
       :align: center
