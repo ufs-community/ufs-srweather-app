@@ -177,8 +177,15 @@ def run_we2e_tests(HOMEdir, args) -> None:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.debug(f"Calling workflow generation function for test {test_name}\n")
+        if args.quiet:
+            console_handler = logging.getLogger().handlers[1]
+            console_handler.setLevel(logging.WARNING)
         expt_dir = generate_FV3LAM_wflow(USHdir,logfile=f"{USHdir}/log.generate_FV3LAM_wflow",debug=args.debug)
-
+        if args.quiet:
+            if args.debug:
+                console_handler.setLevel(logging.DEBUG)
+            else:
+                console_handler.setLevel(logging.INFO)
         # If this job is not using crontab, we need to add an entry to monitor.yaml
         if 'USE_CRON_TO_RELAUNCH' not in test_cfg['workflow']:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
@@ -412,6 +419,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+    parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will helpkeep the screen uncluttered')
 
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
