@@ -248,6 +248,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     # Copy or symlink fix files
     #
+    mkdir_vrfy("-p", FIXam)
+
     if SYMLINK_FIX_FILES:
         log_info(
             f"""

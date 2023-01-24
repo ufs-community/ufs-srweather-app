@@ -802,7 +802,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ [EXPTDIR, "fix"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
