@@ -2583,8 +2583,11 @@ cpl_aqm_parm:
 # AQM_GEFS_DIR:
 # Path to the directory containing GEFS aerosol LBC files
 #
+# AQM_GEFS_FILE_PREFIX:
+# Prefix of AQM GEFS file ("geaer" or "gfs")
+#
 # AQM_GEFS_CYC:
-# Cycle of the GEFS aerosol LBC files
+# Cycle of the GEFS aerosol LBC files only if it is fixed
 # 
 # DO_AQM_CHEM_LBCS:
 # Add chemical LBCs to chemical LBCs
@@ -2602,11 +2605,15 @@ cpl_aqm_parm:
 # NEXUS_GRID_FN:
 # File name of the input grid_spec file of nexus
 #
+# NUM_SPLIT_NEXUS:
+# Number of split nexus emission tasks
+#
 # NEXUS_GFS_SFC_OFFSET_HRS: 0
 # Time offset when retrieving gfs surface data files
 # 
-# NUM_SPLIT_NEXUS:
-# Number of split nexus emission tasks
+# NEXUS_GFS_SFC_DIR:
+# Path to directory containing GFS surface data files
+# This is set to COMINgfs when DO_REAL_TIME=TRUE. 
 #
 # NEXUS_GFS_SFC_ARCHV_DIR: 
 # Path to archive directory for gfs surface files on HPSS
@@ -2625,6 +2632,12 @@ cpl_aqm_parm:
 #
 # COMINairnow:
 # Path to the real-time AIRNOW observation data
+#
+# COMINgfs:
+# Path to the real-time GFS data
+#
+# COMINgefs:
+# Path to the real-time GEFS data
 #
 #-----------------------------------------------------------------------
 #
@@ -2651,7 +2664,8 @@ cpl_aqm_parm:
   AQM_LBCS_DIR: ""
   AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
   AQM_GEFS_DIR: ""
-  AQM_GEFS_CYC: 0
+  AQM_GEFS_FILE_PREFIX: "geaer"
+  AQM_GEFS_FILE_CYC: ""
 
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: false
@@ -2661,6 +2675,7 @@ cpl_aqm_parm:
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
   NEXUS_GFS_SFC_OFFSET_HRS: 0
+  NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
   PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
@@ -2670,4 +2685,5 @@ cpl_aqm_parm:
 
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
   COMINairnow: "/path/to/real/time/airnow/data"
-  COMINgfs_BASEDIR: ""
+  COMINgfs: ""
+  COMINgefs: ""

@@ -81,7 +81,12 @@ fi
 GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${yyyy}/${yyyymm}/${yyyymmdd}"
 GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
 
-GFS_SFC_LOCAL_DIR="${COMINgfs_BASEDIR}/${GFS_SFC_TAR_SUB_DIR}"
+if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+  GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
+else
+  GFS_SFC_LOCAL_DIR="${NEXUS_GFS_SFC_DIR}/${GFS_SFC_TAR_SUB_DIR}"
+fi	
+
 GFS_SFC_DATA_INTVL="3"
 
 # copy files from local directory

@@ -56,8 +56,7 @@ TARGETS
    all = builds all apps
    Or any combinations of (ufs, ufs_utils, upp, gsi, rrfs_utils)
 
-NOTE: This script is for internal developer use only;
-See User's Guide for detailed build instructions
+NOTE: See User's Guide for detailed build instructions
 
 EOF_USAGE
 }
@@ -103,7 +102,6 @@ usage_error () {
 # default settings
 LCL_PID=$$
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-BIN_DIR="${SRW_DIR}/bin"
 MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${SRW_DIR}/build"
 INSTALL_DIR=${SRW_DIR}
@@ -111,7 +109,6 @@ BIN_DIR="exec"
 COMPILER=""
 APPLICATION=""
 CCPP_SUITES=""
-CANOPY=false
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
 BUILD_TYPE="RELEASE"
@@ -154,8 +151,6 @@ while :; do
     --app|--app=|-a|-a=) usage_error "$1 requires argument." ;;
     --ccpp=?*) CCPP_SUITES=${1#*=} ;;
     --ccpp|--ccpp=) usage_error "$1 requires argument." ;;
-    --canopy) CANOPY=true ;;
-    --canopy=*) usage_error "$1 argument ignored." ;;
     --enable-options=?*) ENABLE_OPTIONS=${1#*=} ;;
     --enable-options|--enable-options=) usage_error "$1 requires argument." ;;
     --disable-options=?*) DISABLE_OPTIONS=${1#*=} ;;
@@ -250,26 +245,6 @@ fi
 
 # Check out external components ===============================================
 if [ "${APPLICATION}" = "ATMAQ" ]; then
-  if [ -d "${SRW_DIR}/sorc/arl_nexus" ]; then
-    printf "!!! Extra external components already exist. This step is skipped.\n"
-  else
-    if [ -d "${SRW_DIR}/sorc/gsi" ]; then
-      printf "!!! FV3-LAM components exist. The existing components are removed.\n"
-      rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
-      rm -rf "${SRW_DIR}/sorc/UFS_UTILS"
-      rm -rf "${SRW_DIR}/sorc/UPP"  
-      rm -rf "${SRW_DIR}/sorc/gsi"
-      rm -rf "${SRW_DIR}/sorc/rrfs_utl"
-    fi 
-    printf "... Checking out external components for Online-CMAQ ...\n"
-    ./manage_externals/checkout_externals -e Externals_AQM.cfg
-  fi
-  if [ "${CANOPY}" = true ]; then
-    printf "... Replace ufs-weather-model with the canopy version ...\n"
-    rm -rf "${SRW_DIR}/sorc/ufs-weather-model"
-    ./manage_externals/checkout_externals -e externals/Externals_canopy.cfg
-  fi
-
   if [ "${DEFAULT_BUILD}" = true ]; then
     BUILD_NEXUS="on"
     BUILD_AQM_UTILS="on"
@@ -279,13 +254,6 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
     BUILD_POST_STAT="on"
   else
     BUILD_POST_STAT="off"
-  fi
-else
-  if [ -d "${SRW_DIR}/sorc/ufs-weather-model" ]; then
-    printf "!!! External components already exist. This step is skipped.\n"
-  else  
-    printf "... Checking out external components for FV3-LAM ...\n"  
-    ./manage_externals/checkout_externals
   fi
 fi
 

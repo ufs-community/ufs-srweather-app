@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode, 6h/12h forecast, 4cycles a day, on WCOSS2
+  description: config for Online-CMAQ, GSD_HRRR_25km, NCO mode on WCOSS2
 user:
   RUN_ENVIR: nco
   MACHINE: wcoss2
@@ -8,11 +8,11 @@ workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
-  EXPT_SUBDIR: aqm_nco_hrrr25_1d2cyc
+  EXPT_SUBDIR: aqm_nco_hrrr25km
   PREDEF_GRID_NAME: GSD_HRRR_25km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2019080500'
-  DATE_LAST_CYCL: '2019080518'
+  DATE_LAST_CYCL: '2019080506'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: -1
   FCST_LEN_CYCL:
@@ -27,7 +27,7 @@ nco:
   envir: prod
   NET: aqm
   model_ver: v7.0
-  RUN: aqm_test
+  RUN: aqm_hrrr25km
 #  OPSROOT: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/NCO_OUTPUT
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
@@ -42,12 +42,12 @@ task_make_sfc_climo:
   SFC_CLIMO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/GSD_HRRR_25km
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
-#  FV3GFS_FILE_FMT_ICS: grib2
+#  FV3GFS_FILE_FMT_ICS: netcdf
   EXTRN_MDL_ICS_OFFSET_HRS: 0
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
-#  FV3GFS_FILE_FMT_LBCS: grib2
+#  FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
 task_run_fcst:
   RESTART_INTERVAL: 6
@@ -76,9 +76,6 @@ cpl_aqm_parm:
   PPN_NEXUS_EMISSION: 40
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: true
-  AQM_GEFS_CYC: 0
-  AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_BIO_FILE: BEIS_SARC401.ncf
   DO_AQM_DUST: false
   DO_AQM_CANOPY: false
@@ -90,8 +87,8 @@ cpl_aqm_parm:
   AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/boundary_conditions_v4
   AQM_LBCS_FILES: gfs_bndy_chem_<MM>.tile7.000.nc
   AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_aerosol
-  NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
-  NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
+  AQM_GEFS_FILE_PREFIX: gfs
+  AQM_GEFS_FILE_CYC: 0
   NEXUS_GRID_FN: grid_spec_GSD_HRRR_25km.nc
   NUM_SPLIT_NEXUS: 3
 
