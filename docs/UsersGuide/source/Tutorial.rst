@@ -475,6 +475,14 @@ At the 12th forecast hour, the ``control`` plot indicates that CAPE may be decre
 Try It!
 ----------
 
+Option 1: Adjust frequency of forecast output.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For a simple extension of this tutorial, users can adjust ``LBC_SPEC_INTVL_HRS`` and ``PLOT_FCST_INC`` to a factor of 12 less than 6 (which is the default). This will produce forecast output and plots at more frequent intervals for the duration of the 12-hour forecast window. 
+
+Option 2: Compare output from additional physics suites.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control! 
 
 Users may find the difference plots for :term:`updraft helicity` particularly informative. The FV3_GFS_v16 physics suite does not contain updraft helicity output in its ``diag_table`` files, so the difference plot generated in this tutorial is empty. However, high updraft helicity values increase the probability that a storm will become a supercell thunderstorm or a tornado. Comparing the results from two physics suites that measure this parameter can therefore prove insightful. 
