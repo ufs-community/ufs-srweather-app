@@ -363,11 +363,17 @@ MODULES_RUN_TASK_FP script.
 -->
   <task name="&NEXUS_GFS_SFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_nexus_gfs_sfc }}">
 
+  {%- if do_real_time %}
+    &RSRV_DEFAULT;
+  {%- else %}
     &RSRV_HPSS;
+  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&NEXUS_GFS_SFC_TN;" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"</command>
     <nodes>{{ nnodes_nexus_gfs_sfc }}:ppn={{ ppn_nexus_gfs_sfc }}</nodes>
-  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    {%- if not do_real_time %}   
     <memory>{{ mem_nexus_gfs_sfc }}</memory>
+    {%- endif %}
   {%- endif %}
     <walltime>{{ wtime_nexus_gfs_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -463,11 +469,17 @@ MODULES_RUN_TASK_FP script.
 -->
   <task name="&FIRE_EMISSION_TN;" cycledefs="forecast" maxtries="{{ maxtries_fire_emission }}">
 
+  {%- if do_real_time %}
+    &RSRV_DEFAULT;
+  {%- else %}
     &RSRV_HPSS;
+  {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&FIRE_EMISSION_TN;" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"</command>
     <nodes>{{ nnodes_fire_emission }}:ppn={{ ppn_fire_emission }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+  {%- if not do_real_time %}
     <memory>{{ mem_fire_emission }}</memory>
+  {%- endif %}
   {%- endif %}
     <walltime>{{ wtime_fire_emission }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>

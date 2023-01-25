@@ -2586,7 +2586,7 @@ cpl_aqm_parm:
 # AQM_GEFS_FILE_PREFIX:
 # Prefix of AQM GEFS file ("geaer" or "gfs")
 #
-# AQM_GEFS_CYC:
+# AQM_GEFS_FILE_CYC:
 # Cycle of the GEFS aerosol LBC files only if it is fixed
 # 
 # DO_AQM_CHEM_LBCS:
