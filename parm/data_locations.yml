@@ -290,8 +290,6 @@ FV3GFS_prepbufr:
     archive_format: zip
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/gfs/prepbufr
-#    archive_internal_dir:
-#     - ./
     archive_file_names:
       - "{yyyymmdd}0000.zip"
     file_names:
