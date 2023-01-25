@@ -188,31 +188,20 @@ For a detailed understanding of the ``task_get_extrn_lbcs:`` variables, see :num
 
 Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
 
-Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC`` and set it to 6. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. The settings below will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z).
+Lastly, in the ``task_plot_allvars:`` section, add ``PLOT_FCST_INC: 6`` and  ``PLOT_DOMAINS: ["regional"]``. Users may also want to add ``PLOT_FCST_START: 0`` and ``PLOT_FCST_END: 12`` explicitly, but these can be omitted since the default values are the same as the forecast start and end time respectively. 
 
 .. code-block:: console
 
    task_plot_allvars:
      COMOUT_REF: ""
      PLOT_FCST_INC: 6
+     PLOT_DOMAINS: ["regional"]
 
-Because the plotting scripts are designed to generate plots over the entire CONUS, users will need to modify the code to generate plots for the smaller SUBCONUS_Ind_3km domain. To do this, navigate to the ``ufs-srweather-app/scripts`` directory: 
+``PLOT_FCST_INC:`` This variable indicates the forecast hour increment for the plotting task. By setting the value to ``6``, the task will generate a ``.png`` file for every 6th forecast hour starting from 18z on June 15, 2019 (the 0th forecast hour) through the 12th forecast hour (June 16, 2019 at 06z).
 
-.. code-block:: console
+``PLOT_DOMAINS:`` The plotting scripts are designed to generate plots over the entire CONUS by default, but by setting this variable to ["regional"], the experiment will generate plots for the smaller SUBCONUS_Ind_3km regional domain instead. 
 
-   cd /path/to/ufs-srweather-app/scripts
-
-Edit the two plotting files. Modify line #417 of ``exregional_plot_allvars.py`` and line #441 of ``exregional_plot_allvars_diff.py`` to say:
-
-.. code-block:: console
-
-   domains = ["regional"]  # Other option is 'conus'
-
-.. hint::
-
-   When using the ``vi`` editor to open the file, users can type ``/regional`` to search for the correct line of the file. Hit the ``n`` key to move to the next instance of "regional" in the file. 
-
-After adjusting the plotting scripts, return to ``$USH`` and generate the forecast:
+After configuring the forecast, users can generate the forecast by running:
 
 .. code-block:: console
 
@@ -414,7 +403,7 @@ At f000, the ``test_expt`` plot (top left) is showing more severe weather than t
 
       *Composite Reflectivity at f000*
 
-As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. Thus both forecasts do a good job of picking up on the convection. However, the ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. It appears that the ``test_expt`` case was able to resolve more discrete storms over northwest Indiana and in the squall line. The ``control`` plot has less definition and depicts widespread storms concentrated together over the center of the state. 
+As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. Both forecasts do a good job of picking up on the convection. However, the ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. It appears that the ``test_expt`` case was able to resolve more discrete storms over northwest Indiana and in the squall line. The ``control`` plot has less definition and depicts widespread storms concentrated together over the center of the state. 
 
 .. _refc006:
 
@@ -423,7 +412,7 @@ As the forecast progresses, the radar images resemble each other more (see :numr
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
-At forecast hour 12, the plots for each forecast show a similar evolution of the storm with both resolving a squall line. The ``test_expt`` plot shows a more intense squall line with discrete cells (areas of high composite reflectivity in dark red), which could lead to severe weather. The ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. It also orients the squall line more northward with less intensity, possibly due to the previous runs' convection cooling the atmosphere. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
+At forecast hour 12, the plots for each forecast show a similar evolution of the storm with both resolving a squall line. The ``test_expt`` plot shows a more intense squall line with discrete cells (areas of high composite reflectivity in dark red), which could lead to severe weather. The ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. It also orients the squall line more northward with less intensity, possibly due to convection from the previous forecast runs cooling the atmosphere. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
 
 .. figure:: _static/plots/refc_diff_regional_f012.png
       :align: center

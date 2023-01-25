@@ -1784,6 +1784,9 @@ Typically, the following parameters must be set explicitly by the user in the co
 ``PLOT_FCST_END``: (Default: "")
    The last forecast hour for the plotting task. For example, if a forecast run for 24 hours, and the user wants plots for each available hour of forecast output, they should set ``PLOT_FCST_END: 24``. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12.
 
+``PLOT_DOMAINS``: (Default: ["conus"])
+   Domains to plot. Currently supported options are ["conus"], ["regional"], or both (i.e., ["conus", "regional"]).
+
 Global Configuration Parameters
 ===================================
 
