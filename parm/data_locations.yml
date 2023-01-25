@@ -286,17 +286,17 @@ GSI-FIX:
 
 FV3GFS_prepbufr:
   hpss:
-    protocol: zip
+    protocol: htar
     archive_format: zip
     archive_path:
-      - /BMC/fdr/Permanent/{yyy}/{mm}/{dd}/data/grids/gfs/prepbufr
-    archive_internal_dir:
-      - ./
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/gfs/prepbufr
+#    archive_internal_dir:
+#     - ./
     archive_file_names:
       - "{yyyymmdd}0000.zip"
     file_names:
       obs:
-        - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
+        - "{yy}{jjj}{hh}00.gfs.t{hh}z.prepbufr.nr"
 
 RAP_obs:
   hpss:
