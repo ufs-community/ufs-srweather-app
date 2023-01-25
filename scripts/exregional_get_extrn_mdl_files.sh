@@ -74,7 +74,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
      end_hr=$BOUNDARY_LEN_HRS
   fi
-  first_time=$((TIME_OFFSET_HRS))
+  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
   last_time=$((TIME_OFFSET_HRS + end_hr))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}

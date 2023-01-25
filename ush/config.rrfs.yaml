@@ -72,7 +72,7 @@ cycledefs:
 gsi:
   HYBENSMEM_NMIN: 66
 nco:
-  NET: RRFS_CONUS
+  NET: rrfs
   envir: para
   model_ver: v1.0
   RUN: RRFS_conus_3km
@@ -111,7 +111,7 @@ task_run_post:
   NNODES_RUN_POST: 1
   PPN_RUN_POST: 40
   USE_CUSTOM_POST_CONFIG_FILE: false
-  POST_OUTPUT_DOMAIN_NAME: conus_25km
+  POST_OUTPUT_DOMAIN_NAME: RRFS_CONUS_3km
   CUSTOM_POST_CONFIG_FP: '{{ [platform.FIXcrtmupp, "upp/postxconfig-NT-fv3lam.txt"]|path_join }}'
   CUSTOM_POST_PARAMS_FP: '{{ [platform.FIXcrtmupp, "upp/params_grib2_tbl_new"]|path_join }}'
   TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"

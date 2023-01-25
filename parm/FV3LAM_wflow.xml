@@ -3735,6 +3735,7 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
+{%- if do_rrfs_dev %}
 {%- if machine in ["JET", "HERA"]  %}
 {%- if not do_ensemble %}
 <!--
@@ -3818,6 +3819,7 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
+{%- endif %}
 {%- endif %}
 {%- endif %}
 <!--
@@ -5087,11 +5089,11 @@ the <task> tag to be identical to the ones above for other output times.
 -->
 {%- endif %}
 
-{%- if machine in ["WCOSS2"]  %}
 <!--
 ************************************************************************
 ************************************************************************
 -->
+{%- if machine in ["WCOSS2"]  %}
   <task name="&RUN_ARCHIVE_TN;" cycledefs="archive" maxtries="{{ maxtries_run_post }}">
 
     &RSRV_HPSS;
@@ -5138,13 +5140,8 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
-
 {% if do_ensemble and do_ens_graphics %}
 {%- if machine in ["JET", "HERA"] %}
-<!--
-************************************************************************
-************************************************************************
--->
   <metatask name="ensemble_maps">
 
     <var name="tilelabel"> {{ tile_labels }} </var>
@@ -5186,7 +5183,6 @@ the <task> tag to be identical to the ones above for other output times.
       </dependency>
     </task>
   </metatask>
-
 {%- endif %}
 {%- endif %}
 <!--
@@ -5280,8 +5276,8 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
+{%- endif %}
 
 <!-- end of prod block -->
-{%- endif %}
 {%- endif %}
 </workflow>
