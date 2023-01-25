@@ -271,13 +271,6 @@ NAM:
       fcst:
         - nam.t{hh}z.awphys{fcst_hr:02d}.tm00.grib2
 
-GSI-FIX:
-  remote:
-    protocol: download
-    url: https://epic-sandbox-srw.s3.amazonaws.com
-    file_names:
-      - gsi-fix.{yy}.{mm}.{dd}.tar.gz
-
 ##########################
 ##########################
 ###  Observation Data  ###
