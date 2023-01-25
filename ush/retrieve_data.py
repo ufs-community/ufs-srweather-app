@@ -220,7 +220,6 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
         yyyymm=cycle_date.strftime("%Y%m"),
         yyyymmdd=cycle_date.strftime("%Y%m%d"),
         yyyymmddhh=cycle_date.strftime("%Y%m%d%H"),
-        yyjjjhh=cycle_date.strftime("%y%j%H"),
     )
 
     if templates_only:
