@@ -58,7 +58,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}_base"
 
     ensmem_num = ENSMEM_INDX
 
@@ -174,7 +174,7 @@ class Testing(unittest.TestCase):
         mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
             os.path.join(PARMdir, "input.nml.FV3"),
-            os.path.join(EXPTDIR, "input.nml"),
+            os.path.join(EXPTDIR, "input.nml_base"),
         )
         for i in range(2):
             mkdir_vrfy(

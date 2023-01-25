@@ -504,14 +504,18 @@ fi
 #-----------------------------------------------------------------------
 #
 STOCH="FALSE"
-if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
-   [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
+   [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
 
-   for cyc_start in "${CYCL_HRS_STOCH[@]}"; do
-     if [ ${HH} -eq ${cyc_start} ]; then 
-       STOCH="TRUE"
-     fi
-   done
+   if [ "${DO_RRFS_DEV}" = "TRUE" ]; then
+     for cyc_start in "${CYCL_HRS_STOCH[@]}"; do
+       if [ ${HH} -eq ${cyc_start} ]; then 
+         STOCH="TRUE"
+       fi
+     done
+   else
+     STOCH="TRUE"
+   fi
 
 fi
 
