@@ -74,7 +74,15 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
      end_hr=$BOUNDARY_LEN_HRS
   fi
-  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
+  # There is a difference between RRFS_dev & SRW regarding download of 0th
+  # hour lbcs. RRFS_dev downloads 0th hour lbcs while SRW does not.
+  # I tried to make them the same but RRFS_dev workflow skips make_ics for
+  # some cycles so it needs to download 0th hour lbcs.
+  if [ ${DO_RRFS_DEV} = "TRUE" ]; then
+    first_time=$((TIME_OFFSET_HRS))
+  else
+    first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
+  fi
   last_time=$((TIME_OFFSET_HRS + end_hr))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
