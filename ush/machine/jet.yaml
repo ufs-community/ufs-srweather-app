@@ -38,46 +38,12 @@ data:
       nemsio: /public/data/grids/gfs/nemsio
       grib2: /public/data/grids/gfs/0p25deg/grib2
       netcdf: /public/data/grids/gfs/anl/netcdf
+    GFS_prepbufr: /public/data/grids/gfs/prepbufr
+    GFS_tcvitals: /public/data/grids/gfs/bufr
     RAP: /public/data/grids/rap/full/wrfprs/grib2
+    RAP_obs: /public/data/grids/rap/obs
     HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
-
-# RRFS input obs./data
-RAP:
-  local:
-    file_path: /public/data/grids/rap/obs
-    file_names:
-      obs:
-        - "{yyyymmddhh}.rap.t{hh}z.prepbufr.tm00"
-        - "{yyyymmddhh}.rap.t{hh}z.1bamua.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.1bhrs4.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.1bmhs.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.amsr2.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ascatt.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ascatw.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.atms.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.atmsdb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.crisf4.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.crsfdb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esamua.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esatms.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.eshrs3.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esiasi.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esmhs.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d.nr"
-        - "{yyyymmddhh}.rap.t{hh}z.gsrasr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gsrcsr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.iasidb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d.nr"
-        - "{yyyymmddhh}.rap.t{hh}z.lgycld.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.mtiasi.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.nexrad.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.rassda.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
-FV3GFS:
+    
   local:
     file_path: 
       - ['/public/data/grids/gfs/prepbufr', '/public/data/grids/gfs/bufr']

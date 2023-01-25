@@ -280,9 +280,23 @@ GSI-FIX:
 
 ##########################
 ##########################
-### Observational Data ###
+###  Observation Data  ###
 ##########################
 ##########################
+
+FV3GFS_prepbufr:
+  hpss:
+    protocol: zip
+    archive_format: zip
+    archive_path:
+      - /BMC/fdr/Permanent/{yyy}/{mm}/{dd}/data/grids/gfs/prepbufr
+    archive_internal_dir:
+      - ./
+    archive_file_names:
+      - "{yyyymmdd}0000.zip"
+    file_names:
+      obs:
+        - "{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr"
 
 RAP_obs:
   hpss:
@@ -290,8 +304,8 @@ RAP_obs:
     archive_format: zip
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
-    #archive_internal_dir:
-    #  - ./
+    archive_internal_dir:
+      - ./
     archive_file_names:
       - "{yyyymmddhh}00.zip"
     file_names:
@@ -361,3 +375,16 @@ RAP_obs:
         - rap.t{hh}z.satwnd.tm00.bufr_d
         - rap.t{hh}z.sevasr.tm00.bufr_d
         - rap.t{hh}z.ssmisu.tm00.bufr_d
+
+###########################
+###########################
+####### Fix Files #########
+###########################
+###########################
+
+GSI-FIX:
+  remote:
+    protocol: download
+    url: https://epic-sandbox-srw.s3.amazonaws.com
+    file_names:
+      - gsi-fix.22.07.27.tar.gz

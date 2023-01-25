@@ -302,13 +302,10 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
                 if "sfc" in tmpl:
                     del file_templates[format]['fcst'][i]
 
-    if use_cla_tmpl or file_templates is None:
-        file_templates = cla.file_templates if cla.file_templates else file_templates
-
     if isinstance(file_templates, dict):
         if cla.file_type is not None:
             file_templates = file_templates[cla.file_type]
-        file_templates = file_templates[cla.anl_or_fcst]
+        file_templates = file_templates[cla.file_set]
     if not file_templates:
         msg = "No file naming convention found. They must be provided \
                 either on the command line or on in a config file."
@@ -359,21 +356,6 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     )
 
     input_locs = input_locs if isinstance(input_locs, list) else [input_locs]
-
-    # If the --output_path option wasn't used, lets see if it in in the config file
-    if cla.output_path is None:
-        output_path = cla.config.get(cla.external_model, {}).get(method, {}).get("output_path")
-        logging.debug(f"Configured output_path for {cla.external_model}:{method} is: {output_path}")
-        if output_path is None:
-            raise argparse.ArgumentTypeError(
-                (
-                    f"You must configure a {cla.external_model}:'disk':output_path,"
-                    " or use --output_path option! "
-                )
-            )
-            return unavailable
-        else:
-            cla.output_path=os.path.abspath(output_path)
 
     orig_path = os.getcwd()
     unavailable = []
@@ -495,7 +477,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         archive_file_names = archive_file_names[cla.file_type]
 
     if isinstance(archive_file_names, dict):
-        archive_file_names = archive_file_names[cla.anl_or_fcst]
+        archive_file_names = archive_file_names[cla.file_set]
 
     unavailable = {}
     existing_archives = {}
@@ -522,7 +504,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     archive_internal_dirs = store_specs.get("archive_internal_dir", [""])
     if isinstance(archive_internal_dirs, dict):
-        archive_internal_dirs = archive_internal_dirs.get(cla.anl_or_fcst, [""])
+        archive_internal_dirs = archive_internal_dirs.get(cla.file_set, [""])
 
     # which_archive matters for choosing the correct file names within,
     # but we can safely just try all options for the
@@ -771,12 +753,6 @@ def main(argv):
             print(f"{name:>15s}: {val}")
     print(f"{('-' * 80)}\n{('-' * 80)}")
 
-    # with no --config arg passed, use our default config specs
-    if cla.config is None:
-        logging.info(f"read parm/data_locations.yml")
-        cla.config = config_exists("./parm/data_locations.yml")
-    logging.debug(f"config {cla.config}")
-
     if "disk" in cla.data_stores:
         # Make sure a path was provided.
         if not cla.input_file_path:
@@ -952,17 +928,10 @@ def parse_args(argv):
 
     # Required
     parser.add_argument(
-        "--anl_or_fcst",
-        choices=("anl", "fcst", "obs", "None"),   # Added 'None' for generic packages copied from local disk or remote url
-        help="Flag for whether analysis or forecast \
-        files should be gathered",
-        required=False,                    # relaxed this arg option, to enable generic package copying
-    )
-    parser.add_argument(
-        "--machine",
-        choices=("jet", "hera"),  
-        help="Flag for which machine path(s) to use \
-        if retrieving local data files", 
+        "--file_set",
+        choices=("anl", "fcst", "obs", "fix"),
+        help="Flag for whether analysis, forecast, \
+        fix, or observation files should be gathered",
         required=False,                    # relaxed this arg option, to enable generic package copying
     )
     parser.add_argument(
@@ -970,13 +939,16 @@ def parse_args(argv):
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
         in this repository is in parm/data_locations.yml",
+        required=True,
         type=config_exists,
+        
     )
     parser.add_argument(
         "--cycle_date",
         help="Cycle date of the data to be retrieved in YYYYMMDDHH \
         format.",
         required=False,                    # relaxed this arg option, and set a benign value when not used
+        default="1999123100",
         type=to_datetime,
     )
     parser.add_argument(
@@ -991,6 +963,7 @@ def parse_args(argv):
         "--external_model",
         choices=(
             "FV3GFS",
+            "FV3GFS_prepbufr",
             "GDAS",
             "GEFS",
             "GSMGFS",
@@ -1014,17 +987,18 @@ def parse_args(argv):
         as-is. default=[0]",
         nargs="+",
         required=False,                    # relaxed this arg option, and set a default value when not used
+        default=[0],
         type=int,
     )
     parser.add_argument(
         "--output_path",
         help="Path to a location on disk. Path is expected to exist.",
-        required=False,                    # relaxed this arg option to allow for config setting from "disk" stores
+        required=True,                    
         type=os.path.abspath,
     )
     parser.add_argument(
         "--ics_or_lbcs",
-        choices=("ICS", "LBCS", "None"),   # Added 'None' for generic packages copied from disk or remote
+        choices=("ICS", "LBCS"),
         help="Flag for whether ICS or LBCS.",
         required=False,                    # relaxed this arg option, to enable generic packages
     )
@@ -1053,7 +1027,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--file_type",
-        choices=("grib2", "nemsio", "netcdf", "bufr", "prepbufr"),
+        choices=("grib2", "nemsio", "netcdf"),
         help="External model file format",
     )
     parser.add_argument(
