@@ -455,7 +455,8 @@ workflow:
   # EXPT_BASEDIR:
   # The base directory in which the experiment directory will be created.  
   # If this is not specified or if it is set to an empty string, it will
-  # default to ${HOMEdir}/../expt_dirs.  
+  # default to ${HOMEdir}/../expt_dirs. If set to a relative path, the
+  # path will be appended to the default value ${HOMEdir}/../expt_dirs 
   #
   # EXPT_SUBDIR:
   # The name that the experiment directory (without the full path) will
@@ -475,7 +476,7 @@ workflow:
   EXPT_BASEDIR: '{{ workflow.EXPT_BASEDIR }}'
   EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
-  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
+  EXPTDIR: ""
   #
   #-----------------------------------------------------------------------
   #
