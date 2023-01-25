@@ -73,9 +73,9 @@ if [ ${CYCLE_TYPE} == "spinup" ]; then
 else
   DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam"
 fi
-cd_vrfy $DATA
 mkdir_vrfy -p ${DATA}/INPUT
 mkdir_vrfy -p ${DATA}/RESTART
+cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -83,7 +83,15 @@ mkdir_vrfy -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #
-export INPUT_DATA="${DATA}/INPUT"
+if [ $DO_RRFS_DEV = "TRUE" ]; then
+  export INPUT_DATA="${DATA}/INPUT"
+else
+  if [ $RUN_ENVIR = "nco" ]; then
+      export INPUT_DATA="${COMIN}"
+  else
+      export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #

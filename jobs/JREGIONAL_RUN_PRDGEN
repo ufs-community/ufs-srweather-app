@@ -88,9 +88,9 @@ fi
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
   if [ ${CYCLE_TYPE} = "spinup" ]; then
-    export COMOUT="${COMOUT}_spinup${SLASH_ENSMEM_SUBDIR}/postprd"
+    export COMOUT="${COMOUT}_spinup"
   else
-    export COMOUT="${COMOUT}${SLASH_ENSMEM_SUBDIR}/postprd"
+    export COMOUT="${COMOUT}"
   fi
 else
   if [ ${CYCLE_TYPE} = "spinup" ]; then

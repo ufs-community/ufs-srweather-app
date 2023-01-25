@@ -249,6 +249,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # Copy or symlink fix files
     #
     mkdir_vrfy("-p", FIXam)
+    if RUN_TASK_MAKE_GRID:
+        ln_vrfy(f"""-fsn '{HOMEdir}/fix/fix_am/global_hyblev_fcst_rrfsL65.txt' '{FIXam}/global_hyblev_fcst_rrfsL65.txt'""")
 
     if SYMLINK_FIX_FILES:
         log_info(

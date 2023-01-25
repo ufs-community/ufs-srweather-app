@@ -248,6 +248,11 @@ The forecast has BKTYPE $BKTYPE (1:cold start ; 0 cycling)"
 n_iolayouty=$(($IO_LAYOUT_Y-1))
 list_iolayout=$(seq 0 $n_iolayouty)
 
+if [ $DO_RRFS_DEV = "FALSE" ]; then
+   PREFIX="${NET}.${cycle}${dot_ensmem}."
+else
+   PREFIX=""
+fi
 #
 # The symlinks to be created point to files in the same directory (INPUT),
 # so it's most straightforward to use relative paths.
@@ -255,7 +260,7 @@ list_iolayout=$(seq 0 $n_iolayouty)
 relative_link_flag="FALSE"
 
 if [ ${BKTYPE} -eq 1 ]; then
-    target="${INPUT_DATA}/gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+    target="${INPUT_DATA}/${PREFIX}gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
 else
     target="fv_core.res.tile1.nc"
 fi
@@ -276,7 +281,7 @@ fi
 # Symlink sfc data
 #
 if [ ${BKTYPE} -eq 1 ]; then
-  target="${INPUT_DATA}/sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  target="${INPUT_DATA}/${PREFIX}sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
   symlink="sfc_data.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
@@ -294,14 +299,14 @@ fi
 # Symlink gfs_ctrl and bndy data
 #
 if [ $DO_RRFS_DEV = "FALSE" ]; then
-  target="${INPUT_DATA}/gfs_ctrl.nc"
+  target="${INPUT_DATA}/${PREFIX}gfs_ctrl.nc"
   symlink="gfs_ctrl.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
   
   
   for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    target="${INPUT_DATA}/gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    target="${INPUT_DATA}/${PREFIX}gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
     symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"

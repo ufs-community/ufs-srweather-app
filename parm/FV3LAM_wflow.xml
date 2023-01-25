@@ -159,15 +159,15 @@ Directories and files.
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/phy">
 {%- endif %}
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/phy">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/fcst_fv3lam/dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/fcst_fv3lam/phy">
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
@@ -3433,6 +3433,9 @@ later below for other output times.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
+      <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
+      <envar><name>TMMARK</name><value>tm00</value></envar>
 <!--
 Note that because the forecast minutes and seconds corresponding to the
 first model output time are not exactly zero, we use the jinja template
@@ -3503,6 +3506,10 @@ for other output times.
         <envar><name>fmn</name><value>#fmn#</value></envar>
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+        <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+        <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
+        <envar><name>TMMARK</name><value>tm00</value></envar>
 
         <dependency>
           <or>
@@ -3587,6 +3594,10 @@ always zero).
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
+        <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+        <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
+        <envar><name>TMMARK</name><value>tm00</value></envar>
+
         <dependency>
           <or>
             <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
@@ -3656,6 +3667,10 @@ the <task> tag to be identical to the ones above for other output times.
       <envar><name>fmn</name><value>#fmn#</value></envar>
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+      <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
+      <envar><name>TMMARK</name><value>tm00</value></envar>
 
       <dependency>
         <or>
