@@ -357,10 +357,10 @@ done
 #
 # background files
 #
-bgdawp=${COMOUT}/${NET}.${cycle}.bgdawpf${subh_fhr}.${TMMARK}.grib2
-bgrd3d=${COMOUT}/${NET}.${cycle}.bgrd3df${subh_fhr}.${TMMARK}.grib2
-bgsfc=${COMOUT}/${NET}.${cycle}.bgsfcf${subh_fhr}.${TMMARK}.grib2
-bgifi=${COMOUT}/${NET}.${cycle}.bgifif${subh_fhr}.${TMMARK}.grib2
+bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgsfc=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
 wgrib2 ${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix} -set center 7 -grib ${bgdawp}
 wgrib2 ${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix} -set center 7 -grib ${bgrd3d}
