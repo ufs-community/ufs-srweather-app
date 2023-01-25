@@ -130,10 +130,10 @@ fhr=${subh_fhr}
 #
 # background files
 #
-bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${TMMARK}.grib2
-bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${TMMARK}.grib2
-bgsfc=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${TMMARK}.grib2
-bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2
+bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgsfc=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
 # extract the output fields for the testbed
 touch ${bgsfc}
@@ -167,29 +167,29 @@ elif  [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
   gridname=""
 fi
 basetime=$( date +%y%j%H%M -d "${yyyymmdd} ${hh}" )
-cp_vrfy ${bgdawp} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${TMMARK}.grib2
-cp_vrfy ${bgrd3d} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${TMMARK}.grib2
+cp_vrfy ${bgdawp} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+cp_vrfy ${bgrd3d} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 if [ -f  ${bgifi} ]; then
-  cp_vrfy ${bgifi} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2
+  cp_vrfy ${bgifi} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 fi
-cp_vrfy ${bgsfc}  ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${TMMARK}.grib2
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${TMMARK}.grib2 ${COMOUT}/BGDAWP_${basetime}${post_fhr}
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${TMMARK}.grib2 ${COMOUT}/BGRD3D_${basetime}${post_fhr}
-if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2 ]; then
-  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2 ${COMOUT}/BGIFI_${basetime}${post_fhr}
+cp_vrfy ${bgsfc}  ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGDAWP_${basetime}${post_fhr}
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGRD3D_${basetime}${post_fhr}
+if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
+  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGIFI_${basetime}${post_fhr}
 fi
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${TMMARK}.grib2  ${COMOUT}/BGSFC_${basetime}${post_fhr}
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ${COMOUT}/BGSFC_${basetime}${post_fhr}
 
 net4=$(echo ${NET:0:4} | tr '[:upper:]' '[:lower:]')
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
 wgrib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2.idx
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
 wgrib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2.idx
-if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2 ]; then
-  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
+if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
+  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
   wgrib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2.idx
 fi
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${TMMARK}.grib2  ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
 wgrib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2.idx
 # Remap to additional output grids if requested
 
@@ -357,7 +357,7 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       eval grid_specs=\$grid_specs_${grid}
       subdir=${COMOUT}/${grid}_grid
       mkdir -p ${subdir}/${fhr}
-      bg_remap=${subdir}/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2
+      bg_remap=${subdir}/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       # Interpolate fields to new grid
       eval infile=\$bg${leveltype}
@@ -385,30 +385,30 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
 
       # Save to com directory 
       mkdir -p ${COMOUT}/${grid}_grid
-      cp_vrfy ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2
+      cp_vrfy ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       if [ $leveltype = 'dawp' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
+         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
          wgrib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2.idx
       fi
 
       if [ $leveltype = 'rd3d' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
+         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
          wgrib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2.idx
       fi
 
-      if [[ $leveltype = 'ifi' ]] && [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2  ]]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
+      if [[ $leveltype = 'ifi' ]] && [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ]]; then
+         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
          wgrib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2.idx
       fi
 
       if [ $leveltype = 'sfc' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
+         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
          wgrib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2.idx
       fi
 
       # Link output for transfer from Jet to web
-      ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${TMMARK}.grib2 ${COMOUT}/${grid}_grid/BG${leveltype^^}_${basetime}${post_fhr}
+      ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.bg${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${grid}_grid/BG${leveltype^^}_${basetime}${post_fhr}
     done
   done
 fi
