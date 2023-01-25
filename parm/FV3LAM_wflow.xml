@@ -4985,7 +4985,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     &RSRV_POST;
 
-    <command>&JOBSdir;/../scripts/exregional_clean.ksh</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_CLEAN"</command>
 
     <nodes> 1:ppn=1</nodes>
     <walltime>00:15:00</walltime>

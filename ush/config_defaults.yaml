@@ -3139,6 +3139,28 @@ task_run_clean:
   MEM_RUN_CLEAN: 2G
   WTIME_RUN_CLEAN: 00:15:00
   MAXTRIES_RUN_CLEAN: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for cleaning the real-time and retrospective runs.
+  # CLEAN_OLDPROD_HRS:
+  #   the product under com directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDLOG_HRS
+  #   the log files under com directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDRUN_HRS
+  #   the run directory under tmpnwprd directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDFCST_HRS
+  #   the fv3lam forecast netcdf files forecast run directory from cycles older than (current cycle - this hour) will be cleaned 
+  # CLEAN_OLDSTMP_HRS
+  #   the postprd GRIB-2 files from cycles older than (current cycle - this hour) will be cleaned 
+  #-----------------------------------------------------------------------
+  #
+  CLEAN_OLDPROD_HRS: 72
+  CLEAN_OLDLOG_HRS: 72
+  CLEAN_OLDRUN_HRS: 48
+  CLEAN_OLDFCST_HRS: 24
+  CLEAN_OLDSTMPPOST_HRS: 24
+  CLEAN_NWGES_HRS: 72
 
 #----------------------------
 # ARCHIVE config parameters
@@ -3442,26 +3464,3 @@ global:
   RADARREFL_MINS: [0, 1, 2, 3]
   RADARREFL_TIMELEVEL: [0]
   
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Parameters for cleaning the real-time and retrospective runs.
-  # CLEAN_OLDPROD_HRS:
-  #   the product under com directory from cycles older than (current cycle - this hour) will be cleaned 
-  # CLEAN_OLDLOG_HRS
-  #   the log files under com directory from cycles older than (current cycle - this hour) will be cleaned 
-  # CLEAN_OLDRUN_HRS
-  #   the run directory under tmpnwprd directory from cycles older than (current cycle - this hour) will be cleaned 
-  # CLEAN_OLDFCST_HRS
-  #   the fv3lam forecast netcdf files forecast run directory from cycles older than (current cycle - this hour) will be cleaned 
-  # CLEAN_OLDSTMP_HRS
-  #   the postprd GRIB-2 files from cycles older than (current cycle - this hour) will be cleaned 
-  #-----------------------------------------------------------------------
-  #
-  
-  CLEAN_OLDPROD_HRS: 72
-  CLEAN_OLDLOG_HRS: 72
-  CLEAN_OLDRUN_HRS: 48
-  CLEAN_OLDFCST_HRS: 24
-  CLEAN_OLDSTMPPOST_HRS: 24
-  CLEAN_NWGES_HRS: 72
