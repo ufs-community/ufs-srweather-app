@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_anal|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_anal|task_run_fcst|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -805,7 +805,7 @@ POST_STEP
 
 if [ ${GSI_TYPE} == "ANALYSIS" ]; then
   if [ ${OB_TYPE} == "radardbz" ]; then
-    cat fort.238 > $COMOUT/rrfs_a.t${HH}z.fits3.tm00
+    cat fort.238 > $COMOUT/${NET}.t${HH}z.fits3.${POST_OUTPUT_DOMAIN_NAME}
   else
     mv fort.207 fit_rad1
     sed -e 's/   asm all/ps asm 900/; s/   rej all/ps rej 900/; s/   mon all/ps mon 900/' fort.201 > fit_p1
@@ -815,8 +815,8 @@ if [ ${GSI_TYPE} == "ANALYSIS" ]; then
     sed -e 's/   asm all/pw asm 900/; s/   rej all/pw rej 900/; s/   mon all/pw mon 900/' fort.205 > fit_pw1
     sed -e 's/   asm all/rw asm 900/; s/   rej all/rw rej 900/; s/   mon all/rw mon 900/' fort.209 > fit_rw1
 
-    cat fit_p1 fit_w1 fit_t1 fit_q1 fit_pw1 fit_rad1 fit_rw1 > $COMOUT/rrfs_a.t${HH}z.fits.tm00
-    cat fort.208 fort.210 fort.212 fort.213 fort.220 > $COMOUT/rrfs_a.t${HH}z.fits2.tm00
+    cat fit_p1 fit_w1 fit_t1 fit_q1 fit_pw1 fit_rad1 fit_rw1 > $COMOUT/${NET}.t${HH}z.fits.${POST_OUTPUT_DOMAIN_NAME}
+    cat fort.208 fort.210 fort.212 fort.213 fort.220 > $COMOUT/${NET}.t${HH}z.fits2.${POST_OUTPUT_DOMAIN_NAME}
   fi
 fi
 #
