@@ -62,12 +62,11 @@ the specified cycle.
 #-----------------------------------------------------------------------
 #
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  workdir=${CYCLE_DIR}/process_lightning_spinup
+  DATA="${DATA:-${COMIN}/process_lightning_spinup}"
 else
-  workdir=${CYCLE_DIR}/process_lightning
+  DATA="${DATA:-${COMIN}/process_lightning}"
 fi
-rm -fr ${workdir}
-mkdir_vrfy -p ${workdir}
+mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -76,9 +75,7 @@ mkdir_vrfy -p ${workdir}
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_process_lightning.sh \
-  CYCLE_DIR="${CYCLE_DIR}" WORKDIR="${workdir}" || \
-print_err_msg_exit "\
+$SCRIPTSdir/exregional_process_lightning.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------

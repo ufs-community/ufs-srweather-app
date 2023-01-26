@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHDIR/source_util_funcs.sh
+. $USHdir/source_util_funcs.sh
 source_config_for_task "task_process_lightning" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -41,6 +41,7 @@ print_info_msg "
 ========================================================================
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
+
 This is the ex-script for the task that runs lightning preprocess
 with FV3 for the specified cycle.
 ========================================================================"
@@ -52,7 +53,6 @@ with FV3 for the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
 YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
 JJJ=$(date +%j -d "${START_DATE}")
@@ -163,7 +163,7 @@ EOF
 exec_fn="process_Lightning.exe"
 exec_fp="$EXECdir/${exec_fn}"
 
-if [ -f "${exec_fp}" ]; then
+if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
 The executable specified in exec_fp does not exist:
   exec_fp = \"${exec_fp}\"
@@ -180,8 +180,7 @@ fi
 
 if [[ "$run_lightning" == true ]]; then
     PREP_STEP
-    eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || 
-print_err_msg "\  
+    eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\  
         Call to executable to run lightning (nc) process returned with nonzero exit code."
     POST_STEP
 fi
@@ -195,6 +194,7 @@ fi
 print_info_msg "
 ========================================================================
 LIGHTNING PROCESS completed successfully!!!
+
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
 ========================================================================"
