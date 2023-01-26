@@ -563,6 +563,9 @@ python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --run-dir "${DATA}" \
+  --cyc "$cyc" \
+  --cycle-type "${CYCLE_TYPE:-prod}" \
+  --cycle-subtype "${CYCLE_SUBTYPE:-empty}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
   --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\

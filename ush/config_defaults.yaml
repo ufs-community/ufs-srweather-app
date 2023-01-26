@@ -5,7 +5,7 @@ metadata:
   description: >-
     Default configuration for an experiment. The valid values for most of the
     parameters are specified in valid_param_vals.yaml
-  version: !!str '1.0'
+  version: !!str '2.0'
 #----------------------------
 # USER config parameters
 #----------------------------
@@ -1567,16 +1567,14 @@ cycledefs:
   #
   #-----------------------------------------------------------------------
   #
-  CYCLEDAY: "*"
-  CYCLEMONTH: "*"
   AT_START_CYCLEDEF: "00 01 01 01 2100 *"
   INITIAL_CYCLEDEF: "00 01 01 01 2100 *"
   BOUNDARY_CYCLEDEF: "00 01 01 01 2100 *"
   BOUNDARY_LONG_CYCLEDEF: "00 01 01 01 2100 *"
   SPINUP_CYCLEDEF: "00 01 01 01 2100 *"
   PROD_CYCLEDEF: "00 01 01 01 2100 *"
-  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
   PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
+  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
   ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
   SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
 

@@ -62,13 +62,12 @@ workflow_switches:
   DO_POST_SPINUP: true
   DO_POST_PROD: true
 cycledefs:
-  CYCLEMONTH: "7"
-  CYCLEDAY: "24-30"
   INITIAL_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0300 ", workflow.DATE_LAST_CYCL[0:8], "2300 12:00:00"]|join }}'
   BOUNDARY_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0000 ", workflow.DATE_LAST_CYCL[0:8], "2300 06:00:00"]|join }}'
-  PROD_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0900 ", workflow.DATE_LAST_CYCL[0:8], "2300 01:00:00"]|join }}'
-  ARCHIVE_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0700 ", workflow.DATE_LAST_CYCL[0:8], "2300 24:00:00"]|join }}'
-  SPINUP_CYCLEDEF: '{{ ["00 03-08,15-20 ", cycledefs.CYCLEDAY, " ", cycledefs.CYCLEMONTH, " 2021 *"]|join }}'
+  PROD_CYCLEDEF: "00 10,11,13,14,16,17,19,20,22,23 24-30 7 2021 *"
+  PRODLONG_CYCLEDEF: "00 9-23/3 24-30 7 2021 *"
+  #ARCHIVE_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0700 ", workflow.DATE_LAST_CYCL[0:8], "2300 24:00:00"]|join }}'
+  SPINUP_CYCLEDEF: "00 03-08,15-20 24-30 7 2021 *"
 gsi:
   HYBENSMEM_NMIN: 66
 nco:
