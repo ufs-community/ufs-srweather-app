@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This J-JOB script archives forecast data
+# This J-JOB script plots graphics using pygraf library
 #
 #-----------------------------------------------------------------------
 

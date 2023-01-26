@@ -116,6 +116,10 @@ task_run_post:
   CUSTOM_POST_PARAMS_FP: '{{ [platform.FIXcrtmupp, "upp/params_grib2_tbl_new"]|path_join }}'
   TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"
   TESTBED_FIELDS_FN2: "testbed_fields_bgrd3d.txt"
+task_process_radarref:
+  RADARREFL_TIMELEVEL: [0]
+task_run_prdgen:
+  ADDNL_OUTPUT_GRIDS: []
 task_run_anal:
   NCORES_RUN_ANAL: 240
   NCORES_RUN_OBSERVER: 80
@@ -123,13 +127,10 @@ task_run_ref2tten:
   PPN_RUN_REF2TTEN: 1
 task_run_nonvarcldanl:
   PPN_RUN_NONVARCLDANL: '{{ task_run_fcst.IO_LAYOUT_Y }}'
-task_plot_allvars:
-  COMOUT_REF: ""
+task_run_graphics:
+  TILE_LABELS: "full"
+  TILE_SETS: "full"
 global:
   NUM_ENS_MEMBERS: 9
   HALO_BLEND: 20
   PRINT_DIFF_PGR: true
-  ADDNL_OUTPUT_GRIDS: []
-  TILE_LABELS: "full"
-  TILE_SETS: "full"
-  RADARREFL_TIMELEVEL: [0]

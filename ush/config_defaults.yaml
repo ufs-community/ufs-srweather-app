@@ -2197,6 +2197,20 @@ task_process_radarref:
   MAXTRIES_PROCESS_RADARREF: 1
 
   RADAR_REF_THINNING: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for observation preprocess.
+  # RADARREFL_MINS:
+  #   minute from the hour that the NSSL mosaic files will be searched for 
+  #      data preprocess
+  # RADARREFL_TIMELEVEL:
+  #   time level (minute) from the hour that the NSSL mosaic files will be generated 
+  #
+  #-----------------------------------------------------------------------
+  #
+  RADARREFL_MINS: [0, 1, 2, 3]
+  RADARREFL_TIMELEVEL: [0]
 
 #----------------------------
 # REF2TTEN config parameters
@@ -2350,6 +2364,29 @@ task_run_prdgen:
   KMP_AFFINITY_RUN_PRDGEN: "scatter"
   OMP_NUM_THREADS_RUN_PRDGEN: 1
   OMP_STACKSIZE_RUN_PRDGEN: "1024m"
+  #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set additional output grids for wgrib2 remapping, if any 
+  # Space-separated list of strings, e.g., ( "130" "242" "clue" )
+  # Default is no additional grids
+  #
+  # Current options as of 23 Apr 2021:
+  #  "130"   (CONUS 13.5 km)
+  #  "200"   (Puerto Rico 16 km)
+  #  "221"   (North America 32 km)
+  #  "242"   (Alaska 11.25 km)
+  #  "243"   (Pacific 0.4-deg)
+  #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
+  #  "hrrr"  (HRRR 3-km CONUS grid)
+  #  "hrrre" (HRRRE 3-km CONUS grid)
+  #  "rrfsak" (RRFS 3-km Alaska grid)
+  #  "hrrrak" (HRRR 3-km Alaska grid)
+  #
+  #-----------------------------------------------------------------------
+  #
+  ADDNL_OUTPUT_GRIDS: []
 
 #----------------------------
 # RUN BUFRSND config parameters
@@ -3129,6 +3166,34 @@ task_run_graphics:
   PPN_RUN_GRAPHICS: 12
   WTIME_RUN_GRAPHICS: 00:30:00
   MAXTRIES_RUN_GRAPHICS: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the tiles (or subdomains) for creating graphics in a Rocoto metatask.
+  # Do not include references to the grids that are produced in separate grib
+  # files (set with ADDNL_OUTPUT_GRIDS above). Those will be added in setup.sh
+  #
+  # TILE_LABELS
+  # A space separated list (string is fine, no need for array) of the labels
+  # applied to the groupings of tiles to be run as a single batch jobs. For
+  # example, you may label the set of tiles SE,NE,SC,NC,SW,NW as "regions", and
+  # the full input domain as "full" if you wanted those to run in two domains. The
+  # length must match the length of TILE_SETS.
+  #
+  # TILE_SETS
+  # A space separated list of tile groupings to plot. Space-separated sets
+  # indicate which ones will be grouped in a single batch job, comma sepated items
+  # are the tiles to be plotted in that batch job. For example:
+  #    TILE_SETS="full SW,SC,SE NW,NC,NE"
+  #    TILE_LABELS="full southern_regions northern_regions"
+  # would plot maps for the full domain in a batch job separately from the
+  # southern regions, using a third batch job for the northern regions. The
+  # space-separated list must match the length of TILE_LABELS.
+  #
+  #-----------------------------------------------------------------------
+  #
+  TILE_LABELS: "full"
+  TILE_SETS: "full"
 
 #----------------------------
 # CLEAN config parameters
@@ -3205,57 +3270,6 @@ global:
   #-----------------------------------------------------------------------
   #
   USE_CRTM: false
-  #
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set additional output grids for wgrib2 remapping, if any 
-  # Space-separated list of strings, e.g., ( "130" "242" "clue" )
-  # Default is no additional grids
-  #
-  # Current options as of 23 Apr 2021:
-  #  "130"   (CONUS 13.5 km)
-  #  "200"   (Puerto Rico 16 km)
-  #  "221"   (North America 32 km)
-  #  "242"   (Alaska 11.25 km)
-  #  "243"   (Pacific 0.4-deg)
-  #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
-  #  "hrrr"  (HRRR 3-km CONUS grid)
-  #  "hrrre" (HRRRE 3-km CONUS grid)
-  #  "rrfsak" (RRFS 3-km Alaska grid)
-  #  "hrrrak" (HRRR 3-km Alaska grid)
-  #
-  #-----------------------------------------------------------------------
-  #
-  ADDNL_OUTPUT_GRIDS: []
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Set the tiles (or subdomains) for creating graphics in a Rocoto metatask.
-  # Do not include references to the grids that are produced in separate grib
-  # files (set with ADDNL_OUTPUT_GRIDS above). Those will be added in setup.sh
-  #
-  # TILE_LABELS
-  # A space separated list (string is fine, no need for array) of the labels
-  # applied to the groupings of tiles to be run as a single batch jobs. For
-  # example, you may label the set of tiles SE,NE,SC,NC,SW,NW as "regions", and
-  # the full input domain as "full" if you wanted those to run in two domains. The
-  # length must match the length of TILE_SETS.
-  #
-  # TILE_SETS
-  # A space separated list of tile groupings to plot. Space-separated sets
-  # indicate which ones will be grouped in a single batch job, comma sepated items
-  # are the tiles to be plotted in that batch job. For example:
-  #    TILE_SETS="full SW,SC,SE NW,NC,NE"
-  #    TILE_LABELS="full southern_regions northern_regions"
-  # would plot maps for the full domain in a batch job separately from the
-  # southern regions, using a third batch job for the northern regions. The
-  # space-separated list must match the length of TILE_LABELS.
-  #
-  #-----------------------------------------------------------------------
-  #
-  TILE_LABELS: "full"
-  TILE_SETS: "full"
   #
   #-----------------------------------------------------------------------
   #
@@ -3450,18 +3464,4 @@ global:
   #-----------------------------------------------------------------------
   #
   GWD_HRRRsuite_BASEDIR: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Parameters for observation preprocess.
-  # RADARREFL_MINS:
-  #   minute from the hour that the NSSL mosaic files will be searched for 
-  #      data preprocess
-  # RADARREFL_TIMELEVEL:
-  #   time level (minute) from the hour that the NSSL mosaic files will be generated 
-  #
-  #-----------------------------------------------------------------------
-  #
-  RADARREFL_MINS: [0, 1, 2, 3]
-  RADARREFL_TIMELEVEL: [0]
   
