@@ -68,6 +68,7 @@ user:
   PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
   MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+  GRAPHICSdir: '{{ [HOMEdir, "python_graphics"]|path_join }}'
   VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'

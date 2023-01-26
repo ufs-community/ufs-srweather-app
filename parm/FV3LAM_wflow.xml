@@ -3756,7 +3756,7 @@ the <task> tag to be identical to the ones above for other output times.
 
       <jobname>&TAG;python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
       <join>&LOGDIR;/python{{ uscore_ensmem_name }}_#tilelabel#&LOGEXT;</join>
-      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_GRAPHICS"</command>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -3794,7 +3794,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     <jobname>&TAG;python{{ uscore_ensmem_name }}_<cyclestr>@H</cyclestr>_skewts</jobname>
     <join>&LOGDIR;/python_skewts{{ uscore_ensmem_name }}<cyclestr>_@H</cyclestr>&LOGEXT;</join>
-    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_GRAPHICS"</command>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -5156,7 +5156,7 @@ the <task> tag to be identical to the ones above for other output times.
 
       <jobname>&TAG;python_<cyclestr>@H</cyclestr>_#tilelabel#</jobname>
       <join>&LOGDIR;/python_#tilelabel#&LOGEXT;</join>
-      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_GRAPHICS"</command>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -5248,7 +5248,7 @@ the <task> tag to be identical to the ones above for other output times.
 
     <jobname>&TAG;python_<cyclestr>@H</cyclestr>_enspost_maps</jobname>
     <join>&LOGDIR;/python_enspost_maps&LOGEXT;</join>
-    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_PYTHON_GRAPHICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "run_graphics" "&JOBSdir;/JREGIONAL_RUN_GRAPHICS"</command>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
