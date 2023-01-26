@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_graphics|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_graphics|task_run_fcst|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -119,7 +119,7 @@ case ${GRAPHICS_TYPE} in
 
   "maps")
 
-    file_tmpl="${NET}.t${CDATE:8:2}z.bg${file_id:-dawp}f{FCST_TIME:03d}.tm00.grib2"
+    file_tmpl="${NET}.t${CDATE:8:2}z.bg${file_id:-dawp}.f{FCST_TIME:03d}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
     file_type=prs
     extra_args="\
       --tiles $tiles \
@@ -133,7 +133,7 @@ case ${GRAPHICS_TYPE} in
 
   "skewts")
 
-    file_tmpl="${NET}.t${CDATE:8:2}z.bgrd3df{FCST_TIME:03d}.tm00.grib2"
+    file_tmpl="${NET}.t${CDATE:8:2}z.bgrd3d.f{FCST_TIME:03d}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
     file_type=nat
     extra_args="\
       --sites ${GRAPHICSdir}/static/${sites_file} \
@@ -142,7 +142,7 @@ case ${GRAPHICS_TYPE} in
 
   "enspanel")
 
-    file_tmpl="${NET}.t${CDATE:8:2}z.bgdawpf{FCST_TIME:03d}.tm00.grib2"
+    file_tmpl="${NET}.t${CDATE:8:2}z.bgdawp.f{FCST_TIME:03d}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
     file_type=prs
     extra_args="\
       --tiles $tiles \
