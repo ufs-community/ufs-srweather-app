@@ -889,6 +889,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     if not isinstance(post_output_domain_name, int):
         post_output_domain_name = lowercase(post_output_domain_name)
+
+    # Write updated value of POST_OUTPUT_DOMAIN_NAME back to dictionary
+    post_config["POST_OUTPUT_DOMAIN_NAME"] = post_output_domain_name 
+
     #
     # -----------------------------------------------------------------------
     #
