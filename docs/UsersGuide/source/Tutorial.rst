@@ -205,7 +205,6 @@ After configuring the forecast, users can generate the forecast by running:
 
 .. code-block:: console
 
-   cd $USH
    ./generate_FV3LAM_wflow.py
 
 To see experiment progress, users should navigate to their experiment directory. Then, use the ``rocotorun`` command to launch new workflow tasks and ``rocotostat`` to check on experiment progress. 
