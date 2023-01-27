@@ -104,6 +104,6 @@ if [[ $TRACE == "TRUE" ]]; then
         id=""
     fi
     # Print the script name and line number of each command as it is executed
-    export PS4="+ $(basename ${BASH_SOURCE[1]})[$LINENO]""$id: "
+    export PS4='+ $(basename $0)[$LINENO]'"$id: "
 fi
 
