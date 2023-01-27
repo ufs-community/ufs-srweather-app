@@ -497,6 +497,7 @@ information on all WE2E tests:
     "grids_extrn_mdls_suites_community" \
     "grids_extrn_mdls_suites_nco" \
     "release_SRW_v1" \
+    "verification" \
     "wflow_features" \
     )
   num_category_subdirs="${#category_subdirs[@]}"
