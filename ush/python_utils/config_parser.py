@@ -472,7 +472,7 @@ def check_structure_dict(dict_o, dict_t):
         dict_o: target dictionary
         dict_t: template dictionary to compare structure to
     Returns:
-        inval:  dictionary of invalid key-value pairs
+        dict:  Invalid key-value pairs.
     """
     inval = {}
     for k, v in dict_o.items():
