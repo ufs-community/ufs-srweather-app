@@ -101,7 +101,6 @@ task_make_lbcs:
   WTIME_MAKE_LBCS: 02:00:00
 task_run_fcst:
   DT_ATMOS: 60
-  WRITE_DOPOST: true
   QUILTING: true
   IO_LAYOUT_Y: 1
   WTIME_RUN_FCST: 02:45:00
