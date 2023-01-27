@@ -187,7 +187,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# The RRFS CONUS domain with ~3km cells.
+# The RRFS CONUS domain with ~3km cells (C3359).
 #
 #-----------------------------------------------------------------------
 #
@@ -217,6 +217,41 @@
     WRTCMP_ny: 1059
     WRTCMP_lon_lwr_left: -122.719528
     WRTCMP_lat_lwr_left: 21.138123
+    WRTCMP_dx: 3000.0
+    WRTCMP_dy: 3000.0
+#
+#-----------------------------------------------------------------------
+#
+# The RRFS CONUS domain with ~3km cells (C3357, HRRRIC).
+#
+#-----------------------------------------------------------------------
+#
+"RRFS_CONUS_3km_HRRRIC":
+  GRID_GEN_METHOD: "ESGgrid"
+  ESGgrid_LON_CTR: -97.5
+  ESGgrid_LAT_CTR: 38.5
+  ESGgrid_DELX: 3000.0
+  ESGgrid_DELY: 3000.0
+  ESGgrid_NX: 1748
+  ESGgrid_NY: 1038
+  ESGgrid_PAZI: 0.0
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  DT_ATMOS: 40
+  LAYOUT_X: 30
+  LAYOUT_Y: 16
+  BLOCKSIZE: 32
+  QUILTING:
+    WRTCMP_write_groups: 1
+    WRTCMP_write_tasks_per_group: 16
+    WRTCMP_output_grid: "lambert_conformal"
+    WRTCMP_cen_lon: -97.5
+    WRTCMP_cen_lat: 38.5
+    WRTCMP_stdlat1: 38.5
+    WRTCMP_stdlat2: 38.5
+    WRTCMP_nx: 1746
+    WRTCMP_ny: 1014
+    WRTCMP_lon_lwr_left: -122.17364391
+    WRTCMP_lat_lwr_left: 21.88588562
     WRTCMP_dx: 3000.0
     WRTCMP_dy: 3000.0
 #
@@ -855,7 +890,7 @@
   ESGgrid_NY: 2700
   ESGgrid_PAZI: 0.0
   ESGgrid_WIDE_HALO_WIDTH: 6
-  DT_ATMOS: 36
+  DT_ATMOS: 36   # 60 - RRFS dev
   LAYOUT_X: 20   # 40 - EMC operational configuration
   LAYOUT_Y: 35   # 45 - EMC operational configuration
   BLOCKSIZE: 28
