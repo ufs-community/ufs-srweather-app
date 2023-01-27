@@ -396,6 +396,8 @@ The argument \"machine\" specifying the machine or platform on which to
 run the WE2E tests was not specified in the call to this script.  \
 ${help_msg}"
 fi
+machine=${machine,,}
+
   # Cheyenne-specific test limitation
 
 if [ "${machine,,}" = "cheyenne" ]; then
