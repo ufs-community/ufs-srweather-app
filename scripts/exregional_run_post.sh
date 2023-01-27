@@ -112,7 +112,7 @@ temporary work directory (DATA_FHR):
 ===================================================================="
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${post_params_fp}  ./params_grib2_tbl_new
+cp_vrfy ${post_params_fp} ./params_grib2_tbl_new
 #
 #-----------------------------------------------------------------------
 #

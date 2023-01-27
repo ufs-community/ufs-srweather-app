@@ -109,10 +109,10 @@ task_run_fcst:
 task_run_post:
   NNODES_RUN_POST: 1
   PPN_RUN_POST: 40
-  USE_CUSTOM_POST_CONFIG_FILE: false
+  USE_CUSTOM_POST_CONFIG_FILE: true
   POST_OUTPUT_DOMAIN_NAME: RRFS_CONUS_3km
-  CUSTOM_POST_CONFIG_FP: '{{ [platform.FIXcrtmupp, "upp/postxconfig-NT-fv3lam.txt"]|path_join }}'
-  CUSTOM_POST_PARAMS_FP: '{{ [platform.FIXcrtmupp, "upp/params_grib2_tbl_new"]|path_join }}'
+  CUSTOM_POST_CONFIG_FP: '{{ [user.PARMdir, "upp/postxconfig-NT-fv3lam_rrfs.txt"]|path_join }}'
+  CUSTOM_POST_PARAMS_FP: '{{ [user.PARMdir, "upp/params_grib2_tbl_new"]|path_join }}'
   TESTBED_FIELDS_FN: "testbed_fields_bgdawp.txt"
   TESTBED_FIELDS_FN2: "testbed_fields_bgrd3d.txt"
 task_process_radarref:

@@ -471,20 +471,29 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
+    post_params_fp="${CUSTOM_POST_PARAMS_FP}"
     print_info_msg "
 ====================================================================
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
+  CUSTOM_POST_PARAMS_FP = \"${CUSTOM_POST_PARAMS_FP}\"
 ===================================================================="
   else
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
+      post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
+      post_params_fp="${PARMdir}/upp/params_grib2_tbl_new_cmaq"
+    else
+      post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+      post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
+    fi
     print_info_msg "
 ====================================================================
   post_config_fp = \"${post_config_fp}\"
+  post_params_fp = \"${post_params_fp}\"
 ===================================================================="
   fi
   cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-  cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+  cp_vrfy ${post_params_fp} ./params_grib2_tbl_new
   # Set itag for inline-post:
 cat > itag <<EOF
 &MODEL_INPUTS
