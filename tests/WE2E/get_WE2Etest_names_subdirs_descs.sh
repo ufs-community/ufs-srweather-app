@@ -500,6 +500,8 @@ information on all WE2E tests:
     "wflow_features" \
     )
   num_category_subdirs="${#category_subdirs[@]}"
+
+  orig_dir=$(pwd)
 #
 #-----------------------------------------------------------------------
 #
@@ -816,6 +818,10 @@ This is probably because it is a directory.  Please correct and rerun."
 #
   num_prim_tests="${#prim_test_names[@]}"
   num_alt_tests="${#alt_test_names[@]}"
+#
+# Change location back to original directory.
+#
+  cd_vrfy "${orig_dir}"
 #
 #-----------------------------------------------------------------------
 #
