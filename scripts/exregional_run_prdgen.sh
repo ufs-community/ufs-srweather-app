@@ -173,12 +173,12 @@ if [ -f  ${bgifi} ]; then
   cp_vrfy ${bgifi} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 fi
 cp_vrfy ${bgsfc}  ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGDAWP_${basetime}${post_fhr}
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGRD3D_${basetime}${post_fhr}
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGDAWP_${basetime}f${post_fhr}00
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGRD3D_${basetime}f${post_fhr}00
 if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
-  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGIFI_${basetime}${post_fhr}
+  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/BGIFI_${basetime}f${post_fhr}00
 fi
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ${COMOUT}/BGSFC_${basetime}${post_fhr}
+ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ${COMOUT}/BGSFC_${basetime}f${post_fhr}00
 
 net4=$(echo ${NET:0:4} | tr '[:upper:]' '[:lower:]')
 ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2

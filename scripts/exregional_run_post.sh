@@ -330,6 +330,8 @@ fi
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
 post_renamed_fn_suffix="f${subh_fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
+basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+symlink_suffix="${dot_ensmem/./_}_${basetime}f${fhr}${post_mn}"
 #
 # write grib file to COMOUT
 #
@@ -343,10 +345,15 @@ fi
 if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
     wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+    ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
+    ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
 else
     wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
     wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+    ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
+    ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
 fi
+
 if [ $SENDDBN = "TRUE" ]; then
    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
@@ -355,6 +362,8 @@ fi
 if [ -f IFIFIP.${post_fn_suffix} ]; then
    bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
    wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+   ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
+
    if [ $SENDDBN = "TRUE" ]; then
       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
    fi
