@@ -328,48 +328,36 @@ if [ "${post_mn}" != "00" ]; then
 fi
 
 post_fn_suffix="GrbF${post_fhr}${dot_post_mn_or_null}"
-post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
-cd_vrfy "${COMOUT}"
+post_renamed_fn_suffix="f${subh_fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
 #
-# Loop through the two files that UPP
-# generates (i.e. "...prslev..." and "...natlev..." files) and move, 
-# rename, and create symlinks to them.
+# write grib file to COMOUT
 #
-basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
-if [ ${DO_RRFS_DEV} = "TRUE" ]; then
-    fids=( "bgdawp" "bgrd3d" )
+if [ $DO_RRFS_DEV = "TRUE" ]; then
+    bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
+    bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
 else
-    fids=( "prslev" "natlev" )
+    bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
+    bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
 fi
-for fid in "${fids[@]}"; do
-  FID=$(echo_uppercase $fid)
-  post_orig_fn="${FID}.${post_fn_suffix}"
-  post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+    wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+    wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+else
+    wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+    wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+fi
+if [ $SENDDBN = "TRUE" ]; then
+   $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+   $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
+fi
 
-  create_symlink_to_file target="${post_renamed_fn}" \
-                       symlink="${FID}${symlink_suffix}" \
-                       relative="TRUE"
-  # DBN alert
-  if [ $SENDDBN = "TRUE" ]; then
-    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-  fi
-done
-
-#
-# background files
-#
-bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgsfc=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgsfc.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.f${subh_fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
-
-wgrib2 ${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix} -set center 7 -grib ${bgdawp}
-wgrib2 ${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix} -set center 7 -grib ${bgrd3d}
-if [ -f ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} ]; then
-  wgrib2 ${NET}.${cycle}${dot_ensmem}.ififip.${post_renamed_fn_suffix} -set center 7 -grib ${bgifi}
+if [ -f IFIFIP.${post_fn_suffix} ]; then
+   bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
+   wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+   if [ $SENDDBN = "TRUE" ]; then
+      $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
+   fi
 fi
 
 # remove DATA_FHR

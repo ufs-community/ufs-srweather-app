@@ -669,7 +669,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
-    if [ ${DO_RRFS_DEV} = "TRUE" ]; then
+    if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
         fids=( "bgdawp" "bgrd3d" )
     else
         fids=( "prslev" "natlev" )
