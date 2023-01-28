@@ -473,10 +473,10 @@ workflow:
   # installed.
   #-----------------------------------------------------------------------
   #
-  EXPT_BASEDIR: '{{ workflow.EXPT_BASEDIR }}'
+  EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
-  EXPTDIR: ""
+  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
