@@ -187,6 +187,57 @@ FV3_GFS_2017_gfdlmp:
     z_slope_ice: True
     z_slope_liq: True
 
+FV3_RAP:
+  atmos_model_nml:
+    avg_max_length: 3600.
+  fv_core_nml:
+    d_con: 0.5
+    d2_bg_k2: 0.04
+    dz_min: 2.0
+    hord_dp: 6
+    hord_mt: 6
+    hord_tm: 6
+    hord_vt: 6
+    k_split: 6
+    kord_mt: 9
+    kord_tm: -9
+    kord_tr: 9
+    kord_wz: 9
+    n_split: 3
+    psm_bc: 1
+    nord_tr: 0
+    nrows_blend: 10
+    regional_bcs_from_gsi: false
+    rf_cutoff: 2000.0
+    vtdm4: 0.02
+    write_restart_with_bcs: false
+  gfs_physics_nml: 
+    <<: *RRFS_v1beta_phys
+    cdmbgwd: [3.5, 1.0]
+    do_gsl_drag_ls_bl: true
+    do_gsl_drag_ss: true
+    do_gsl_drag_tofd: true
+    do_mynnsfclay: true
+    do_sfcperts: !!python/none
+    do_tofd : false
+    do_ugwp : false
+    do_ugwp_v0 : false
+    do_ugwp_v0_nst_only : false
+    do_ugwp_v0_orog_only : false
+    dt_inner : 30
+    effr_in: true
+    gwd_opt: 3
+    fhlwr: 900.0
+    fhswr: 900.0
+    iaer: 1011
+    ialb: 2 
+    iccn: 2
+    icliq_sw: 2
+    iems: 2 
+    imfdeepcnv:  3
+    imfshalcnv: -1
+    iovr: 3
+
 FV3_GFS_2017_gfdlmp_regional:
   atmos_model_nml:
     avg_max_length: 3600.0
