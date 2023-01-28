@@ -663,35 +663,45 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fhr_d=${fhr}
     fi
 
+    # set post_mn
     post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
+
+    # set suffixes
     post_mn_or_null=""
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
-    if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
-        fids=( "bgdawp" "bgrd3d" )
+    #
+    # write grib file to COMOUT
+    #
+    if [ $DO_RRFS_DEV = "TRUE" ]; then
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
+        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
     else
-        fids=( "prslev" "natlev" )
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
+        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
     fi
-    for fid in "${fids[@]}"; do
-      FID=$(echo_uppercase $fid)
-      post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
- 
-      mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
-      if [ $RUN_ENVIR != "nco" ]; then
-        basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-        symlink_suffix="_${basetime}f${fhr}${post_mn}"
-        create_symlink_to_file target="${post_renamed_fn}" \
-                         symlink="${FID}${symlink_suffix}" \
-	                 relative="TRUE"
-      fi
-      # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
-        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-      fi
-    done
+    if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+        wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+    else
+        wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+    fi
+    if [ $SENDDBN = "TRUE" ]; then
+       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
+    fi
+    
+    if [ -f IFIFIP.${post_fn_suffix} ]; then
+       bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
+       wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+       if [ $SENDDBN = "TRUE" ]; then
+          $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
+       fi
+    fi
+
   done
 
 fi
