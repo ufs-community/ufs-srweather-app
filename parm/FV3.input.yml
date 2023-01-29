@@ -100,12 +100,32 @@ FV3_HRRR:
     do_gsl_drag_ss: True
     do_gsl_drag_tofd: True
     do_gsl_drag_ls_bl: True 
-    iaer: 5111
+    iaer: 5111 #1011 in RRFS_dev crashes in SRW?
     icliq_sw: 2
     iovr: 3
     lsm: 3
     lsoil_lsm: 9
     sfclay_compute_flux: True
+    #diag_flux: False
+    do_tofd: False
+    do_ugwp : False
+    do_ugwp_v0 : False
+    do_ugwp_v0_nst_only : False
+    do_ugwp_v0_orog_only : False
+    dt_inner : 20
+    effr_in: True
+    fhlwr: 900.0
+    fhswr: 900.0
+    ialb: 2
+    #iccn: 2
+    iems: 2
+    imfdeepcnv: -1
+    imfshalcnv: -1
+    iovr: 3
+    ldiag_ugwp: false
+    lgfdlmprad: false
+    sfclay_compute_flux: true
+    thsfc_loc: false 
 
 FV3_GFS_2017_gfdlmp:
   atmos_model_nml:
