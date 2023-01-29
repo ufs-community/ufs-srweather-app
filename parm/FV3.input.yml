@@ -266,7 +266,7 @@ FV3_RAP:
     fhswr: 900.0
     iaer: 1011
     ialb: 2 
-    iccn: 2
+    #iccn: 2
     icliq_sw: 2
     iems: 2 
     imfdeepcnv:  3
