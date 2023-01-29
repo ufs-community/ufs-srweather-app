@@ -123,7 +123,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP")
     if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
