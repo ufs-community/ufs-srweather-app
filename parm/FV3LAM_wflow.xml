@@ -1543,7 +1543,7 @@ MODULES_RUN_TASK_FP script.
     &RSRV_DEFAULT;
     &WALL_LIMIT_ANAL;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_ANAL_TN;" "&JOBSdir;/JREGIONAL_REFL2TTEN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_ANAL_TN;" "&JOBSdir;/JREGIONAL_RUN_REF2TTEN"</command>
 
     <nodes>{{ nnodes_run_ref2tten }}:ppn={{ ppn_run_ref2tten }}</nodes>
     <walltime>{{ wtime_run_ref2tten }}</walltime>

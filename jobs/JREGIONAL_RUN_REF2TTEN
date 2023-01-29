@@ -83,7 +83,7 @@ mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_ref2tten.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_run_ref2tten.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
