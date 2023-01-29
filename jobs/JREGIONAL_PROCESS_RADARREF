@@ -19,7 +19,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_process_radarref" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
