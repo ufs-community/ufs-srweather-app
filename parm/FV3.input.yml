@@ -65,17 +65,32 @@ FV3_WoFS_v0:
     do_hailcast: True
 
 FV3_HRRR:
+  atmos_model_nml:
+    avg_max_length: 3600.
+    ignore_rst_cksum: True
   fv_core_nml:
-    hord_dp: -5
-    hord_mt: 5
-    hord_tm: 5
-    hord_vt: 5
+    d_con: 0.5
+    d2_bg_k2: 0.04
+    dz_min: 2.0
+    hord_dp: 6
+    hord_mt: 6
+    hord_tm: 6
+    hord_tr: 10
+    hord_vt: 6
+    k_split: 6
     kord_mt: 9
     kord_tm: -9
     kord_tr: 9
     kord_wz: 9
-    nord_tr: 2
+    n_split: 3
+    psm_bc: 1
+    nord_tr: 0
     nrows_blend: 10
+    range_warn: False
+    regional_bcs_from_gsi: False
+    rf_cutoff: 2000.0
+    vtdm4: 0.02
+    write_restart_with_bcs: False
   gfs_physics_nml:
     <<: *RRFS_v1beta_phys
     cdmbgwd: [3.5, 1.0]
