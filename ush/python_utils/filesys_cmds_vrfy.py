@@ -25,6 +25,10 @@ def cp_vrfy(*args):
     return cmd_vrfy("cp", *args)
 
 
+def rsync_vrfy(*args):
+    return cmd_vrfy("rsync", *args)
+
+
 def mv_vrfy(*args):
     return cmd_vrfy("mv", *args)
 
