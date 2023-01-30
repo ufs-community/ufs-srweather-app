@@ -40,6 +40,11 @@ def run_we2e_tests(homedir, args) -> None:
     run_envir = args.run_envir
     machine = args.machine.lower()
 
+    # Check for invalid input
+    if run_envir:
+        if run_envir not in ['nco', 'community']:
+            raise KeyError(f"Invalid 'run_envir' provided: {run_envir}")
+
     # If args.tests is a list of length more than one, we assume it is a list of test names
     if len(args.tests) > 1:
         tests_to_check=args.tests
@@ -134,6 +139,10 @@ def run_we2e_tests(homedir, args) -> None:
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:
             test_cfg['user'].update({"RUN_ENVIR": run_envir})
+            if run_envir == "nco":
+                if 'nco' not in test_cfg:
+                    test_cfg['nco'] = dict()
+                test_cfg['nco'].update({"model_ver": "we2e"})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
