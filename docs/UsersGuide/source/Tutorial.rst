@@ -43,8 +43,14 @@ Data
 
 On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual input model data locations (see :numref:`Section %s <DataLocations>` for a list). The data can also be downloaded from the `UFS SRW Application Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-.. COMMENT: Specify where in the bucket the data is! Ask Sylvia to add HRRR/RAP data to Bucket. NEED HRRR/RAP data added to `develop` location across L1 platforms for this tutorial! (Currently only available on AWS under v2p1, not develop!)
+   * FV3GFS data for the first forecast (``control``) is located at: 
+   
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/FV3GFS/grib2/2019061518/
 
+   * HRRR and RAP data for the second forecast (``test_expt``) is located at: 
+      
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/HRRR/2019061518/
+      * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/RAP/2019061518/
 
 Load the Regional Workflow
 -------------------------------
