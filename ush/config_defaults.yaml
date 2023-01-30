@@ -2206,6 +2206,10 @@ task_plot_allvars:
   # By default the end is FCST_LEN_HRS
   #-----------------------------------
   PLOT_FCST_END: ""
+  #------------------------------------------------------------------------------
+  # Domains to plot. Currently supported are either "conus" or "regional" or both
+  #-------------------------------------------------------------------------------
+  PLOT_DOMAINS: ["conus"]
 
 
 #----------------------------
