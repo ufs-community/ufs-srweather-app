@@ -2320,6 +2320,9 @@ task_run_enkf:
   NCORES_RUN_ENKF: 4
   WTIME_RUN_ENKF: 01:00:00
   MAXTRIES_RUN_ENKF: 1
+  KMP_AFFINITY_RUN_ENKF: "scatter"
+  OMP_NUM_THREADS_RUN_ENKF: 1
+  OMP_STACKSIZE_RUN_ENKF: "1024m"
 
 #----------------------------
 # RECENTER config parameters
