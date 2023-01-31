@@ -80,15 +80,13 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Make sure the keys in user config match those in the default
     # config.
-    if not check_structure_dict(cfg_u, cfg_d):
-        raise Exception(
-            dedent(
-                f"""
-                User-specified variable "{key}" in {user_config} is not valid
-                Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n
-                """
-            )
-        )
+    invalid = check_structure_dict(cfg_u, cfg_d)
+    if invalid:
+        errmsg = "Invalid key(s) specified in {user_config}:\n"
+        for entry in invalid:
+            errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
+        errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
+        raise Exception(errmsg)
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
     mandatory = ["user.MACHINE"]
