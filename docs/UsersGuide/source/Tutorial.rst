@@ -66,7 +66,7 @@ To load the regional workflow environment, source the lmod-setup file. Then load
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username):
-
+etai
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
@@ -116,7 +116,7 @@ Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variab
       MACHINE: macos
       ACCOUNT: none
 
-For a detailed understanding of these variables, see :numref:`Section %s <user>`.
+For a detailed description of these variables, see :numref:`Section %s <user>`.
 
 Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Chapter %s <VXCases>`.
 
@@ -146,7 +146,7 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
-For a detailed understanding of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
+For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
 In the ``workflow_switches:`` section, turn on the plotting task by setting ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
 
@@ -165,7 +165,7 @@ In the ``workflow_switches:`` section, turn on the plotting task by setting ``RU
      RUN_TASK_VX_ENSPOINT: false
      RUN_TASK_PLOT_ALLVARS: true
 
-For a detailed understanding of the ``workflow-switches:`` variables, see :numref:`Section %s <workflow-switches>`.
+For a detailed description of the ``workflow-switches:`` variables, see :numref:`Section %s <workflow-switches>`.
 
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
@@ -177,7 +177,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
-For a detailed understanding of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`.
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`.
 
 Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
 
@@ -190,7 +190,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
-For a detailed understanding of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
+For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
 Users do not need to modify the ``task_run_fcst:`` section for this tutorial. 
 
@@ -479,14 +479,6 @@ At the 12th forecast hour, the ``control`` plot indicates that CAPE may be decre
 
 Try It!
 ----------
-
-Option 1: Adjust frequency of forecast output.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For a simple extension of this tutorial, users can adjust ``LBC_SPEC_INTVL_HRS`` and ``PLOT_FCST_INC`` to a factor of 12 less than 6 (which is the default). This will produce forecast output and plots at more frequent intervals for the duration of the 12-hour forecast window. 
-
-Option 2: Compare output from additional physics suites.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control! 
 
