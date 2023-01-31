@@ -206,6 +206,18 @@ def check_tests(tests: list) -> list:
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    # Check that there are no duplicate test filenames
+    testfilenames=[]
+    for testfile in testfiles:
+        if os.path.basename(testfile) in testfilenames:
+            duplicates = glob.glob('test_configs/**/' + os.path.basename(testfile), recursive=True)
+            raise Exception(dedent(f"""
+                            Found duplicate test file names:
+                            {duplicates}
+                            Ensure that each test file name under the test_configs/ directory
+                            is unique.
+                            """))
+        testfilenames.append(os.path.basename(testfile))
     tests_to_run=[]
     for test in tests:
         # Skip blank/empty testnames; this avoids failure if newlines or spaces are included
