@@ -784,8 +784,8 @@ the <task> tag to be identical to the ones above for other output times.
       <and>
 {#- Redundant dependency to simplify jinja code.
 This dependency will always evaluate to true.  It is included because
-because rocoto does not allow empty <dependency>, <and>, and other tags.
-Without it, we'd have to include more jinja if-statements here.
+rocoto does not allow empty <dependency>, <and>, and other tags.  Without
+it, we'd have to include more jinja if-statements here.
 #}
         <streq><left>TRUE</left><right>TRUE</right></streq>
         {%- if write_dopost %}

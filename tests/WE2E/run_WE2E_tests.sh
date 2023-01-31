@@ -400,7 +400,7 @@ machine=${machine,,}
 
   # Cheyenne-specific test limitation
 
-if [ "${machine,,}" = "cheyenne" ]; then
+if [ "${machine}" = "cheyenne" ]; then
   use_cron_to_relaunch=FALSE
   echo "
 Due to system limitations, the 'use_cron_to_relaunch' command can not be used on
@@ -805,7 +805,7 @@ Please correct and rerun."
   save_USHdir=${USHdir}
   source_config ${USHdir}/config_defaults.yaml
   USHdir=${save_USHdir}
-  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine,,}.yaml"}
+  MACHINE_FILE=${machine_file:-"${USHdir}/machine/${machine}.yaml"}
   source_config ${MACHINE_FILE}
   source_config ${test_config_fp}
 #
