@@ -277,17 +277,26 @@ NAM:
 ##########################
 ##########################
 
-FV3GFS_prepbufr:
+GFS_obs:
   hpss:
     protocol: htar
     archive_format: zip
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/gfs/prepbufr
     archive_file_names:
-      - "{yyyymmdd}0000.zip"
+      prepbufr:
+        obs:
+          - "{yyyymmdd}0000.zip"
+      tcvitals:
+        obs: 
+          - "{yyyymmdd}0000.zip"
     file_names:
-      obs:
-        - "{yy}{jjj}{hh}00.gfs.t{hh}z.prepbufr.nr"
+      prepbufr:
+        obs:
+          - "{yy}{jjj}{hh}00.gfs.t{hh}z.prepbufr.nr"
+      tcvitals:
+        obs:
+          - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
 
 RAP_obs:
   hpss:

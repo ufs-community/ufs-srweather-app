@@ -301,6 +301,9 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
                 if "sfc" in tmpl:
                     del file_templates[format]['fcst'][i]
 
+    if use_cla_tmpl:
+        file_templates = cla.file_templates if cla.file_templates else file_templates
+
     if isinstance(file_templates, dict):
         if cla.file_type is not None:
             file_templates = file_templates[cla.file_type]
@@ -389,7 +392,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                     )
                     logging.debug(f"Full file path: {input_loc}")
 
-                    if method == "disk" or method == "local":
+                    if method == "disk":
                         if cla.symlink:
                             retrieved = copy_file(input_loc, target_path, "ln -sf")
                         else:
@@ -815,31 +818,6 @@ def main(argv):
                 method="disk",
             )
 
-        elif data_store == "local":
-            # add 'local' to handle files or packages beyond HPSS 
-            # - like locally copying or symlinking tarballs
-            file_templates = get_file_templates(
-                cla,
-                known_data_info,
-                data_store="local", # ... treating local files different than hpss
-                use_cla_tmpl=True,
-            )
-
-            logging.debug(f"User supplied file names are: {file_templates}")
-            # First choice is the User-supplied file path rather than from config specs.
-            if cla.input_file_path is not None:
-                logging.debug(f"User supplied file path is: {cla.input_file_path}")
-            else:
-                cla.input_file_path = store_specs.get("file_path")
-                logging.debug(f"Configured file path is: {cla.input_file_path}")
-            unavailable = get_requested_files(
-                cla,
-                check_all=known_data_info.get("check_all", False),
-                file_templates=file_templates,
-                input_locs=cla.input_file_path,
-                method="local",
-            )
-
         elif not store_specs:
             msg = f"No information is available for {data_store}."
             raise KeyError(msg)
@@ -953,7 +931,7 @@ def parse_args(argv):
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk, local, remote",     # local and remote are for generic package copying
+        first. Choices: hpss, nomads, aws, disk, local",
         nargs="*",
         required=True,
         type=to_lower,
@@ -962,7 +940,7 @@ def parse_args(argv):
         "--external_model",
         choices=(
             "FV3GFS",
-            "FV3GFS_prepbufr",
+            "GFS_obs",
             "GDAS",
             "GEFS",
             "GSMGFS",
@@ -1026,7 +1004,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--file_type",
-        choices=("grib2", "nemsio", "netcdf"),
+        choices=("grib2", "nemsio", "netcdf", "prepbufr", "tcvitals"),
         help="External model file format",
     )
     parser.add_argument(

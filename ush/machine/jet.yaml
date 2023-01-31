@@ -38,15 +38,10 @@ data:
       nemsio: /public/data/grids/gfs/nemsio
       grib2: /public/data/grids/gfs/0p25deg/grib2
       netcdf: /public/data/grids/gfs/anl/netcdf
-    GFS_prepbufr: /public/data/grids/gfs/prepbufr
-    GFS_tcvitals: /public/data/grids/gfs/bufr
     RAP: /public/data/grids/rap/full/wrfprs/grib2
-    RAP_obs: /public/data/grids/rap/obs
     HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
-    
-  local:
-    file_path: 
-      - ['/public/data/grids/gfs/prepbufr', '/public/data/grids/gfs/bufr']
-    file_names:
-      obs:
-        - ['{yyjjjhh}00.gfs.t{hh}z.prepbufr.nr', '230081200.gfs.t12z.syndata.tcvitals.tm00']
+  obs:
+    RAP_obs: /public/data/grids/rap/obs
+    GFS_obs:
+      prepbufr: /public/data/grids/gfs/prepbufr
+      tcvitals: /public/data/grids/gfs/bufr
