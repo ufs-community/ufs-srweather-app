@@ -1363,7 +1363,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
@@ -1448,7 +1447,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
@@ -1502,7 +1500,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
@@ -1563,7 +1560,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -1610,7 +1606,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -1654,7 +1649,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -1737,7 +1731,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
@@ -1812,7 +1805,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
@@ -1868,7 +1860,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
@@ -1909,7 +1900,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>spinup</cyclestr></value></envar>
       <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
@@ -1982,7 +1972,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>FG_ROOT</name><value><cyclestr>&FG_ROOT;</cyclestr></value></envar>
     <envar><name>LBCS_ROOT</name><value><cyclestr>&FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -2114,7 +2103,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>nens</name><value>{{ num_ens_members }}</value></envar>
@@ -2166,7 +2154,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>OBSERVER</cyclestr></value></envar>
@@ -2233,7 +2220,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>GSI_TYPE</name><value><cyclestr>OBSERVER</cyclestr></value></envar>
@@ -2286,7 +2272,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
     <envar><name>nens</name><value>{{ num_ens_members }}</value></envar>
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>OB_TYPE</name><value>conv</value></envar>
@@ -2327,7 +2312,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
     <envar><name>nens</name><value>{{ num_ens_members }}</value></envar>
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>OB_TYPE</name><value>radardbz</value></envar>
@@ -2376,7 +2360,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
     <envar><name>nens</name><value>{{ num_ens_members }}</value></envar>
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>ENSCTRL_CYCLE_DIR</name><value><cyclestr>&ENSCTRL_COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>ENSCTRL_CYCLE_ROOT</name><value><cyclestr>&ENSCTRL_COMIN_BASEDIR;</cyclestr></value></envar>
@@ -2453,7 +2436,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -2546,7 +2528,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -2600,7 +2581,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_ROOT</name><value><cyclestr>&COMIN_BASEDIR;</cyclestr></value></envar>
     <envar><name>RRFSE_FG_ROOT</name><value><cyclestr>&RRFSE_FG_ROOT;</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -2661,7 +2641,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -2709,7 +2688,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -2755,7 +2733,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>MEM_TYPE</name><value><cyclestr>MEMBER</cyclestr></value></envar>
@@ -2839,7 +2816,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
@@ -2920,7 +2896,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
@@ -3021,7 +2996,6 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-    <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
     <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
     <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
     <envar><name>NWGES_BASEDIR</name><value>&NWGES_BASEDIR;</value></envar>
@@ -3108,7 +3082,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -3155,7 +3128,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
@@ -3221,7 +3193,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
       <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
@@ -3273,7 +3244,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
       <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
@@ -3320,7 +3290,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
       <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
@@ -3363,7 +3332,6 @@ MODULES_RUN_TASK_FP script.
       <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
       <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-      <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
       <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
       <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
       <envar><name>fhr</name><value>#fhr#</value></envar>
@@ -3721,7 +3689,6 @@ the <task> tag to be identical to the ones above for other output times.
         <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
         <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
-        <envar><name>CYCLE_DIR</name><value><cyclestr>&COMIN_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>NWGES_DIR</name><value><cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr></value></envar>
         <envar><name>TMMARK</name><value>tm00</value></envar>
 
