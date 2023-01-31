@@ -63,7 +63,7 @@ the specified cycle.
 #   spinup: this job is for spin-up cycles
 #   others(prod): this job is for product cycle
 #
-CYCLE_TYPE=${CYCLE_TYPE:-prod}
+export CYCLE_TYPE=${CYCLE_TYPE:-prod}
 if [ ${CYCLE_TYPE} == "spinup" ]; then
   DATA="${DATA:-${COMIN}}/enkfupdt_${OB_TYPE}_spinup"
 else
