@@ -38,6 +38,7 @@ def run_we2e_tests(homedir, args) -> None:
 
     # Set some variables based on input arguments
     run_envir = args.run_envir
+    machine = args.machine.lower()
 
     # If args.tests is a list of length more than one, we assume it is a list of test names
     if len(args.tests) > 1:
@@ -63,13 +64,13 @@ def run_we2e_tests(homedir, args) -> None:
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] == 'fundamental' or user_spec_tests[0] == 'comprehensive':
                 # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
-                testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}.nco"
+                testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
-                    testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}.com"
+                    testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}.com"
                     if not os.path.isfile(testfilename):
-                        testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}.{args.compiler}"
+                        testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}"
                         if not os.path.isfile(testfilename):
-                            testfilename = f"machine_suites/{user_spec_tests[0]}.{args.machine}"
+                            testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}"
                             if not os.path.isfile(testfilename):
                                 testfilename = f"machine_suites/{user_spec_tests[0]}"
                     else:
@@ -109,11 +110,11 @@ def run_we2e_tests(homedir, args) -> None:
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
 
-    config_default_file = ushdir + '/config_defaults.yaml'
+    config_default_file = os.path.join(ushdir,'/config_defaults.yaml')
     logging.debug(f"Loading config defaults file {config_default_file}")
     config_defaults = load_config_file(config_default_file)
 
-    machine_file = ushdir + '/machine/' + args.machine + '.yaml'
+    machine_file = os.path.join(ushdir, 'machine', f'{machine}.yaml')
     logging.debug(f"Loading machine defaults file {machine_file}")
     machine_defaults = load_config_file(machine_file)
 
@@ -128,7 +129,7 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
-        test_cfg['user'].update({"MACHINE": args.machine})
+        test_cfg['user'].update({"MACHINE": machine})
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:
             test_cfg['user'].update({"RUN_ENVIR": run_envir})
@@ -456,7 +457,7 @@ if __name__ == "__main__":
 
     #Set defaults that need other argument values
     if args.modulefile is None:
-        args.modulefile = f'build_{args.machine}_{args.compiler}'
+        args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
 
     #Call main function
 
