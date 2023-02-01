@@ -34,7 +34,7 @@ def run_we2e_tests(homedir, args) -> None:
     setup_logging(debug=args.debug)
 
     # Set some important directories
-    ushdir=homedir + '/ush'
+    ushdir=os.path.join(homedir,'ush')
 
     # Set some variables based on input arguments
     run_envir = args.run_envir
@@ -46,13 +46,13 @@ def run_we2e_tests(homedir, args) -> None:
     else:
         #First see if args.tests is a valid test name
         user_spec_tests = args.tests
-        try:
-            logging.debug(f'Checking if {user_spec_tests} is a valid test name')
-            _ = check_tests(user_spec_tests)
-            # If no error, user_spec_tests is the name of the test specified on the command line
+        logging.debug(f'Checking if {user_spec_tests} is a valid test name')
+        match = check_test(user_spec_tests[0])
+        if match:
             tests_to_check = user_spec_tests
-        except:
+        else:
             # If not a valid test name, check if it is a test suite
+            logging.debug(f'Checking if {user_spec_tests} is a valid test suite')
             if user_spec_tests[0] == 'all':
                 alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
                 tests_to_check = []
@@ -83,16 +83,19 @@ def run_we2e_tests(homedir, args) -> None:
                         logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
                                        'Setting run_envir = {run_envir} for all tests')
                 logging.debug(f"Reading test file: {testfilename}")
-                tests_to_check = list(open(testfilename))
+                with open(testfilename) as f:
+                    tests_to_check = [x.rstrip() for x in f]
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
+                logging.debug(f'Checking if {user_spec_tests} is a file containing test names')
                 if os.path.isfile(user_spec_tests[0]):
-                    tests_to_check = list(open(user_spec_tests[0]))
+                    with open(user_spec_tests[0]) as f:
+                        tests_to_check = [x.rstrip() for x in f]
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
-                    does not appear to be a valid test name, a valid test suite, or a valid test file.
+                    does not appear to be a valid test name, a valid test suite, or a file containing valid test names.
 
                     Check your inputs and try again.
                     """))
@@ -165,7 +168,7 @@ def run_we2e_tests(homedir, args) -> None:
         with open(ushdir + "/config.yaml","w") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
-        logging.debug(f"Calling workflow generation function for test {test_name}\n")
+        logging.info(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
@@ -221,18 +224,12 @@ def check_tests(tests: list) -> list:
     tests_to_run=[]
     for test in tests:
         # Skip blank/empty testnames; this avoids failure if newlines or spaces are included
-        if test.isspace():
+        if not test or test.isspace():
             continue
-        match=False
-        # Search for exact config file name to avoid accidental partial matches
-        test_config='config.' + test.rstrip() + '.yaml'
-        for testfile in testfiles:
-            if test_config in testfile:
-                logging.debug(f"found test {test}")
-                match=True
-                tests_to_run.append(os.path.abspath(testfile))
+        match = check_test(test)
         if not match:
             raise Exception(f"Could not find test {test}")
+        tests_to_run.append(match)
     # Because some test files are symlinks to other tests, check that we don't
     # include the same test twice
     for testfile in tests_to_run.copy():
@@ -247,6 +244,27 @@ def check_tests(tests: list) -> list:
         tests_to_run = list(set(tests_to_run))
     return tests_to_run
 
+
+
+def check_test(test: str) -> str:
+    """
+    Function for checking that a string corresponds to a valid test name
+
+    Args:
+        test (str) : String of potential test name
+    Returns:
+        str        : File name of test config file (empty string if no test file found)
+    """
+    # potential test files
+    testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    # potential test file for input test name
+    test_config=f'config.{test.strip()}.yaml'
+    config = ''
+    for testfile in testfiles:
+        if test_config in testfile:
+            logging.debug(f"found test {test}, testfile {testfile}")
+            config = os.path.abspath(testfile)
+    return config
 
 
 def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:

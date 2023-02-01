@@ -169,7 +169,7 @@ def update_expt_status(expt: dict, name: str) -> dict:
     if "DEAD" in statuses:
         still_live = ["RUNNING", "SUBMITTING", "QUEUED"]
         if any(status in still_live for status in statuses):
-            logging.debug(f'DEAD job in experiment {name}; keeping alive because some jobs are still alive:\n{statuses}')
+            logging.debug(f'DEAD job in experiment {name}; continuing to track until all jobs are complete')
             expt["status"] = "DYING"
         else:
             expt["status"] = "DEAD"
