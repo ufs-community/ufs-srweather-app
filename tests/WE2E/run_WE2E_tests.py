@@ -186,7 +186,7 @@ def run_we2e_tests(homedir, args) -> None:
 
     if not args.use_cron_to_relaunch:
         logging.info("calling function that monitors jobs, prints summary")
-        monitor_file = monitor_jobs(monitor_yaml, args.debug)
+        monitor_file = monitor_jobs(monitor_yaml, debug=args.debug)
 
         logging.info("All experiments are complete")
         logging.info(f"Summary of results available in {monitor_file}")
