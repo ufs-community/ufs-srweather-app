@@ -110,7 +110,7 @@ def run_we2e_tests(homedir, args) -> None:
     logging.info(f'Will run {len(tests_to_run)} tests:\n{pretty_list}')
 
 
-    config_default_file = os.path.join(ushdir,'/config_defaults.yaml')
+    config_default_file = os.path.join(ushdir,'config_defaults.yaml')
     logging.debug(f"Loading config defaults file {config_default_file}")
     config_defaults = load_config_file(config_default_file)
 
