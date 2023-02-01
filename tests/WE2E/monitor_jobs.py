@@ -29,8 +29,8 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
         monitor_file (str): [optional]
         debug       (bool): [optional] Enable extra output for debugging
     Returns:
-        monitor_file (str): The name of the file used for job monitoring (when script
-                            is finish, this contains results/summary)
+        str: The name of the file used for job monitoring (when script is finished, this 
+             contains results/summary)
 
     """
 
@@ -44,33 +44,13 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
 
     # Perform initial setup for each experiment
     logging.info("Checking tests available for monitoring...")
-    num_expts = 0
     for expt in expt_dict:
         logging.info(f"Starting experiment {expt} running")
-        num_expts += 1
-        rocoto_db = f"{expt_dict[expt]['expt_dir']}/FV3LAM_wflow.db"
-        rocotorun_cmd = ["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
-        subprocess.run(rocotorun_cmd)
-        logging.debug(f"Reading database for experiment {expt}, populating experiment dictionary")
-        try:
-            db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
-        except:
-            logging.warning(f"Unable to read database {rocoto_db}\nWill not track experiment {expt}")
-            expt_dict[expt]["status"] = "ERROR"
-            num_expts -= 1
-            continue
-        for task in db:
-            # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
-            # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
-            cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
-            expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
         expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
-        #Run rocotorun again to get around rocotobqserver proliferation issue
-        subprocess.run(rocotorun_cmd)
 
     write_monitor_file(monitor_file,expt_dict)
 
-    logging.info(f'Setup complete; monitoring {num_expts} experiments')
+    logging.info(f'Setup complete; monitoring {len(expt_dict)} experiments')
 
     #Make a copy of experiment dictionary; will use this copy to monitor active experiments
     running_expts = expt_dict.copy()
@@ -79,24 +59,6 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     while running_expts:
         i += 1
         for expt in running_expts.copy():
-            logging.debug(f"Updating status of {expt}")
-            rocoto_db = f"{running_expts[expt]['expt_dir']}/FV3LAM_wflow.db"
-            rocotorun_cmd = ["rocotorun", f"-w {expt_dict[expt]['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
-            try:
-                db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
-            except:
-                logging.warning(f"Unable to read database {rocoto_db}\nWill not track experiment {expt}")
-                expt_dict[expt]["status"] = "ERROR"
-                continue
-            # Run "rocotorun" here to give the database time to be fully written
-            subprocess.run(rocotorun_cmd)
-            #Run rocotorun again to get around rocotobqserver proliferation issue
-            subprocess.run(rocotorun_cmd)
-            for task in db:
-                # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
-                # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
-                cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
-                expt_dict[expt][f"{task[0]}_{cycle}"] = task[2]
             expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
             running_expts[expt] = expt_dict[expt]
             if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
@@ -123,12 +85,15 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
 
     return monitor_file
 
-
 def update_expt_status(expt: dict, name: str) -> dict:
     """
-    This function reads the dictionary showing the status of a given experiment (as read from the
-    rocoto database file) and uses a simple set of rules to combine the statuses of every task into 
-    a useful "status" for the whole experiment.
+    This function reads the dictionary showing the location of a given experiment, runs a
+    `rocotorun` command to update the experiment (running new jobs and updating the status of
+    previously submitted ones), and reads the rocoto database file to update the status of
+    each job for that experiment in the experiment dictionary.
+
+    The function then and uses a simple set of rules to combine the statuses of every task
+    into a useful "status" for the whole experiment, and returns the updated experiment dictionary.
 
     Experiment "status" levels explained:
     CREATED: The experiments have been created, but the monitor script has not yet processed them.
@@ -154,11 +119,41 @@ def update_expt_status(expt: dict, name: str) -> dict:
              unsubmitted jobs remaining.
     COMPLETE:All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle
              to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
+
+    Args:
+        expt (dict): A dictionary containing the information for an individual experiment, as
+                     described in the main monitor_jobs() function.
+        name  (str): [optional]
+    Returns:
+        dict: The updated experiment dictionary.
     """
 
     #If we are no longer tracking this experiment, return unchanged
     if expt["status"] in ['DEAD','ERROR','COMPLETE']:
         return expt
+
+    # Update experiment, read rocoto database
+    rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
+    rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
+    subprocess.run(rocotorun_cmd)
+
+    logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
+    try:
+        db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
+    except:
+        logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
+        expt["status"] = "ERROR"
+        return expt
+
+    for task in db:
+        # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
+        # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
+        cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
+        expt[f"{task[0]}_{cycle}"] = task[2]
+
+    #Run rocotorun again to get around rocotobqserver proliferation issue
+    subprocess.run(rocotorun_cmd)
+
     statuses = list()
     for task in expt:
         # Skip non-task entries
