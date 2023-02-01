@@ -75,6 +75,7 @@ $SCRIPTSdir/exregional_plot_allvars.py \
            --inc ${PLOT_FCST_INC:-1} \
            --comout ${COMOUT} \
            --cartopy-dir ${FIXshp} \
+           --plot-domains "${PLOT_DOMAINS[@]}" \
            --domain ${GRID_NAME} || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
@@ -89,6 +90,7 @@ if [ ! -z $COMOUT_REF ]; then
            --comout-1 ${COMOUT} \
            --comout-2 ${COMOUT_REF} \
            --cartopy-dir ${FIXshp} \
+           --plot-domains "${PLOT_DOMAINS[@]}" \
            --domain ${GRID_NAME} || \
   print_err_msg_exit "\
   Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."

@@ -85,15 +85,13 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Make sure the keys in user config match those in the default
     # config.
-    if not check_structure_dict(cfg_u, cfg_d):
-        raise Exception(
-            dedent(
-                f"""
-                User-specified variable "{key}" in {user_config} is not valid
-                Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n
-                """
-            )
-        )
+    invalid = check_structure_dict(cfg_u, cfg_d)
+    if invalid:
+        errmsg = "Invalid key(s) specified in {user_config}:\n"
+        for entry in invalid:
+            errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
+        errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
+        raise Exception(errmsg)
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
     mandatory = ["user.MACHINE"]
@@ -149,6 +147,20 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # User settings (take precedence over all others)
     update_dict(cfg_u, cfg_d)
+
+    # Set "Home" directory, the top-level ufs-srweather-app directory
+    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    cfg_d["user"]["HOMEdir"] = homedir
+
+    # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
+    expt_basedir = cfg_d["workflow"]["EXPT_BASEDIR"]
+    if (not expt_basedir) or (expt_basedir[0] != "/"):
+        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
+    try:
+        expt_basedir = os.path.realpath(expt_basedir)
+    except:
+        pass
+    cfg_d["workflow"]["EXPT_BASEDIR"] = os.path.abspath(expt_basedir)
 
     extend_yaml(cfg_d)
 
@@ -219,7 +231,7 @@ def set_srw_paths(ushdir, expt_config):
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
-    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    homedir = expt_config.get("user", {}).get("HOMEdir")
 
     # Read Externals.cfg
     mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
@@ -258,7 +270,6 @@ def set_srw_paths(ushdir, expt_config):
         )
 
     return dict(
-        HOMEdir=homedir,
         USHdir=ushdir,
         UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
     )
@@ -344,38 +355,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
               fcst_len_hrs_max = {fcst_len_hrs_max}"""
         )
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the base directory (EXPT_BASEDIR) in which the experiment subdirectory
-    # (EXPT_SUBDIR) will be located does not start with a "/", then it is
-    # either set to a null string or contains a relative directory.  In both
-    # cases, prepend to it the absolute path of the default directory under
-    # which the experiment directories are placed.  If EXPT_BASEDIR was set
-    # to a null string, it will get reset to this default experiment directory,
-    # and if it was set to a relative directory, it will get reset to an
-    # absolute directory that points to the relative directory under the
-    # default experiment directory.  Then create EXPT_BASEDIR if it doesn't
-    # already exist.
-    #
-    # -----------------------------------------------------------------------
-    #
-    expt_basedir = workflow_config.get("EXPT_BASEDIR")
-    homedir = expt_config["user"].get("HOMEdir")
-    if (not expt_basedir) or (expt_basedir[0] != "/"):
-        if not expt_basedir or "{{" in expt_basedir:
-            expt_basedir = ""
-        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
-    try:
-        expt_basedir = os.path.realpath(expt_basedir)
-    except:
-        pass
-    expt_basedir = os.path.abspath(expt_basedir)
 
-    workflow_config["EXPT_BASEDIR"] = expt_basedir
-
-    # Update some paths that include EXPT_BASEDIR
-    extend_yaml(expt_config)
     #
     # -----------------------------------------------------------------------
     #
@@ -386,7 +366,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
 
     expt_subdir = workflow_config.get("EXPT_SUBDIR", "")
-    exptdir = workflow_config["EXPTDIR"]
+    exptdir = workflow_config.get("EXPTDIR")
+
+    # Update some paths that include EXPTDIR and EXPT_BASEDIR
+    extend_yaml(expt_config)
     preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
     try:
         check_for_preexist_dir_file(exptdir, preexisting_dir_method)
