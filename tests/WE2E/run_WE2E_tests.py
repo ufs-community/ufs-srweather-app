@@ -283,30 +283,26 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
     #Make our lives easier by shortening some dictionary calls
     cfg_ics = cfg['task_get_extrn_ics']
 
-    # If RUN_TASK_GET_EXTRN_ICS is false, do nothing and return
+    # If RUN_TASK_GET_EXTRN_ICS is explicitly set to false, do nothing and return
     if 'workflow_switches' in cfg:
         if 'RUN_TASK_GET_EXTRN_ICS' in cfg['workflow_switches']:
             if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
                 return cfg_ics
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_ics:
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified in task_get_extrn_ics section of config')
-        return cfg_ics
-    if not cfg_ics['USE_USER_STAGED_EXTRN_FILES']:
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES is false for task_get_extrn_ics section of config')
+    if not cfg_ics.get('USE_USER_STAGED_EXTRN_FILES'):
+        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_ics section of config')
         return cfg_ics
 
     # If EXTRN_MDL_SYSBASEDIR_ICS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if 'EXTRN_MDL_SYSBASEDIR_ICS' in cfg_ics:
-        if cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] == "set_to_non_default_location_in_testing_script":
-            if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
-                if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
-                    raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
-                cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
-            else:
-                raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
-            return cfg_ics
+    if cfg_ics.get('EXTRN_MDL_SYSBASEDIR_ICS') == "set_to_non_default_location_in_testing_script":
+        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
+            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
+                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
+            cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
+        else:
+            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
+        return cfg_ics
 
     # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
     cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
@@ -345,28 +341,26 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
     #Make our lives easier by shortening some dictionary calls
     cfg_lbcs = cfg['task_get_extrn_lbcs']
 
-    # If RUN_TASK_GET_EXTRN_LBCS is false, do nothing and return
+    # If RUN_TASK_GET_EXTRN_LBCS is explicitly set to false, do nothing and return
     if 'workflow_switches' in cfg:
         if 'RUN_TASK_GET_EXTRN_LBCS' in cfg['workflow_switches']:
             if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
                 return cfg_lbcs
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if 'USE_USER_STAGED_EXTRN_FILES' not in cfg_lbcs:
-        return cfg_lbcs
-    if not cfg_lbcs['USE_USER_STAGED_EXTRN_FILES']:
+    if not cfg_lbcs.get('USE_USER_STAGED_EXTRN_FILES'):
+        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_lbcs section of config')
         return cfg_lbcs
 
     # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if 'EXTRN_MDL_SYSBASEDIR_LBCS' in cfg_lbcs:
-        if cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] == "set_to_non_default_location_in_testing_script":
-            if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
-                if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
-                    raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
+    if cfg_lbcs.get('EXTRN_MDL_SYSBASEDIR_LBCS') == "set_to_non_default_location_in_testing_script":
+        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
+            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
+                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
                 cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
-            else:
-                raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
-            return cfg_lbcs
+        else:
+            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
+        return cfg_lbcs
 
     # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
     cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
