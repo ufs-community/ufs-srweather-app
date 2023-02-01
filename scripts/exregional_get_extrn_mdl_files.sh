@@ -186,30 +186,8 @@ ${cmd}
 #
 #-----------------------------------------------------------------------
 #
-function filename_mod() {
-    # Function that modifies the filenames
-    fn_mod=$(echo "$1" |
-             sed "s|{mem:02d}|$num|g" |
-             sed "s|t{hh}|t${hh}|g" |
-             sed "s|f{fcst_hr:03d}|f`printf %03d $fcst_hr`|g" |
-             sed "s|f{fcst_hr:02d}|f`printf %02d $fcst_hr`|g" )
-    echo $fn_mod
-}
-
 if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
-    # Use grep command to fetch the variations of GEFS filenames from data_locations.yml
-    filenames_lines=(8 9 10)
-    filenames=(2 4)
-    fn_list=()
-    for line in "${filenames_lines[@]}"; do
-        for name in "${filenames[@]}"; do
-            filename=$( grep -A$line 'GEFS' ${PARMdir}/data_locations.yml |
-                        tail -n1 |
-                        awk -F "'" "{ print $ $name }" )
-            fn_list+=( "$filename" )
-        done
-    done
-
+    
     # This block of code sets the forecast hour range based on ICS/LBCS
     if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
         fcst_hrs_tmp=( $fcst_hrs )
@@ -220,27 +198,42 @@ if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
 
     # Loop through ensemble member numbers and forecast hours
     for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
+        sorted_fn=( )
         for fcst_hr in "${all_fcst_hrs_array[@]}"; do
-            # Loop through GEFS filenames and call the filename_mod to get properly formatted names
-            # Then store results as a list
-            for fn in ${fn_list[@]}; do
-                mod_fn=$(filename_mod $fn)
-                mod_fn_list+=( $mod_fn )
+            # Read in filenames from $EXTRN_MDL_FNS and sort them
+            base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
+            filenames_array=`awk -F= '/EXTRN_MDL_FNS/{print $2}' $base_path/${EXTRN_DEFNS}`
+            for filename in ${filenames_array[@]}; do
+                IFS='.' read -ra split_fn <<< "$filename"
+                if [ `echo -n $filename | tail -c 2` == `printf %02d $fcst_hr` ] && [ "${split_fn[1]}" == "t${hh}z" ] ; then
+                    if [ "${split_fn[2]}" == 'pgrb2a' ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == 'pgrb2b' ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2af`printf %02d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %02d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2af`printf %03d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %03d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    fi
+                fi
             done
+
             # Define filename lists used to check if files exist
-            fn_list_1=( ${mod_fn_list[0]} ${mod_fn_list[1]}
+            fn_list_1=( ${sorted_fn[0]} ${sorted_fn[1]}
                        "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
-            fn_list_2=( ${mod_fn_list[2]} ${mod_fn_list[3]}
+            fn_list_2=( ${sorted_fn[2]} ${sorted_fn[3]}
                        "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
-            fn_list_3=( ${mod_fn_list[4]} ${mod_fn_list[5]}
+            fn_list_3=( ${sorted_fn[4]} ${sorted_fn[5]}
                        "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
-            #echo ${fn_list_1[@]}
+            echo ${fn_list_1[@]}
             fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
 
-            base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
-            printf "Looking for files in $base_path\n"
-
             # Look for filenames, if they exist, merge files together
+            printf "Looking for files in $base_path\n"
             for fn in "${fn_lists[@]}"; do
                 fn_str="$fn[@]"
                 fn_array=( "${!fn_str}" )
@@ -254,7 +247,7 @@ if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
         # If merge files exist, update the extrn_defn file
         merged_fn_str="( ${merged_fn[@]} )"
         printf "Merged files are: ${merged_fn_str} \nUpdating ${EXTRN_DEFNS}\n\n"
-        sed -i "s|EXTRN_MDL_FNS=.*|EXTRN_MDL_FNS=${merged_fn_str}|g" $base_path/${EXTRN_DEFNS}
+        echo "$(awk -F= -v val="${merged_fn_str}" '/EXTRN_MDL_FNS/ {$2=val} {print}' OFS== $base_path/${EXTRN_DEFNS})" > $base_path/${EXTRN_DEFNS}
         merged_fn=()
         mod_fn_list=()
     done
