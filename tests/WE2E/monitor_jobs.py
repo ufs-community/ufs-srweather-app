@@ -139,7 +139,11 @@ def update_expt_status(expt: dict, name: str) -> dict:
 
     logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
     try:
-        db = sqlite_read(rocoto_db,'SELECT taskname,cycle,state from jobs')
+        # This section of code queries the "job" table of the rocoto database, returning a list
+        # of tuples containing the taskname, cycle, and state of each job respectively
+        with closing(sqlite3.connect(rocoto_db)) as connection:
+            with closing(connection.cursor()) as cur:
+                db = cur.execute('SELECT taskname,cycle,state from jobs').fetchall()
     except:
         logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
         expt["status"] = "ERROR"
@@ -207,15 +211,6 @@ def write_monitor_file(monitor_file: str, expt_dict: dict):
         logging.fatal("File may be corrupt or invalid for re-run!!")
         logging.fatal("\n********************************\n")
         raise
-
-def sqlite_read(db: str, ex: str) -> list:
-#    # Create Named Tuple for better data organization
-#    Task = namedtuple("taskname","cycle","state")
-
-    with closing(sqlite3.connect(db)) as connection:
-        with closing(connection.cursor()) as cur:
-            db = cur.execute(ex).fetchall()
-    return db
 
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:

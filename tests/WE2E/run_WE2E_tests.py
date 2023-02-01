@@ -64,13 +64,14 @@ def run_we2e_tests(homedir, args) -> None:
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
                 # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
-                testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}.nco"
+                prefix = f"machine_suites/{user_spec_tests[0]}"
+                testfilename = f"{prefix}.{machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
-                    testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}.com"
+                    testfilename = f"{prefix}.{machine}.{args.compiler}.com"
                     if not os.path.isfile(testfilename):
-                        testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}"
+                        testfilename = f"{prefix}.{machine}.{args.compiler}"
                         if not os.path.isfile(testfilename):
-                            testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}"
+                            testfilename = f"{prefix}.{machine}"
                             if not os.path.isfile(testfilename):
                                 testfilename = f"machine_suites/{user_spec_tests[0]}"
                     else:
@@ -169,7 +170,7 @@ def run_we2e_tests(homedir, args) -> None:
         with open(ushdir + "/config.yaml","w") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
-        logging.info(f"Calling workflow generation function for test {test_name}\n")
+        logging.debug(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
@@ -179,6 +180,7 @@ def run_we2e_tests(homedir, args) -> None:
                 console_handler.setLevel(logging.DEBUG)
             else:
                 console_handler.setLevel(logging.INFO)
+        logging.info(f"Workflow for test {test_name} successfully generated in\n{expt_dir}\n")
         # If this job is not using crontab, we need to add an entry to monitor.yaml
         if 'USE_CRON_TO_RELAUNCH' not in test_cfg['workflow']:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
