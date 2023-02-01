@@ -59,10 +59,10 @@ def run_we2e_tests(homedir, args) -> None:
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
-                    filename = filename[7:-5]
-                    tests_to_check.append(filename)
+                    # We just want the test namein this list, so cut out the "config." prefix and ".yaml" extension
+                    tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
-            elif user_spec_tests[0] == 'fundamental' or user_spec_tests[0] == 'comprehensive':
+            elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
                 # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
                 testfilename = f"machine_suites/{user_spec_tests[0]}.{machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
