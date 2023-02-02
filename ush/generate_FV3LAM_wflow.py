@@ -460,8 +460,16 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     })
     if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
          CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
-         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" or
-         CCPP_PHYS_SUITE == "FV3_GFS_v16" ):
+         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" ):
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 5
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":   
         if CPL_AQM:
             fv_core_nml_dict.update({
                 "hord_tr": 8,
