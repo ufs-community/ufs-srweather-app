@@ -465,25 +465,26 @@ def update_dict(dict_o, dict_t, provide_default=False):
 
 def check_structure_dict(dict_o, dict_t):
     """Check if a dictionary's structure follows a template.
-    The invalid entries are printed to the screen.
+    The invalid entries are returned as a list of lists.
+    If all entries are valid, returns an empty dictionary
 
     Args:
         dict_o: target dictionary
         dict_t: template dictionary to compare structure to
     Returns:
-        Boolean
+        dict:  Invalid key-value pairs.
     """
+    inval = {}
     for k, v in dict_o.items():
         if k in dict_t.keys():
             v1 = dict_t[k]
             if isinstance(v, dict) and isinstance(v1, dict):
                 r = check_structure_dict(v, v1)
-                if not r:
-                    return False
+                if r:
+                    inval.update(r)
         else:
-            print(f"INVALID ENTRY: {k}={v}")
-            return False
-    return True
+            inval[k] = v
+    return inval
 
 
 def filter_dict(dict_o, keys_regex):
@@ -579,9 +580,11 @@ def cfg_main():
         cfg_t = load_config_file(args.validate, 1)
         r = check_structure_dict(cfg, cfg_t)
         if r:
-            print("SUCCESS")
-        else:
+            for k in r:
+                print(f"INVALID ENTRY: {k}={r[k]}")
             print("FAILURE")
+        else:
+            print("SUCCESS")
     else:
         if args.template:
             cfg = flatten_dict(cfg)
