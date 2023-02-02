@@ -208,7 +208,7 @@ def link_fix(
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh0}.nc",
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh4}.nc",
         ]
-        if ccpp_phys_suite == "FV3_HRRR":
+        if ccpp_phys_suite == "FV3_HRRR" or ccpp_phys_suite == "FV3_GFS_v17_p8":
             fns += [
                 f"C*{dot_or_uscore}oro_data_ss.tile{tile_rgnl}.halo{nh0}.nc",
                 f"C*{dot_or_uscore}oro_data_ls.tile{tile_rgnl}.halo{nh0}.nc",
