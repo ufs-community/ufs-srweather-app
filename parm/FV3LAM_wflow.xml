@@ -934,20 +934,12 @@ it, we'd have to include more jinja if-statements here.
 {#- Redundant dependency to simplify jinja code. #}
         <streq><left>TRUE</left><right>TRUE</right></streq>
       {%- if run_task_get_obs_ccpa %}
-        <and>
-          <taskdep task="&GET_OBS_CCPA_TN;"/>
-        {%- if write_dopost %}
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
-          <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-        </and>
-      {%- else %}
-        {%- if write_dopost %}
+        <taskdep task="&GET_OBS_CCPA_TN;"/>
+      {%- endif %}
+      {%- if write_dopost %}
         <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
+      {%- elif run_task_run_post %}
         <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
       </and>
     </dependency>
@@ -993,20 +985,12 @@ it, we'd have to include more jinja if-statements here.
 {#- Redundant dependency to simplify jinja code. #}
         <streq><left>TRUE</left><right>TRUE</right></streq>
       {%- if run_task_get_obs_mrms %}
-        <and>
-          <taskdep task="&GET_OBS_MRMS_TN;"/>
-        {%- if write_dopost %}
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
-          <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-        </and>
-      {%- else %}
-        {%- if write_dopost %}
+        <taskdep task="&GET_OBS_MRMS_TN;"/>
+      {%- endif %}
+      {%- if write_dopost %}
         <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
+      {%- elif run_task_run_post %}
         <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
       </and>
     </dependency>
@@ -1052,20 +1036,12 @@ it, we'd have to include more jinja if-statements here.
 {#- Redundant dependency to simplify jinja code. #}
       <streq><left>TRUE</left><right>TRUE</right></streq>
       {%- if run_task_get_obs_mrms %}
-        <and>
-          <taskdep task="&GET_OBS_MRMS_TN;"/>
-        {%- if write_dopost %}
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
-          <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-        </and>
-      {%- else %}
-        {%- if write_dopost %}
+        <taskdep task="&GET_OBS_MRMS_TN;"/>
+      {%- endif %}
+      {%- if write_dopost %}
         <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
+      {%- elif run_task_run_post %}
         <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
       </and>
     </dependency>
@@ -1233,20 +1209,12 @@ it, we'd have to include more jinja if-statements here.
 {#- Redundant dependency to simplify jinja code. #}
       <streq><left>TRUE</left><right>TRUE</right></streq>
       {%- if run_task_get_obs_ndas %}
-        <and>
-          <taskdep task="&GET_OBS_NDAS_TN;"/>
-        {%- if write_dopost %}
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
-          <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-        </and>
-      {%- else %}
-        {%- if write_dopost %}
+        <taskdep task="&GET_OBS_NDAS_TN;"/>
+      {%- endif %}
+      {%- if write_dopost %}
         <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- elif run_task_run_post %}
+      {%- elif run_task_run_post %}
         <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
       </and>
     </dependency>
