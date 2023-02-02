@@ -656,12 +656,12 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             + settings_str
         )
     #
-    # If not running the MAKE_GRID_TN task (which implies the workflow will
+    # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
     # the paths to surface climatology files.  These files are located in
     # (or have symlinks that point to them) in the FIXlam directory.
     #
-    # Note that if running the MAKE_GRID_TN task, this action usually cannot
+    # Note that if running the TN_MAKE_GRID task, this action usually cannot
     # be performed here but must be performed in that task because the names
     # of the surface climatology files depend on the CRES parameter (which is
     # the C-resolution of the grid), and this parameter is in most workflow

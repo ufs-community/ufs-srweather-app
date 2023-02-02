@@ -27,47 +27,47 @@ Workflow task names.
 {%- else %}
 <!ENTITY SCHED_NATIVE_CMD          "">
 {%- endif %}
-<!ENTITY MAKE_GRID_TN              "{{ make_grid_tn }}">
-<!ENTITY MAKE_OROG_TN              "{{ make_orog_tn }}">
-<!ENTITY MAKE_SFC_CLIMO_TN         "{{ make_sfc_climo_tn }}">
-<!ENTITY GET_EXTRN_ICS_TN          "{{ get_extrn_ics_tn }}">
-<!ENTITY GET_EXTRN_LBCS_TN         "{{ get_extrn_lbcs_tn }}">
-<!ENTITY MAKE_ICS_TN               "{{ make_ics_tn }}">
-<!ENTITY MAKE_LBCS_TN              "{{ make_lbcs_tn }}">
-<!ENTITY RUN_FCST_TN               "{{ run_fcst_tn }}">
-<!ENTITY RUN_POST_TN               "{{ run_post_tn }}">
+<!ENTITY TN_MAKE_GRID              "{{ tn_make_grid }}">
+<!ENTITY TN_MAKE_OROG              "{{ tn_make_orog }}">
+<!ENTITY TN_MAKE_SFC_CLIMO         "{{ tn_make_sfc_climo }}">
+<!ENTITY TN_GET_EXTRN_ICS          "{{ tn_get_extrn_ics }}">
+<!ENTITY TN_GET_EXTRN_LBCS         "{{ tn_get_extrn_lbcs }}">
+<!ENTITY TN_MAKE_ICS               "{{ tn_make_ics }}">
+<!ENTITY TN_MAKE_LBCS              "{{ tn_make_lbcs }}">
+<!ENTITY TN_RUN_FCST               "{{ tn_run_fcst }}">
+<!ENTITY TN_RUN_POST               "{{ tn_run_post }}">
 <!ENTITY GET_OBS                   "{{ get_obs }}">
-<!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
-<!ENTITY GET_OBS_NDAS_TN           "{{ get_obs_ndas_tn }}">
-<!ENTITY GET_OBS_MRMS_TN           "{{ get_obs_mrms_tn }}">
-<!ENTITY VX_TN                     "{{ vx_tn }}">
-<!ENTITY VX_GRIDSTAT_TN            "{{ vx_gridstat_tn }}">
-<!ENTITY VX_GRIDSTAT_REFC_TN       "{{ vx_gridstat_refc_tn }}">
-<!ENTITY VX_GRIDSTAT_RETOP_TN      "{{ vx_gridstat_retop_tn }}">
-<!ENTITY VX_GRIDSTAT_03h_TN        "{{ vx_gridstat_03h_tn }}">
-<!ENTITY VX_GRIDSTAT_06h_TN        "{{ vx_gridstat_06h_tn }}">
-<!ENTITY VX_GRIDSTAT_24h_TN        "{{ vx_gridstat_24h_tn }}">
-<!ENTITY VX_POINTSTAT_TN           "{{ vx_pointstat_tn }}">
-<!ENTITY VX_ENSGRID_TN             "{{ vx_ensgrid_tn }}">
-<!ENTITY VX_ENSGRID_REFC_TN        "{{ vx_ensgrid_refc_tn }}">
-<!ENTITY VX_ENSGRID_RETOP_TN       "{{ vx_ensgrid_retop_tn }}">
-<!ENTITY VX_ENSGRID_03h_TN         "{{ vx_ensgrid_03h_tn }}">
-<!ENTITY VX_ENSGRID_06h_TN         "{{ vx_ensgrid_06h_tn }}">
-<!ENTITY VX_ENSGRID_24h_TN         "{{ vx_ensgrid_24h_tn }}">
-<!ENTITY VX_ENSGRID_MEAN_TN        "{{ vx_ensgrid_mean_tn }}">
-<!ENTITY VX_ENSGRID_PROB_TN        "{{ vx_ensgrid_prob_tn }}">
-<!ENTITY VX_ENSGRID_MEAN_03h_TN    "{{ vx_ensgrid_mean_03h_tn }}">
-<!ENTITY VX_ENSGRID_PROB_03h_TN    "{{ vx_ensgrid_prob_03h_tn }}">
-<!ENTITY VX_ENSGRID_MEAN_06h_TN    "{{ vx_ensgrid_mean_06h_tn }}">
-<!ENTITY VX_ENSGRID_PROB_06h_TN    "{{ vx_ensgrid_prob_06h_tn }}">
-<!ENTITY VX_ENSGRID_MEAN_24h_TN    "{{ vx_ensgrid_mean_24h_tn }}">
-<!ENTITY VX_ENSGRID_PROB_24h_TN    "{{ vx_ensgrid_prob_24h_tn }}">
-<!ENTITY VX_ENSGRID_PROB_REFC_TN   "{{ vx_ensgrid_prob_refc_tn }}">
-<!ENTITY VX_ENSGRID_PROB_RETOP_TN  "{{ vx_ensgrid_prob_retop_tn }}">
-<!ENTITY VX_ENSPOINT_TN            "{{ vx_enspoint_tn }}">
-<!ENTITY VX_ENSPOINT_MEAN_TN       "{{ vx_enspoint_mean_tn }}">
-<!ENTITY VX_ENSPOINT_PROB_TN       "{{ vx_enspoint_prob_tn }}">
-<!ENTITY PLOT_ALLVARS_TN           "{{ plot_allvars_tn }}">
+<!ENTITY TN_GET_OBS_CCPA           "{{ tn_get_obs_ccpa }}">
+<!ENTITY TN_GET_OBS_NDAS           "{{ tn_get_obs_ndas }}">
+<!ENTITY TN_GET_OBS_MRMS           "{{ tn_get_obs_mrms }}">
+<!ENTITY TN_VX                     "{{ tn_vx }}">
+<!ENTITY TN_VX_GRIDSTAT            "{{ tn_vx_gridstat }}">
+<!ENTITY TN_VX_GRIDSTAT_REFC       "{{ tn_vx_gridstat_refc }}">
+<!ENTITY TN_VX_GRIDSTAT_RETOP      "{{ tn_vx_gridstat_retop }}">
+<!ENTITY TN_VX_GRIDSTAT_03h        "{{ tn_vx_gridstat_03h }}">
+<!ENTITY TN_VX_GRIDSTAT_06h        "{{ tn_vx_gridstat_06h }}">
+<!ENTITY TN_VX_GRIDSTAT_24h        "{{ tn_vx_gridstat_24h }}">
+<!ENTITY TN_VX_POINTSTAT           "{{ tn_vx_pointstat }}">
+<!ENTITY TN_VX_ENSGRID             "{{ tn_vx_ensgrid }}">
+<!ENTITY TN_VX_ENSGRID_REFC        "{{ tn_vx_ensgrid_refc }}">
+<!ENTITY TN_VX_ENSGRID_RETOP       "{{ tn_vx_ensgrid_retop }}">
+<!ENTITY TN_VX_ENSGRID_03h         "{{ tn_vx_ensgrid_03h }}">
+<!ENTITY TN_VX_ENSGRID_06h         "{{ tn_vx_ensgrid_06h }}">
+<!ENTITY TN_VX_ENSGRID_24h         "{{ tn_vx_ensgrid_24h }}">
+<!ENTITY TN_VX_ENSGRID_MEAN        "{{ tn_vx_ensgrid_mean }}">
+<!ENTITY TN_VX_ENSGRID_PROB        "{{ tn_vx_ensgrid_prob }}">
+<!ENTITY TN_VX_ENSGRID_MEAN_03h    "{{ tn_vx_ensgrid_mean_03h }}">
+<!ENTITY TN_VX_ENSGRID_PROB_03h    "{{ tn_vx_ensgrid_prob_03h }}">
+<!ENTITY TN_VX_ENSGRID_MEAN_06h    "{{ tn_vx_ensgrid_mean_06h }}">
+<!ENTITY TN_VX_ENSGRID_PROB_06h    "{{ tn_vx_ensgrid_prob_06h }}">
+<!ENTITY TN_VX_ENSGRID_MEAN_24h    "{{ tn_vx_ensgrid_mean_24h }}">
+<!ENTITY TN_VX_ENSGRID_PROB_24h    "{{ tn_vx_ensgrid_prob_24h }}">
+<!ENTITY TN_VX_ENSGRID_PROB_REFC   "{{ tn_vx_ensgrid_prob_refc }}">
+<!ENTITY TN_VX_ENSGRID_PROB_RETOP  "{{ tn_vx_ensgrid_prob_retop }}">
+<!ENTITY TN_VX_ENSPOINT            "{{ tn_vx_enspoint }}">
+<!ENTITY TN_VX_ENSPOINT_MEAN       "{{ tn_vx_enspoint_mean }}">
+<!ENTITY TN_VX_ENSPOINT_PROB       "{{ tn_vx_enspoint_prob }}">
+<!ENTITY TN_PLOT_ALLVARS           "{{ tn_plot_allvars }}">
 
 <!--
 Flags that specify whether to run the preprocessing and/or verification tasks.
@@ -130,9 +130,9 @@ Directories and files.
 <!--
 Reservation types.  Reservations specify the queue/partition and account
 to use for a given task.  The "DEFAULT" reservation type is used for all 
-tasks other than GET_EXTRN_ICS_TN, GET_EXTRN_LBCS_TN, and RUN_FCST_TN; 
-the "HPSS" type is used for the GET_EXTRN_ICS_TN and GET_EXTRN_LBCS_TN 
-tasks; and the "FCST" type is used for the RUN_FCST_TN task.
+tasks other than TN_GET_EXTRN_ICS, TN_GET_EXTRN_LBCS, and TN_RUN_FCST; 
+the "HPSS" type is used for the TN_GET_EXTRN_ICS and TN_GET_EXTRN_LBCS 
+tasks; and the "FCST" type is used for the TN_RUN_FCST task.
 -->
 
 {%- if partition_default is not none %}
@@ -170,7 +170,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 
 <!-- 
 The following command works to call the J-job for a given task (in this
-case the MAKE_GRID_TN task) if in the script LOAD_MODULES_RUN_TASK_FP we 
+case the TN_MAKE_GRID task) if in the script LOAD_MODULES_RUN_TASK_FP we 
 do NOT call exec to run the J-job.  The command first sources the script
 LOAD_MODULES_RUN_TASK_FP and then runs the J-job, so it is simpler than
 calling exec and thus preferred if NCO accepts it.  Note that the portion
@@ -183,7 +183,7 @@ source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since
 we are already sourcing other files in the J-job anyway.
 -->
 <!--
-    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;";
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;";
                &JOBSdir;/JREGIONAL_MAKE_GRID;
              }</command>
 -->
@@ -200,16 +200,16 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_grid }}">
+  <task name="&TN_MAKE_GRID;" cycledefs="at_start" maxtries="{{ maxtries_make_grid }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSdir;/JREGIONAL_MAKE_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;" "&JOBSdir;/JREGIONAL_MAKE_GRID"</command>
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_GRID_TN;</jobname>
-    <join>&LOGDIR;/&MAKE_GRID_TN;&LOGEXT;</join>
+    <jobname>&TN_MAKE_GRID;</jobname>
+    <join>&LOGDIR;/&TN_MAKE_GRID;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -225,16 +225,16 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_orog }}">
+  <task name="&TN_MAKE_OROG;" cycledefs="at_start" maxtries="{{ maxtries_make_orog }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSdir;/JREGIONAL_MAKE_OROG"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_OROG;" "&JOBSdir;/JREGIONAL_MAKE_OROG"</command>
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_OROG_TN;</jobname>
-    <join>&LOGDIR;/&MAKE_OROG_TN;&LOGEXT;</join>
+    <jobname>&TN_MAKE_OROG;</jobname>
+    <join>&LOGDIR;/&TN_MAKE_OROG;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -246,7 +246,7 @@ MODULES_RUN_TASK_FP script.
     <dependency>
       <or>
 <!--        <taskdep task="make_grid"/> -->
-        <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+        <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
         <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
       </or>
     </dependency>
@@ -258,16 +258,16 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="{{ maxtries_make_sfc_climo }}">
+  <task name="&TN_MAKE_SFC_CLIMO;" cycledefs="at_start" maxtries="{{ maxtries_make_sfc_climo }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_SFC_CLIMO;" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"</command>
     <nodes>{{ nnodes_make_sfc_climo }}:ppn={{ ppn_make_sfc_climo }}</nodes>
     <walltime>{{ wtime_make_sfc_climo }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
-    <join>&LOGDIR;/&MAKE_SFC_CLIMO_TN;&LOGEXT;</join>
+    <jobname>&TN_MAKE_SFC_CLIMO;</jobname>
+    <join>&LOGDIR;/&TN_MAKE_SFC_CLIMO;&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -279,13 +279,13 @@ MODULES_RUN_TASK_FP script.
     <dependency>
       <and>
         <or>
-<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_GRID;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&TN_MAKE_OROG;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -298,10 +298,10 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GET_EXTRN_ICS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
+  <task name="&TN_GET_EXTRN_ICS;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_ics }}</memory>
@@ -311,8 +311,8 @@ MODULES_RUN_TASK_FP script.
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&GET_EXTRN_ICS_TN;</jobname>
-    <join>&LOGDIR;/&GET_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_GET_EXTRN_ICS;</jobname>
+    <join>&LOGDIR;/&TN_GET_EXTRN_ICS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -329,10 +329,10 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GET_EXTRN_LBCS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
+  <task name="&TN_GET_EXTRN_LBCS;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_lbcs }}</memory>
@@ -342,8 +342,8 @@ MODULES_RUN_TASK_FP script.
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&GET_EXTRN_LBCS_TN;</jobname>
-    <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_GET_EXTRN_LBCS;</jobname>
+    <join>&LOGDIR;/&TN_GET_EXTRN_LBCS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -367,16 +367,16 @@ MODULES_RUN_TASK_FP script.
 {%- endif %}
 
 {%- if run_task_make_ics %}
-  <task name="&MAKE_ICS_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_ics }}">
+  <task name="&TN_MAKE_ICS;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSdir;/JREGIONAL_MAKE_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS;" "&JOBSdir;/JREGIONAL_MAKE_ICS"</command>
     <nodes>{{ nnodes_make_ics }}:ppn={{ ppn_make_ics }}</nodes>
     <walltime>{{ wtime_make_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_ICS_TN;{{ uscore_ensmem_name }}</jobname>
-    <join>&LOGDIR;/&MAKE_ICS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_MAKE_ICS;{{ uscore_ensmem_name }}</jobname>
+    <join>&LOGDIR;/&TN_MAKE_ICS;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -389,20 +389,20 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&GET_EXTRN_ICS_TN;"/>
+        <taskdep task="&TN_GET_EXTRN_ICS;"/>
         <or>
-<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_GRID;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&TN_MAKE_OROG;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_SFC_CLIMO;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&TN_MAKE_SFC_CLIMO;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -415,16 +415,16 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_lbcs }}">
+  <task name="&TN_MAKE_LBCS;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSdir;/JREGIONAL_MAKE_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_LBCS;" "&JOBSdir;/JREGIONAL_MAKE_LBCS"</command>
     <nodes>{{ nnodes_make_lbcs }}:ppn={{ ppn_make_lbcs }}</nodes>
     <walltime>{{ wtime_make_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&MAKE_LBCS_TN;{{ uscore_ensmem_name }}</jobname>
-    <join>&LOGDIR;/&MAKE_LBCS_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_MAKE_LBCS;{{ uscore_ensmem_name }}</jobname>
+    <join>&LOGDIR;/&TN_MAKE_LBCS;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -437,20 +437,20 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&GET_EXTRN_LBCS_TN;"/>
+        <taskdep task="&TN_GET_EXTRN_LBCS;"/>
         <or>
-<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_GRID;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_OROG;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&TN_MAKE_OROG;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
         </or>
         <or>
-<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
-          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+<!--          <taskdep task="&TN_MAKE_SFC_CLIMO;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&TN_MAKE_SFC_CLIMO;&CMPEXT;</datadep>
           <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
         </or>
       </and>
@@ -463,10 +463,10 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&RUN_FCST_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
+  <task name="&TN_RUN_FCST;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSdir;/JREGIONAL_RUN_FCST"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSdir;/JREGIONAL_RUN_FCST"</command>
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
@@ -480,8 +480,8 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <native>&SCHED_NATIVE_CMD;</native>
     <walltime>{{ wtime_run_fcst }}</walltime>
-    <jobname>&RUN_FCST_TN;{{ uscore_ensmem_name }}</jobname>
-    <join>&LOGDIR;/&RUN_FCST_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_RUN_FCST;{{ uscore_ensmem_name }}</jobname>
+    <join>&LOGDIR;/&TN_RUN_FCST;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -494,8 +494,8 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
-        <taskdep task="&MAKE_ICS_TN;{{ uscore_ensmem_name }}"/>
-        <taskdep task="&MAKE_LBCS_TN;{{ uscore_ensmem_name }}"/>
+        <taskdep task="&TN_MAKE_ICS;{{ uscore_ensmem_name }}"/>
+        <taskdep task="&TN_MAKE_LBCS;{{ uscore_ensmem_name }}"/>
       </and>
     </dependency>
 
@@ -525,16 +525,16 @@ later below for other output times.
 
     <var name="fhr">000</var>
     <var name="fmn">00</var>
-    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
+    <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-      <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+      <jobname>&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <join>&LOGDIR;/&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -555,7 +555,7 @@ names in the dependencies.
 -->
       <dependency>
         <or>
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+          <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
           <and>
             <datadep age="05:00">&DYN_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
             <datadep age="05:00">&PHY_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
@@ -576,22 +576,22 @@ variable (along with the fmn variable in the inner metatask) allows the
 block of code inside the <task> tag to be identical to the ones later below
 for other output times.
 -->
-  <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f000">
+  <metatask name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f000">
 
     <var name="fhr">000</var>
     <metatask>
 
       <var name="fmn">{% for min in range(delta_min, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
-      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
+      <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
         <native>&SCHED_NATIVE_CMD;</native>
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+        <jobname>&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+	<join>&LOGDIR;/&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
         <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -606,7 +606,7 @@ for other output times.
 
         <dependency>
           <or>
-            <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+            <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
             <and>
               <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
               <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
@@ -621,7 +621,7 @@ for other output times.
   </metatask>
   {%- endif %}
 
-  <metatask name="&RUN_POST_TN;{{ uscore_ensmem_name }}">
+  <metatask name="&TN_RUN_POST;{{ uscore_ensmem_name }}">
   {%- if sub_hourly_post %}
 <!--
 Define the post-processing tasks for the second through next-to-last model
@@ -630,7 +630,7 @@ output hours (and all output minutes for each such hour).
     <var name="fhr">{% for h in range(1, fcst_len_hrs) %}{{ " %03d" % h }}{% endfor %}</var>
     <metatask>
       <var name="fmn">{% for min in range(0, 60, delta_min) %}{{ " %02d" % min }}{% endfor %}</var>
-      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
+      <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
   {%- else %}
 <!--
 Define the post-processing tasks for each model output hour.  Note that
@@ -643,21 +643,21 @@ post-processing is performed (i.e. the case in which the minutes are not
 always zero).
 -->
     <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
-      <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
+      <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
   {%- endif %}
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
         <native>&SCHED_NATIVE_CMD;</native>
         {%- if sub_hourly_post %}
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+        <jobname>&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+	<join>&LOGDIR;/&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
         {%- else %}
-        <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
-	<join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+        <jobname>&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+	<join>&LOGDIR;/&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
         {%- endif %}
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -677,7 +677,7 @@ always zero).
 
         <dependency>
           <or>
-            <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+            <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
             <and>
             {%- if sub_hourly_post %}
               <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
@@ -715,16 +715,16 @@ the <task> tag to be identical to the ones above for other output times.
 
     <var name="fhr">{{ "%03d" % fcst_len_hrs }}</var>
     <var name="fmn">00</var>
-    <task name="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
+    <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
-      <jobname>&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
-      <join>&LOGDIR;/&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+      <jobname>&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#</jobname>
+      <join>&LOGDIR;/&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
       <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -739,7 +739,7 @@ the <task> tag to be identical to the ones above for other output times.
 
       <dependency>
         <or>
-          <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+          <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
           <and>
             <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
             <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
@@ -758,18 +758,18 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&PLOT_ALLVARS_TN;" cycledefs="forecast" maxtries="{{ maxtries_plot_allvars }}">
+  <task name="&TN_PLOT_ALLVARS;" cycledefs="forecast" maxtries="{{ maxtries_plot_allvars }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&PLOT_ALLVARS_TN;" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_PLOT_ALLVARS;" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"</command>
     <nodes>{{ nnodes_plot_allvars }}:ppn={{ ppn_plot_allvars }}</nodes>
     <walltime>{{ wtime_plot_allvars }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&PLOT_ALLVARS_TN;</jobname>
-    <join>&LOGDIR;/&PLOT_ALLVARS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_PLOT_ALLVARS;</jobname>
+    <join>&LOGDIR;/&TN_PLOT_ALLVARS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -789,9 +789,9 @@ it, we'd have to include more jinja if-statements here.
 #}
         <streq><left>TRUE</left><right>TRUE</right></streq>
         {%- if write_dopost %}
-        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
         {%- elif run_task_run_post %}
-        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
         {%- endif %}
       </and>
     </dependency>
@@ -804,7 +804,7 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GET_OBS_CCPA_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ccpa }}">
+  <task name="&TN_GET_OBS_CCPA;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ccpa }}">
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"</command>
@@ -815,8 +815,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_get_obs_ccpa }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_CCPA_TN;</jobname>
-    <join>&LOGDIR;/&GET_OBS_CCPA_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_GET_OBS_CCPA;</jobname>
+    <join>&LOGDIR;/&TN_GET_OBS_CCPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -836,7 +836,7 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GET_OBS_MRMS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_mrms }}">
+  <task name="&TN_GET_OBS_MRMS;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_mrms }}">
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"</command>
@@ -847,8 +847,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_get_obs_mrms }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_MRMS_TN;</jobname>
-    <join>&LOGDIR;/&GET_OBS_MRMS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_GET_OBS_MRMS;</jobname>
+    <join>&LOGDIR;/&TN_GET_OBS_MRMS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -869,7 +869,7 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GET_OBS_NDAS_TN;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ndas }}">
+  <task name="&TN_GET_OBS_NDAS;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ndas }}">
 
     &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"</command>
@@ -880,8 +880,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_get_obs_ndas }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&GET_OBS_NDAS_TN;</jobname>
-    <join>&LOGDIR;/&GET_OBS_NDAS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_GET_OBS_NDAS;</jobname>
+    <join>&LOGDIR;/&TN_GET_OBS_NDAS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -900,10 +900,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat }}">
+  <task name="&TN_VX_GRIDSTAT;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -911,8 +911,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -952,10 +952,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_refc }}">
+  <task name="&TN_VX_GRIDSTAT_REFC;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -963,8 +963,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_REFC_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_REFC_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT_REFC;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT_REFC;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1003,10 +1003,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_retop }}">
+  <task name="&TN_VX_GRIDSTAT_RETOP;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -1014,8 +1014,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_RETOP_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_RETOP_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT_RETOP;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT_RETOP;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1054,10 +1054,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_03h }}">
+  <task name="&TN_VX_GRIDSTAT_03h;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -1065,8 +1065,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_03h_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_03h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT_03h;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT_03h;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1084,7 +1084,7 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}"/>
+      <taskdep task="&TN_VX_GRIDSTAT;{{ uscore_ensmem_name }}"/>
     </dependency>
 
   </task>
@@ -1095,10 +1095,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_06h }}">
+  <task name="&TN_VX_GRIDSTAT_06h;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -1106,8 +1106,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_06h_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_06h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT_06h;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT_06h;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1125,7 +1125,7 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}"/>
+      <taskdep task="&TN_VX_GRIDSTAT;{{ uscore_ensmem_name }}"/>
     </dependency>
 
   </task>
@@ -1136,10 +1136,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_24h }}">
+  <task name="&TN_VX_GRIDSTAT_24h;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_gridstat_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_GRIDSTAT"</command>
     <nodes>{{ nnodes_vx_gridstat }}:ppn={{ ppn_vx_gridstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_gridstat }}</memory>
@@ -1147,8 +1147,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_gridstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_GRIDSTAT_24h_TN;</jobname>
-    <join>&LOGDIR;/&VX_GRIDSTAT_24h_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_GRIDSTAT_24h;</jobname>
+    <join>&LOGDIR;/&TN_VX_GRIDSTAT_24h;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1166,7 +1166,7 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&VX_GRIDSTAT_TN;{{ uscore_ensmem_name }}"/>
+      <taskdep task="&TN_VX_GRIDSTAT;{{ uscore_ensmem_name }}"/>
     </dependency>
 
   </task>
@@ -1177,10 +1177,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_pointstat }}">
+  <task name="&TN_VX_POINTSTAT;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_vx_pointstat }}">
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_POINTSTAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_POINTSTAT"</command>
     <nodes>{{ nnodes_vx_pointstat }}:ppn={{ ppn_vx_pointstat }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_pointstat }}</memory>
@@ -1188,8 +1188,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_pointstat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_POINTSTAT_TN;</jobname>
-    <join>&LOGDIR;/&VX_POINTSTAT_TN;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_POINTSTAT;</jobname>
+    <join>&LOGDIR;/&TN_VX_POINTSTAT;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1231,10 +1231,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_ENSGRID_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid }}">
+  <task name="&TN_VX_ENSGRID;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1242,8 +1242,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1268,10 +1268,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_03h }}">
+  <task name="&TN_VX_ENSGRID_03h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1279,8 +1279,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_03h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_03h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_03h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1294,7 +1294,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>03</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID;"/>
     </dependency>
 
   </task>
@@ -1305,10 +1305,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_06h }}">
+  <task name="&TN_VX_ENSGRID_06h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1316,8 +1316,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_06h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_06h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_06h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1331,7 +1331,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>06</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID;"/>
     </dependency>
 
   </task>
@@ -1342,10 +1342,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_24h }}">
+  <task name="&TN_VX_ENSGRID_24h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1353,8 +1353,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_24h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_24h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_24h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1368,7 +1368,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>24</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID;"/>
     </dependency>
 
   </task>
@@ -1378,10 +1378,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-<task name="&VX_ENSGRID_REFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_refc }}">
+<task name="&TN_VX_ENSGRID_REFC;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1389,8 +1389,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_REFC_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_REFC;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_REFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1413,10 +1413,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-<task name="&VX_ENSGRID_RETOP_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_retop }}">
+<task name="&TN_VX_ENSGRID_RETOP;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID"</command>
     <nodes>{{ nnodes_vx_ensgrid }}:ppn={{ ppn_vx_ensgrid }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid }}</memory>
@@ -1424,8 +1424,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_RETOP_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_RETOP;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_RETOP;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1447,10 +1447,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_ENSGRID_MEAN_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean }}">
+  <task name="&TN_VX_ENSGRID_MEAN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
@@ -1458,8 +1458,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_MEAN;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_MEAN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1473,7 +1473,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>01</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID;"/>
     </dependency>
 
   </task>
@@ -1483,10 +1483,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob }}">
+  <task name="&TN_VX_ENSGRID_PROB;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1494,8 +1494,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1509,7 +1509,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>01</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID;"/>
     </dependency>
 
   </task>
@@ -1519,10 +1519,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_MEAN_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_03h }}">
+  <task name="&TN_VX_ENSGRID_MEAN_03h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
@@ -1530,8 +1530,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_03h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_MEAN_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_MEAN_03h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_MEAN_03h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1545,7 +1545,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>03</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_03h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_03h;"/>
     </dependency>
 
   </task>
@@ -1555,10 +1555,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_03h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_03h }}">
+  <task name="&TN_VX_ENSGRID_PROB_03h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1566,8 +1566,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_03h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_03h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB_03h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB_03h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1581,7 +1581,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>03</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_03h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_03h;"/>
     </dependency>
 
   </task>
@@ -1592,10 +1592,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_MEAN_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_06h }}">
+  <task name="&TN_VX_ENSGRID_MEAN_06h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
@@ -1603,8 +1603,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_06h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_MEAN_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_MEAN_06h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_MEAN_06h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1618,7 +1618,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>06</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_06h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_06h;"/>
     </dependency>
 
   </task>
@@ -1628,10 +1628,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_06h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_06h }}">
+  <task name="&TN_VX_ENSGRID_PROB_06h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1639,8 +1639,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_06h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_06h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB_06h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB_06h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1654,7 +1654,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>06</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_06h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_06h;"/>
     </dependency>
 
   </task>
@@ -1665,10 +1665,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_MEAN_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_24h }}">
+  <task name="&TN_VX_ENSGRID_MEAN_24h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_mean_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_MEAN"</command>
     <nodes>{{ nnodes_vx_ensgrid_mean }}:ppn={{ ppn_vx_ensgrid_mean }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_mean }}</memory>
@@ -1676,8 +1676,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_MEAN_24h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_MEAN_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_MEAN_24h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_MEAN_24h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1691,7 +1691,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>24</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_24h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_24h;"/>
     </dependency>
 
   </task>
@@ -1701,10 +1701,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_24h_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_24h }}">
+  <task name="&TN_VX_ENSGRID_PROB_24h;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1712,8 +1712,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_24h_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_24h_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB_24h;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB_24h;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1727,7 +1727,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>ACCUM</name><value>24</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_24h_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_24h;"/>
     </dependency>
 
   </task>
@@ -1737,10 +1737,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_REFC_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_refc }}">
+  <task name="&TN_VX_ENSGRID_PROB_REFC;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1748,8 +1748,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_REFC_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_REFC_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB_REFC;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB_REFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1762,7 +1762,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>VAR</name><value>REFC</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_REFC_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_REFC;"/>
     </dependency>
 
   </task>
@@ -1772,10 +1772,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 -->
 
-  <task name="&VX_ENSGRID_PROB_RETOP_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_retop }}">
+  <task name="&TN_VX_ENSGRID_PROB_RETOP;" cycledefs="forecast" maxtries="{{ maxtries_vx_ensgrid_prob_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSGRID_PROB"</command>
     <nodes>{{ nnodes_vx_ensgrid_prob }}:ppn={{ ppn_vx_ensgrid_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_ensgrid_prob }}</memory>
@@ -1783,8 +1783,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_ensgrid_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSGRID_PROB_RETOP_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSGRID_PROB_RETOP_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSGRID_PROB_RETOP;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSGRID_PROB_RETOP;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1797,7 +1797,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>VAR</name><value>RETOP</value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSGRID_RETOP_TN;"/>
+      <taskdep task="&TN_VX_ENSGRID_RETOP;"/>
     </dependency>
 
   </task>
@@ -1808,10 +1808,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_ENSPOINT_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint }}">
+  <task name="&TN_VX_ENSPOINT;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT"</command>
     <nodes>{{ nnodes_vx_enspoint }}:ppn={{ ppn_vx_enspoint }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint }}</memory>
@@ -1819,8 +1819,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_enspoint }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSPOINT_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSPOINT;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSPOINT;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1841,10 +1841,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_ENSPOINT_MEAN_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_mean }}">
+  <task name="&TN_VX_ENSPOINT_MEAN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_mean }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_MEAN"</command>
     <nodes>{{ nnodes_vx_enspoint_mean }}:ppn={{ ppn_vx_enspoint_mean }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint_mean }}</memory>
@@ -1852,8 +1852,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_enspoint_mean }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_MEAN_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSPOINT_MEAN_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSPOINT_MEAN;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSPOINT_MEAN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1865,7 +1865,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSPOINT_TN;"/>
+      <taskdep task="&TN_VX_ENSPOINT;"/>
     </dependency>
 
   </task>
@@ -1874,10 +1874,10 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&VX_ENSPOINT_PROB_TN;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_prob }}">
+  <task name="&TN_VX_ENSPOINT_PROB;" cycledefs="forecast" maxtries="{{ maxtries_vx_enspoint_prob }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_TN;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_VX_ENSPOINT_PROB"</command>
     <nodes>{{ nnodes_vx_enspoint_prob }}:ppn={{ ppn_vx_enspoint_prob }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_vx_enspoint_prob }}</memory>
@@ -1885,8 +1885,8 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_vx_enspoint_prob }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&VX_ENSPOINT_PROB_TN;</jobname>
-    <join>&LOGDIR;/&VX_ENSPOINT_PROB_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_VX_ENSPOINT_PROB;</jobname>
+    <join>&LOGDIR;/&TN_VX_ENSPOINT_PROB;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1898,7 +1898,7 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
 
     <dependency>
-      <taskdep task="&VX_ENSPOINT_TN;"/>
+      <taskdep task="&TN_VX_ENSPOINT;"/>
     </dependency>
 
   </task>
