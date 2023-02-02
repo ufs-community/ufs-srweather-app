@@ -360,7 +360,6 @@ FV3_GFS_v16:
     hord_dp: -5
     hord_mt: 5
     hord_tm: 5
-    hord_tr: 8
     hord_vt: 5
     k_split: 6
     make_nh: False
