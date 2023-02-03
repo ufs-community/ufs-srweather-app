@@ -411,3 +411,126 @@ FV3_GFS_v16:
     ldebug: False
   surf_map_nml: !!python/none
 
+FV3_GFS_v17_p8:
+  cires_ugwp_nml:
+    launch_level: 27
+  fv_core_nml:
+    <<: *gfs_v15_fv_core
+    agrid_vel_rst: True
+    d2_bg_k1: 0.2
+    d2_bg_k2: 0.04
+    delt_max: 0.002
+    dnats: 0
+    do_sat_adj: False
+    do_vort_damp: !!python/none
+    full_zs_filter: !!python/none
+    fv_sg_adj: 450
+    hord_dp: -5
+    hord_mt: 5
+    hord_tm: 5
+    hord_vt: 5
+    hord_tr: 8
+    k_split: 2
+    n_split: 6
+    n_sponge: 42
+    nord: 2
+    nudge_dz: False
+    n_zs_filter: !!python/none
+    range_warn: True
+    res_latlon_dynamics: ''
+    rf_fast: !!python/none
+    tau: 10.0
+  gfdl_cloud_microphysics_nml:
+    <<: *gfs_gfdl_cloud_mp
+    mp_time: 150.0
+    reiflag: 2
+    rthresh: 1.0e-06
+    sedi_transport: True
+    tau_l2v: 225.0
+    tau_v2l: 150.0
+  gfs_physics_nml:
+    <<: *gfs_v15_gfs_physics
+    active_gases: h2o_co2_o3_n2o_ch4_o2
+    bl_mynn_edmf: 1
+    bl_mynn_edmf_mom: 1
+    bl_mynn_tkeadvect: True
+    cdmbgwd: [4.0, 0.15, 1.0, 1.0]
+    cplchm: False
+    decfl: 10
+    do_gsl_drag_ls_bl: False
+    do_gsl_drag_ss: True
+    do_gsl_drag_tofd: False
+    do_myjpbl: !!python/none
+    do_myjsfc: !!python/none
+    do_mynnedmf: False
+    do_mynnsfclay: False
+    do_RRTMGP: False
+    do_ugwp_v0: True
+    do_ugwp_v0_nst_only: False
+    do_ugwp_v0_orog_only: False
+    do_ugwp_v1: False
+    do_ugwp_v1_orog_only: False
+    do_ysu: !!python/none
+    doGP_cldoptics_LUT: False
+    doGP_lwscat: False
+    dt_inner: 150
+    fhzero: 6
+    frac_grid: True
+    gwd_opt: 2
+    hybedmf: False
+    iaer: 1011
+    ialb: 2
+    iau_inc_files: !!python/none
+    icloud_bl: 1
+    icliq_sw: 2
+    iems: 2
+    imp_physics: 8
+    iopt_alb: 1
+    iopt_crs: 2
+    iopt_dveg: 4
+    iopt_rad: 3
+    iopt_sfc: 3
+    iopt_stc: 3
+    iovr: 3
+    isatmedmf: 1
+    ldiag_ugwp: !!python/none
+    lgfdlmprad: False
+    lradar: False
+    lseaspray: True
+    lsm: 2
+    lsoil: 4
+    lsoil_lsm: 4
+    ltaerosol: False
+    lw_file_clouds: rrtmgp-cloud-optics-coeffs-lw.nc
+    lw_file_gas: rrtmgp-data-lw-g128-210809.nc
+    min_lakeice: 0.15
+    min_seaice: 0.15
+    nsradar_reset: !!python/none
+    nstf_name: [2, 0, 0, 0, 0]
+    prautco: [0.00015, 0.00015]
+    psautco: [0.0008, 0.0005]
+    qdiag3d: False
+    ras: False
+    rrtmgp_nBandsLW: 16
+    rrtmgp_nBandsSW: 14
+    rrtmgp_nGptsLW: 128
+    rrtmgp_nGptsSW: 112
+    satmedmf: True
+    sedi_semi: True
+    sfclay_compute_flux: !!python/none
+    shinhong: !!python/none
+    sw_file_clouds: rrtmgp-cloud-optics-coeffs-sw.nc
+    sw_file_gas: rrtmgp-data-sw-g112-210809.nc
+    ttendlim: -999
+    xkzminv: !!python/none
+    xkzm_m: !!python/none
+    xkzm_h: !!python/none
+  mpp_io_nml:
+    deflate_level: 1
+    shuffle: 1
+  namsfc:
+    fsicl: 0
+    fsics: 0
+    landice: False
+    ldebug: False
+  surf_map_nml: !!python/none

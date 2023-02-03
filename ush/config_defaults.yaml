@@ -1852,7 +1852,7 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
 
 #----------------------------
 # POST config parameters

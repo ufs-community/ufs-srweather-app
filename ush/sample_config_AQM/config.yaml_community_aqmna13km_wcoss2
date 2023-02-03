@@ -10,7 +10,7 @@ workflow:
 #  EXPT_BASEDIR: /lfs/h2/emc/lam/noscrub/chan-hoo.jeon/expt_dirs
   EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
-  CCPP_PHYS_SUITE: FV3_GFS_v16
+  CCPP_PHYS_SUITE: FV3_GFS_v17_p8
   DATE_FIRST_CYCL: '2023011700'
   DATE_LAST_CYCL: '2023011706'
   INCR_CYCL_FREQ: 6
@@ -21,8 +21,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
-  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v17_p8
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v17_p8
 nco:
   envir: prod
   NET: aqm
