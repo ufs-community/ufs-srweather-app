@@ -739,10 +739,6 @@ def main(argv):
     """
 
     cla = parse_args(argv)
-    if cla.cycle_date is None:
-        cla.cycle_date = to_datetime("1999123100") # set it to something benign
-    if cla.fcst_hrs is None:
-        cla.fcst_hrs = [0]                         # set a default
     cla.fcst_hrs = arg_list_to_range(cla.fcst_hrs)
 
     if cla.members:
@@ -758,15 +754,12 @@ def main(argv):
     if "disk" in cla.data_stores:
         # Make sure a path was provided.
         if not cla.input_file_path:
-            # See if file_path is in the config ...
-            file_path = cla.config.get(cla.external_model, {}).get("disk", {}).get("file_path")
-            if not file_path:
-                raise argparse.ArgumentTypeError(
-                    (
-                        "You must provide an input_file_path when choosing "
-                        " disk as a data store!"
-                    )
+            raise argparse.ArgumentTypeError(
+                (
+                    "You must provide an input_file_path when choosing "
+                    " disk as a data store!"
                 )
+            )
 
     if "hpss" in cla.data_stores:
         # Make sure hpss module is loaded
@@ -909,7 +902,7 @@ def parse_args(argv):
         choices=("anl", "fcst", "obs", "fix"),
         help="Flag for whether analysis, forecast, \
         fix, or observation files should be gathered",
-        required=False,                    # relaxed this arg option, to enable generic package copying
+        required=True,
     )
     parser.add_argument(
         "--config",
@@ -931,7 +924,7 @@ def parse_args(argv):
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk, local",
+        first. Choices: hpss, nomads, aws, disk, remote.",
         nargs="*",
         required=True,
         type=to_lower,
@@ -977,7 +970,7 @@ def parse_args(argv):
         "--ics_or_lbcs",
         choices=("ICS", "LBCS"),
         help="Flag for whether ICS or LBCS.",
-        required=False,                    # relaxed this arg option, to enable generic packages
+        required=True
     )
 
     # Optional
