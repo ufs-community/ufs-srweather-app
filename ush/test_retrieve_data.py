@@ -131,6 +131,7 @@ class FunctionalTesting(unittest.TestCase):
                 self.assertEqual(len(files_on_disk), 2)
 
     # GEFS Tests
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_gefs_grib2_ics_from_aws(self):
 
         """Get GEFS grib2 a & b files for ICS offset by 6 hours."""
