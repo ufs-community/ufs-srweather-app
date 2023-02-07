@@ -434,7 +434,7 @@ FV3_GFS_v17_p8:
     hord_tr: 8
     k_split: 2
     n_split: 6
-    n_sponge: 42
+    n_sponge: 10
     nord: 2
     nudge_dz: False
     n_zs_filter: !!python/none
