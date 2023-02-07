@@ -4,8 +4,8 @@ import os
 import sys
 import datetime
 import traceback
+import logging
 from textwrap import dedent
-from logging import getLogger
 
 from python_utils import (
     log_info,
@@ -55,7 +55,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
     """
 
     # Load the default config.
+    logging.debug(f"Loading config defaults file {default_config}")
     cfg_d = load_config_file(default_config)
+    logging.debug(f"Read in the following values from config defaults file:\n")
+    logging.debug(cfg_d)
 
     # Load the user config file, then ensure all user-specified
     # variables correspond to a default value.
@@ -69,6 +72,8 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     try:
         cfg_u = load_config_file(user_config)
+        logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
+        logging.debug(cfg_u)
     except:
         errmsg = dedent(
             f"""\n
@@ -114,6 +119,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             ({machine}) in your config file {user_config}"""
             )
         )
+    logging.debug(f"Loading machine defaults file {machine_file}")
     machine_cfg = load_config_file(machine_file)
 
     # Load the fixed files configuration
@@ -269,7 +275,7 @@ def set_srw_paths(ushdir, expt_config):
     )
 
 
-def setup(USHdir, user_config_fn="config.yaml"):
+def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     """Function that validates user-provided configuration, and derives
     a secondary set of parameters needed to configure a Rocoto-based SRW
     workflow. The derived parameters use a set of required user-defined
@@ -284,13 +290,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
       USHdir          (str): The full path of the ush/ directory where
                              this script is located
       user_config_fn  (str): The name of a user-provided config YAML
+      debug          (bool): Enable extra output for debugging
 
     Returns:
       None
     """
 
-    logger = getLogger(__name__)
-    cd_vrfy(USHdir)
+    logger = logging.getLogger(__name__)
 
     # print message
     log_info(
@@ -1265,7 +1271,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # loop through the flattened expt_config and check validity of params
-    cfg_v = load_config_file("valid_param_vals.yaml")
+    cfg_v = load_config_file(os.path.join(USHdir, "valid_param_vals.yaml"))
     for k, v in flatten_dict(expt_config).items():
         if v is None or v == "":
             continue
