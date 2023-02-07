@@ -67,6 +67,9 @@ Glossary
    cycle-independent
       Describes a workflow task that only needs to be run once per experiment, regardless of the number of cycles in the experiment.
    
+   data assimilation
+      One of the major sources of error in weather and climate forecasts is uncertainty related to the initial conditions that are used to generate future predictions. Even the most precise instruments have a small range of unavoidable measurement error, which means that tiny measurement errors (e.g., related to atmospheric conditions and instrument location) can compound over time. These small differences result in very similar forecasts in the short term (i.e., minutes, hours), but they cause widely divergent forecasts in the long term. Data assimilation systems seek to mitigate this problem by combining the most timely observational data with other sources of data, such as historical data, to provide an analysis of possible atmospheric states and the probabilities of each. Errors in weather and climate forecasts can also arise because models are imperfect representations of reality. Data assimilation systems can use techniques including stochastic physics, which applies randomized perturbations to the physical tendencies or the physical parameters of a model, to compensate for model uncertainty. 
+
    dycore
    dynamical core
       Global atmospheric model based on fluid dynamics principles, including Euler's equations of motion.
@@ -188,6 +191,9 @@ Glossary
    NWP
       Numerical Weather Prediction (NWP) takes current observations of weather and processes them with computer models to forecast the future state of the weather. 
 
+   NWS
+      The `National Weather Service <https://www.weather.gov/>`__ (NWS) is an agency of the United States government that is tasked with providing weather forecasts, warnings of hazardous weather, and other weather-related products to organizations and the public for the purposes of protection, safety, and general information. It is a part of the National Oceanic and Atmospheric Administration (NOAA) branch of the Department of Commerce.
+
    Orography
       The branch of physical geography dealing with mountains.
 
@@ -228,6 +234,9 @@ Glossary
 
    Umbrella repository
       A repository that houses external code, or "externals," from additional repositories.
+
+   Updraft helicity
+      Helicity measures the rotation in a storm's updraft (rising) air. Significant rotation increases the probability that the storm will become a supercell thunderstorm or a tornado. See http://ww2010.atmos.uiuc.edu/(Gh)/guides/mtr/svr/modl/fcst/params/hel.rxml for more details on updraft helicity. 
 
    UPP
       The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 
