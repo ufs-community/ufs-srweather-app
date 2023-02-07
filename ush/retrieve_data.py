@@ -183,7 +183,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     Return:
       filled template string
     """
-
+ 
     # Parse keyword args
     ens_group = kwargs.get("ens_group")
     fcst_hr = kwargs.get("fcst_hr", 0)
@@ -344,7 +344,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     """
 
     members = kwargs.get("members", "")
-    members = members if isinstance(members, list) else [members]
+    members = cla.members if isinstance(cla.members, list) else [members]
 
     check_all = kwargs.get("check_all", False)
 
