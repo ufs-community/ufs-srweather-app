@@ -85,10 +85,10 @@ if [ $RUN_ENVIR = "nco" ]; then
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
     if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-      export INPUT_BASE=${EXPTDIR}/${CDATE}/postprd
+      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
       export OUTPUT_BASE=${EXPTDIR}/${CDATE}
     else
-      export INPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
+      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
       export OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
     fi
     export MEM_BASE=$EXPTDIR/$CDATE
@@ -112,7 +112,7 @@ if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
   LOG_SUFFIX=pointstat_${CDATE}
 elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
-  MODEL=${MODEL}_${ENSMEM}
+  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
   LOG_SUFFIX=pointstat_${CDATE}_${ENSMEM}
 fi
 
@@ -141,7 +141,7 @@ export MET_BIN_EXEC
 export METPLUS_PATH
 export METPLUS_CONF
 export MET_CONFIG
-export MODEL
+export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
 

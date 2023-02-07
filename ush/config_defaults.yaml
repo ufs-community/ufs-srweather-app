@@ -215,9 +215,6 @@ platform:
   #
   # Set METplus parameters.  Definitions:
   #
-  # MODEL: 
-  # String that specifies a descriptive name for the model being verified.
-  #
   # MET_INSTALL_DIR:
   # Location to top-level directory of MET installation.
   #
@@ -307,7 +304,6 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  MODEL: ""
   MET_INSTALL_DIR: ""
   MET_BIN_EXEC: ""
   METPLUS_PATH: ""
@@ -2375,3 +2371,21 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+
+#----------------------------
+# verification parameters
+#
+# VX_FCST_MODEL_NAME:
+# String that specifies a descriptive name for the model being verified.
+# This is used in forming the names of the verification output files as
+# well as in the contents of those files.
+#
+# VX_FCST_INPUT_BASEDIR:
+# Location of top-level directory containing forecast (but not obs) files
+# that will be used as input into METplus for verification.  If not
+# specified, this gets set to EXPTDIR.
+#
+#-----------------------------
+verification:
+  VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
