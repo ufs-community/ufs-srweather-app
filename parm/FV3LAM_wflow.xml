@@ -781,11 +781,19 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
 
     <dependency>
+      <and>
+{#- Redundant dependency to simplify jinja code.
+This dependency will always evaluate to true.  It is included because
+rocoto does not allow empty <dependency>, <and>, and other tags.  Without
+it, we'd have to include more jinja if-statements here.
+#}
+        <streq><left>TRUE</left><right>TRUE</right></streq>
         {%- if write_dopost %}
-      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+        {%- elif run_task_run_post %}
+        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
         {%- endif %}
+      </and>
     </dependency>
 
   </task>
@@ -922,22 +930,18 @@ the <task> tag to be identical to the ones above for other output times.
     {%- endif %}
 
     <dependency>
-      {%- if run_task_get_obs_ccpa %}
       <and>
+{#- Redundant dependency to simplify jinja code. #}
+        <streq><left>TRUE</left><right>TRUE</right></streq>
+      {%- if run_task_get_obs_ccpa %}
         <taskdep task="&GET_OBS_CCPA_TN;"/>
-        {%- if write_dopost %}
-        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-      </and>
-      {%- else %}
-        {%- if write_dopost %}
-      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
+      {%- if write_dopost %}
+        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+      {%- elif run_task_run_post %}
+        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {%- endif %}
+      </and>
     </dependency>
 
   </task>
@@ -977,22 +981,18 @@ the <task> tag to be identical to the ones above for other output times.
     {%- endif %}
 
     <dependency>
-      {%- if run_task_get_obs_mrms %}
       <and>
+{#- Redundant dependency to simplify jinja code. #}
+        <streq><left>TRUE</left><right>TRUE</right></streq>
+      {%- if run_task_get_obs_mrms %}
         <taskdep task="&GET_OBS_MRMS_TN;"/>
-        {%- if write_dopost %}
-        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-      </and>
-      {%- else %}
-        {%- if write_dopost %}
-      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
+      {%- if write_dopost %}
+        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+      {%- elif run_task_run_post %}
+        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {%- endif %}
+      </and>
     </dependency>
 
   </task>
@@ -1032,22 +1032,18 @@ the <task> tag to be identical to the ones above for other output times.
     {%- endif %}
 
     <dependency>
-      {%- if run_task_get_obs_mrms %}
       <and>
+{#- Redundant dependency to simplify jinja code. #}
+      <streq><left>TRUE</left><right>TRUE</right></streq>
+      {%- if run_task_get_obs_mrms %}
         <taskdep task="&GET_OBS_MRMS_TN;"/>
-        {%- if write_dopost %}
-        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-      </and>
-      {%- else %}
-        {%- if write_dopost %}
-      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
+      {%- if write_dopost %}
+        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+      {%- elif run_task_run_post %}
+        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {%- endif %}
+      </and>
     </dependency>
 
   </task>
@@ -1209,22 +1205,18 @@ the <task> tag to be identical to the ones above for other output times.
     {%- endif %}
 
     <dependency>
-      {%- if run_task_get_obs_ndas %}
       <and>
+{#- Redundant dependency to simplify jinja code. #}
+      <streq><left>TRUE</left><right>TRUE</right></streq>
+      {%- if run_task_get_obs_ndas %}
         <taskdep task="&GET_OBS_NDAS_TN;"/>
-        {%- if write_dopost %}
-        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
-      </and>
-      {%- else %}
-        {%- if write_dopost %}
-      <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
-        {%- else %}
-      <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
-        {%- endif %}
       {%- endif %}
+      {%- if write_dopost %}
+        <taskdep task="&RUN_FCST_TN;{{ uscore_ensmem_name }}"/>
+      {%- elif run_task_run_post %}
+        <metataskdep metatask="&RUN_POST_TN;{{ uscore_ensmem_name }}"/>
+      {%- endif %}
+      </and>
     </dependency>
 
   </task>

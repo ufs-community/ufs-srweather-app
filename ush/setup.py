@@ -4,8 +4,8 @@ import os
 import sys
 import datetime
 import traceback
+import logging
 from textwrap import dedent
-from logging import getLogger
 
 from python_utils import (
     log_info,
@@ -55,7 +55,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
     """
 
     # Load the default config.
+    logging.debug(f"Loading config defaults file {default_config}")
     cfg_d = load_config_file(default_config)
+    logging.debug(f"Read in the following values from config defaults file:\n")
+    logging.debug(cfg_d)
 
     # Load the user config file, then ensure all user-specified
     # variables correspond to a default value.
@@ -69,6 +72,8 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     try:
         cfg_u = load_config_file(user_config)
+        logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
+        logging.debug(cfg_u)
     except:
         errmsg = dedent(
             f"""\n
@@ -80,15 +85,13 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Make sure the keys in user config match those in the default
     # config.
-    if not check_structure_dict(cfg_u, cfg_d):
-        raise Exception(
-            dedent(
-                f"""
-                User-specified variable "{key}" in {user_config} is not valid
-                Check {EXPT_DEFAULT_CONFIG_FN} for allowed user-specified variables\n
-                """
-            )
-        )
+    invalid = check_structure_dict(cfg_u, cfg_d)
+    if invalid:
+        errmsg = f"Invalid key(s) specified in {user_config}:\n"
+        for entry in invalid:
+            errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
+        errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
+        raise Exception(errmsg)
 
     # Mandatory variables *must* be set in the user's config; the default value is invalid
     mandatory = ["user.MACHINE"]
@@ -116,6 +119,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             ({machine}) in your config file {user_config}"""
             )
         )
+    logging.debug(f"Loading machine defaults file {machine_file}")
     machine_cfg = load_config_file(machine_file)
 
     # Load the fixed files configuration
@@ -144,6 +148,20 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # User settings (take precedence over all others)
     update_dict(cfg_u, cfg_d)
 
+    # Set "Home" directory, the top-level ufs-srweather-app directory
+    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    cfg_d["user"]["HOMEdir"] = homedir
+
+    # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
+    expt_basedir = cfg_d["workflow"]["EXPT_BASEDIR"]
+    if (not expt_basedir) or (expt_basedir[0] != "/"):
+        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
+    try:
+        expt_basedir = os.path.realpath(expt_basedir)
+    except:
+        pass
+    cfg_d["workflow"]["EXPT_BASEDIR"] = os.path.abspath(expt_basedir)
+
     extend_yaml(cfg_d)
 
     # Do any conversions of data types
@@ -151,9 +169,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
         for k, v in settings.items():
             if not (v is None or v == ""):
                 cfg_d[sect][k] = str_to_list(v)
-
-    for k, v in cfg_d["task_run_fcst"].items():
-        print(f"*** {k}: {v}")
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
@@ -216,7 +231,7 @@ def set_srw_paths(ushdir, expt_config):
     """
 
     # HOMEdir is the location of the SRW clone, one directory above ush/
-    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    homedir = expt_config.get("user", {}).get("HOMEdir")
 
     # Read Externals.cfg
     mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
@@ -255,13 +270,12 @@ def set_srw_paths(ushdir, expt_config):
         )
 
     return dict(
-        HOMEdir=homedir,
         USHdir=ushdir,
         UFS_WTHR_MDL_DIR=ufs_wthr_mdl_dir,
     )
 
 
-def setup(USHdir, user_config_fn="config.yaml"):
+def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     """Function that validates user-provided configuration, and derives
     a secondary set of parameters needed to configure a Rocoto-based SRW
     workflow. The derived parameters use a set of required user-defined
@@ -276,13 +290,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
       USHdir          (str): The full path of the ush/ directory where
                              this script is located
       user_config_fn  (str): The name of a user-provided config YAML
+      debug          (bool): Enable extra output for debugging
 
     Returns:
       None
     """
 
-    logger = getLogger(__name__)
-    cd_vrfy(USHdir)
+    logger = logging.getLogger(__name__)
 
     # print message
     log_info(
@@ -341,38 +355,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
               fcst_len_hrs_max = {fcst_len_hrs_max}"""
         )
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # If the base directory (EXPT_BASEDIR) in which the experiment subdirectory
-    # (EXPT_SUBDIR) will be located does not start with a "/", then it is
-    # either set to a null string or contains a relative directory.  In both
-    # cases, prepend to it the absolute path of the default directory under
-    # which the experiment directories are placed.  If EXPT_BASEDIR was set
-    # to a null string, it will get reset to this default experiment directory,
-    # and if it was set to a relative directory, it will get reset to an
-    # absolute directory that points to the relative directory under the
-    # default experiment directory.  Then create EXPT_BASEDIR if it doesn't
-    # already exist.
-    #
-    # -----------------------------------------------------------------------
-    #
-    expt_basedir = workflow_config.get("EXPT_BASEDIR")
-    homedir = expt_config["user"].get("HOMEdir")
-    if (not expt_basedir) or (expt_basedir[0] != "/"):
-        if not expt_basedir or "{{" in expt_basedir:
-            expt_basedir = ""
-        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
-    try:
-        expt_basedir = os.path.realpath(expt_basedir)
-    except:
-        pass
-    expt_basedir = os.path.abspath(expt_basedir)
 
-    workflow_config["EXPT_BASEDIR"] = expt_basedir
-
-    # Update some paths that include EXPT_BASEDIR
-    extend_yaml(expt_config)
     #
     # -----------------------------------------------------------------------
     #
@@ -383,7 +366,10 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     expt_subdir = workflow_config.get("EXPT_SUBDIR", "")
-    exptdir = workflow_config["EXPTDIR"]
+    exptdir = workflow_config.get("EXPTDIR")
+
+    # Update some paths that include EXPTDIR and EXPT_BASEDIR
+    extend_yaml(expt_config)
     preexisting_dir_method = workflow_config.get("PREEXISTING_DIR_METHOD", "")
     try:
         check_for_preexist_dir_file(exptdir, preexisting_dir_method)
@@ -1285,7 +1271,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # loop through the flattened expt_config and check validity of params
-    cfg_v = load_config_file("valid_param_vals.yaml")
+    cfg_v = load_config_file(os.path.join(USHdir, "valid_param_vals.yaml"))
     for k, v in flatten_dict(expt_config).items():
         if v is None or v == "":
             continue
