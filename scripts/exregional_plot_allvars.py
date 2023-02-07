@@ -308,6 +308,14 @@ if __name__ == "__main__":
         required=True,
     )
     parser.add_argument(
+        "--plot-domains",
+        "-p",
+        nargs="+",
+        default=["conus"],
+        help="Name of domain to plot (either 'conus' or 'regional' or both).",
+        required=False,
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="Print debug messages",
@@ -414,7 +422,7 @@ if __name__ == "__main__":
         # Specify plotting domains
         # User can add domains here, just need to specify lat/lon information below
         # (if dom == 'conus' block)
-        domains = ["conus"]  # Other option is 'regional'
+        domains = args.plot_domains  # Other option is 'regional'
     
         ###################################################
         # Read in all variables and calculate differences #

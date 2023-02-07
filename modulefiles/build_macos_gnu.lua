@@ -18,7 +18,6 @@ load("hpc")
 load("hpc-python")
 
 load("hpc-gnu")
-load("openmpi")
 load("hpc-openmpi")
 
 load("srw_common")

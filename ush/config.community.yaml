@@ -6,7 +6,6 @@ user:
   MACHINE: hera
   ACCOUNT: an_account
 platform:
-  MODEL: FV3_GFS_v16_CONUS_25km
   MET_INSTALL_DIR: ""
   METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
@@ -50,3 +49,5 @@ task_plot_allvars:
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
