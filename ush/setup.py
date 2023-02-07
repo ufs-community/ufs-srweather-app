@@ -87,7 +87,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # config.
     invalid = check_structure_dict(cfg_u, cfg_d)
     if invalid:
-        errmsg = "Invalid key(s) specified in {user_config}:\n"
+        errmsg = f"Invalid key(s) specified in {user_config}:\n"
         for entry in invalid:
             errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
         errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
