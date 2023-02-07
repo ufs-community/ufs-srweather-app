@@ -10,8 +10,8 @@ platform:
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
   PREDEF_GRID_NAME: RRFS_CONUS_25km
-  DATE_FIRST_CYCL: $DATE_UTIL --utc --date="2 days ago" +%Y%m%d00
-  DATE_LAST_CYCL: $DATE_UTIL --utc --date="2 days ago" +%Y%m%d00
+  DATE_FIRST_CYCL: '{{ 2|days_ago }}'
+  DATE_LAST_CYCL: '{{ 2|days_ago }}'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:

@@ -33,7 +33,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
-  WTIME_RUN_FCST: 01:00:00
   WRITE_DOPOST: true
   QUILTING: true
 task_plot_allvars:
@@ -42,6 +41,9 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km
 
 rocoto:
-  task_make_grid: !null
-  task_make_orog: !null
-  task_make_sfc_climo: !null
+  tasks:
+    task_make_grid: !null
+    task_make_orog: !null
+    task_make_sfc_climo: !null
+    task_run_fcst:
+      wtime: 01:00:00
