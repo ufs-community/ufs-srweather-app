@@ -537,8 +537,8 @@ To configure an experiment and python environment for a general Linux or Mac sys
 
 .. _PlotOutput:
 
-Plot the Output
------------------
+Plotting Configuration (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
@@ -561,12 +561,12 @@ the same cycle starting date/time and forecast hours. Other parameters may diffe
 .. _Cartopy:
 
 Cartopy Shapefiles
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
 
 Task Configuration
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
 
@@ -593,16 +593,16 @@ When plotting output from a single experiment, no further adjustments are necess
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
 
 Plotting the Difference Between Two Experiments
-```````````````````````````````````````````````````
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
-When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
+When plotting the difference between two experiments (``expt1`` and ``expt2``), users must set the ``COMOUT_REF`` template variable in ``expt2``'s ``config.yaml`` file to point at forecast output from the ``expt1`` directory. For example, in *community* mode, users can set ``COMOUT_REF`` as follows in the ``expt2`` configuration file:
 
 .. code-block:: console
 
    task_plot_allvars:
-      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+      COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
 
-In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`` and ``expt2``. In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
 
 The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 
