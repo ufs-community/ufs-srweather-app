@@ -108,8 +108,6 @@ EOF
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_MAKE_SFC_CLIMO*PPN_MAKE_SFC_CLIMO ))
-
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \

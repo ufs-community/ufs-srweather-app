@@ -4,7 +4,7 @@ default_task_verify_ens: &default_task
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     PDY: !cycstr '@Y@m@d'
     CDATE: !cycstr '@Y@m@d@H'
-    nprocs: '{{ nnodes * nprocs }}'
+    nprocs: '{{ nnodes * ppn }}'
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'

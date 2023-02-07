@@ -11,7 +11,7 @@ default_task_prep: &default_task
     LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
-    nprocs: '{{ nnodes * nprocs }}'
+    nprocs: '{{ nnodes * ppn }}'
     subcyc: !cycstr "@M"
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'

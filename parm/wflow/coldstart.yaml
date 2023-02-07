@@ -7,7 +7,7 @@ default_task: &default_task
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
-    nprocs: '{{ nnodes * nprocs }}'
+    nprocs: '{{ nnodes * ppn }}'
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     ENSMEM_INDX: '#mem#'

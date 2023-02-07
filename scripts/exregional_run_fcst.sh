@@ -64,8 +64,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_RUN_FCST*PPN_RUN_FCST ))
-
 if [ -z "${RUN_CMD_FCST:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \

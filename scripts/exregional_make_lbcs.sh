@@ -65,8 +65,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))
-
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \

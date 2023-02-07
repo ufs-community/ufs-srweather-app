@@ -1,0 +1,48 @@
+# Settings that will run tasks needed per-experiment to create "fix
+# files" for the stationary grid.
+
+default_task_plot: &default_task
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  envars: &default_envars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    LOGDIR: !cycstr "&LOGDIR;"
+    PDY: !cycstr "@Y@m@d"
+    USHdir: "&USHdir;"
+    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    ENSMEM_INDX: '#mem#'
+    cyc: !cycstr "@H"
+    nprocs: '{{ nnodes * ppn }}'
+    subcyc: !cycstr "@M"
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 1
+  ppn: 24
+  nodesize: "&NCORES_PER_NODE;"
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 01:00:00
+
+task_plot_allvars:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  dependency:
+    or_do_post: &post_files_exist
+      and_run_post: # If post was meant to run, wait on the whole post metatask
+        taskvalid:
+          attrs:
+            task: run_post_000
+        metataskdep:
+          attrs:
+            metatask: run_post
+      and_inline_post: # If inline post ran, wait on the forecast task to complete
+        not:
+          taskvalid:
+            attrs:
+              task: run_post_000
+        taskdep:
+          attrs:
+            task: run_fcst
+

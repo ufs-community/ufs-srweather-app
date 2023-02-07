@@ -13,7 +13,7 @@ default_task_post: &default_task
     ENSMEM_INDX: '#mem#'
     cyc: !cycstr '@H'
     fhr: '#fhr#'
-    nprocs: '{{ nnodes * nprocs }}'
+    nprocs: '{{ nnodes * ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
