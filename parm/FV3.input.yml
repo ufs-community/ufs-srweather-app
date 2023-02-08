@@ -430,7 +430,7 @@ FV3_GFS_v17_p8:
     hord_tm: 5
     hord_vt: 5
     hord_tr: 8
-    k_split: 2
+    k_split: 6
     n_split: 6
     n_sponge: 10
     nord: 2
