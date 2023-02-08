@@ -81,7 +81,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     endtime = datetime.now()
     total_walltime = endtime - starttime
 
-    logging.info(f'All {num_expts} experiments finished in {str(total_walltime)}')
+    logging.info(f'All {len(running_expts)} experiments finished in {str(total_walltime)}')
 
     return monitor_file
 
