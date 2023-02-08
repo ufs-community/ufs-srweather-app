@@ -179,7 +179,7 @@ def run_we2e_tests(homedir, args) -> None:
         with open(ushdir + "/config.yaml","w") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
-        logging.debug(f"Calling workflow generation function for test {test_name}\n")
+        logging.info(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
