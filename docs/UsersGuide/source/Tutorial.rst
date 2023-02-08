@@ -4,7 +4,7 @@
 Tutorials
 =============
 
-This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in the ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
+This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
 
 Users can run through the entire set of tutorials or jump to the one that interests them most. The five tutorials address different skills:
 
@@ -59,14 +59,14 @@ To load the regional workflow environment, source the lmod-setup file. Then load
 
 .. code-block:: console
    
-   source etc/lmod-setup.sh <platform> # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
+   source etc/lmod-setup.sh <platform>       # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
    module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username):
-etai
+
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
@@ -268,7 +268,7 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
 
-``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a previous forecast run that was started earlier than the start time of the current forecast configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
 Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_POST``) for the postprocessing tasks. The wall time is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
 
@@ -306,7 +306,7 @@ To see experiment progress, users should navigate to their experiment directory.
 
 .. note::
    
-   If users have not automated their workflow using cron, they will need to ensure that they continue issuing ``rocotorun`` commands to launch all of the tasks in each experiment. While switching between experiment directories to run ``rocotorun`` and ``rocotostat`` commands in both is possible, it may be easier to finish the ``control`` experiment's tasks before starting on ``test_expt``. 
+   If users have not automated their workflow using cron, they will need to ensure that they continue issuing ``rocotorun`` commands to launch all of the tasks in each experiment. While switching between experiment directories to run ``rocotorun`` and ``rocotostat`` commands in both directories is possible, it may be easier to finish the ``control`` experiment's tasks before starting on ``test_expt``. 
 
 
 Compare and Analyze Results
@@ -317,7 +317,7 @@ Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-p
 Copy ``.png`` Files onto Local System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. Detailed instructions can are available in the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
+Users who are working on the cloud or on an HPC cluster may want to copy the ``.png`` files onto their local system to view in their preferred image viewer. Detailed instructions are available in the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>`.
 
 In summary, users can run the ``scp`` command in a new terminal/command prompt window to securely copy files from a remote system to their local system if an SSH tunnel is already established between the local system and the remote system. Users can adjust one of the following commands for their system:
 
@@ -408,7 +408,7 @@ At f000, the ``test_expt`` plot (top left) is showing more severe weather than t
 
       *Composite Reflectivity at f000*
 
-As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. Both forecasts do a good job of picking up on the convection. However, the ``test_expt`` forecast still indicates a higher-energy storm with more areas of dark red. It appears that the ``test_expt`` case was able to resolve more discrete storms over northwest Indiana and in the squall line. The ``control`` plot has less definition and depicts widespread storms concentrated together over the center of the state. 
+As the forecast progresses, the radar images resemble each other more (see :numref:`Figure %s <refc006>`). Both the ``test_expt`` and ``control`` plots show the storm gaining energy (with more orange and red areas), rotating counterclockwise, and moving east. Thus, both forecasts do a good job of picking up on the convection. However, the ``test_expt`` forecast still indicates a higher-energy storm with more areas of *dark* red. It appears that the ``test_expt`` case was able to resolve more discrete storms over northwest Indiana and in the squall line. The ``control`` plot has less definition and depicts widespread storms concentrated together over the center of the state. 
 
 .. _refc006:
 
@@ -553,6 +553,7 @@ Weather Summary
 A line of severe storms brought strong winds, flash flooding, and tornadoes to the eastern half of the US.
 
 **Weather Phenomena:** Flooding and high winds
+
    * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/HalloweenStorm.jpg

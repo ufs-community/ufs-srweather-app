@@ -10,7 +10,7 @@ Introduction to SSH & Data Transfer
 
    Note that all port numbers, IP addresses, and SSH keys included in this chapter are placeholders and do not refer to known systems. They are used purely for illustrative purposes, and users should modify the commands to correspond to their actual systems. 
 
-A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between two systems. Many HPC platforms, including NOAA `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__, are accessed via SSH from the user's own computer via SSH. 
+A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between two systems. Many HPC platforms, including NOAA `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__, are accessed via SSH from the user's own computer. 
 
 .. attention:: 
 
@@ -42,7 +42,7 @@ To see the SSH public key contents, run:
 
    cat id_rsa.pub
 
-SSH into a Remote Machine
+SSH Into a Remote Machine
 ----------------------------
 
 This process differs somewhat from system to system. However, this section provides general guidance. 
@@ -130,7 +130,7 @@ Users who are working on a remote cloud or HPC system may want to copy files (e.
 
    scp [OPTION] [user@]SRC_HOST:]file1 [user@]DEST_HOST:]file2
 
-Here, ``SRC_HOST`` refers to the system where the files are currently located. ``DEST_HOST`` refers to the system that the files will be moved to. ``file1`` is the path to the file or directory to copy, and ``file2`` is the location that the file or directory should be copied to on the ``DEST_HOST`` system. 
+Here, ``SRC_HOST`` refers to the system where the files are currently located. ``DEST_HOST`` refers to the system that the files will be copied to. ``file1`` is the path to the file or directory to copy, and ``file2`` is the location that the file or directory should be copied to on the ``DEST_HOST`` system. 
 
 .. _SSHDownload:
 
