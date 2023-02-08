@@ -1,0 +1,54 @@
+# This is an example yaml file showing the various entries that can be created for tracking jobs by monitor_jobs.py
+# Any valid file created by monitor_jobs.py (unless corrupted) can be re-submitted for continued tracking if any
+# experiments are yet to be completed.
+# If an experiment with status: COMPLETE, DEAD, or ERROR is read by monitor_jobs,py, it will be ignored.
+#First example: an experiment that has been created by generate_FV3LAM_workflow.py but has not yet started running
+custom_ESGgrid:
+  expt_dir: /some_directory/expt_dirs/custom_ESGgrid
+  status: CREATED
+#Second example: an experiment that has just been submitted
+custom_ESGgrid:
+  expt_dir: /some_directory/expt_dirs/custom_ESGgrid
+  status: SUBMITTING
+  make_grid_201907010000: SUBMITTING
+  get_extrn_ics_201907010000: SUBMITTING
+  get_extrn_lbcs_201907010000: SUBMITTING
+#Third example: an experiment with a mix of successful and running tasks
+custom_ESGgrid:
+  expt_dir: /some_directory/expt_dirs/custom_ESGgrid
+  status: RUNNING
+  make_grid_201907010000: SUCCEEDED
+  get_extrn_ics_201907010000: SUCCEEDED
+  get_extrn_lbcs_201907010000: SUCCEEDED
+  make_orog_201907010000: SUCCEEDED
+  make_sfc_climo_201907010000: SUCCEEDED
+  make_ics_201907010000: RUNNING
+  make_lbcs_201907010000: RUNNING
+#Fourth example: an experiment that has completed successfully
+custom_ESGgrid:
+  expt_dir: /some_directory/expt_dirs/custom_ESGgrid
+  status: COMPLETE
+  make_grid_201907010000: SUCCEEDED
+  get_extrn_ics_201907010000: SUCCEEDED
+  get_extrn_lbcs_201907010000: SUCCEEDED
+  make_orog_201907010000: SUCCEEDED
+  make_sfc_climo_201907010000: SUCCEEDED
+  make_ics_201907010000: SUCCEEDED
+  make_lbcs_201907010000: SUCCEEDED
+  run_fcst_201907010000: SUCCEEDED
+  run_post_f000_201907010000: SUCCEEDED
+  run_post_f001_201907010000: SUCCEEDED
+  run_post_f002_201907010000: SUCCEEDED
+  run_post_f003_201907010000: SUCCEEDED
+  run_post_f004_201907010000: SUCCEEDED
+  run_post_f005_201907010000: SUCCEEDED
+  run_post_f006_201907010000: SUCCEEDED
+#Fifth example: an experiment that has died due to a failed task.
+custom_ESGgrid:
+  expt_dir: /some_directory/expt_dirs/custom_ESGgrid
+  status: DEAD
+  make_grid_201907010000: SUCCEEDED
+  get_extrn_ics_201907010000: SUCCEEDED
+  get_extrn_lbcs_201907010000: SUCCEEDED
+  make_orog_201907010000: DEAD
+
