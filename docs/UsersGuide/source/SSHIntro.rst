@@ -89,7 +89,7 @@ Users attempting to authenticate via SSH on GitHub might create the following co
      User git
      IdentityFile ~/.ssh/id_ed25519
 
-SSH into the Remote System
+SSH Into the Remote System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To SSH into the remote system, simply run:
