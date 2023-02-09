@@ -32,3 +32,6 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+verification:
+  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
+
