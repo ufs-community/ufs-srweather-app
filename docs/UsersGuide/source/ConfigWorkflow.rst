@@ -215,7 +215,7 @@ Directory Parameters
 -----------------------
 
 ``EXPT_BASEDIR``: (Default: "")
-   The full path to the base directory in which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ufs-srweather-app`` directory.
+   The full path to the base directory in which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ufs-srweather-app`` directory. If set to a relative path, the provided path will be appended to the default value ``${HOMEdir}/../expt_dirs``. For example, if ``EXPT_BASEDIR=some/relative/path`` (i.e. a path that does not begin with ``/``), the value of ``EXPT_BASEDIR`` used by the workflow will be ``EXPT_BASEDIR=${HOMEdir}/../expt_dirs/some/relative/path``.
 
 ``EXPT_SUBDIR``: (Default: "")
    The user-designated name of the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
