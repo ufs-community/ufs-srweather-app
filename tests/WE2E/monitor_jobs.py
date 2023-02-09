@@ -46,7 +46,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     logging.info("Checking tests available for monitoring...")
     for expt in expt_dict:
         logging.info(f"Starting experiment {expt} running")
-        expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
+        expt_dict[expt] = update_expt_status(expt_dict[expt], expt, True)
 
     write_monitor_file(monitor_file,expt_dict)
 
@@ -81,11 +81,11 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     endtime = datetime.now()
     total_walltime = endtime - starttime
 
-    logging.info(f'All {len(running_expts)} experiments finished in {str(total_walltime)}')
+    logging.info(f'All {len(expt_dict)} experiments finished in {str(total_walltime)}')
 
     return monitor_file
 
-def update_expt_status(expt: dict, name: str) -> dict:
+def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
     """
     This function reads the dictionary showing the location of a given experiment, runs a
     `rocotorun` command to update the experiment (running new jobs and updating the status of
@@ -121,15 +121,18 @@ def update_expt_status(expt: dict, name: str) -> dict:
              to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
 
     Args:
-        expt (dict): A dictionary containing the information for an individual experiment, as
-                     described in the main monitor_jobs() function.
-        name  (str): [optional]
+        expt    (dict):    A dictionary containing the information for an individual experiment, as
+                           described in the main monitor_jobs() function.
+        name     (str):    Name of the experiment; used for logging only
+        refresh (bool):    If true, this flag will check an experiment status even if it is listed
+                           as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
+                           that may have been restarted.
     Returns:
         dict: The updated experiment dictionary.
     """
 
     #If we are no longer tracking this experiment, return unchanged
-    if expt["status"] in ['DEAD','ERROR','COMPLETE']:
+    if (expt["status"] in ['DEAD','ERROR','COMPLETE']) and not refresh:
         return expt
 
     # Update experiment, read rocoto database
