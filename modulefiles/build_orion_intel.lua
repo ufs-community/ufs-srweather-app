@@ -11,7 +11,7 @@ load("noaatools")
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.1"))
 load(pathJoin("python", os.getenv("python_ver") or "3.9.2"))
 
-prepend_path("MODULEPATH","/work/noaa/epic-ps/hpc-stack/lib/intel/2022.1.2/modulefiles/stack")
+prepend_path("MODULEPATH","/work/noaa/epic-ps/role-epic-ps/hpc-stack/libs/intel-2022.1.2/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1.2"))
 load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver") or "2022.1.2"))
@@ -20,8 +20,6 @@ load("srw_common")
 
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
-
-load(pathJoin("wgrib2", os.getenv("wgrib2_ver") or "2.0.8"))
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
