@@ -18,6 +18,7 @@ Parameters needed by the job scheduler.
 <!ENTITY QUEUE_DEFAULT "{{ queue_default }}">
 <!ENTITY QUEUE_HPSS    "{{ queue_hpss }}">
 <!ENTITY QUEUE_FCST    "{{ queue_fcst }}">
+<!ENTITY QUEUE_PRDGEN       "{{ queue_prdgen }}">
 
 <!--
 Workflow task names.
@@ -36,6 +37,7 @@ Workflow task names.
 <!ENTITY MAKE_LBCS_TN              "{{ make_lbcs_tn }}">
 <!ENTITY RUN_FCST_TN               "{{ run_fcst_tn }}">
 <!ENTITY RUN_POST_TN               "{{ run_post_tn }}">
+<!ENTITY RUN_PRDGEN_TN             "{{ run_prdgen_tn }}">
 <!ENTITY GET_OBS                   "{{ get_obs }}">
 <!ENTITY GET_OBS_CCPA_TN           "{{ get_obs_ccpa_tn }}">
 <!ENTITY GET_OBS_NDAS_TN           "{{ get_obs_ndas_tn }}">
@@ -149,6 +151,11 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue><partition>{{ partition_fcst }}</partition>">
 {%- else %}
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue>">
+{%- endif %}
+{%- if partition_prdgen is not none %}
+<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition><native>&RRFS_POST_RESERVE;</native>">
+{%- else %}
+<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue>">
 {%- endif %}
 
 ]>

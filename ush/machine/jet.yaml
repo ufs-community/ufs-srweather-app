@@ -15,6 +15,8 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
+  PARTITION_PRDGEN: sjet,vjet,kjet,xjet
+  QUEUE_PRDGEN: batch
   RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL
   RUN_CMD_SERIAL: time

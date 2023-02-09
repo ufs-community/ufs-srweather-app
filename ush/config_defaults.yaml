@@ -158,6 +158,18 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
+  # PARTITION_PRDGEN:
+  #   # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"),
+  #     # the partition to which the task that remaps output grids is submitted.  If
+  #       # this is not set or set to an empty string, it will be (re)set to a
+  #         # machine-dependent value.  This is not used if SCHED is not set to
+  # "slurm".
+  #
+  # QUEUE_PRDGEN:
+  # The queue or QOS to which the task that prodgen is submitted.
+  # If this is not set or set to an empty string, it will be (re)set to a
+  # machine-dependent value.
+  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
@@ -174,6 +186,8 @@ platform:
   QUEUE_HPSS: ""
   PARTITION_FCST: ""
   QUEUE_FCST: ""
+  PARTITION_PRDGEN: ""
+  QUEUE_PRDGEN: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1033,6 +1047,16 @@ workflow_switches:
   RUN_TASK_VX_ENSPOINT: false
 
   RUN_TASK_PLOT_ALLVARS: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_PARALLEL_PRDGEN:
+  # Flag turn on parallel wgrib2 runs in prdgen .
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_PARALLEL_PRDGEN: false
+  #
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -1913,6 +1937,43 @@ task_run_post:
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
+
+#----------------------------
+# RUN PRDGEN config parameters
+#-----------------------------
+task_run_prdgen:
+  RUN_PRDGEN_TN: "run_prdgen"
+  NNODES_RUN_PRDGEN: 1
+  PPN_RUN_PRDGEN: 1
+  MEM_RUN_PRDGEN: 24G
+  WTIME_RUN_PRDGEN: 00:40:00
+  MAXTRIES_RUN_PRDGEN: 1
+  KMP_AFFINITY_RUN_PRDGEN: "scatter"
+  OMP_NUM_THREADS_RUN_PRDGEN: 1
+  OMP_STACKSIZE_RUN_PRDGEN: "1024m"
+  #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set additional output grids for wgrib2 remapping, if any
+  # Space-separated list of strings, e.g., ( "130" "242" "clue" )
+  # Default is no additional grids
+  #
+  # Current options as of 23 Apr 2021:
+  #  "130"   (CONUS 13.5 km)
+  #  "200"   (Puerto Rico 16 km)
+  #  "221"   (North America 32 km)
+  #  "242"   (Alaska 11.25 km)
+  #  "243"   (Pacific 0.4-deg)
+  #  "clue"  (NSSL/SPC 3-km CLUE grid for 2020/2021)
+  #  "hrrr"  (HRRR 3-km CONUS grid)
+  #  "hrrre" (HRRRE 3-km CONUS grid)
+  #  "rrfsak" (RRFS 3-km Alaska grid)
+  #  "hrrrak" (HRRR 3-km Alaska grid)
+  #
+  #-----------------------------------------------------------------------
+  #
+  ADDNL_OUTPUT_GRIDS: []
 
 #----------------------------
 # GET OBS CCPA config parameters
