@@ -410,7 +410,7 @@ A standard set of environment variables has been established for *nco* mode to s
    Only *community* mode is fully supported for this release. *nco* mode is used by those at the Environmental Modeling Center (EMC) and Global Systems Laboratory (GSL) who are working on pre-implementation operational testing. Other users should run the SRW App in *community* mode. 
 
 ``envir, NET, model_ver, RUN``:
-   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5) as follows:
+   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5) as follows: 
 
    ``envir``: (Default: "para")
       Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. 
@@ -426,6 +426,8 @@ A standard set of environment variables has been established for *nco* mode to s
 
 ``OPSROOT``: (Default: "")
   The operations root directory in *nco* mode.
+
+.. _workflow-switches:
 
 WORKFLOW SWITCHES Configuration Parameters
 =============================================
@@ -689,6 +691,8 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
 ``SFC_CLIMO_DIR``: (Default: "")
    The directory containing pre-generated surface climatology files to use when ``TN_MAKE_SFC_CLIMO`` is set to false.
 
+.. _task_get_extrn_ics:
+
 GET_EXTRN_ICS Configuration Parameters
 =========================================
 
@@ -770,6 +774,7 @@ Set parameters associated with NOMADS online data.
 ``NOMADS_file_type``: (Default: "nemsio")
    Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
+.. _task_get_extrn_lbcs:
 
 GET_EXTRN_LBCS Configuration Parameters
 ==========================================
@@ -1768,16 +1773,19 @@ Additional Parameters
 Typically, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
 
 ``COMOUT_REF``: (Default: "")
-   The directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the COMOUT directory and end with ``$PDY/$cyc``.
+   The directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory and end with ``$PDY/$cyc``. For more detail on *nco* standards and directory naming conventions, see `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ (particularly pp. 4-5). 
   
 ``PLOT_FCST_START``: (Default: 0)
    The starting forecast hour for the plotting task. For example, if a forecast starts at 18h/18z, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. If a forecast starts at 18h/18z, but the user only wants plots from the 6th forecast hour on, "starting forecast hour" should be 6.
 
 ``PLOT_FCST_INC``: (Default: 3)
-   Forecast hour increment for the plotting task. This may be the same as ``INCR_CYCL_FREQ``, or it may be a multiple of ``INCR_CYCL_FREQ``. For example, if ``INCR_CYCL_FREQ`` is set to 3, there will be forecast output every three hours for the duration of the forecast. If the user wants plots of all of this output, they should set ``PLOT_FCST_INC: 3``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. However, there must be forecast output available at the designated increments to produce the plots. In this example, setting ``PLOT_FCST_INC: 7`` would produce an error because there is only forecast output available for hours 3, 6, 9, ..., etc. 
+   Forecast hour increment for the plotting task. For example, if the user wants plots for each forecast hour, they should set ``PLOT_FCST_INC: 1``. If the user only wants plots for some of the output (e.g., every 6 hours), they should set ``PLOT_FCST_INC: 6``. 
   
 ``PLOT_FCST_END``: (Default: "")
    The last forecast hour for the plotting task. For example, if a forecast run for 24 hours, and the user wants plots for each available hour of forecast output, they should set ``PLOT_FCST_END: 24``. If the user only wants plots from the first 12 hours of the forecast, the "last forecast hour" should be 12.
+
+``PLOT_DOMAINS``: (Default: ["conus"])
+   Domains to plot. Currently supported options are ["conus"], ["regional"], or both (i.e., ["conus", "regional"]).
 
 Global Configuration Parameters
 ===================================

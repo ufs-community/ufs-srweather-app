@@ -306,7 +306,7 @@ where:
 
 For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. 
 
-In some cases, it may be necessary to specify values for ``EXTRN_MDL_FILES_*CS``variables. This is often the case with HRRR and RAP data. An example ``config.yaml`` excerpt using HRRR and RAP data appears below: 
+In some cases, it may be necessary to specify values for ``EXTRN_MDL_FILES_*CS`` variables. This is often the case with HRRR and RAP data. An example ``config.yaml`` excerpt using HRRR and RAP data appears below: 
 
 .. code-block:: console
 
