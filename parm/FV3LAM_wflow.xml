@@ -13,11 +13,11 @@ See README.xml_templating.md for information on using the Templating mechanisms.
 <!--
 Parameters needed by the job scheduler.
 -->
-<!ENTITY ACCOUNT       "{{ account }}">
-<!ENTITY SCHED         "{{ sched }}">
-<!ENTITY QUEUE_DEFAULT "{{ queue_default }}">
-<!ENTITY QUEUE_HPSS    "{{ queue_hpss }}">
-<!ENTITY QUEUE_FCST    "{{ queue_fcst }}">
+<!ENTITY ACCOUNT            "{{ account }}">
+<!ENTITY SCHED              "{{ sched }}">
+<!ENTITY QUEUE_DEFAULT      "{{ queue_default }}">
+<!ENTITY QUEUE_HPSS         "{{ queue_hpss }}">
+<!ENTITY QUEUE_FCST    	    "{{ queue_fcst }}">
 <!ENTITY QUEUE_PRDGEN       "{{ queue_prdgen }}">
 
 <!--
@@ -758,6 +758,52 @@ the <task> tag to be identical to the ones above for other output times.
 
   </metatask>
   {%- endif %}
+{%- endif %}
+
+{%- if run_task_run_prdgen %}
+<!--
+************************************************************************
+************************************************************************
+-->
+<metatask name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}">
+
+    <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
+    <task name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc" maxtries="{{ maxtries_run_prdgen }}">
+
+      &RSRV_PRDGEN;
+      &WALL_LIMIT_POST;
+
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_PRDGEN_TN;" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"</command>
+
+      <nodes>{{ nnodes_run_prdgen }}:ppn={{ ppn_run_prdgen }}</nodes>
+      <walltime>{{ wtime_run_prdgen }}</walltime>
+      <memory>{{ mem_run_prdgen }}</memory>
+      <nodesize>&NCORES_PER_NODE;</nodesize>
+      <native>&SCHED_NATIVE_CMD;</native>
+
+      <jobname>&TAG;&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <join>&LOGDIR;/&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+
+      <envar><name>CYCLE_TYPE</name><value><cyclestr>prod</cyclestr></value></envar>
+      <envar><name>CYCLE_SUBTYPE</name><value><cyclestr></cyclestr></value></envar>
+      <envar><name>fhr</name><value>#fhr#</value></envar>
+      <envar><name>TMMARK</name><value>tm00</value></envar>
+
+      <dependency>
+        <taskdep task="&RUN_POST_TN;{{ uscore_ensmem_name }}_f#fhr#"/>
+      </dependency>
+
+    </task>
+  </metatask>
 {%- endif %}
 
 {%- if run_task_plot_allvars %}

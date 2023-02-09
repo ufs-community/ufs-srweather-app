@@ -993,6 +993,9 @@ workflow_switches:
   # RUN_TASK_RUN_POST:
   # Flag that determines whether the RUN_POST_TN task is to be run.
   # 
+  # RUN_TASK_RUN_PRDGEN:
+  # Flag that determines whether the RUN_PRDGEN_TN task is to be run.
+  #
   # RUN_TASK_GET_OBS_CCPA:
   # Flag that determines whether to run the GET_OBS_CCPA_TN task, which
   # retrieves the CCPA hourly precipitation files used by METplus from NOAA HPSS. 
@@ -1037,6 +1040,8 @@ workflow_switches:
   RUN_TASK_MAKE_LBCS: true
   RUN_TASK_RUN_FCST: true
   RUN_TASK_RUN_POST: true
+
+  RUN_TASK_RUN_PRDGEN: false
   
   RUN_TASK_GET_OBS_CCPA: false
   RUN_TASK_GET_OBS_MRMS: false
