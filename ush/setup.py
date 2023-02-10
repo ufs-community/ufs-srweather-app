@@ -419,6 +419,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
+    workflow_switches = expt_config["workflow_switches"]
+    run_task_make_grid = workflow_switches['RUN_TASK_MAKE_GRID']
+    run_task_make_orog = workflow_switches['RUN_TASK_MAKE_OROG']
+    run_task_make_sfc_climo = workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']
+
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
     if pregen_basedir is None and not (
@@ -1031,7 +1036,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config["workflow_switches"]
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = global_sect["DO_ENSEMBLE"]
@@ -1063,14 +1067,30 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # turned off. Link the files, and check that they all contain the
     # same resolution input.
     #
+    run_task_make_ics = workflow_switches['RUN_TASK_MAKE_LBCS']
+    run_task_make_lbcs = workflow_switches['RUN_TASK_MAKE_ICS']
+    run_task_run_fcst = workflow_switches['RUN_TASK_RUN_FCST']
+    run_task_makeics_or_makelbcs_or_runfcst = run_task_make_ics or \
+                                              run_task_make_lbcs or \
+                                              run_task_run_fcst
+    # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
+    # These consider dependencies of other tasks on each pre-processing task.
+    create_symlinks_to_pregen_files = {
+      "GRID": (not workflow_switches['RUN_TASK_MAKE_GRID']) and \
+              (run_task_make_orog or run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "OROG": (not workflow_switches['RUN_TASK_MAKE_OROG']) and \
+              (run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "SFC_CLIMO": (not workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']) and \
+                   (run_task_make_ics or run_task_make_lbcs),
+    }
+
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        switch = f"RUN_TASK_MAKE_{prep_task}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not workflow_switches[switch]:
+        if create_symlinks_to_pregen_files[prep_task]:
             sect_key = f"task_make_{prep_task.lower()}"
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key].get(dir_key)
@@ -1080,7 +1100,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 expt_config[sect_key][dir_key] = task_dir
                 msg = dedent(
                     f"""
-                   {dir_key} will use pre-generated files.
+                   {dir_key} will point to a location containing pre-generated files.
                    Setting {dir_key} = {task_dir}
                    """
                 )
