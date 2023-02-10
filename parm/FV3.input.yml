@@ -229,7 +229,7 @@ FV3_GFS_v15p2:
     do_sat_adj: True
     fv_debug: False
     fv_sg_adj: 600
-    k_split: 1   
+    k_split: 1
     kord_mt: 9
     kord_tm: -9
     kord_tr: 9
