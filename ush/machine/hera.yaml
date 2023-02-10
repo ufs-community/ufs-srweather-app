@@ -33,6 +33,9 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+data:
+  obs:
+    RAP_obs: /scratch2/BMC/public/data/grids/rap/obs
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
@@ -44,3 +47,4 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
   PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt
+

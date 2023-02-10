@@ -194,13 +194,6 @@ while :; do
   shift
 done
 
-# choose default apps to build
-if [ "${DEFAULT_BUILD}" = true ]; then
-  BUILD_UFS="on"
-  BUILD_UFS_UTILS="on"
-  BUILD_UPP="on"
-fi
-
 # Ensure uppercase / lowercase ============================================
 APPLICATION="${APPLICATION^^}"
 PLATFORM="${PLATFORM,,}"
@@ -213,10 +206,30 @@ if [ -z $PLATFORM ] ; then
   usage
   exit 0
 fi
-
 # set PLATFORM (MACHINE)
 MACHINE="${PLATFORM}"
 printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
+
+# choose default apps to build
+if [ "${DEFAULT_BUILD}" = true ]; then
+  BUILD_UFS="on"
+  BUILD_UFS_UTILS="on"
+  BUILD_UPP="on"
+fi
+
+# Choose components to build for Online-CMAQ
+if [ "${APPLICATION}" = "ATMAQ" ]; then
+  if [ "${DEFAULT_BUILD}" = true ]; then
+    BUILD_NEXUS="on"
+    BUILD_AQM_UTILS="on"
+    BUILD_UPP="off"
+  fi
+  if [ "${PLATFORM}" = "wcoss2" ]; then
+    BUILD_POST_STAT="on"
+  else
+    BUILD_POST_STAT="off"
+  fi
+fi
 
 set -eu
 
@@ -241,20 +254,6 @@ printf "COMPILER=${COMPILER}\n" >&2
 # print settings
 if [ "${VERBOSE}" = true ] ; then
   settings
-fi
-
-# Check out external components ===============================================
-if [ "${APPLICATION}" = "ATMAQ" ]; then
-  if [ "${DEFAULT_BUILD}" = true ]; then
-    BUILD_NEXUS="on"
-    BUILD_AQM_UTILS="on"
-    BUILD_UPP="off"
-  fi
-  if [ "${PLATFORM}" = "wcoss2" ]; then
-    BUILD_POST_STAT="on"
-  else
-    BUILD_POST_STAT="off"
-  fi
 fi
 
 # source version file only if it is specified in versions directory
