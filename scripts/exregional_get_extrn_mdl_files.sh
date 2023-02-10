@@ -57,9 +57,9 @@ or lateral boundary conditions for the FV3.
 set -x
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   if [ ${TIME_OFFSET_HRS} -eq 0 ] ; then
-    anl_or_fcst="anl"
+    file_set="anl"
   else
-    anl_or_fcst="fcst"
+    file_set="fcst"
   fi
   fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
@@ -69,7 +69,7 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
 
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-  anl_or_fcst="fcst"
+  file_sett="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
@@ -151,7 +151,7 @@ fi
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
   --debug \
-  --anl_or_fcst ${anl_or_fcst} \
+  --file_set ${file_set} \
   --config ${PARMdir}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
