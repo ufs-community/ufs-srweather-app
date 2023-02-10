@@ -69,7 +69,7 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
 
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-  file_sett="fcst"
+  file_set="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
