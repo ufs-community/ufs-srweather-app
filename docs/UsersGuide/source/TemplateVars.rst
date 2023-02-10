@@ -1,8 +1,8 @@
 .. _TemplateVars:
 
-===============================================================
-Using Template Variables in the Experiment Configuration Files
-===============================================================
+======================
+Template Variables
+======================
 
 The SRW App's experiment configuration system supports the use of template variables
 in ``config_defaults.yaml`` and ``config.yaml``. A template variable --- or "template" --- is an experiment configuration variable that contains references to values of other variables. 
@@ -54,17 +54,22 @@ To generate difference plots, users must use the template variable ``COMOUT_REF`
 to indicate where the :term:`GRIB2` files from post-processing are located. 
 
 In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will 
-take the form ``/path/to/exptdir/$PDY$cyc/postprd``, where ``$PDY`` refers to the 
-cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. 
+take the form ``/path/to/expt_dirs/expt_name/$PDY$cyc/postprd``, where ``$PDY`` refers 
+to the cycle date in YYYYMMDD format, and ``$cyc`` refers to the starting hour of the cycle. 
 (These variables are set in previous tasks based on the value of ``DATE_FIRST_CYCL``.)
-Concretely, users can set ``COMOUT_REF`` as follows:
+Given two experiments, ``expt1`` and ``expt2``, users can generate difference plots by 
+setting ``COMOUT_REF`` in the ``expt2`` configuration file (``config.yaml``) as follows:
 
 .. code-block:: console
 
-   COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+   COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
 
-In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory 
-(``${COMOUT}`` in the example below) and end with ``${PDY}/${cyc}``. For example:
+The ``expt2`` workflow already knows where to find its own post-processed output, so 
+``COMOUT_REF`` should point to post-processed output for the other experiment (``expt1``). 
+
+In *nco* mode, this directory should be set to the location of the first experiment's 
+``COMOUT`` directory (``${COMOUT}`` in the example below) and end with ``${PDY}/${cyc}``. 
+For example:
 
 .. code-block:: console
 

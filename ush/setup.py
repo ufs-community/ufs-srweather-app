@@ -1086,7 +1086,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
-    # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
+    # If not running the TN_MAKE_GRID, TN_MAKE_OROG, and/or TN_MAKE_SFC_CLIMO
     # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.
     #
