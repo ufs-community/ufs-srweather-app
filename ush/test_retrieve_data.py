@@ -74,7 +74,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'fcst',
+                '--file_set', 'fcst',
                 '--config', self.config,
                 '--cycle_date', '2022060112',
                 '--data_stores', 'hpss',
@@ -107,7 +107,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'anl',
+                '--file_set', 'anl',
                 '--config', self.config,
                 '--cycle_date', '2022052512',
                 '--data_stores', 'aws',
@@ -143,7 +143,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'anl',
+                '--file_set', 'anl',
                 '--config', self.config,
                 '--cycle_date', '2022052512',
                 '--data_stores', 'aws',
@@ -177,7 +177,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'anl',
+                '--file_set', 'anl',
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'hpss',
@@ -207,7 +207,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'fcst',
+                '--file_set', 'fcst',
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'hpss',
@@ -236,7 +236,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'anl',
+                '--file_set', 'anl',
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'aws',
@@ -262,10 +262,8 @@ class FunctionalTesting(unittest.TestCase):
 
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
-
             # fmt: off
             args = [
-                '--anl_or_fcst', 'fcst',
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'aws',
@@ -295,7 +293,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'anl',
+                '--file_set', 'anl',
                 '--config', self.config,
                 '--cycle_date', '2022062509',
                 '--data_stores', 'aws',
@@ -325,7 +323,7 @@ class FunctionalTesting(unittest.TestCase):
 
             # fmt: off
             args = [
-                '--anl_or_fcst', 'fcst',
+                '--file_set', 'fcst',
                 '--config', self.config,
                 '--cycle_date', '2022062509',
                 '--data_stores', 'aws',
