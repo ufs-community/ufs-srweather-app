@@ -265,7 +265,7 @@ class FunctionalTesting(unittest.TestCase):
             
             # fmt: off
             args = [
-                '--anl_or_fcst', 'fcst',
+                '--file_set', 'fcst',
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'aws',
