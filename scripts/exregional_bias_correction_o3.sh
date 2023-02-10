@@ -188,6 +188,23 @@ POST_STEP
 
 cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
+
+mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+
+mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+cp_vrfy ${COMINairnow}/${yyyy}/${PDY}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+
+mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+cp_vrfy ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+
+#exit
 #-----------------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for Ozone
 #-----------------------------------------------------------------------------
@@ -298,8 +315,8 @@ EOF1
 
     grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
    
-    wgrib2 ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_8hr_o3_bc.227.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2 -set_grib_type same -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_1hr_o3_bc.227.grib2
+    wgrib2 ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_8hr_o3_bc.227.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_1hr_o3_bc.227.grib2
 
     cp_vrfy ${DATA}/${NET}.${cycle}.max_*hr_o3_bc.*.grib2 ${COMOUT}
    
@@ -368,12 +385,12 @@ newgrib2file2=${NET}.${cycle}.ave_8hr_o3_bc.227.grib2
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 
-wgrib2 tmpfile.1hr -set_grib_type same -new_grid_winds earth -new_grid ${grid227} ${newgrib2file1} 
+wgrib2 tmpfile.1hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file1} 
 cp_vrfy tmpfile.1hr ${COMOUT}/${NET}.${cycle}.ave_1hr_o3_bc.${id_domain}.grib2
 cp_vrfy ${NET}.${cycle}.ave_1hr_o3_bc.227.grib2 ${COMOUT}
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  wgrib2 tmpfile.8hr -set_grib_type same -new_grid_winds earth -new_grid ${grid227} ${newgrib2file2} 
+  wgrib2 tmpfile.8hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file2} 
   cp_vrfy tmpfile.8hr ${COMOUT}/${NET}.${cycle}.ave_8hr_o3_bc.${id_domain}.grib2
   cp_vrfy ${NET}.${cycle}.ave_8hr_o3_bc.227.grib2 ${COMOUT}
 fi

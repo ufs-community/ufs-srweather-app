@@ -47,16 +47,6 @@ This is the ex-script for the task that runs NEXUS.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_POST_SPLIT}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_POST_SPLIT}
-export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_POST_SPLIT}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------
