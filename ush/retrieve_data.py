@@ -32,6 +32,7 @@ import os
 import shutil
 import subprocess
 import sys
+import glob
 from textwrap import dedent
 import time
 from copy import deepcopy
@@ -81,7 +82,7 @@ def copy_file(source, destination, copy_cmd):
     """
 
     if not os.path.exists(source):
-        logging.info(f"File does not exist on disk \n {source}")
+        logging.info(f"File does not exist on disk \n {source} \n try using: --input_file_path <your_path>")
         return False
 
     # Using subprocess here because system copy is much faster than
@@ -224,7 +225,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     if templates_only:
         return f'{",".join((format_values.keys()))}'
     return template_str.format(**format_values)
-
+    
 
 def create_target_path(target_path):
 
@@ -306,7 +307,7 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
     if isinstance(file_templates, dict):
         if cla.file_type is not None:
             file_templates = file_templates[cla.file_type]
-        file_templates = file_templates[cla.anl_or_fcst]
+        file_templates = file_templates[cla.file_set]
     if not file_templates:
         msg = "No file naming convention found. They must be provided \
                 either on the command line or on in a config file."
@@ -478,7 +479,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         archive_file_names = archive_file_names[cla.file_type]
 
     if isinstance(archive_file_names, dict):
-        archive_file_names = archive_file_names[cla.anl_or_fcst]
+        archive_file_names = archive_file_names[cla.file_set]
 
     unavailable = {}
     existing_archives = {}
@@ -505,7 +506,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     archive_internal_dirs = store_specs.get("archive_internal_dir", [""])
     if isinstance(archive_internal_dirs, dict):
-        archive_internal_dirs = archive_internal_dirs.get(cla.anl_or_fcst, [""])
+        archive_internal_dirs = archive_internal_dirs.get(cla.file_set, [""])
 
     # which_archive matters for choosing the correct file names within,
     # but we can safely just try all options for the
@@ -683,6 +684,7 @@ def setup_logging(debug=False):
     user-defined level for logging in the script."""
 
     level = logging.WARNING
+    level = logging.INFO
     if debug:
         level = logging.DEBUG
 
@@ -743,7 +745,7 @@ def main(argv):
         cla.members = arg_list_to_range(cla.members)
 
     setup_logging(cla.debug)
-    print("Running script retrieve_data.py with args:\n", f"{('-' * 80)}\n{('-' * 80)}")
+    print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
     for name, val in cla.__dict__.items():
         if name not in ["config"]:
             print(f"{name:>15s}: {val}")
@@ -896,10 +898,10 @@ def parse_args(argv):
 
     # Required
     parser.add_argument(
-        "--anl_or_fcst",
-        choices=("anl", "fcst"),
-        help="Flag for whether analysis or forecast \
-        files should be gathered",
+        "--file_set",
+        choices=("anl", "fcst", "obs", "fix"),
+        help="Flag for whether analysis, forecast, \
+        fix, or observation files should be gathered",
         required=True,
     )
     parser.add_argument(
@@ -907,19 +909,22 @@ def parse_args(argv):
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
         in this repository is in parm/data_locations.yml",
+        required=True,
         type=config_exists,
+        
     )
     parser.add_argument(
         "--cycle_date",
         help="Cycle date of the data to be retrieved in YYYYMMDDHH \
         format.",
-        required=True,
+        required=False,                    # relaxed this arg option, and set a benign value when not used
+        default="1999123100",
         type=to_datetime,
     )
     parser.add_argument(
         "--data_stores",
         help="List of priority data_stores. Tries first list item \
-        first. Choices: hpss, nomads, aws, disk",
+        first. Choices: hpss, nomads, aws, disk, remote.",
         nargs="*",
         required=True,
         type=to_lower,
@@ -928,6 +933,7 @@ def parse_args(argv):
         "--external_model",
         choices=(
             "FV3GFS",
+            "GFS_obs",
             "GDAS",
             "GEFS",
             "GSMGFS",
@@ -935,7 +941,9 @@ def parse_args(argv):
             "NAM",
             "RAP",
             "RAPx",
+            "RAP_obs",
             "HRRRx",
+            "GSI-FIX",
         ),
         help="External model label. This input is case-sensitive",
         required=True,
@@ -946,25 +954,30 @@ def parse_args(argv):
         one fhr will be processed.  If 2 or 3 arguments, a sequence \
         of forecast hours [start, stop, [increment]] will be \
         processed.  If more than 3 arguments, the list is processed \
-        as-is.",
+        as-is. default=[0]",
         nargs="+",
-        required=True,
+        required=False,                    # relaxed this arg option, and set a default value when not used
+        default=[0],
         type=int,
     )
     parser.add_argument(
         "--output_path",
         help="Path to a location on disk. Path is expected to exist.",
-        required=True,
+        required=True,                    
         type=os.path.abspath,
     )
     parser.add_argument(
         "--ics_or_lbcs",
         choices=("ICS", "LBCS"),
         help="Flag for whether ICS or LBCS.",
-        required=True,
+        required=True
     )
 
     # Optional
+    parser.add_argument(
+        "--version",     # for file patterns that dont conform to cycle_date [TBD]
+        help="Version number of package to download, e.g. x.yy.zz",
+    )
     parser.add_argument(
         "--symlink",
         action="store_true",
@@ -984,7 +997,7 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--file_type",
-        choices=("grib2", "nemsio", "netcdf"),
+        choices=("grib2", "nemsio", "netcdf", "prepbufr", "tcvitals"),
         help="External model file format",
     )
     parser.add_argument(
