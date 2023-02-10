@@ -82,6 +82,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         "do_aqm_dust": DO_AQM_DUST,
         "do_aqm_canopy": DO_AQM_CANOPY,
         "do_aqm_product": DO_AQM_PRODUCT,
+        "ccpp_phys_suite": CCPP_PHYS_SUITE,
         "aqm_config_dir": AQM_CONFIG_DIR,
         "init_concentrations": init_concentrations,
         "aqm_rc_bio_file_fp": aqm_rc_bio_file_fp,
