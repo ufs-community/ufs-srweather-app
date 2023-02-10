@@ -155,6 +155,7 @@ GDAS:
           - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
         fcst:
           - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
   nomads:
     protocol: download
     url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}

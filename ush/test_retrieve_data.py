@@ -103,7 +103,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = f"mem{{mem:03d}}"
+            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -124,7 +124,6 @@ class FunctionalTesting(unittest.TestCase):
             retrieve_data.main(args)
 
             # Verify files exist in temp dir
-
             for mem in [9, 10]:
                 files_on_disk = glob.glob(
                     os.path.join(out_path_tmpl.format(mem=mem), "*")
@@ -132,6 +131,7 @@ class FunctionalTesting(unittest.TestCase):
                 self.assertEqual(len(files_on_disk), 2)
 
     # GEFS Tests
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_gefs_grib2_ics_from_aws(self):
 
         """Get GEFS grib2 a & b files for ICS offset by 6 hours."""
@@ -139,7 +139,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = f"mem{{mem:03d}}"
+            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
 
             # fmt: off
             args = [

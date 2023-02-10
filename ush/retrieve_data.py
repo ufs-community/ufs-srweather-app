@@ -184,7 +184,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     Return:
       filled template string
     """
-
+ 
     # Parse keyword args
     ens_group = kwargs.get("ens_group")
     fcst_hr = kwargs.get("fcst_hr", 0)
@@ -295,7 +295,7 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
     # Remove sfc files from fcst in file_names of external models for LBCs
     # sfc files needed in fcst when time_offset is not zero.
-    if cla.ics_or_lbcs == "LBCS":
+    if cla.ics_or_lbcs == "LBCS" and isinstance(file_templates, dict):
         for format in ['netcdf', 'nemsio']:
             for i, tmpl in enumerate(file_templates.get(format, {}).get('fcst', [])):
                 if "sfc" in tmpl:
@@ -345,7 +345,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     """
 
     members = kwargs.get("members", "")
-    members = members if isinstance(members, list) else [members]
+    members = cla.members if isinstance(cla.members, list) else [members]
 
     check_all = kwargs.get("check_all", False)
 
@@ -699,26 +699,30 @@ def write_summary_file(cla, data_store, file_templates):
     the data was retrieved, write a bash summary file that is needed by
     the workflow elements downstream."""
 
-    files = []
-    for tmpl in file_templates:
-        files.extend(
-            [fill_template(tmpl, cla.cycle_date, fcst_hr=fh) for fh in cla.fcst_hrs]
+    members =  cla.members if isinstance(cla.members, list) else [-1]
+    for mem in members:
+        files = []
+        for tmpl in file_templates:
+            tmpl = tmpl if isinstance(tmpl, list) else [tmpl]
+            for t in tmpl:
+                files.extend(
+                    [fill_template(t, cla.cycle_date, fcst_hr=fh, mem=mem) for fh in cla.fcst_hrs]
+                )
+        output_path = fill_template(cla.output_path, cla.cycle_date, mem=mem)
+        summary_fp = os.path.join(output_path, cla.summary_file)
+        logging.info(f"Writing a summary file to {summary_fp}")
+        file_contents = dedent(
+            f"""
+            DATA_SRC={data_store}
+            EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
+            EXTRN_MDL_STAGING_DIR={output_path}
+            EXTRN_MDL_FNS=( {' '.join(files)} )
+            EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
+            """
         )
-
-    summary_fp = os.path.join(cla.output_path, cla.summary_file)
-    logging.info(f"Writing a summary file to {summary_fp}")
-    file_contents = dedent(
-        f"""
-        DATA_SRC={data_store}
-        EXTRN_MDL_CDATE={cla.cycle_date.strftime('%Y%m%d%H')}
-        EXTRN_MDL_STAGING_DIR={cla.output_path}
-        EXTRN_MDL_FNS=( {' '.join(files)} )
-        EXTRN_MDL_FHRS=( {' '.join([str(i) for i in cla.fcst_hrs])} )
-        """
-    )
-    logging.info(f"Contents: {file_contents}")
-    with open(summary_fp, "w") as summary:
-        summary.write(file_contents)
+        logging.info(f"Contents: {file_contents}")
+        with open(summary_fp, "w") as summary:
+            summary.write(file_contents)
 
 
 def to_datetime(arg):

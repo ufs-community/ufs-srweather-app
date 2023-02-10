@@ -63,7 +63,7 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   fi
   fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
     file_type=$FV3GFS_FILE_FMT_ICS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
@@ -74,7 +74,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
     file_type=$FV3GFS_FILE_FMT_LBCS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
@@ -93,6 +93,10 @@ hh=${yyyymmddhh:8:2}
 # Set to use the pre-defined data paths in the machine file (ush/machine/).
 PDYext=${yyyymmdd}
 cycext=${hh}
+
+# Set an empty members directory
+mem_dir=""
+
 #
 #-----------------------------------------------------------------------
 #
@@ -136,6 +140,13 @@ if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   additional_flags="$additional_flags \
   --symlink"
 fi
+
+if [ $DO_ENSEMBLE == "TRUE" ] ; then
+  mem_dir="/mem{mem:03d}"
+  member_list=(1 ${NUM_ENS_MEMBERS})
+  additional_flags="$additional_flags \
+  --members ${member_list[@]}"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -158,7 +169,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --external_model ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
   --ics_or_lbcs ${ICS_OR_LBCS} \
-  --output_path ${EXTRN_MDL_STAGING_DIR} \
+  --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
@@ -168,6 +179,79 @@ Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
+#
+#-----------------------------------------------------------------------
+#
+# Merge GEFS files
+#
+#-----------------------------------------------------------------------
+#
+if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
+    
+    # This block of code sets the forecast hour range based on ICS/LBCS
+    if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
+        fcst_hrs_tmp=( $fcst_hrs )
+        all_fcst_hrs_array=( $(seq ${fcst_hrs_tmp[0]} ${fcst_hrs_tmp[2]} ${fcst_hrs_tmp[1]}) )
+    else
+        all_fcst_hrs_array=( ${fcst_hrs} )
+    fi
+
+    # Loop through ensemble member numbers and forecast hours
+    for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
+        sorted_fn=( )
+        for fcst_hr in "${all_fcst_hrs_array[@]}"; do
+            # Read in filenames from $EXTRN_MDL_FNS and sort them
+            base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
+            filenames_array=`awk -F= '/EXTRN_MDL_FNS/{print $2}' $base_path/${EXTRN_DEFNS}`
+            for filename in ${filenames_array[@]}; do
+                IFS='.' read -ra split_fn <<< "$filename"
+                if [ `echo -n $filename | tail -c 2` == `printf %02d $fcst_hr` ] && [ "${split_fn[1]}" == "t${hh}z" ] ; then
+                    if [ "${split_fn[2]}" == 'pgrb2a' ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == 'pgrb2b' ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2af`printf %02d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %02d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2af`printf %03d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %03d $fcst_hr`" ] ; then
+                        sorted_fn+=( "$filename" )
+                    fi
+                fi
+            done
+
+            # Define filename lists used to check if files exist
+            fn_list_1=( ${sorted_fn[0]} ${sorted_fn[1]}
+                       "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
+            fn_list_2=( ${sorted_fn[2]} ${sorted_fn[3]}
+                       "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
+            fn_list_3=( ${sorted_fn[4]} ${sorted_fn[5]}
+                       "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
+            echo ${fn_list_1[@]}
+            fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
+
+            # Look for filenames, if they exist, merge files together
+            printf "Looking for files in $base_path\n"
+            for fn in "${fn_lists[@]}"; do
+                fn_str="$fn[@]"
+                fn_array=( "${!fn_str}" )
+                if [ -f "$base_path/${fn_array[0]}" ] && [ -f "$base_path/${fn_array[1]}" ]; then
+                    printf "Found files: ${fn_array[0]} and ${fn_array[1]} \nCreating new file: ${fn_array[2]}\n"
+                    cat $base_path/${fn_array[0]} $base_path/${fn_array[1]} > $base_path/${fn_array[2]}
+                    merged_fn+=( "${fn_array[2]}" )
+                fi
+            done
+        done
+        # If merge files exist, update the extrn_defn file
+        merged_fn_str="( ${merged_fn[@]} )"
+        printf "Merged files are: ${merged_fn_str} \nUpdating ${EXTRN_DEFNS}\n\n"
+        echo "$(awk -F= -v val="${merged_fn_str}" '/EXTRN_MDL_FNS/ {$2=val} {print}' OFS== $base_path/${EXTRN_DEFNS})" > $base_path/${EXTRN_DEFNS}
+        merged_fn=()
+        mod_fn_list=()
+    done
+fi
 #
 #-----------------------------------------------------------------------
 #
