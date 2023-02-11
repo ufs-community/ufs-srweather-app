@@ -10,7 +10,7 @@ workflow:
 #  EXPT_BASEDIR: /scratch2/NCEPDEV/stmp3/Chan-hoo.Jeon/expt_dirs
   EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
-  CCPP_PHYS_SUITE: FV3_GFS_v17_p8
+  CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023011700'
   DATE_LAST_CYCL: '2023011706'
   INCR_CYCL_FREQ: 6
@@ -22,8 +22,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v17_p8
-  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v17_p8
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
 nco:
   NET: aqm
 workflow_switches:
