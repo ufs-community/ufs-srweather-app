@@ -317,7 +317,7 @@ class Testing(unittest.TestCase):
             create_model_configure_file(
                 run_dir=path,
                 cdate=datetime(2021, 1, 1),
-                fcst_len_cdate=72,
+                fcst_len_hrs=72,
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
                 dt_atmos=1,
