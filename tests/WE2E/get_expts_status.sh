@@ -427,7 +427,8 @@ The last ${num_log_lines} lines of the workflow launch log file
     print_info_msg "$msg" >> "${expts_status_fp}"
     tail -n ${num_log_lines} ${launch_wflow_log_fn} >> "${expts_status_fp}" 
   else
-    wflow_status="Workflow status:  NOT LAUNCHED YET"
+    wflow_status="Workflow status:  NOT LAUNCHED YET
+Launching workflow using script \"${launch_wflow_fn}\"..."
     print_info_msg "${wflow_status}"
     print_info_msg "\
 $separator
@@ -436,6 +437,7 @@ $separator
 ${wflow_status}
 "
     print_info_msg "$msg" >> "${expts_status_fp}"
+    eval ./${launch_wflow_fn}
   fi
 #
 # Change location back to the experiments base directory.
