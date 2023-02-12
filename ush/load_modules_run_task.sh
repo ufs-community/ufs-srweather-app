@@ -127,9 +127,9 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     module load mod_nexus
   fi
 else
-module use "${HOMEdir}/modulefiles"
-module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
-Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
+  module use "${HOMEdir}/modulefiles"
+  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+  Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""

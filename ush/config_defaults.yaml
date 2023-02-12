@@ -2652,6 +2652,9 @@ cpl_aqm_parm:
   # DO_AQM_GEFS_LBCS:
   # Add GEFS aerosol LBCs to chemical LBCs
   #
+  # DO_AQM_SAVE_AIRNOW_HIST:
+  # Save bias-correction airnow training data
+  #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
@@ -2750,6 +2753,7 @@ cpl_aqm_parm:
   DO_AQM_PRODUCT: true
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: false
+  DO_AQM_SAVE_AIRNOW_HIST: true
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_DIR: ""
