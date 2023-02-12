@@ -188,7 +188,7 @@ POST_STEP
 
 cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-if [ "${DO_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
