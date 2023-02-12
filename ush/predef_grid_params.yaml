@@ -826,20 +826,20 @@
   LAYOUT_X: 10
   LAYOUT_Y: 11
   BLOCKSIZE: 2
-  #if QUILTING = True
-  WRTCMP_write_groups: 1
-  WRTCMP_write_tasks_per_group: 10
-  WRTCMP_output_grid: "lambert_conformal"
-  WRTCMP_cen_lon: -97.5
-  WRTCMP_cen_lat: 38.5
-  WRTCMP_stdlat1: 38.5
-  WRTCMP_stdlat2: 38.5
-  WRTCMP_nx: 191
-  WRTCMP_ny: 97
-  WRTCMP_lon_lwr_left: -120.72962370
-  WRTCMP_lat_lwr_left: 25.11648583
-  WRTCMP_dx: 25000.0
-  WRTCMP_dy: 25000.0
+  QUILTING:
+    WRTCMP_write_groups: 1
+    WRTCMP_write_tasks_per_group: 10
+    WRTCMP_output_grid: "lambert_conformal"
+    WRTCMP_cen_lon: -97.5
+    WRTCMP_cen_lat: 38.5
+    WRTCMP_stdlat1: 38.5
+    WRTCMP_stdlat2: 38.5
+    WRTCMP_nx: 191
+    WRTCMP_ny: 97
+    WRTCMP_lon_lwr_left: -120.72962370
+    WRTCMP_lat_lwr_left: 25.11648583
+    WRTCMP_dx: 25000.0
+    WRTCMP_dy: 25000.0
 #
 #-----------------------------------------------------------------------
 #
@@ -861,18 +861,18 @@
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  # if QUILTING = True
-  WRTCMP_write_groups: 2
-  WRTCMP_write_tasks_per_group: 46
-  WRTCMP_output_grid: "rotated_latlon"
-  WRTCMP_cen_lon: -118.0
-  WRTCMP_cen_lat: 50.0
-  WRTCMP_lon_lwr_left: -45.25
-  WRTCMP_lat_lwr_left: -28.5
-  WRTCMP_lon_upr_rght: 45.25
-  WRTCMP_lat_upr_rght: 28.5
-  WRTCMP_dlon: 0.116908139
-  WRTCMP_dlat: 0.116908139
+  QUILTING:
+    WRTCMP_write_groups: 2
+    WRTCMP_write_tasks_per_group: 46
+    WRTCMP_output_grid: "rotated_latlon"
+    WRTCMP_cen_lon: -118.0
+    WRTCMP_cen_lat: 50.0
+    WRTCMP_lon_lwr_left: -45.25
+    WRTCMP_lat_lwr_left: -28.5
+    WRTCMP_lon_upr_rght: 45.25
+    WRTCMP_lat_upr_rght: 28.5
+    WRTCMP_dlon: 0.116908139
+    WRTCMP_dlat: 0.116908139
 #
 #-----------------------------------------------------------------------
 #

@@ -28,6 +28,9 @@ platform:
   FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+  COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
+  COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
+  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
@@ -48,6 +51,4 @@ cpl_aqm_parm:
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
   PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt
-  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
-  COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
-  COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
+
