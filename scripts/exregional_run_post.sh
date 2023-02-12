@@ -94,7 +94,7 @@ to the temporary work directory (DATA_FHR):
 ===================================================================="
 else
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    post_config_fp="${HOMEdir}/sorc/AQM-utils/parm/postxconfig-NT-fv3lam_cmaq.txt"
+    post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
   fi
