@@ -25,8 +25,8 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: true
-#  COLDSTART: false
-#  WARMSTART_CYCLE_DIR: /path/to/restart/dir
+  COLDSTART: false
+  WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
   envir: prod
   NET: aqm

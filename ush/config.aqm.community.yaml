@@ -11,21 +11,18 @@ workflow:
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023011700'
-  DATE_LAST_CYCL: '2023011700'
+  DATE_LAST_CYCL: '2023011706'
   INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: 6
-#  FCST_LEN_HRS: -1
-#  FCST_LEN_CYCL:
-#    - 6
-#    - 12
+  FCST_LEN_HRS: -1
+  FCST_LEN_CYCL:
+    - 6
+    - 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
-#  COLDSTART: false
-#  WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
   NET: aqm
 workflow_switches:
