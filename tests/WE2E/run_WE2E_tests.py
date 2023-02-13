@@ -164,10 +164,6 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults,config_defaults)
             logging.debug(test_cfg['task_get_extrn_lbcs'])
 
-        if 'verification' in test_cfg:
-            logging.debug(test_cfg['verification'])
-        test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
-        logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
@@ -389,34 +385,6 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
                                                     f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
 
     return cfg_lbcs
-
-def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
-    """
-    Function for checking and updating various settings in verification section of test config yaml
-
-    Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-    Returns:
-        cfg_vx : Updated dictionary for verification section of test config
-    """
-
-    # Make our lives easier by shortening some dictionary calls
-    if 'verification' in cfg:
-        cfg_vx = cfg['verification']
-    else:
-        cfg_vx = dict()
-
-    # If VX_FCST_INPUT_BASEDIR is not set in the verification section of 
-    # the test dictionary, set it to the value from the machine file.
-    if not 'VX_FCST_INPUT_BASEDIR' in cfg_vx:
-        if 'VX_FCST_INPUT_BASEDIR' in mach['verification']:
-            cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['verification']['VX_FCST_INPUT_BASEDIR']
-        else:
-            raise KeyError(f"Non-default forecast file location for verification VX_FCST_INPUT_BASEDIR not set in machine file")
-
-    return cfg_vx
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
