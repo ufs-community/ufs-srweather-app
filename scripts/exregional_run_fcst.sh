@@ -93,11 +93,11 @@ the grid and (filtered) orography files ..."
 cd_vrfy ${DATA}/INPUT
 
 #
-# For experiments in which the MAKE_GRID_TN task is run, we make the 
+# For experiments in which the TN_MAKE_GRID task is run, we make the 
 # symlinks to the grid files relative because those files wlll be located 
 # within the experiment directory.  This keeps the experiment directory 
 # more portable and the symlinks more readable.  However, for experiments 
-# in which the MAKE_GRID_TN task is not run, pregenerated grid files will
+# in which the TN_MAKE_GRID task is not run, pregenerated grid files will
 # be used, and those will be located in an arbitrary directory (specified 
 # by the user) that is somwehere outside the experiment directory.  Thus, 
 # in this case, there isn't really an advantage to using relative symlinks, 
@@ -155,7 +155,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 
 #
 # As with the symlinks grid files above, when creating the symlinks to
-# the orography files, use relative paths if running the MAKE_OROG_TN
+# the orography files, use relative paths if running the TN_MAKE_OROG
 # task and absolute paths otherwise.
 #
 if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
@@ -194,7 +194,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
 
   fileids=( "ss" "ls" )
   for fileid in "${fileids[@]}"; do

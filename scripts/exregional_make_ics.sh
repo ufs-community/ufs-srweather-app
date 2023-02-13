@@ -86,10 +86,10 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMINext}"
+    extrn_mdl_staging_dir="${COMINext}${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS"
+    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
@@ -124,6 +124,7 @@ case "${CCPP_PHYS_SUITE}" in
 #
   "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
+  "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
   "FV3_HRRR" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
@@ -131,6 +132,8 @@ case "${CCPP_PHYS_SUITE}" in
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "GEFS" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
       varmap_file="GFSphys_var_map.txt"
     fi
@@ -381,6 +384,35 @@ case "${EXTRN_MDL_NAME_ICS}" in
     fn_sfc="${EXTRN_MDL_FNS[1]}"
     convert_nst=True
   fi
+  vgtyp_from_climo=True
+  sotyp_from_climo=True
+  vgfrc_from_climo=True
+  minmax_vgfrc_from_climo=True
+  lai_from_climo=True
+  tg3_from_soil=False
+  ;;
+
+"GDAS")
+  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+  tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+  external_model="GFS"
+  input_type="gaussian_netcdf"
+  convert_nst=False
+  fn_atm="${EXTRN_MDL_FNS[0]}"
+  fn_sfc="${EXTRN_MDL_FNS[1]}"
+  vgtyp_from_climo=True
+  sotyp_from_climo=True
+  vgfrc_from_climo=True
+  minmax_vgfrc_from_climo=True
+  lai_from_climo=True
+  tg3_from_soil=True
+  ;;
+
+"GEFS")
+  external_model="GFS"
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+  convert_nst=False
   vgtyp_from_climo=True
   sotyp_from_climo=True
   vgfrc_from_climo=True

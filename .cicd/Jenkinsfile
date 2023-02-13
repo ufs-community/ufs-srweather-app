@@ -13,7 +13,9 @@ pipeline {
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        // Use the line below to enable hera
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['cheyenne', 'gaea', 'jet', 'orion'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Uncomment the following line to re-enable comprehensive tests
