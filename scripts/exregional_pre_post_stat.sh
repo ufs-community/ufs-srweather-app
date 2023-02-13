@@ -47,16 +47,6 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_PRE_POST_STAT}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_PRE_POST_STAT}
-export OMP_STACKSIZE=${OMP_STACKSIZE_PRE_POST_STAT}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------

@@ -35,3 +35,6 @@ platform:
 verification:
   VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
 
+data:
+  obs:
+    RAP_obs: /scratch2/BMC/public/data/grids/rap/obs

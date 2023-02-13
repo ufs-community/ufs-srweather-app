@@ -60,6 +60,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
+set -x
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
@@ -143,18 +144,18 @@ fi
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 
   RUN_CYC="${cyc}"
+  CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
+  PDY_MOD=${CDATE_MOD:0:8}
+  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${CDATE_MOD:8:2}"}
+  AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
   if [ ${DO_REAL_TIME} = "TRUE" ]; then
-    CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
-    PDY_MOD=${CDATE_MOD:0:8}
-    AQM_GEFS_CYC=$( printf "%02d" ${CDATE_MOD:8:2} )
-    AQM_MOFILE_FN="${AQM_GEFS_DIR}/gefs.${PDY_MOD}/${AQM_GEFS_CYC}/chem/sfcsig/geaer.t${AQM_GEFS_CYC}z.atmf"
+    AQM_MOFILE_FN="${COMINgefs}/gefs.${PDY_MOD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   else
-    AQM_GEFS_CYC=$( printf "%02d" "${AQM_GEFS_CYC}" )
-    AQM_MOFILE_FN="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_CYC}/gfs.t00z.atmf"
+    AQM_MOFILE_FN="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_FILE_CYC}/${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   fi  
 
-  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_CYC ))" )
+  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_FILE_CYC ))" )
   NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
 cat > gefs2lbc-nemsio.ini <<EOF
