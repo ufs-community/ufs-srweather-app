@@ -201,7 +201,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
+                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
                             For examples of valid formats, see the Users' Guide.
                             """
