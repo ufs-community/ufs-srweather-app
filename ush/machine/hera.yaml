@@ -25,6 +25,7 @@ platform:
   TEST_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
@@ -32,8 +33,6 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-verification:
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
 
 data:
   obs:

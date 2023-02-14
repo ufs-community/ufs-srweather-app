@@ -347,6 +347,7 @@ platform:
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
+  TEST_VX_FCST_INPUT_BASEDIR: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -472,7 +473,7 @@ workflow:
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
-  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
+  EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -2389,4 +2390,4 @@ global:
 #-----------------------------
 verification:
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if (workflow_switches.RUN_TASK_RUN_FCST and (task_run_fcst.WRITE_DOPOST or workflow_switches.RUN_TASK_RUN_POST)) }}'
