@@ -2390,4 +2390,4 @@ global:
 #-----------------------------
 verification:
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if (workflow_switches.RUN_TASK_RUN_FCST and (task_run_fcst.WRITE_DOPOST or workflow_switches.RUN_TASK_RUN_POST)) }}'
+  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
