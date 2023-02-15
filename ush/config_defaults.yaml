@@ -67,6 +67,7 @@ user:
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
+  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
 
 #----------------------------
 # PLATFORM config parameters
@@ -195,12 +196,16 @@ platform:
   # RUN_CMD_SERIAL:
   # The run command for some serial jobs 
   #
+  # RUN_CMD_AQM:
+  # The run command for some AQM tasks.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_CMD_SERIAL: ""
   RUN_CMD_UTILS: ""
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
+  RUN_CMD_AQM: ""
 
   #
   #-----------------------------------------------------------------------
@@ -248,7 +253,7 @@ platform:
   # the valid time in the metadata for files valid from 19 - 00 UTC (or 
   # files under the '00' directory). The script to pull the CCPA data 
   # from the NOAA HPSS has an example of how to account for this as well
-  # as organizing the data into a more intuitive format: 
+  # as organizing the data into a more intuitive format:
   # scripts/exregional_get_ccpa_files.sh. When a fix is provided, it will
   # be accounted for in the exregional_get_ccpa_files.sh script.
   #
@@ -389,6 +394,23 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # COMINgfs:
+  # Path to the real-time GFS data
+  #
+  # COMINgefs:
+  # Path to the real-time GEFS data
+  #
+  # COMINairnow:
+  # Path to the real-time AIRNOW observation data
+  #
+  #-----------------------------------------------------------------------
+  #
+  COMINgfs: ""
+  COMINgefs: ""
+  COMINairnow: "/path/to/real/time/airnow/data"
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -411,16 +433,6 @@ workflow:
   #-----------------------------------------------------------------------
   #
   RELATIVE_LINK_FLAG: "--relative"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # CPL:
-  # Flag indicating whether another component should run in coupled mode
-  # with the forecast.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -546,6 +558,9 @@ workflow:
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
+  # AQM_RC_TMPL_FN:
+  # Template file name of resource file for NOAA Air Quality Model (AQM)
+  #
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)
   #
@@ -597,6 +612,8 @@ workflow:
   FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
   NEMS_CONFIG_FN: "nems.configure"
+  AQM_RC_FN: "aqm.rc"
+  AQM_RC_TMPL_FN: "aqm.rc"
 
   FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
   FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
@@ -606,6 +623,7 @@ workflow:
   FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
   NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
 
   # These are staged in the exptdir at configuration time
   DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
@@ -785,12 +803,23 @@ workflow:
   # FCST_LEN_HRS:
   # The length of each forecast, in integer hours.
   #
+  # FCST_LEN_CYCL:
+  # The length of forecast for each cycle date in integer hours.
+  # This is valid only when FCST_LEN_HRS = -1.
+  # This pattern is recurred for all cycle dates.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
   DATE_LAST_CYCL: "YYYYMMDDHH"
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
+  FCST_LEN_CYCL:
+    - 6
+    - 12
+    - 12
+    - 6
+
   #
   #-----------------------------------------------------------------------
   #
@@ -863,6 +892,28 @@ workflow:
 
   GET_OBS: "get_obs"
   TN_VX: "run_vx"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_REAL_TIME:
+  # switch for real-time run
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_REAL_TIME: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # COLDSTART:
+  # Flag turning on/off warm start
+  #
+  # WARMSTART_CYCLE_DIR:
+  # Path to the directory where RESTART dir is located for warm start
+  #
+  #-----------------------------------------------------------------------
+  #
+  COLDSTART: true
+  WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
 #----------------------------
 # NCO specific variables
@@ -1012,6 +1063,39 @@ workflow_switches:
   # RUN_TASK_PLOT_ALLVARS:
   # Flag that determines whether to run python plotting scripts
   #
+  # RUN_TASK_AQM_ICS:
+  # Flag that determines whether the TN_AQM_ICS task is to be run for air quality modeling.
+  #
+  # RUN_TASK_AQM_LBCS:
+  # Flag that determines whether the TN_AQM_LBCS task is to be run for air quality modeling.
+  #
+  # RUN_TASK_NEXUS_GFS_SFC:
+  # Flag that determines whether the TN_NEXUS_GFS_SFC task is to be run for air quality modeling.
+  #
+  # RUN_TASK_NEXUS_EMISSION:
+  # Flag that determines whether the TN_NEXUS_EMISSION task is to be run for air quality modeling.
+  #
+  # RUN_TASK_FIRE_EMISSION:
+  # Flag that determines whether the TN_FIRE_EMISSION task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POINT_SOURCE:
+  # Flag that determines whether the TN_POINT_SOURCE task is to be run for air quality modeling.
+  #
+  # RUN_TASK_PRE_POST_STAT:
+  # Flag that determines whether the TN_PRE_POST_STAT task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POST_STAT_O3:
+  # Flag that determines whether the TN_POST_STAT_O3 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POST_STAT_PM25:
+  # Flag that determines whether the TN_POST_STAT_PM25 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_BIAS_CORRECTION_O3:
+  # Flag that determines whether the TN_BIAS_CORRECTION_O3 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_BIAS_CORRECTION_PM25:
+  # Flag that determines whether the TN_BIAS_CORRECTION_PM25 task is to be run for air quality modeling.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_TASK_MAKE_GRID: true
@@ -1034,6 +1118,19 @@ workflow_switches:
   RUN_TASK_VX_ENSPOINT: false
 
   RUN_TASK_PLOT_ALLVARS: false
+
+  RUN_TASK_AQM_ICS: false
+  RUN_TASK_AQM_LBCS: false
+  RUN_TASK_NEXUS_GFS_SFC: false
+  RUN_TASK_NEXUS_EMISSION: false
+  RUN_TASK_FIRE_EMISSION: false
+  RUN_TASK_POINT_SOURCE: false
+  RUN_TASK_PRE_POST_STAT: false
+  RUN_TASK_POST_STAT_O3: false
+  RUN_TASK_POST_STAT_PM25: false
+  RUN_TASK_BIAS_CORRECTION_O3: false
+  RUN_TASK_BIAS_CORRECTION_PM25: false
+
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
@@ -1586,7 +1683,6 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
@@ -2044,7 +2140,6 @@ task_run_vx_ensgrid:
   MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
 
-
 #----------------------------
 # VX_ENSGRID_REFC config parameters
 #-----------------------------
@@ -2213,6 +2308,146 @@ task_plot_allvars:
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
 
+#----------------------------
+# AQM_ICS config parameters
+#-----------------------------
+task_aqm_ics:
+  TN_AQM_ICS: "aqm_ics"
+  NNODES_AQM_ICS: 1
+  PPN_AQM_ICS: 1
+  WTIME_AQM_ICS: 00:30:00
+  MAXTRIES_AQM_ICS: 2
+
+#----------------------------
+# AQM_LBCS config parameters
+#-----------------------------
+task_aqm_lbcs:
+  TN_AQM_LBCS: "aqm_lbcs"
+  NNODES_AQM_LBCS: 1
+  PPN_AQM_LBCS: 24
+  WTIME_AQM_LBCS: 00:30:00
+  MAXTRIES_AQM_LBCS: 2
+
+#----------------------------
+# NEXUS_GFS_SFC config parameters
+#-----------------------------
+task_nexus_gfs_sfc:
+  TN_NEXUS_GFS_SFC: "nexus_gfs_sfc"
+  NNODES_NEXUS_GFS_SFC: 1
+  PPN_NEXUS_GFS_SFC: 1
+  MEM_NEXUS_GFS_SFC: 2G
+  WTIME_NEXUS_GFS_SFC: 00:30:00
+  MAXTRIES_NEXUS_GFS_SFC: 2
+
+#----------------------------
+# NEXUS_EMISSION config parameters
+#-----------------------------
+task_nexus_emission:
+  TN_NEXUS_EMISSION: "nexus_emission"
+  NNODES_NEXUS_EMISSION: 4
+  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  WTIME_NEXUS_EMISSION: 01:00:00
+  MAXTRIES_NEXUS_EMISSION: 2
+  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+  OMP_NUM_THREADS_NEXUS_EMISSION: 2
+  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+#----------------------------
+# NEXUS_POST_SPLIT config parameters
+#-----------------------------
+task_nexus_post_split:
+  TN_NEXUS_POST_SPLIT: "nexus_post_split"
+  NNODES_NEXUS_POST_SPLIT: 1
+  PPN_NEXUS_POST_SPLIT: 1
+  WTIME_NEXUS_POST_SPLIT: 00:30:00
+  MAXTRIES_NEXUS_POST_SPLIT: 2
+
+#----------------------------
+# FIRE_EMISSION config parameters
+#-----------------------------
+task_fire_emission:
+  TN_FIRE_EMISSION: "fire_emission"
+  NNODES_FIRE_EMISSION: 1
+  PPN_FIRE_EMISSION: 1
+  MEM_FIRE_EMISSION: 2G
+  WTIME_FIRE_EMISSION: 00:30:00
+  MAXTRIES_FIRE_EMISSION: 2
+
+#----------------------------
+# POINT_SOURCE config parameters
+#-----------------------------
+task_point_source:
+  TN_POINT_SOURCE: "point_source"
+  NNODES_POINT_SOURCE: 1
+  PPN_POINT_SOURCE: 1 
+  WTIME_POINT_SOURCE: 01:00:00
+  MAXTRIES_POINT_SOURCE: 2
+
+#----------------------------
+# PRE_POST_STAT config parameters
+#-----------------------------
+task_pre_post_stat:
+  TN_PRE_POST_STAT: "pre_post_stat"
+  NNODES_PRE_POST_STAT: 1
+  PPN_PRE_POST_STAT: 1
+  WTIME_PRE_POST_STAT: 00:30:00
+  MAXTRIES_PRE_POST_STAT: 2
+
+#----------------------------
+# POST_STAT_O3 config parameters
+#-----------------------------
+task_post_stat_o3:
+  TN_POST_STAT_O3: "post_stat_o3"
+  NNODES_POST_STAT_O3: 1
+  PPN_POST_STAT_O3: 1
+  MEM_POST_STAT_O3: 120G 
+  WTIME_POST_STAT_O3: 00:30:00
+  MAXTRIES_POST_STAT_O3: 2
+  KMP_AFFINITY_POST_STAT_O3: "scatter"
+  OMP_NUM_THREADS_POST_STAT_O3: 1
+  OMP_STACKSIZE_POST_STAT_O3: "2056M"
+
+#----------------------------
+# POST_STAT_PM25 config parameters
+#-----------------------------
+task_post_stat_pm25:
+  TN_POST_STAT_PM25: "post_stat_pm25"
+  NNODES_POST_STAT_PM25: 1
+  PPN_POST_STAT_PM25: 1
+  MEM_POST_STAT_PM25: 120G
+  WTIME_POST_STAT_PM25: 00:30:00
+  MAXTRIES_POST_STAT_PM25: 2
+  KMP_AFFINITY_POST_STAT_PM25: "scatter"
+  OMP_NUM_THREADS_POST_STAT_PM25: 1
+  OMP_STACKSIZE_POST_STAT_PM25: "2056M"
+
+#----------------------------
+# BIAS_CORRECTION_O3 config parameters
+#-----------------------------
+task_bias_correction_o3:
+  TN_BIAS_CORRECTION_O3: "bias_correction_o3"
+  NNODES_BIAS_CORRECTION_O3: 1
+  PPN_BIAS_CORRECTION_O3: 1
+  MEM_BIAS_CORRECTION_O3: 120G
+  WTIME_BIAS_CORRECTION_O3: 00:30:00
+  MAXTRIES_BIAS_CORRECTION_O3: 2
+  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_O3: 128
+  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
+
+#----------------------------
+# BIAS_CORRECTION_PM25 config parameters
+#-----------------------------
+task_bias_correction_pm25:
+  TN_BIAS_CORRECTION_PM25: "bias_correction_pm25"
+  NNODES_BIAS_CORRECTION_PM25: 1
+  PPN_BIAS_CORRECTION_PM25: 1
+  MEM_BIAS_CORRECTION_PM25: 120G
+  WTIME_BIAS_CORRECTION_PM25: 00:30:00
+  MAXTRIES_BIAS_CORRECTION_PM25: 2
+  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 128
+  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
 # global config parameters
@@ -2369,24 +2604,194 @@ global:
   #-----------------------------------------------------------------------
   #
   HALO_BLEND: 10
-  #
-  #-----------------------------------------------------------------------
-  #
 
 #----------------------------
 # verification parameters
-#
-# VX_FCST_MODEL_NAME:
-# String that specifies a descriptive name for the model being verified.
-# This is used in forming the names of the verification output files as
-# well as in the contents of those files.
-#
-# VX_FCST_INPUT_BASEDIR:
-# Location of top-level directory containing forecast (but not obs) files
-# that will be used as input into METplus for verification.  If not
-# specified, this gets set to EXPTDIR.
-#
-#-----------------------------
+#----------------------------
 verification:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # VX_FCST_MODEL_NAME:
+  # String that specifies a descriptive name for the model being verified.
+  # This is used in forming the names of the verification output files as
+  # well as in the contents of those files.
+  #
+  # VX_FCST_INPUT_BASEDIR:
+  # Location of top-level directory containing forecast (but not obs) files
+  # that will be used as input into METplus for verification.  If not
+  # specified, this gets set to EXPTDIR.
+  #
+  #-----------------------------------------------------------------------
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
   VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+
+#----------------------------
+# CPL_AQM config parameters
+#-----------------------------
+cpl_aqm_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # CPL_AQM:
+  # Coupling flag for air quality modeling
+  #
+  # DO_AQM_DUST:
+  # Flag turning on/off AQM dust option in AQM_RC
+  #
+  # DO_AQM_CANOPY
+  # Flag turning on/off AQM canopy option in AQM_RC
+  # 
+  # DO_AQM_PRODUCT
+  # Flag turning on/off AQM output products in AQM_RC
+  # 
+  # DO_AQM_CHEM_LBCS:
+  # Add chemical LBCs to chemical LBCs
+  # 
+  # DO_AQM_GEFS_LBCS:
+  # Add GEFS aerosol LBCs to chemical LBCs
+  #
+  # DO_AQM_SAVE_AIRNOW_HIST:
+  # Save bias-correction airnow training data
+  #
+  # AQM_CONFIG_DIR:
+  # Configuration directory for AQM
+  # 
+  # AQM_BIO_DIR:
+  # Path to the directory containing AQM bio files
+  # 
+  # AQM_BIO_FILE:
+  # File name of AQM BIO file
+  #
+  # AQM_DUST_DIR:
+  # Path to the directory containing AQM dust file
+  #
+  # AQM_DUST_FILE_PREFIX:
+  # Frefix of AQM dust file
+  #
+  # AQM_DUST_FILE_SUFFIX:
+  # Suffix and extension of AQM dust file
+  #
+  # AQM_CANOPY_DIR:
+  # Path to the directory containing AQM canopy files
+  # 
+  # AQM_CANOPY_FILE_PREFIX:
+  # File name of AQM canopy file
+  #
+  # AQM_CANOPY_FILE_SUFFIX:
+  # Suffix and extension of AQM CANOPY file
+  # 
+  # AQM_FIRE_DIR:
+  # Path to the directory containing AQM fire files
+  # 
+  # AQM_FIRE_FILE_PREFIX:
+  # Prefix of AQM FIRE file
+  # 
+  # AQM_FIRE_FILE_SUFFIX:
+  # Suffix and extension of AQM FIRE file
+  #
+  # AQM_RC_FIRE_FREQUENCY:
+  # Fire frequency in aqm.rc
+  #
+  # AQM_RC_PRODUCT_FN:
+  # File name of AQM output products
+  #
+  # AQM_RC_PRODUCT_FREQUENCY:
+  # Frequency of AQM output products
+  #
+  # AQM_LBCS_DIR:
+  # Path to the directory containing chemical LBC files
+  # 
+  # AQM_LBCS_FILES:
+  # File name of chemical LBCs
+  #
+  # AQM_GEFS_DIR:
+  # Path to the directory containing GEFS aerosol LBC files
+  #
+  # AQM_GEFS_FILE_PREFIX:
+  # Prefix of AQM GEFS file ("geaer" or "gfs")
+  #
+  # AQM_GEFS_FILE_CYC:
+  # Cycle of the GEFS aerosol LBC files only if it is fixed
+  # 
+  # NEXUS_INPUT_DIR:
+  # Same as GRID_DIR but for the the air quality emission generation task.
+  # Should be blank for the default value specified in setup.sh
+  # 
+  # NEXUS_FIX_DIR:
+  # Directory containing grid_spec files as the input file of nexus
+  # 
+  # NEXUS_GRID_FN:
+  # File name of the input grid_spec file of nexus
+  #
+  # NUM_SPLIT_NEXUS:
+  # Number of split nexus emission tasks
+  #
+  # NEXUS_GFS_SFC_OFFSET_HRS: 0
+  # Time offset when retrieving gfs surface data files
+  # 
+  # NEXUS_GFS_SFC_DIR:
+  # Path to directory containing GFS surface data files
+  # This is set to COMINgfs when DO_REAL_TIME=TRUE. 
+  #
+  # NEXUS_GFS_SFC_ARCHV_DIR: 
+  # Path to archive directory for gfs surface files on HPSS
+  #
+  # PT_SRC_BASEDIR:
+  # Parent directory containing point source files for CONUS/AK/HI
+  #
+  # AQM_AIRNOW_HIST_DIR:
+  # Path to the directory where the historical AIRNOW data are located
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL_AQM: false
+
+  DO_AQM_DUST: true
+  DO_AQM_CANOPY: false
+  DO_AQM_PRODUCT: true
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: false
+  DO_AQM_SAVE_AIRNOW_HIST: true
+
+  AQM_CONFIG_DIR: ""
+  AQM_BIO_DIR: ""
+  AQM_BIO_FILE: "BEIS_SARC401.ncf"
+
+  AQM_DUST_DIR: "/path/to/dust/dir"
+  AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
+  AQM_DUST_FILE_SUFFIX: ".nc"
+
+  AQM_CANOPY_DIR: "/path/to/canopy/dir"
+  AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
+  AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
+
+  AQM_FIRE_DIR: ""
+  AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
+  AQM_FIRE_FILE_SUFFIX: ".nc"
+  AQM_FIRE_FILE_OFFSET_HRS: 0
+
+  AQM_RC_FIRE_FREQUENCY: "static"
+  AQM_RC_PRODUCT_FN: "aqm.prod.nc"
+  AQM_RC_PRODUCT_FREQUENCY: "hourly"
+
+  AQM_LBCS_DIR: ""
+  AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
+
+  AQM_GEFS_DIR: ""
+  AQM_GEFS_FILE_PREFIX: "geaer"
+  AQM_GEFS_FILE_CYC: ""
+
+  NEXUS_INPUT_DIR: ""
+  NEXUS_FIX_DIR: ""
+  NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
+  NUM_SPLIT_NEXUS: 3
+  NEXUS_GFS_SFC_OFFSET_HRS: 0
+  NEXUS_GFS_SFC_DIR: ""
+  NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+
+  PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
+
+  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+
