@@ -33,7 +33,10 @@ workflow_switches:
   RUN_TASK_RUN_POST: false
 #
 # This test assumes the observation files are staged.  Thus, deactivate
-# the GET_OBS_... tasks.
+# the GET_OBS_... tasks.  Note we do not specify the obs staging directories
+# (CCPA_OBS_DIR, MRMS_OBS_DIR, and NDAS_OBS_DIR) because those will be
+# automatically set (in a platform-dependent way using the machine file)
+# by the script that runs the WE2E tests.
 #
   RUN_TASK_GET_OBS_CCPA: false
   RUN_TASK_GET_OBS_MRMS: false
@@ -44,18 +47,12 @@ workflow_switches:
   RUN_TASK_VX_GRIDSTAT: true
   RUN_TASK_VX_POINTSTAT: true
 
-platform:
 #
-# Since the observation files are staged, we need to specify the base 
-# staging directories.
+# In the "verification" section below, we don't explicitly set the location 
+# of the staged forecast files (via VX_FCST_INPUT_BASEDIR) because this
+# location gets set automatically by the script that runs the WE2E tests.
+# The script sets the location in a platform-dependent way using the
+# appropriate machine file.
 #
-  CCPA_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/ccpa/proc'
-  MRMS_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/mrms/proc'
-  NDAS_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/ndas/proc'
-
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-#
-# Since the forecast files are staged, specify the base staging directory.
-#
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/fcst_det'

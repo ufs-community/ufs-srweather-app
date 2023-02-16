@@ -201,7 +201,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
+                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
                             For examples of valid formats, see the Users' Guide.
                             """
@@ -550,6 +550,44 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 grid_config[param] = value
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    if fcst_len_hrs == -1:
+        # Create a full list of cycle dates
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
+        num_fcst_len_cycl = len(fcst_len_cycl)
+        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+        incr_cycl_freq = workflow_config.get("INCR_CYCL_FREQ")
+        all_cdates = set_cycle_dates(date_first_cycl,date_last_cycl,incr_cycl_freq)
+        num_all_cdates = len(all_cdates)
+        # Create a full list of forecast hours
+        num_recur = num_all_cdates // num_fcst_len_cycl
+        rem_recur = num_all_cdates % num_fcst_len_cycl
+        if rem_recur == 0:
+            fcst_len_cycl = fcst_len_cycl * num_recur
+            num_fcst_len_cycl = len(fcst_len_cycl)
+            workflow_config["FCST_LEN_CYCL"] = fcst_len_cycl
+            workflow_config.update({"ALL_CDATES": all_cdates})
+        else:
+            raise Exception(
+                f"""
+                The number of the cycle dates is not evenly divisible by the
+                number of the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}
+                  rem = num_all_cdates%%num_fcst_len_cycl = {rem_recur}"""
+            )
+        if num_fcst_len_cycl != num_all_cdates:
+            raise Exception(
+                f"""
+                The number of the cycle dates does not match with the number of
+                the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}"""
+            )
+
     #
     # -----------------------------------------------------------------------
     #
@@ -731,7 +769,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
     rem = fcst_len_hrs % lbc_spec_intvl_hrs
-    if rem != 0:
+    if rem != 0 and fcst_len_hrs > 0:
         raise Exception(
             f"""
             The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
@@ -970,7 +1008,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
     # Check for the CCPP_PHYSICS suite xml file
     ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
     if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):

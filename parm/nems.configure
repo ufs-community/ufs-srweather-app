@@ -1,6 +1,48 @@
+#############################################
+####  NEMS Run-Time Configuration File  #####
+#############################################
+
+{% if not print_esmf %}
+# ESMF #
+logKindFlag:            ESMF_LOGKIND_MULTI_ON_ERROR
+{% endif %}
+
+{% if cpl_aqm  %}
+# EARTH #
+EARTH_component_list: ATM AQM
+EARTH_attributes::
+  Verbosity = max
+::
+
+# ATM #
+ATM_model:                      fv3
+ATM_petlist_bounds:             -1 -1
+ATM_attributes::
+  Verbosity = max
+::
+
+# AQM #
+AQM_model:                      aqm
+AQM_petlist_bounds:             -1 -1
+AQM_attributes::
+  Verbosity = max
+  Diagnostic = 131072
+::
+
+# Run Sequence #
+runSeq::
+  @{{ dt_atmos }}
+    ATM phase1
+    ATM -> AQM
+    AQM
+    AQM -> ATM
+    ATM phase2
+  @
+::
+{% else %}
 EARTH_component_list: ATM
  ATM_model:            fv3
  runSeq::
    ATM
  ::
-logKindFlag:            ESMF_LOGKIND_MULTI_ON_ERROR
+{% endif %}
