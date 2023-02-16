@@ -74,6 +74,16 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -260,6 +270,20 @@ for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
                          relative="${relative_link_flag}"
 done
 
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  # create symlink to PT for point source in Online-CMAQ
+  if [ "${RUN_TASK_POINT_SOURCE}" = "TRUE" ]; then
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+    symlink="PT.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+	                       relative="${relative_link_flag}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -384,10 +408,6 @@ create_symlink_to_file target="${FIELD_TABLE_FP}" \
                        symlink="${DATA}/${FIELD_TABLE_FN}" \
                        relative="${relative_link_flag}"
 
-create_symlink_to_file target="${NEMS_CONFIG_FP}" \
-                       symlink="${DATA}/${NEMS_CONFIG_FN}" \
-                       relative="${relative_link_flag}"
-
 create_symlink_to_file target="${FIELD_DICT_FP}" \
                        symlink="${DATA}/${FIELD_DICT_FN}" \
                        relative="${relative_link_flag}"
@@ -401,7 +421,11 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
 ===================================================================="
   else
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    if [ "${CPL_AQM}" = "TRUE" ]; then
+      post_config_fp="${HOMEdir}/sorc/AQM-utils/parm/postxconfig-NT-fv3lam_cmaq.txt"
+    else
+      post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    fi
     print_info_msg "
 ====================================================================
   post_config_fp = \"${post_config_fp}\"
@@ -411,15 +435,55 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
   cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    post_itag_add="aqfcmaq_on=.true.,"
+  else
+    post_itag_add=""
+  fi
 cat > itag <<EOF
 &MODEL_INPUTS
  MODELNAME='FV3R'
 /
 &NAMPGB
- KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,
+ KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
 /
 EOF
 fi
+
+if [ "${CPL_AQM}" = "TRUE" ]; then
+#
+#-----------------------------------------------------------------------
+#
+# Setup air quality model cold/warm start
+#
+#-----------------------------------------------------------------------
+#
+  init_concentrations="false"
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+    init_concentrations="true"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the aqm.rc file within each
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+  python3 $USHdir/create_aqm_rc_file.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --cdate "$CDATE" \
+    --run-dir "${DATA}" \
+    --init-concentration "${init_concentrations}" \
+    || print_err_msg_exit "\
+Call to function to create an aqm.rc file for the current
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
@@ -446,6 +510,7 @@ fi
 python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
+  --fcst_len_hrs "${FCST_LEN_HRS}" \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
@@ -471,6 +536,32 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
+# Pre-generate symlinks to forecast output in DATA
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
+  # create an intermediate symlink to RESTART
+  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the NEMS configuration file within each
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+python3 $USHdir/create_nems_configure_file.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --run-dir "${DATA}" \
+  || print_err_msg_exit "\
+Call to function to create a NEMS configuration file for the current
+cycle's (cdate) run directory (DATA) failed:
+  DATA = \"${DATA}\""
+#
+#-----------------------------------------------------------------------
+#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -484,6 +575,35 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
+#
+#-----------------------------------------------------------------------
+#
+# Move RESTART directory to COMIN and create symlink in DATA only for
+# NCO mode and when it is not empty.
+#
+# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
+# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
+#
+#-----------------------------------------------------------------------
+#
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    rm_vrfy -rf "${COMIN}/RESTART"
+    if [ "$(ls -A ${DATA}/RESTART)" ]; then
+      mv_vrfy ${DATA}/RESTART ${COMIN}
+      ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+    fi
+  fi
+
+  mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+ 
+  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
+    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    done
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -519,7 +639,12 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
-    fids=( "prslev" "natlev" )
+    if [ "${CPL_AQM}" = "TRUE" ]; then
+      fids=( "cmaq" )
+    else
+      fids=( "prslev" "natlev" )
+    fi
+
     for fid in "${fids[@]}"; do
       FID=$(echo_uppercase $fid)
       post_orig_fn="${FID}.${post_fn_suffix}"
@@ -538,6 +663,11 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
+
+    if [ "${CPL_AQM}" = "TRUE" ]; then	
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   done
 
 fi
