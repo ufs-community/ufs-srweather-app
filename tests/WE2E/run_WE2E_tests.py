@@ -173,6 +173,10 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults,config_defaults)
             logging.debug(test_cfg['task_get_extrn_lbcs'])
 
+        if 'verification' in test_cfg:
+            logging.debug(test_cfg['verification'])
+        test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
+        logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
@@ -394,6 +398,53 @@ def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
                                                     f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
 
     return cfg_lbcs
+
+def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
+    """
+    Function for checking and updating various settings in verification section of test config yaml
+
+    Args:
+        cfg  : Dictionary loaded from test config file
+        mach : Dictionary loaded from machine settings file
+        dflt : Dictionary loaded from default config file
+    Returns:
+        cfg_vx : Updated dictionary for verification section of test config
+    """
+
+    # Make our lives easier by shortening some dictionary calls
+    if 'verification' in cfg:
+        cfg_vx = cfg['verification']
+    else:
+        cfg_vx = dict()
+
+    # If VX_FCST_INPUT_BASEDIR is already explicitly set in the test configuration
+    # dictionary, keep that value and just return.
+    if 'VX_FCST_INPUT_BASEDIR' in cfg_vx:
+        return cfg_vx
+
+    # Attempt to obtain the values of RUN_TASK_RUN_FCST, WRITE_DO_POST, and RUN_TASK_RUN_POST
+    # from the test configuration dictionary.  If not available there, get them from the default 
+    # configuration dictionary.
+    flags = {'RUN_TASK_RUN_FCST': False, 'WRITE_DOPOST': False, 'RUN_TASK_RUN_POST': False}
+    for section in ['workflow_switches', 'task_run_fcst']:
+        for flag in flags:
+            if (section in cfg) and (flag in cfg[section]):
+                flags[flag] = cfg[section][flag]
+            elif flag in dflt[section]:
+                flags[flag] = dflt[section][flag]
+
+    # If UPP is going to be run (either in-line or as a separate set of tasks), set the
+    # VX_FCST_INPUT_BASEDIR to the default directory for the experiment.  Otherwise, set
+    # it to the value of TEST_VX_FCST_INPUT_BASEDIR in the machine file.
+    if (flags['RUN_TASK_RUN_FCST'] and flags['WRITE_DOPOST']) or flags['RUN_TASK_RUN_POST']:
+        cfg_vx['VX_FCST_INPUT_BASEDIR'] = dflt['workflow']['EXPTDIR']
+    else:
+        if 'TEST_VX_FCST_INPUT_BASEDIR' in mach['platform']:
+            cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['platform']['TEST_VX_FCST_INPUT_BASEDIR']
+        else:
+            raise KeyError(f"Non-default forecast file location for verification (TEST_VX_FCST_INPUT_BASEDIR) not set in machine file")
+
+    return cfg_vx
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
