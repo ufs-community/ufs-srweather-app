@@ -108,20 +108,15 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-  if [ ${VAR} == "APCP" ]; then
-    LOG_SUFFIX=gridstat_${CDATE}_${VAR}_${ACCUM}h
-  else
-    LOG_SUFFIX=gridstat_${CDATE}_${VAR}
-  fi
-elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+if [ ${VAR} == "APCP" ]; then
+  LOG_SUFFIX=gridstat_${VAR}${ACCUM}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+else
+  LOG_SUFFIX=gridstat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+fi
+
+if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
   VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-  if [ ${VAR} == "APCP" ]; then
-    LOG_SUFFIX=gridstat_${CDATE}_${ENSMEM}_${VAR}_${ACCUM}h
-  else
-    LOG_SUFFIX=gridstat_${CDATE}_${ENSMEM}_${VAR}
-  fi
 fi
 
 #

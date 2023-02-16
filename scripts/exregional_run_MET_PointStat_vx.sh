@@ -108,12 +108,10 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-  LOG_SUFFIX=pointstat_${CDATE}
-elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+LOG_SUFFIX="pointstat"
+if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
   VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-  LOG_SUFFIX=pointstat_${CDATE}_${ENSMEM}
 fi
 
 #
