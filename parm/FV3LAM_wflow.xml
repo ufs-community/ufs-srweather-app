@@ -68,6 +68,41 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC       "{{ tn_run_met_gridstat_vx_ensprob_refc }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP      "{{ tn_run_met_gridstat_vx_ensprob_retop }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA   "{{ tn_run_met_pointstat_vx_ensprob_sfc_upa }}">
+{%- if run_task_aqm_ics %}
+<!ENTITY TN_AQM_EXTRN_ICS          "{{ tn_aqm_ics }}_ext">
+<!ENTITY TN_AQM_ICS                "{{ tn_aqm_ics }}">
+{%- endif %}
+{%- if run_task_aqm_lbcs %}
+<!ENTITY TN_AQM_LBCS               "{{ tn_aqm_lbcs }}">
+{%- endif %}
+{%- if run_task_nexus_gfs_sfc %}
+<!ENTITY TN_NEXUS_GFS_SFC          "{{ tn_nexus_gfs_sfc }}">
+{%- endif %}
+{%- if run_task_nexus_emission %}
+<!ENTITY TN_NEXUS_EMISSION         "{{ tn_nexus_emission }}">
+<!ENTITY TN_NEXUS_POST_SPLIT       "{{ tn_nexus_post_split }}">
+{%- endif %}
+{%- if run_task_fire_emission %}
+<!ENTITY TN_FIRE_EMISSION          "{{ tn_fire_emission }}">
+{%- endif %}
+{%- if run_task_point_source %}
+<!ENTITY TN_POINT_SOURCE           "{{ tn_point_source }}">
+{%- endif %}
+{%- if run_task_pre_post_stat %}
+<!ENTITY TN_PRE_POST_STAT          "{{ tn_pre_post_stat }}">
+{%- endif %}
+{%- if run_task_post_stat_o3 %}
+<!ENTITY TN_POST_STAT_O3           "{{ tn_post_stat_o3 }}">
+{%- endif %}
+{%- if run_task_post_stat_pm25 %}
+<!ENTITY TN_POST_STAT_PM25         "{{ tn_post_stat_pm25 }}">
+{%- endif %}
+{%- if run_task_bias_correction_o3 %}
+<!ENTITY TN_BIAS_CORRECTION_O3     "{{ tn_bias_correction_o3 }}">
+{%- endif %}
+{%- if run_task_bias_correction_pm25 %}
+<!ENTITY TN_BIAS_CORRECTION_PM25   "{{ tn_bias_correction_pm25 }}">
+{%- endif %}
 
 <!--
 Flags that specify whether to run the preprocessing and/or verification tasks.
@@ -105,9 +140,11 @@ Directories and files.
 <!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
 <!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- endif %}
+<!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- else %}
 <!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">
 <!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/phy">
+<!ENTITY COMIN_DIR "{{ comin_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}">
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
@@ -126,6 +163,11 @@ Directories and files.
 <!ENTITY CCPA_OBS_DIR "{{ ccpa_obs_dir }}">
 <!ENTITY MRMS_OBS_DIR "{{ mrms_obs_dir }}">
 <!ENTITY NDAS_OBS_DIR "{{ ndas_obs_dir }}">
+
+<!ENTITY WARMSTART_CYCLE_DIR  "{{ warmstart_cycle_dir }}">
+{%- if do_real_time %}
+<!ENTITY COMINgfs     "{{ comingfs }}">
+{%- endif %}
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -153,13 +195,17 @@ tasks; and the "FCST" type is used for the TN_RUN_FCST task.
 
 ]>
 
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20" taskthrottle="{{ taskthrottle }}">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="200" taskthrottle="{{ taskthrottle }}">
 {# Double quotes are required inside the strftime! Expect an error from reading the template if using single quotes. #}
   <cycledef group="at_start">{{ cdate_first_cycl.strftime("%M %H %d %m %Y *") }}</cycledef>
   <cycledef group="forecast">
     {{- date_first_cycl ~ " " ~ date_last_cycl ~ " " ~ cycl_freq -}}
   </cycledef>
-
+{%- if cycl_next != date_first_cycl %}
+  <cycledef group="cycled">
+    {{- cycl_next ~ " " ~ date_last_cycl ~ " " ~ cycl_freq -}}
+  </cycledef>
+{%- endif %}
   <log>
   {%- if run_envir == "nco"  %}
     &LOGDIR;/FV3LAM_wflow.{{ workflow_id }}.log
@@ -293,6 +339,180 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+{%- if run_task_nexus_gfs_sfc %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_NEXUS_GFS_SFC;" cycledefs="forecast" maxtries="{{ maxtries_nexus_gfs_sfc }}">
+
+  {%- if do_real_time %}
+    &RSRV_DEFAULT;
+  {%- else %}
+    &RSRV_HPSS;
+  {%- endif %}
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_GFS_SFC;" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"</command>
+    <nodes>{{ nnodes_nexus_gfs_sfc }}:ppn={{ ppn_nexus_gfs_sfc }}</nodes>
+    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    {%- if not do_real_time %}   
+    <memory>{{ mem_nexus_gfs_sfc }}</memory>
+    {%- endif %}
+  {%- endif %}
+    <walltime>{{ wtime_nexus_gfs_sfc }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&TN_NEXUS_GFS_SFC;</jobname>
+    <join>&LOGDIR;/&TN_NEXUS_GFS_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
+
+</task>
+{%- endif %}
+{%- if run_task_nexus_emission %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <metatask name="&TN_NEXUS_EMISSION;">
+    <var name="nspt">{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}</var>
+      <task name="&TN_NEXUS_EMISSION;_#nspt#" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_EMISSION;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
+        {%- if machine in ["HERA"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
+        <native>{{ native_nexus_emission }}</native>
+        {%- elif machine in ["WCOSS2"]  %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}:tpp={{ omp_num_threads_nexus_emission }}</nodes>
+        <native>&SCHED_NATIVE_CMD;</native>
+        {%- else %}
+        <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>    
+        {%- endif %}
+        <walltime>{{ wtime_nexus_emission }}</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <jobname>&TN_NEXUS_EMISSION;_#nspt#</jobname>
+        <join>&LOGDIR;/&TN_NEXUS_EMISSION;<cyclestr>_@Y@m@d@H_s#nspt#&LOGEXT;</cyclestr></join>
+
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>nspt</name><value>#nspt#</value></envar>
+	<envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+	<envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+{%- if run_task_nexus_gfs_sfc %}	
+        <dependency>
+          <taskdep task="&TN_NEXUS_GFS_SFC;"/>    
+	</dependency>
+{%- endif %}
+      </task>
+  </metatask>      
+  <task name="&TN_NEXUS_POST_SPLIT;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_POST_SPLIT;" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"</command>
+    <nodes>{{ nnodes_nexus_post_split }}:ppn={{ ppn_nexus_post_split }}</nodes>
+    <walltime>{{ wtime_nexus_post_split }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_NEXUS_POST_SPLIT;</jobname>
+    <join>&LOGDIR;/&TN_NEXUS_POST_SPLIT;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <metataskdep metatask="&TN_NEXUS_EMISSION;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_fire_emission %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_FIRE_EMISSION;" cycledefs="forecast" maxtries="{{ maxtries_fire_emission }}">
+
+  {%- if do_real_time %}
+    &RSRV_DEFAULT;
+  {%- else %}
+    &RSRV_HPSS;
+  {%- endif %}
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_FIRE_EMISSION;" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"</command>
+    <nodes>{{ nnodes_fire_emission }}:ppn={{ ppn_fire_emission }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+  {%- if not do_real_time %}
+    <memory>{{ mem_fire_emission }}</memory>
+  {%- endif %}
+  {%- endif %}
+    <walltime>{{ wtime_fire_emission }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+    <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+    <jobname>&TN_FIRE_EMISSION;</jobname>
+    <join>&LOGDIR;/&TN_FIRE_EMISSION;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+  </task>
+{%- endif %}
+{%- if run_task_point_source %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_POINT_SOURCE;" cycledefs="forecast" maxtries="{{ maxtries_point_source }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POINT_SOURCE;" "&JOBSdir;/JREGIONAL_POINT_SOURCE"</command>
+    <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}</nodes>    
+    <walltime>{{ wtime_point_source }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_POINT_SOURCE;</jobname>
+    <join>&LOGDIR;/&TN_POINT_SOURCE;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+<!-- <taskdep task="&TN_MAKE_GRID;"/> -->
+      <or>
+        <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
+        <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+      </or>
+    </dependency>
+
+  </task>
+{%- endif %}
 {%- if run_task_get_extrn_ics %}
 <!--
 ************************************************************************
@@ -321,7 +541,11 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
-
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
   </task>
 {%- endif %}
 {%- if run_task_get_extrn_lbcs %}
@@ -352,6 +576,12 @@ MODULES_RUN_TASK_FP script.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+
+{%- if do_real_time %}
+    <dependency>
+      <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+    </dependency>
+{%- endif %}
 
   </task>
 {%- endif %}
@@ -458,6 +688,107 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+{%- if run_task_aqm_ics %}
+  {%- if not coldstart %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_AQM_EXTRN_ICS;" cycledefs="at_start" maxtries="{{ maxtries_aqm_ics }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+    <walltime>{{ wtime_aqm_ics }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_AQM_EXTRN_ICS;</jobname>
+    <join>&LOGDIR;/&TN_AQM_EXTRN_ICS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>PREV_CYCLE_DIR</name><value>&WARMSTART_CYCLE_DIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&TN_MAKE_ICS;"/>
+        <or>
+          <datadep age="00:00:00:05">&WARMSTART_CYCLE_DIR;/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr></datadep>
+          <datadep age="00:00:00:05">&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc</datadep>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+  {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_AQM_ICS;" cycledefs="cycled" maxtries="{{ maxtries_aqm_ics }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+    <walltime>{{ wtime_aqm_ics }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_AQM_ICS;</jobname>
+    <join>&LOGDIR;/&TN_AQM_ICS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>PREV_CYCLE_DIR</name><value><cyclestr offset="-{{- cycl_freq -}}">&COMIN_DIR;</cyclestr></value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&TN_MAKE_ICS;"/>
+        <or>
+          <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr></datadep>
+          <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc</datadep>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_aqm_lbcs %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_AQM_LBCS;" cycledefs="forecast" maxtries="{{ maxtries_aqm_lbcs }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_LBCS;" "&JOBSdir;/JREGIONAL_AQM_LBCS"</command>
+    <nodes>{{ nnodes_aqm_lbcs }}:ppn={{ ppn_aqm_lbcs }}</nodes>
+    <walltime>{{ wtime_aqm_lbcs }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_AQM_LBCS;</jobname>
+    <join>&LOGDIR;/&TN_AQM_LBCS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+        <taskdep task="&TN_MAKE_LBCS;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
 {%- if run_task_run_fcst %}
 <!--
 ************************************************************************
@@ -496,6 +827,31 @@ MODULES_RUN_TASK_FP script.
       <and>
         <taskdep task="&TN_MAKE_ICS;{{ uscore_ensmem_name }}"/>
         <taskdep task="&TN_MAKE_LBCS;{{ uscore_ensmem_name }}"/>
+{%- if run_task_nexus_emission %}
+        <taskdep task="&TN_NEXUS_POST_SPLIT;"/>
+{%- endif %}
+{%- if run_task_fire_emission %}
+        <taskdep task="&TN_FIRE_EMISSION;"/>
+{%- endif %}
+{%- if run_task_point_source %}
+        <taskdep task="&TN_POINT_SOURCE;"/>
+{%- endif %}
+{%- if run_task_aqm_ics %}
+        <or>
+          <taskdep task="&TN_AQM_ICS;"/>
+{%- if not coldstart %}
+          <and>
+            <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
+            <taskdep task="&TN_AQM_EXTRN_ICS;"/>
+          </and>
+{%- else %}
+          <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
+{%- endif %}
+        </or>
+{%- endif %}
+{%- if run_task_aqm_lbcs %}
+        <taskdep task="&TN_AQM_LBCS;"/>
+{%- endif %}
       </and>
     </dependency>
 
@@ -752,7 +1108,37 @@ the <task> tag to be identical to the ones above for other output times.
   </metatask>
   {%- endif %}
 {%- endif %}
+{%- if run_task_pre_post_stat %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_PRE_POST_STAT;" cycledefs="forecast" maxtries="{{ maxtries_pre_post_stat }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_PRE_POST_STAT;" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"</command>
+    <nodes>{{ nnodes_pre_post_stat }}:ppn={{ ppn_pre_post_stat }}</nodes>
+    <walltime>{{ wtime_pre_post_stat }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_PRE_POST_STAT;</jobname>
+    <join>&LOGDIR;/&TN_PRE_POST_STAT;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+{%- if run_task_run_post %}
+      <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
+{%- else %}
+      <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
+{%- endif %}
+    </dependency>
+  </task>
+{%- endif %}
 {%- if run_task_plot_allvars %}
 <!--
 ************************************************************************
@@ -798,7 +1184,130 @@ it, we'd have to include more jinja if-statements here.
 
   </task>
 {%- endif %}
+{%- if run_task_post_stat_o3 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_POST_STAT_O3;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_o3 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_O3;" "&JOBSdir;/JREGIONAL_POST_STAT_O3"</command>
+    <nodes>{{ nnodes_post_stat_o3 }}:ppn={{ ppn_post_stat_o3 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_post_stat_o3 }}</memory>
+{%- endif %}
+    <walltime>{{ wtime_post_stat_o3 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_POST_STAT_O3;</jobname>
+    <join>&LOGDIR;/&TN_POST_STAT_O3;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&TN_PRE_POST_STAT;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_post_stat_pm25 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_POST_STAT_PM25;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_pm25 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_PM25;" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"</command>
+    <nodes>{{ nnodes_post_stat_pm25 }}:ppn={{ ppn_post_stat_pm25 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_post_stat_pm25 }}</memory>
+{%- endif %}    
+    <walltime>{{ wtime_post_stat_pm25 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_POST_STAT_PM25;</jobname>
+    <join>&LOGDIR;/&TN_POST_STAT_PM25;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&TN_PRE_POST_STAT;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_bias_correction_o3 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_BIAS_CORRECTION_O3;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_o3 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_O3;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"</command>
+    <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_bias_correction_o3 }}</memory>
+{%- endif %}
+    <walltime>{{ wtime_bias_correction_o3 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_BIAS_CORRECTION_O3;</jobname>
+    <join>&LOGDIR;/&TN_BIAS_CORRECTION_O3;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&TN_PRE_POST_STAT;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
+{%- if run_task_bias_correction_pm25 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_BIAS_CORRECTION_PM25;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_pm25 }}">
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_PM25;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"</command>
+    <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}</nodes>
+{%- if machine not in ["GAEA"]  %}
+    <memory>{{ mem_bias_correction_pm25 }}</memory>
+{%- endif %}
+    <walltime>{{ wtime_bias_correction_pm25 }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TN_BIAS_CORRECTION_PM25;</jobname>
+    <join>&LOGDIR;/&TN_BIAS_CORRECTION_PM25;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>    
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar> 
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>    
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+
+    <dependency>
+      <taskdep task="&TN_PRE_POST_STAT;"/>
+    </dependency>
+
+  </task>
+{%- endif %}
 {%- if run_task_get_obs_ccpa %}
 <!--
 ************************************************************************

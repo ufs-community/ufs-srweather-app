@@ -504,6 +504,33 @@ The namelist file (nml_fn) used in this call is in directory DATA:
 POST_STEP
 mv_vrfy ${shaved_fp} ${GRID_DIR}
 #
+# Create an input namelist file for the shave executable to generate a
+# grid file without halo from the one with a wide halo.  Then
+# call the shave executable.  Finally, move the resultant file to the
+# GRID_DIR directory.
+#
+print_info_msg "$VERBOSE" "
+\"Shaving\" grid file with wide halo to obtain grid file without halo..."
+
+nml_fn="input.shave.grid.halo0"
+shaved_fp="${DATA}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo0.nc"
+printf "%s %s %s %s %s\n" \
+  $NX $NY "0" \"${unshaved_fp}\" \"${shaved_fp}\" \
+  > ${nml_fn}
+
+PREP_STEP
+eval $RUN_CMD_SERIAL ${exec_fp} < ${nml_fn} ${REDIRECT_OUT_ERR} || \
+print_err_msg_exit "\
+Call to executable (exec_fp) to generate a grid file without halo
+from the grid file with a ${NHW}-cell-wide halo returned with nonzero
+exit code:
+  exec_fp = \"${exec_fp}\"
+The namelist file (nml_fn) used in this call is in directory DATA:
+  nml_fn = \"${nml_fn}\"
+  DATA = \"${DATA}\""
+POST_STEP
+mv_vrfy ${shaved_fp} ${GRID_DIR}
+#
 # Change location to the original directory.
 #
 cd_vrfy -
@@ -552,6 +579,20 @@ make_grid_mosaic_file \
   print_err_msg_exit "\
 Call to function to generate the mosaic file for a grid with a ${NH4}-cell-wide
 halo failed."
+#
+#-----------------------------------------------------------------------
+#
+# Create the grid mosaic file for the grid without halo.
+#
+#-----------------------------------------------------------------------
+#
+make_grid_mosaic_file \
+  grid_dir="${GRID_DIR}" \
+  grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo0.nc" \
+  mosaic_fn="${CRES}${DOT_OR_USCORE}mosaic.halo0.nc" \
+  run_cmd="${RUN_CMD_SERIAL}" || \
+  print_err_msg_exit "\
+Call to function to generate the mosaic file for a grid without halo failed."
 #
 #-----------------------------------------------------------------------
 #

@@ -132,6 +132,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
         fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
 
+        if date_first_cycl == date_last_cycl:
+            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H00")
+        else:
+            cycl_next = date_to_str(date_first_cycl + timedelta(hours=expt_config['workflow']['INCR_CYCL_FREQ']), format="%Y%m%d%H00")
+
         settings.update(
             {
                 #
@@ -139,6 +144,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 #
                 "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
                 "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
+                "native_nexus_emission": f"--cpus-per-task {expt_config['task_nexus_emission']['OMP_NUM_THREADS_NEXUS_EMISSION']}",
                 #
                 # Parameters that determine the set of cycles to run.
                 #
@@ -146,6 +152,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
                 "cdate_first_cycl": date_first_cycl,
                 "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
+                "cycl_next": cycl_next,
                 #
                 # Ensemble-related parameters.
                 #
@@ -432,7 +439,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "blocksize": BLOCKSIZE,
         "ccpp_suite": CCPP_PHYS_SUITE,
     }
-    settings["fv_core_nml"] = {
+
+    fv_core_nml_dict = {}
+    fv_core_nml_dict.update({
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
@@ -449,8 +458,43 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-    }
-    settings["gfs_physics_nml"] = {
+    })
+    if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
+         CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
+         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" ):
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 5
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":   
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "hord_tr": 8,
+                "dnats": 5,
+                "nord": 2
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 4
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 0
+            })
+
+    settings["fv_core_nml"] = fv_core_nml_dict
+
+    gfs_physics_nml_dict = {}
+    gfs_physics_nml_dict.update({
         "kice": kice or None,
         "lsoil": lsoil or None,
         "do_shum": DO_SHUM,
@@ -461,7 +505,31 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "n_var_lndp": N_VAR_LNDP,
         "lndp_type": LNDP_TYPE,
         "fhcyc": FHCYC_LSM_SPP_OR_NOT,
-    }
+    })
+    if CPL_AQM:
+        gfs_physics_nml_dict.update({
+            "cplaqm": True,    
+            "cplocn2atm": False,
+            "fscav_aero": ["aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0", 
+                           "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0", 
+                           "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0", 
+                           "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0", 
+                           "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0", 
+                           "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0", 
+                           "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0", 
+                           "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0", 
+                           "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0", 
+                           "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0", 
+                           "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0", 
+                           "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0", 
+                           "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0", 
+                           "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0", 
+                           "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0", 
+                           "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0", 
+                           "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
+        })
+    settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
     #
     # Add to "settings" the values of those namelist variables that specify
     # the paths to fixed files in the FIXam directory.  As above, these namelist
