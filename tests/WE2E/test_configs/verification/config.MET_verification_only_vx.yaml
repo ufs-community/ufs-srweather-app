@@ -36,7 +36,7 @@ workflow_switches:
 # the GET_OBS_... tasks.  Note we do not specify the obs staging directories
 # (CCPA_OBS_DIR, MRMS_OBS_DIR, and NDAS_OBS_DIR) because those will be
 # automatically set (in a platform-dependent way using the machine file)
-# by the script that runs this test.
+# by the script that runs the WE2E tests.
 #
   RUN_TASK_GET_OBS_CCPA: false
   RUN_TASK_GET_OBS_MRMS: false
@@ -49,9 +49,10 @@ workflow_switches:
 
 #
 # In the "verification" section below, we don't explicitly set the location 
-# of the staged forecast files (specified by VX_FCST_INPUT_BASEDIR) because
-# this location gets set automatically (in a platform-dependent way using
-# the appropriate machine file) by the script that runs this test.
+# of the staged forecast files (via VX_FCST_INPUT_BASEDIR) because this
+# location gets set automatically by the script that runs the WE2E tests.
+# The script sets the location in a platform-dependent way using the
+# appropriate machine file.
 #
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
