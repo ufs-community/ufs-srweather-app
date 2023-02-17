@@ -108,7 +108,7 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-LOG_SUFFIX="pointstat"
+LOG_SUFFIX="PointStat"
 if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
   ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
   VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}

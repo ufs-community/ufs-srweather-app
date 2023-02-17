@@ -109,9 +109,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=gridstat_${VAR}${ACCUM}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
 else
-  LOG_SUFFIX=gridstat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
 fi
 
 if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then

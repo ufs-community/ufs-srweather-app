@@ -114,9 +114,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=gridstat_${VAR}${ACCUM}h_ensmean_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h_ensmean_${CDATE}
 else
-  LOG_SUFFIX=gridstat_${VAR}_ensmean_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}_ensmean_${CDATE}
 fi
 
 #

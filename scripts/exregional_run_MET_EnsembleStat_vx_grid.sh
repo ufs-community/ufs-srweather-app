@@ -117,9 +117,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=ensemblestat_${VAR}${ACCUM}h_${CDATE}
+  LOG_SUFFIX=EnsembleStat_${VAR}${ACCUM}h_${CDATE}
 else
-  LOG_SUFFIX=ensemblestat_${VAR}_${CDATE}
+  LOG_SUFFIX=EnsembleStat_${VAR}_${CDATE}
 fi
 
 #
