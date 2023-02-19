@@ -7,6 +7,8 @@ import traceback
 import logging
 from textwrap import dedent
 
+import yaml
+
 from python_utils import (
     log_info,
     cd_vrfy,
@@ -130,6 +132,11 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Load the constants file
     cfg_c = load_config_file(os.path.join(ushdir, "constants.yaml"))
 
+
+    # Load the rocoto workflow default file
+    cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
+        "wflow", "default_workflow.yaml"))
+
     # Update default config with the constants, the machine config, and
     # then the user_config
     # Recall: update_dict updates the second dictionary with the first,
@@ -138,6 +145,9 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Constants
     update_dict(cfg_c, cfg_d)
+
+    # Default workflow settings
+    update_dict(cfg_wflow, cfg_d)
 
     # Machine settings
     update_dict(machine_cfg, cfg_d)
@@ -1031,19 +1041,24 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config["workflow_switches"]
+
+    task_defs = expt_config.get('rocoto', {}).get('tasks')
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = global_sect["DO_ENSEMBLE"]
-    run_task_vx_ensgrid = workflow_switches["RUN_TASK_VX_ENSGRID"]
-    run_task_vx_enspoint = workflow_switches["RUN_TASK_VX_ENSPOINT"]
-    if (not do_ensemble) and (run_task_vx_ensgrid or run_task_vx_enspoint):
+
+
+    # Gather all the tasks/metatasks that are defined for verifying
+    # ensembles
+    ens_vx_tasks = [task for task in task_defs if "vx_ens" in task]
+    if (not do_ensemble) and ens_vx_tasks:
+        task_str = "\n".join(ens_vx_tasks)
         raise Exception(
             f'''
             Ensemble verification can not be run unless running in ensemble mode:
                DO_ENSEMBLE = \"{do_ensemble}\"
-               RUN_TASK_VX_ENSGRID = \"{run_task_vx_ensgrid}\"
-               RUN_TASK_VX_ENSPOINT = \"{run_task_vx_enspoint}\"'''
+               Ensemble verification tasks: {task_str}
+            '''
         )
 
     #
@@ -1067,11 +1082,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        switch = f"RUN_TASK_MAKE_{prep_task}"
+        sect_key = f"task_make_{prep_task.lower()}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not workflow_switches[switch]:
-            sect_key = f"task_make_{prep_task.lower()}"
+        if not task_defs.get(sect_key):
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key].get(dir_key)
 
@@ -1147,16 +1161,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     if fcst_config["WRITE_DOPOST"]:
         # Turn off run_post
-        if workflow_switches["RUN_TASK_RUN_POST"]:
+        removed_task = task_defs.pop('metatask_run_ens_post', None)
+        if removed_task:
             logger.warning(
                 dedent(
                     f"""
                            Inline post is turned on, deactivating post-processing tasks:
-                           RUN_TASK_RUN_POST = False
+                           Removing {removed_task} from task definitions
+                           list.
                            """
                 )
             )
-            workflow_switches["RUN_TASK_RUN_POST"] = False
 
         # Check if SUB_HOURLY_POST is on
         if expt_config["task_run_post"]["SUB_HOURLY_POST"]:
@@ -1261,6 +1276,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     with open(global_var_defns_fp, "a") as f:
         f.write(cfg_to_shell_str(expt_config))
+
+    with open(global_var_defns_fp.replace('sh', 'yaml'), 'w') as f:
+        yaml.dump(expt_config, f)
+
 
     #
     # -----------------------------------------------------------------------

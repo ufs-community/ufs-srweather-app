@@ -1,0 +1,68 @@
+{%- macro dependency_tree(dep_dict) -%}
+{%- if dep_dict is mapping -%}
+  {%- for tag, values in dep_dict.items() -%}
+    {%- if values is mapping -%}
+      {%- if values.get("attrs") -%}
+        <{{ tag.split("_")[0] }} {% for attr, val in values.pop("attrs", {}).items() %}{{ attr }}="{{ val }}" {% endfor %}>
+        {%- if values.get("text") -%}
+          {{ values.pop("text") }}
+        </{{ tag.split("_")[0] }}>
+        {%- endif -%}
+      {%- else -%}
+        <{{ tag.split("_")[0] }}>
+          {{ dependency_tree(values) }}
+        </{{ tag.split("_")[0] }}>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro task(name, settings) %}
+  <task name="{{name}}" {% for attr, val in settings["attrs"].items() %}{{ attr }}="{{ val }}" {% endfor %}>
+
+    <jobname>"{{name}}"</jobname>
+    {%- for key, value in settings.items() -%}
+    {% if key not in ["envars", "attrs", "dependency", "nnodes", "ppn"] %}
+    <{{ key }}>"{{ value }}"</{{ key }}>
+    {%- endif -%}
+    {% endfor %}
+
+    {% for var, value in settings.get("envars", {}).items() %}
+    <envar><name>{{ var }}</name><value>{{ value }}</value></envar>
+    {%- endfor %}
+
+    {% if settings.get("dependency") -%}
+    <dependency>
+      {{ dependency_tree(dep_dict=settings.get("dependency")) }}
+    </dependency>
+    {%- endif %}
+
+  </task>
+{% endmacro %}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE workflow [
+
+{% for entity, value in entities.items() %}
+  <!ENTITY {{ entity }} "{{ value }}">
+{%- endfor %}
+
+]>
+<workflow {% for attr, val in attrs.items() %}{{ attr }}="{{ val }}" {% endfor %}>
+
+  {% for group, value in cycledefs.items() %}
+  <cycledef group="{{ group }}">{{ value.get("dates") }}</cycledef>
+  {%- endfor %}
+
+  <log>{{ log }}</log>
+
+{% for item, settings in tasks.items() %}
+  {%- if item.split("_", 1) [0] == "task" %}
+  {{ task(name=item, settings=settings ) }}
+  {%- elif item.split("_", 1) [0] == "metatask" %}
+  <metatask>{{ item.split("_", 1)[-1] }}</metatask>
+  {%- endif %}
+{%- endfor %}
+
+</workflow>

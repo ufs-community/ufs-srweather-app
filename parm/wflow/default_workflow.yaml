@@ -1,5 +1,5 @@
-# Trying to match grid_RRFS_CONUS_25km_ics_HRRR_lbcs_RAP_suite_HRRR 
 #
+# The defaults that cover a majority of our workflow test experiments.
 #
 rocoto:
   entities:
@@ -11,8 +11,8 @@ rocoto:
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
     JOBSDIR: '{{ user.JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
-    LOGDIR: '{% if user.RUN_ENVIR == "nco" %} "{}/@Y@m@d".format(nco.LOGBASEDIR) {% else %} nco.LOGBASEDIR {% endif %}'
-    LOGEXT: '{% if user.RUN_ENVIR == "nco" %} ".{}.log".format(workflow.WORKFLOW_ID) {% else %} ".log" {% endif %}'
+    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/@Y@m@d".format(nco.LOGBASEDIR)}}{% else %}{{nco.LOGBASEDIR}}{% endif %}'
+    LOGEXT: '{% if user.RUN_ENVIR == "nco" %}{{".{}.log".format(workflow.WORKFLOW_ID)}}{% else %}{{".log"}}{% endif %}'
     MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
@@ -30,12 +30,12 @@ rocoto:
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
   attrs:
     cyclethrottle: "20"
-    realtime: False
+    realtime: "F"
     scheduler: '{{ platform.SCHED }}'
   cycledefs:
     at_start:
-      dates: !startstopfreq ['workflow.DATE_FIRST_CYCL', 'workflow.DATE_FIRST_CYCL', 'workflow.CYCL_FREQ']
+      dates: !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
     forecast:
-      dates: !startstopfreq ['workflow.DATE_FIRST_CYCL', 'workflow.DATE_LAST_CYCL', 'workflow.CYCL_FREQ']
+      dates: !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
   log: !cycstr '&LOGDIR'
   tasks: !include ['parm/wflow/prep.yaml', 'parm/wflow/coldstart.yaml']

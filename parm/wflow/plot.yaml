@@ -11,7 +11,7 @@ default_task_plot: &default_task
     LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
     USHdir: "&USHdir;"
-    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     ENSMEM_INDX: '#mem#'
     cyc: !cycstr "@H"
     nprocs: '{{ nnodes * ppn }}'

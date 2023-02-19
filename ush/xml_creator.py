@@ -6,6 +6,7 @@ A standalone tool that reads a YAML file and generates a Rocoto XML.
 import argparse
 from copy import deepcopy
 from io import StringIO
+import logging
 import os
 import pathlib
 import re
@@ -17,6 +18,7 @@ import xml.dom.minidom as minidom
 import jinja2
 import yaml
 
+from python_utils import extend_yaml
 
 def load_config(arg):
 
@@ -44,73 +46,9 @@ def prettify(elem):
     """
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
-    return reparsed.toprettyxml(indent="  ")
-
-def extend_yaml(yaml_dict, full_dict=None):
-
-    '''
-    Updates yaml_dict inplace by rendering any existing Jinja2 templates
-    that exist in a value.
-    '''
-
-    if full_dict is None:
-        full_dict = yaml_dict
-
-    if not isinstance(yaml_dict, dict):
-        return
-
-    for k, v in yaml_dict.items():
-
-        if isinstance(v, dict):
-            extend_yaml(v, full_dict)
-        else:
-
-          # Save a bit of compute and only do this part for strings that
-          # contain the jinja double brackets.
-          v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
-          is_a_template = any((ele for ele in ['{{', '{%'] if ele in v_str))
-          if is_a_template:
-
-              # Find expressions first, and process them as a single template
-              # if they exist
-              # Find individual double curly brace template in the string
-              # otherwise. We need one substitution template at a time so that
-              # we can opt to leave some un-filled when they are not yet set.
-              # For example, we can save cycle-dependent templates to fill in
-              # at run time.
-              print(f'Value: {v}')
-              if '{%' in v:
-                  templates = [v_str]
-              else:
-                  templates = re.findall(r'{{[^}]*}}|\S', v_str)
-              print(f'Templates: {templates}')
-
-              data = []
-              for template in templates:
-                  j2env = jinja2.Environment(loader=jinja2.BaseLoader,
-                          undefined=jinja2.StrictUndefined)
-                  j2env.filters['path_join'] = path_join
-                  j2tmpl = j2env.from_string(template)
-                  try:
-                      # Fill in a template that has the appropriate variables
-                      # set.
-                      template = j2tmpl.render(env=os.environ, **full_dict)
-                  except jinja2.exceptions.UndefinedError as e:
-                      # Leave a templated field as-is in the resulting dict
-                      print(f'Error: {e}')
-                      print(f'Preserved template: {k}: {template}')
-                      for a, b in full_dict.items():
-                          print(f'    {a}: {b}')
-
-                  data.append(template)
-
-              if isinstance(v, ET.Element):
-                  v.text = ''.join(data)
-              else:
-                  # Put the full template line back together as it was,
-                  # filled or not
-                  yaml_dict[k] = ''.join(data)
-
+    # Remove the first line containing xml tag.
+    reparsed = reparsed.toprettyxml(indent="  ")
+    return reparsed.split('\n', 1)[-1]
 
 def path_ok(arg):
 
@@ -128,60 +66,6 @@ def path_ok(arg):
 
     msg = f'{arg} is not a writable path!'
     raise argparse.ArgumentTypeError(msg)
-
-def cycstr(loader, node):
-
-    ''' Returns a cyclestring Element whose content corresponds to the
-    input node argument '''
-
-    try:
-        arg = loader.construct_mapping(node, deep=True)
-    except yaml.constructor.ConstructorError:
-        arg = loader.construct_scalar(node)
-
-    if isinstance(arg, str):
-        string = arg
-        cyc = ET.Element('cyclestr')
-    else:
-        string = arg.pop('value')
-        cyc = ET.Element('cyclestr', attrib=arg)
-    cyc.text = string
-    return cyc
-
-def include(loader, node):
-
-    ''' Returns a dictionary that includes the contents of the referenced
-    YAML file(s). '''
-
-    filepaths = loader.construct_sequence(node)
-    srw_path = pathlib.Path(__file__).resolve().parents[0]
-
-    cfg = {}
-    for filepath in filepaths:
-        abs_path = filepath
-        if not os.path.isabs(filepath):
-            abs_path = os.path.join(os.path.dirname(srw_path), filepath)
-        with open(abs_path, 'r') as fp:
-           cfg.update(yaml.load(fp, Loader=yaml.SafeLoader))
-    return cfg
-
-def startstopfreq(loader, node):
-
-    ''' Returns a Rocoto-formatted string for the contents of a cycledef
-    tag. Assume that the items in the node are env variables, and return
-    a Rocoto-formatted string'''
-
-    args = loader.construct_sequence(node)
-
-    # Try to fill the values from environment values, default to the
-    # value provided in the entry.
-    start, stop, freq = (os.environ.get(arg, arg) for arg in args)
-
-    return f'{start} {stop} {freq}:00:00'
-
-yaml.add_constructor('!cycstr', cycstr, Loader=yaml.SafeLoader)
-yaml.add_constructor('!include', include, Loader=yaml.SafeLoader)
-yaml.add_constructor('!startstopfreq', startstopfreq, Loader=yaml.SafeLoader)
 
 def create_header(entities):
 
@@ -216,6 +100,7 @@ def create_workflow_tree(workflow_config):
     # Generate all the cycledefs defined in the config
     for cycledef, cd_config in cycledefs.items():
         content = cd_config.pop('dates')
+        print("contents", content)
         cycle = ET.SubElement(
             workflow,
             'cycledef',
@@ -308,13 +193,17 @@ def build_task(name, config, parent):
       None. Updates the parent Element Tree by adding subelements to it.
     '''
 
+    config = deepcopy(config)
     attrs = config.pop('attrs', {})
     if attrs.get('name') is None:
         attrs['name'] = name
 
     config['jobname'] = name
-
     extend_yaml(config)
+
+    if name == 'get_extrn_lbcs':
+      print('TASK CONFIG: ', config)
+      exit()
     task_elem = ET.SubElement(parent, 'task', attrib=attrs)
     for tag, tag_value in config.items():
         if tag == 'envars':
@@ -330,6 +219,8 @@ def build_task(name, config, parent):
         elif tag == 'dependency':
             dep_tag = ET.SubElement(task_elem, tag)
             build_dependency_tree(tag_value, dep_tag)
+        elif tag in ['nnodes', 'ppn', 'jobname']:
+            continue
         else:
             task_tag = ET.SubElement(task_elem, tag)
             element_or_text(tag_value, task_tag)
@@ -397,8 +288,6 @@ def parse_args(argv):
     parser.add_argument('-c', '--config',
                     help='Full path to a YAML user config file, and a \
                     top-level section to use (optional).',
-                    default='fv3_lam.yml',
-                    type=load_config,
                     )
     parser.add_argument('-o', '--outxml',
                     dest='outxml',
@@ -412,7 +301,7 @@ def parse_args(argv):
         )
     return parser.parse_args(argv)
 
-def main(argv):
+def create_xml(argv, config_dict=None):
 
     ''' Builds the ElementTree corresponding to the Rocoto workflow
     described by a YAML config file and writes it out to an XML file.
@@ -420,15 +309,25 @@ def main(argv):
 
     cla = parse_args(argv)
 
-    for k, v in cla.config.items():
-        print(f'{k}: {v}')
-    extend_yaml(cla.config)
-    extend_yaml(cla.config)
+    if cla.config is not None:
+        user_config = load_config(cla.config)
 
-    print('Parsed YAML config:')
-    print(yaml.dump(cla.config))
+        for k, v in user_config.items():
+            logging.debug(f'{k}: {v}')
+        extend_yaml(user_config)
+        extend_yaml(user_config)
 
-    workflow_config = cla.config.get('workflow')
+    if isinstance(config_dict, dict):
+        user_config = config_dict
+
+    logging.info(f"Running create_xml with args: ")
+    for name, val in cla.__dict__.items():
+        logging.info(f"{name:>15s}: {val}")
+
+    workflow_config = user_config.get('rocoto')
+
+    logging.info(f"Workflow config settings are: ")
+    logging.info(yaml.dump(workflow_config))
 
     # Generate the header with all the entity info as a string.
     header = create_header(workflow_config.get('entities', {}))
@@ -444,13 +343,32 @@ def main(argv):
     # Write the full workflow, header and tree, to the desired output
     # location
     if cla.dryrun or not cla.outxml:
-        print(header)
-        print(prettify(workflow))
+        logging.INFO(header)
+        logging.INFO(prettify(workflow))
     else:
         with open(cla.outxml, 'w') as fn:
             fn.write(header)
             fn.write(prettify(workflow))
 
+def setup_logging(logfile: str = "log.create_xml") -> None:
+    """
+    Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
+    messages with detailed timing and routine info in the specified text file.
+    """
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(name)-22s %(levelname)-8s %(message)s",
+        filename=logfile,
+        filemode="w",
+    )
+    logging.debug(f"Finished setting up debug file logging in {logfile}")
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.getLogger().addHandler(console)
+    logging.debug("Logging set up successfully")
+
 if __name__ == '__main__':
 
-    main(sys.argv[1:])
+    setup_logging()
+    create_xml(sys.argv[1:])
+

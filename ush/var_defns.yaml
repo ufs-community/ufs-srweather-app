@@ -1,0 +1,808 @@
+constants:
+  DEGS_PER_RADIAN: 57.29577951308232
+  GTYPE: regional
+  NH0: 0
+  NH3: 3
+  NH4: 4
+  PI_GEOM: 3.141592653589793
+  RADIUS_EARTH: 6371200.0
+  TILE_RGNL: 7
+  valid_vals_BOOLEAN:
+  - 'TRUE'
+  - 'true'
+  - 'YES'
+  - 'yes'
+  - 'FALSE'
+  - 'false'
+  - 'NO'
+  - 'no'
+fixed_files:
+  CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
+  - aerosol.dat                | global_climaeropac_global.txt
+  - co2historicaldata_2010.txt | fix_co2_proj/global_co2historicaldata_2010.txt
+  - co2historicaldata_2011.txt | fix_co2_proj/global_co2historicaldata_2011.txt
+  - co2historicaldata_2012.txt | fix_co2_proj/global_co2historicaldata_2012.txt
+  - co2historicaldata_2013.txt | fix_co2_proj/global_co2historicaldata_2013.txt
+  - co2historicaldata_2014.txt | fix_co2_proj/global_co2historicaldata_2014.txt
+  - co2historicaldata_2015.txt | fix_co2_proj/global_co2historicaldata_2015.txt
+  - co2historicaldata_2016.txt | fix_co2_proj/global_co2historicaldata_2016.txt
+  - co2historicaldata_2017.txt | fix_co2_proj/global_co2historicaldata_2017.txt
+  - co2historicaldata_2018.txt | fix_co2_proj/global_co2historicaldata_2018.txt
+  - co2historicaldata_2019.txt | fix_co2_proj/global_co2historicaldata_2019.txt
+  - co2historicaldata_2020.txt | fix_co2_proj/global_co2historicaldata_2020.txt
+  - co2historicaldata_2021.txt | fix_co2_proj/global_co2historicaldata_2021.txt
+  - co2historicaldata_glob.txt | global_co2historicaldata_glob.txt
+  - co2monthlycyc.txt          | co2monthlycyc.txt
+  - global_h2oprdlos.f77       | global_h2o_pltc.f77
+  - global_albedo4.1x1.grb     | global_albedo4.1x1.grb
+  - global_zorclim.1x1.grb     | global_zorclim.1x1.grb
+  - global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb
+  - sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt
+  - solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt
+  - global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
+  - CCN_ACTIVATE.BIN | CCN_ACTIVATE.BIN
+  - freezeH2O.dat | freezeH2O.dat
+  - qr_acr_qg.dat | qr_acr_qg.dat
+  - qr_acr_qs.dat | qr_acr_qs.dat
+  - qr_acr_qgV2.dat | qr_acr_qgV2.dat
+  - qr_acr_qsV2.dat | qr_acr_qsV2.dat
+  - Thompson_MP_MONTHLY_CLIMO.nc | Thompson_MP_MONTHLY_CLIMO.nc
+  FIXgsm_FILES_TO_COPY_TO_FIXam:
+  - global_glacier.2x2.grb
+  - global_maxice.2x2.grb
+  - RTGSST.1982.2012.monthly.clim.grb
+  - global_snoclim.1.875.grb
+  - CFSR.SEAICE.1982.2012.monthly.clim.grb
+  - global_soilmgldas.t126.384.190.grb
+  - seaice_newland.grb
+  - global_climaeropac_global.txt
+  - fix_co2_proj/global_co2historicaldata_2010.txt
+  - fix_co2_proj/global_co2historicaldata_2011.txt
+  - fix_co2_proj/global_co2historicaldata_2012.txt
+  - fix_co2_proj/global_co2historicaldata_2013.txt
+  - fix_co2_proj/global_co2historicaldata_2014.txt
+  - fix_co2_proj/global_co2historicaldata_2015.txt
+  - fix_co2_proj/global_co2historicaldata_2016.txt
+  - fix_co2_proj/global_co2historicaldata_2017.txt
+  - fix_co2_proj/global_co2historicaldata_2018.txt
+  - fix_co2_proj/global_co2historicaldata_2019.txt
+  - fix_co2_proj/global_co2historicaldata_2020.txt
+  - fix_co2_proj/global_co2historicaldata_2021.txt
+  - global_co2historicaldata_glob.txt
+  - co2monthlycyc.txt
+  - global_h2o_pltc.f77
+  - global_hyblev.l65.txt
+  - global_zorclim.1x1.grb
+  - global_sfc_emissivity_idx.txt
+  - global_tg3clim.2.6x1.5.grb
+  - global_solarconstant_noaa_an.txt
+  - global_albedo4.1x1.grb
+  - geo_em.d01.lat-lon.2.5m.HGT_M.nc
+  - HGT.Beljaars_filtered.lat-lon.30s_res.nc
+  - ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
+  - CCN_ACTIVATE.BIN
+  - freezeH2O.dat
+  - qr_acr_qg.dat
+  - qr_acr_qs.dat
+  - qr_acr_qgV2.dat
+  - qr_acr_qsV2.dat
+  - Thompson_MP_MONTHLY_CLIMO.nc
+  FNAISC: CFSR.SEAICE.1982.2012.monthly.clim.grb
+  FNGLAC: global_glacier.2x2.grb
+  FNMSKH: seaice_newland.grb
+  FNMXIC: global_maxice.2x2.grb
+  FNSMCC: global_soilmgldas.t126.384.190.grb
+  FNSNOC: global_snoclim.1.875.grb
+  FNTSFC: RTGSST.1982.2012.monthly.clim.grb
+  FNZORC: igbp
+  FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
+  - FNGLAC | global_glacier.2x2.grb
+  - FNMXIC | global_maxice.2x2.grb
+  - FNTSFC | RTGSST.1982.2012.monthly.clim.grb
+  - FNSNOC | global_snoclim.1.875.grb
+  - FNAISC | CFSR.SEAICE.1982.2012.monthly.clim.grb
+  - FNSMCC | global_soilmgldas.t126.384.190.grb
+  - FNMSKH | seaice_newland.grb
+  FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
+  - FNALBC  | snowfree_albedo
+  - FNALBC2 | facsf
+  - FNTG3C  | substrate_temperature
+  - FNVEGC  | vegetation_greenness
+  - FNVETC  | vegetation_type
+  - FNSOTC  | soil_type
+  - FNVMNC  | vegetation_greenness
+  - FNVMXC  | vegetation_greenness
+  - FNSLPC  | slope_type
+  - FNABSC  | maximum_snow_albedo
+  SFC_CLIMO_FIELDS:
+  - facsf
+  - maximum_snow_albedo
+  - slope_type
+  - snowfree_albedo
+  - soil_type
+  - substrate_temperature
+  - vegetation_greenness
+  - vegetation_type
+global:
+  CRTM_DIR: null
+  DO_ENSEMBLE: false
+  DO_LSM_SPP: false
+  DO_SHUM: false
+  DO_SKEB: false
+  DO_SPP: false
+  DO_SPPT: false
+  ENSMEM_NAMES: null
+  FHCYC_LSM_SPP_OR_NOT: 0
+  FV3_NML_ENSMEM_FPS: null
+  HALO_BLEND: 10
+  ISEED_LSM_SPP:
+  - 9
+  ISEED_SHUM: 2
+  ISEED_SKEB: 3
+  ISEED_SPP:
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  ISEED_SPPT: 1
+  LNDP_MODEL_TYPE: 0
+  LNDP_TYPE: 0
+  LSM_SPP_LSCALE:
+  - 150000
+  - 150000
+  - 150000
+  - 150000
+  - 150000
+  - 150000
+  - 150000
+  LSM_SPP_MAG_LIST:
+  - 0.017
+  - 0.001
+  - 0.001
+  - 0.001
+  - 0.001
+  - 0.001
+  - 0.2
+  LSM_SPP_TSCALE:
+  - 21600
+  - 21600
+  - 21600
+  - 21600
+  - 21600
+  - 21600
+  - 21600
+  LSM_SPP_VAR_LIST:
+  - smc
+  - vgf
+  - alb
+  - sal
+  - emi
+  - zol
+  - stc
+  NEW_LSCALE: true
+  NUM_ENS_MEMBERS: 0
+  N_VAR_LNDP: 0
+  N_VAR_SPP: 0
+  SHUM_INT: 3600
+  SHUM_LSCALE: 150000
+  SHUM_MAG: -999.0
+  SHUM_TSCALE: 21600
+  SKEBNORM: 1
+  SKEB_INT: 3600
+  SKEB_LSCALE: 150000
+  SKEB_MAG: -999.0
+  SKEB_TSCALE: 21600
+  SKEB_VDOF: 10
+  SPPT_INT: 3600
+  SPPT_LOGIT: true
+  SPPT_LSCALE: 150000
+  SPPT_MAG: -999.0
+  SPPT_SFCLIMIT: true
+  SPPT_TSCALE: 21600
+  SPP_LSCALE:
+  - 150000.0
+  - 150000.0
+  - 150000.0
+  - 150000.0
+  - 150000.0
+  SPP_MAG_LIST:
+  - 0.2
+  - 0.2
+  - 0.75
+  - 0.2
+  - 0.2
+  SPP_SIGTOP1:
+  - 0.1
+  - 0.1
+  - 0.1
+  - 0.1
+  - 0.1
+  SPP_SIGTOP2:
+  - 0.025
+  - 0.025
+  - 0.025
+  - 0.025
+  - 0.025
+  SPP_STDDEV_CUTOFF:
+  - 1.5
+  - 1.5
+  - 2.5
+  - 1.5
+  - 1.5
+  SPP_TSCALE:
+  - 21600.0
+  - 21600.0
+  - 21600.0
+  - 21600.0
+  - 21600.0
+  SPP_VAR_LIST:
+  - pbl
+  - sfc
+  - mp
+  - rad
+  - gwd
+  USE_CRTM: false
+  USE_ZMTNBLCK: false
+grid_params:
+  DEL_ANGLE_X_SG: 0.11241167188497128
+  DEL_ANGLE_Y_SG: 0.11241167188497128
+  LAT_CTR: 38.5
+  LON_CTR: -97.5
+  NEG_NX_OF_DOM_WITH_WIDE_HALO: -231
+  NEG_NY_OF_DOM_WITH_WIDE_HALO: -143
+  NHW: 6
+  NX: 219
+  NY: 131
+  PAZI: 0.0
+  STRETCH_FAC: 0.999
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    completes successfully on the RRFS_CONUS_25km grid using the HRRR
+    physics suite with ICs derived from the FV3GFS and LBCs derived from
+    the RAP.
+    Note that this test specifies the file format of the FV3GFS external
+    model data (from which to generate ICs) to be "grib2" as opposed to
+    the default value of "nemsio".
+  version: 1.0
+nco:
+  COMIN_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  COMOUT_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  COMROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  DATAROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  DBNROOT: null
+  DCOMROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  EXTROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  KEEPDATA: true
+  LOGBASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/log
+  MAILCC: null
+  MAILTO: null
+  NET: rrfs
+  OPSROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  PACKAGEROOT: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  RUN: rrfs
+  SENDCOM: false
+  SENDDBN: false
+  SENDDBN_NTC: false
+  SENDECF: false
+  SENDWEB: false
+  envir: para
+  model_ver: v1.0.0
+platform:
+  BUILD_MOD_FN: build_hera_intel
+  BUILD_VER_FN: build.ver.hera
+  CCPA_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ccpa/proc
+  DOMAIN_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
+  EXTRN_MDL_DATA_STORES: disk
+  FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
+  FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
+  FIXorg: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
+  FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
+  FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
+  METPLUS_PATH: /contrib/METplus/METplus-4.1.1
+  MET_BIN_EXEC: bin
+  MET_INSTALL_DIR: /contrib/met/10.1.1
+  MRMS_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/mrms/proc
+  NCORES_PER_NODE: 40
+  NDAS_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ndas/proc
+  PARTITION_DEFAULT: hera
+  PARTITION_FCST: hera
+  PARTITION_HPSS: service
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  QUEUE_DEFAULT: batch
+  QUEUE_FCST: batch
+  QUEUE_HPSS: batch
+  RUN_CMD_FCST: srun --export=ALL
+  RUN_CMD_POST: srun --export=ALL
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: srun --export=ALL
+  RUN_VER_FN: run.ver.hera
+  SCHED: slurm
+  SCHED_NATIVE_CMD: --export=NONE
+  TASKTHROTTLE: 1000
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
+  WFLOW_MOD_FN: wflow_hera
+  WORKFLOW_MANAGER: rocoto
+rocoto:
+  attrs:
+    cyclethrottle: '20'
+    realtime: F
+    scheduler: slurm
+  cycledefs:
+    at_start:
+      dates: 202008100000 202008100000 24:00:00
+    forecast:
+      dates: 202008100000 202008100000 24:00:00
+  entities:
+    ACCOUNT: zrtrr
+    CCPA_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ccpa/proc
+    COMIN_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/../nco_dirs/com/rrfs/v1.0.0
+    COMOUT_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/../nco_dirs/com/rrfs/v1.0.0
+    EXPTDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+    GLOBAL_VAR_DEFNS_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/var_defns.sh
+    JOBSDIR: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/jobs
+    LOAD_MODULES_RUN_TASK_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/ush/load_modules_run_task.sh
+    LOGDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/../nco_dirs/output
+    LOGEXT: .log
+    MRMS_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/mrms/proc
+    NCORES_PER_NODE: '40'
+    NDAS_OBS_DIR: /scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ndas/proc
+    NET: rrfs
+    PARTITION_DEFAULT: hera
+    PARTITION_FCST: hera
+    PARTITION_HPSS: service
+    QUEUE_DEFAULT: batch
+    QUEUE_FCST: batch
+    QUEUE_HPSS: batch
+    RUN: rrfs
+    SCHED_NATIVE_CMD: --export=NONE
+    SCRIPTSDIR: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/scripts
+    USCORE_ENSMEM_NAME: ''
+    WORKFLOW_ID: ''
+  log: <cyclestr>&LOGDIR</cyclestr>
+  tasks:
+    default_task:
+      account: '&ACCOUNT;'
+      attrs: &id001
+        cycledefs: forecast
+        maxtries: '1'
+      envars:
+        ENSMEM_INDX: '#mem#'
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+        PDY: <cyclestr>@Y@m@d</cyclestr>
+        cyc: <cyclestr>@H</cyclestr>
+        nprocs: '{{ nnodes * ppn }}'
+        subcyc: <cyclestr>@M</cyclestr>
+      native: --export=NONE
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: '&NCORES_PER_NODE;'
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:30:00
+    default_task_prep:
+      account: '&ACCOUNT;'
+      attrs: &id005
+        cycledefs: at_start
+        maxtries: '2'
+      envars: &id006
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+        PDY: <cyclestr>@Y@m@d</cyclestr>
+        cyc: <cyclestr>@H</cyclestr>
+        nprocs: '{{ nnodes * ppn }}'
+        subcyc: <cyclestr>@M</cyclestr>
+      native: --export=NONE
+      nnodes: 1
+      nodes: 1:ppn=24
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 24
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:20:00
+    metatask_run_ensemble:
+      task_make_ics:
+        account: '&ACCOUNT;'
+        attrs: *id001
+        command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
+        dependency:
+          and:
+            or_grid: &id002
+              datadep_grid:
+                attrs:
+                  age: 00:00:00:05
+                text: '&LOGDIR;/make_grid_task_complete.txt'
+            or_orog: &id003
+              datadep_orog:
+                attrs:
+                  age: 00:00:00:05
+                text: '&LOGDIR;/make_orog_task_complete.txt'
+            or_sfc_climo: &id004
+              datadep_sfc_climo:
+                attrs:
+                  age: 00:00:00:05
+                text: '&LOGDIR;/make_sfc_climo_task_complete.txt'
+            taskdep_get_extrn:
+              attrs:
+                task: get_extrn_ics
+        envars:
+          ENSMEM_INDX: '#mem#'
+          GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+          LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+          PDY: <cyclestr>@Y@m@d</cyclestr>
+          SLASH_ENSMEM_SUBDIR: /
+          cyc: <cyclestr>@H</cyclestr>
+          nprocs: '{{ nnodes * ppn }}'
+          subcyc: <cyclestr>@M</cyclestr>
+        join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+        native: --export=NONE
+        nnodes: 4
+        nodes: 4:ppn=12
+        nodesize: '&NCORES_PER_NODE;'
+        ppn: 12
+        queue: '&QUEUE_DEFAULT;'
+        walltime: 00:30:00
+      task_make_lbcs:
+        account: '&ACCOUNT;'
+        attrs: *id001
+        command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
+        dependency:
+          and:
+            or_grid: *id002
+            or_orog: *id003
+            or_sfc_climo: *id004
+            taskdep_get_extrn:
+              attrs:
+                task: get_extrn_lbcs
+        envars:
+          ENSMEM_INDX: '#mem#'
+          GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+          LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+          PDY: <cyclestr>@Y@m@d</cyclestr>
+          SLASH_ENSMEM_SUBDIR: /
+          cyc: <cyclestr>@H</cyclestr>
+          nprocs: '{{ nnodes * ppn }}'
+          subcyc: <cyclestr>@M</cyclestr>
+        join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+        native: --export=NONE
+        nnodes: 4
+        nodes: 4:ppn=12
+        nodesize: '&NCORES_PER_NODE;'
+        ppn: 12
+        queue: '&QUEUE_DEFAULT;'
+        walltime: 00:30:00
+      task_run_fcst:
+        account: '&ACCOUNT;'
+        attrs: *id001
+        command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
+        dependency:
+          and:
+            taskdep_make_ics:
+              attrs:
+                task: make_ics
+            taskdep_make_lbcs:
+              attrs:
+                task: make_lbcs
+        envars:
+          ENSMEM_INDX: '#mem#'
+          GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+          LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+          PDY: <cyclestr>@Y@m@d</cyclestr>
+          SLASH_ENSMEM_SUBDIR: /
+          cyc: <cyclestr>@H</cyclestr>
+          nprocs: '{{ nnodes * ppn }}'
+          subcyc: <cyclestr>@M</cyclestr>
+        join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+        native: --cpus-per-task 2 --exclusive
+        nnodes: '{{ NNODES_RUN_FCST }}'
+        nodes: ''
+        nodesize: '40'
+        ppn: '{{ PPN_RUN_FCST }}'
+        queue: '&QUEUE_FCST;'
+        walltime: 04:30:00
+      var:
+        mem: det
+    task_get_extrn_ics:
+      account: '&ACCOUNT;'
+      attrs: *id001
+      command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
+      envars:
+        ENSMEM_INDX: '#mem#'
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        ICS_OR_LBCS: ICS
+        LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+        PDY: <cyclestr>@Y@m@d</cyclestr>
+        cyc: <cyclestr>@H</cyclestr>
+        nprocs: '{{ nnodes * ppn }}'
+        subcyc: <cyclestr>@M</cyclestr>
+      join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+      memory: 2G
+      native: --export=NONE
+      nnodes: 1
+      nodes: 1:ppn=1
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 1
+      queue: '&QUEUE_HPSS;'
+      walltime: 00:45:00
+    task_get_extrn_lbcs:
+      account: '&ACCOUNT;'
+      attrs: *id001
+      command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
+      envars:
+        ENSMEM_INDX: '#mem#'
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        ICS_OR_LBCS: LBCS
+        LOGDIR: <cyclestr>&LOGDIR;</cyclestr>
+        PDY: <cyclestr>@Y@m@d</cyclestr>
+        cyc: <cyclestr>@H</cyclestr>
+        nprocs: '{{ nnodes * ppn }}'
+        subcyc: <cyclestr>@M</cyclestr>
+      join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+      memory: 2G
+      native: --export=NONE
+      nnodes: 1
+      nodes: 1:ppn=1
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 1
+      queue: '&QUEUE_HPSS;'
+      walltime: 00:45:00
+    task_make_grid:
+      account: '&ACCOUNT;'
+      attrs: *id005
+      command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
+      envars: *id006
+      join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+      native: --export=NONE
+      nnodes: 1
+      nodes: 1:ppn=24
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 24
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:20:00
+    task_make_orog:
+      account: '&ACCOUNT;'
+      attrs: *id005
+      command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSDIR;/JREGIONAL_MAKE_OROG"'
+      dependency:
+        taskdep_make_grid:
+          attrs:
+            task: make_grid
+      envars: *id006
+      join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+      native: --export=NONE
+      nnodes: 1
+      nodes: 1:ppn=24
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 24
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:20:00
+    task_make_sfc_climo:
+      account: '&ACCOUNT;'
+      attrs: *id005
+      command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
+      dependency:
+        and:
+          taskdep_make_grid:
+            attrs:
+              task: make_orog
+      envars: *id006
+      join: <cyclestr>&LOGDIR;/{{ jobname }}.log</cyclestr>
+      native: --export=NONE
+      nnodes: 2
+      nodes: 2:ppn=24
+      nodesize: '&NCORES_PER_NODE;'
+      ppn: 24
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:20:00
+task_get_extrn_ics:
+  EXTRN_MDL_FILES_ICS: null
+  EXTRN_MDL_ICS_OFFSET_HRS: 0
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+  EXTRN_MDL_SYSBASEDIR_ICS: null
+  FV3GFS_FILE_FMT_ICS: grib2
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_FILES_LBCS:
+  - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+  EXTRN_MDL_LBCS_OFFSET_HRS: 3
+  EXTRN_MDL_NAME_LBCS: RAP
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+  EXTRN_MDL_SYSBASEDIR_LBCS: null
+  FV3GFS_FILE_FMT_LBCS: nemsio
+  LBC_SPEC_INTVL_HRS: 1
+  USE_USER_STAGED_EXTRN_FILES: true
+task_make_grid:
+  ESGgrid_DELX: 25000.0
+  ESGgrid_DELY: 25000.0
+  ESGgrid_LAT_CTR: 38.5
+  ESGgrid_LON_CTR: -97.5
+  ESGgrid_NX: 219
+  ESGgrid_NY: 131
+  ESGgrid_PAZI: 0.0
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G: null
+  GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G: null
+  GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G: null
+  GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G: null
+  GFDLgrid_LAT_T6_CTR: null
+  GFDLgrid_LON_T6_CTR: null
+  GFDLgrid_NUM_CELLS: null
+  GFDLgrid_REFINE_RATIO: null
+  GFDLgrid_STRETCH_FAC: null
+  GFDLgrid_USE_NUM_CELLS_IN_FILENAMES: null
+  GRID_DIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/grid
+task_make_ics:
+  FVCOM_DIR: null
+  FVCOM_FILE: fvcom.nc
+  FVCOM_WCSTART: cold
+  KMP_AFFINITY_MAKE_ICS: scatter
+  OMP_NUM_THREADS_MAKE_ICS: 1
+  OMP_STACKSIZE_MAKE_ICS: 1024m
+  USE_FVCOM: false
+task_make_lbcs:
+  KMP_AFFINITY_MAKE_LBCS: scatter
+  LBC_SPEC_FCST_HRS: 1 2 3 4 5 6
+  OMP_NUM_THREADS_MAKE_LBCS: 1
+  OMP_STACKSIZE_MAKE_LBCS: 1024m
+task_make_orog:
+  KMP_AFFINITY_MAKE_OROG: disabled
+  OMP_NUM_THREADS_MAKE_OROG: 6
+  OMP_STACKSIZE_MAKE_OROG: 2048m
+  OROG_DIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/orog
+task_make_sfc_climo:
+  KMP_AFFINITY_MAKE_SFC_CLIMO: scatter
+  OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
+  OMP_STACKSIZE_MAKE_SFC_CLIMO: 1024m
+  SFC_CLIMO_DIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/sfc_climo
+task_plot_allvars:
+  COMOUT_REF: null
+  PLOT_DOMAINS:
+  - conus
+  PLOT_FCST_END: null
+  PLOT_FCST_INC: 3
+  PLOT_FCST_START: 0
+task_run_fcst:
+  BLOCKSIZE: 40
+  DT_ATMOS: 40
+  FV3_EXEC_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/exec/ufs_model
+  KMP_AFFINITY_RUN_FCST: scatter
+  LAYOUT_X: 5
+  LAYOUT_Y: 2
+  NNODES_RUN_FCST: '1'
+  OMP_NUM_THREADS_RUN_FCST: 2
+  OMP_STACKSIZE_RUN_FCST: 1024m
+  PE_MEMBER01: 12
+  PPN_RUN_FCST: 20
+  PRINT_ESMF: false
+  QUILTING: true
+  RESTART_INTERVAL: 0
+  USE_MERRA_CLIMO: false
+  WRITE_DOPOST: false
+  WRTCMP_cen_lat: 38.5
+  WRTCMP_cen_lon: -97.5
+  WRTCMP_dlat: null
+  WRTCMP_dlon: null
+  WRTCMP_dx: 25000.0
+  WRTCMP_dy: 25000.0
+  WRTCMP_lat_lwr_left: 21.138123
+  WRTCMP_lat_upr_rght: null
+  WRTCMP_lon_lwr_left: -122.719528
+  WRTCMP_lon_upr_rght: null
+  WRTCMP_nx: 217
+  WRTCMP_ny: 128
+  WRTCMP_output_grid: lambert_conformal
+  WRTCMP_stdlat1: 38.5
+  WRTCMP_stdlat2: 38.5
+  WRTCMP_write_groups: 1
+  WRTCMP_write_tasks_per_group: 2
+task_run_post:
+  CUSTOM_POST_CONFIG_FP: null
+  DT_SUBHOURLY_POST_MNTS: 0
+  KMP_AFFINITY_RUN_POST: scatter
+  OMP_NUM_THREADS_RUN_POST: 1
+  OMP_STACKSIZE_RUN_POST: 1024m
+  POST_OUTPUT_DOMAIN_NAME: rrfs_conus_25km
+  SUB_HOURLY_POST: false
+  USE_CUSTOM_POST_CONFIG_FILE: false
+user:
+  ACCOUNT: zrtrr
+  EXECdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/exec
+  HOMEdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow
+  JOBSdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/jobs
+  MACHINE: HERA
+  METPLUS_CONF: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/metplus
+  MET_CONFIG: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/met
+  MODULESdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/modulefiles
+  PARMdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm
+  RUN_ENVIR: community
+  SCRIPTSdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/scripts
+  SORCdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/sorc
+  UFS_WTHR_MDL_DIR: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/sorc/ufs-weather-model
+  USHdir: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/ush
+  VX_CONFIG_DIR: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm
+verification:
+  VX_FCST_INPUT_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  VX_FCST_MODEL_NAME: rrfs.RRFS_CONUS_25km
+workflow:
+  CCPP_PHYS_SUITE: FV3_HRRR
+  CCPP_PHYS_SUITE_FN: suite_FV3_HRRR.xml
+  CCPP_PHYS_SUITE_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/suite_FV3_HRRR.xml
+  CCPP_PHYS_SUITE_IN_CCPP_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/sorc/ufs-weather-model/FV3/ccpp/suites/suite_FV3_HRRR.xml
+  COMPILER: intel
+  CONSTANTS_FN: constants.yaml
+  CPL: false
+  CRES: CNone
+  CRONTAB_LINE: null
+  CRON_RELAUNCH_INTVL_MNTS: 3
+  DATA_TABLE_FN: data_table
+  DATA_TABLE_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/data_table
+  DATA_TABLE_TMPL_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/data_table
+  DATE_FIRST_CYCL: 2020-08-10 00:00:00
+  DATE_LAST_CYCL: 2020-08-10 00:00:00
+  DEBUG: false
+  DIAG_TABLE_FN: diag_table
+  DIAG_TABLE_TMPL_FN: diag_table.FV3_HRRR
+  DIAG_TABLE_TMPL_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/diag_table.FV3_HRRR
+  DOT_OR_USCORE: _
+  EXEC_SUBDIR: exec
+  EXPTDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  EXPT_BASEDIR: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs
+  EXPT_CONFIG_FN: config.yaml
+  EXPT_SUBDIR: grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  EXTRN_MDL_VAR_DEFNS_FN: extrn_mdl_var_defns
+  FCST_LEN_HRS: 6
+  FCST_MODEL: ufs-weather-model
+  FIELD_DICT_FN: fd_nems.yaml
+  FIELD_DICT_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/fd_nems.yaml
+  FIELD_DICT_IN_UWM_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/sorc/ufs-weather-model/tests/parm/fd_nems.yaml
+  FIELD_TABLE_FN: field_table
+  FIELD_TABLE_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/field_table
+  FIELD_TABLE_TMPL_FN: field_table.FV3_HRRR
+  FIELD_TABLE_TMPL_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/field_table.FV3_HRRR
+  FIXam: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/fix_am
+  FIXclim: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/fix_clim
+  FIXdir: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+  FIXlam: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/fix_lam
+  FV3_EXEC_FN: ufs_model
+  FV3_NML_BASE_ENS_FN: input.nml.base_ens
+  FV3_NML_BASE_ENS_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/input.nml.base_ens
+  FV3_NML_BASE_SUITE_FN: input.nml.FV3
+  FV3_NML_BASE_SUITE_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/input.nml.FV3
+  FV3_NML_FN: input.nml
+  FV3_NML_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/input.nml
+  FV3_NML_YAML_CONFIG_FN: FV3.input.yml
+  FV3_NML_YAML_CONFIG_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/FV3.input.yml
+  GET_OBS: get_obs
+  GLOBAL_VAR_DEFNS_FN: var_defns.sh
+  GLOBAL_VAR_DEFNS_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/var_defns.sh
+  GRID_GEN_METHOD: ESGgrid
+  INCR_CYCL_FREQ: 24
+  LOAD_MODULES_RUN_TASK_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/ush/load_modules_run_task.sh
+  MODEL_CONFIG_FN: model_configure
+  MODEL_CONFIG_TMPL_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/model_configure
+  NEMS_CONFIG_FN: nems.configure
+  NEMS_CONFIG_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/nems.configure
+  NEMS_CONFIG_TMPL_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/parm/nems.configure
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  PREEXISTING_DIR_METHOD: rename
+  RELATIVE_LINK_FLAG: --relative
+  RES_IN_FIXLAM_FILENAMES: null
+  RGNL_GRID_NML_FN: regional_grid.nml
+  SDF_USES_RUC_LSM: true
+  SDF_USES_THOMPSON_MP: true
+  SYMLINK_FIX_FILES: true
+  THOMPSON_MP_CLIMO_FN: Thompson_MP_MONTHLY_CLIMO.nc
+  THOMPSON_MP_CLIMO_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/fix_am/Thompson_MP_MONTHLY_CLIMO.nc
+  USE_CRON_TO_RELAUNCH: false
+  VERBOSE: true
+  VX_TN: run_vx
+  WFLOW_LAUNCH_LOG_FN: log.launch_FV3LAM_wflow
+  WFLOW_LAUNCH_LOG_FP: /scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR/log.launch_FV3LAM_wflow
+  WFLOW_LAUNCH_SCRIPT_FN: launch_FV3LAM_wflow.sh
+  WFLOW_LAUNCH_SCRIPT_FP: /scratch2/BMC/wrfruc/cholt/repos/srw_onerepo_yaml_wflow/ush/launch_FV3LAM_wflow.sh
+  WFLOW_XML_FN: FV3LAM_wflow.xml
+  WORKFLOW_ID: id_1675999808

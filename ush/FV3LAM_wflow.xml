@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE workflow [
+
+<!--
+Parameters needed by the job scheduler.
+-->
+<!ENTITY ACCOUNT       "zrtrr">
+<!ENTITY SCHED         "slurm">
+<!ENTITY QUEUE_DEFAULT "batch">
+<!ENTITY QUEUE_HPSS    "batch">
+<!ENTITY QUEUE_FCST    "batch">
+
+<!--
+Workflow task names.
+-->
+<!ENTITY SCHED_NATIVE_CMD          "--export=NONE">
+<!ENTITY MAKE_GRID_TN              "make_grid">
+<!ENTITY MAKE_OROG_TN              "make_orog">
+<!ENTITY MAKE_SFC_CLIMO_TN         "make_sfc_climo">
+<!ENTITY GET_EXTRN_ICS_TN          "get_extrn_ics">
+<!ENTITY GET_EXTRN_LBCS_TN         "get_extrn_lbcs">
+<!ENTITY MAKE_ICS_TN               "make_ics">
+<!ENTITY MAKE_LBCS_TN              "make_lbcs">
+<!ENTITY RUN_FCST_TN               "run_fcst">
+<!ENTITY RUN_POST_TN               "run_post">
+<!ENTITY GET_OBS                   "get_obs">
+<!ENTITY GET_OBS_CCPA_TN           "get_obs_ccpa">
+<!ENTITY GET_OBS_NDAS_TN           "get_obs_ndas">
+<!ENTITY GET_OBS_MRMS_TN           "get_obs_mrms">
+<!ENTITY VX_TN                     "run_vx">
+<!ENTITY VX_GRIDSTAT_TN            "run_gridstatvx">
+<!ENTITY VX_GRIDSTAT_REFC_TN       "run_gridstatvx_refc">
+<!ENTITY VX_GRIDSTAT_RETOP_TN      "run_gridstatvx_retop">
+<!ENTITY VX_GRIDSTAT_03h_TN        "run_gridstatvx_03h">
+<!ENTITY VX_GRIDSTAT_06h_TN        "run_gridstatvx_06h">
+<!ENTITY VX_GRIDSTAT_24h_TN        "run_gridstatvx_24h">
+<!ENTITY VX_POINTSTAT_TN           "run_pointstatvx">
+<!ENTITY VX_ENSGRID_TN             "run_ensgridvx">
+<!ENTITY VX_ENSGRID_REFC_TN        "run_ensgridvx_refc">
+<!ENTITY VX_ENSGRID_RETOP_TN       "run_ensgridvx_retop">
+<!ENTITY VX_ENSGRID_03h_TN         "run_ensgridvx_03h">
+<!ENTITY VX_ENSGRID_06h_TN         "run_ensgridvx_06h">
+<!ENTITY VX_ENSGRID_24h_TN         "run_ensgridvx_24h">
+<!ENTITY VX_ENSGRID_MEAN_TN        "run_ensgridvx_mean">
+<!ENTITY VX_ENSGRID_PROB_TN        "run_ensgridvx_prob">
+<!ENTITY VX_ENSGRID_MEAN_03h_TN    "run_ensgridvx_mean_03h">
+<!ENTITY VX_ENSGRID_PROB_03h_TN    "run_ensgridvx_prob_03h">
+<!ENTITY VX_ENSGRID_MEAN_06h_TN    "run_ensgridvx_mean_06h">
+<!ENTITY VX_ENSGRID_PROB_06h_TN    "run_ensgridvx_prob_06h">
+<!ENTITY VX_ENSGRID_MEAN_24h_TN    "run_ensgridvx_mean_24h">
+<!ENTITY VX_ENSGRID_PROB_24h_TN    "run_ensgridvx_prob_24h">
+<!ENTITY VX_ENSGRID_PROB_REFC_TN   "run_ensgridvx_prob_refc">
+<!ENTITY VX_ENSGRID_PROB_RETOP_TN  "run_ensgridvx_prob_retop">
+<!ENTITY VX_ENSPOINT_TN            "run_enspointvx">
+<!ENTITY VX_ENSPOINT_MEAN_TN       "run_enspointvx_mean">
+<!ENTITY VX_ENSPOINT_PROB_TN       "run_enspointvx_prob">
+<!ENTITY PLOT_ALLVARS_TN           "plot_allvars">
+
+<!--
+Flags that specify whether to run the preprocessing and/or verification tasks.
+-->
+<!ENTITY RUN_TASK_MAKE_GRID      "TRUE">
+<!ENTITY RUN_TASK_MAKE_OROG      "TRUE">
+<!ENTITY RUN_TASK_MAKE_SFC_CLIMO "TRUE">
+
+<!--
+Number of physical cores per node for the current machine.  This is used
+below in the <nodesize> tag, but that tag is not clearly documented.  This
+parameter may be unnecessary since each task now has its own variable that
+specifies the number of processes per node being used (the PPN_... entities).
+-->
+<!ENTITY NCORES_PER_NODE "40">
+
+<!--
+Directories and files.
+-->
+<!ENTITY USHdir                   "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/ush">
+<!ENTITY JOBSdir                  "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/jobs">
+<!ENTITY SCRIPTSdir               "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/scripts">
+<!ENTITY COMIN_BASEDIR            "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16">
+<!ENTITY COMOUT_BASEDIR           "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16">
+<!ENTITY GLOBAL_VAR_DEFNS_FP      "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/var_defns.sh">
+<!ENTITY LOAD_MODULES_RUN_TASK_FP "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/ush/load_modules_run_task.sh">
+<!ENTITY EXPTDIR                  "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16">
+<!ENTITY DYN_DIR  "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/<cyclestr>@Y@m@d@H</cyclestr>/phy">
+<!ENTITY LOGDIR                   "/scratch2/BMC/wrfruc/cholt/repos/expt_dirs/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16/log">
+<!ENTITY LOGEXT                   ".log" >
+<!ENTITY CMPEXT                   "_task_complete.txt">
+
+<!ENTITY MET_INSTALL_DIR "/contrib/met/10.1.1">
+<!ENTITY METPLUS_PATH "/contrib/METplus/METplus-4.1.1">
+<!ENTITY METPLUS_CONF "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/parm/metplus">
+<!ENTITY MET_CONFIG "/scratch2/BMC/wrfruc/cholt/repos/srw_deprecate_cycl_hrs/parm/met">
+<!ENTITY CCPA_OBS_DIR "/scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ccpa/proc">
+<!ENTITY MRMS_OBS_DIR "/scratch2/BMC/det/UFS_SRW_App/develop/obs_data/mrms/proc">
+<!ENTITY NDAS_OBS_DIR "/scratch2/BMC/det/UFS_SRW_App/develop/obs_data/ndas/proc">
+
+<!--
+Reservation types.  Reservations specify the queue/partition and account
+to use for a given task.  The "DEFAULT" reservation type is used for all 
+tasks other than GET_EXTRN_ICS_TN, GET_EXTRN_LBCS_TN, and RUN_FCST_TN; 
+the "HPSS" type is used for the GET_EXTRN_ICS_TN and GET_EXTRN_LBCS_TN 
+tasks; and the "FCST" type is used for the RUN_FCST_TN task.
+-->
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>hera</partition>">
+<!ENTITY RSRV_HPSS    "<account>&ACCOUNT;</account><queue>&QUEUE_HPSS;</queue><partition>service</partition>">
+<!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue><partition>hera</partition>">
+
+]>
+
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="20">
+
+  <cycledef group="at_start">00 00 01 07 2019 *</cycledef>
+  <cycledef group="forecast">201907010000 201907010000 24:00:00</cycledef>
+
+  <log>
+    &LOGDIR;/FV3LAM_wflow.log
+  </log>
+
+<!-- 
+The following command works to call the J-job for a given task (in this
+case the MAKE_GRID_TN task) if in the script LOAD_MODULES_RUN_TASK_FP we 
+do NOT call exec to run the J-job.  The command first sources the script
+LOAD_MODULES_RUN_TASK_FP and then runs the J-job, so it is simpler than
+calling exec and thus preferred if NCO accepts it.  Note that the portion
+of the command that sources LOAD_MODULES_RUN_TASK_FP also passes an 
+argument to it (the argument being the name of the task).  This works in
+bash but it probably won't work in sh.
+
+If this method is acceptable to NCO, then for clarity maybe we can
+source LOAD_MODULES_RUN_TASK_FP within the J-job instead of here since
+we are already sourcing other files in the J-job anyway.
+-->
+<!--
+    <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;";
+               &JOBSdir;/JREGIONAL_MAKE_GRID;
+             }</command>
+-->
+<!--
+The following command works if we call exec in LOAD_MODULES_RUN_TASK_FP
+to run the J-job.  This passes the J-job script as the second argument
+to LOAD_MODULES_RUN_TASK_FP (the first argument is the task name).  The
+J-job then uses exec to run the J-job (while also terminating the LOAD_-
+MODULES_RUN_TASK_FP script.
+-->
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_GRID_TN;" cycledefs="at_start" maxtries="2">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_GRID_TN;" "&JOBSdir;/JREGIONAL_MAKE_GRID"</command>
+    <nodes>1:ppn=24</nodes>
+    <walltime>00:20:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&MAKE_GRID_TN;</jobname>
+    <join>&LOGDIR;/&MAKE_GRID_TN;&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_OROG_TN;" cycledefs="at_start" maxtries="2">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_OROG_TN;" "&JOBSdir;/JREGIONAL_MAKE_OROG"</command>
+    <nodes>1:ppn=24</nodes>
+    <walltime>00:20:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&MAKE_OROG_TN;</jobname>
+    <join>&LOGDIR;/&MAKE_OROG_TN;&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+
+    <dependency>
+      <or>
+<!--        <taskdep task="make_grid"/> -->
+        <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+        <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+      </or>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_SFC_CLIMO_TN;" cycledefs="at_start" maxtries="2">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_SFC_CLIMO_TN;" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <nodes>2:ppn=24</nodes>
+    <walltime>00:20:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&MAKE_SFC_CLIMO_TN;</jobname>
+    <join>&LOGDIR;/&MAKE_SFC_CLIMO_TN;&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+
+    <dependency>
+      <and>
+        <or>
+<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&GET_EXTRN_ICS_TN;" cycledefs="forecast" maxtries="1">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_ICS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <nodes>1:ppn=1</nodes>
+    <memory>2G</memory>
+    <walltime>00:45:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&GET_EXTRN_ICS_TN;</jobname>
+    <join>&LOGDIR;/&GET_EXTRN_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&GET_EXTRN_LBCS_TN;" cycledefs="forecast" maxtries="1">
+
+    &RSRV_HPSS;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_EXTRN_LBCS_TN;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <nodes>1:ppn=1</nodes>
+    <memory>2G</memory>
+    <walltime>00:45:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&GET_EXTRN_LBCS_TN;</jobname>
+    <join>&LOGDIR;/&GET_EXTRN_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>ICS_OR_LBCS</name><value>LBCS</value></envar>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_ICS_TN;" cycledefs="forecast" maxtries="2">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_ICS_TN;" "&JOBSdir;/JREGIONAL_MAKE_ICS"</command>
+    <nodes>4:ppn=12</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&MAKE_ICS_TN;</jobname>
+    <join>&LOGDIR;/&MAKE_ICS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr></cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>##</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&GET_EXTRN_ICS_TN;"/>
+        <or>
+<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&MAKE_LBCS_TN;" cycledefs="forecast" maxtries="2">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&MAKE_LBCS_TN;" "&JOBSdir;/JREGIONAL_MAKE_LBCS"</command>
+    <nodes>4:ppn=12</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&MAKE_LBCS_TN;</jobname>
+    <join>&LOGDIR;/&MAKE_LBCS_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr></cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>##</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&GET_EXTRN_LBCS_TN;"/>
+        <or>
+<!--          <taskdep task="&MAKE_GRID_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/grid/&MAKE_GRID_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_GRID;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_OROG_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/orog/&MAKE_OROG_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_OROG;</left><right>FALSE</right></streq>
+        </or>
+        <or>
+<!--          <taskdep task="&MAKE_SFC_CLIMO_TN;"/> -->
+          <datadep age="00:00:00:05">&EXPTDIR;/sfc_climo/&MAKE_SFC_CLIMO_TN;&CMPEXT;</datadep>
+          <streq><left>&RUN_TASK_MAKE_SFC_CLIMO;</left><right>FALSE</right></streq>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_FCST_TN;" cycledefs="forecast" maxtries="1">
+
+    &RSRV_FCST;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_FCST_TN;" "&JOBSdir;/JREGIONAL_RUN_FCST"</command>
+    <cores>12</cores>
+    <native>--cpus-per-task 2 --exclusive</native>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <walltime>04:30:00</walltime>
+    <jobname>&RUN_FCST_TN;</jobname>
+    <join>&LOGDIR;/&RUN_FCST_TN;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr></cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>##</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&MAKE_ICS_TN;"/>
+        <taskdep task="&MAKE_LBCS_TN;"/>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+
+  <metatask name="&RUN_POST_TN;">
+<!--
+Define the post-processing tasks for each model output hour.  Note that
+only one metatask is needed for this purpose (the inner one that loops 
+over the hours), but we use two metatasks in order to be able to use the 
+variable fmn, which here is always set to zero.  Use of this variable 
+(along with the fhr variable in the inner metatask) allows the block of 
+code inside the <task> tag to be identical to the case in which subhourly 
+post-processing is performed (i.e. the case in which the minutes are not 
+always zero).
+-->
+    <var name="fhr"> 000 001 002 003 004 005 006</var>
+      <task name="&RUN_POST_TN;_f#fhr#" cycledefs="forecast" maxtries="2">
+
+        &RSRV_DEFAULT;
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_POST_TN;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <nodes>2:ppn=24</nodes>
+        <walltime>00:15:00</walltime>
+        <nodesize>&NCORES_PER_NODE;</nodesize>
+        <native>&SCHED_NATIVE_CMD;</native>
+        <jobname>&RUN_POST_TN;_f#fhr#</jobname>
+	<join>&LOGDIR;/&RUN_POST_TN;_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+        <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+        <envar><name>USHdir</name><value>&USHdir;</value></envar>
+        <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+        <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+        <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+        <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+        <envar><name>fhr</name><value>#fhr#</value></envar>
+        <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr></cyclestr></value></envar>
+        <envar><name>ENSMEM_INDX</name><value><cyclestr>##</cyclestr></value></envar>
+
+        <dependency>
+          <or>
+            <taskdep task="&RUN_FCST_TN;"/>
+            <and>
+              <datadep age="05:00">&DYN_DIR;f#fhr#.nc</datadep>
+              <datadep age="05:00">&PHY_DIR;f#fhr#.nc</datadep>
+            </and>
+          </or>
+        </dependency>
+
+      </task>
+  </metatask>
+</workflow>

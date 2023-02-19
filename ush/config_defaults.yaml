@@ -663,7 +663,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if rocoto.tasks["task_make_grid"] else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -957,7 +957,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if workflow_switches.RUN_TASK_MAKE_GRID else "" }}'
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks["task_make_grid"] else "" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1233,7 +1233,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if workflow_switches.RUN_TASK_MAKE_OROG else "" }}'
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks["task_make_orog"] else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1242,7 +1242,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if workflow_switches.RUN_TASK_MAKE_SFC_CLIMO else "" }}'
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks["task_make_sfc_climo"] else "" }}'
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1459,7 +1459,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
+  LBC_SPEC_FCST_HRS: '{% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %}'
 
 #----------------------------
 # FORECAST config parameters

@@ -45,7 +45,7 @@ task_make_sfc_climo:
       taskdep_make_grid:
         attrs:
           task: make_grid
-      taskdep_make_grid:
+      taskdep_make_orog:
         attrs:
           task: make_orog
 

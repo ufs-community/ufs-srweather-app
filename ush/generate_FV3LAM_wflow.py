@@ -35,7 +35,7 @@ from python_utils import (
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from fill_jinja_template import fill_jinja_template
+from xml_creator import create_xml
 from set_namelist import set_namelist
 from check_python_version import check_python_version
 
@@ -105,102 +105,23 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
 
         log_info(
             f"""
-            Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
-            file (template_xml_fp):
-              template_xml_fp = '{template_xml_fp}'
+            Creating rocoto workflow XML file (WFLOW_XML_FP):
               WFLOW_XML_FP = '{wflow_xml_fp}'"""
         )
 
         #
-        # Dictionary of settings to pass to fill_jinja
-        #
-        settings = {}
-        for k, v in flatten_dict(expt_config).items():
-            settings[lowercase(k)] = v
-
-        ensmem_indx_name = ""
-        uscore_ensmem_name = ""
-        slash_ensmem_subdir = ""
-        if expt_config["global"]["DO_ENSEMBLE"]:
-            ensmem_indx_name = "mem"
-            uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
-            slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
-
-        dt_atmos = expt_config["task_run_fcst"]["DT_ATMOS"]
-        date_first_cycl = expt_config["workflow"]["DATE_FIRST_CYCL"]
-        date_last_cycl = expt_config["workflow"]["DATE_LAST_CYCL"]
-        first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
-        fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
-
-        settings.update(
-            {
-                #
-                # Number of cores used for a task
-                #
-                "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
-                "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
-                #
-                # Parameters that determine the set of cycles to run.
-                #
-                "date_first_cycl": date_to_str(date_first_cycl, format="%Y%m%d%H00"),
-                "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
-                "cdate_first_cycl": date_first_cycl,
-                "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
-                #
-                # Ensemble-related parameters.
-                #
-                "ensmem_indx_name": ensmem_indx_name,
-                "uscore_ensmem_name": uscore_ensmem_name,
-                "slash_ensmem_subdir": slash_ensmem_subdir,
-                #
-                # Parameters associated with subhourly post-processed output
-                #
-                "delta_min": expt_config["task_run_post"]["DT_SUBHOURLY_POST_MNTS"],
-                "first_fv3_file_tstr": first_file_time.strftime("000:%M:%S"),
-            }
-        )
-
-        # Log "settings" variable.
-        settings_str = cfg_to_yaml_str(settings)
-
-        log_info(
-            f"""
-            The variable 'settings' specifying values of the rococo XML variables
-            has been set as follows:
-            #-----------------------------------------------------------------------
-            settings =\n\n""",
-            verbose=verbose,
-        )
-        log_info(settings_str, verbose=verbose)
-
-        #
-        # Call the python script to generate the experiment's actual XML file
-        # from the jinja template file.
+        # Call the python script to generate the experiment's XML file
         #
         try:
-            fill_jinja_template(
-                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
+            create_xml(
+                ["-o", wflow_xml_fp],
+                config_dict=expt_config,
             )
         except:
-            logging.info(
-                dedent(
-                    f"""
-                      Variable settings specified on command line for
-                      fill_jinja_template.py:\n
-                        settings =\n\n"""
-                )
-                + '\n'.join([f"{key}: {value}" for key, value in entities.items()]),
-            )
             raise Exception(
                 dedent(
                     f"""
-                    Call to python script fill_jinja_template.py to create a rocoto workflow
-                    XML file from a template file failed.  Parameters passed to this script
-                    are:
-                      Full path to template rocoto XML file:
-                        template_xml_fp = '{template_xml_fp}'
-                      Full path to output rocoto XML file:
-                        WFLOW_XML_FP = '{wflow_xml_fp}'
+                    Call to create_xml failed.
                     """
                 )
             )
@@ -667,7 +588,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # the C-resolution of the grid), and this parameter is in most workflow
     # configurations is not known until the grid is created.
     #
-    if not RUN_TASK_MAKE_GRID:
+    if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
         set_FV3nml_sfc_climo_filenames()
 

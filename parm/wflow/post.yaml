@@ -9,7 +9,7 @@ default_task_post: &default_task
     PDY: !cycstr '@Y@m@d'
     CDATE: !cycstr '@Y@m@d@H'
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
-    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     ENSMEM_INDX: '#mem#'
     cyc: !cycstr '@H'
     fhr: '#fhr#'
@@ -25,7 +25,7 @@ default_task_post: &default_task
 
 metatask_run_ens_post:
   var:
-    mem: '{% if DO_ENSEMBLE  %} "{%- for m in range(1, NUM_ENS_MEMBERS+1) -%}{{ "%03d"%m }}{%- endfor -%} {% else %} det {% endif %}'
+    mem: '{% if global.DO_ENSEMBLE  %} "{%- for m in range(1, NUM_ENS_MEMBERS+1) -%}{{ "%03d"%m }}{%- endfor -%} {% else %}{{ "det" }}{% endif %}'
   metatask_run_post:
     var:
       fhr: '{% for h in range(1, FCST_LEN_HRS+1) %}{{ " %03d" % h }}{% endfor %}'

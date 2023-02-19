@@ -256,10 +256,11 @@ def fill_jinja_template(argv):
     # parse args
     cla = parse_args(argv)
     if cla.config:
-        cla.config = config_exists(cla.config)
+        cla.config = config_exists(cla.config).get('rocoto')
 
     # Create a Jinja Environment to load the template.
-    env = j2.Environment(loader=j2.FileSystemLoader(cla.template))
+    env = j2.Environment(loader=j2.FileSystemLoader(cla.template,
+        encoding='utf-8'))
     template_source = env.loader.get_source(env, "")
     template = env.get_template("")
     parsed_content = env.parse(template_source)
@@ -289,6 +290,7 @@ def fill_jinja_template(argv):
 
     # Fill in XML template
     xml_contents = template.render(**tvars)
+    print(xml_contents)
     with open(cla.outxml, "w") as fn:
         fn.write(xml_contents)
 

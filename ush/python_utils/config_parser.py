@@ -15,9 +15,18 @@ returnded by load_config to make queries.
 """
 
 import argparse
+import configparser
+import json
+import os
+import pathlib
+import re
+from textwrap import dedent
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
+import jinja2
 #
-# Note: Yaml maynot be available in which case we suppress
+# Note: yaml may not be available in which case we suppress
 # the exception, so that we can have other functionality
 # provided by this module.
 #
@@ -25,17 +34,6 @@ try:
     import yaml
 except ModuleNotFoundError:
     pass
-# The rest of the formats: JSON/SHELL/INI/XML do not need
-# external packages
-import json
-import os
-import re
-from textwrap import dedent
-import configparser
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
-
-import jinja2
 
 from .environment import list_to_str, str_to_list
 from .run_command import run_command
@@ -78,17 +76,70 @@ def cfg_to_yaml_str(cfg):
         cfg, Dumper=custom_dumper, sort_keys=False, default_flow_style=False
     )
 
+def cycstr(loader, node):
+
+    ''' Returns a cyclestring Element whose content corresponds to the
+    input node argument '''
+
+    try:
+        arg = loader.construct_mapping(node, deep=True)
+    except yaml.constructor.ConstructorError:
+        arg = loader.construct_scalar(node)
+
+    if isinstance(arg, str):
+        string = arg
+        cyc = ET.Element('cyclestr')
+    else:
+        string = arg.pop('value')
+        cyc = ET.Element('cyclestr', attrib=arg)
+    cyc.text = string
+    #return cyc
+    return f'<cyclestr>{arg}</cyclestr>'
+
+def include(loader, node):
+
+    ''' Returns a dictionary that includes the contents of the referenced
+    YAML file(s). '''
+
+    filepaths = loader.construct_sequence(node)
+    srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
+
+    cfg = {}
+    for filepath in filepaths:
+        abs_path = filepath
+        if not os.path.isabs(filepath):
+            abs_path = os.path.join(os.path.dirname(srw_path), filepath)
+        with open(abs_path, 'r') as fp:
+           cfg.update(yaml.load(fp, Loader=yaml.SafeLoader))
+    return cfg
 
 def join_str(loader, node):
     """Custom tag hangler to join strings"""
     seq = loader.construct_sequence(node)
     return "".join([str(i) for i in seq])
 
+def startstopfreq(loader, node):
+
+    ''' Returns a Rocoto-formatted string for the contents of a cycledef
+    tag. Assume that the items in the node are env variables, and return
+    a Rocoto-formatted string'''
+
+    args = loader.construct_sequence(node)
+
+    # Try to fill the values from environment values, default to the
+    # value provided in the entry.
+    start, stop, freq = (os.environ.get(arg, arg) for arg in args)
+
+    return f'{start}00 {stop}00 {freq}:00:00'
 
 try:
+    yaml.add_constructor('!cycstr', cycstr, Loader=yaml.SafeLoader)
+    yaml.add_constructor('!include', include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
+    yaml.add_constructor('!startstopfreq', startstopfreq, Loader=yaml.SafeLoader)
 except NameError:
     pass
+
 
 
 def path_join(arg):
@@ -125,9 +176,10 @@ def extend_yaml(yaml_dict, full_dict=None):
             # Save a bit of compute and only do this part for strings that
             # contain the jinja double brackets.
             v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
+            if isinstance(v, ET.Element):
+                print('ELEMENT VSTR', v_str, v.text, yaml_dict)
             is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
             if is_a_template:
-
                 # Find expressions first, and process them as a single template
                 # if they exist
                 # Find individual double curly brace template in the string
@@ -135,19 +187,26 @@ def extend_yaml(yaml_dict, full_dict=None):
                 # we can opt to leave some un-filled when they are not yet set.
                 # For example, we can save cycle-dependent templates to fill in
                 # at run time.
-                if "{%" in v:
+                if "{%" in v_str:
                     templates = [v_str]
                 else:
                     # Separates out all the double curly bracket pairs
-                    templates = re.findall(r"{{[^}]*}}|\S", v_str)
+                    templates = [m.group() for m in
+                            re.finditer(r"{{[^}]*}}|\S", v_str)  if '{{'
+                            in m.group()]
                 data = []
+                print('TEMPLATES', templates)
                 for template in templates:
                     j2env = jinja2.Environment(
                         loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
                     )
                     j2env.filters["path_join"] = path_join
                     j2env.filters["days_ago"] = days_ago
-                    j2tmpl = j2env.from_string(template)
+                    try:
+                        j2tmpl = j2env.from_string(template)
+                    except:
+                        print(f"ERROR filling template: {template}, {v_str}")
+                        raise
                     try:
                         # Fill in a template that has the appropriate variables
                         # set.
@@ -165,12 +224,16 @@ def extend_yaml(yaml_dict, full_dict=None):
 
                     data.append(template)
 
+                for tmpl, rendered in zip(templates, data):
+                    v_str = v_str.replace(tmpl, rendered)
+
                 if isinstance(v, ET.Element):
-                    v.text = "".join(data)
+                    print('Replacing ET text with', v_str)
+                    v.text = v_str
                 else:
                     # Put the full template line back together as it was,
                     # filled or not
-                    yaml_dict[k] = "".join(data)
+                    yaml_dict[k] = v_str
 
 
 ##########

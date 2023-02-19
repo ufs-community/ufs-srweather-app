@@ -7,7 +7,7 @@ default_task_verify_ens: &default_task
     nprocs: '{{ nnodes * ppn }}'
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
-    SLASH_ENSMEM_SUBDIR: '{% if DO_ENSEMBLE  %}{{ /mem#mem# }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
