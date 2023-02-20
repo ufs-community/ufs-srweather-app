@@ -43,7 +43,7 @@ cpl_aqm_parm:
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   AQM_DUST_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
   AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-  AQM_FIRE_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/data/RRFS_CMAQ/emissions/GSCE/RAVE.in.C793/RAVE_RT
+  AQM_FIRE_DIR: /lfs/h2/emc/aqmtemp/RAVE_NA
   AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
   AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
   AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
