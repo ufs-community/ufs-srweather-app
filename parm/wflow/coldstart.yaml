@@ -62,6 +62,8 @@ metatask_run_ensemble:
           attrs:
             task: get_extrn_ics
         or_grid:
+          streq:
+            left: 
           datadep_grid:
             attrs:
               age: 00:00:00:05

@@ -1,32 +1,33 @@
-{%- macro dependency_tree(dep_dict) -%}
-{%- if dep_dict is mapping -%}
-  {%- for tag, values in dep_dict.items() -%}
-    {%- if values is mapping -%}
-      {%- if values.get("attrs") -%}
-        <{{ tag.split("_")[0] }} {% for attr, val in values.pop("attrs", {}).items() %}{{ attr }}="{{ val }}" {% endfor %}>
-        {%- if values.get("text") -%}
-          {{ values.pop("text") }}
-        </{{ tag.split("_")[0] }}>
-        {%- endif -%}
-      {%- else -%}
-        <{{ tag.split("_")[0] }}>
-          {{ dependency_tree(values) }}
-        </{{ tag.split("_")[0] }}>
-      {%- endif -%}
-    {%- endif -%}
-  {%- endfor -%}
-{%- endif -%}
-{%- endmacro %}
+{%- macro dependency_tree(dep_dict) %}
+{%- if dep_dict is mapping %}
+  {%- for tag, values in dep_dict.items() %}
+    {%- if values is mapping %}
+      <{{ tag.split("_")[0] -}} {% for attr, val in values.pop("attrs", {}).items() %} {{ attr }}="{{ val }}"{%- endfor %}>
+      {%- if values.get("text") %}
+        {{ values.pop("text") }}
+      </{{ tag.split("_")[0] }}>
+      {%- elif values %}
+      {{- dependency_tree(values)|indent(2) }}
+      </{{ tag.split("_")[0] }}>
+      {%- endif %}
+    {%- else %}
+      <{{ tag.split("_")[0]|indent(2) -}}>
+        {{- values -}}
+      </{{ tag.split("_")[0]|indent(2) }}>
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+{%- endmacro -%}
 
 {% macro task(name, settings) %}
   <task name="{{name}}" {% for attr, val in settings["attrs"].items() %}{{ attr }}="{{ val }}" {% endfor %}>
 
     <jobname>"{{name}}"</jobname>
     {%- for key, value in settings.items() -%}
-    {% if key not in ["envars", "attrs", "dependency", "nnodes", "ppn"] %}
+    {%- if key not in ["envars", "attrs", "dependency", "nnodes", "ppn"] %}
     <{{ key }}>"{{ value }}"</{{ key }}>
-    {%- endif -%}
-    {% endfor %}
+    {%- endif %}
+    {%- endfor %}
 
     {% for var, value in settings.get("envars", {}).items() %}
     <envar><name>{{ var }}</name><value>{{ value }}</value></envar>
@@ -34,11 +35,24 @@
 
     {% if settings.get("dependency") -%}
     <dependency>
-      {{ dependency_tree(dep_dict=settings.get("dependency")) }}
+    {{- dependency_tree(dep_dict=settings.get("dependency")) }}
     </dependency>
     {%- endif %}
-
   </task>
+{% endmacro %}
+
+{% macro metatask(name, settings) %}
+  <metatask name="{{name}}" {% for attr, val in settings.get("attrs", {}).items() %}{{ attr }}="{{ val }}" {% endfor %}>
+    {% for varname, value in settings.get("var", {}).items() %}
+    <var name="{{ varname }}">{{ value }}</var>
+    {%- endfor %}
+    {%- for item, task_settings in settings.items() %}
+      {%- if item.split("_", 1)[0] == "task" %}
+      {{ task(name=item.split("_", 1)[-1], settings=task_settings)|indent(2) }}
+      {%- endif %}
+    {%- endfor %}
+  </metatask>
+
 {% endmacro %}
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -58,10 +72,10 @@
   <log>{{ log }}</log>
 
 {% for item, settings in tasks.items() %}
-  {%- if item.split("_", 1) [0] == "task" %}
-  {{ task(name=item, settings=settings ) }}
-  {%- elif item.split("_", 1) [0] == "metatask" %}
-  <metatask>{{ item.split("_", 1)[-1] }}</metatask>
+  {%- if item.split("_", 1)[0] == "task" %}
+  {{ task(name=item.split("_", 1)[-1], settings=settings ) }}
+  {%- elif item.split("_", 1)[0] == "metatask" %}
+  {{ metatask(name=item.split("_", 1)[-1], settings=settings ) }}
   {%- endif %}
 {%- endfor %}
 

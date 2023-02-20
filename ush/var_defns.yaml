@@ -411,6 +411,9 @@ rocoto:
         dependency:
           and:
             or_grid: &id002
+              streq:
+                left: False
+                right: True
               datadep_grid:
                 attrs:
                   age: 00:00:00:05
@@ -420,11 +423,17 @@ rocoto:
                 attrs:
                   age: 00:00:00:05
                 text: '&LOGDIR;/make_orog_task_complete.txt'
+              streq:
+                left: False
+                right: True
             or_sfc_climo: &id004
               datadep_sfc_climo:
                 attrs:
                   age: 00:00:00:05
                 text: '&LOGDIR;/make_sfc_climo_task_complete.txt'
+              streq:
+                left: False
+                right: True
             taskdep_get_extrn:
               attrs:
                 task: get_extrn_ics
@@ -586,6 +595,9 @@ rocoto:
       dependency:
         and:
           taskdep_make_grid:
+            attrs:
+              task: make_grid
+          taskdep_make_orog:
             attrs:
               task: make_orog
       envars: *id006
