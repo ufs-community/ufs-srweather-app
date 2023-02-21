@@ -175,8 +175,8 @@ def run_we2e_tests(homedir, args) -> None:
 
         if 'verification' in test_cfg:
             logging.debug(test_cfg['verification'])
-        test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
-        logging.debug(test_cfg['verification'])
+            test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
+            logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
