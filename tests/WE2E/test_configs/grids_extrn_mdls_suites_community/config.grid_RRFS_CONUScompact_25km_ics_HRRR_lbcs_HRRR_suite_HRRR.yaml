@@ -23,3 +23,5 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+task_run_fcst:
+  DT_ATMOS: 75
