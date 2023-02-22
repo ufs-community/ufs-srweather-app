@@ -25,4 +25,3 @@ task_get_extrn_lbcs:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
   DT_ATMOS: 75
-
