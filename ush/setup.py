@@ -553,18 +553,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     continue
                 # DT_ATMOS needs special treatment based on CCPP suite
                 elif param == "DT_ATMOS":
-                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
-                        if grid_params[param] > 40:
-                            logger.warning(dedent(
-                                f"""
-                                WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
-                                time step regardless of grid resolution; setting DT_ATMOS to 40.\n
-                                This value can be overwritten in the user config file.
-                                """
-                            ))
-                            fcst_config[param] = 40
-                        else:
-                            fcst_config[param] = value
+                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites and grid_params[param] > 40:
+                        logger.warning(dedent(
+                            f"""
+                            WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                            time step regardless of grid resolution; setting DT_ATMOS to 40.\n
+                            This value can be overwritten in the user config file.
+                            """
+                        ))
+                        fcst_config[param] = 40
+                    else:
+                        fcst_config[param] = value
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
