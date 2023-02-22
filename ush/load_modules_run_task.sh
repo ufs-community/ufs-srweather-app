@@ -107,12 +107,33 @@ if [ -f ${VERSION_FILE} ]; then
 fi
 
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
-module use "${HOMEdir}/modulefiles"
-module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
-Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  module use "${HOMEdir}/modulefiles/extrn_comp_build"
+  if [ "${task_name}" = "make_grid" ] || [ "${task_name}" = "make_orog" ] || \
+     [ "${task_name}" = "make_sfc_climo" ] || [ "${task_name}" = "make_ics" ] || \
+     [ "${task_name}" = "make_lbcs" ]; then
+    module load mod_ufs-utils
+  elif [ "${task_name}" = "run_fcst" ]; then
+    module load mod_ufs-weather-model
+  elif [ "${task_name}" = "run_post" ]; then
+    module load mod_upp
+  elif [ "${task_name}" = "aqm_lbcs" ] || \
+       [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \
+       [ "${task_name}" = "bias_correction_o3" ] || \
+       [ "${task_name}" = "bias_correction_pm25" ]; then
+    module load mod_aqm-utils
+  elif [ "${task_name}" = "nexus_emission" ] || ([ "${task_name}" = "nexus_post_split" ] && \
+       [ "${machine}" = "wcoss2" ] ); then
+    module load mod_nexus
+  fi
+else
+  module use "${HOMEdir}/modulefiles"
+  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+  Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -176,7 +197,6 @@ fi
 
 module list
 
-
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
@@ -185,6 +205,12 @@ module list
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda activate ${SRW_ENV}
+  set -u
+fi
+
+if [ -n "${AQM_ENV:-}" ] ; then
+  set +u
+  source "${AQM_ENV_FP}/${AQM_ENV}/bin/activate"
   set -u
 fi
 

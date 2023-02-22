@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_bias_correction_pm25" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -188,20 +188,20 @@ POST_STEP
 
 cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
+if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp_vrfy ${COMINairnow}/${yyyy}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+fi
 
-mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-cp_vrfy ${COMINairnow}/${yyyy}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-
-#exit
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
 #-----------------------------------------------------------------------
