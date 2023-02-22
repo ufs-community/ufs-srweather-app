@@ -6,6 +6,7 @@ import glob
 import argparse
 import logging
 from textwrap import dedent
+from datetime import datetime
 
 sys.path.append("../../ush")
 
@@ -17,7 +18,7 @@ from python_utils import (
 
 from check_python_version import check_python_version
 
-from monitor_jobs import monitor_jobs
+from monitor_jobs import monitor_jobs, write_monitor_file
 
 
 def run_we2e_tests(homedir, args) -> None:
@@ -205,12 +206,18 @@ def run_we2e_tests(homedir, args) -> None:
 
     if not args.use_cron_to_relaunch:
         logging.info("calling function that monitors jobs, prints summary")
-        monitor_file = monitor_jobs(monitor_yaml, debug=args.debug)
-
-        logging.info("All experiments are complete")
-        logging.info(f"Summary of results available in {monitor_file}")
-
-
+        monitor_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
+        write_monitor_file(monitor_file,monitor_yaml)
+        try:
+            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, debug=args.debug)
+        except KeyboardInterrupt:
+            logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file}\n")
+        except:
+            raise
+        else:
+            logging.info("All experiments are complete")
+            logging.info(f"Summary of results available in {monitor_file}")
 
 
 

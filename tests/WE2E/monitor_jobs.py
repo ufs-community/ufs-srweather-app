@@ -51,6 +51,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     write_monitor_file(monitor_file,expt_dict)
 
     logging.info(f'Setup complete; monitoring {len(expt_dict)} experiments')
+    logging.info('Use ctrl-c to pause job submission/monitoring')
 
     #Make a copy of experiment dictionary; will use this copy to monitor active experiments
     running_expts = expt_dict.copy()
@@ -262,6 +263,9 @@ if __name__ == "__main__":
 
     try:
         monitor_jobs(expt_dict,args.yaml_file, args.debug)
+    except KeyboardInterrupt:
+        logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
+        logging.info(f"{__file__} -y={args.yaml_file}\n")
     except:
         logging.exception(
             dedent(
