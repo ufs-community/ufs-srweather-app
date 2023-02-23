@@ -166,18 +166,12 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
         if 'task_get_extrn_ics' in test_cfg:
-            logging.debug(test_cfg['task_get_extrn_ics'])
             test_cfg['task_get_extrn_ics'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,config_defaults,"ics")
-            logging.debug(test_cfg['task_get_extrn_ics'])
         if 'task_get_extrn_lbcs' in test_cfg:
-            logging.debug(test_cfg['task_get_extrn_lbcs'])
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,config_defaults,"lbcs")
-            logging.debug(test_cfg['task_get_extrn_lbcs'])
 
         if 'verification' in test_cfg:
-            logging.debug(test_cfg['verification'])
             test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
-            logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
