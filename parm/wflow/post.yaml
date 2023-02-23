@@ -6,6 +6,7 @@ default_task_post: &default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSDIR;/JREGIONAL_RUN_POST"'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '{{ user.USHdir }}'
     PDY: !cycstr '@Y@m@d'
     CDATE: !cycstr '@Y@m@d@H'
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'

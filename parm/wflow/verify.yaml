@@ -7,6 +7,7 @@ default_task_verify: &default_task
     - "&RSRV_DEFAULT;"
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '{{ user.USHdir }}'
     PDY: !cycstr '@Y@m@d'
     CDATE: !cycstr '@Y@m@d@H'
     CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'

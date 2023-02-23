@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import os
 import sys
 import datetime
@@ -136,6 +137,26 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Load the rocoto workflow default file
     cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
         "wflow", "default_workflow.yaml"))
+
+    # Takes care of removing any potential "null" entries.
+    update_dict(cfg_wflow, cfg_wflow)
+
+    # Add jobname entry to each task
+    rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
+    for task, task_settings in rocoto_tasks.items():
+        task_type = task.split("_", maxsplit=1)[0]
+        if task_type == "task":
+            # Use the provided attribute if it is present, otherwise use
+            # the name in the key
+            rocoto_tasks[task]["jobname"] = \
+                task_settings.get("attrs", {}).get("name") or \
+                task.split("_", maxsplit=1)[1]
+        elif task_type == "metatask":
+            for mtask, mtask_settings in task_settings.items():
+                if mtask.split("_", maxsplit=1)[0] == "task":
+                    rocoto_tasks[task][mtask]["jobname"] = \
+                        mtask_settings.get("attrs", {}).get("name") or \
+                        mtask.split("_", maxsplit=1)[1]
 
     # Update default config with the constants, the machine config, and
     # then the user_config
@@ -915,8 +936,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
-        nco_config["LOGBASEDIR"] = os.path.join(exptdir, "log")
-
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
 
@@ -930,11 +949,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
         mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
     if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
 
+    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 
@@ -1274,11 +1293,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         configuration file ('{user_config_fn}')."""
     )
 
-    with open(global_var_defns_fp, "a") as f:
-        f.write(cfg_to_shell_str(expt_config))
+    rocoto_yaml_fp = workflow_config["ROCOTO_YAML_FP"]
+    with open(rocoto_yaml_fp, 'w') as f:
+        yaml.Dumper.ignore_aliases = lambda *args : True
+        yaml.dump(expt_config.get("rocoto"), f)
 
-    with open(global_var_defns_fp.replace('sh', 'yaml'), 'w') as f:
-        yaml.dump(expt_config, f)
+    var_defns_cfg = copy.deepcopy(expt_config)
+    del var_defns_cfg["rocoto"]
+    with open(global_var_defns_fp, "a") as f:
+        f.write(cfg_to_shell_str(var_defns_cfg))
 
 
     #

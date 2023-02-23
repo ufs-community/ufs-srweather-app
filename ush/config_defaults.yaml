@@ -572,6 +572,10 @@ workflow:
   # to each workflow task) in order to make all the experiment variables 
   # available in those scripts.
   #
+  # ROCOTO_YAML_FN:
+  # Name of the YAML file containing the YAML workflow definition from
+  # which the Rocoto XML file is created.
+  #
   # EXTRN_MDL_VAR_DEFNS_FN:
   # Name of file (a shell script) containing the defintions of variables
   # associated with the external model from which ICs or LBCs are generated.  This
@@ -626,11 +630,13 @@ workflow:
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
   GLOBAL_VAR_DEFNS_FN: "var_defns.sh"
+  ROCOTO_YAML_FN: "rocoto_defns.yaml"
   EXTRN_MDL_VAR_DEFNS_FN: "extrn_mdl_var_defns"
   WFLOW_LAUNCH_SCRIPT_FN: "launch_FV3LAM_wflow.sh"
   WFLOW_LAUNCH_LOG_FN: "log.launch_FV3LAM_wflow"
 
   GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
+  ROCOTO_YAML_FP: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}'
   WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
   WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
   #
@@ -922,7 +928,7 @@ nco:
   PACKAGEROOT: '{{ OPSROOT }}/packages'
   DATAROOT: '{{ OPSROOT }}/tmp'
   DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{{ OPSROOT }}/output'
+  LOGBASEDIR: '{% if user.RUN_ENVIR == nco %}{{ [OPSROOT, output]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
@@ -1459,7 +1465,6 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '{% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %}'
 
 #----------------------------
 # FORECAST config parameters

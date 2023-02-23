@@ -8,10 +8,11 @@ default_task_prep: &default_task
     maxtries: '2'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '{{ user.USHdir }}'
     LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
-    nprocs: '{{ nnodes * ppn }}'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
     subcyc: !cycstr "@M"
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'

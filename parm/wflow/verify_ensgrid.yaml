@@ -2,6 +2,7 @@ default_task_verify_ens: &default_task
   account: '&ACCOUNT;'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '{{ user.USHdir }}'
     PDY: !cycstr '@Y@m@d'
     CDATE: !cycstr '@Y@m@d@H'
     nprocs: '{{ nnodes * ppn }}'
@@ -103,7 +104,7 @@ metatask_vx_ens_stats:
 
 task_vx_enspoint:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT"'
   envars:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'

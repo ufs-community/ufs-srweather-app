@@ -35,7 +35,7 @@ from python_utils import (
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from xml_creator import create_xml
+from fill_jinja_template import fill_jinja_template
 from set_namelist import set_namelist
 from check_python_version import check_python_version
 
@@ -102,6 +102,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             expt_config["user"]["PARMdir"],
             wflow_xml_fn,
         )
+        global_var_defns_fp = expt_config["workflow"]["GLOBAL_VAR_DEFNS_FP"]
 
         log_info(
             f"""
@@ -112,16 +113,18 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         #
         # Call the python script to generate the experiment's XML file
         #
+        rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
         try:
-            create_xml(
-                ["-o", wflow_xml_fp],
-                config_dict=expt_config,
+            fill_jinja_template(
+                ["-o", wflow_xml_fp,
+                 "-t", template_xml_fp,
+                 "-c", rocoto_yaml_fp ],
             )
         except:
             raise Exception(
                 dedent(
                     f"""
-                    Call to create_xml failed.
+                    Call to fill_jinja_template failed.
                     """
                 )
             )
@@ -708,6 +711,7 @@ if __name__ == "__main__":
                 """
             )
         )
+        raise
     
     # Note workflow generation completion
     log_info(

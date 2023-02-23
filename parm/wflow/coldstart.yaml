@@ -5,9 +5,10 @@ default_task: &default_task
     maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '{{ user.USHdir }}'
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
-    nprocs: '{{ nnodes * ppn }}'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     ENSMEM_INDX: '#mem#'
@@ -19,7 +20,7 @@ default_task: &default_task
 
 task_get_extrn_ics:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"'
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
@@ -32,7 +33,7 @@ task_get_extrn_ics:
 
 task_get_extrn_lbcs:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSDIR;/JREGIONAL_GET_EXTRN_MDL_FILES"'
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
@@ -46,7 +47,7 @@ task_get_extrn_lbcs:
 metatask_run_ensemble:
   var:
     mem: '{% if global.DO_ENSEMBLE  %} "{%- for m in range(1, NUM_ENS_MEMBERS+1) -%}{{ "%03d"%m }}{%- endfor -%} {% else %}{{ "det" }}{% endif %}'
-  task_make_ics:
+  task_make_ics_#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
     envars:
@@ -62,24 +63,31 @@ metatask_run_ensemble:
           attrs:
             task: get_extrn_ics
         or_grid:
-          streq:
-            left: 
           datadep_grid:
             attrs:
               age: 00:00:00:05
-            text: '&LOGDIR;/make_grid_task_complete.txt'
+            text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+          streq:
+            left: staged_grid
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
         or_orog:
           datadep_orog:
             attrs:
               age: 00:00:00:05
-            text: '&LOGDIR;/make_orog_task_complete.txt'
+            text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+          streq:
+            left: staged_orog
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
         or_sfc_climo:
           datadep_sfc_climo:
             attrs:
               age: 00:00:00:05
-            text: '&LOGDIR;/make_sfc_climo_task_complete.txt'
+            text: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+          streq:
+            left: staged_sfc_climo
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
 
-  task_make_lbcs:
+  task_make_lbcs_#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
     envars:
@@ -95,16 +103,17 @@ metatask_run_ensemble:
           attrs:
             task: get_extrn_lbcs
 
-  task_run_fcst:
+  task_run_fcst_#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+      nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
     nodesize: '{{ platform.NCORES_PER_NODE }}'
-    nnodes: '{{ NNODES_RUN_FCST }}'
-    ppn: '{{ PPN_RUN_FCST }}'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST|int }}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST|int }}'
     queue: '&QUEUE_FCST;'
     walltime: 04:30:00
     dependency:

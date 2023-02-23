@@ -73,7 +73,7 @@ def cfg_to_yaml_str(cfg):
     """Get contents of config file as a yaml string"""
 
     return yaml.dump(
-        cfg, Dumper=custom_dumper, sort_keys=False, default_flow_style=False
+        cfg, sort_keys=False, default_flow_style=False
     )
 
 def cycstr(loader, node):
@@ -154,7 +154,7 @@ def days_ago(arg):
     return (datetime.date.today() -
             datetime.timedelta(days=arg)).strftime("%Y%m%d00")
 
-def extend_yaml(yaml_dict, full_dict=None):
+def extend_yaml(yaml_dict, full_dict=None, parent=None):
 
     """
     Updates yaml_dict inplace by rendering any existing Jinja2 templates
@@ -164,13 +164,16 @@ def extend_yaml(yaml_dict, full_dict=None):
     if full_dict is None:
         full_dict = yaml_dict
 
+    if parent is None:
+        full_dict = yaml_dict
+
     if not isinstance(yaml_dict, dict):
         return
 
     for k, v in yaml_dict.items():
 
         if isinstance(v, dict):
-            extend_yaml(v, full_dict)
+            extend_yaml(v, full_dict, yaml_dict)
         else:
 
             # Save a bit of compute and only do this part for strings that
@@ -210,7 +213,7 @@ def extend_yaml(yaml_dict, full_dict=None):
                     try:
                         # Fill in a template that has the appropriate variables
                         # set.
-                        template = j2tmpl.render(**yaml_dict, **full_dict)
+                        template = j2tmpl.render(parent=parent, **yaml_dict, **full_dict)
                     except jinja2.exceptions.UndefinedError as e:
                         # Leave a templated field as-is in the resulting dict
                         pass
@@ -517,12 +520,14 @@ def update_dict(dict_o, dict_t, provide_default=False):
     Returns:
         None
     """
-    for k, v in dict_o.items():
+    for k, v in dict_o.copy().items():
         if isinstance(v, dict):
             if isinstance(dict_t.get(k), dict):
                 update_dict(v, dict_t[k], provide_default)
             else:
                 dict_t[k] = v
+        elif v is None and k in dict_t.keys():
+            del dict_t[k]
         elif k in dict_t.keys():
             if (
                 (not provide_default)
@@ -531,6 +536,8 @@ def update_dict(dict_o, dict_t, provide_default=False):
                 or ("{{" in dict_t[k])
             ):
                 dict_t[k] = v
+        elif k not in dict_t.keys():
+            dict_t[k] = v
 
 
 def check_structure_dict(dict_o, dict_t):
