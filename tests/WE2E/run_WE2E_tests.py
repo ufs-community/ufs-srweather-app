@@ -167,11 +167,11 @@ def run_we2e_tests(homedir, args) -> None:
 
         if 'task_get_extrn_ics' in test_cfg:
             logging.debug(test_cfg['task_get_extrn_ics'])
-            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_ics(test_cfg,machine_defaults,config_defaults)
+            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,config_defaults,"ics")
             logging.debug(test_cfg['task_get_extrn_ics'])
         if 'task_get_extrn_lbcs' in test_cfg:
             logging.debug(test_cfg['task_get_extrn_lbcs'])
-            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults,config_defaults)
+            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,config_defaults,"lbcs")
             logging.debug(test_cfg['task_get_extrn_lbcs'])
 
         if 'verification' in test_cfg:
@@ -218,6 +218,9 @@ def run_we2e_tests(homedir, args) -> None:
         else:
             logging.info("All experiments are complete")
             logging.info(f"Summary of results available in {monitor_file}")
+    else:
+        logging.info("All experiments have been generated; using cron to submit workflows")
+        logging.info("To view running experiments in cron try `crontab -l`")
 
 
 
@@ -290,41 +293,47 @@ def check_test(test: str) -> str:
     return config
 
 
-def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
+def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str = "") -> dict:
     """
-    Function for checking and updating various settings in task_get_extrn_ics section of test config yaml
+    Function for checking and updating various settings in task_get_extrn_ics or 
+    task_get_extrn_lbcs section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
         dflt : Dictionary loaded from default config file
+        ics_or_lbcs: Perform checks for ICs task or LBCs task
+
     Returns:
-        cfg_ics : Updated dictionary for task_get_extrn_ics section of test config
+        cfg_bcs : Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
     """
 
-    #Make our lives easier by shortening some dictionary calls
-    cfg_ics = cfg['task_get_extrn_ics']
+    if ics_or_lbcs not in ["lbcs", "ics"]:
+        raise ValueError(f"ics_or_lbcs must be set to 'lbcs' or 'ics'")
 
-    # If RUN_TASK_GET_EXTRN_ICS is explicitly set to false, do nothing and return
-    if 'workflow_switches' in cfg:
-        if 'RUN_TASK_GET_EXTRN_ICS' in cfg['workflow_switches']:
-            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
-                return cfg_ics
+    I_OR_L = ics_or_lbcs.upper()
+
+    #Make our lives easier by shortening some dictionary calls
+    cfg_bcs = cfg[f'task_get_extrn_{ics_or_lbcs}']
+
+    # If RUN_TASK_GET_EXTRN_* is explicitly set to false, do nothing and return
+    if cfg.get('workflow_switches', {}).get(f'RUN_TASK_GET_EXTRN_{I_OR_L}', True) is False:
+        return cfg_bcs
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_ics.get('USE_USER_STAGED_EXTRN_FILES'):
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_ics section of config')
-        return cfg_ics
+    if not cfg_bcs.get('USE_USER_STAGED_EXTRN_FILES'):
+        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_{ics_or_lbcs} section of config')
+        return cfg_bcs
 
-    # If EXTRN_MDL_SYSBASEDIR_ICS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg_ics.get('EXTRN_MDL_SYSBASEDIR_ICS') == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
-            cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
+    # If EXTRN_MDL_SYSBASEDIR_* is "set_to_non_default_location_in_testing_script", replace with test value from machine file
+    if cfg_bcs.get(f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}') == "set_to_non_default_location_in_testing_script":
+        if f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}' in mach['platform']:
+            if os.path.isdir(mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']):
+                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} from machine file does not exist or is not a directory")
+                cfg_bcs[f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}'] = mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']
         else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
-        return cfg_ics
+            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} not set in machine file")
+        return cfg_bcs
 
     # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
     cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
@@ -337,74 +346,16 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
                                 does not exist."""))
 
     # Different input data types have different directory structures, so set the data directory accordingly
-    if cfg_ics['EXTRN_MDL_NAME_ICS'] == 'FV3GFS':
-        if 'FV3GFS_FILE_FMT_ICS' not in cfg_ics:
-            cfg_ics['FV3GFS_FILE_FMT_ICS'] = dflt['task_get_extrn_ics']['FV3GFS_FILE_FMT_ICS']
-        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/{cfg_ics['FV3GFS_FILE_FMT_ICS']}/${{yyyymmddhh}}"
+    if cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}'] == 'FV3GFS':
+        if f'FV3GFS_FILE_FMT_{I_OR_L}' not in cfg_bcs:
+            cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}'] = dflt[f'task_get_extrn_{ics_or_lbcs}'][f'FV3GFS_FILE_FMT_{I_OR_L}']
+        cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                    f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/{cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}']}/${{yyyymmddhh}}"
     else:
-        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/${{yyyymmddhh}}"
+        cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
+                                                    f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/${{yyyymmddhh}}"
 
-    return cfg_ics
-
-def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
-    """
-    Function for checking and updating various settings in task_get_extrn_lbcs section of test config yaml
-
-    Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-    Returns:
-        cfg_lbcs : Updated dictionary for task_get_extrn_lbcs section of test config
-    """
-
-    #Make our lives easier by shortening some dictionary calls
-    cfg_lbcs = cfg['task_get_extrn_lbcs']
-
-    # If RUN_TASK_GET_EXTRN_LBCS is explicitly set to false, do nothing and return
-    if 'workflow_switches' in cfg:
-        if 'RUN_TASK_GET_EXTRN_LBCS' in cfg['workflow_switches']:
-            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
-                return cfg_lbcs
-
-    # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_lbcs.get('USE_USER_STAGED_EXTRN_FILES'):
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_lbcs section of config')
-        return cfg_lbcs
-
-    # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg_lbcs.get('EXTRN_MDL_SYSBASEDIR_LBCS') == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
-                cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
-        else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
-        return cfg_lbcs
-
-    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
-    cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
-    if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
-        raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
-                       "has not been specified in the machine file for this platform")
-    if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
-        raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
-                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
-                                does not exist."""))
-
-    # Different input data types have different directory structures, so set the data directory accordingly
-    if cfg_lbcs['EXTRN_MDL_NAME_LBCS'] == 'FV3GFS':
-        if 'FV3GFS_FILE_FMT_LBCS' not in cfg_lbcs:
-            cfg_lbcs['FV3GFS_FILE_FMT_LBCS'] = dflt['task_get_extrn_lbcs']['FV3GFS_FILE_FMT_LBCS']
-        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/{cfg_lbcs['FV3GFS_FILE_FMT_LBCS']}/${{yyyymmddhh}}"
-    else:
-        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
-
-    return cfg_lbcs
+    return cfg_bcs
 
 def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
     """
