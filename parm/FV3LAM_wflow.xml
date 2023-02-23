@@ -48,26 +48,30 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_APCP24H            "{{ tn_run_met_gridstat_vx_apcp24h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_REFC               "{{ tn_run_met_gridstat_vx_refc }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_RETOP              "{{ tn_run_met_gridstat_vx_retop }}">
-<!ENTITY TN_RUN_MET_POINTSTAT_VX_SFC_UPA           "{{ tn_run_met_pointstat_vx_sfc_upa }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_SFC               "{{ tn_run_met_pointstat_vx_sfc }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_UPA               "{{ tn_run_met_pointstat_vx_upa }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H        "{{ tn_run_met_ensemblestat_vx_apcp01h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H        "{{ tn_run_met_ensemblestat_vx_apcp03h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H        "{{ tn_run_met_ensemblestat_vx_apcp06h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H        "{{ tn_run_met_ensemblestat_vx_apcp24h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_REFC           "{{ tn_run_met_ensemblestat_vx_refc }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_RETOP          "{{ tn_run_met_ensemblestat_vx_retop }}">
-<!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA        "{{ tn_run_met_ensemblestat_vx_sfc_upa }}">
+<!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_SFC            "{{ tn_run_met_ensemblestat_vx_sfc }}">
+<!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_UPA            "{{ tn_run_met_ensemblestat_vx_upa }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H    "{{ tn_run_met_gridstat_vx_ensmean_apcp01h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H    "{{ tn_run_met_gridstat_vx_ensmean_apcp03h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H    "{{ tn_run_met_gridstat_vx_ensmean_apcp06h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H    "{{ tn_run_met_gridstat_vx_ensmean_apcp24h }}">
-<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA   "{{ tn_run_met_pointstat_vx_ensmean_sfc_upa }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC       "{{ tn_run_met_pointstat_vx_ensmean_sfc }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA       "{{ tn_run_met_pointstat_vx_ensmean_upa }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H    "{{ tn_run_met_gridstat_vx_ensprob_apcp01h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H    "{{ tn_run_met_gridstat_vx_ensprob_apcp03h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H    "{{ tn_run_met_gridstat_vx_ensprob_apcp06h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H    "{{ tn_run_met_gridstat_vx_ensprob_apcp24h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC       "{{ tn_run_met_gridstat_vx_ensprob_refc }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP      "{{ tn_run_met_gridstat_vx_ensprob_retop }}">
-<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA   "{{ tn_run_met_pointstat_vx_ensprob_sfc_upa }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC       "{{ tn_run_met_pointstat_vx_ensprob_sfc }}">
+<!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA       "{{ tn_run_met_pointstat_vx_ensprob_upa }}">
 {%- if run_task_aqm_ics %}
 <!ENTITY TN_AQM_EXTRN_ICS          "{{ tn_aqm_ics }}_ext">
 <!ENTITY TN_AQM_ICS                "{{ tn_aqm_ics }}">
@@ -1420,7 +1424,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_apcp01h }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP01H;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1472,7 +1476,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_apcp03h }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP03H;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP03H;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_APCP03H;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1514,7 +1518,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_apcp06h }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP06H;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP06H;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_APCP06H;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1556,7 +1560,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_apcp24h }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP24H;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_APCP24H;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_APCP24H;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1597,7 +1601,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_refc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_REFC;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_REFC;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_REFC;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1647,7 +1651,7 @@ it, we'd have to include more jinja if-statements here.
     <walltime>{{ wtime_run_met_gridstat_vx_retop }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_GRIDSTAT_VX_RETOP;</jobname>
+    <jobname>&TN_RUN_MET_GRIDSTAT_VX_RETOP;{{ uscore_ensmem_name }}</jobname>
     <join>&LOGDIR;/&TN_RUN_MET_GRIDSTAT_VX_RETOP;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1688,19 +1692,19 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_RUN_MET_POINTSTAT_VX_SFC_UPA;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_sfc_upa }}">
+  <task name="&TN_RUN_MET_POINTSTAT_VX_SFC;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_sfc }}">
     &RSRV_DEFAULT;
 
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
-    <nodes>{{ nnodes_run_met_pointstat_vx_sfc_upa }}:ppn={{ ppn_run_met_pointstat_vx_sfc_upa }}</nodes>
+    <nodes>{{ nnodes_run_met_pointstat_vx_sfc }}:ppn={{ ppn_run_met_pointstat_vx_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
-    <memory>{{ mem_run_met_pointstat_vx_sfc_upa }}</memory>
+    <memory>{{ mem_run_met_pointstat_vx_sfc }}</memory>
   {%- endif %}
-    <walltime>{{ wtime_run_met_pointstat_vx_sfc_upa }}</walltime>
+    <walltime>{{ wtime_run_met_pointstat_vx_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_POINTSTAT_VX_SFC_UPA;</jobname>
-    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_SFC_UPA;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_SFC;{{ uscore_ensmem_name }}</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_SFC;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1710,6 +1714,56 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+  {%- if do_ensemble %}
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+    <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+  {%- endif %}
+
+    <dependency>
+      <and>
+{#- Redundant dependency to simplify jinja code. #}
+      <streq><left>TRUE</left><right>TRUE</right></streq>
+  {%- if run_task_get_obs_ndas %}
+        <taskdep task="&TN_GET_OBS_NDAS;"/>
+  {%- endif %}
+  {%- if write_dopost %}
+        <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
+  {%- elif run_task_run_post %}
+        <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
+  {%- endif %}
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_POINTSTAT_VX_UPA;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_upa }}">
+    &RSRV_DEFAULT;
+
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
+    <nodes>{{ nnodes_run_met_pointstat_vx_upa }}:ppn={{ ppn_run_met_pointstat_vx_upa }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_pointstat_vx_upa }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_pointstat_vx_upa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_UPA;{{ uscore_ensmem_name }}</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_UPA;{{ uscore_ensmem_name }}<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>UPA</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
   {%- if do_ensemble %}
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
@@ -1959,19 +2013,19 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_sfc_upa }}">
+  <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_sfc }}">
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
-    <nodes>{{ nnodes_run_met_ensemblestat_vx_sfc_upa }}:ppn={{ ppn_run_met_ensemblestat_vx_sfc_upa }}</nodes>
+    <nodes>{{ nnodes_run_met_ensemblestat_vx_sfc }}:ppn={{ ppn_run_met_ensemblestat_vx_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
-    <memory>{{ mem_run_met_ensemblestat_vx_sfc_upa }}</memory>
+    <memory>{{ mem_run_met_ensemblestat_vx_sfc }}</memory>
   {%- endif %}
-    <walltime>{{ wtime_run_met_ensemblestat_vx_sfc_upa }}</walltime>
+    <walltime>{{ wtime_run_met_ensemblestat_vx_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA;</jobname>
-    <join>&LOGDIR;/&TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1981,6 +2035,40 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_upa }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
+    <nodes>{{ nnodes_run_met_ensemblestat_vx_upa }}:ppn={{ ppn_run_met_ensemblestat_vx_upa }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_ensemblestat_vx_upa }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_ensemblestat_vx_upa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>UPA</value></envar>
 
     <dependency>
       <metataskdep metatask="run_ensemble"/>
@@ -2142,19 +2230,19 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensmean_sfc_upa }}">
+  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensmean_sfc }}">
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
-    <nodes>{{ nnodes_run_met_pointstat_vx_ensmean_sfc_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensmean_sfc_upa }}</nodes>
+    <nodes>{{ nnodes_run_met_pointstat_vx_ensmean_sfc }}:ppn={{ ppn_run_met_pointstat_vx_ensmean_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
-    <memory>{{ mem_run_met_pointstat_vx_ensmean_sfc_upa }}</memory>
+    <memory>{{ mem_run_met_pointstat_vx_ensmean_sfc }}</memory>
   {%- endif %}
-    <walltime>{{ wtime_run_met_pointstat_vx_ensmean_sfc_upa }}</walltime>
+    <walltime>{{ wtime_run_met_pointstat_vx_ensmean_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA;</jobname>
-    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -2164,9 +2252,43 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA;"/>
+      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;"/>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensmean_upa }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
+    <nodes>{{ nnodes_run_met_pointstat_vx_ensmean_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensmean_upa }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_pointstat_vx_ensmean_upa }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_pointstat_vx_ensmean_upa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>UPA</value></envar>
+
+    <dependency>
+      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;"/>
     </dependency>
 
   </task>
@@ -2393,19 +2515,19 @@ it, we'd have to include more jinja if-statements here.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensprob_sfc_upa }}">
+  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensprob_sfc }}">
 
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
-    <nodes>{{ nnodes_run_met_pointstat_vx_ensprob_sfc_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensprob_sfc_upa }}</nodes>
+    <nodes>{{ nnodes_run_met_pointstat_vx_ensprob_sfc }}:ppn={{ ppn_run_met_pointstat_vx_ensprob_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
-    <memory>{{ mem_run_met_pointstat_vx_ensprob_sfc_upa }}</memory>
+    <memory>{{ mem_run_met_pointstat_vx_ensprob_sfc }}</memory>
   {%- endif %}
-    <walltime>{{ wtime_run_met_pointstat_vx_ensprob_sfc_upa }}</walltime>
+    <walltime>{{ wtime_run_met_pointstat_vx_ensprob_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
-    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA;</jobname>
-    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -2415,9 +2537,43 @@ it, we'd have to include more jinja if-statements here.
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA;"/>
+      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;"/>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensprob_upa }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
+    <nodes>{{ nnodes_run_met_pointstat_vx_ensprob_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensprob_upa }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_pointstat_vx_ensprob_upa }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_pointstat_vx_ensprob_upa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>VAR</name><value>UPA</value></envar>
+
+    <dependency>
+      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;"/>
     </dependency>
 
   </task>
