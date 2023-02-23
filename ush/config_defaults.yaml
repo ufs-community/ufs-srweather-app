@@ -2078,9 +2078,9 @@ task_get_obs_ndas:
   MAXTRIES_GET_OBS_NDAS: 1
 
 #----------------------------
-# run_MET_GridStat_vx_APCP01h config parameters
+# run_met_gridstat_vx_apcp01h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_APCP01h:
+task_run_met_gridstat_vx_apcp01h:
   TN_RUN_MET_GRIDSTAT_VX_APCP01h: "run_MET_GridStat_vx_APCP01h"
   NNODES_RUN_MET_GRIDSTAT_VX_APCP01H: 1
   PPN_RUN_MET_GRIDSTAT_VX_APCP01H: 1
@@ -2089,9 +2089,9 @@ task_run_MET_GridStat_vx_APCP01h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP01H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_APCP03h config parameters
+# run_met_gridstat_vx_apcp03h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_APCP03h:
+task_run_met_gridstat_vx_apcp03h:
   TN_RUN_MET_GRIDSTAT_VX_APCP03H: "run_MET_GridStat_vx_APCP03h"
   NNODES_RUN_MET_GRIDSTAT_VX_APCP03H: 1
   PPN_RUN_MET_GRIDSTAT_VX_APCP03H: 1
@@ -2100,9 +2100,9 @@ task_run_MET_GridStat_vx_APCP03h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP03H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_APCP06h config parameters
+# run_met_gridstat_vx_apcp06h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_APCP06h:
+task_run_met_gridstat_vx_apcp06h:
   TN_RUN_MET_GRIDSTAT_VX_APCP06H: "run_MET_GridStat_vx_APCP06h"
   NNODES_RUN_MET_GRIDSTAT_VX_APCP06H: 1
   PPN_RUN_MET_GRIDSTAT_VX_APCP06H: 1
@@ -2111,9 +2111,9 @@ task_run_MET_GridStat_vx_APCP06h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP06H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_APCP24h config parameters
+# run_met_gridstat_vx_apcp24h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_APCP24h:
+task_run_met_gridstat_vx_apcp24h:
   TN_RUN_MET_GRIDSTAT_VX_APCP24H: "run_MET_GridStat_vx_APCP24h"
   NNODES_RUN_MET_GRIDSTAT_VX_APCP24H: 1
   PPN_RUN_MET_GRIDSTAT_VX_APCP24H: 1
@@ -2122,9 +2122,9 @@ task_run_MET_GridStat_vx_APCP24h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP24H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_REFC config parameters
+# run_met_gridstat_vx_refc config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_REFC:
+task_run_met_gridstat_vx_refc:
   TN_RUN_MET_GRIDSTAT_VX_REFC: "run_MET_GridStat_vx_REFC"
   NNODES_RUN_MET_GRIDSTAT_VX_REFC: 1
   PPN_RUN_MET_GRIDSTAT_VX_REFC: 1
@@ -2133,9 +2133,9 @@ task_run_MET_GridStat_vx_REFC:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_REFC: 2
 
 #----------------------------
-# run_MET_GridStat_vx_RETOP config parameters
+# run_met_gridstat_vx_retop config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_RETOP:
+task_run_met_gridstat_vx_retop:
   TN_RUN_MET_GRIDSTAT_VX_RETOP: "run_MET_GridStat_vx_RETOP"
   NNODES_RUN_MET_GRIDSTAT_VX_RETOP: 1
   PPN_RUN_MET_GRIDSTAT_VX_RETOP: 1
@@ -2144,9 +2144,9 @@ task_run_MET_GridStat_vx_RETOP:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_RETOP: 2
 
 #----------------------------
-# run_MET_PointStat_vx_SFC_UPA config parameters
+# run_met_pointstat_vx_sfc_upa config parameters
 #-----------------------------
-task_run_MET_PointStat_vx_SFC_UPA:
+task_run_met_pointstat_vx_sfc_upa:
   TN_RUN_MET_POINTSTAT_VX_SFC_UPA: "run_MET_PointStat_vx_SFC_UPA"
   NNODES_RUN_MET_POINTSTAT_VX_SFC_UPA: 1
   PPN_RUN_MET_POINTSTAT_VX_SFC_UPA: 1
@@ -2155,9 +2155,9 @@ task_run_MET_PointStat_vx_SFC_UPA:
   MAXTRIES_RUN_MET_POINTSTAT_VX_SFC_UPA: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_APCP01h config parameters
+# run_met_ensemblestat_vx_apcp01h config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_APCP01h:
+task_run_met_ensemblestat_vx_apcp01h:
   TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H: "run_MET_EnsembleStat_vx_APCP01h"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 1
@@ -2166,9 +2166,9 @@ task_run_MET_EnsembleStat_vx_APCP01h:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_APCP03h config parameters
+# run_met_ensemblestat_vx_apcp03h config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_APCP03h:
+task_run_met_ensemblestat_vx_apcp03h:
   TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H: "run_MET_EnsembleStat_vx_APCP03h"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 1
@@ -2177,9 +2177,9 @@ task_run_MET_EnsembleStat_vx_APCP03h:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_APCP06h config parameters
+# run_met_ensemblestat_vx_apcp06h config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_APCP06h:
+task_run_met_ensemblestat_vx_apcp06h:
   TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H: "run_MET_EnsembleStat_vx_APCP06h"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 1
@@ -2188,9 +2188,9 @@ task_run_MET_EnsembleStat_vx_APCP06h:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_APCP24h config parameters
+# run_met_ensemblestat_vx_apcp24h config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_APCP24h:
+task_run_met_ensemblestat_vx_apcp24h:
   TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H: "run_MET_EnsembleStat_vx_APCP24h"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 1
@@ -2199,9 +2199,9 @@ task_run_MET_EnsembleStat_vx_APCP24h:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_REFC config parameters
+# run_met_ensemblestat_vx_refc config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_REFC:
+task_run_met_ensemblestat_vx_refc:
   TN_RUN_MET_ENSEMBLESTAT_VX_REFC: "run_MET_EnsembleStat_vx_REFC"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_REFC: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_REFC: 1
@@ -2210,9 +2210,9 @@ task_run_MET_EnsembleStat_vx_REFC:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_REFC: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_RETOP config parameters
+# run_met_ensemblestat_vx_retop config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_RETOP:
+task_run_met_ensemblestat_vx_retop:
   TN_RUN_MET_ENSEMBLESTAT_VX_RETOP: "run_MET_EnsembleStat_vx_RETOP"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_RETOP: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_RETOP: 1
@@ -2221,9 +2221,9 @@ task_run_MET_EnsembleStat_vx_RETOP:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_RETOP: 2
 
 #----------------------------
-# run_MET_EnsembleStat_vx_SFC_UPA config parameters
+# run_met_ensemblestat_vx_sfc_upa config parameters
 #-----------------------------
-task_run_MET_EnsembleStat_vx_SFC_UPA:
+task_run_met_ensemblestat_vx_sfc_upa:
   TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: "run_MET_EnsembleStat_vx_SFC_UPA"
   NNODES_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 1
   PPN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 1
@@ -2232,9 +2232,9 @@ task_run_MET_EnsembleStat_vx_SFC_UPA:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensmean_APCP01h config parameters
+# run_met_gridstat_vx_ensmean_apcp01h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensmean_APCP01h:
+task_run_met_gridstat_vx_ensmean_apcp01h:
   TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: "run_MET_GridStat_vx_ensmean_APCP01h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 1
@@ -2243,9 +2243,9 @@ task_run_MET_GridStat_vx_ensmean_APCP01h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensmean_APCP03h config parameters
+# run_met_gridstat_vx_ensmean_apcp03h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensmean_APCP03h:
+task_run_met_gridstat_vx_ensmean_apcp03h:
   TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: "run_MET_GridStat_vx_ensmean_APCP03h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 1
@@ -2254,9 +2254,9 @@ task_run_MET_GridStat_vx_ensmean_APCP03h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensmean_APCP06h config parameters
+# run_met_gridstat_vx_ensmean_apcp06h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensmean_APCP06h:
+task_run_met_gridstat_vx_ensmean_apcp06h:
   TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: "run_MET_GridStat_vx_ensmean_APCP06h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 1
@@ -2265,9 +2265,9 @@ task_run_MET_GridStat_vx_ensmean_APCP06h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensmean_APCP24h config parameters
+# run_met_gridstat_vx_ensmean_apcp24h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensmean_APCP24h:
+task_run_met_gridstat_vx_ensmean_apcp24h:
   TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: "run_MET_GridStat_vx_ensmean_APCP24h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 1
@@ -2276,9 +2276,9 @@ task_run_MET_GridStat_vx_ensmean_APCP24h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 2
 
 #----------------------------
-# run_MET_PointStat_vx_ensmean_SFC_UPA config parameters
+# run_met_pointstat_vx_ensmean_sfc_upa config parameters
 #-----------------------------
-task_run_MET_PointStat_vx_ensmean_SFC_UPA:
+task_run_met_pointstat_vx_ensmean_sfc_upa:
   TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: "run_MET_PointStat_vx_ensmean_SFC_UPA"
   NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 1
   PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 1
@@ -2287,9 +2287,9 @@ task_run_MET_PointStat_vx_ensmean_SFC_UPA:
   MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_APCP01h config parameters
+# run_met_gridstat_vx_ensprob_apcp01h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_APCP01h:
+task_run_met_gridstat_vx_ensprob_apcp01h:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: "run_MET_GridStat_vx_ensprob_APCP01h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 1
@@ -2298,9 +2298,9 @@ task_run_MET_GridStat_vx_ensprob_APCP01h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_APCP03h config parameters
+# run_met_gridstat_vx_ensprob_apcp03h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_APCP03h:
+task_run_met_gridstat_vx_ensprob_apcp03h:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: "run_MET_GridStat_vx_ensprob_APCP03h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 1
@@ -2309,9 +2309,9 @@ task_run_MET_GridStat_vx_ensprob_APCP03h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_APCP06h config parameters
+# run_met_gridstat_vx_ensprob_apcp06h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_APCP06h:
+task_run_met_gridstat_vx_ensprob_apcp06h:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: "run_MET_GridStat_vx_ensprob_APCP06h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 1
@@ -2320,9 +2320,9 @@ task_run_MET_GridStat_vx_ensprob_APCP06h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_APCP24h config parameters
+# run_met_gridstat_vx_ensprob_apcp24h config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_APCP24h:
+task_run_met_gridstat_vx_ensprob_apcp24h:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: "run_MET_GridStat_vx_ensprob_APCP24h"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 1
@@ -2331,9 +2331,9 @@ task_run_MET_GridStat_vx_ensprob_APCP24h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_REFC config parameters
+# run_met_gridstat_vx_ensprob_refc config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_REFC:
+task_run_met_gridstat_vx_ensprob_refc:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: "run_MET_GridStat_vx_ensprob_REFC"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 1
@@ -2342,9 +2342,9 @@ task_run_MET_GridStat_vx_ensprob_REFC:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 2
 
 #----------------------------
-# run_MET_GridStat_vx_ensprob_RETOP config parameters
+# run_met_gridstat_vx_ensprob_retop config parameters
 #-----------------------------
-task_run_MET_GridStat_vx_ensprob_RETOP:
+task_run_met_gridstat_vx_ensprob_retop:
   TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: "run_MET_GridStat_vx_ensprob_RETOP"
   NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 1
   PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 1
@@ -2353,9 +2353,9 @@ task_run_MET_GridStat_vx_ensprob_RETOP:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 2
 
 #----------------------------
-# run_MET_PointStat_vx_ensprob_SFC_UPA config parameters
+# run_met_pointstat_vx_ensprob_sfc_upa config parameters
 #-----------------------------
-task_run_MET_PointStat_vx_ensprob_SFC_UPA:
+task_run_met_pointstat_vx_ensprob_sfc_upa:
   TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: "run_MET_PointStat_vx_ensprob_SFC_UPA"
   NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 1
   PPN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 1

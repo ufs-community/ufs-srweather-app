@@ -54,7 +54,7 @@ by initialitation time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_MET_PointStat_vx.sh || \
+$SCRIPTSdir/exregional_run_met_pointstat_vx.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
