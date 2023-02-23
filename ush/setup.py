@@ -521,9 +521,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    # Gather the pre-defined grid parameters, if needed
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
+
+    # Warn if user has specified a large timestep inappropriately
+    hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
+    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
+        dt = fcst_config.get("DT_ATMOS")
+        if dt:
+            if dt > 40:
+                logger.warning(dedent(
+                    f"""
+                    WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                    time step regardless of grid resolution. The user-specified value
+                    DT_ATMOS = {fcst_config.get("DT_ATMOS")}
+                    may result in CFL violations or other errors!
+                    """
+                ))
+
+    # Gather the pre-defined grid parameters, if needed
     if workflow_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(
             USHdir,
@@ -540,6 +556,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     continue
                 elif isinstance(param_val, (int, float)):
                     continue
+                # DT_ATMOS needs special treatment based on CCPP suite
+                elif param == "DT_ATMOS":
+                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites and grid_params[param] > 40:
+                        logger.warning(dedent(
+                            f"""
+                            WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                            time step regardless of grid resolution; setting DT_ATMOS to 40.\n
+                            This value can be overwritten in the user config file.
+                            """
+                        ))
+                        fcst_config[param] = 40
+                    else:
+                        fcst_config[param] = value
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
