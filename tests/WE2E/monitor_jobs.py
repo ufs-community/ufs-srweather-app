@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import re
 import sys
 import argparse
 import logging
@@ -13,12 +15,16 @@ from contextlib import closing
 sys.path.append("../../ush")
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict,
     load_config_file,
-    cfg_to_yaml_str
+    load_shell_config
 )
 
 from check_python_version import check_python_version
 
+from job_summary import print_job_summary
+from utils import calculate_core_hours, write_monitor_file, update_expt_status
 
 def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
@@ -93,140 +99,6 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     print_job_summary(expt_dict, debug)
 
     return monitor_file
-
-def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
-    """
-    This function reads the dictionary showing the location of a given experiment, runs a
-    `rocotorun` command to update the experiment (running new jobs and updating the status of
-    previously submitted ones), and reads the rocoto database file to update the status of
-    each job for that experiment in the experiment dictionary.
-
-    The function then and uses a simple set of rules to combine the statuses of every task
-    into a useful "status" for the whole experiment, and returns the updated experiment dictionary.
-
-    Experiment "status" levels explained:
-    CREATED: The experiments have been created, but the monitor script has not yet processed them.
-             This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
-             should never see this status in this function. Including just for completeness sake.
-    SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will 
-             continue to monitor this experiment.
-    DYING:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
-             We will continue to monitor this experiment until all tasks are either status DEAD or
-             status SUCCEEDED (see next entry).
-    DEAD:    One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We
-             will no longer monitor this experiment.
-    ERROR:   One or more tasks are at status UNKNOWN, meaning that rocoto has failed to track the
-             job associated with that task. This will require manual intervention to solve, so we
-             will no longer monitor this experiment.
-             This status may also appear if we fail to read the rocoto database file.
-    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED, SUBMITTED,
-             or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
-    QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUBMITTED or
-             SUCCEEDED.
-             This is a normal state; we will continue to monitor this experiment.
-    SUCCEEDED: All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are
-             unsubmitted jobs remaining.
-    COMPLETE:All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle
-             to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
-
-    Args:
-        expt    (dict):    A dictionary containing the information for an individual experiment, as
-                           described in the main monitor_jobs() function.
-        name     (str):    Name of the experiment; used for logging only
-        refresh (bool):    If true, this flag will check an experiment status even if it is listed
-                           as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
-                           that may have been restarted.
-    Returns:
-        dict: The updated experiment dictionary.
-    """
-
-    #If we are no longer tracking this experiment, return unchanged
-    if (expt["status"] in ['DEAD','ERROR','COMPLETE']) and not refresh:
-        return expt
-
-    # Update experiment, read rocoto database
-    rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
-    rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
-    subprocess.run(rocotorun_cmd)
-
-    logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
-    try:
-        # This section of code queries the "job" table of the rocoto database, returning a list
-        # of tuples containing the taskname, cycle, and state of each job respectively
-        with closing(sqlite3.connect(rocoto_db)) as connection:
-            with closing(connection.cursor()) as cur:
-                db = cur.execute('SELECT taskname,cycle,state,cores,duration from jobs').fetchall()
-    except:
-        logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
-        expt["status"] = "ERROR"
-        return expt
-
-    for task in db:
-        # For each entry from rocoto database, store that task's info under a dictionary key named TASKNAME_CYCLE
-        # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
-        cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
-        if f"{task[0]}_{cycle}" not in expt:
-            expt[f"{task[0]}_{cycle}"] = dict()
-        expt[f"{task[0]}_{cycle}"]["status"] = task[2]
-        expt[f"{task[0]}_{cycle}"]["cores"] = task[3]
-        expt[f"{task[0]}_{cycle}"]["walltime"] = task[4]
-
-    #Run rocotorun again to get around rocotobqserver proliferation issue
-    subprocess.run(rocotorun_cmd)
-
-    statuses = list()
-    for task in expt:
-        # Skip non-task entries
-        if task in ["expt_dir","status"]:
-            continue
-        statuses.append(expt[task]["status"])
-
-    if "DEAD" in statuses:
-        still_live = ["RUNNING", "SUBMITTING", "QUEUED"]
-        if any(status in still_live for status in statuses):
-            logging.debug(f'DEAD job in experiment {name}; continuing to track until all jobs are complete')
-            expt["status"] = "DYING"
-        else:
-            expt["status"] = "DEAD"
-        return expt
-
-    if "UNKNOWN" in statuses:
-        expt["status"] = "ERROR" 
-
-    if "RUNNING" in statuses:
-        expt["status"] = "RUNNING"
-    elif "QUEUED" in statuses:
-        expt["status"] = "QUEUED"
-    elif "SUBMITTING" in statuses:
-        expt["status"] = "SUBMITTING"
-    elif "SUCCEEDED" in statuses:
-        if expt["status"] == "SUCCEEDED":
-            expt["status"] = "COMPLETE"
-        else:
-            expt["status"] = "SUCCEEDED"
-    else:
-        logging.fatal("Some kind of horrible thing has happened")
-        raise ValueError(dedent(f"""Some kind of horrible thing has happened to the experiment status
-              for experiment {name}
-              status is {expt["status"]}
-              all task statuses are {statuses}"""))
-
-    return expt
-
-
-def write_monitor_file(monitor_file: str, expt_dict: dict):
-    try:
-        with open(monitor_file,"w") as f:
-            f.write("### WARNING ###\n")
-            f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY monitor_jobs.py\n")
-            f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
-            f.writelines(cfg_to_yaml_str(expt_dict))
-    except:
-        logging.fatal("\n********************************\n")
-        logging.fatal(f"WARNING WARNING WARNING\nFailure occurred while writing monitor file {monitor_file}")
-        logging.fatal("File may be corrupt or invalid for re-run!!")
-        logging.fatal("\n********************************\n")
-        raise
 
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:

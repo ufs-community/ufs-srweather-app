@@ -4,7 +4,6 @@ import os
 import sys
 import argparse
 import logging
-import re
 import subprocess
 import sqlite3
 import time
@@ -16,14 +15,12 @@ sys.path.append("../../ush")
 
 from python_utils import (
     cfg_to_yaml_str,
-    flatten_dict,
-    load_config_file,
-    load_shell_config
+    load_config_file
 )
 
 from check_python_version import check_python_version
 
-from monitor_jobs import update_expt_status, write_monitor_file
+from utils import calculate_core_hours, create_expt_dict, update_expt_status, write_monitor_file
 
 REPORT_WIDTH = 100
 
@@ -89,43 +86,6 @@ def create_expt_dict(expt_dir: str) -> dict:
 
     return summary_file, expt_dict
 
-def calculate_core_hours(expt_dict: dict) -> dict:
-    """
-    Function takes in an experiment dictionary, reads the var_defns file for necessary information,
-    and calculates the core hours used by each task, updating expt_dict with this info
-
-    Args:
-        expt_dict (dict) : Experiment dictionary
-    Returns:
-        dict : Experiment dictionary updated with core hours
-    """
-
-    for expt in expt_dict:
-        # Read variable definitions file
-        vardefs = load_shell_config(os.path.join(expt_dict[expt]["expt_dir"],"var_defns.sh"))
-        vdf = flatten_dict(vardefs)
-        cores_per_node = vdf["NCORES_PER_NODE"]
-        for task in expt_dict[expt]:
-            # Skip non-task entries
-            if task in ["expt_dir","status"]:
-                continue
-            # Cycle is last 12 characters, task name is rest (minus separating underscore)
-            taskname = task[:-13]
-            # Handle task names that have ensemble and/or fhr info appended with regex
-            taskname = re.sub('_mem\d{3}', '', taskname)
-            taskname = re.sub('_f\d{3}', '', taskname)
-            nnodes_var = f'NNODES_{taskname.upper()}'
-            if nnodes_var in vdf:
-                nnodes = vdf[nnodes_var]
-                # Users are charged for full use of nodes, so core hours are CPN * nodes * time in hrs
-                core_hours = cores_per_node * nnodes * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = True
-            else:
-                # If we can't find the number of nodes, assume full usage (may undercount)
-                core_hours = expt_dict[expt][task]['cores'] * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = False
-            expt_dict[expt][task]['core_hours'] = round(core_hours,2)
-    return expt_dict
 
 def setup_logging(debug: bool = False) -> None:
     """
