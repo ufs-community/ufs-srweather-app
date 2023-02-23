@@ -82,10 +82,10 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMINext}"
+    extrn_mdl_staging_dir="${COMINext}${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS"
+    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
@@ -99,6 +99,19 @@ fi
 DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
+LBC_SPEC_FCST_HRS=()
+for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
+  LBC_SPEC_FCST_HRS+=("$i_lbc")
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -120,6 +133,7 @@ case "${CCPP_PHYS_SUITE}" in
 #
   "FV3_RRFS_v1beta" | \
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
+  "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
   "FV3_HRRR" )
     if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
@@ -127,6 +141,8 @@ case "${CCPP_PHYS_SUITE}" in
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "GEFS" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
       varmap_file="GFSphys_var_map.txt"
     fi
@@ -289,6 +305,20 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   fi
   ;;
 
+"GDAS")
+  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+  tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+  external_model="GFS"
+  input_type="gaussian_netcdf"
+  fn_atm="${EXTRN_MDL_FNS[0]}"
+  ;;
+
+"GEFS")
+  external_model="GFS"
+  fn_grib2="${EXTRN_MDL_FNS[0]}"
+  input_type="grib2"
+  ;;
+
 "RAP")
   external_model="RAP"
   input_type="grib2"
@@ -361,6 +391,12 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
       fn_atm="${EXTRN_MDL_FNS[$i]}"
     fi
+    ;;
+  "GDAS")
+    fn_atm="${EXTRN_MDL_FNS[0][$i]}"
+    ;;
+  "GEFS")
+    fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   "RAP")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"

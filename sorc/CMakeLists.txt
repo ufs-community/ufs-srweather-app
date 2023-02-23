@@ -12,25 +12,18 @@ message(STATUS "BUILD_UFS_UTILS ......... ${BUILD_UFS_UTILS}")
 message(STATUS "BUILD_GSI ............... ${BUILD_GSI}")
 message(STATUS "BUILD_UPP ............... ${BUILD_UPP}")
 message(STATUS "BUILD_RRFS_UTILS ........ ${BUILD_RRFS_UTILS}")
+message(STATUS "BUILD_NEXUS ............. ${BUILD_NEXUS}")
+message(STATUS "BUILD_AQM_UTILS ......... ${BUILD_AQM_UTILS}")
 
-# Build UFS utilities
-if(BUILD_UFS_UTILS)
-  list(APPEND TARGET_LIST UFS_UTILS)
-
-  list(APPEND UFS_UTILS_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-    "-DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}"
-    "-DBUILD_TESTING=OFF"
-  )
-
-  ExternalProject_Add(UFS_UTILS
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UFS_UTILS
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UFS_UTILS
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    CMAKE_ARGS ${UFS_UTILS_ARGS}
-    BUILD_ALWAYS TRUE
-    STEP_TARGETS build
-    )
+# Set dependency of ufs weather model only for coupled model
+if (NOT APP)
+  set(UFS_DEPEND "")
+else()
+  if (BUILD_UFS)
+    set(UFS_DEPEND "ufs-weather-model")
+  else()
+    set(UFS_DEPEND "")
+  endif()
 endif()
 
 # Build UFS weather model
@@ -38,7 +31,11 @@ if (BUILD_UFS)
   list(APPEND TARGET_LIST ufs-weather-model)
 
   if(NOT CCPP_SUITES)
-    set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
+    if(CPL_AQM)
+      set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8")
+    else()
+      set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
+    endif()
   endif()
   
   if(NOT APP)
@@ -93,11 +90,33 @@ if (BUILD_UFS)
     )
 endif()
 
+# Build UFS utilities
+if(BUILD_UFS_UTILS)
+  list(APPEND TARGET_LIST UFS_UTILS)
+
+  list(APPEND UFS_UTILS_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}"
+    "-DBUILD_TESTING=OFF"
+  )
+
+  ExternalProject_Add(UFS_UTILS
+    DEPENDS ${UFS_DEPEND}
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UFS_UTILS
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UFS_UTILS
+    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+    CMAKE_ARGS ${UFS_UTILS_ARGS}
+    BUILD_ALWAYS TRUE
+    STEP_TARGETS build
+    )
+endif()
+
 # Build UPP
 if (BUILD_UPP)
   list(APPEND TARGET_LIST UPP)
 
   ExternalProject_Add(UPP
+    DEPENDS ${UFS_DEPEND}
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/UPP
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/UPP
     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
@@ -134,6 +153,34 @@ if (BUILD_RRFS_UTILS)
     STEP_TARGETS build
     DEPENDS GSI
     )
+endif()
+
+if (CPL_AQM)
+  if (BUILD_NEXUS)
+    list(APPEND TARGET_LIST NEXUS)
+
+    ExternalProject_Add(arl_nexus
+      DEPENDS ${UFS_DEPEND}
+      PREFIX ${CMAKE_CURRENT_BINARY_DIR}/arl_nexus
+      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/arl_nexus
+      INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
+      BUILD_ALWAYS TRUE
+    )
+  endif()
+
+  if (BUILD_AQM_UTILS)
+    list(APPEND TARGET_LIST AQM_UTILS)
+
+    ExternalProject_Add(AQM-utils
+      DEPENDS ${UFS_DEPEND}
+      PREFIX ${CMAKE_CURRENT_BINARY_DIR}/AQM-utils
+      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/AQM-utils
+      INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR} -DBUILD_POST_STAT=${BUILD_POST_STAT}
+      BUILD_ALWAYS TRUE
+    )
+  endif()
 endif()
 
 # add custom target for separate build and install

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_nexus_post_split" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -44,16 +44,6 @@ In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs NEXUS.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-#
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_POST_SPLIT}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_POST_SPLIT}
-export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_POST_SPLIT}
 #
 #-----------------------------------------------------------------------
 #

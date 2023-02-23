@@ -40,6 +40,11 @@ data:
       netcdf: /public/data/grids/gfs/anl/netcdf
     RAP: /public/data/grids/rap/full/wrfprs/grib2
     HRRR: /public/data/grids/hrrr/conus/wrfprs/grib2
+  obs:
+    RAP_obs: /public/data/grids/rap/obs
+    GFS_obs:
+      prepbufr: /public/data/grids/gfs/prepbufr
+      tcvitals: /public/data/grids/gfs/bufr
 
 rocoto:
   tasks:
@@ -47,4 +52,3 @@ rocoto:
       cores: '{{ PE_MEMBER01 }}'
       native: '--cpus-per-task {{ OMP_NUM_THREADS_RUN_FCST }} --exclusive'
       nodes: ''
-    

@@ -19,12 +19,14 @@ platform:
   RUN_CMD_POST: srun --export=ALL
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL
+  RUN_CMD_AQM: srun -n ${nprocs} --export=ALL
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data
   TEST_PREGEN_BASEDIR: /scratch2/BMC/det/UFS_SRW_App/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
@@ -32,6 +34,7 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+
 
 rocoto:
   tasks:
@@ -43,3 +46,20 @@ rocoto:
         nnodes:
         nodesize:
         ppn:
+
+data:
+  obs:
+    RAP_obs: /scratch2/BMC/public/data/grids/rap/obs
+cpl_aqm_parm:
+  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
+  AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
+  AQM_DUST_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
+  AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
+  AQM_FIRE_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/GSCE/RAVE.in.793/RAVE_RT
+  AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  AQM_GEFS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
+  NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
+  NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
+  PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt
+
+

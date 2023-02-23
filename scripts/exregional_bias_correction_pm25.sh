@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_bias_correction_pm25" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -188,6 +188,20 @@ POST_STEP
 
 cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
+if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp_vrfy ${COMINairnow}/${yyyy}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+fi
+
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
 #-----------------------------------------------------------------------
@@ -309,11 +323,11 @@ EOF1
   newgrib2file1=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
 
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  wgrib2 ${oldgrib2file1} -set_grib_type same -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file1} 
+  wgrib2 ${oldgrib2file1} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file1} 
 
   oldgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2
   newgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
-  wgrib2 ${oldgrib2file2} -set_grib_type same -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file2}
+  wgrib2 ${oldgrib2file2} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file2}
 
   cp_vrfy ${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2   ${COMOUT}
   cp_vrfy ${NET}.${cycle}.ave_24hr_pm25_bc.${id_domain}.grib2  ${COMOUT}
@@ -334,7 +348,7 @@ while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
 done
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-wgrib2 tmpfile_pm25_bc -set_grib_type same -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.grib2_pm25_bc.227
+wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.grib2_pm25_bc.227
 
 cp_vrfy tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cp_vrfy ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2

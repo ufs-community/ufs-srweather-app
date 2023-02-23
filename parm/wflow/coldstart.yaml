@@ -54,7 +54,6 @@ metatask_run_ensemble:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     join: !cycstr '&LOGDIR;/{{ jobname }}.log'
-
     nnodes: 4
     ppn: 12
     dependency:

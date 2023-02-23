@@ -30,7 +30,7 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   # Set the array parameter containing the names of all the fields that the
-  # MAKE_SFC_CLIMO_TN task generates on the native FV3-LAM grid.
+  # TN_MAKE_SFC_CLIMO task generates on the native FV3-LAM grid.
   #
   #-----------------------------------------------------------------------
   #

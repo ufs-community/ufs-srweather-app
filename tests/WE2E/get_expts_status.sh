@@ -79,6 +79,7 @@ Usage:
 
   ${scrfunc_fn} \\
     expts_basedir=\"...\" \\
+    [launch_wflows=\"...\"] \\
     [num_log_lines=\"...\"] \\
     [verbose=\"...\"]
 
@@ -88,6 +89,11 @@ follows:
 expts_basedir:
 Full path to the experiments base directory, i.e. the directory containing 
 the experiment subdirectories.
+
+launch_wflows:
+Optional flag that determines whether each experiment's workflow should
+be launched if hasn't already.  Should be set to \"TRUE\" or \"FALSE\".
+Default is \"FALSE\".
 
 num_log_lines:
 Optional integer specifying the number of lines from the end of the 
@@ -123,6 +129,7 @@ fi
 #
 valid_args=( \
   "expts_basedir" \
+  "launch_wflows" \
   "num_log_lines" \
   "verbose" \
   )
@@ -130,20 +137,21 @@ process_args valid_args "$@"
 #
 #-----------------------------------------------------------------------
 #
-# Set the default value of "num_log_lines".
+# Default values for various input arguments.
 #
 #-----------------------------------------------------------------------
 #
+launch_wflows=${launch_wflows:-"FALSE"}
 num_log_lines=${num_log_lines:-"40"}
-#
-#-----------------------------------------------------------------------
-#
-# Make the default value of "verbose" "FALSE".  Then make sure "verbose"
-# is set to a valid value.
-#
-#-----------------------------------------------------------------------
-#
 verbose=${verbose:-"FALSE"}
+#
+#-----------------------------------------------------------------------
+#
+# Make sure "launch_wflows" and "verbose" have valid values.
+#
+#-----------------------------------------------------------------------
+#
+launch_wflows=$(boolify "${launch_wflows}")
 verbose=$(boolify "$verbose")
 #
 #-----------------------------------------------------------------------
@@ -396,6 +404,7 @@ for (( i=0; i<=$((num_expts-1)); i++ )); do
 $separator
 Checking workflow status of experiment \"${expt_subdir}\" ..."
   print_info_msg "$msg"
+  print_info_msg "$msg" >> "${expts_status_fp}"
 #
 # Change location to the experiment subdirectory, and check the launch
 # log file for status
@@ -424,18 +433,33 @@ ${wflow_status}
 The last ${num_log_lines} lines of the workflow launch log file 
 (\"${launch_wflow_log_fn}\") are:
 "
-    print_info_msg "$msg" >> "${expts_status_fp}"
     tail -n ${num_log_lines} ${launch_wflow_log_fn} >> "${expts_status_fp}" 
+#
+# If a log file from the launch script is not present in the experiment
+# directory, it means the workflow has not been launched.  In this case,
+# print out an appropriate message.  Then, if launch_wflows is set to 
+# TRUE, launch the workflow and print out further info.
+#
   else
+
     wflow_status="Workflow status:  NOT LAUNCHED YET"
+    if [ "${launch_wflows}" = "TRUE" ]; then
+      wflow_status=${wflow_status}"
+Launching workflow using script \"${launch_wflow_fn}\"..."
+    fi
+
     print_info_msg "${wflow_status}"
     print_info_msg "\
 $separator
 "
-    msg=$msg"
-${wflow_status}
+
+    msg="${wflow_status}
 "
     print_info_msg "$msg" >> "${expts_status_fp}"
+    if [ "${launch_wflows}" = "TRUE" ]; then
+      ./${launch_wflow_fn} >> "${expts_status_fp}" 2>&1
+    fi
+
   fi
 #
 # Change location back to the experiments base directory.
