@@ -25,7 +25,7 @@ from check_python_version import check_python_version
 
 from monitor_jobs import update_expt_status, write_monitor_file
 
-REPORT_WIDTH = 110
+REPORT_WIDTH = 100
 
 def print_job_summary(expt_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
@@ -41,7 +41,7 @@ def print_job_summary(expt_dict: dict, debug: bool = False):
     # Create summary table as list of strings
     summary = []
     summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Experiment name {" "*44} | Status    | Core hours used ')
+    summary.append(f'Experiment name {" "*43} | Status    | Core hours used ')
     # Flag for tracking if "cores per node" is in dictionary
     summary.append('-'*REPORT_WIDTH)
     for expt in expt_dict:
@@ -50,7 +50,7 @@ def print_job_summary(expt_dict: dict, debug: bool = False):
         for task in expt_dict[expt]:
             if "core_hours" in expt_dict[expt][task]:
                 ch += expt_dict[expt][task]["core_hours"]
-        summary.append(f'{expt[:60]:<60s} {status:^12s} {ch:^12.2f}')
+        summary.append(f'{expt[:60]:<60s}  {status:<12s}  {ch:>13.2f}')
 
     # Print summary to screen
     for line in summary:
@@ -112,13 +112,18 @@ def calculate_core_hours(expt_dict: dict) -> dict:
             # Cycle is last 12 characters, task name is rest (minus separating underscore)
             taskname = task[:-13]
             # Handle task names that have ensemble and/or fhr info appended with regex
-            print(taskname)
             taskname = re.sub('_mem\d{3}', '', taskname)
             taskname = re.sub('_f\d{3}', '', taskname)
-            print(taskname)
-            nnodes = vdf[f'NNODES_{taskname.upper()}']
-            # Users are charged for full use of nodes, so core hours are CPN * nodes * time in hrs
-            core_hours = cores_per_node * nnodes * expt_dict[expt][task]['walltime'] / 3600
+            nnodes_var = f'NNODES_{taskname.upper()}'
+            if nnodes_var in vdf:
+                nnodes = vdf[nnodes_var]
+                # Users are charged for full use of nodes, so core hours are CPN * nodes * time in hrs
+                core_hours = cores_per_node * nnodes * expt_dict[expt][task]['walltime'] / 3600
+                expt_dict[expt][task]['exact_count'] = True
+            else:
+                # If we can't find the number of nodes, assume full usage (may undercount)
+                core_hours = expt_dict[expt][task]['cores'] * expt_dict[expt][task]['walltime'] / 3600
+                expt_dict[expt][task]['exact_count'] = False
             expt_dict[expt][task]['core_hours'] = round(core_hours,2)
     return expt_dict
 

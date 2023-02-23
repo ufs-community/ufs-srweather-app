@@ -83,6 +83,14 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     total_walltime = endtime - starttime
 
     logging.info(f'All {len(expt_dict)} experiments finished in {str(total_walltime)}')
+    logging.info(f'Calculating core-hour usage and printing final summary')
+
+    # Calculate core hours and update yaml
+    expt_dict = calculate_core_hours(expt_dict)
+    write_monitor_file(monitor_file,expt_dict)
+
+    #Call function to print summary
+    print_job_summary(expt_dict, debug)
 
     return monitor_file
 
