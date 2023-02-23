@@ -38,7 +38,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     # Write monitor_file, which will contain information on each monitored experiment
     if not monitor_file:
         monitor_file = f'monitor_jobs_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
-        logging.info(f"Writing information for all experiments to {monitor_file}")
+    logging.info(f"Writing information for all experiments to {monitor_file}")
 
     write_monitor_file(monitor_file,expt_dict)
 
@@ -147,17 +147,21 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         # of tuples containing the taskname, cycle, and state of each job respectively
         with closing(sqlite3.connect(rocoto_db)) as connection:
             with closing(connection.cursor()) as cur:
-                db = cur.execute('SELECT taskname,cycle,state from jobs').fetchall()
+                db = cur.execute('SELECT taskname,cycle,state,cores,duration from jobs').fetchall()
     except:
         logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
         expt["status"] = "ERROR"
         return expt
 
     for task in db:
-        # For each entry from rocoto database, store that under a dictionary key named TASKNAME_CYCLE
+        # For each entry from rocoto database, store that task's info under a dictionary key named TASKNAME_CYCLE
         # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
         cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
-        expt[f"{task[0]}_{cycle}"] = task[2]
+        if f"{task[0]}_{cycle}" not in expt:
+            expt[f"{task[0]}_{cycle}"] = dict()
+        expt[f"{task[0]}_{cycle}"]["status"] = task[2]
+        expt[f"{task[0]}_{cycle}"]["cores"] = task[3]
+        expt[f"{task[0]}_{cycle}"]["walltime"] = task[4]
 
     #Run rocotorun again to get around rocotobqserver proliferation issue
     subprocess.run(rocotorun_cmd)
@@ -167,7 +171,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         # Skip non-task entries
         if task in ["expt_dir","status"]:
             continue
-        statuses.append(expt[task])
+        statuses.append(expt[task]["status"])
 
     if "DEAD" in statuses:
         still_live = ["RUNNING", "SUBMITTING", "QUEUED"]
