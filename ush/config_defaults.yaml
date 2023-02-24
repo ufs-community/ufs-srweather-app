@@ -2144,15 +2144,26 @@ task_run_met_gridstat_vx_retop:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_RETOP: 2
 
 #----------------------------
-# run_met_pointstat_vx_sfc_upa config parameters
+# run_met_pointstat_vx_sfc config parameters
 #-----------------------------
-task_run_met_pointstat_vx_sfc_upa:
-  TN_RUN_MET_POINTSTAT_VX_SFC_UPA: "run_MET_PointStat_vx_SFC_UPA"
-  NNODES_RUN_MET_POINTSTAT_VX_SFC_UPA: 1
-  PPN_RUN_MET_POINTSTAT_VX_SFC_UPA: 1
-  MEM_RUN_MET_POINTSTAT_VX_SFC_UPA: 2G
-  WTIME_RUN_MET_POINTSTAT_VX_SFC_UPA: 01:00:00
-  MAXTRIES_RUN_MET_POINTSTAT_VX_SFC_UPA: 2
+task_run_met_pointstat_vx_sfc:
+  TN_RUN_MET_POINTSTAT_VX_SFC: "run_MET_PointStat_vx_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_SFC: 2
+
+#----------------------------
+# run_met_pointstat_vx_upa config parameters
+#-----------------------------
+task_run_met_pointstat_vx_upa:
+  TN_RUN_MET_POINTSTAT_VX_UPA: "run_MET_PointStat_vx_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_UPA: 2
 
 #----------------------------
 # run_met_ensemblestat_vx_apcp01h config parameters
@@ -2221,15 +2232,26 @@ task_run_met_ensemblestat_vx_retop:
   MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_RETOP: 2
 
 #----------------------------
-# run_met_ensemblestat_vx_sfc_upa config parameters
+# run_met_ensemblestat_vx_sfc config parameters
 #-----------------------------
-task_run_met_ensemblestat_vx_sfc_upa:
-  TN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: "run_MET_EnsembleStat_vx_SFC_UPA"
-  NNODES_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 1
-  PPN_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 1
-  MEM_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 2G
-  WTIME_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 01:00:00
-  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_SFC_UPA: 2
+task_run_met_ensemblestat_vx_sfc:
+  TN_RUN_MET_ENSEMBLESTAT_VX_SFC: "run_MET_EnsembleStat_vx_SFC"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_SFC: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_SFC: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_SFC: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_SFC: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_SFC: 2
+
+#----------------------------
+# run_met_ensemblestat_vx_upa config parameters
+#-----------------------------
+task_run_met_ensemblestat_vx_upa:
+  TN_RUN_MET_ENSEMBLESTAT_VX_UPA: "run_MET_EnsembleStat_vx_UPA"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_UPA: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_UPA: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_UPA: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_UPA: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_UPA: 2
 
 #----------------------------
 # run_met_gridstat_vx_ensmean_apcp01h config parameters
@@ -2276,15 +2298,26 @@ task_run_met_gridstat_vx_ensmean_apcp24h:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 2
 
 #----------------------------
-# run_met_pointstat_vx_ensmean_sfc_upa config parameters
+# run_met_pointstat_vx_ensmean_sfc config parameters
 #-----------------------------
-task_run_met_pointstat_vx_ensmean_sfc_upa:
-  TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: "run_MET_PointStat_vx_ensmean_SFC_UPA"
-  NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 1
-  PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 1
-  MEM_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 2G
-  WTIME_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 01:00:00
-  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC_UPA: 2
+task_run_met_pointstat_vx_ensmean_sfc:
+  TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: "run_MET_PointStat_vx_ensmean_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 2
+
+#----------------------------
+# run_met_pointstat_vx_ensmean_upa config parameters
+#-----------------------------
+task_run_met_pointstat_vx_ensmean_upa:
+  TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: "run_MET_PointStat_vx_ensmean_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 2
 
 #----------------------------
 # run_met_gridstat_vx_ensprob_apcp01h config parameters
@@ -2353,15 +2386,26 @@ task_run_met_gridstat_vx_ensprob_retop:
   MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 2
 
 #----------------------------
-# run_met_pointstat_vx_ensprob_sfc_upa config parameters
+# run_met_pointstat_vx_ensprob_sfc config parameters
 #-----------------------------
-task_run_met_pointstat_vx_ensprob_sfc_upa:
-  TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: "run_MET_PointStat_vx_ensprob_SFC_UPA"
-  NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 1
-  PPN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 1
-  MEM_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 2G
-  WTIME_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 01:00:00
-  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC_UPA: 2
+task_run_met_pointstat_vx_ensprob_sfc:
+  TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: "run_MET_PointStat_vx_ensprob_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 2
+
+#----------------------------
+# run_met_pointstat_vx_ensprob_upa config parameters
+#-----------------------------
+task_run_met_pointstat_vx_ensprob_upa:
+  TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: "run_MET_PointStat_vx_ensprob_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 2
 
 #----------------------------
 # AQM_ICS config parameters

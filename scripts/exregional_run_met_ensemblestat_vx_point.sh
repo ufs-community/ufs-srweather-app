@@ -145,11 +145,11 @@ export NUM_ENS_MEMBERS
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/EnsembleStat_conus_sfc.conf
+  -c ${METPLUS_CONF}/EnsembleStat_SFC.conf
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/EnsembleStat_upper_air.conf
+  -c ${METPLUS_CONF}/EnsembleStat_UPA.conf
 
 #
 #-----------------------------------------------------------------------
