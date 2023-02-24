@@ -64,9 +64,9 @@ files corresponding to a specified forecast hour.
 #
 CYCLE_TYPE=${CYCLE_TYPE:-prod}
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam_spinup"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 fi
 #
 #-----------------------------------------------------------------------

@@ -153,9 +153,9 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue>">
 {%- endif %}
 {%- if partition_prdgen is not none %}
-<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition><native>&RRFS_POST_RESERVE;</native>">
+<!ENTITY RSRV_PRDGEN    "<account>&ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition><native>&RRFS_POST_RESERVE;</native>">
 {%- else %}
-<!ENTITY RSRV_PRDGEN    "<account>&SERVICE_ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue>">
+<!ENTITY RSRV_PRDGEN    "<account>&ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue>">
 {%- endif %}
 
 ]>
@@ -771,8 +771,6 @@ the <task> tag to be identical to the ones above for other output times.
     <task name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc" maxtries="{{ maxtries_run_prdgen }}">
 
       &RSRV_PRDGEN;
-      &WALL_LIMIT_POST;
-
       <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_PRDGEN_TN;" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"</command>
 
       <nodes>{{ nnodes_run_prdgen }}:ppn={{ ppn_run_prdgen }}</nodes>
@@ -781,7 +779,7 @@ the <task> tag to be identical to the ones above for other output times.
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
-      <jobname>&TAG;&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
+      <jobname>&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#</jobname>
       <join>&LOGDIR;/&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
       <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>

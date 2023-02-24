@@ -15,7 +15,7 @@
 
 set -x
 
-export fhr=$(printf "%.2d" "${1#0}")  #two digit formatting in bash
+fhr=$1
 cyc=$2
 subpiece=$3
 domain=$4
@@ -48,7 +48,7 @@ elif [ $domain == "pr" ]; then
 fi
 
 # Use different parm file for each subpiece
-wgrib2 $comout/rrfs.t${cyc}z.prslev.f0${fhr}.grib2 | grep -F -f ${parmfile} | wgrib2 -i -grib inputs.grib${domain} $comout/rrfs.t${cyc}z.prslev.f0${fhr}.grib2
+wgrib2 $comout/rrfs.t${cyc}z.prslev.f${fhr}.grib2 | grep -F -f ${parmfile} | wgrib2 -i -grib inputs.grib${domain} $comout/rrfs.t${cyc}z.prslev.f${fhr}.grib2
 wgrib2 inputs.grib${domain} -new_grid_vectors "UGRD:VGRD:USTM:VSTM" -submsg_uv inputs.grib${domain}.uv
 wgrib2 inputs.grib${domain}.uv -set_bitmap 1 -set_grib_type ${compress_type} \
   -new_grid_winds grid -new_grid_vectors "UGRD:VGRD:USTM:VSTM" \

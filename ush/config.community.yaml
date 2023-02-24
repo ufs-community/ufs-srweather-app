@@ -26,6 +26,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: true
   RUN_TASK_MAKE_OROG: true
   RUN_TASK_MAKE_SFC_CLIMO: true
+  RUN_TASK_RUN_PRDGEN: false
   RUN_TASK_GET_OBS_CCPA: false
   RUN_TASK_GET_OBS_MRMS: false
   RUN_TASK_GET_OBS_NDAS: false
