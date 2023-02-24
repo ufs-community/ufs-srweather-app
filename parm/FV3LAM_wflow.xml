@@ -775,7 +775,6 @@ the <task> tag to be identical to the ones above for other output times.
 
       <nodes>{{ nnodes_run_prdgen }}:ppn={{ ppn_run_prdgen }}</nodes>
       <walltime>{{ wtime_run_prdgen }}</walltime>
-      <memory>{{ mem_run_prdgen }}</memory>
       <nodesize>&NCORES_PER_NODE;</nodesize>
       <native>&SCHED_NATIVE_CMD;</native>
 
