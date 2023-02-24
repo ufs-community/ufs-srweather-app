@@ -4,8 +4,8 @@ import os
 import sys
 import datetime
 import traceback
+import logging
 from textwrap import dedent
-from logging import getLogger
 
 from python_utils import (
     log_info,
@@ -55,7 +55,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
     """
 
     # Load the default config.
+    logging.debug(f"Loading config defaults file {default_config}")
     cfg_d = load_config_file(default_config)
+    logging.debug(f"Read in the following values from config defaults file:\n")
+    logging.debug(cfg_d)
 
     # Load the user config file, then ensure all user-specified
     # variables correspond to a default value.
@@ -69,6 +72,8 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     try:
         cfg_u = load_config_file(user_config)
+        logging.debug(f"Read in the following values from YAML config file {user_config}:\n")
+        logging.debug(cfg_u)
     except:
         errmsg = dedent(
             f"""\n
@@ -82,7 +87,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # config.
     invalid = check_structure_dict(cfg_u, cfg_d)
     if invalid:
-        errmsg = "Invalid key(s) specified in {user_config}:\n"
+        errmsg = f"Invalid key(s) specified in {user_config}:\n"
         for entry in invalid:
             errmsg = errmsg + f"{entry} = {invalid[entry]}\n"
         errmsg = errmsg + f"\nCheck {default_config} for allowed user-specified variables\n"
@@ -114,6 +119,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             ({machine}) in your config file {user_config}"""
             )
         )
+    logging.debug(f"Loading machine defaults file {machine_file}")
     machine_cfg = load_config_file(machine_file)
 
     # Load the fixed files configuration
@@ -195,7 +201,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
+                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
                             For examples of valid formats, see the Users' Guide.
                             """
@@ -269,7 +275,7 @@ def set_srw_paths(ushdir, expt_config):
     )
 
 
-def setup(USHdir, user_config_fn="config.yaml"):
+def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     """Function that validates user-provided configuration, and derives
     a secondary set of parameters needed to configure a Rocoto-based SRW
     workflow. The derived parameters use a set of required user-defined
@@ -284,13 +290,13 @@ def setup(USHdir, user_config_fn="config.yaml"):
       USHdir          (str): The full path of the ush/ directory where
                              this script is located
       user_config_fn  (str): The name of a user-provided config YAML
+      debug          (bool): Enable extra output for debugging
 
     Returns:
       None
     """
 
-    logger = getLogger(__name__)
-    cd_vrfy(USHdir)
+    logger = logging.getLogger(__name__)
 
     # print message
     log_info(
@@ -413,6 +419,11 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
+    workflow_switches = expt_config["workflow_switches"]
+    run_task_make_grid = workflow_switches['RUN_TASK_MAKE_GRID']
+    run_task_make_orog = workflow_switches['RUN_TASK_MAKE_OROG']
+    run_task_make_sfc_climo = workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']
+
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
     if pregen_basedir is None and not (
@@ -510,9 +521,25 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # -----------------------------------------------------------------------
     #
 
-    # Gather the pre-defined grid parameters, if needed
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
+
+    # Warn if user has specified a large timestep inappropriately
+    hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
+    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
+        dt = fcst_config.get("DT_ATMOS")
+        if dt:
+            if dt > 40:
+                logger.warning(dedent(
+                    f"""
+                    WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                    time step regardless of grid resolution. The user-specified value
+                    DT_ATMOS = {fcst_config.get("DT_ATMOS")}
+                    may result in CFL violations or other errors!
+                    """
+                ))
+
+    # Gather the pre-defined grid parameters, if needed
     if workflow_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(
             USHdir,
@@ -529,6 +556,19 @@ def setup(USHdir, user_config_fn="config.yaml"):
                     continue
                 elif isinstance(param_val, (int, float)):
                     continue
+                # DT_ATMOS needs special treatment based on CCPP suite
+                elif param == "DT_ATMOS":
+                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites and grid_params[param] > 40:
+                        logger.warning(dedent(
+                            f"""
+                            WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                            time step regardless of grid resolution; setting DT_ATMOS to 40.\n
+                            This value can be overwritten in the user config file.
+                            """
+                        ))
+                        fcst_config[param] = 40
+                    else:
+                        fcst_config[param] = value
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
@@ -539,6 +579,44 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 grid_config[param] = value
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    if fcst_len_hrs == -1:
+        # Create a full list of cycle dates
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
+        num_fcst_len_cycl = len(fcst_len_cycl)
+        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+        incr_cycl_freq = workflow_config.get("INCR_CYCL_FREQ")
+        all_cdates = set_cycle_dates(date_first_cycl,date_last_cycl,incr_cycl_freq)
+        num_all_cdates = len(all_cdates)
+        # Create a full list of forecast hours
+        num_recur = num_all_cdates // num_fcst_len_cycl
+        rem_recur = num_all_cdates % num_fcst_len_cycl
+        if rem_recur == 0:
+            fcst_len_cycl = fcst_len_cycl * num_recur
+            num_fcst_len_cycl = len(fcst_len_cycl)
+            workflow_config["FCST_LEN_CYCL"] = fcst_len_cycl
+            workflow_config.update({"ALL_CDATES": all_cdates})
+        else:
+            raise Exception(
+                f"""
+                The number of the cycle dates is not evenly divisible by the
+                number of the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}
+                  rem = num_all_cdates%%num_fcst_len_cycl = {rem_recur}"""
+            )
+        if num_fcst_len_cycl != num_all_cdates:
+            raise Exception(
+                f"""
+                The number of the cycle dates does not match with the number of
+                the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}"""
+            )
+
     #
     # -----------------------------------------------------------------------
     #
@@ -720,7 +798,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
 
     lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
     rem = fcst_len_hrs % lbc_spec_intvl_hrs
-    if rem != 0:
+    if rem != 0 and fcst_len_hrs > 0:
         raise Exception(
             f"""
             The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
@@ -960,7 +1038,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-
     # Check for the CCPP_PHYSICS suite xml file
     ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
     if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
@@ -1026,7 +1103,6 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config["workflow_switches"]
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = workflow_switches["DO_ENSEMBLE"]
@@ -1044,7 +1120,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
-    # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
+    # If not running the TN_MAKE_GRID, TN_MAKE_OROG, and/or TN_MAKE_SFC_CLIMO
     # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.
     #
@@ -1058,14 +1134,30 @@ def setup(USHdir, user_config_fn="config.yaml"):
     # turned off. Link the files, and check that they all contain the
     # same resolution input.
     #
+    run_task_make_ics = workflow_switches['RUN_TASK_MAKE_LBCS']
+    run_task_make_lbcs = workflow_switches['RUN_TASK_MAKE_ICS']
+    run_task_run_fcst = workflow_switches['RUN_TASK_RUN_FCST']
+    run_task_makeics_or_makelbcs_or_runfcst = run_task_make_ics or \
+                                              run_task_make_lbcs or \
+                                              run_task_run_fcst
+    # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
+    # These consider dependencies of other tasks on each pre-processing task.
+    create_symlinks_to_pregen_files = {
+      "GRID": (not workflow_switches['RUN_TASK_MAKE_GRID']) and \
+              (run_task_make_orog or run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "OROG": (not workflow_switches['RUN_TASK_MAKE_OROG']) and \
+              (run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "SFC_CLIMO": (not workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']) and \
+                   (run_task_make_ics or run_task_make_lbcs),
+    }
+
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        switch = f"RUN_TASK_MAKE_{prep_task}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not workflow_switches[switch]:
+        if create_symlinks_to_pregen_files[prep_task]:
             sect_key = f"task_make_{prep_task.lower()}"
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key].get(dir_key)
@@ -1075,7 +1167,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
                 expt_config[sect_key][dir_key] = task_dir
                 msg = dedent(
                     f"""
-                   {dir_key} will use pre-generated files.
+                   {dir_key} will point to a location containing pre-generated files.
                    Setting {dir_key} = {task_dir}
                    """
                 )
@@ -1266,7 +1358,7 @@ def setup(USHdir, user_config_fn="config.yaml"):
     #
 
     # loop through the flattened expt_config and check validity of params
-    cfg_v = load_config_file("valid_param_vals.yaml")
+    cfg_v = load_config_file(os.path.join(USHdir, "valid_param_vals.yaml"))
     for k, v in flatten_dict(expt_config).items():
         if v is None or v == "":
             continue

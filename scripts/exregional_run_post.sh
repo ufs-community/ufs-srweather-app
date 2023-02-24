@@ -95,9 +95,9 @@ to the temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
-  if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
-    post_params_fp="${PARMdir}/upp/params_grib2_tbl_new_cmaq"
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
+    post_params_fp="${PARMdir}/upp-aqm/params_grib2_tbl_new"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
     post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
@@ -199,7 +199,7 @@ post_mn=${post_time:10:2}
 #
 # Create the input namelist file to the post-processor executable.
 #
-if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
+if [ "${CPL_AQM}" = "TRUE" ]; then
   post_itag_add="aqfcmaq_on=.true.,"
 else
   post_itag_add=""
@@ -335,38 +335,59 @@ symlink_suffix="${dot_ensmem/./_}_${basetime}f${fhr}${post_mn}"
 #
 # write grib file to COMOUT
 #
-if [ $DO_RRFS_DEV = "TRUE" ]; then
-    bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
-    bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
+if [ "${CPL_AQM}" = "TRUE" ]; then
+    
+    bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.cmaq.${post_renamed_fn_suffix}
+
+    wgrib2 CMAQ.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+    ln_vrfy -sf ${bgdawp} ${COMOUT}/CMAQ${symlink_suffix}
+
+    if [ $SENDDBN = "TRUE" ]; then
+        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+    fi
+
+    # Move phy and dyn files to COMIN only for AQM in NCO mode
+    if [ "${RUN_ENVIR}" = "nco" ]; then
+      mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
+
 else
-    bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
-    bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
-fi
-if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
-    wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
-    wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
-    ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
-    ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
-else
-    wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
-    wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
-    ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
-    ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
-fi
 
-if [ $SENDDBN = "TRUE" ]; then
-   $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
-   $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
-fi
+    if [ $DO_RRFS_DEV = "TRUE" ]; then
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
+        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
+    else
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
+        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
+    fi
+    if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+        wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
+    else
+        wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
+    fi
+    
+    if [ $SENDDBN = "TRUE" ]; then
+       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
+    fi
+    
+    if [ -f IFIFIP.${post_fn_suffix} ]; then
+       bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
+       wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+       ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
+    
+       if [ $SENDDBN = "TRUE" ]; then
+          $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
+       fi
+    fi
 
-if [ -f IFIFIP.${post_fn_suffix} ]; then
-   bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
-   wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
-   ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
-
-   if [ $SENDDBN = "TRUE" ]; then
-      $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
-   fi
 fi
 
 # remove DATA_FHR

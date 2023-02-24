@@ -40,19 +40,20 @@ from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 
-def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") -> None:
+def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
     Args:
-        ushdir  (str): The full path of the ush/ directory where this script is located
-        logfile (str): The name of the file where logging is written
+        ushdir  (str) : The full path of the ush/ directory where this script is located
+        logfile (str) : The name of the file where logging is written
+        debug   (bool): Enable extra output for debugging
     Returns:
-        None
+        EXPTDIR (str) : The full path of the directory where this experiment has been generated
     """
 
     # Set up logging to write to screen and logfile
-    setup_logging(logfile)
+    setup_logging(logfile, debug)
 
     # Check python version and presence of some non-standard packages
     check_python_version()
@@ -67,7 +68,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir)
+    expt_config = setup(ushdir,debug=debug)
 
     verbose = expt_config["workflow"]["VERBOSE"]
     #
@@ -131,6 +132,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
         fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
 
+        if date_first_cycl == date_last_cycl:
+            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H00")
+        else:
+            cycl_next = date_to_str(date_first_cycl + timedelta(hours=expt_config['workflow']['INCR_CYCL_FREQ']), format="%Y%m%d%H00")
+
         settings.update(
             {
                 #
@@ -138,6 +144,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 #
                 "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
                 "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
+                "native_nexus_emission": f"--cpus-per-task {expt_config['task_nexus_emission']['OMP_NUM_THREADS_NEXUS_EMISSION']}",
                 #
                 # Parameters that determine the set of cycles to run.
                 #
@@ -145,6 +152,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
                 "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
                 "cdate_first_cycl": date_first_cycl,
                 "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
+                "cycl_next": cycl_next,
                 #
                 # Ensemble-related parameters.
                 #
@@ -436,7 +444,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "blocksize": BLOCKSIZE,
         "ccpp_suite": CCPP_PHYS_SUITE,
     }
-    settings["fv_core_nml"] = {
+
+    fv_core_nml_dict = {}
+    fv_core_nml_dict.update({
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
@@ -456,13 +466,73 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
         "layout": [LAYOUT_X, LAYOUT_Y],
         "io_layout": [IO_LAYOUT_X, IO_LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-    }
-    settings["gfs_physics_nml"] = {
+    })
+    if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
+         CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
+         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" ):
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 5
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":   
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "hord_tr": 8,
+                "dnats": 5,
+                "nord": 2
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 1
+            })
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v17_p8":
+        if CPL_AQM:
+            fv_core_nml_dict.update({
+                "dnats": 4
+            })
+        else:
+            fv_core_nml_dict.update({
+                "dnats": 0
+            })
+
+    settings["fv_core_nml"] = fv_core_nml_dict
+
+    gfs_physics_nml_dict = {}
+    gfs_physics_nml_dict.update({
         "kice": kice or None,
         "lsoil": lsoil or None,
         "print_diff_pgr": PRINT_DIFF_PGR,
         #"rrfs_sd": DO_SMOKE_DUST,  # probably needs ufs-weather-model update
-    }
+    })
+
+    if CPL_AQM:
+        gfs_physics_nml_dict.update({
+            "cplaqm": True,    
+            "cplocn2atm": False,
+            "fscav_aero": ["aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0", 
+                           "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0", 
+                           "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0", 
+                           "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0", 
+                           "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0", 
+                           "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0", 
+                           "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0", 
+                           "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0", 
+                           "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0", 
+                           "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0", 
+                           "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0", 
+                           "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0", 
+                           "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0", 
+                           "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0", 
+                           "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0", 
+                           "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0", 
+                           "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
+        })
+    settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
     #
     # Add to "settings" the values of those namelist variables that specify
     # the paths to fixed files in the FIXam directory.  As above, these namelist
@@ -570,12 +640,12 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
             + settings_str
         )
     #
-    # If not running the MAKE_GRID_TN task (which implies the workflow will
+    # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
     # the paths to surface climatology files.  These files are located in
     # (or have symlinks that point to them) in the FIXlam directory.
     #
-    # Note that if running the MAKE_GRID_TN task, this action usually cannot
+    # Note that if running the TN_MAKE_GRID task, this action usually cannot
     # be performed here but must be performed in that task because the names
     # of the surface climatology files depend on the CRES parameter (which is
     # the C-resolution of the grid), and this parameter is in most workflow
@@ -877,20 +947,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     #
     cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
 
-    # Note workflow generation completion
-    log_info(
-        f"""
-        ========================================================================
-        ========================================================================
-
-        Experiment generation completed.  The experiment directory is:
-
-          EXPTDIR='{EXPTDIR}'
-
-        ========================================================================
-        ========================================================================
-        """
-    )
     #
     # -----------------------------------------------------------------------
     #
@@ -940,21 +996,36 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow") ->
     # If we got to this point everything was successful: move the log file to the experiment directory.
     mv_vrfy(logfile, EXPTDIR)
 
+    return EXPTDIR
 
-def setup_logging(logfile: str = "log.generate_FV3LAM_wflow") -> None:
+
+def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
+    
+    If debug = True, print all messages to both screen and log file.
     """
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(name)-22s %(levelname)-8s %(message)s",
-        filename=logfile,
-        filemode="w",
-    )
+    logging.getLogger().setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
+
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logging.getLogger().addHandler(fh)
     logging.debug(f"Finished setting up debug file logging in {logfile}")
+
+    # If there are already multiple handlers, that means generate_FV3LAM_workflow was called from another function.
+    # In that case, do not change the console (print-to-screen) logging.
+    if len(logging.getLogger().handlers) > 1:
+        return
+
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    if debug:
+        console.setLevel(logging.DEBUG)
+    else:
+        console.setLevel(logging.INFO)
     logging.getLogger().addHandler(console)
     logging.debug("Logging set up successfully")
 
@@ -967,7 +1038,7 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        generate_FV3LAM_wflow(USHdir, wflow_logfile)
+        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile)
     except:
         logging.exception(
             dedent(
@@ -981,6 +1052,21 @@ if __name__ == "__main__":
                 """
             )
         )
+    
+    # Note workflow generation completion
+    log_info(
+        f"""
+        ========================================================================
+        ========================================================================
+
+        Experiment generation completed.  The experiment directory is:
+
+          EXPTDIR='{EXPTDIR}'
+
+        ========================================================================
+        ========================================================================
+        """
+    )
 
 
 class Testing(unittest.TestCase):

@@ -76,6 +76,16 @@ else
 fi
 
 gridspec_dir=${NWGES_BASEDIR}/grid_spec
+
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      break
+    fi
+  done
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -95,11 +105,11 @@ the grid and (filtered) orography files ..."
 cd_vrfy ${DATA}/INPUT
 
 #
-# For experiments in which the MAKE_GRID_TN task is run, we make the 
+# For experiments in which the TN_MAKE_GRID task is run, we make the 
 # symlinks to the grid files relative because those files wlll be located 
 # within the experiment directory.  This keeps the experiment directory 
 # more portable and the symlinks more readable.  However, for experiments 
-# in which the MAKE_GRID_TN task is not run, pregenerated grid files will
+# in which the TN_MAKE_GRID task is not run, pregenerated grid files will
 # be used, and those will be located in an arbitrary directory (specified 
 # by the user) that is somwehere outside the experiment directory.  Thus, 
 # in this case, there isn't really an advantage to using relative symlinks, 
@@ -157,7 +167,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 
 #
 # As with the symlinks grid files above, when creating the symlinks to
-# the orography files, use relative paths if running the MAKE_OROG_TN
+# the orography files, use relative paths if running the TN_MAKE_OROG
 # task and absolute paths otherwise.
 #
 if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
@@ -198,6 +208,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || \
    [ "${CCPP_PHYS_SUITE}" = "FV3_RAP" ]  || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]  || \
    [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15_thompson_mynn_lam3km" ]; then
 
   fileids=( "ss" "ls" )
@@ -313,6 +324,20 @@ if [ $DO_RRFS_DEV = "FALSE" ]; then
   done
 fi
 
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  # create symlink to PT for point source in Online-CMAQ
+  if [ "${RUN_TASK_POINT_SOURCE}" = "TRUE" ]; then
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+    symlink="PT.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+	                       relative="${relative_link_flag}"
+  fi
+fi
 #
 # Smoke and dust
 #
@@ -459,10 +484,6 @@ create_symlink_to_file target="${FIELD_TABLE_FP}" \
                        symlink="${DATA}/${FIELD_TABLE_FN}" \
                        relative="${relative_link_flag}"
 
-create_symlink_to_file target="${NEMS_CONFIG_FP}" \
-                       symlink="${DATA}/${NEMS_CONFIG_FN}" \
-                       relative="${relative_link_flag}"
-
 create_symlink_to_file target="${FIELD_DICT_FP}" \
                        symlink="${DATA}/${FIELD_DICT_FN}" \
                        relative="${relative_link_flag}"
@@ -478,9 +499,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   CUSTOM_POST_PARAMS_FP = \"${CUSTOM_POST_PARAMS_FP}\"
 ===================================================================="
   else
-    if [ ${FCST_MODEL} = "fv3gfs_aqm" ]; then
-      post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_cmaq.txt"
-      post_params_fp="${PARMdir}/upp/params_grib2_tbl_new_cmaq"
+    if [ "${CPL_AQM}" = "TRUE" ]; then
+      post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
+      post_params_fp="${PARMdir}/upp-aqm/params_grib2_tbl_new"
     else
       post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
       post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
@@ -495,12 +516,17 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
   cp_vrfy ${post_params_fp} ./params_grib2_tbl_new
   # Set itag for inline-post:
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    post_itag_add="aqfcmaq_on=.true.,"
+  else
+    post_itag_add=""
+  fi
 cat > itag <<EOF
 &MODEL_INPUTS
  MODELNAME='FV3R'
 /
 &NAMPGB
- KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,
+ KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
 /
 EOF
 fi
@@ -549,6 +575,45 @@ else
   fi
 fi
 
+if [ "${CPL_AQM}" = "TRUE" ]; then
+#
+#-----------------------------------------------------------------------
+#
+# Setup air quality model cold/warm start
+#
+#-----------------------------------------------------------------------
+#
+  init_concentrations="false"
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+    init_concentrations="true"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the aqm.rc file within each
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+  python3 $USHdir/create_aqm_rc_file.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --cdate "$CDATE" \
+    --run-dir "${DATA}" \
+    --init-concentration "${init_concentrations}" \
+    || print_err_msg_exit "\
+Call to function to create an aqm.rc file for the current
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Set stochastic physics seeds
+#
+#-----------------------------------------------------------------------
+#
 if [ "$STOCH" == "TRUE" ]; then
   cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
@@ -571,6 +636,7 @@ fi
 python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
+  --fcst_len_hrs "${FCST_LEN_HRS}" \
   --run-dir "${DATA}" \
   --cyc "$cyc" \
   --cycle-type "${CYCLE_TYPE:-prod}" \
@@ -621,6 +687,32 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Pre-generate symlinks to forecast output in DATA
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
+  # create an intermediate symlink to RESTART
+  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the NEMS configuration file within each
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+python3 $USHdir/create_nems_configure_file.py \
+  --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+  --run-dir "${DATA}" \
+  || print_err_msg_exit "\
+Call to function to create a NEMS configuration file for the current
+cycle's (cdate) run directory (DATA) failed:
+  DATA = \"${DATA}\""
+#
+#-----------------------------------------------------------------------
+#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -634,6 +726,35 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
+#
+#-----------------------------------------------------------------------
+#
+# Move RESTART directory to COMIN and create symlink in DATA only for
+# NCO mode and when it is not empty.
+#
+# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
+# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
+#
+#-----------------------------------------------------------------------
+#
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    rm_vrfy -rf "${COMIN}/RESTART"
+    if [ "$(ls -A ${DATA}/RESTART)" ]; then
+      mv_vrfy ${DATA}/RESTART ${COMIN}
+      ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+    fi
+  fi
+
+  mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+ 
+  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
+    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    done
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -678,39 +799,57 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     #
     # write grib file to COMOUT
     #
-    if [ $DO_RRFS_DEV = "TRUE" ]; then
-        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
-        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
-    else
-        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
-        bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
-    fi
-    if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
-        wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
-        wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
-        ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
-        ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
-    else
-        wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
-        wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
-        ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
-        ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
-    fi
-    if [ $SENDDBN = "TRUE" ]; then
-       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
-       $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
-    fi
+    if [ "${CPL_AQM}" = "TRUE" ]; then
+        
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.cmaq.${post_renamed_fn_suffix}
     
-    if [ -f IFIFIP.${post_fn_suffix} ]; then
-       bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
-       wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
-       ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
-
-       if [ $SENDDBN = "TRUE" ]; then
-          $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
-       fi
+        wgrib2 CMAQ.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/CMAQ${symlink_suffix}
+    
+        if [ $SENDDBN = "TRUE" ]; then
+            $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+        fi
+    
+        # Move phy and dyn files to COMIN only for AQM in NCO mode
+        if [ "${RUN_ENVIR}" = "nco" ]; then
+          mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+          mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+        fi
+    
+    else
+        if [ $DO_RRFS_DEV = "TRUE" ]; then
+            bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
+            bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
+        else
+            bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
+            bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
+        fi
+        if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+            wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+            wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
+        else
+            wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+            wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
+        fi
+        if [ $SENDDBN = "TRUE" ]; then
+           $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+           $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
+        fi
+        
+        if [ -f IFIFIP.${post_fn_suffix} ]; then
+           bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
+           wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+           ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
+    
+           if [ $SENDDBN = "TRUE" ]; then
+              $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
+           fi
+        fi
     fi
-
   done
 
 fi

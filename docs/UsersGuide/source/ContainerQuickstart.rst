@@ -36,12 +36,12 @@ To build and run the SRW App using a Singularity container, first install the Si
 Working in the Cloud or on HPC Systems
 -----------------------------------------
 
-For users working on systems with limited disk space in their ``/home`` directory, it is recommended to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TEMPDIR`` environment variables to point to a location with adequate disk space. For example:
+For users working on systems with limited disk space in their ``/home`` directory, it is recommended to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TMPDIR`` environment variables to point to a location with adequate disk space. For example:
 
 .. code-block:: 
 
    export SINGULARITY_CACHEDIR=</absolute/path/to/writable/directory/cache>
-   export SINGULARITY_TEMPDIR=</absolute/path/to/writable/directory/tmp>
+   export SINGULARITY_TMPDIR=</absolute/path/to/writable/directory/tmp>
 
 where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch``, or ``/glade`` on NOAA Level 1 systems). If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
@@ -53,7 +53,7 @@ On NOAA Cloud systems, the ``sudo su`` command may also be required:
    mkdir /lustre/tmp
    sudo su
    export SINGULARITY_CACHEDIR=/lustre/cache
-   export SINGULARITY_TEMPDIR=/lustre/tmp
+   export SINGULARITY_TMPDIR=/lustre/tmp
    exit
 
 .. note:: 

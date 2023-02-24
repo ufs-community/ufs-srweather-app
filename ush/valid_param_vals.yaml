@@ -6,7 +6,7 @@ valid_vals_VERBOSE: [True, False]
 valid_vals_DEBUG: [True, False]
 valid_vals_MACHINE: ["HERA", "WCOSS2", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "LINUX", "MACOS", "NOAACLOUD", "SINGULARITY", "GAEA"]
 valid_vals_SCHED: ["slurm", "pbspro", "lsf", "lsfcray", "none"]
-valid_vals_FCST_MODEL: ["ufs-weather-model", "fv3gfs_aqm"]
+valid_vals_FCST_MODEL: ["ufs-weather-model"]
 valid_vals_WORKFLOW_MANAGER: ["rocoto", "none"]
 valid_vals_PREDEF_GRID_NAME: [
 "RRFS_CONUS_25km",
@@ -29,6 +29,8 @@ valid_vals_PREDEF_GRID_NAME: [
 "GSL_HAFSV0.A_13km",
 "GSL_HAFSV0.A_3km",
 "GSD_HRRR_AK_50km",
+"GSD_HRRR_25km",
+"AQM_NA_13km",
 "RRFS_NA_13km",
 "RRFS_NA_3km",
 "SUBCONUS_Ind_3km",
@@ -40,14 +42,15 @@ valid_vals_CCPP_PHYS_SUITE: [
 "FV3_GFS_v15p2",
 "FV3_GFS_v15_thompson_mynn_lam3km",
 "FV3_GFS_v16",
+"FV3_GFS_v17_p8",
 "FV3_RRFS_v1beta",
 "FV3_WoFS_v0",
 "FV3_HRRR",
 "FV3_RAP",
 ] 
 valid_vals_GFDLgrid_NUM_CELLS: [48, 96, 192, 384, 768, 1152, 3072]
-valid_vals_EXTRN_MDL_NAME_ICS: ["GSMGFS", "FV3GFS", "RAP", "HRRR", "NAM"]
-valid_vals_EXTRN_MDL_NAME_LBCS: ["GSMGFS", "FV3GFS", "RAP", "HRRR", "NAM"]
+valid_vals_EXTRN_MDL_NAME_ICS: ["GSMGFS", "FV3GFS", "GEFS", "GDAS", "RAP", "HRRR", "NAM"]
+valid_vals_EXTRN_MDL_NAME_LBCS: ["GSMGFS", "FV3GFS", "GEFS", "GDAS", "RAP", "HRRR", "NAM"]
 valid_vals_USE_USER_STAGED_EXTRN_FILES: [True, False]
 valid_vals_FV3GFS_FILE_FMT_ICS: ["nemsio", "grib2", "netcdf"]
 valid_vals_FV3GFS_FILE_FMT_LBCS: ["nemsio", "grib2", "netcdf"]
@@ -112,3 +115,22 @@ valid_vals_DO_REFL2TTEN: [True, False]
 valid_vals_DO_NLDN_LGHT: [True, False]
 valid_vals_DO_RADDA: [True, False]
 valid_vals_USE_RRFSE_ENS: [True, False]
+valid_vals_CPL_AQM: [True, False]
+valid_vals_RUN_TASK_AQM_ICS: [True, False]
+valid_vals_RUN_TASK_AQM_LBCS: [True, False]
+valid_vals_RUN_TASK_NEXUS_GFS_SFC: [True, False]
+valid_vals_RUN_TASK_NEXUS_EMISSION: [True, False]
+valid_vals_RUN_TASK_FIRE_EMISSION: [True, False]
+valid_vals_RUN_TASK_POINT_SOURCE: [True, False]
+valid_vals_RUN_TASK_PRE_POST_STAT: [True, False]
+valid_vals_RUN_TASK_POST_STAT_O3: [True, False]
+valid_vals_RUN_TASK_POST_STAT_PM25: [True, False]
+valid_vals_RUN_TASK_BIAS_CORRECTION_O3: [True, False]
+valid_vals_RUN_TASK_BIAS_CORRECTION_PM25: [True, False]
+valid_vals_DO_AQM_DUST: [True, False]
+valid_vals_DO_AQM_CANOPY: [True, False]
+valid_vals_DO_AQM_PRODUCT: [True, False]
+valid_vals_DO_AQM_CHEM_LBCS: [True, False]
+valid_vals_DO_AQM_GEFS_LBCS: [True, False]
+valid_vals_DO_AQM_SAVE_AIRNOW_HIST: [True, False]
+valid_vals_COLDSTART: [True, False]

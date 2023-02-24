@@ -24,7 +24,7 @@ from fill_jinja_template import fill_jinja_template
 
 
 def create_model_configure_file(
-    cdate, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos,
+    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos,
     cyc, cycle_type, cycle_subtype
 ):
     """Creates a model configuration file in the specified
@@ -32,6 +32,7 @@ def create_model_configure_file(
 
     Args:
         cdate: cycle date
+        fcst_len_hrs: forecast length in hours
         run_dir: run directory
         sub_hourly_post
         dt_subhourly_post_mnts
@@ -72,10 +73,8 @@ def create_model_configure_file(
     #
     # Set parameters in the model configure file.
     #
-    dot_quilting_dot = f".{lowercase(str(QUILTING))}."
-    dot_print_esmf_dot = f".{lowercase(str(PRINT_ESMF))}."
-    dot_cpl_dot = f".{lowercase(str(CPL))}."
-    dot_write_dopost = f".{lowercase(str(WRITE_DOPOST))}."
+    dot_quilting_dot=f".{lowercase(str(QUILTING))}."
+    dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
     #
     # Set the forecast hour length for this cycle
     # Todo:"ensinit" cycle
@@ -98,14 +97,12 @@ def create_model_configure_file(
     #
     settings = {
         "PE_MEMBER01": PE_MEMBER01,
-        "print_esmf": dot_print_esmf_dot,
         "start_year": yyyy,
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
-        "nhours_fcst": FCST_LEN_HRS_cycle,
+        "nhours_fcst": FCST_LEN_HRS_cycle,  #fcst_len_hrs  =>resolve this conflict with AQM
         "dt_atmos": DT_ATMOS,
-        "cpl": dot_cpl_dot,
         "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
         "write_dopost": dot_write_dopost,
@@ -271,6 +268,14 @@ def parse_args(argv):
     )
 
     parser.add_argument(
+        "-f",
+        "--fcst_len_hrs",
+        dest="fcst_len_hrs",
+        required=True,
+        help="Forecast length in hours.",
+    )
+
+    parser.add_argument(
         "-s",
         "--sub-hourly-post",
         dest="sub_hourly_post",
@@ -334,6 +339,7 @@ if __name__ == "__main__":
     create_model_configure_file(
         run_dir=args.run_dir,
         cdate=str_to_type(args.cdate),
+        fcst_len_hrs=str_to_type(args.fcst_len_hrs),
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
@@ -350,6 +356,7 @@ class Testing(unittest.TestCase):
             create_model_configure_file(
                 run_dir=path,
                 cdate=datetime(2021, 1, 1),
+                fcst_len_hrs=72,
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
                 dt_atmos=1,
@@ -368,8 +375,6 @@ class Testing(unittest.TestCase):
         set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         set_env_var("QUILTING", True)
-        set_env_var("PRINT_ESMF", True)
-        set_env_var("CPL", True)
         set_env_var("WRITE_DOPOST", True)
         set_env_var("USHdir", USHdir)
         set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)

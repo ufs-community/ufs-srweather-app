@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -81,7 +81,12 @@ fi
 GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${yyyy}/${yyyymm}/${yyyymmdd}"
 GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
 
-GFS_SFC_LOCAL_DIR="${COMINgfs_BASEDIR}/${GFS_SFC_TAR_SUB_DIR}"
+if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+  GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
+else
+  GFS_SFC_LOCAL_DIR="${NEXUS_GFS_SFC_DIR}/${GFS_SFC_TAR_SUB_DIR}"
+fi	
+
 GFS_SFC_DATA_INTVL="3"
 
 # copy files from local directory
@@ -149,7 +154,7 @@ else
     htar -tvf ${gfs_sfc_tar_fp}
     PREP_STEP
     htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
+      print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
     POST_STEP
   fi
   # Move retrieved files to staging directory
