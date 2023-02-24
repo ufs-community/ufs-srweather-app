@@ -203,10 +203,10 @@ def run_we2e_tests(homedir, args) -> None:
         monitor_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
         write_monitor_file(monitor_file,monitor_yaml)
         try:
-            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, debug=args.debug)
+            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs, debug=args.debug)
         except KeyboardInterrupt:
             logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
-            logging.info(f"./monitor_jobs.py -y={monitor_file}\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
         except:
             raise
         else:
@@ -448,6 +448,7 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
     parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will help keep the screen uncluttered')
+    parser.add_argument('-p', '--procs', type=int, help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, with provided number of parallel tasks', default=1)
 
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
@@ -466,6 +467,8 @@ if __name__ == "__main__":
     #Set defaults that need other argument values
     if args.modulefile is None:
         args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
+    if args.procs < 1:
+        raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
 
     #Call main function
 

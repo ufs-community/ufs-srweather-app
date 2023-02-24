@@ -13,6 +13,7 @@ import time
 from textwrap import dedent
 from datetime import datetime
 from contextlib import closing
+from multiprocessing import Pool
 
 sys.path.append("../../ush")
 
@@ -302,4 +303,36 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
 
     return expt
 
+def update_expt_status_parallel(expt_dict: dict, procs: int) -> dict:
+    """
+    This function updates an entire set of experiments in parallel, drastically speeding up
+    the process if given enough parallel processes. Given an experiment dictionary, it will
+    output the updated dictionary.
 
+    parallelizes the call to update_expt_status across the given number of processes.
+    Making use of the python multiprocessing starmap functionality, takes
+
+    Args:
+        expt_dict (dict): A dictionary containing information for all experiments
+        procs     (int): The number of parallel processes
+
+    Returns:
+        dict: The updated dictionary of experiment dictionaries
+    """
+
+    args = []
+    # Define a tuple of arguments to pass to starmap
+    for expt in expt_dict:
+        args.append( (expt_dict[expt],expt,True) )
+
+    # call update_expt_status() in parallel
+    with Pool(processes=procs) as pool:
+        output = pool.starmap(update_expt_status, args)
+
+    # Update dictionary with output from all calls to update_expt_status()
+    i = 0
+    for expt in expt_dict:
+         expt_dict[expt] = output[i]
+         i += 1
+
+    return expt_dict

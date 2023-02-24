@@ -24,9 +24,9 @@ from python_utils import (
 from check_python_version import check_python_version
 
 from job_summary import print_job_summary
-from utils import calculate_core_hours, write_monitor_file, update_expt_status
+from utils import calculate_core_hours, write_monitor_file, update_expt_status, update_expt_status_parallel
 
-def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -> str:
+def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
 
     Args:
@@ -50,9 +50,14 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
 
     # Perform initial setup for each experiment
     logging.info("Checking tests available for monitoring...")
-    for expt in expt_dict:
-        logging.info(f"Starting experiment {expt} running")
-        expt_dict[expt] = update_expt_status(expt_dict[expt], expt, True)
+
+    if procs > 1:
+        print(f'Starting experiments in parallel with {procs} processes')
+        expt_dict = update_expt_status_parallel(expt_dict, procs)
+    else:
+        for expt in expt_dict:
+            logging.info(f"Starting experiment {expt} running")
+            expt_dict[expt] = update_expt_status(expt_dict[expt], expt, True)
 
     write_monitor_file(monitor_file,expt_dict)
 
@@ -65,8 +70,13 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', debug: bool = False) -
     i = 0
     while running_expts:
         i += 1
+        if procs > 1:
+            expt_dict = update_expt_status_parallel(expt_dict, procs)
+        else:
+            for expt in running_expts.copy():
+                expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
+
         for expt in running_expts.copy():
-            expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
             running_expts[expt] = expt_dict[expt]
             if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
                 logging.info(f'Experiment {expt} is {running_expts[expt]["status"]}; will no longer monitor.')
@@ -135,6 +145,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for monitoring and running jobs in a specified experiment, as specified in a yaml configuration file\n")
 
     parser.add_argument('-y', '--yaml_file', type=str, help='YAML-format file specifying the information of jobs to be run; for an example file, see monitor_jobs.yaml', required=True)
+    parser.add_argument('-p', '--procs', type=int, help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, with provided number of parallel tasks', default=1)
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
 
     args = parser.parse_args()
@@ -143,13 +154,16 @@ if __name__ == "__main__":
 
     expt_dict = load_config_file(args.yaml_file)
 
+    if args.procs < 1:
+        raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
+
     #Call main function
 
     try:
-        monitor_jobs(expt_dict,args.yaml_file, args.debug)
+        monitor_jobs(expt_dict,args.yaml_file,args.procs,args.debug)
     except KeyboardInterrupt:
         logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
-        logging.info(f"{__file__} -y={args.yaml_file}\n")
+        logging.info(f"{__file__} -y={args.yaml_file} -p={args.procs}\n")
     except:
         logging.exception(
             dedent(
