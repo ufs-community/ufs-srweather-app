@@ -45,13 +45,26 @@ def print_job_summary(expt_dict: dict, debug: bool = False):
     summary.append(f'Experiment name {" "*43} | Status    | Core hours used ')
     # Flag for tracking if "cores per node" is in dictionary
     summary.append('-'*REPORT_WIDTH)
+    total_core_hours = 0
+    statuses = []
     for expt in expt_dict:
-        status = expt_dict[expt]["status"]
+        statuses.append(expt_dict[expt]["status"])
         ch = 0
         for task in expt_dict[expt]:
             if "core_hours" in expt_dict[expt][task]:
                 ch += expt_dict[expt][task]["core_hours"]
-        summary.append(f'{expt[:60]:<60s}  {status:<12s}  {ch:>13.2f}')
+        summary.append(f'{expt[:60]:<60s}  {statuses[-1]:<12s}  {ch:>13.2f}')
+        total_core_hours += ch
+    if "ERROR" in statuses:
+        total_status = "ERROR"
+    elif "DEAD" in statuses:
+        total_status = "DEAD"
+    elif "COMPLETE" in statuses:
+        total_status = "COMPLETE"
+    else:
+        total_status = "UNKNOWN"
+    summary.append('-'*REPORT_WIDTH)
+    summary.append(f'Total {" "*54}  {total_status:<12s}  {total_core_hours:>13.2f}')
 
     # Print summary to screen
     for line in summary:

@@ -20,39 +20,10 @@ from python_utils import (
 
 from check_python_version import check_python_version
 
-from utils import calculate_core_hours, create_expt_dict, update_expt_status, write_monitor_file
+from utils import calculate_core_hours, create_expt_dict, update_expt_status, \
+                  print_job_summary, write_monitor_file
 
 REPORT_WIDTH = 100
-
-def print_job_summary(expt_dict: dict, debug: bool = False):
-    """Function that creates a summary for the specified experiment
-
-    Args:
-        expt_dict   (dict): A dictionary containing the information needed to run
-                            one or more experiments. See example file monitor_jobs.yaml
-        debug       (bool): [optional] Enable extra output for debugging
-    Returns:
-        None
-    """
-
-    # Create summary table as list of strings
-    summary = []
-    summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Experiment name {" "*43} | Status    | Core hours used ')
-    # Flag for tracking if "cores per node" is in dictionary
-    summary.append('-'*REPORT_WIDTH)
-    for expt in expt_dict:
-        status = expt_dict[expt]["status"]
-        ch = 0
-        for task in expt_dict[expt]:
-            if "core_hours" in expt_dict[expt][task]:
-                ch += expt_dict[expt][task]["core_hours"]
-        summary.append(f'{expt[:60]:<60s}  {status:<12s}  {ch:>13.2f}')
-
-    # Print summary to screen
-    for line in summary:
-        print(line)
-
 
 def create_expt_dict(expt_dir: str) -> dict:
     """
