@@ -88,8 +88,8 @@ else
       export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
       export OUTPUT_BASE=${EXPTDIR}/${CDATE}
     else
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
+      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}
     fi
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
