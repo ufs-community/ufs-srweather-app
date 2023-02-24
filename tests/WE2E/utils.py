@@ -233,8 +233,9 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
 
     # Update experiment, read rocoto database
     rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
-    rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
-    subprocess.run(rocotorun_cmd)
+    rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
+    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    logging.debug(p.stdout)
 
     logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
     try:
@@ -259,7 +260,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         expt[f"{task[0]}_{cycle}"]["walltime"] = task[4]
 
     #Run rocotorun again to get around rocotobqserver proliferation issue
-    subprocess.run(rocotorun_cmd)
+    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    logging.debug(p.stdout)
 
     statuses = list()
     for task in expt:

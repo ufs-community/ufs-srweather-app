@@ -407,7 +407,7 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
 
     formatter = logging.Formatter("%(name)-16s %(levelname)-8s %(message)s")
 
-    fh = logging.FileHandler(logfile, mode='w')
+    fh = logging.FileHandler(logfile, mode='a')
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logging.getLogger().addHandler(fh)
