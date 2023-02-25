@@ -49,6 +49,8 @@
     {%- for item, task_settings in settings.items() %}
       {%- if item.split("_", 1)[0] == "task" %}
       {{ task(name=item.split("_", 1)[-1], settings=task_settings)|indent(2) }}
+      {%- elif item.split("_", 1)[0] == "metatask" %}
+      {{ metatask(name=item.split("_", 1)[-1], settings=task_settings)|indent(2) }}
       {%- endif %}
     {%- endfor %}
   </metatask>
