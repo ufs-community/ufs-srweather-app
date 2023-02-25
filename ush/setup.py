@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import json
 import os
 import sys
 import datetime
@@ -138,25 +139,47 @@ def load_config_for_setup(ushdir, default_config, user_config):
     cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
         "wflow", "default_workflow.yaml"))
 
-    # Takes care of removing any potential "null" entries.
+    # Takes care of removing any potential "null" entries, i.e.,
+    # unsetting a default value from an anchored default_task
     update_dict(cfg_wflow, cfg_wflow)
 
-    # Add jobname entry to each task
+    # Update here so we can grab the user-specificed set of task groups
+    # to include
+    update_dict(cfg_u.get('rocoto', {}), cfg_wflow)
+
+    # Extend yaml here on just the rocoto section to include the
+    # appropriate groups of tasks
+    extend_yaml(cfg_wflow)
+
+    # Put the entries expanded under taskgroups in tasks
     rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
-    for task, task_settings in rocoto_tasks.items():
-        task_type = task.split("_", maxsplit=1)[0]
-        if task_type == "task":
-            # Use the provided attribute if it is present, otherwise use
-            # the name in the key
-            rocoto_tasks[task]["jobname"] = \
-                task_settings.get("attrs", {}).get("name") or \
-                task.split("_", maxsplit=1)[1]
-        elif task_type == "metatask":
-            for mtask, mtask_settings in task_settings.items():
-                if mtask.split("_", maxsplit=1)[0] == "task":
-                    rocoto_tasks[task][mtask]["jobname"] = \
-                        mtask_settings.get("attrs", {}).get("name") or \
-                        mtask.split("_", maxsplit=1)[1]
+    print(f"rocoto_tasks: {type(rocoto_tasks.get('taskgroups'))}")
+    print(rocoto_tasks.get('taskgroups'))
+    rocoto_tasks.update(json.loads(rocoto_tasks.pop("taskgroups")))
+    print(f"rocoto_tasks: {type(rocoto_tasks.get('taskgroups'))}")
+
+    # Update wflow config from user one more time to make sure any of
+    # the "null" settings are removed, i.e., tasks turned off.
+    update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
+
+
+    def add_jobname(tasks):
+        """ Add the jobname entry for all the tasks in the workflow """
+
+        for task, task_settings in tasks.items():
+            task_type = task.split("_", maxsplit=1)[0]
+            if task_type == "task":
+                # Use the provided attribute if it is present, otherwise use
+                # the name in the key
+                tasks[task]["jobname"] = \
+                    task_settings.get("attrs", {}).get("name") or \
+                    task.split("_", maxsplit=1)[1]
+            elif task_type == "metatask":
+                add_jobname(task_settings)
+
+
+    # Add jobname entry to each remaining task
+    add_jobname(rocoto_tasks)
 
     # Update default config with the constants, the machine config, and
     # then the user_config
@@ -450,23 +473,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    workflow_switches = expt_config["workflow_switches"]
-    run_task_make_grid = workflow_switches['RUN_TASK_MAKE_GRID']
-    run_task_make_orog = workflow_switches['RUN_TASK_MAKE_OROG']
-    run_task_make_sfc_climo = workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']
+    rocoto_tasks = expt_config["rocoto"]["tasks"]
+    run_make_grid = rocoto_tasks.get('task_make_grid') is not None
+    run_make_orog = rocoto_tasks.get('task_make_orog') is not None
+    run_make_sfc_climo = rocoto_tasks.get('task_make_sfc_climo') is not None
 
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
     if pregen_basedir is None and not (
-        run_task_make_grid and run_task_make_orog and run_task_make_sfc_climo
+        run_make_grid and run_make_orog and run_make_sfc_climo
     ):
         raise Exception(
             f"""
             DOMAIN_PREGEN_BASEDIR must be set when any of the following
-            tasks are turned off:
-                RUN_TASK_MAKE_GRID = {run_task_make_grid}
-                RUN_TASK_MAKE_OROG = {run_task_make_orog}
-                RUN_TASK_MAKE_SFC_CLIMO = {run_task_make_sfc_climo}"""
+            tasks are not included in the workflow:
+                RUN_MAKE_GRID = {run_make_grid}
+                RUN_MAKE_OROG = {run_make_orog}
+                RUN_MAKE_SFC_CLIMO = {run_make_sfc_climo}"""
         )
 
     # A batch system account is specified
@@ -1135,25 +1158,38 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     mkdir_vrfy(f' -p "{fixlam}"')
 
     #
-    # Use the pregenerated domain files if the RUN_TASK_MAKE* tasks are
-    # turned off. Link the files, and check that they all contain the
-    # same resolution input.
+    # Use the pregenerated domain files if the tasks to generate them
+    # are turned off. Link the files, and check that they all contain
+    # the same resolution input.
     #
-    run_task_make_ics = workflow_switches['RUN_TASK_MAKE_LBCS']
-    run_task_make_lbcs = workflow_switches['RUN_TASK_MAKE_ICS']
-    run_task_run_fcst = workflow_switches['RUN_TASK_RUN_FCST']
-    run_task_makeics_or_makelbcs_or_runfcst = run_task_make_ics or \
-                                              run_task_make_lbcs or \
-                                              run_task_run_fcst
+
+    def dict_find(user_dict, substring):
+
+        if not isinstance(user_dict, dict):
+            return
+
+        for key, value in user_dict.items():
+            if substring in key:
+                return True
+            if isinstance(value, dict):
+                dict_find(value, substring)
+        return False
+
+    run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
+    run_make_lbcs = dict_find(rocoto_tasks, "task_make_ics")
+    run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
+    run_any_coldstart_task = run_make_ics or \
+                             run_make_lbcs or \
+                             run_run_fcst
     # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
     # These consider dependencies of other tasks on each pre-processing task.
     create_symlinks_to_pregen_files = {
-      "GRID": (not workflow_switches['RUN_TASK_MAKE_GRID']) and \
-              (run_task_make_orog or run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
-      "OROG": (not workflow_switches['RUN_TASK_MAKE_OROG']) and \
-              (run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
-      "SFC_CLIMO": (not workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']) and \
-                   (run_task_make_ics or run_task_make_lbcs),
+      "GRID": (not run_make_grid) and \
+              (run_make_orog or run_make_sfc_climo or run_any_coldstart_task),
+      "OROG": (not run_make_orog) and \
+              (run_make_sfc_climo or run_any_coldstart_task),
+      "SFC_CLIMO": (not run_make_sfc_climo) and \
+                   (run_make_ics or run_make_lbcs),
     }
 
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]

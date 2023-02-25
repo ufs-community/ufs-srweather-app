@@ -96,12 +96,11 @@ def cycstr(loader, node):
     #return cyc
     return f'<cyclestr>{arg}</cyclestr>'
 
-def include(loader, node):
+def include(filepaths):
 
     ''' Returns a dictionary that includes the contents of the referenced
     YAML file(s). '''
 
-    filepaths = loader.construct_sequence(node)
     srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
 
     cfg = {}
@@ -111,7 +110,7 @@ def include(loader, node):
             abs_path = os.path.join(os.path.dirname(srw_path), filepath)
         with open(abs_path, 'r') as fp:
            cfg.update(yaml.load(fp, Loader=yaml.SafeLoader))
-    return cfg
+    return json.dumps(cfg)
 
 def join_str(loader, node):
     """Custom tag hangler to join strings"""
@@ -205,6 +204,7 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                     )
                     j2env.filters["path_join"] = path_join
                     j2env.filters["days_ago"] = days_ago
+                    j2env.filters["include"] = include
                     try:
                         j2tmpl = j2env.from_string(template)
                     except:
@@ -527,6 +527,7 @@ def update_dict(dict_o, dict_t, provide_default=False):
             else:
                 dict_t[k] = v
         elif v is None and k in dict_t.keys():
+            # remove the key if the source dict has null entry
             del dict_t[k]
         elif k in dict_t.keys():
             if (
