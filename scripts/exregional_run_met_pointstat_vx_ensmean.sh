@@ -145,11 +145,7 @@ export POST_OUTPUT_DOMAIN_NAME
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_SFC_ensmean.conf
-
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_UPA_ensmean.conf
+  -c ${METPLUS_CONF}/PointStat_ensmean_${VAR}.conf
 #
 #-----------------------------------------------------------------------
 #

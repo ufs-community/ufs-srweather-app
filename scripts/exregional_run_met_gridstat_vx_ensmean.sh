@@ -114,9 +114,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h_ensmean_${CDATE}
+  LOG_SUFFIX=GridStat_ensmean_${VAR}${ACCUM}h_${CDATE}
 else
-  LOG_SUFFIX=GridStat_${VAR}_ensmean_${CDATE}
+  LOG_SUFFIX=GridStat_ensmean_${VAR}_${CDATE}
 fi
 
 #
@@ -159,11 +159,11 @@ if [ ${VAR} == "APCP" ]; then
   export acc="${ACCUM}h"
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}${acc}_mean.conf
+    -c ${METPLUS_CONF}/GridStat_ensmean_${VAR}${acc}.conf
 else
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}_mean.conf
+    -c ${METPLUS_CONF}/GridStat_ensmean_${VAR}.conf
 fi
 
 #

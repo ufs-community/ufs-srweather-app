@@ -144,11 +144,7 @@ export POST_OUTPUT_DOMAIN_NAME
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_SFC_ensprob.conf
-
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_UPA_ensprob.conf
+  -c ${METPLUS_CONF}/PointStat_ensprob_${VAR}.conf
 #
 #-----------------------------------------------------------------------
 #
