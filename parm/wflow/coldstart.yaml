@@ -119,8 +119,8 @@ metatask_run_ensemble:
       and:
         taskdep_make_ics:
           attrs:
-            task: make_ics
+            task: make_ics_#mem#
         taskdep_make_lbcs:
           attrs:
-            task: make_lbcs
+            task: make_lbcs_#mem#
 

@@ -38,4 +38,5 @@ rocoto:
     forecast:
       dates: !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
   log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.workflow_id + "." }}{%endif %}log'
-  tasks: !include ['parm/wflow/coldstart.yaml', 'parm/wflow/prep.yaml']
+  tasks:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/prep.yaml", "parm/wflow/post.yaml"]|include }}'

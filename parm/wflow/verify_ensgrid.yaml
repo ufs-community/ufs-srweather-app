@@ -4,11 +4,12 @@ default_task_verify_ens: &default_task
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '{{ user.USHdir }}'
     PDY: !cycstr '@Y@m@d'
-    CDATE: !cycstr '@Y@m@d@H'
-    nprocs: '{{ nnodes * ppn }}'
-    CYCLE_DIR: !cycstr '&CYCLE_BASEDIR;/@Y@m@d@H'
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    nprocs: '{{ nnodes * ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -19,11 +20,11 @@ default_task_verify_ens: &default_task
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-metatask_vx_ensgrid:
+metatask_ensgridvx:
   var:
     VAR: APCP REFC RETOP
     OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
-  task_run_vx_ensgrid_#VAR#:
+  task_run_ensgridvx_#VAR#:
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
     envars:
       <<: *default_vars
@@ -35,11 +36,11 @@ metatask_vx_ensgrid:
         attrs:
           metatask: run_ensemble
 
-metatask_vx_ensgrid_prob:
+metatask_ensgridvx_prob:
   var:
     VAR: APCP REFC RETOP
     OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
-  task_run_vx_ensgrid_prob_#VAR#:
+  task_run_ensgridvx_prob_#VAR#:
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"'
     envars:
       <<: *default_vars
@@ -49,13 +50,13 @@ metatask_vx_ensgrid_prob:
     dependency:
       metataskdep:
         attrs:
-          metatask: run_vx_ensgrid_#VAR#
+          metatask: run_ensgridvx_#VAR#
 
-metatask_vx_ensgrid_acc:
+metatask_ensgridvx_acc:
   var:
     ACCUM_HR: 03 06 24
     FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
-  task_run_vx_ensgrid_#ACCUM_HR#h:
+  task_run_ensgridvx_#ACCUM_HR#h:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
     envars:
@@ -67,17 +68,17 @@ metatask_vx_ensgrid_acc:
     dependency:
       taskdep:
         attrs:
-          task: run_vx_ensgrid_APCP
+          task: run_ensgridvx_APCP
 
-metatask_vx_ens_stats:
+metatask_ensgridvx_stats:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_vx_ensgrid_acc:
+  metatask_ensgridvx_acc:
     var:
       ACCUM_HR: 03 06 24
       FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
-    task_run_vx_ensgrid_#statlc#_#ACCUM_HR#h:
+    task_run_ensgridvx_#statlc#_#ACCUM_HR#h:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_#STAT#"'
       envars:
@@ -89,18 +90,17 @@ metatask_vx_ens_stats:
       dependency:
         taskdep:
           attrs:
-            task: run_vx_ensgrid_APCP
-  metatask_vx_enspoint:
-    task_run_vx_enspoint_#statlc#:
-      <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_#STAT#"'
-      envars:
-        <<: *default_vars
-        OBS_DIR: '&NDAS_OBS_DIR;'
-      dependency:
-        taskdep:
-          attrs:
-            task: run_vx_enspoint
+            task: run_ensgridvx_APCP
+  task_run_enspointvx_#statlc#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_#STAT#"'
+    envars:
+      <<: *default_vars
+      OBS_DIR: '&NDAS_OBS_DIR;'
+    dependency:
+      taskdep:
+        attrs:
+          task: run_vx_enspoint
 
 task_vx_enspoint:
   <<: *default_task

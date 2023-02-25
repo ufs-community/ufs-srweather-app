@@ -30,7 +30,7 @@ metatask_run_ens_post:
   metatask_run_post:
     var:
       fhr: '{% for h in range(1, FCST_LEN_HRS+1) %}{{ " %03d" % h }}{% endfor %}'
-    task_run_post_f#fhr#:
+    task_run_post_#mem#_f#fhr#:
       <<: *default_task
       dependency:
         or:
@@ -53,7 +53,7 @@ metatask_run_ens_post:
     metatask_sub_hourly_post:
       var:
         fmn: '{% for min in range(0, 60, DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
-      task_run_post_f#fhr##fmn#: &subhourly_run_post_task
+      task_run_post_#mem#_f#fhr##fmn#: &subhourly_run_post_task
         <<: *default_task
         envars:
           <<: *default_vars
@@ -77,5 +77,5 @@ metatask_run_ens_post:
     var:
       fhr: '{{ " %03d" % FCST_LEN_HRS }}'
       fmn: '00'
-    task_run_post:
-      <<: &subhourly_run_post_task
+    task_run_post_#mem#_f#fhr##fmn#:
+      <<: *subhourly_run_post_task

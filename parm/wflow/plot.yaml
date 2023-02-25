@@ -9,14 +9,13 @@ default_task_plot: &default_task
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '{{ user.USHdir }}'
-    LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
-    USHdir: "&USHdir;"
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     ENSMEM_INDX: '#mem#'
-    cyc: !cycstr "@H"
     nprocs: '{{ nnodes * ppn }}'
-    subcyc: !cycstr "@M"
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
