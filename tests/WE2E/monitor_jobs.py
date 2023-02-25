@@ -23,7 +23,7 @@ from python_utils import (
 
 from check_python_version import check_python_version
 
-from job_summary import print_job_summary
+from WE2E_summary import print_WE2E_summary
 from utils import calculate_core_hours, write_monitor_file, update_expt_status, update_expt_status_parallel
 
 def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
@@ -43,7 +43,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug:
     starttime = datetime.now()
     # Write monitor_file, which will contain information on each monitored experiment
     if not monitor_file:
-        monitor_file = f'monitor_jobs_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
+        monitor_file = f'WE2E_tests_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
     logging.info(f"Writing information for all experiments to {monitor_file}")
 
     write_monitor_file(monitor_file,expt_dict)
@@ -106,7 +106,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug:
     write_monitor_file(monitor_file,expt_dict)
 
     #Call function to print summary
-    print_job_summary(expt_dict, debug)
+    print_WE2E_summary(expt_dict, debug)
 
     return monitor_file
 

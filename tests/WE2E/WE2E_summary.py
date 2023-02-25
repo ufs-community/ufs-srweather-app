@@ -21,42 +21,9 @@ from python_utils import (
 from check_python_version import check_python_version
 
 from utils import calculate_core_hours, create_expt_dict, update_expt_status, \
-                  print_job_summary, write_monitor_file
+                  print_WE2E_summary, write_monitor_file
 
 REPORT_WIDTH = 100
-
-def create_expt_dict(expt_dir: str) -> dict:
-    """
-    Function takes in a directory, searches that directory for subdirectories containing
-    experiments, and creates a skeleton dictionary that can be filled out by update_expt_status()
-
-    Args:
-        expt_dir   (str) : Experiment directory
-    Returns:
-        dict : Experiment dictionary
-    """
-    contents = os.listdir(expt_dir)
-
-    expt_dict=dict()
-    for item in contents:
-        # Look for FV3LAM_wflow.xml to indicate directories with experiments in them
-        fullpath = os.path.join(expt_dir, item)
-        if not os.path.isdir(fullpath):
-            continue
-        xmlfile = os.path.join(expt_dir, item, 'FV3LAM_wflow.xml')
-        if os.path.isfile(xmlfile):
-            expt_dict[item] = dict()
-            expt_dict[item].update({"expt_dir": os.path.join(expt_dir,item)})
-            expt_dict[item].update({"status": "CREATED"})
-        else:
-            logging.debug(f'Skipping directory {item}, experiment XML file not found')
-        #Update the experiment dictionary
-        logging.info(f"Reading status of experiment {item}")
-        update_expt_status(expt_dict[item],item,True)
-    summary_file = f'job_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
-
-    return summary_file, expt_dict
-
 
 def setup_logging(debug: bool = False) -> None:
     """
@@ -106,5 +73,5 @@ if __name__ == "__main__":
     write_monitor_file(yaml_file,expt_dict)
 
     #Call function to print summary
-    print_job_summary(expt_dict, args.debug)
+    print_WE2E_summary(expt_dict, args.debug)
 

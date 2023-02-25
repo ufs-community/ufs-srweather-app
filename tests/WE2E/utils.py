@@ -28,7 +28,7 @@ from check_python_version import check_python_version
 
 REPORT_WIDTH = 100
 
-def print_job_summary(expt_dict: dict, debug: bool = False):
+def print_WE2E_summary(expt_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
 
     Args:
@@ -43,16 +43,34 @@ def print_job_summary(expt_dict: dict, debug: bool = False):
     summary = []
     summary.append('-'*REPORT_WIDTH)
     summary.append(f'Experiment name {" "*43} | Status    | Core hours used ')
-    # Flag for tracking if "cores per node" is in dictionary
     summary.append('-'*REPORT_WIDTH)
     total_core_hours = 0
     statuses = []
+    expt_details = []
     for expt in expt_dict:
         statuses.append(expt_dict[expt]["status"])
         ch = 0
+        expt_details.append('')
+        expt_details.append('-'*REPORT_WIDTH)
+        expt_details.append(f'Detailed summary of experiment {expt}')
+        expt_details.append(f'{" "*40} | Status    | Walltime   | Core hours used')
+        expt_details.append('-'*REPORT_WIDTH)
+
         for task in expt_dict[expt]:
+            # Skip non-task entries
+            if task in ["expt_dir","status"]:
+                continue
+            status = expt_dict[expt][task]["status"]
+            walltime = expt_dict[expt][task]["walltime"]
+            expt_details.append(f'{task[:40]:<40s}  {status:<12s} {walltime:>10.1f}')
             if "core_hours" in expt_dict[expt][task]:
-                ch += expt_dict[expt][task]["core_hours"]
+                task_ch = expt_dict[expt][task]["core_hours"]
+                ch += task_ch
+                expt_details[-1] = f'{expt_details[-1]}  {task_ch:>13.2f}'
+            else:
+                expt_details[-1] = f'{expt_details[-1]}            -'
+        expt_details.append('-'*REPORT_WIDTH)
+        expt_details.append(f'Total {" "*34}  {statuses[-1]:<12s} {" "*11} {ch:>13.2f}')
         summary.append(f'{expt[:60]:<60s}  {statuses[-1]:<12s}  {ch:>13.2f}')
         total_core_hours += ch
     if "ERROR" in statuses:
@@ -70,6 +88,16 @@ def print_job_summary(expt_dict: dict, debug: bool = False):
     for line in summary:
         print(line)
 
+    # Print summary and details to file
+    summary_file = f'WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
+    print(f"\nDetailed summary written to {summary_file}\n")
+
+    with open(summary_file, 'w') as f:
+        for line in summary:
+            f.write(f"{line}\n")
+        f.write("\nDetailed summary of each experiment:\n")
+        for line in expt_details:
+            f.write(f"{line}\n")
 
 def calculate_core_hours(expt_dict: dict) -> dict:
     """
@@ -134,10 +162,11 @@ def create_expt_dict(expt_dir: str) -> dict:
             expt_dict[item].update({"status": "CREATED"})
         else:
             logging.debug(f'Skipping directory {item}, experiment XML file not found')
+            continue
         #Update the experiment dictionary
         logging.info(f"Reading status of experiment {item}")
         update_expt_status(expt_dict[item],item,True)
-    summary_file = f'job_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
+    summary_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
 
     return summary_file, expt_dict
 
