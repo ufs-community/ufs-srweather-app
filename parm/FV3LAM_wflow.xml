@@ -658,10 +658,10 @@ MODULES_RUN_TASK_FP script.
 {%- if run_task_fire_emission %}
   <task name="&TN_FIRE_EMISSION;" cycledefs="forecast" maxtries="{{ maxtries_fire_emission }}">
 
-  {%- if do_real_time %}
-    &RSRV_DEFAULT;
-  {%- else %}
+  {%- if do_aqm_save_fire %}
     &RSRV_HPSS;
+  {%- else %}
+    &RSRV_DEFAULT;
   {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_FIRE_EMISSION;" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"</command>
     <nodes>{{ nnodes_fire_emission }}:ppn={{ ppn_fire_emission }}</nodes>
@@ -684,6 +684,7 @@ MODULES_RUN_TASK_FP script.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   </task>
 {%- endif %}
 <!--
