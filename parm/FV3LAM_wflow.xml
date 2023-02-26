@@ -562,7 +562,7 @@ MODULES_RUN_TASK_FP script.
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&TN_NEXUS_GFS_SFC;</jobname>
+    <jobname>&TAG;&TN_NEXUS_GFS_SFC;</jobname>
     <join>&LOGDIR;/&TN_NEXUS_GFS_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -606,7 +606,7 @@ MODULES_RUN_TASK_FP script.
         {%- endif %}
         <walltime>{{ wtime_nexus_emission }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
-        <jobname>&TN_NEXUS_EMISSION;_#nspt#</jobname>
+        <jobname>&TAG;&TN_NEXUS_EMISSION;_#nspt#</jobname>
         <join>&LOGDIR;/&TN_NEXUS_EMISSION;<cyclestr>_@Y@m@d@H_s#nspt#&LOGEXT;</cyclestr></join>
 
         <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -634,7 +634,7 @@ MODULES_RUN_TASK_FP script.
     <nodes>{{ nnodes_nexus_post_split }}:ppn={{ ppn_nexus_post_split }}</nodes>
     <walltime>{{ wtime_nexus_post_split }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_NEXUS_POST_SPLIT;</jobname>
+    <jobname>&TAG;&TN_NEXUS_POST_SPLIT;</jobname>
     <join>&LOGDIR;/&TN_NEXUS_POST_SPLIT;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -675,7 +675,7 @@ MODULES_RUN_TASK_FP script.
   {%- if machine not in ["WCOSS2"] %}
     <native>&SCHED_NATIVE_CMD;</native>
   {%- endif %}
-    <jobname>&TN_FIRE_EMISSION;</jobname>
+    <jobname>&TAG;&TN_FIRE_EMISSION;</jobname>
     <join>&LOGDIR;/&TN_FIRE_EMISSION;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -699,7 +699,7 @@ MODULES_RUN_TASK_FP script.
     <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}</nodes>    
     <walltime>{{ wtime_point_source }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_POINT_SOURCE;</jobname>
+    <jobname>&TAG;&TN_POINT_SOURCE;</jobname>
     <join>&LOGDIR;/&TN_POINT_SOURCE;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -945,7 +945,7 @@ MODULES_RUN_TASK_FP script.
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_AQM_EXTRN_ICS;</jobname>
+    <jobname>&TAG;&TN_AQM_EXTRN_ICS;</jobname>
     <join>&LOGDIR;/&TN_AQM_EXTRN_ICS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -980,7 +980,7 @@ MODULES_RUN_TASK_FP script.
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_AQM_ICS;</jobname>
+    <jobname>&TAG;&TN_AQM_ICS;</jobname>
     <join>&LOGDIR;/&TN_AQM_ICS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -1020,7 +1020,7 @@ MODULES_RUN_TASK_FP script.
     <nodes>{{ nnodes_aqm_lbcs }}:ppn={{ ppn_aqm_lbcs }}</nodes>
     <walltime>{{ wtime_aqm_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_AQM_LBCS;</jobname>
+    <jobname>&TAG;&TN_AQM_LBCS;</jobname>
     <join>&LOGDIR;/&TN_AQM_LBCS;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4252,7 +4252,7 @@ it, we'd have to include more jinja if-statements here.
     <nodes>{{ nnodes_pre_post_stat }}:ppn={{ ppn_pre_post_stat }}</nodes>
     <walltime>{{ wtime_pre_post_stat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_PRE_POST_STAT;</jobname>
+    <jobname>&TAG;&TN_PRE_POST_STAT;</jobname>
     <join>&LOGDIR;/&TN_PRE_POST_STAT;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4286,7 +4286,7 @@ it, we'd have to include more jinja if-statements here.
 {%- endif %}
     <walltime>{{ wtime_post_stat_o3 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_POST_STAT_O3;</jobname>
+    <jobname>&TAG;&TN_POST_STAT_O3;</jobname>
     <join>&LOGDIR;/&TN_POST_STAT_O3;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4317,7 +4317,7 @@ it, we'd have to include more jinja if-statements here.
 {%- endif %}    
     <walltime>{{ wtime_post_stat_pm25 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_POST_STAT_PM25;</jobname>
+    <jobname>&TAG;&TN_POST_STAT_PM25;</jobname>
     <join>&LOGDIR;/&TN_POST_STAT_PM25;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4348,7 +4348,7 @@ it, we'd have to include more jinja if-statements here.
 {%- endif %}
     <walltime>{{ wtime_bias_correction_o3 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_BIAS_CORRECTION_O3;</jobname>
+    <jobname>&TAG;&TN_BIAS_CORRECTION_O3;</jobname>
     <join>&LOGDIR;/&TN_BIAS_CORRECTION_O3;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
@@ -4379,7 +4379,7 @@ it, we'd have to include more jinja if-statements here.
 {%- endif %}
     <walltime>{{ wtime_bias_correction_pm25 }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
-    <jobname>&TN_BIAS_CORRECTION_PM25;</jobname>
+    <jobname>&TAG;&TN_BIAS_CORRECTION_PM25;</jobname>
     <join>&LOGDIR;/&TN_BIAS_CORRECTION_PM25;<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
