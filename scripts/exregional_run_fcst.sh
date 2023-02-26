@@ -77,15 +77,32 @@ fi
 
 gridspec_dir=${NWGES_BASEDIR}/grid_spec
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
-      break
+#
+#-----------------------------------------------------------------------
+#
+# Assign variable length forecast hours
+#
+#-----------------------------------------------------------------------
+#
+if [ $DO_RRFS_DEV = "TRUE" ]; then
+    if [ $CYCLE_TYPE = "spinup" ]; then
+        FCST_LEN_HRS=$FCST_LEN_HRS_SPINUP
+    else
+        len="${#FCST_LEN_HRS_CYCLES}"
+        if [ $len -gt $cyc ]; then
+            FCST_LEN_HRS="${FCST_LEN_HRS_CYCLES[$cyc]}"
+        fi
     fi
-  done
+else
+    if [ "${FCST_LEN_HRS}" = "-1" ]; then
+      for i_cdate in "${!ALL_CDATES[@]}"; do
+        if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+          FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+          break
+        fi
+      done
+    fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -638,9 +655,6 @@ python3 $USHdir/create_model_configure_file.py \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
   --run-dir "${DATA}" \
-  --cyc "$cyc" \
-  --cycle-type "${CYCLE_TYPE:-prod}" \
-  --cycle-subtype "${CYCLE_SUBTYPE:-empty}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
   --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\

@@ -101,19 +101,6 @@ fi
 DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
-      break
-    fi
-  done
-fi
-LBC_SPEC_FCST_HRS=()
-for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
-  LBC_SPEC_FCST_HRS+=("$i_lbc")
-done
 #
 #-----------------------------------------------------------------------
 #
@@ -535,7 +522,9 @@ located in the following directory:
 # the forecast hour of the FV3-LAM (which is not necessarily the same as
 # that of the external model since their start times may be offset).
 #
-  fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
+  lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
+  fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
+  fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
   mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
 #

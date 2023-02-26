@@ -24,8 +24,7 @@ from fill_jinja_template import fill_jinja_template
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos,
-    cyc, cycle_type, cycle_subtype
+    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
 ):
     """Creates a model configuration file in the specified
     run directory
@@ -37,9 +36,6 @@ def create_model_configure_file(
         sub_hourly_post
         dt_subhourly_post_mnts
         dt_atmos
-        cyc
-        cycle_type
-        cycle_subtype
     Returns:
         Boolean
     """
@@ -76,17 +72,6 @@ def create_model_configure_file(
     dot_quilting_dot=f".{lowercase(str(QUILTING))}."
     dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
     #
-    # Set the forecast hour length for this cycle
-    # Todo:"ensinit" cycle
-    #
-    if cycle_type == "spinup":
-        FCST_LEN_HRS_cycle = FCST_LEN_HRS_SPINUP
-    else:
-        if len(FCST_LEN_HRS_CYCLES) > cyc:
-            FCST_LEN_HRS_cycle = FCST_LEN_HRS_CYCLES[cyc]
-        else:
-            FCST_LEN_HRS_cycle = FCST_LEN_HRS 
-    #
     # -----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -101,7 +86,7 @@ def create_model_configure_file(
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
-        "nhours_fcst": FCST_LEN_HRS_cycle,  #fcst_len_hrs  =>resolve this conflict with AQM
+        "nhours_fcst": fcst_len_hrs,
         "dt_atmos": DT_ATMOS,
         "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
@@ -307,27 +292,6 @@ def parse_args(argv):
         help="Path to var_defns file.",
     )
 
-    parser.add_argument(
-        "--cyc",
-        dest="cyc",
-        required=True,
-        help="Forecast cycle (hour).",
-    )
-
-    parser.add_argument(
-        "--cycle-type",
-        dest="cycle_type",
-        required=True,
-        help="Cycle type (spinup or prod).",
-    )
-
-    parser.add_argument(
-        "--cycle-subtype",
-        dest="cycle_subtype",
-        required=True,
-        help="Cycle substype.",
-    )
-
     return parser.parse_args(argv)
 
 
@@ -343,9 +307,6 @@ if __name__ == "__main__":
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
-        cyc=str_to_type(args.cyc),
-        cycle_type=args.cycle_type,
-        cycle_subtype=args.cycle_subtype,
     )
 
 
@@ -360,9 +321,6 @@ class Testing(unittest.TestCase):
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
                 dt_atmos=1,
-                cyc=1,
-                cycle_type="prod",
-                cycle_subtype="ensinit",
             )
         )
 
@@ -380,9 +338,6 @@ class Testing(unittest.TestCase):
         set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)
         set_env_var("MODEL_CONFIG_TMPL_FP", MODEL_CONFIG_TMPL_FP)
         set_env_var("PE_MEMBER01", 24)
-        set_env_var("FCST_LEN_HRS", 3)
-        set_env_var("FCST_LEN_HRS_SPINUP", 1)
-        set_env_var("FCST_LEN_HRS_CYCLES", [3, 6])
         set_env_var("DT_ATMOS", 1)
         set_env_var("OMP_NUM_THREADS_RUN_FCST", 1)
         set_env_var("RESTART_INTERVAL", 4 )
