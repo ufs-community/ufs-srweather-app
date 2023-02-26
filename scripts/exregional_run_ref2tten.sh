@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_ref2tten|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_ref2tten|task_process_radarref|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
