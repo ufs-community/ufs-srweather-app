@@ -152,6 +152,19 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         date_3rd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
         date_4th_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*3) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
 
+        # set number of restart intervals for restart capability
+        restart_interval = expt_config["task_run_fcst"]["RESTART_INTERVAL"]
+        restart_hrs = restart_interval.split()
+        num_restart_hrs = len(restart_hrs)
+        if fcst_len_hrs == -1 and num_fcst_len_cycl > 1:
+            restart_hrs_fcst1 = [ihs for ihs in restart_hrs if int(ihs) <= fcst_len_cycl[0]]
+            restart_hrs_fcst2 = [ihs for ihs in restart_hrs if int(ihs) <= fcst_len_cycl[1]]
+        else:
+            restart_hrs_fcst1 = restart_hrs 
+            restart_hrs_fcst2 = restart_hrs
+        num_restart_hrs_fcst1 = len(restart_hrs_fcst1)
+        num_restart_hrs_fcst2 = len(restart_hrs_fcst2)
+
         settings.update(
             {
                 #
@@ -178,6 +191,13 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "fcst_len_hrs": fcst_len_hrs,
                 "fcst_len_cycl": fcst_len_cycl,
                 "num_fcst_len_cycl": num_fcst_len_cycl,
+                #
+                # Parameters for restart capability in run_fcst
+                #
+                "restart_hrs_fcst1": restart_hrs_fcst1,
+                "num_restart_hrs_fcst1": num_restart_hrs_fcst1,
+                "restart_hrs_fcst2": restart_hrs_fcst2,
+                "num_restart_hrs_fcst2": num_restart_hrs_fcst2,
                 #
                 # Ensemble-related parameters.
                 #

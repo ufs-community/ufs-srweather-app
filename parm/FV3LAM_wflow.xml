@@ -810,6 +810,91 @@ MODULES_RUN_TASK_FP script.
 
   </task>
 {%- endif %}
+{%- if do_aqm_restart_fcst %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <metatask name="&TN_GET_EXTRN_ICS_RESTART;_fcst2">
+    <var name="irst">{% for h in range(1, num_restart_hrs_fcst1+1) %}{{ " %02d" % h }}{% endfor %}</var>
+    <task name="&TN_GET_EXTRN_ICS_RESTART;_#irst#" cycledefs="fcst_1st" maxtries="{{ maxtries_get_extrn_ics }}">
+      &RSRV_HPSS;
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS_RESTART;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+      <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+      <memory>{{ mem_get_extrn_ics }}</memory>
+  {%- endif %}
+      <walltime>{{ wtime_get_extrn_ics }}</walltime>
+      <nodesize>&NCORES_PER_NODE;</nodesize>
+  {%- if machine not in ["WCOSS2"] %}
+      <native>&SCHED_NATIVE_CMD;</native>
+  {%- endif %}
+      <jobname>&TN_GET_EXTRN_ICS_RESTART;</jobname>
+      <join>&LOGDIR;/&TN_GET_EXTRN_ICS;_#irst#;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+      <envar><name>ICS_OR_LBCS</name><value>ICS</value></envar>
+{%- if do_real_time %}
+      <dependency>
+        <datadep age="00:00:00:05"><cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr></datadep>
+      </dependency>{%- endif %}
+    </task>
+  </metatask>
+
+  <metatask name="&TN_MAKE_ICS_RESTART;_fcst2">
+    <var name="irst">{% for h in range(1, num_restart_hrs_fcst1+1) %}{{ " %02d" % h }}{% endfor %}</var>
+    <task name="&TN_MAKE_ICS_RESTART;_#irst#" cycledefs="fcst_1st" maxtries="{{ maxtries_make_ics }}">
+      &RSRV_DEFAULT;
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS_RESTART;" "&JOBSdir;/JREGIONAL_MAKE_ICS"</command>
+      <nodes>{{ nnodes_make_ics }}:ppn={{ ppn_make_ics }}</nodes>
+      <walltime>{{ wtime_make_ics }}</walltime>
+      <nodesize>&NCORES_PER_NODE;</nodesize>
+      <native>&SCHED_NATIVE_CMD;</native>
+      <jobname>&TN_MAKE_ICS_RESTART;</jobname>
+      <join>&LOGDIR;/&TN_MAKE_ICS_RESTART;_#irst#;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
+      <dependency>
+        <metataskdep metatask="&TN_GET_EXTRN_ICS_RESTART;_fcst2"/>
+      </dependency>
+    </task>
+  </metatask>
+
+  <metatask name="&TN_AQM_ICS_RESTART;_fcst2">
+    <var name="irst">{% for h in range(1, num_restart_hrs_fcst1+1) %}{{ " %02d" % h }}{% endfor %}</var>
+    <task name="&TN_AQM_ICS_RESTART;_#irst#" cycledefs="fcst_1st" maxtries="{{ maxtries_aqm_ics }}">
+      &RSRV_DEFAULT;
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS_RESTART;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+      <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+      <walltime>{{ wtime_aqm_ics }}</walltime>
+      <nodesize>&NCORES_PER_NODE;</nodesize>
+      <jobname>&TN_AQM_ICS_RESTART;</jobname>
+      <join>&LOGDIR;/&TN_AQM_ICS_RESTART;_#irst#<cyclestr>_@Y@m@d@H&LOGEXT;</cyclestr></join>      <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+      <envar><name>USHdir</name><value>&USHdir;</value></envar>
+      <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+      <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+      <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+      <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+      <envar><name>PREV_CYCLE_DIR</name><value><cyclestr>&COMIN_DIR;</cyclestr></value></envar>
+      <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
+      <dependency>
+        <and>
+          <metataskdep metatask="&TN_MAKE_ICS_RESTART;_fcst2"/>
+          <datadep age="00:00:00:05"><cyclestr>&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr></datadep>
+        </and>
+      </dependency>
+    </task>
+  </metatask>
+{%- endif %}
 {%- if run_task_run_fcst %}
 <!--
 ************************************************************************
