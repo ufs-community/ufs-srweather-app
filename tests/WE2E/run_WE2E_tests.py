@@ -19,7 +19,7 @@ from python_utils import (
 from check_python_version import check_python_version
 
 from monitor_jobs import monitor_jobs, write_monitor_file
-
+from utils import print_test_details
 
 def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
@@ -144,6 +144,10 @@ def run_we2e_tests(homedir, args) -> None:
                 if 'nco' not in test_cfg:
                     test_cfg['nco'] = dict()
                 test_cfg['nco'].update({"model_ver": "we2e"})
+        if args.opsroot:
+            if 'nco' not in test_cfg:
+                test_cfg['nco'] = dict()
+            test_cfg['nco'].update({"OPSROOT": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -162,6 +166,7 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['workflow'].update({"DEBUG": args.debug_tests})
         if args.verbose_tests:
             test_cfg['workflow'].update({"VERBOSE": args.verbose_tests})
+
 
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
@@ -398,6 +403,7 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
 
     return cfg_vx
 
+
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
@@ -456,7 +462,9 @@ if __name__ == "__main__":
     parser.add_argument('--expt_basedir', type=str, help='Explicitly set EXPT_BASEDIR for all experiments')
     parser.add_argument('--exec_subdir', type=str, help='Explicitly set EXEC_SUBDIR for all experiments')
     parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this option disables the "monitor" script functionality')
-    parser.add_argument('--cron_relaunch_intvl_mnts', type=str, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
+    parser.add_argument('--cron_relaunch_intvl_mnts', type=int, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
+    parser.add_argument('--opsroot', type=str, help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for details)')
+    parser.add_argument('--print_test_details', action='store_true', help='Create a "test_details.txt" file summarizing each test prior to starting experiment')
     parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
 
@@ -470,6 +478,10 @@ if __name__ == "__main__":
     if args.procs < 1:
         raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
 
+    # Print test details (if requested)
+    if args.print_test_details:
+        print_test_details("test_details.txt")
+    sys.exit()
     #Call main function
 
     try:

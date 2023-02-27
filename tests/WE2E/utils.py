@@ -10,6 +10,7 @@ import logging
 import subprocess
 import sqlite3
 import time
+import glob
 from textwrap import dedent
 from datetime import datetime
 from contextlib import closing
@@ -378,3 +379,97 @@ def update_expt_status_parallel(expt_dict: dict, procs: int) -> dict:
          i += 1
 
     return expt_dict
+
+
+
+def print_test_details(txtfile: str = "test_details.txt") -> None:
+    """Prints a pipe ( | ) delimited text file containing summaries of each test defined by a
+    config file in test_configs/*
+
+    """
+
+    testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    testdict = dict()
+    links = dict()
+    for testfile in testfiles:
+        pathname, filename = os.path.split(testfile)
+        testname = filename[7:-5]
+        dirname = os.path.basename(os.path.normpath(pathname))
+        if os.path.islink(filename):
+            targettestfile = os.readlink(testfile)
+            targetfilename = os.path.basename(targettestfile)
+            targettestname = targetfilename[7:-5]
+            links[testname] = (testname, dirname, targettestname)
+        else:
+            testdict[testname] = load_config_file(testfile)
+            testdict[testname]["directory"] = dirname
+
+    # For each found link, add its info to the appropriate test dictionary entry
+    for link in links:
+        testdict[link[2]]["alternate_name"] = link[0]
+        testdict[link[2]]["alternate_directory_name"] = link[1]
+
+    # Print the file
+    with open(txtfile, 'w') as f:
+        # Field delimiter character
+        d = "\" | \""
+        txt_output = ['"Test Name']
+        txt_output.append(f'(Subdirectory){d}Alternate Test Names')
+        txt_output.append(f'(Subdirectories){d}Test Purpose/Description{d}Relative Cost of Running Dynamics')
+        txt_output.append(f'(1 corresponds to running a 6-hour forecast on the RRFS_CONUS_25km predefined grid using the default time step){d}PREDEF_GRID_NAME{d}CCPP_PHYS_SUITE{d}EXTRN_MDL_NAME_ICS{d}EXTRN_MDL_NAME_LBCS{d}DATE_FIRST_CYCL{d}DATE_LAST_CYCL{d}INCR_CYCL_FREQ{d}FCST_LEN_HRS{d}LBC_SPEC_INTVL_HRS{d}NUM_ENS_MEMBERS')
+
+        for line in txt_output:
+            f.write(f"{line}\n")
+        for expt in testdict:
+            f.write(f"\"{expt}\n(")
+            f.write(f"{testdict[expt]['directory']}){d}")
+            if "alternate_name" in testdict[expt]:
+                f.write(f"{testdict[expt]['alternate_name']}\n({testdict[expt]['alternate_directory_name']}){d}")
+            else:
+                f.write(f"{d}\n")
+            desc = testdict[expt]['metadata']['description'].splitlines()
+            for line in desc[:-1]:
+                f.write(f"   {line}\n")
+            f.write(f"   {desc[-1]}")
+            f.write(f"{d}'0{d}'0")
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','PREDEF_GRID_NAME'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','CCPP_PHYS_SUITE'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_ics','EXTRN_MDL_NAME_ICS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs','EXTRN_MDL_NAME_LBCS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_FIRST_CYCL'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_LAST_CYCL'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','INCR_CYCL_FREQ'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','FCST_LEN_HRS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_run_fcst','DT_ATMOS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs','LBC_SPEC_INTVL_HRS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'global','NUM_ENS_MEMBERS') + "\n")
+
+#            f.write(f"{d}{testdict[expt]['workflow']['PREDEF_GRID_NAME']}")
+#            f.write(f"{d}{testdict[expt]['workflow']['CCPP_PHYS_SUITE']}")
+#            f.write(f"{d}{testdict[expt]['task_get_extrn_ics']['EXTRN_MDL_NAME_ICS']}")
+#            f.write(f"{d}{testdict[expt]['task_get_extrn_lbcs']['EXTRN_MDL_NAME_LBCS']}")
+#            f.write(f"{d}{testdict[expt]['workflow']['DATE_FIRST_CYCL']}")
+#            f.write(f"{d}{testdict[expt]['workflow']['DATE_LAST_CYCL']}")
+#            if "INCR_CYCL_FREQ" in testdict[expt]['workflow']:
+#                f.write(f"{d}{testdict[expt]['workflow']['INCR_CYCL_FREQ']}")
+#            else:
+#                f.write(f"{d}")
+#            f.write(f"{d}{testdict[expt]['workflow']['FCST_LEN_HRS']}")
+#            f.write(f"{d}{testdict[expt]['task_get_extrn_lbcs']['LBC_SPEC_INTVL_HRS']}")
+#            if "global" in testdict[expt]:
+#                if NUM_ENS_MEMBERS in testdict[expt]['global']:
+#                    f.write(f"{d}{testdict[expt]['global']['NUM_ENS_MEMBERS']}")
+#                else:
+#                    f.write(f"{d}")
+#            else:
+#                f.write(f"{d}")
+
+def get_or_print_blank(d,key1,key2):
+    if d.get(key1,{}).get(key2):
+        write = f"{d[key1][key2]}"
+    else:
+        write = ""
+
+    return write
+
+
