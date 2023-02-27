@@ -36,7 +36,7 @@ else if ( "$L_MACHINE" == singularity ) then
    module purge
 
 else if ( "$L_MACHINE" == gaea ) then
-   source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
+   source /lustre/f2/dev/role.epic/contrib/Lmod_init.csh
 
 else if ( "$L_MACHINE" == odin ) then
    module unload modules
