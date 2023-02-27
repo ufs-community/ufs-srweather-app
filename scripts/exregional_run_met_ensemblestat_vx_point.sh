@@ -92,7 +92,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=$EXPTDIR/$CDATE
+    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}                           
     export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
@@ -101,6 +101,35 @@ else
     export MEM_STAR="mem*/"
     export MEM_CUSTOM="{custom?fmt=%s}/"
     export DOT_MEM_CUSTOM=
+#
+# Construct variable that contains a METplus template of the paths to
+# the forecast files that are inputs to the EnsembleStat tool.  This
+# variable will be exported to the environment and read by the METplus
+# configuration files.
+#
+    NDIGITS_ENSMEM_NAMES=3
+    time_lag=0
+
+    FCST_INPUT_FN_TEMPLATE=""
+    for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
+
+      mem_indx=$(($i+1))
+      mem_indx_fmt=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "${mem_indx}")
+#      time_lag=$(( ${ENS_TIME_LAG_HRS[$i]}*${secs_per_hour} ))
+
+      SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
+      template="${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd/${FCST_FN_TEMPLATE}"
+
+      if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
+        FCST_INPUT_FN_TEMPLATE="  $(eval echo ${template})"
+      else
+        FCST_INPUT_FN_TEMPLATE="\
+${FCST_INPUT_FN_TEMPLATE},
+  $(eval echo ${template})"
+      fi
+
+    done
+
 fi
 export DOT_ENSMEM=${dot_ensmem}
 
@@ -116,7 +145,7 @@ LOG_SUFFIX="EnsembleStat"
 #
 #-----------------------------------------------------------------------
 #
-# Check for existence of top-level OBS_DIR 
+# Check for existence of top-level OBS_DIR
 #
 #-----------------------------------------------------------------------
 #
@@ -128,7 +157,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Export some environment variables passed in by the XML and run METplus 
+# Export some environment variables passed in by the XML and run METplus
 #
 #-----------------------------------------------------------------------
 #
@@ -142,6 +171,7 @@ export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
 export NUM_ENS_MEMBERS
+export FCST_INPUT_FN_TEMPLATE
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \

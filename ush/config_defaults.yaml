@@ -2724,6 +2724,9 @@ global:
 verification:
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
   VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
+  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd'
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM}h.nc'
 
 #----------------------------
 # CPL_AQM config parameters
