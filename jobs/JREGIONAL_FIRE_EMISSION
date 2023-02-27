@@ -86,13 +86,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Set the run directory
+#
+#-----------------------------------------------------------------------
+#
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+mkdir_vrfy -p "${DATA}"
+#
+#-----------------------------------------------------------------------
+#
 # Create the directory where the RAVE fire emission files should be stored
 #
 #-----------------------------------------------------------------------
 #
 export FIRE_EMISSION_STAGING_DIR="${COMINext}/FIRE_EMISSION"
 mkdir_vrfy -p "${FIRE_EMISSION_STAGING_DIR}"
-cd_vrfy ${FIRE_EMISSION_STAGING_DIR}
 #
 #-----------------------------------------------------------------------
 #
