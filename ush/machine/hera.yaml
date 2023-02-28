@@ -19,6 +19,7 @@ platform:
   QUEUE_PRDGEN: batch
   RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL
+  RUN_CMD_PRDGEN: srun --export=ALL
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL
   SCHED_NATIVE_CMD: --export=NONE

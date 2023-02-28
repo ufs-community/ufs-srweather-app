@@ -12,6 +12,7 @@ platform:
   DOMAIN_PREGEN_BASEDIR: /home/username/DATA/UFS/FV3LAM_pregen
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
   RUN_CMD_POST: mpirun
+  RUN_CMD_PRDGEN: mpirun
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun
   PRE_TASK_CMDS: '{ ulimit -a; ulimit -s unlimited; }'

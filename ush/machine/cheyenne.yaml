@@ -15,6 +15,7 @@ platform:
   QUEUE_PRDGEN: regular
   RUN_CMD_FCST: mpirun -np ${PE_MEMBER01}
   RUN_CMD_POST: mpirun -np $nprocs
+  RUN_CMD_PRDGEN: mpirun -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -np $nprocs
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
