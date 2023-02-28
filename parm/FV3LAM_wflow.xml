@@ -153,7 +153,7 @@ tasks; and the "FCST" type is used for the RUN_FCST_TN task.
 <!ENTITY RSRV_FCST    "<account>&ACCOUNT;</account><queue>&QUEUE_FCST;</queue>">
 {%- endif %}
 {%- if partition_prdgen is not none %}
-<!ENTITY RSRV_PRDGEN    "<account>&ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition><native>&RRFS_POST_RESERVE;</native>">
+<!ENTITY RSRV_PRDGEN    "<account>&ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue><partition>{{ partition_prdgen }}</partition>">
 {%- else %}
 <!ENTITY RSRV_PRDGEN    "<account>&ACCOUNT;</account><queue>&QUEUE_PRDGEN;</queue>">
 {%- endif %}
@@ -768,7 +768,7 @@ the <task> tag to be identical to the ones above for other output times.
 <metatask name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}">
 
     <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
-    <task name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="prodcyc" maxtries="{{ maxtries_run_prdgen }}">
+    <task name="&RUN_PRDGEN_TN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="forecast" maxtries="{{ maxtries_run_prdgen }}">
 
       &RSRV_PRDGEN;
       <command>&LOAD_MODULES_RUN_TASK_FP; "&RUN_PRDGEN_TN;" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"</command>
