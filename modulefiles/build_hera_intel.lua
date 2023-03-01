@@ -24,6 +24,8 @@ load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver") or "2022.1.2"))
 
 load("srw_common")
 
+unload("netcdf")
+load(pathJoin("netcdf", os.getenv("netcdf_ver") or "4.7.4"))
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
 
