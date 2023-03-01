@@ -175,8 +175,6 @@ def run_we2e_tests(homedir, args) -> None:
 
         if 'verification' in test_cfg:
             logging.debug(test_cfg['verification'])
-        test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
-        logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
@@ -299,10 +297,9 @@ def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
     cfg_ics = cfg['task_get_extrn_ics']
 
     # If RUN_TASK_GET_EXTRN_ICS is explicitly set to false, do nothing and return
-    if 'workflow_switches' in cfg:
-        if 'RUN_TASK_GET_EXTRN_ICS' in cfg['workflow_switches']:
-            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
-                return cfg_ics
+    if cfg.get('workflow_switches', {}).get('RUN_TASK_GET_EXTRN_ICS') is not None:
+        if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
+            return cfg_ics
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if not cfg_ics.get('USE_USER_STAGED_EXTRN_FILES'):

@@ -55,13 +55,17 @@ cpl_aqm_parm:
 rocoto:
   tasks:
     task_get_extrn_ics:
-      native: ''
+      native:
     task_get_extrn_lbcs:
-      native: ''
+      native:
     task_plot_allvars:
-      native: ''
+      native:
     task_run_fcst:
-      cores: ''
+      cores:
       native: '{{ platform.SCHED_NATIVE_CMD }}'
-      nodes: '{{ NNODES }}:ppn={{ PPN }}:tpp={{ OMP_NUM_THREADS_RUN_FCST }}'
+      nodes: '{{ parent.nnodes }}:ppn={{ parent.ppn }}:tpp={{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
       nodesize: '{{ platform.NCORES_PER_NODE }}'
+    task_nexus_emission_#nspt#:
+      nodes: '{{ parent.nnodes }}:ppn={{ parent.ppn }}:tpp={{ task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+    task_fire_emission:
+      native:

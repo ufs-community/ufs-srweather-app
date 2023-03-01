@@ -90,6 +90,14 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Make sure the keys in user config match those in the default
     # config.
     invalid = check_structure_dict(cfg_u, cfg_d)
+
+    # Task and metatask entries can be added arbitrarily under the
+    # rocoto section. Remove those from invalid if they exist
+    for key in invalid.copy().keys():
+        if key.split("_", maxsplit=1)[0] in ["task", "metatask"]:
+            invalid.pop(key)
+            logging.info(f"Found and allowing key {key}")
+
     if invalid:
         errmsg = f"Invalid key(s) specified in {user_config}:\n"
         for entry in invalid:
@@ -143,9 +151,12 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # unsetting a default value from an anchored default_task
     update_dict(cfg_wflow, cfg_wflow)
 
-    # Update here so we can grab the user-specificed set of task groups
-    # to include
-    update_dict(cfg_u.get('rocoto', {}), cfg_wflow)
+
+    # Take any user-specified taskgroups entry here.
+    taskgroups = cfg_u.get('rocoto', {}).get('tasks', {}).get('taskgroups')
+    if taskgroups:
+        cfg_wflow['rocoto']['tasks']['taskgroups'] = taskgroups
+
 
     # Extend yaml here on just the rocoto section to include the
     # appropriate groups of tasks
@@ -153,19 +164,17 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Put the entries expanded under taskgroups in tasks
     rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
-    print(f"rocoto_tasks: {type(rocoto_tasks.get('taskgroups'))}")
-    print(rocoto_tasks.get('taskgroups'))
-    rocoto_tasks.update(json.loads(rocoto_tasks.pop("taskgroups")))
-    print(f"rocoto_tasks: {type(rocoto_tasks.get('taskgroups'))}")
+    rocoto_tasks.update(yaml.load(rocoto_tasks.pop("taskgroups"),Loader=yaml.SafeLoader))
 
     # Update wflow config from user one more time to make sure any of
     # the "null" settings are removed, i.e., tasks turned off.
     update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
 
-
     def add_jobname(tasks):
         """ Add the jobname entry for all the tasks in the workflow """
 
+        if not isinstance(tasks, dict):
+            return
         for task, task_settings in tasks.items():
             task_type = task.split("_", maxsplit=1)[0]
             if task_type == "task":
@@ -201,6 +210,11 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # User settings (take precedence over all others)
     update_dict(cfg_u, cfg_d)
+
+    # Update the cfg_d against itself now, to remove any "null"
+    # stranglers.
+    update_dict(cfg_d, cfg_d)
+
 
     # Set "Home" directory, the top-level ufs-srweather-app directory
     homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
@@ -381,10 +395,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # Workflow
     workflow_config = expt_config["workflow"]
 
-    # Generate a unique number for this workflow run. This may be used to
-    # get unique log file names for example
-    workflow_id = "id_" + str(int(datetime.datetime.now().timestamp()))
-    workflow_config["WORKFLOW_ID"] = workflow_id
+    workflow_id = workflow_config["WORKFLOW_ID"]
     log_info(f"""WORKFLOW ID = {workflow_id}""")
 
     debug = workflow_config.get("DEBUG")
@@ -1391,7 +1402,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     rocoto_yaml_fp = workflow_config["ROCOTO_YAML_FP"]
     with open(rocoto_yaml_fp, 'w') as f:
         yaml.Dumper.ignore_aliases = lambda *args : True
-        yaml.dump(expt_config.get("rocoto"), f)
+        yaml.dump(expt_config.get("rocoto"), f, sort_keys=False)
 
     var_defns_cfg = copy.deepcopy(expt_config)
     del var_defns_cfg["rocoto"]

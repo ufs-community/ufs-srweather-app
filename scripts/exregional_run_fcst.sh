@@ -111,7 +111,7 @@ cd_vrfy ${DATA}/INPUT
 # in this case, there isn't really an advantage to using relative symlinks, 
 # so we use symlinks with absolute paths.
 #
-if [ "${RUN_TASK_MAKE_GRID}" = "TRUE" ]; then
+if [[ -d "${EXPTDIR}/grid" ]]; then
   relative_link_flag="TRUE"
 else
   relative_link_flag="FALSE"
@@ -166,7 +166,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # the orography files, use relative paths if running the TN_MAKE_OROG
 # task and absolute paths otherwise.
 #
-if [ "${RUN_TASK_MAKE_OROG}" = "TRUE" ]; then
+if [ -d "${EXPTDIR}/orog" ]; then
   relative_link_flag="TRUE"
 else
   relative_link_flag="FALSE"

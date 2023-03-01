@@ -31,3 +31,4 @@ platform:
 data:
   ics_lbcs:
     FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
+

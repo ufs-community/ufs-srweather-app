@@ -16,6 +16,7 @@ returnded by load_config to make queries.
 
 import argparse
 import configparser
+import datetime
 import json
 import os
 import pathlib
@@ -35,7 +36,7 @@ try:
 except ModuleNotFoundError:
     pass
 
-from .environment import list_to_str, str_to_list
+from .environment import list_to_str, str_to_list, str_to_type
 from .run_command import run_command
 
 ##########
@@ -109,8 +110,10 @@ def include(filepaths):
         if not os.path.isabs(filepath):
             abs_path = os.path.join(os.path.dirname(srw_path), filepath)
         with open(abs_path, 'r') as fp:
-           cfg.update(yaml.load(fp, Loader=yaml.SafeLoader))
-    return json.dumps(cfg)
+            contents = yaml.load(fp, Loader=yaml.SafeLoader)
+        for key, value in contents.items():
+            cfg[key] = value
+    return yaml.dump(cfg, sort_keys=False)
 
 def join_str(loader, node):
     """Custom tag hangler to join strings"""
@@ -131,11 +134,15 @@ def startstopfreq(loader, node):
 
     return f'{start}00 {stop}00 {freq}:00:00'
 
+def nowtimestamp(loader, node):
+    return "id_" + str(int(datetime.datetime.now().timestamp()))
+
 try:
-    yaml.add_constructor('!cycstr', cycstr, Loader=yaml.SafeLoader)
-    yaml.add_constructor('!include', include, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!cycstr", cycstr, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!include", include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
-    yaml.add_constructor('!startstopfreq', startstopfreq, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!startstopfreq", startstopfreq, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!nowtimestamp", nowtimestamp ,Loader=yaml.SafeLoader)
 except NameError:
     pass
 
@@ -197,7 +204,6 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                             re.finditer(r"{{[^}]*}}|\S", v_str)  if '{{'
                             in m.group()]
                 data = []
-                print('TEMPLATES', templates)
                 for template in templates:
                     j2env = jinja2.Environment(
                         loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
@@ -217,6 +223,8 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                     except jinja2.exceptions.UndefinedError as e:
                         # Leave a templated field as-is in the resulting dict
                         pass
+                    except ValueError:
+                        pass
                     except TypeError:
                         pass
                     except ZeroDivisionError:
@@ -228,7 +236,7 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                     data.append(template)
 
                 for tmpl, rendered in zip(templates, data):
-                    v_str = v_str.replace(tmpl, rendered)
+                    v_str = str_to_type(v_str.replace(tmpl, rendered))
 
                 if isinstance(v, ET.Element):
                     print('Replacing ET text with', v_str)
@@ -543,7 +551,7 @@ def update_dict(dict_o, dict_t, provide_default=False):
 
 def check_structure_dict(dict_o, dict_t):
     """Check if a dictionary's structure follows a template.
-    The invalid entries are returned as a list of lists.
+    The invalid entries are returned as a dictionary.
     If all entries are valid, returns an empty dictionary
 
     Args:

@@ -13,14 +13,15 @@ default_task_plot: &default_task
     cyc: !cycstr "@H"
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
-    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: '#mem#'
     nprocs: '{{ nnodes * ppn }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
-  ppn: 24
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 24
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 

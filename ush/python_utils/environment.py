@@ -64,6 +64,8 @@ def str_to_type(s, return_string=0):
             return True
         if s.lower() in ["false", "no", "nope"]:
             return False
+        if s in ["None", "null"]:
+            return None
         v = str_to_date(s)
         if v is not None:
             if return_string == 2:

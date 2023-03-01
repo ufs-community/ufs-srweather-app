@@ -434,7 +434,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  WORKFLOW_ID: ""
+  WORKFLOW_ID: !nowtimestamp ''
   #
   #-----------------------------------------------------------------------
   #
@@ -688,7 +688,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if rocoto.tasks["task_make_grid"] else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -1016,7 +1016,7 @@ task_make_grid:
   # 
   #-----------------------------------------------------------------------
   # 
-  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks["task_make_grid"] else "" }}'
+  GRID_DIR: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks.get("task_make_grid") else "" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -1292,7 +1292,7 @@ task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
   OMP_STACKSIZE_MAKE_OROG: "2048m"
-  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks["task_make_orog"] else "" }}'
+  OROG_DIR: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}'
 
 #----------------------------
 # MAKE SFC CLIMO config parameters
@@ -1301,7 +1301,7 @@ task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
   OMP_STACKSIZE_MAKE_SFC_CLIMO: "1024m"
-  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks["task_make_sfc_climo"] else "" }}'
+  SFC_CLIMO_DIR: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}'
 
 #----------------------------
 # EXTRN ICS config parameters
@@ -1865,100 +1865,18 @@ task_plot_allvars:
   PLOT_DOMAINS: ["conus"]
 
 #----------------------------
-# AQM_ICS config parameters
-#-----------------------------
-task_aqm_ics:
-  TN_AQM_ICS: "aqm_ics"
-  NNODES_AQM_ICS: 1
-  PPN_AQM_ICS: 1
-  WTIME_AQM_ICS: 00:30:00
-  MAXTRIES_AQM_ICS: 2
-
-#----------------------------
-# AQM_LBCS config parameters
-#-----------------------------
-task_aqm_lbcs:
-  TN_AQM_LBCS: "aqm_lbcs"
-  NNODES_AQM_LBCS: 1
-  PPN_AQM_LBCS: 24
-  WTIME_AQM_LBCS: 00:30:00
-  MAXTRIES_AQM_LBCS: 2
-
-#----------------------------
-# NEXUS_GFS_SFC config parameters
-#-----------------------------
-task_nexus_gfs_sfc:
-  TN_NEXUS_GFS_SFC: "nexus_gfs_sfc"
-  NNODES_NEXUS_GFS_SFC: 1
-  PPN_NEXUS_GFS_SFC: 1
-  MEM_NEXUS_GFS_SFC: 2G
-  WTIME_NEXUS_GFS_SFC: 00:30:00
-  MAXTRIES_NEXUS_GFS_SFC: 2
-
-#----------------------------
 # NEXUS_EMISSION config parameters
 #-----------------------------
 task_nexus_emission:
-  TN_NEXUS_EMISSION: "nexus_emission"
-  NNODES_NEXUS_EMISSION: 4
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
-  WTIME_NEXUS_EMISSION: 01:00:00
-  MAXTRIES_NEXUS_EMISSION: 2
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
   OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
 
 #----------------------------
-# NEXUS_POST_SPLIT config parameters
-#-----------------------------
-task_nexus_post_split:
-  TN_NEXUS_POST_SPLIT: "nexus_post_split"
-  NNODES_NEXUS_POST_SPLIT: 1
-  PPN_NEXUS_POST_SPLIT: 1
-  WTIME_NEXUS_POST_SPLIT: 00:30:00
-  MAXTRIES_NEXUS_POST_SPLIT: 2
-
-#----------------------------
-# FIRE_EMISSION config parameters
-#-----------------------------
-task_fire_emission:
-  TN_FIRE_EMISSION: "fire_emission"
-  NNODES_FIRE_EMISSION: 1
-  PPN_FIRE_EMISSION: 1
-  MEM_FIRE_EMISSION: 2G
-  WTIME_FIRE_EMISSION: 00:30:00
-  MAXTRIES_FIRE_EMISSION: 2
-
-#----------------------------
-# POINT_SOURCE config parameters
-#-----------------------------
-task_point_source:
-  TN_POINT_SOURCE: "point_source"
-  NNODES_POINT_SOURCE: 1
-  PPN_POINT_SOURCE: 1 
-  WTIME_POINT_SOURCE: 01:00:00
-  MAXTRIES_POINT_SOURCE: 2
-
-#----------------------------
-# PRE_POST_STAT config parameters
-#-----------------------------
-task_pre_post_stat:
-  TN_PRE_POST_STAT: "pre_post_stat"
-  NNODES_PRE_POST_STAT: 1
-  PPN_PRE_POST_STAT: 1
-  WTIME_PRE_POST_STAT: 00:30:00
-  MAXTRIES_PRE_POST_STAT: 2
-
-#----------------------------
 # POST_STAT_O3 config parameters
 #-----------------------------
 task_post_stat_o3:
-  TN_POST_STAT_O3: "post_stat_o3"
-  NNODES_POST_STAT_O3: 1
-  PPN_POST_STAT_O3: 1
-  MEM_POST_STAT_O3: 120G 
-  WTIME_POST_STAT_O3: 00:30:00
-  MAXTRIES_POST_STAT_O3: 2
   KMP_AFFINITY_POST_STAT_O3: "scatter"
   OMP_NUM_THREADS_POST_STAT_O3: 1
   OMP_STACKSIZE_POST_STAT_O3: "2056M"
@@ -1967,12 +1885,6 @@ task_post_stat_o3:
 # POST_STAT_PM25 config parameters
 #-----------------------------
 task_post_stat_pm25:
-  TN_POST_STAT_PM25: "post_stat_pm25"
-  NNODES_POST_STAT_PM25: 1
-  PPN_POST_STAT_PM25: 1
-  MEM_POST_STAT_PM25: 120G
-  WTIME_POST_STAT_PM25: 00:30:00
-  MAXTRIES_POST_STAT_PM25: 2
   KMP_AFFINITY_POST_STAT_PM25: "scatter"
   OMP_NUM_THREADS_POST_STAT_PM25: 1
   OMP_STACKSIZE_POST_STAT_PM25: "2056M"
@@ -1981,12 +1893,6 @@ task_post_stat_pm25:
 # BIAS_CORRECTION_O3 config parameters
 #-----------------------------
 task_bias_correction_o3:
-  TN_BIAS_CORRECTION_O3: "bias_correction_o3"
-  NNODES_BIAS_CORRECTION_O3: 1
-  PPN_BIAS_CORRECTION_O3: 1
-  MEM_BIAS_CORRECTION_O3: 120G
-  WTIME_BIAS_CORRECTION_O3: 00:30:00
-  MAXTRIES_BIAS_CORRECTION_O3: 2
   KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_O3: 128
   OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
@@ -1995,12 +1901,6 @@ task_bias_correction_o3:
 # BIAS_CORRECTION_PM25 config parameters
 #-----------------------------
 task_bias_correction_pm25:
-  TN_BIAS_CORRECTION_PM25: "bias_correction_pm25"
-  NNODES_BIAS_CORRECTION_PM25: 1
-  PPN_BIAS_CORRECTION_PM25: 1
-  MEM_BIAS_CORRECTION_PM25: 120G
-  WTIME_BIAS_CORRECTION_PM25: 00:30:00
-  MAXTRIES_BIAS_CORRECTION_PM25: 2
   KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 128
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
@@ -2349,4 +2249,12 @@ cpl_aqm_parm:
   PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
 
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+
+rocoto:
+  attrs:
+  cycledefs:
+  entities:
+  log:
+  tasks:
+    taskgroups:
 

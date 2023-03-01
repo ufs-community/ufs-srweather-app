@@ -8,15 +8,16 @@ default_task_verify_ens: &default_task
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
-    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     nprocs: '{{ nnodes * ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: '&NCORES_PER_NODE;'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   ppn: 1
-  nodesize: '{{ machine.ncores_per_node }}'
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 

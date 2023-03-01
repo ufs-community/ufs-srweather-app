@@ -32,3 +32,11 @@ workflow_switches:
   RUN_TASK_MAKE_LBCS: false
   RUN_TASK_RUN_FCST: false
   RUN_TASK_RUN_POST: false
+rocoto:
+  tasks:
+    task_get_extrn_ics:
+    task_get_extrn_lbcs:
+    task_make_ics_#mem#:
+    task_make_lbcs_#mem#:
+    task_run_fcst_#mem#:
+    metatask_run_ens_post:

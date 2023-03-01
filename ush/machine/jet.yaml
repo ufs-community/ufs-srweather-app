@@ -48,7 +48,11 @@ data:
 
 rocoto:
   tasks:
-    task_run_fcst:
-      cores: '{{ PE_MEMBER01 }}'
-      native: '--cpus-per-task {{ OMP_NUM_THREADS_RUN_FCST }} --exclusive'
-      nodes: ''
+    metatask_run_ensemble:
+      task_run_fcst_#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:
