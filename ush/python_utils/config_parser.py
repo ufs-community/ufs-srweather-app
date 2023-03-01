@@ -15,6 +15,7 @@ returnded by load_config to make queries.
 """
 
 import argparse
+import datetime
 
 #
 # Note: Yaml maynot be available in which case we suppress
@@ -97,6 +98,14 @@ def path_join(arg):
     return os.path.join(*arg)
 
 
+def days_ago(arg):
+    """A filter for jinja2 that gives us a date string for x number of
+    days ago"""
+
+    return (datetime.date.today() -
+            datetime.timedelta(days=arg)).strftime("%Y%m%d00")
+
+
 def extend_yaml(yaml_dict, full_dict=None):
 
     """
@@ -140,6 +149,7 @@ def extend_yaml(yaml_dict, full_dict=None):
                         loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
                     )
                     j2env.filters["path_join"] = path_join
+                    j2env.filters["days_ago"] = days_ago
                     j2tmpl = j2env.from_string(template)
                     try:
                         # Fill in a template that has the appropriate variables
