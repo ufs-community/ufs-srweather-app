@@ -1037,7 +1037,7 @@ workflow_switches:
   # Flag that determines whether the TN_RUN_POST task is to be run.
   # 
   # RUN_TASK_RUN_PRDGEN:
-  # Flag that determines whether the RUN_PRDGEN_TN task is to be run.
+  # Flag that determines whether the TN_RUN_PRDGEN task is to be run.
   #
   # RUN_TASK_GET_OBS_CCPA:
   # Flag that determines whether to run the TN_GET_OBS_CCPA task, which
@@ -2032,7 +2032,7 @@ task_run_post:
 # RUN PRDGEN config parameters
 #-----------------------------
 task_run_prdgen:
-  RUN_PRDGEN_TN: "run_prdgen"
+  TN_RUN_PRDGEN: "run_prdgen"
   NNODES_RUN_PRDGEN: 1
   PPN_RUN_PRDGEN: 1
   WTIME_RUN_PRDGEN: 00:30:00
