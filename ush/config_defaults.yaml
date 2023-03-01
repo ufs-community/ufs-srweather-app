@@ -67,6 +67,7 @@ user:
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
+  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
 
 #----------------------------
 # PLATFORM config parameters
@@ -158,18 +159,6 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
-  # PARTITION_PRDGEN:
-  #   # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"),
-  #     # the partition to which the task that remaps output grids is submitted.  If
-  #       # this is not set or set to an empty string, it will be (re)set to a
-  #         # machine-dependent value.  This is not used if SCHED is not set to
-  # "slurm".
-  #
-  # QUEUE_PRDGEN:
-  # The queue or QOS to which the task that prodgen is submitted.
-  # If this is not set or set to an empty string, it will be (re)set to a
-  # machine-dependent value.
-  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
@@ -186,8 +175,6 @@ platform:
   QUEUE_HPSS: ""
   PARTITION_FCST: ""
   QUEUE_FCST: ""
-  PARTITION_PRDGEN: ""
-  QUEUE_PRDGEN: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -206,8 +193,14 @@ platform:
   # The run command for post-processing (UPP). Can be left blank for smaller 
   # domains, in which case UPP will run without MPI.
   #
+  # RUN_CMD_PRDGEN: 
+  # The run command for the product generation job.
+  #
   # RUN_CMD_SERIAL:
   # The run command for some serial jobs 
+  #
+  # RUN_CMD_AQM:
+  # The run command for some AQM tasks.
   #
   #-----------------------------------------------------------------------
   #
@@ -215,6 +208,8 @@ platform:
   RUN_CMD_UTILS: ""
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
+  RUN_CMD_PRDGEN: ""
+  RUN_CMD_AQM: ""
 
   #
   #-----------------------------------------------------------------------
@@ -246,7 +241,7 @@ platform:
   # precipitation files used by METplus are located. This parameter needs
   # to be set for both user-provided observations and for observations 
   # that are retrieved from the NOAA HPSS (if the user has access) via
-  # the get_obs_ccpa_tn task (activated in workflow by setting
+  # the TN_GET_OBS_CCPA task (activated in workflow by setting
   # RUN_TASK_GET_OBS_CCPA=true). In the case of pulling observations 
   # directly from NOAA HPSS, the data retrieved will be placed in this 
   # directory. Please note, this path must be defind as 
@@ -262,7 +257,7 @@ platform:
   # the valid time in the metadata for files valid from 19 - 00 UTC (or 
   # files under the '00' directory). The script to pull the CCPA data 
   # from the NOAA HPSS has an example of how to account for this as well
-  # as organizing the data into a more intuitive format: 
+  # as organizing the data into a more intuitive format:
   # scripts/exregional_get_ccpa_files.sh. When a fix is provided, it will
   # be accounted for in the exregional_get_ccpa_files.sh script.
   #
@@ -271,7 +266,7 @@ platform:
   # reflectivity files used by METplus are located.  This parameter needs
   # to be set for both user-provided observations and for observations
   # that are retrieved from the NOAA HPSS (if the user has access) via the
-  # get_obs_mrms_tn task (activated in workflow by setting
+  # TN_GET_OBS_MRMS task (activated in workflow by setting
   # RUN_TASK_GET_OBS_MRMS=true).  In the case of pulling observations 
   # directly from NOAA HPSS, the data retrieved will be placed in this 
   # directory. Please note, this path must be defind as 
@@ -300,7 +295,7 @@ platform:
   # files used by METplus are located. This parameter needs to be set for
   # both user-provided observations and for observations that are 
   # retrieved from the NOAA HPSS (if the user has access) via the 
-  # get_obs_ndas_tn task (activated in workflow by setting 
+  # TN_GET_OBS_NDAS task (activated in workflow by setting 
   # RUN_TASK_GET_OBS_NDAS=true). In the case of pulling observations 
   # directly from NOAA HPSS, the data retrieved will be placed in this 
   # directory. Please note, this path must be defind as 
@@ -361,6 +356,7 @@ platform:
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
+  TEST_VX_FCST_INPUT_BASEDIR: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -403,6 +399,23 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
+  #
+  #-----------------------------------------------------------------------
+  #
+  # COMINgfs:
+  # Path to the real-time GFS data
+  #
+  # COMINgefs:
+  # Path to the real-time GEFS data
+  #
+  # COMINairnow:
+  # Path to the real-time AIRNOW observation data
+  #
+  #-----------------------------------------------------------------------
+  #
+  COMINgfs: ""
+  COMINgefs: ""
+  COMINairnow: "/path/to/real/time/airnow/data"
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -425,16 +438,6 @@ workflow:
   #-----------------------------------------------------------------------
   #
   RELATIVE_LINK_FLAG: "--relative"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # CPL:
-  # Flag indicating whether another component should run in coupled mode
-  # with the forecast.
-  #
-  #-----------------------------------------------------------------------
-  #
-  CPL: '{{ workflow.FCST_MODEL == "fv3gfs_aqm" }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -486,7 +489,7 @@ workflow:
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
   EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
   EXEC_SUBDIR: "exec"
-  EXPTDIR: '{{ [EXPT_BASEDIR, EXPT_SUBDIR]|path_join }}'
+  EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -560,6 +563,9 @@ workflow:
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
+  # AQM_RC_TMPL_FN:
+  # Template file name of resource file for NOAA Air Quality Model (AQM)
+  #
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)
   #
@@ -579,9 +585,9 @@ workflow:
   # EXTRN_MDL_VAR_DEFNS_FN:
   # Name of file (a shell script) containing the defintions of variables
   # associated with the external model from which ICs or LBCs are generated.  This
-  # file is created by the GET_EXTRN_*_TN task because the values of the variables
+  # file is created by the TN_GET_EXTRN_* task because the values of the variables
   # it contains are not known before this task runs.  The file is then sourced by
-  # the MAKE_ICS_TN and MAKE_LBCS_TN tasks.
+  # the TN_MAKE_ICS and TN_MAKE_LBCS tasks.
   #
   # WFLOW_LAUNCH_SCRIPT_FN:
   # Name of the script that can be used to (re)launch the experiment's rocoto
@@ -611,6 +617,8 @@ workflow:
   FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
   NEMS_CONFIG_FN: "nems.configure"
+  AQM_RC_FN: "aqm.rc"
+  AQM_RC_TMPL_FN: "aqm.rc"
 
   FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
   FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
@@ -620,6 +628,7 @@ workflow:
   FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
   NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
 
   # These are staged in the exptdir at configuration time
   DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
@@ -667,7 +676,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if user.RUN_ENVIR == "community" else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -799,12 +808,23 @@ workflow:
   # FCST_LEN_HRS:
   # The length of each forecast, in integer hours.
   #
+  # FCST_LEN_CYCL:
+  # The length of forecast for each cycle date in integer hours.
+  # This is valid only when FCST_LEN_HRS = -1.
+  # This pattern is recurred for all cycle dates.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
   DATE_LAST_CYCL: "YYYYMMDDHH"
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
+  FCST_LEN_CYCL:
+    - 6
+    - 12
+    - 12
+    - 6
+
   #
   #-----------------------------------------------------------------------
   #
@@ -866,8 +886,9 @@ workflow:
   # GET_OBS:
   # Task modulefile name for all get_obs_* tasks
   #
-  # VX_TN:
-  # Task modulefile name for all verification tasks
+  # TN_VX:
+  # Task name to use in forming the modulefile name for all verification
+  # tasks.
   #
   #------------------------------------------------------------------------
   #
@@ -875,7 +896,29 @@ workflow:
   SYMLINK_FIX_FILES: true
 
   GET_OBS: "get_obs"
-  VX_TN: "run_vx"
+  TN_VX: "run_vx"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_REAL_TIME:
+  # switch for real-time run
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_REAL_TIME: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # COLDSTART:
+  # Flag turning on/off warm start
+  #
+  # WARMSTART_CYCLE_DIR:
+  # Path to the directory where RESTART dir is located for warm start
+  #
+  #-----------------------------------------------------------------------
+  #
+  COLDSTART: true
+  WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
 #----------------------------
 # NCO specific variables
@@ -957,55 +1000,55 @@ workflow_switches:
   #-----------------------------------------------------------------------
   #
   # Set flags (and related directories) that determine whether various
-  # workflow tasks should be run.  Note that the MAKE_GRID_TN, MAKE_OROG_TN, 
-  # and MAKE_SFC_CLIMO_TN are all cycle-independent tasks, i.e. if they 
+  # workflow tasks should be run.  Note that the TN_MAKE_GRID, TN_MAKE_OROG, 
+  # and TN_MAKE_SFC_CLIMO are all cycle-independent tasks, i.e. if they 
   # are to be run, they do so only once at the beginning of the workflow 
   # before any cycles are run.  Definitions:
   #
   # RUN_TASK_MAKE_GRID:
-  # Flag that determines whether the MAKE_GRID_TN task is to be run.  If 
+  # Flag that determines whether the TN_MAKE_GRID task is to be run.  If 
   # this is set to true, the grid generation task is run and new grid
   # files are generated.  If it is set to false, then the scripts look
   # for pregenerated grid files in the directory specified by GRID_DIR 
   # (see below).
   #
   # RUN_TASK_MAKE_OROG:
-  # Same as RUN_TASK_MAKE_GRID but for the MAKE_OROG_TN task.
+  # Same as RUN_TASK_MAKE_GRID but for the TN_MAKE_OROG task.
   #
   # RUN_TASK_MAKE_SFC_CLIMO:
-  # Same as RUN_TASK_MAKE_GRID but for the MAKE_SFC_CLIMO_TN task.
+  # Same as RUN_TASK_MAKE_GRID but for the TN_MAKE_SFC_CLIMO task.
   #
   # RUN_TASK_GET_EXTRN_ICS:
-  # Flag that determines whether the GET_EXTRN_ICS_TN task is to be run.
+  # Flag that determines whether the TN_GET_EXTRN_ICS task is to be run.
   #
   # RUN_TASK_GET_EXTRN_LBCS:
-  # Flag that determines whether the GET_EXTRN_LBCS_TN task is to be run.
+  # Flag that determines whether the TN_GET_EXTRN_LBCS task is to be run.
   #
   # RUN_TASK_MAKE_ICS:
-  # Flag that determines whether the MAKE_ICS_TN task is to be run.
+  # Flag that determines whether the TN_MAKE_ICS task is to be run.
   #
   # RUN_TASK_MAKE_LBCS:
-  # Flag that determines whether the MAKE_LBCS_TN task is to be run.
+  # Flag that determines whether the TN_MAKE_LBCS task is to be run.
   #
   # RUN_TASK_RUN_FCST:
-  # Flag that determines whether the RUN_FCST_TN task is to be run.
+  # Flag that determines whether the TN_RUN_FCST task is to be run.
   #
   # RUN_TASK_RUN_POST:
-  # Flag that determines whether the RUN_POST_TN task is to be run.
+  # Flag that determines whether the TN_RUN_POST task is to be run.
   # 
   # RUN_TASK_RUN_PRDGEN:
   # Flag that determines whether the RUN_PRDGEN_TN task is to be run.
   #
   # RUN_TASK_GET_OBS_CCPA:
-  # Flag that determines whether to run the GET_OBS_CCPA_TN task, which
+  # Flag that determines whether to run the TN_GET_OBS_CCPA task, which
   # retrieves the CCPA hourly precipitation files used by METplus from NOAA HPSS. 
   # 
   # RUN_TASK_GET_OBS_MRMS:
-  # Flag that determines whether to run the GET_OBS_MRMS_TN task, which
+  # Flag that determines whether to run the TN_GET_OBS_MRMS task, which
   # retrieves the MRMS composite reflectivity files used by METplus from NOAA HPSS. 
   #
   # RUN_TASK_GET_OBS_NDAS:
-  # Flag that determines whether to run the GET_OBS_NDAS_TN task, which
+  # Flag that determines whether to run the TN_GET_OBS_NDAS task, which
   # retrieves the NDAS PrepBufr files used by METplus from NOAA HPSS. 
   #
   # RUN_TASK_VX_GRIDSTAT:
@@ -1027,6 +1070,39 @@ workflow_switches:
   #
   # RUN_TASK_PLOT_ALLVARS:
   # Flag that determines whether to run python plotting scripts
+  #
+  # RUN_TASK_AQM_ICS:
+  # Flag that determines whether the TN_AQM_ICS task is to be run for air quality modeling.
+  #
+  # RUN_TASK_AQM_LBCS:
+  # Flag that determines whether the TN_AQM_LBCS task is to be run for air quality modeling.
+  #
+  # RUN_TASK_NEXUS_GFS_SFC:
+  # Flag that determines whether the TN_NEXUS_GFS_SFC task is to be run for air quality modeling.
+  #
+  # RUN_TASK_NEXUS_EMISSION:
+  # Flag that determines whether the TN_NEXUS_EMISSION task is to be run for air quality modeling.
+  #
+  # RUN_TASK_FIRE_EMISSION:
+  # Flag that determines whether the TN_FIRE_EMISSION task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POINT_SOURCE:
+  # Flag that determines whether the TN_POINT_SOURCE task is to be run for air quality modeling.
+  #
+  # RUN_TASK_PRE_POST_STAT:
+  # Flag that determines whether the TN_PRE_POST_STAT task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POST_STAT_O3:
+  # Flag that determines whether the TN_POST_STAT_O3 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_POST_STAT_PM25:
+  # Flag that determines whether the TN_POST_STAT_PM25 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_BIAS_CORRECTION_O3:
+  # Flag that determines whether the TN_BIAS_CORRECTION_O3 task is to be run for air quality modeling.
+  #
+  # RUN_TASK_BIAS_CORRECTION_PM25:
+  # Flag that determines whether the TN_BIAS_CORRECTION_PM25 task is to be run for air quality modeling.
   #
   #-----------------------------------------------------------------------
   #
@@ -1052,21 +1128,25 @@ workflow_switches:
   RUN_TASK_VX_ENSPOINT: false
 
   RUN_TASK_PLOT_ALLVARS: false
-  #
-  #-----------------------------------------------------------------------
-  #
-  # DO_PARALLEL_PRDGEN:
-  # Flag turn on parallel wgrib2 runs in prdgen .
-  #
-  #-----------------------------------------------------------------------
-  #
-  DO_PARALLEL_PRDGEN: false
-  #
+
+  RUN_TASK_AQM_ICS: false
+  RUN_TASK_AQM_LBCS: false
+  RUN_TASK_NEXUS_GFS_SFC: false
+  RUN_TASK_NEXUS_EMISSION: false
+  RUN_TASK_FIRE_EMISSION: false
+  RUN_TASK_POINT_SOURCE: false
+  RUN_TASK_PRE_POST_STAT: false
+  RUN_TASK_POST_STAT_O3: false
+  RUN_TASK_POST_STAT_PM25: false
+  RUN_TASK_BIAS_CORRECTION_O3: false
+  RUN_TASK_BIAS_CORRECTION_PM25: false
+
+
 #----------------------------
 # MAKE GRID config parameters
 #-----------------------------
 task_make_grid:
-  MAKE_GRID_TN: "make_grid"
+  TN_MAKE_GRID: "make_grid"
   NNODES_MAKE_GRID: 1
   PPN_MAKE_GRID: 24
   WTIME_MAKE_GRID: 00:20:00
@@ -1353,7 +1433,7 @@ task_make_grid:
 # MAKE OROG config parameters
 #-----------------------------
 task_make_orog:
-  MAKE_OROG_TN: "make_orog"
+  TN_MAKE_OROG: "make_orog"
   NNODES_MAKE_OROG: 1
   PPN_MAKE_OROG: 24
   WTIME_MAKE_OROG: 00:20:00
@@ -1367,7 +1447,7 @@ task_make_orog:
 # MAKE SFC CLIMO config parameters
 #-----------------------------
 task_make_sfc_climo:
-  MAKE_SFC_CLIMO_TN: "make_sfc_climo"
+  TN_MAKE_SFC_CLIMO: "make_sfc_climo"
   NNODES_MAKE_SFC_CLIMO: 2
   PPN_MAKE_SFC_CLIMO: 24
   WTIME_MAKE_SFC_CLIMO: 00:20:00
@@ -1381,7 +1461,7 @@ task_make_sfc_climo:
 # EXTRN ICS config parameters
 #-----------------------------
 task_get_extrn_ics:
-  GET_EXTRN_ICS_TN: "get_extrn_ics"
+  TN_GET_EXTRN_ICS: "get_extrn_ics"
   NNODES_GET_EXTRN_ICS: 1
   PPN_GET_EXTRN_ICS: 1
   MEM_GET_EXTRN_ICS: 2G
@@ -1404,7 +1484,7 @@ task_get_extrn_ics:
   # the external model started than when the FV3 forecast configured here
   # should start. For example, the forecast should start from a 6 hour
   # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS=6.
-  
+  #
   # FV3GFS_FILE_FMT_ICS:
   # If using the FV3GFS model as the source of the ICs (i.e. if EXTRN_MDL_NAME_ICS
   # is set to "FV3GFS"), this variable specifies the format of the model
@@ -1480,7 +1560,7 @@ task_get_extrn_ics:
 # EXTRN LBCS config parameters
 #-----------------------------
 task_get_extrn_lbcs:
-  GET_EXTRN_LBCS_TN: "get_extrn_lbcs"
+  TN_GET_EXTRN_LBCS: "get_extrn_lbcs"
   NNODES_GET_EXTRN_LBCS: 1
   PPN_GET_EXTRN_LBCS: 1
   MEM_GET_EXTRN_LBCS: 2G
@@ -1561,7 +1641,7 @@ task_get_extrn_lbcs:
 # MAKE ICS config parameters
 #-----------------------------
 task_make_ics:
-  MAKE_ICS_TN: "make_ics"
+  TN_MAKE_ICS: "make_ics"
   NNODES_MAKE_ICS: 4
   PPN_MAKE_ICS: 12
   WTIME_MAKE_ICS: 00:30:00
@@ -1606,7 +1686,7 @@ task_make_ics:
 # MAKE LBCS config parameters
 #-----------------------------
 task_make_lbcs:
-  MAKE_LBCS_TN: "make_lbcs"
+  TN_MAKE_LBCS: "make_lbcs"
   NNODES_MAKE_LBCS: 4
   PPN_MAKE_LBCS: 12
   WTIME_MAKE_LBCS: 00:30:00
@@ -1614,13 +1694,12 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + workflow.FCST_LEN_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
 #-----------------------------
 task_run_fcst:
-  RUN_FCST_TN: "run_fcst"
+  TN_RUN_FCST: "run_fcst"
   NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
   PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   WTIME_RUN_FCST: 04:30:00
@@ -1684,7 +1763,7 @@ task_run_fcst:
   # WRITE_DOPOST:
   # Flag that determines whether or not to use the inline post feature 
   # [i.e. calling the Unified Post Processor (UPP) from within the weather 
-  # model].  If this is set to true, the RUN_POST_TN task is deactivated 
+  # model].  If this is set to true, the TN_RUN_POST task is deactivated 
   # (i.e. RUN_TASK_RUN_POST is set to false) to avoid unnecessary 
   # computations.
   #
@@ -1866,13 +1945,13 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" }}'
+  USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
 
 #----------------------------
 # POST config parameters
 #-----------------------------
 task_run_post:
-  RUN_POST_TN: "run_post"
+  TN_RUN_POST: "run_post"
   NNODES_RUN_POST: 2
   PPN_RUN_POST: 24
   WTIME_RUN_POST: 00:15:00
@@ -1930,7 +2009,7 @@ task_run_post:
   #
   # POST_OUTPUT_DOMAIN_NAME:
   # Domain name (in lowercase) used in constructing the names of the output 
-  # files generated by UPP [which is called either by running the RUN_POST_TN 
+  # files generated by UPP [which is called either by running the TN_RUN_POST 
   # task or by activating the inline post feature (WRITE_DOPOST set to true)].  
   # The post output files are named as follows:
   # 
@@ -1961,6 +2040,13 @@ task_run_prdgen:
   KMP_AFFINITY_RUN_PRDGEN: "scatter"
   OMP_NUM_THREADS_RUN_PRDGEN: 1
   OMP_STACKSIZE_RUN_PRDGEN: "1024m"
+  #-----------------------------------------------------------------------
+  #
+  # Flag that determines whether to use CFP to run the product generation
+  # job in parallel.  This should be used with the RRFS_NA_3km grid.
+  #
+  #-----------------------------------------------------------------------
+  DO_PARALLEL_PRDGEN: false
   #
   #
   #-----------------------------------------------------------------------
@@ -1989,7 +2075,7 @@ task_run_prdgen:
 # GET OBS CCPA config parameters
 #-----------------------------
 task_get_obs_ccpa:
-  GET_OBS_CCPA_TN: "get_obs_ccpa"
+  TN_GET_OBS_CCPA: "get_obs_ccpa"
   NNODES_GET_OBS_CCPA: 1
   PPN_GET_OBS_CCPA: 1
   MEM_GET_OBS_CCPA: 2G
@@ -2000,7 +2086,7 @@ task_get_obs_ccpa:
 # GET OBS MRMS config parameters
 #-----------------------------
 task_get_obs_mrms:
-  GET_OBS_MRMS_TN: "get_obs_mrms"
+  TN_GET_OBS_MRMS: "get_obs_mrms"
   NNODES_GET_OBS_MRMS: 1
   PPN_GET_OBS_MRMS: 1
   MEM_GET_OBS_MRMS: 2G
@@ -2011,7 +2097,7 @@ task_get_obs_mrms:
 # GET OBS NDAS config parameters
 #-----------------------------
 task_get_obs_ndas:
-  GET_OBS_NDAS_TN: "get_obs_ndas"
+  TN_GET_OBS_NDAS: "get_obs_ndas"
   NNODES_GET_OBS_NDAS: 1
   PPN_GET_OBS_NDAS: 1
   MEM_GET_OBS_NDAS: 2G
@@ -2022,7 +2108,7 @@ task_get_obs_ndas:
 # VX_GRIDSTAT config parameters
 #-----------------------------
 task_run_vx_gridstat:
-  VX_GRIDSTAT_TN: "run_gridstatvx"
+  TN_VX_GRIDSTAT: "run_gridstatvx"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2033,7 +2119,7 @@ task_run_vx_gridstat:
 # VX_GRIDSTAT_REFC config parameters
 #-----------------------------
 task_run_vx_gridstat_refc:
-  VX_GRIDSTAT_REFC_TN: "run_gridstatvx_refc"
+  TN_VX_GRIDSTAT_REFC: "run_gridstatvx_refc"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2044,7 +2130,7 @@ task_run_vx_gridstat_refc:
 # VX_GRIDSTAT_RETOP config parameters
 #-----------------------------
 task_run_vx_gridstat_retop:
-  VX_GRIDSTAT_RETOP_TN: "run_gridstatvx_retop"
+  TN_VX_GRIDSTAT_RETOP: "run_gridstatvx_retop"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2055,7 +2141,7 @@ task_run_vx_gridstat_retop:
 # VX_GRIDSTAT_03h config parameters
 #-----------------------------
 task_run_vx_gridstat_03h:
-  VX_GRIDSTAT_03h_TN: "run_gridstatvx_03h"
+  TN_VX_GRIDSTAT_03h: "run_gridstatvx_03h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2066,7 +2152,7 @@ task_run_vx_gridstat_03h:
 # VX_GRIDSTAT_06h config parameters
 #-----------------------------
 task_run_vx_gridstat_06h:
-  VX_GRIDSTAT_06h_TN: "run_gridstatvx_06h"
+  TN_VX_GRIDSTAT_06h: "run_gridstatvx_06h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2077,7 +2163,7 @@ task_run_vx_gridstat_06h:
 # VX_GRIDSTAT_24h config parameters
 #-----------------------------
 task_run_vx_gridstat_24h:
-  VX_GRIDSTAT_24h_TN: "run_gridstatvx_24h"
+  TN_VX_GRIDSTAT_24h: "run_gridstatvx_24h"
   NNODES_VX_GRIDSTAT: 1
   PPN_VX_GRIDSTAT: 1
   MEM_VX_GRIDSTAT: 2G
@@ -2088,7 +2174,7 @@ task_run_vx_gridstat_24h:
 # VX_POINTSTAT config parameters
 #-----------------------------
 task_run_vx_pointstat:
-  VX_POINTSTAT_TN: "run_pointstatvx"
+  TN_VX_POINTSTAT: "run_pointstatvx"
   NNODES_VX_POINTSTAT: 1
   PPN_VX_POINTSTAT: 1
   MEM_VX_POINTSTAT: 2G
@@ -2099,27 +2185,26 @@ task_run_vx_pointstat:
 # VX_ENSGRID config parameters
 #-----------------------------
 task_run_vx_ensgrid:
-  VX_ENSGRID_TN: "run_ensgridvx"
+  TN_VX_ENSGRID: "run_ensgridvx"
   MAXTRIES_VX_ENSGRID: 2
-  VX_ENSGRID_03h_TN: "run_ensgridvx_03h"
+  TN_VX_ENSGRID_03h: "run_ensgridvx_03h"
   MAXTRIES_VX_ENSGRID_03h: 2
-  VX_ENSGRID_06h_TN: "run_ensgridvx_06h"
+  TN_VX_ENSGRID_06h: "run_ensgridvx_06h"
   MAXTRIES_VX_ENSGRID_06h: 2
-  VX_ENSGRID_24h_TN: "run_ensgridvx_24h"
+  TN_VX_ENSGRID_24h: "run_ensgridvx_24h"
   MAXTRIES_VX_ENSGRID_24h: 2
-  VX_ENSGRID_RETOP_TN: "run_ensgridvx_retop"
+  TN_VX_ENSGRID_RETOP: "run_ensgridvx_retop"
   MAXTRIES_VX_ENSGRID_RETOP: 2
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
   WTIME_VX_ENSGRID: 01:00:00
 
-
 #----------------------------
 # VX_ENSGRID_REFC config parameters
 #-----------------------------
 task_run_vx_ensgrid_refc:
-  VX_ENSGRID_REFC_TN: "run_ensgridvx_refc"
+  TN_VX_ENSGRID_REFC: "run_ensgridvx_refc"
   NNODES_VX_ENSGRID: 1
   PPN_VX_ENSGRID: 1
   MEM_VX_ENSGRID: 2G
@@ -2130,7 +2215,7 @@ task_run_vx_ensgrid_refc:
 # VX_ENSGRID_MEAN config parameters
 #-----------------------------
 task_run_vx_ensgrid_mean:
-  VX_ENSGRID_MEAN_TN: "run_ensgridvx_mean"
+  TN_VX_ENSGRID_MEAN: "run_ensgridvx_mean"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
@@ -2141,7 +2226,7 @@ task_run_vx_ensgrid_mean:
 # VX_ENSGRID_MEAN_03h config parameters
 #-----------------------------
 task_run_vx_ensgrid_mean_03h:
-  VX_ENSGRID_MEAN_03h_TN: "run_ensgridvx_mean_03h"
+  TN_VX_ENSGRID_MEAN_03h: "run_ensgridvx_mean_03h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
@@ -2152,7 +2237,7 @@ task_run_vx_ensgrid_mean_03h:
 # VX_ENSGRID_MEAN_06h config parameters
 #-----------------------------
 task_run_vx_ensgrid_mean_06h:
-  VX_ENSGRID_MEAN_06h_TN: "run_ensgridvx_mean_06h"
+  TN_VX_ENSGRID_MEAN_06h: "run_ensgridvx_mean_06h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
@@ -2163,7 +2248,7 @@ task_run_vx_ensgrid_mean_06h:
 # VX_ENSGRID_MEAN_24h config parameters
 #-----------------------------
 task_run_vx_ensgrid_mean_24h:
-  VX_ENSGRID_MEAN_24h_TN: "run_ensgridvx_mean_24h"
+  TN_VX_ENSGRID_MEAN_24h: "run_ensgridvx_mean_24h"
   NNODES_VX_ENSGRID_MEAN: 1
   PPN_VX_ENSGRID_MEAN: 1
   MEM_VX_ENSGRID_MEAN: 2G
@@ -2174,11 +2259,11 @@ task_run_vx_ensgrid_mean_24h:
 # VX_ENSGRID_PROB config parameters
 #-----------------------------
 task_run_vx_ensgrid_prob:
-  VX_ENSGRID_PROB_TN: "run_ensgridvx_prob"
+  TN_VX_ENSGRID_PROB: "run_ensgridvx_prob"
   NNODES_VX_ENSGRID_PROB: 1
-  VX_ENSGRID_PROB_RETOP_TN: "run_ensgridvx_prob_retop"
+  TN_VX_ENSGRID_PROB_RETOP: "run_ensgridvx_prob_retop"
   MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
-  VX_ENSGRID_PROB_REFC_TN: "run_ensgridvx_prob_refc"
+  TN_VX_ENSGRID_PROB_REFC: "run_ensgridvx_prob_refc"
   MAXTRIES_VX_ENSGRID_PROB_REFC: 2
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
@@ -2189,7 +2274,7 @@ task_run_vx_ensgrid_prob:
 # VX_ENSGRID_PROB_03h config parameters
 #-----------------------------
 task_run_vx_ensgrid_prob_03h:
-  VX_ENSGRID_PROB_03h_TN: "run_ensgridvx_prob_03h"
+  TN_VX_ENSGRID_PROB_03h: "run_ensgridvx_prob_03h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
@@ -2200,7 +2285,7 @@ task_run_vx_ensgrid_prob_03h:
 # VX_ENSGRID_PROB_06h config parameters
 #-----------------------------
 task_run_vx_ensgrid_prob_06h:
-  VX_ENSGRID_PROB_06h_TN: "run_ensgridvx_prob_06h"
+  TN_VX_ENSGRID_PROB_06h: "run_ensgridvx_prob_06h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
@@ -2211,7 +2296,7 @@ task_run_vx_ensgrid_prob_06h:
 # VX_ENSGRID_PROB_24h config parameters
 #-----------------------------
 task_run_vx_ensgrid_prob_24h:
-  VX_ENSGRID_PROB_24h_TN: "run_ensgridvx_prob_24h"
+  TN_VX_ENSGRID_PROB_24h: "run_ensgridvx_prob_24h"
   NNODES_VX_ENSGRID_PROB: 1
   PPN_VX_ENSGRID_PROB: 1
   MEM_VX_ENSGRID_PROB: 2G
@@ -2222,7 +2307,7 @@ task_run_vx_ensgrid_prob_24h:
 # VX_ENSPOINT config parameters
 #-----------------------------
 task_run_vx_enspoint:
-  VX_ENSPOINT_TN: "run_enspointvx"
+  TN_VX_ENSPOINT: "run_enspointvx"
   NNODES_VX_ENSPOINT: 1
   PPN_VX_ENSPOINT: 1
   MEM_VX_ENSPOINT: 2G
@@ -2233,7 +2318,7 @@ task_run_vx_enspoint:
 # VX_ENSPOINT_MEAN config parameters
 #-----------------------------
 task_run_vx_enspoint_mean:
-  VX_ENSPOINT_MEAN_TN: "run_enspointvx_mean"
+  TN_VX_ENSPOINT_MEAN: "run_enspointvx_mean"
   NNODES_VX_ENSPOINT_MEAN: 1
   PPN_VX_ENSPOINT_MEAN: 1
   MEM_VX_ENSPOINT_MEAN: 2G
@@ -2244,7 +2329,7 @@ task_run_vx_enspoint_mean:
 # VX_ENSPOINT_PROB config parameters
 #-----------------------------
 task_run_vx_enspoint_prob:
-  VX_ENSPOINT_PROB_TN: "run_enspointvx_prob"
+  TN_VX_ENSPOINT_PROB: "run_enspointvx_prob"
   NNODES_VX_ENSPOINT_PROB: 1
   PPN_VX_ENSPOINT_PROB: 1
   MEM_VX_ENSPOINT_PROB: 2G
@@ -2255,7 +2340,7 @@ task_run_vx_enspoint_prob:
 # PLOT_ALLVARS config parameters
 #-----------------------------
 task_plot_allvars:
-  PLOT_ALLVARS_TN: "plot_allvars"
+  TN_PLOT_ALLVARS: "plot_allvars"
   NNODES_PLOT_ALLVARS: 1
   PPN_PLOT_ALLVARS: 24
   WTIME_PLOT_ALLVARS: 01:00:00
@@ -2283,6 +2368,146 @@ task_plot_allvars:
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
 
+#----------------------------
+# AQM_ICS config parameters
+#-----------------------------
+task_aqm_ics:
+  TN_AQM_ICS: "aqm_ics"
+  NNODES_AQM_ICS: 1
+  PPN_AQM_ICS: 1
+  WTIME_AQM_ICS: 00:30:00
+  MAXTRIES_AQM_ICS: 2
+
+#----------------------------
+# AQM_LBCS config parameters
+#-----------------------------
+task_aqm_lbcs:
+  TN_AQM_LBCS: "aqm_lbcs"
+  NNODES_AQM_LBCS: 1
+  PPN_AQM_LBCS: 24
+  WTIME_AQM_LBCS: 00:30:00
+  MAXTRIES_AQM_LBCS: 2
+
+#----------------------------
+# NEXUS_GFS_SFC config parameters
+#-----------------------------
+task_nexus_gfs_sfc:
+  TN_NEXUS_GFS_SFC: "nexus_gfs_sfc"
+  NNODES_NEXUS_GFS_SFC: 1
+  PPN_NEXUS_GFS_SFC: 1
+  MEM_NEXUS_GFS_SFC: 2G
+  WTIME_NEXUS_GFS_SFC: 00:30:00
+  MAXTRIES_NEXUS_GFS_SFC: 2
+
+#----------------------------
+# NEXUS_EMISSION config parameters
+#-----------------------------
+task_nexus_emission:
+  TN_NEXUS_EMISSION: "nexus_emission"
+  NNODES_NEXUS_EMISSION: 4
+  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  WTIME_NEXUS_EMISSION: 01:00:00
+  MAXTRIES_NEXUS_EMISSION: 2
+  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+  OMP_NUM_THREADS_NEXUS_EMISSION: 2
+  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+#----------------------------
+# NEXUS_POST_SPLIT config parameters
+#-----------------------------
+task_nexus_post_split:
+  TN_NEXUS_POST_SPLIT: "nexus_post_split"
+  NNODES_NEXUS_POST_SPLIT: 1
+  PPN_NEXUS_POST_SPLIT: 1
+  WTIME_NEXUS_POST_SPLIT: 00:30:00
+  MAXTRIES_NEXUS_POST_SPLIT: 2
+
+#----------------------------
+# FIRE_EMISSION config parameters
+#-----------------------------
+task_fire_emission:
+  TN_FIRE_EMISSION: "fire_emission"
+  NNODES_FIRE_EMISSION: 1
+  PPN_FIRE_EMISSION: 1
+  MEM_FIRE_EMISSION: 2G
+  WTIME_FIRE_EMISSION: 00:30:00
+  MAXTRIES_FIRE_EMISSION: 2
+
+#----------------------------
+# POINT_SOURCE config parameters
+#-----------------------------
+task_point_source:
+  TN_POINT_SOURCE: "point_source"
+  NNODES_POINT_SOURCE: 1
+  PPN_POINT_SOURCE: 1 
+  WTIME_POINT_SOURCE: 01:00:00
+  MAXTRIES_POINT_SOURCE: 2
+
+#----------------------------
+# PRE_POST_STAT config parameters
+#-----------------------------
+task_pre_post_stat:
+  TN_PRE_POST_STAT: "pre_post_stat"
+  NNODES_PRE_POST_STAT: 1
+  PPN_PRE_POST_STAT: 1
+  WTIME_PRE_POST_STAT: 00:30:00
+  MAXTRIES_PRE_POST_STAT: 2
+
+#----------------------------
+# POST_STAT_O3 config parameters
+#-----------------------------
+task_post_stat_o3:
+  TN_POST_STAT_O3: "post_stat_o3"
+  NNODES_POST_STAT_O3: 1
+  PPN_POST_STAT_O3: 1
+  MEM_POST_STAT_O3: 120G 
+  WTIME_POST_STAT_O3: 00:30:00
+  MAXTRIES_POST_STAT_O3: 2
+  KMP_AFFINITY_POST_STAT_O3: "scatter"
+  OMP_NUM_THREADS_POST_STAT_O3: 1
+  OMP_STACKSIZE_POST_STAT_O3: "2056M"
+
+#----------------------------
+# POST_STAT_PM25 config parameters
+#-----------------------------
+task_post_stat_pm25:
+  TN_POST_STAT_PM25: "post_stat_pm25"
+  NNODES_POST_STAT_PM25: 1
+  PPN_POST_STAT_PM25: 1
+  MEM_POST_STAT_PM25: 120G
+  WTIME_POST_STAT_PM25: 00:30:00
+  MAXTRIES_POST_STAT_PM25: 2
+  KMP_AFFINITY_POST_STAT_PM25: "scatter"
+  OMP_NUM_THREADS_POST_STAT_PM25: 1
+  OMP_STACKSIZE_POST_STAT_PM25: "2056M"
+
+#----------------------------
+# BIAS_CORRECTION_O3 config parameters
+#-----------------------------
+task_bias_correction_o3:
+  TN_BIAS_CORRECTION_O3: "bias_correction_o3"
+  NNODES_BIAS_CORRECTION_O3: 1
+  PPN_BIAS_CORRECTION_O3: 1
+  MEM_BIAS_CORRECTION_O3: 120G
+  WTIME_BIAS_CORRECTION_O3: 00:30:00
+  MAXTRIES_BIAS_CORRECTION_O3: 2
+  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_O3: 128
+  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
+
+#----------------------------
+# BIAS_CORRECTION_PM25 config parameters
+#-----------------------------
+task_bias_correction_pm25:
+  TN_BIAS_CORRECTION_PM25: "bias_correction_pm25"
+  NNODES_BIAS_CORRECTION_PM25: 1
+  PPN_BIAS_CORRECTION_PM25: 1
+  MEM_BIAS_CORRECTION_PM25: 120G
+  WTIME_BIAS_CORRECTION_PM25: 00:30:00
+  MAXTRIES_BIAS_CORRECTION_PM25: 2
+  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 128
+  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
 # global config parameters
@@ -2459,4 +2684,181 @@ global:
 #-----------------------------
 verification:
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
+
+#----------------------------
+# CPL_AQM config parameters
+#-----------------------------
+cpl_aqm_parm:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # CPL_AQM:
+  # Coupling flag for air quality modeling
+  #
+  # DO_AQM_DUST:
+  # Flag turning on/off AQM dust option in AQM_RC
+  #
+  # DO_AQM_CANOPY
+  # Flag turning on/off AQM canopy option in AQM_RC
+  # 
+  # DO_AQM_PRODUCT
+  # Flag turning on/off AQM output products in AQM_RC
+  # 
+  # DO_AQM_CHEM_LBCS:
+  # Add chemical LBCs to chemical LBCs
+  # 
+  # DO_AQM_GEFS_LBCS:
+  # Add GEFS aerosol LBCs to chemical LBCs
+  #
+  # DO_AQM_SAVE_AIRNOW_HIST:
+  # Save bias-correction airnow training data
+  #
+  # DO_AQM_SAVE_FIRE:
+  # Archive fire emission file to HPSS
+  #
+  # AQM_CONFIG_DIR:
+  # Configuration directory for AQM
+  # 
+  # AQM_BIO_DIR:
+  # Path to the directory containing AQM bio files
+  # 
+  # AQM_BIO_FILE:
+  # File name of AQM BIO file
+  #
+  # AQM_DUST_DIR:
+  # Path to the directory containing AQM dust file
+  #
+  # AQM_DUST_FILE_PREFIX:
+  # Frefix of AQM dust file
+  #
+  # AQM_DUST_FILE_SUFFIX:
+  # Suffix and extension of AQM dust file
+  #
+  # AQM_CANOPY_DIR:
+  # Path to the directory containing AQM canopy files
+  # 
+  # AQM_CANOPY_FILE_PREFIX:
+  # File name of AQM canopy file
+  #
+  # AQM_CANOPY_FILE_SUFFIX:
+  # Suffix and extension of AQM CANOPY file
+  # 
+  # AQM_FIRE_DIR:
+  # Path to the directory containing AQM fire files
+  # 
+  # AQM_FIRE_FILE_PREFIX:
+  # Prefix of AQM FIRE file
+  # 
+  # AQM_FIRE_FILE_SUFFIX:
+  # Suffix and extension of AQM FIRE file
+  #
+  # AQM_FIRE_ARCHV_DIR:
+  # Path to the archive directory for RAVE emission files on HPSS
+  #
+  # AQM_RC_FIRE_FREQUENCY:
+  # Fire frequency in aqm.rc
+  #
+  # AQM_RC_PRODUCT_FN:
+  # File name of AQM output products
+  #
+  # AQM_RC_PRODUCT_FREQUENCY:
+  # Frequency of AQM output products
+  #
+  # AQM_LBCS_DIR:
+  # Path to the directory containing chemical LBC files
+  # 
+  # AQM_LBCS_FILES:
+  # File name of chemical LBCs
+  #
+  # AQM_GEFS_DIR:
+  # Path to the directory containing GEFS aerosol LBC files
+  #
+  # AQM_GEFS_FILE_PREFIX:
+  # Prefix of AQM GEFS file ("geaer" or "gfs")
+  #
+  # AQM_GEFS_FILE_CYC:
+  # Cycle of the GEFS aerosol LBC files only if it is fixed
+  # 
+  # NEXUS_INPUT_DIR:
+  # Same as GRID_DIR but for the the air quality emission generation task.
+  # Should be blank for the default value specified in setup.sh
+  # 
+  # NEXUS_FIX_DIR:
+  # Directory containing grid_spec files as the input file of nexus
+  # 
+  # NEXUS_GRID_FN:
+  # File name of the input grid_spec file of nexus
+  #
+  # NUM_SPLIT_NEXUS:
+  # Number of split nexus emission tasks
+  #
+  # NEXUS_GFS_SFC_OFFSET_HRS: 0
+  # Time offset when retrieving gfs surface data files
+  # 
+  # NEXUS_GFS_SFC_DIR:
+  # Path to directory containing GFS surface data files
+  # This is set to COMINgfs when DO_REAL_TIME=TRUE. 
+  #
+  # NEXUS_GFS_SFC_ARCHV_DIR: 
+  # Path to archive directory for gfs surface files on HPSS
+  #
+  # PT_SRC_BASEDIR:
+  # Parent directory containing point source files for CONUS/AK/HI
+  #
+  # AQM_AIRNOW_HIST_DIR:
+  # Path to the directory where the historical AIRNOW data are located
+  #
+  #-----------------------------------------------------------------------
+  #
+  CPL_AQM: false
+
+  DO_AQM_DUST: true
+  DO_AQM_CANOPY: false
+  DO_AQM_PRODUCT: true
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: false
+  DO_AQM_SAVE_AIRNOW_HIST: false
+  DO_AQM_SAVE_FIRE: false
+
+  AQM_CONFIG_DIR: ""
+  AQM_BIO_DIR: ""
+  AQM_BIO_FILE: "BEIS_SARC401.ncf"
+
+  AQM_DUST_DIR: "/path/to/dust/dir"
+  AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
+  AQM_DUST_FILE_SUFFIX: ".nc"
+
+  AQM_CANOPY_DIR: "/path/to/canopy/dir"
+  AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
+  AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
+
+  AQM_FIRE_DIR: ""
+  AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
+  AQM_FIRE_FILE_SUFFIX: ".nc"
+  AQM_FIRE_FILE_OFFSET_HRS: 0
+  AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
+
+  AQM_RC_FIRE_FREQUENCY: "static"
+  AQM_RC_PRODUCT_FN: "aqm.prod.nc"
+  AQM_RC_PRODUCT_FREQUENCY: "hourly"
+
+  AQM_LBCS_DIR: ""
+  AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
+
+  AQM_GEFS_DIR: ""
+  AQM_GEFS_FILE_PREFIX: "geaer"
+  AQM_GEFS_FILE_CYC: ""
+
+  NEXUS_INPUT_DIR: ""
+  NEXUS_FIX_DIR: ""
+  NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
+  NUM_SPLIT_NEXUS: 3
+  NEXUS_GFS_SFC_OFFSET_HRS: 0
+  NEXUS_GFS_SFC_DIR: ""
+  NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+
+  PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
+
+  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+

@@ -181,8 +181,8 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | FCST_MODEL, WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,                        |
    |                             | EXTRN_MDL_VAR_DEFNS_FN, WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN,  |
    |                             | CCPP_PHYS_SUITE, GRID_GEN_METHOD, DATE_FIRST_CYCL, DATE_LAST_CYCL,    |
-   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, VX_TN, VX_ENSGRID_TN,          |
-   |                             | VX_ENSGRID_PROB_REFC_TN, MAXTRIES_VX_ENSGRID_PROB_REFC,               |
+   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, TN_VX, TN_VX_ENSGRID,          |
+   |                             | TN_VX_ENSGRID_PROB_REFC, MAXTRIES_VX_ENSGRID_PROB_REFC,               |
    |                             | PREEXISTING_DIR_METHOD, VERBOSE, DEBUG, COMPILER                      |
    +-----------------------------+-----------------------------------------------------------------------+
    | NCO                         | envir, NET, model_ver, RUN, OPSROOT                                   |
@@ -194,7 +194,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,     |
    |                             | RUN_TASK_VX_ENSPOINT                                                  |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_grid              | MAKE_GRID_TN, NNODES_MAKE_GRID, PPN_MAKE_GRID, WTIME_MAKE_GRID,       |
+   | task_make_grid              | TN_MAKE_GRID, NNODES_MAKE_GRID, PPN_MAKE_GRID, WTIME_MAKE_GRID,       |
    |                             | MAXTRIES_MAKE_GRID, GRID_DIR, ESGgrid_LON_CTR, ESGgrid_LAT_CTR,       |
    |                             | ESGgrid_DELX, ESGgrid_DELY, ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI,     |
    |                             | ESGgrid_WIDE_HALO_WIDTH, GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR,    |
@@ -203,16 +203,16 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G, |
    |                             | GFDLgrid_USE_NUM_CELLS_IN_FILENAMES                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_orog              | MAKE_OROG_TN, NNODES_MAKE_OROG, PPN_MAKE_OROG, WTIME_MAKE_OROG,       |
+   | task_make_orog              | TN_MAKE_OROG, NNODES_MAKE_OROG, PPN_MAKE_OROG, WTIME_MAKE_OROG,       |
    |                             | MAXTRIES_MAKE_OROG, KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG |
    |                             | OMP_STACKSIZE_MAKE_OROG, OROG_DIR                                     |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_sfc_climo         | MAKE_SFC_CLIMO_TN, NNODES_MAKE_SFC_CLIMO, PPN_MAKE_SFC_CLIMO,         |
+   | task_make_sfc_climo         | TN_MAKE_SFC_CLIMO, NNODES_MAKE_SFC_CLIMO, PPN_MAKE_SFC_CLIMO,         |
    |                             | WTIME_MAKE_SFC_CLIMO, MAXTRIES_MAKE_SFC_CLIMO,                        |
    |                             | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
    |                             | OMP_STACKSIZE_MAKE_SFC_CLIMO, SFC_CLIMO_DIR                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_ics          | GET_EXTRN_ICS_TN, NNODES_GET_EXTRN_ICS, PPN_GET_EXTRN_ICS,            |
+   | task_get_extrn_ics          | TN_GET_EXTRN_ICS, NNODES_GET_EXTRN_ICS, PPN_GET_EXTRN_ICS,            |
    |                             | WTIME_GET_EXTRN_ICS, MAXTRIES_GET_EXTRN_ICS, EXTRN_MDL_NAME_ICS,      |
    |                             | EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,                        |
    |                             | EXTRN_MDL_SYSBASEDIR_ICS, USE_USER_STAGED_EXTRN_FILES,                |
@@ -220,23 +220,23 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | EXTRN_MDL_FILES_ICS, EXTRN_MDL_FILES_ICS, EXTRN_MDL_DATA_STORES,      |
    |                             | NOMADS, NOMADS_file_type                                              |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_lbcs         | GET_EXTRN_LBCS_TN, NNODES_GET_EXTRN_LBCS, PPN_GET_EXTRN_LBCS,         |
+   | task_get_extrn_lbcs         | TN_GET_EXTRN_LBCS, NNODES_GET_EXTRN_LBCS, PPN_GET_EXTRN_LBCS,         |
    |                             | WTIME_GET_EXTRN_LBCS, MAXTRIES_GET_EXTRN_LBCS, EXTRN_MDL_NAME_LBCS,   |
    |                             | LBC_SPEC_INTVL_HRS, EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_LBCS,  |
    |                             | EXTRN_MDL_SYSBASEDIR_LBCS, USE_USER_STAGED_EXTRN_FILES,               |
    |                             | EXTRN_MDL_SOURCE_BASEDIR_LBCS, EXTRN_MDL_FILES_LBCS,                  |
    |                             | EXTRN_MDL_DATA_STORE, NOMADS, NOMADS_file_type                        |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_ics               | MAKE_ICS_TN, NNODES_MAKE_ICS, PPN_MAKE_ICS, WTIME_MAKE_ICS,           |
+   | task_make_ics               | TN_MAKE_ICS, NNODES_MAKE_ICS, PPN_MAKE_ICS, WTIME_MAKE_ICS,           |
    |                             | MAXTRIES_MAKE_ICS, KMP_AFFINITY_MAKE_ICS, OMP_NUM_THREADS_MAKE_ICS,   |
    |                             | OMP_STACKSIZE_MAKE_ICS, USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR,          |
    |                             | FVCOM_FILE                                                            |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_lbcs              | MAKE_LBCS_TN, NNODES_MAKE_LBCS, PPN_MAKE_LBCS, WTIME_MAKE_LBCS,       |
+   | task_make_lbcs              | TN_MAKE_LBCS, NNODES_MAKE_LBCS, PPN_MAKE_LBCS, WTIME_MAKE_LBCS,       |
    |                             | MAXTRIES_MAKE_LBCS, KMP_AFFINITY_MAKE_LBCS, OMP_NUM_THREADS_MAKE_LBCS,| 
    |                             | OMP_STACKSIZE_MAKE_LBCS                                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_fcst               | RUN_FCST_TN, NNODES_RUN_FCST, PPN_RUN_FCST, WTIME_RUN_FCST,           |
+   | task_run_fcst               | TN_RUN_FCST, NNODES_RUN_FCST, PPN_RUN_FCST, WTIME_RUN_FCST,           |
    |                             | MAXTRIES_RUN_FCST, KMP_AFFINITY_RUN_FCST, OMP_NUM_THREADS_RUN_FCST,   |
    |                             | OMP_STACKSIZE_RUN_FCST, DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST,     |
    |                             | LAYOUT_X, LAYOUT_Y, BLOCKSIZE, QUILTING, PRINT_ESMF,                  |
@@ -252,7 +252,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                           |
    |                             | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                                 |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_post               | RUN_POST_TN, NNODES_RUN_POST, PPN_RUN_POST, WTIME_RUN_POST,           | 
+   | task_run_post               | TN_RUN_POST, NNODES_RUN_POST, PPN_RUN_POST, WTIME_RUN_POST,           | 
    |                             | MAXTRIES_RUN_POST, KMP_AFFINITY_RUN_POST, OMP_NUM_THREADS_RUN_POST,   |
    |                             | OMP_STACKSIZE_RUN_POST, SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS,     |
    |                             | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,                   |
@@ -268,77 +268,77 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | LSM_SPP_TSCALE, LSM_SPP_LSCALE, ISEED_LSM_SPP, LSM_SPP_VAR_LIST,      |
    |                             | LSM_SPP_MAG_LIST, HALO_BLEND                                          |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_ccpa           | GET_OBS_CCPA_TN, NNODES_GET_OBS_CCPA, PPN_GET_OBS_CCPA,               |
+   | task_get_obs_ccpa           | TN_GET_OBS_CCPA, NNODES_GET_OBS_CCPA, PPN_GET_OBS_CCPA,               |
    |                             | WTIME_GET_OBS_CCPA, MAXTRIES_GET_OBS_CCPA                             |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_mrms           | GET_OBS_MRMS_TN, NNODES_GET_OBS_MRMS, PPN_GET_OBS_MRMS,               |
+   | task_get_obs_mrms           | TN_GET_OBS_MRMS, NNODES_GET_OBS_MRMS, PPN_GET_OBS_MRMS,               |
    |                             | WTIME_GET_OBS_MRMS, MAXTRIES_GET_OBS_MRMS                             |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_ndas           | GET_OBS_NDAS_TN, NNODES_GET_OBS_NDAS, PPN_GET_OBS_NDAS,               |
+   | task_get_obs_ndas           | TN_GET_OBS_NDAS, NNODES_GET_OBS_NDAS, PPN_GET_OBS_NDAS,               |
    |                             | WTIME_GET_OBS_NDAS, MAXTRIES_GET_OBS_NDAS                             |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat        | VX_GRIDSTAT_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,                  |
+   | task_run_vx_gridstat        | TN_VX_GRIDSTAT, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,                  |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_refc   | VX_GRIDSTAT_REFC_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,             |
+   | task_run_vx_gridstat_refc   | TN_VX_GRIDSTAT_REFC, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,             |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_REFC                          |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_retop  | VX_GRIDSTAT_RETOP_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,            |
+   | task_run_vx_gridstat_retop  | TN_VX_GRIDSTAT_RETOP, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,            |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_RETOP                         |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_03h    | VX_GRIDSTAT_03h_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
+   | task_run_vx_gridstat_03h    | TN_VX_GRIDSTAT_03h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_03h                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_06h    | VX_GRIDSTAT_06h_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
+   | task_run_vx_gridstat_06h    | TN_VX_GRIDSTAT_06h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_06h                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_24h    | VX_GRIDSTAT_24h_TN, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
+   | task_run_vx_gridstat_24h    | TN_VX_GRIDSTAT_24h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
    |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_24h                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_pointstat       | VX_POINTSTAT_TN, NNODES_VX_POINTSTAT, PPN_VX_POINTSTAT,               |
+   | task_run_vx_pointstat       | TN_VX_POINTSTAT, NNODES_VX_POINTSTAT, PPN_VX_POINTSTAT,               |
    |                             | WTIME_VX_POINTSTAT, MAXTRIES_VX_POINTSTAT                             |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid         | VX_ENSGRID_03h_TN, MAXTRIES_VX_ENSGRID_03h, VX_ENSGRID_06h_TN,        |
-   |                             | MAXTRIES_VX_ENSGRID_06h, VX_ENSGRID_24h_TN, MAXTRIES_VX_ENSGRID_24h,  |
-   |                             | VX_ENSGRID_RETOP_TN, MAXTRIES_VX_ENSGRID_RETOP,                       |
-   |                             | VX_ENSGRID_PROB_RETOP_TN, MAXTRIES_VX_ENSGRID_PROB_RETOP,             |
+   | task_run_vx_ensgrid         | TN_VX_ENSGRID_03h, MAXTRIES_VX_ENSGRID_03h, TN_VX_ENSGRID_06h,        |
+   |                             | MAXTRIES_VX_ENSGRID_06h, TN_VX_ENSGRID_24h, MAXTRIES_VX_ENSGRID_24h,  |
+   |                             | TN_VX_ENSGRID_RETOP, MAXTRIES_VX_ENSGRID_RETOP,                       |
+   |                             | TN_VX_ENSGRID_PROB_RETOP, MAXTRIES_VX_ENSGRID_PROB_RETOP,             |
    |                             | NNODES_VX_ENSGRID, PPN_VX_ENSGRID, WTIME_VX_ENSGRID,                  |
    |                             | MAXTRIES_VX_ENSGRID                                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_refc    | VX_ENSGRID_REFC_TN, NNODES_VX_ENSGRID, PPN_VX_ENSGRID,                |
+   | task_run_vx_ensgrid_refc    | TN_VX_ENSGRID_REFC, NNODES_VX_ENSGRID, PPN_VX_ENSGRID,                |
    |                             | WTIME_VX_ENSGRID, MAXTRIES_VX_ENSGRID_REFC                            |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean    | VX_ENSGRID_MEAN_TN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,      |
+   | task_run_vx_ensgrid_mean    | TN_VX_ENSGRID_MEAN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,      |
    |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN                       |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_03h| VX_ENSGRID_MEAN_03h_TN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
+   | task_run_vx_ensgrid_mean_03h| TN_VX_ENSGRID_MEAN_03h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
    |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_03h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_06h| VX_ENSGRID_MEAN_06h_TN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
+   | task_run_vx_ensgrid_mean_06h| TN_VX_ENSGRID_MEAN_06h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
    |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_06h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_24h| VX_ENSGRID_MEAN_24h_TN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
+   | task_run_vx_ensgrid_mean_24h| TN_VX_ENSGRID_MEAN_24h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
    |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_24h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob    | VX_ENSGRID_PROB_TN, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,      |
+   | task_run_vx_ensgrid_prob    | TN_VX_ENSGRID_PROB, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,      |
    |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB                       |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_03h| VX_ENSGRID_PROB_03h_TN, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
+   | task_run_vx_ensgrid_prob_03h| TN_VX_ENSGRID_PROB_03h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
    |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_03h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_06h| VX_ENSGRID_PROB_06h_TN, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
+   | task_run_vx_ensgrid_prob_06h| TN_VX_ENSGRID_PROB_06h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
    |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_06h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_24h| VX_ENSGRID_PROB_24h_TN, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
+   | task_run_vx_ensgrid_prob_24h| TN_VX_ENSGRID_PROB_24h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
    |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_24h                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint        | VX_ENSPOINT_TN, NNODES_VX_ENSPOINT, PPN_VX_ENSPOINT,                  |
+   | task_run_vx_enspoint        | TN_VX_ENSPOINT, NNODES_VX_ENSPOINT, PPN_VX_ENSPOINT,                  |
    |                             | WTIME_VX_ENSPOINT, MAXTRIES_VX_ENSPOINT                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint_mean   | VX_ENSPOINT_MEAN_TN, NNODES_VX_ENSPOINT_MEAN, PPN_VX_ENSPOINT_MEAN,   |
+   | task_run_vx_enspoint_mean   | TN_VX_ENSPOINT_MEAN, NNODES_VX_ENSPOINT_MEAN, PPN_VX_ENSPOINT_MEAN,   |
    |                             | WTIME_VX_ENSPOINT_MEAN, MAXTRIES_VX_ENSPOINT_MEAN                     |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint_prob   | VX_ENSPOINT_PROB_TN, NNODES_VX_ENSPOINT_PROB, PPN_VX_ENSPOINT_PROB,   |
+   | task_run_vx_enspoint_prob   | TN_VX_ENSPOINT_PROB, NNODES_VX_ENSPOINT_PROB, PPN_VX_ENSPOINT_PROB,   |
    |                             | WTIME_VX_ENSPOINT_PROB, MAXTRIES_VX_ENSPOINT_PROB                     |
    +-----------------------------+-----------------------------------------------------------------------+
    
@@ -537,8 +537,8 @@ To configure an experiment and python environment for a general Linux or Mac sys
 
 .. _PlotOutput:
 
-Plot the Output
------------------
+Plotting Configuration (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
@@ -561,12 +561,12 @@ the same cycle starting date/time and forecast hours. Other parameters may diffe
 .. _Cartopy:
 
 Cartopy Shapefiles
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
 
 Task Configuration
-^^^^^^^^^^^^^^^^^^^^^
+`````````````````````
 
 Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
 
@@ -593,16 +593,16 @@ When plotting output from a single experiment, no further adjustments are necess
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
 
 Plotting the Difference Between Two Experiments
-```````````````````````````````````````````````````
+""""""""""""""""""""""""""""""""""""""""""""""""""
 
-When plotting the difference between two experiments, users must set the baseline experiment directory using the ``COMOUT_REF`` template variable. For example, in *community* mode, users can set:
+When plotting the difference between two experiments (``expt1`` and ``expt2``), users must set the ``COMOUT_REF`` template variable in ``expt2``'s ``config.yaml`` file to point at forecast output from the ``expt1`` directory. For example, in *community* mode, users can set ``COMOUT_REF`` as follows in the ``expt2`` configuration file:
 
 .. code-block:: console
 
    task_plot_allvars:
-      COMOUT_REF: '${EXPT_BASEDIR}/${EXPT_SUBDIR}/${PDY}${cyc}/postprd'
+      COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
 
-In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`` and ``expt2``. In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
 
 The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 

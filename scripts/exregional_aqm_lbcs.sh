@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -60,6 +60,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
+set -x
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
@@ -102,7 +103,7 @@ if [ "${FCST_LEN_HRS}" = "-1" ]; then
   done
 fi
 LBC_SPEC_FCST_HRS=()
-for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
+for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} ); do
   LBC_SPEC_FCST_HRS+=("$i_lbc")
 done
 
@@ -143,18 +144,29 @@ fi
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 
   RUN_CYC="${cyc}"
+  CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
+  PDY_MOD=${CDATE_MOD:0:8}
+  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${CDATE_MOD:8:2}"}
+  AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
+  AQM_MOFILE_FN="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   if [ ${DO_REAL_TIME} = "TRUE" ]; then
-    CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
-    PDY_MOD=${CDATE_MOD:0:8}
-    AQM_GEFS_CYC=$( printf "%02d" ${CDATE_MOD:8:2} )
-    AQM_MOFILE_FN="${AQM_GEFS_DIR}/gefs.${PDY_MOD}/${AQM_GEFS_CYC}/chem/sfcsig/geaer.t${AQM_GEFS_CYC}z.atmf"
+    AQM_MOFILE_FP="${COMINgefs}/gefs.${PDY_MOD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_GEFS_CYC=$( printf "%02d" "${AQM_GEFS_CYC}" )
-    AQM_MOFILE_FN="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_CYC}/gfs.t00z.atmf"
+    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
-  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_CYC ))" )
+  # Check if GEFS aerosol files exist
+  for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
+    fhr=$( printf "%03d" "${hr}" )
+    AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
+    if [ ! -e "${AQM_MOFILE_FHR_FP}" ]; then
+      print_err_msg_exit "The GEFS file (AQM_MOFILE_FHR_FP) for LBCs does not exist:
+      AQM_MOFILE_FHR_FP = \"${AQM_MOFILE_FHR_FP}\""  
+    fi
+  done
+
+  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_FILE_CYC ))" )
   NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
 cat > gefs2lbc-nemsio.ini <<EOF
@@ -162,7 +174,7 @@ cat > gefs2lbc-nemsio.ini <<EOF
  tstepdiff=${GEFS_CYC_DIFF}
  dtstep=${LBC_SPEC_INTVL_HRS}
  bndname='aothrj','aecj','aorgcj','asoil','numacc','numcor'
- mofile='${AQM_MOFILE_FN}','.nemsio'
+ mofile='${AQM_MOFILE_FP}','.nemsio'
  lbcfile='${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
  topofile='${OROG_DIR}/${CRES}_oro_data.tile7.halo4.nc'
 &end

@@ -201,7 +201,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['user'][val]} is not in a valid date format.
+                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
                             For examples of valid formats, see the Users' Guide.
                             """
@@ -419,6 +419,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
+    workflow_switches = expt_config["workflow_switches"]
+    run_task_make_grid = workflow_switches['RUN_TASK_MAKE_GRID']
+    run_task_make_orog = workflow_switches['RUN_TASK_MAKE_OROG']
+    run_task_make_sfc_climo = workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']
+
     # Necessary tasks are turned on
     pregen_basedir = expt_config["platform"].get("DOMAIN_PREGEN_BASEDIR")
     if pregen_basedir is None and not (
@@ -516,9 +521,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    # Gather the pre-defined grid parameters, if needed
     fcst_config = expt_config["task_run_fcst"]
     grid_config = expt_config["task_make_grid"]
+
+    # Warn if user has specified a large timestep inappropriately
+    hires_ccpp_suites = ["FV3_RRFS_v1beta", "FV3_WoFS_v0", "FV3_HRRR"]
+    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites:
+        dt = fcst_config.get("DT_ATMOS")
+        if dt:
+            if dt > 40:
+                logger.warning(dedent(
+                    f"""
+                    WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                    time step regardless of grid resolution. The user-specified value
+                    DT_ATMOS = {fcst_config.get("DT_ATMOS")}
+                    may result in CFL violations or other errors!
+                    """
+                ))
+
+    # Gather the pre-defined grid parameters, if needed
     if workflow_config.get("PREDEF_GRID_NAME"):
         grid_params = set_predef_grid_params(
             USHdir,
@@ -535,6 +556,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     continue
                 elif isinstance(param_val, (int, float)):
                     continue
+                # DT_ATMOS needs special treatment based on CCPP suite
+                elif param == "DT_ATMOS":
+                    if workflow_config["CCPP_PHYS_SUITE"] in hires_ccpp_suites and grid_params[param] > 40:
+                        logger.warning(dedent(
+                            f"""
+                            WARNING: CCPP suite {workflow_config["CCPP_PHYS_SUITE"]} requires short
+                            time step regardless of grid resolution; setting DT_ATMOS to 40.\n
+                            This value can be overwritten in the user config file.
+                            """
+                        ))
+                        fcst_config[param] = 40
+                    else:
+                        fcst_config[param] = value
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
@@ -545,6 +579,44 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 grid_config[param] = value
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
+    fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    if fcst_len_hrs == -1:
+        # Create a full list of cycle dates
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
+        num_fcst_len_cycl = len(fcst_len_cycl)
+        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+        incr_cycl_freq = workflow_config.get("INCR_CYCL_FREQ")
+        all_cdates = set_cycle_dates(date_first_cycl,date_last_cycl,incr_cycl_freq)
+        num_all_cdates = len(all_cdates)
+        # Create a full list of forecast hours
+        num_recur = num_all_cdates // num_fcst_len_cycl
+        rem_recur = num_all_cdates % num_fcst_len_cycl
+        if rem_recur == 0:
+            fcst_len_cycl = fcst_len_cycl * num_recur
+            num_fcst_len_cycl = len(fcst_len_cycl)
+            workflow_config["FCST_LEN_CYCL"] = fcst_len_cycl
+            workflow_config.update({"ALL_CDATES": all_cdates})
+        else:
+            raise Exception(
+                f"""
+                The number of the cycle dates is not evenly divisible by the
+                number of the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}
+                  rem = num_all_cdates%%num_fcst_len_cycl = {rem_recur}"""
+            )
+        if num_fcst_len_cycl != num_all_cdates:
+            raise Exception(
+                f"""
+                The number of the cycle dates does not match with the number of
+                the forecast lengths:
+                  num_all_cdates = {num_all_cdates}
+                  num_fcst_len_cycl = {num_fcst_len_cycl}"""
+            )
+
     #
     # -----------------------------------------------------------------------
     #
@@ -726,7 +798,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     lbc_spec_intvl_hrs = get_extrn_lbcs.get("LBC_SPEC_INTVL_HRS")
     rem = fcst_len_hrs % lbc_spec_intvl_hrs
-    if rem != 0:
+    if rem != 0 and fcst_len_hrs > 0:
         raise Exception(
             f"""
             The forecast length (FCST_LEN_HRS) is not evenly divisible by the lateral
@@ -965,7 +1037,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
     # Check for the CCPP_PHYSICS suite xml file
     ccpp_phys_suite_in_ccpp_fp = workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"]
     if not os.path.exists(ccpp_phys_suite_in_ccpp_fp):
@@ -1031,7 +1102,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    workflow_switches = expt_config["workflow_switches"]
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = global_sect["DO_ENSEMBLE"]
@@ -1049,7 +1119,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
-    # If not running the MAKE_GRID_TN, MAKE_OROG_TN, and/or MAKE_SFC_CLIMO
+    # If not running the TN_MAKE_GRID, TN_MAKE_OROG, and/or TN_MAKE_SFC_CLIMO
     # tasks, create symlinks under the FIXlam directory to pregenerated grid,
     # orography, and surface climatology files.
     #
@@ -1063,14 +1133,30 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # turned off. Link the files, and check that they all contain the
     # same resolution input.
     #
+    run_task_make_ics = workflow_switches['RUN_TASK_MAKE_LBCS']
+    run_task_make_lbcs = workflow_switches['RUN_TASK_MAKE_ICS']
+    run_task_run_fcst = workflow_switches['RUN_TASK_RUN_FCST']
+    run_task_makeics_or_makelbcs_or_runfcst = run_task_make_ics or \
+                                              run_task_make_lbcs or \
+                                              run_task_run_fcst
+    # Flags for creating symlinks to pre-generated grid, orography, and sfc_climo files.
+    # These consider dependencies of other tasks on each pre-processing task.
+    create_symlinks_to_pregen_files = {
+      "GRID": (not workflow_switches['RUN_TASK_MAKE_GRID']) and \
+              (run_task_make_orog or run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "OROG": (not workflow_switches['RUN_TASK_MAKE_OROG']) and \
+              (run_task_make_sfc_climo or run_task_makeics_or_makelbcs_or_runfcst),
+      "SFC_CLIMO": (not workflow_switches['RUN_TASK_MAKE_SFC_CLIMO']) and \
+                   (run_task_make_ics or run_task_make_lbcs),
+    }
+
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None
     for prep_task in prep_tasks:
         res_in_fns = ""
-        switch = f"RUN_TASK_MAKE_{prep_task}"
         # If the user doesn't want to run the given task, link the fix
         # file from the staged files.
-        if not workflow_switches[switch]:
+        if create_symlinks_to_pregen_files[prep_task]:
             sect_key = f"task_make_{prep_task.lower()}"
             dir_key = f"{prep_task}_DIR"
             task_dir = expt_config[sect_key].get(dir_key)
@@ -1080,7 +1166,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 expt_config[sect_key][dir_key] = task_dir
                 msg = dedent(
                     f"""
-                   {dir_key} will use pre-generated files.
+                   {dir_key} will point to a location containing pre-generated files.
                    Setting {dir_key} = {task_dir}
                    """
                 )

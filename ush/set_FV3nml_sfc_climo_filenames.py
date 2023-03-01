@@ -33,7 +33,7 @@ def set_FV3nml_sfc_climo_filenames():
     This function sets the values of the variables in
     the forecast model's namelist file that specify the paths to the surface
     climatology files on the FV3LAM native grid (which are either pregenerated
-    or created by the MAKE_SFC_CLIMO_TN task).  Note that the workflow
+    or created by the TN_MAKE_SFC_CLIMO task).  Note that the workflow
     generation scripts create symlinks to these surface climatology files
     in the FIXlam directory, and the values in the namelist file that get
     set by this function are relative or full paths to these links.

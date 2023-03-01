@@ -208,7 +208,7 @@ def link_fix(
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh0}.nc",
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh4}.nc",
         ]
-        if ccpp_phys_suite == "FV3_HRRR":
+        if ccpp_phys_suite == "FV3_HRRR" or ccpp_phys_suite == "FV3_GFS_v17_p8":
             fns += [
                 f"C*{dot_or_uscore}oro_data_ss.tile{tile_rgnl}.halo{nh0}.nc",
                 f"C*{dot_or_uscore}oro_data_ls.tile{tile_rgnl}.halo{nh0}.nc",
@@ -310,7 +310,7 @@ def link_fix(
     # -----------------------------------------------------------------------
     #
     # If the task in consideration (one of the pre-processing tasks
-    # MAKE_GRID_TN, MAKE_OROG_TN, and MAKE_SFC_CLIMO_TN) was run, then
+    # TN_MAKE_GRID, TN_MAKE_OROG, and TN_MAKE_SFC_CLIMO) was run, then
     # the source location of the fix files will be located under the
     # experiment directory.  In this case, we use relative symlinks for
     # portability and readability. Make absolute links otherwise.
