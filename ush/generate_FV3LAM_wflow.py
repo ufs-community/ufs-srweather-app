@@ -144,9 +144,12 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         fcst_len_hrs = expt_config["workflow"]["FCST_LEN_HRS"]
         fcst_len_cycl = expt_config["workflow"]["FCST_LEN_CYCL"]
         num_fcst_len_cycl = len(fcst_len_cycl)
-        all_cdates = expt_config["workflow"]["ALL_CDATES"]
-        num_all_cdates = len(all_cdates)
-        num_cyc_days = num_all_cdates // num_fcst_len_cycl -1
+        if fcst_len_hrs == -1:
+            all_cdates = expt_config["workflow"]["ALL_CDATES"]
+            num_all_cdates = len(all_cdates)
+            num_cyc_days = num_all_cdates // num_fcst_len_cycl -1
+        else:
+            num_cyc_days = 0
         date_1st_last_cycl = date_to_str(date_first_cycl + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
         date_2nd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
         date_3rd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
