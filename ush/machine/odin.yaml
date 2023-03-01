@@ -9,8 +9,6 @@ platform:
   QUEUE_FCST: workq
   PARTITION_HPSS: workq
   QUEUE_HPSS: workq
-  PARTITION_PRDGEN: workq
-  QUEUE_PRDGEN: workq
   RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL -n 1
   RUN_CMD_PRDGEN: srun --export=ALL -n 1

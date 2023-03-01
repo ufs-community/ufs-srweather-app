@@ -56,8 +56,4 @@ wgrib2 inputs.grib${domain}.uv -set_bitmap 1 -set_grib_type ${compress_type} \
   -if ":(WEASD|APCP|NCPCP|ACPCP|SNOD):" -new_grid_interpolation budget -fi \
   -new_grid ${gridspecs} ${domain}_${subpiece}.grib2
 
-#export err=$?; err_chk
-
-# Send data to COMOUT in the ex-script after the grid is re-assembled
-
 exit

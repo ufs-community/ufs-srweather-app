@@ -9,8 +9,6 @@ platform:
   QUEUE_FCST: normal
   PARTITION_HPSS: normal
   QUEUE_HPSS: normal
-  PARTITION_PRDGEN: normal
-  QUEUE_PRDGEN: normal
   RUN_CMD_FCST: ibrun -np $nprocs
   RUN_CMD_POST: ibrun -np $nprocs
   RUN_CMD_PRDGEN: ibrun -np $nprocs

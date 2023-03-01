@@ -12,7 +12,6 @@ platform:
   QUEUE_DEFAULT: dev
   QUEUE_FCST: dev
   QUEUE_HPSS: dev_transfer
-  QUEUE_PRDGEN: dev
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
   RUN_CMD_PRDGEN: mpiexec n ${nprocs} --cpu-bind core cfp
