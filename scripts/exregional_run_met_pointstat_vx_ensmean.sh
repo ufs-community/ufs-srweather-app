@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_enspoint_mean|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -49,6 +49,15 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
+# Begin grid-to-point vx on ensemble output.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "$VERBOSE" "Starting point-stat verification"
+
+#
+#-----------------------------------------------------------------------
+#
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
 # ively) from CDATE. Also read in FHR and create a comma-separated list
 # for METplus to run over.
@@ -74,7 +83,7 @@ export fhr_list
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_BASE=$COMIN
+    export INPUT_BASE=$COMOUT/metout/${CDATE}/metprd/ensemble_stat
     export OUTPUT_BASE=$COMOUT/metout
     export MEM_BASE=$OUTPUT_BASE
     export LOG_DIR=$LOGDIR
@@ -84,13 +93,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
-    else
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}/${SLASH_ENSMEM_SUBDIR}
-    fi
+    export INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/ensemble_stat
+    export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -104,17 +108,11 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-# Create INPUT_BASE to read into METplus conf files.
+# Create INPUT_BASE and LOG_SUFFIX to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
-if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-  LOG_SUFFIX=pointstat_${CDATE}
-elif [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
-  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-  LOG_SUFFIX=pointstat_${CDATE}_${ENSMEM}
-fi
+LOG_SUFFIX="PointStat"
 
 #
 #-----------------------------------------------------------------------
@@ -147,12 +145,7 @@ export POST_OUTPUT_DOMAIN_NAME
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_conus_sfc.conf
-
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_upper_air.conf
-
+  -c ${METPLUS_CONF}/PointStat_ensmean_${VAR}.conf
 #
 #-----------------------------------------------------------------------
 #
@@ -162,7 +155,7 @@ ${METPLUS_PATH}/ush/run_metplus.py \
 #
 print_info_msg "
 ========================================================================
-METplus point-stat completed successfully.
+METplus ensemble-stat completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
