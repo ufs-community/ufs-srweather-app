@@ -53,7 +53,7 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug:
 
     if procs > 1:
         print(f'Starting experiments in parallel with {procs} processes')
-        expt_dict = update_expt_status_parallel(expt_dict, procs)
+        expt_dict = update_expt_status_parallel(expt_dict, procs, True)
     else:
         for expt in expt_dict:
             logging.info(f"Starting experiment {expt} running")

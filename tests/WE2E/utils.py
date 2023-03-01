@@ -281,6 +281,10 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
     p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     logging.debug(p.stdout)
 
+    #Run rocotorun again to get around rocotobqserver proliferation issue
+    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    logging.debug(p.stdout)
+
     logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
     try:
         # This section of code queries the "job" table of the rocoto database, returning a list
@@ -289,9 +293,14 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
             with closing(connection.cursor()) as cur:
                 db = cur.execute('SELECT taskname,cycle,state,cores,duration from jobs').fetchall()
     except:
-        logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
-        expt["status"] = "ERROR"
-        return expt
+        # Some platforms (including Hera) can have a problem with rocoto jobs not submitting
+        # properly due to build-ups of background processes. This will resolve over time as
+        # rocotorun continues to be called, so let's only treat this as an error if we are
+        # past the first initial iteration of job submissions
+        if not refresh:
+            logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
+            expt["status"] = "ERROR"
+            return expt
 
     for task in db:
         # For each entry from rocoto database, store that task's info under a dictionary key named TASKNAME_CYCLE
@@ -302,10 +311,6 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         expt[f"{task[0]}_{cycle}"]["status"] = task[2]
         expt[f"{task[0]}_{cycle}"]["cores"] = task[3]
         expt[f"{task[0]}_{cycle}"]["walltime"] = task[4]
-
-    #Run rocotorun again to get around rocotobqserver proliferation issue
-    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    logging.debug(p.stdout)
 
     statuses = list()
     for task in expt:
@@ -337,16 +342,33 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
             expt["status"] = "COMPLETE"
         else:
             expt["status"] = "SUCCEEDED"
+    elif expt["status"] == "CREATED":
+        # Some platforms (including Hera) can have a problem with rocoto jobs not submitting
+        # properly due to build-ups of background processes. This will resolve over time as
+        # rocotorun continues to be called, so let's only print this warning message if we
+        # are past the first initial iteration of job submissions
+        if not refresh:
+            logging.warning(dedent(
+                """WARNING:Tasks have not yet been submitted for experiment {name};
+                it could be that your jobs are being throttled at the system level.
+
+                If you continue to see this message, there may be an error with your
+                experiment configuration, such as an incorrect queue or account number.
+
+                You can use ctrl-c to pause this script and inspect log files.
+                """))
+              
     else:
         logging.fatal("Some kind of horrible thing has happened")
-        raise ValueError(dedent(f"""Some kind of horrible thing has happened to the experiment status
+        raise ValueError(dedent(
+              f"""Some kind of horrible thing has happened to the experiment status
               for experiment {name}
               status is {expt["status"]}
               all task statuses are {statuses}"""))
 
     return expt
 
-def update_expt_status_parallel(expt_dict: dict, procs: int) -> dict:
+def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
     the process if given enough parallel processes. Given an experiment dictionary, it will
@@ -357,7 +379,8 @@ def update_expt_status_parallel(expt_dict: dict, procs: int) -> dict:
 
     Args:
         expt_dict (dict): A dictionary containing information for all experiments
-        procs     (int): The number of parallel processes
+        procs      (int): The number of parallel processes
+        refresh   (bool): "Refresh" flag to pass to update_expt_status()
 
     Returns:
         dict: The updated dictionary of experiment dictionaries
@@ -366,7 +389,7 @@ def update_expt_status_parallel(expt_dict: dict, procs: int) -> dict:
     args = []
     # Define a tuple of arguments to pass to starmap
     for expt in expt_dict:
-        args.append( (expt_dict[expt],expt,True) )
+        args.append( (expt_dict[expt],expt,refresh) )
 
     # call update_expt_status() in parallel
     with Pool(processes=procs) as pool:
