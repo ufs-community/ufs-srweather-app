@@ -444,27 +444,22 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs','LBC_SPEC_INTVL_HRS'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'global','NUM_ENS_MEMBERS') + "\n")
 
-#            f.write(f"{d}{testdict[expt]['workflow']['PREDEF_GRID_NAME']}")
-#            f.write(f"{d}{testdict[expt]['workflow']['CCPP_PHYS_SUITE']}")
-#            f.write(f"{d}{testdict[expt]['task_get_extrn_ics']['EXTRN_MDL_NAME_ICS']}")
-#            f.write(f"{d}{testdict[expt]['task_get_extrn_lbcs']['EXTRN_MDL_NAME_LBCS']}")
-#            f.write(f"{d}{testdict[expt]['workflow']['DATE_FIRST_CYCL']}")
-#            f.write(f"{d}{testdict[expt]['workflow']['DATE_LAST_CYCL']}")
-#            if "INCR_CYCL_FREQ" in testdict[expt]['workflow']:
-#                f.write(f"{d}{testdict[expt]['workflow']['INCR_CYCL_FREQ']}")
-#            else:
-#                f.write(f"{d}")
-#            f.write(f"{d}{testdict[expt]['workflow']['FCST_LEN_HRS']}")
-#            f.write(f"{d}{testdict[expt]['task_get_extrn_lbcs']['LBC_SPEC_INTVL_HRS']}")
-#            if "global" in testdict[expt]:
-#                if NUM_ENS_MEMBERS in testdict[expt]['global']:
-#                    f.write(f"{d}{testdict[expt]['global']['NUM_ENS_MEMBERS']}")
-#                else:
-#                    f.write(f"{d}")
-#            else:
-#                f.write(f"{d}")
-
 def get_or_print_blank(d,key1,key2):
+    """Function that checks the existence of keys in a nested dictionary in the form:
+
+    dictionary[key1][key2]
+
+    If dictionary[key1][key2] exists, return its value as a string.
+    If either key1 or key2 do not exist, return an empty string
+    
+    Args:
+        d   (dict) : Dictionary to check for keys
+        key1 (str) : The key for dictionary d
+        key2 (str) : The key for dictionary d[key1]
+    Returns:
+        write : A string containing the value of d[key1][key2]
+    """
+
     if d.get(key1,{}).get(key2):
         write = f"{d[key1][key2]}"
     else:

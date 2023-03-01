@@ -65,11 +65,13 @@ def run_we2e_tests(homedir, args) -> None:
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
-                    # We just want the test namein this list, so cut out the "config." prefix and ".yaml" extension
+                    # We just want the test name in this list, so cut out the 
+                    # "config." prefix and ".yaml" extension
                     tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
-                # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
+                # I am writing this section of code under protest; we should use args.run_envir to
+                # check for run_envir-specific files!
                 prefix = f"machine_suites/{user_spec_tests[0]}"
                 testfilename = f"{prefix}.{machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
@@ -91,19 +93,21 @@ def run_we2e_tests(homedir, args) -> None:
                         logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
                                        'Setting run_envir = {run_envir} for all tests')
                 logging.debug(f"Reading test file: {testfilename}")
-                with open(testfilename) as f:
+                with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
             else:
-                # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
+                # If we have gotten this far then the only option left for user_spec_tests is a
+                # file containing test names
                 logging.debug(f'Checking if {user_spec_tests} is a file containing test names')
                 if os.path.isfile(user_spec_tests[0]):
-                    with open(user_spec_tests[0]) as f:
+                    with open(user_spec_tests[0], encoding="utf-8") as f:
                         tests_to_check = [x.rstrip() for x in f]
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
-                    does not appear to be a valid test name, a valid test suite, or a file containing valid test names.
+                    does not appear to be a valid test name, a valid test suite, or a file
+                    containing valid test names.
 
                     Check your inputs and try again.
                     """))
@@ -180,7 +184,7 @@ def run_we2e_tests(homedir, args) -> None:
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(ushdir + "/config.yaml","w") as f:
+        with open(ushdir + "/config.yaml","w", encoding="utf-8") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
@@ -212,8 +216,6 @@ def run_we2e_tests(homedir, args) -> None:
         except KeyboardInterrupt:
             logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
             logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
-        except:
-            raise
         else:
             logging.info("All experiments are complete")
             logging.info(f"Summary of results available in {monitor_file}")
@@ -380,7 +382,7 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
         return cfg_vx
 
     # Attempt to obtain the values of RUN_TASK_RUN_FCST, WRITE_DO_POST, and RUN_TASK_RUN_POST
-    # from the test configuration dictionary.  If not available there, get them from the default 
+    # from the test configuration dictionary.  If not available there, get them from the default
     # configuration dictionary.
     flags = {'RUN_TASK_RUN_FCST': False, 'WRITE_DOPOST': False, 'RUN_TASK_RUN_POST': False}
     for section in ['workflow_switches', 'task_run_fcst']:
@@ -481,7 +483,6 @@ if __name__ == "__main__":
     # Print test details (if requested)
     if args.print_test_details:
         print_test_details("test_details.txt")
-    sys.exit()
     #Call main function
 
     try:
