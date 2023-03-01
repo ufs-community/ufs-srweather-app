@@ -310,7 +310,13 @@ but the element with index i=${i} is empty:
   for arg_val_pair in "${@:2}"; do
 
     arg_name=$(echo ${arg_val_pair} | cut -f1 -d=)
-    arg_value=$(echo ${arg_val_pair} | cut -f2 -d=)
+# The following method with sed also works.
+#    arg_name=$(echo ${arg_val_pair} | $SED -n -r "s|^([^=]*)(=)(.*)|\1|p")
+# The "cut" method of obtaining the value doesn't work when the value
+# also contains an equal sign (e.g. when a template of some sort is being
+# passed in).  So switch to using sed.
+#    arg_value=$(echo ${arg_val_pair} | cut -f2 -d=)
+    arg_value=$(echo ${arg_val_pair} | $SED -n -r "s|^([^=]*)(=)(.*)|\3|p")
 #
 # If the first character of the argument's value is an opening parenthe-
 # sis and its last character is a closing parenthesis, then the argument
