@@ -373,7 +373,7 @@ MODULES_RUN_TASK_FP script.
   {%- endif %}
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_GFS_SFC;" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"</command>
     <nodes>{{ nnodes_nexus_gfs_sfc }}:ppn={{ ppn_nexus_gfs_sfc }}</nodes>
-    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     {%- if not do_real_time %}   
     <memory>{{ mem_nexus_gfs_sfc }}</memory>
     {%- endif %}
