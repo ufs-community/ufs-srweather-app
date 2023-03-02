@@ -4,12 +4,8 @@
 # into the calling shell script
 #-----------------------------------------------------------------------
 #
-tmpfn="bbbbbb.txt"
+
 function config_to_str() {
-  echo "cccccccccccccccc" >> ${tmpfn}
-  echo "  $1" >> ${tmpfn}
-  echo "  $2" >> ${tmpfn}
-  echo "  ${@:3}" >> ${tmpfn}
   $USHdir/config_utils.py -o $1 -c $2 "${@:3}"
 }
 
@@ -19,8 +15,6 @@ function config_to_str() {
 #-----------------------------------------------------------------------
 #
 function config_to_shell_str() {
-    echo "bbbbbbbbbbbbbbbb" >> ${tmpfn}
-    echo "  $@" >> ${tmpfn}
     config_to_str shell "$@"
 }
 function config_to_ini_str() {
@@ -54,9 +48,6 @@ function source_config() {
 #
 function source_config_for_task() {
 
-  rm ${tmpfn}
-  echo "aaaaaaaaaaaaaaa" >> ${tmpfn}
-  echo "  $@" >> ${tmpfn}
   source <( config_to_shell_str "${@:2}" -k "(^(?!task_)|$1).*" )
 
 }
