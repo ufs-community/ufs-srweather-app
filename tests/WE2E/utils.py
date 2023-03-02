@@ -246,9 +246,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
              status SUCCEEDED (see next entry).
     DEAD:    One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We
              will no longer monitor this experiment.
-    ERROR:   One or more tasks are at status UNKNOWN, meaning that rocoto has failed to track the
-             job associated with that task. This will require manual intervention to solve, so we
-             will no longer monitor this experiment.
+    ERROR:   Could not read the rocoto database file. This will require manual intervention to
+             solve, so we will no longer monitor this experiment.
              This status may also appear if we fail to read the rocoto database file.
     RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED, SUBMITTED,
              or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
@@ -327,8 +326,6 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         else:
             expt["status"] = "DEAD"
             return expt
-    elif "UNKNOWN" in statuses:
-        expt["status"] = "ERROR"
     elif "RUNNING" in statuses:
         expt["status"] = "RUNNING"
     elif "QUEUED" in statuses:
