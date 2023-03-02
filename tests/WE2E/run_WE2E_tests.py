@@ -401,7 +401,7 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
         if 'TEST_VX_FCST_INPUT_BASEDIR' in mach['platform']:
             cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['platform']['TEST_VX_FCST_INPUT_BASEDIR']
         else:
-            raise KeyError(f"Non-default forecast file location for verification (TEST_VX_FCST_INPUT_BASEDIR) not set in machine file")
+            cfg_vx['VX_FCST_INPUT_BASEDIR'] = ''
 
     return cfg_vx
 

@@ -274,6 +274,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
     if (expt["status"] in ['DEAD','ERROR','COMPLETE']) and not refresh:
         return expt
 
+    if refresh:
+        logging.info(f"Updating database for experiment {name}")
     # Update experiment, read rocoto database
     rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
     rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
@@ -365,7 +367,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
     # Final check for experiments where all tasks are "SUCCEEDED"; since the rocoto database does
     # not include info on jobs that have not been submitted yet, use rocotostat to check that
     # there are no un-submitted jobs remaining.
-    expt = compare_rocotostat(expt,name)
+    if expt["status"] in ["SUCCEEDED","STALLED","STUCK"]:
+        expt = compare_rocotostat(expt,name)
 
     return expt
 
