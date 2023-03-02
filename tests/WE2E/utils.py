@@ -338,10 +338,10 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
     elif "SUBMITTING" in statuses:
         expt["status"] = "SUBMITTING"
     elif "SUCCEEDED" in statuses:
-        if expt["status"] == "SUCCEEDED":
-            expt["status"] = "COMPLETE"
-        else:
-            expt["status"] = "SUCCEEDED"
+        # If all task statuses are "SUCCEEDED", set the experiment status to "SUCCEEDED". This
+        # will trigger a final check using rocotostat to make sure there are no remaining un-
+        # started tests.
+        expt["status"] = "SUCCEEDED"
     elif expt["status"] == "CREATED":
         # Some platforms (including Hera) can have a problem with rocoto jobs not submitting
         # properly due to build-ups of background processes. This will resolve over time as
@@ -365,6 +365,11 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
               for experiment {name}
               status is {expt["status"]}
               all task statuses are {statuses}"""))
+
+    # Final check for experiments where all tasks are "SUCCEEDED"; since the rocoto database does
+    # not include info on jobs that have not been submitted yet, use rocotostat to check that
+    # there are no un-submitted jobs remaining.
+    expt = compare_rocotostat(expt,name)
 
     return expt
 
@@ -490,4 +495,73 @@ def get_or_print_blank(d,key1,key2):
 
     return write
 
+def compare_rocotostat(expt_dict,name):
+    """Reads the dictionary showing the location of a given experiment, runs a `rocotostat` command
+    to get the full set of tasks for the experiment, and compares the two to see if there are any
+    unsubmitted tasks remaining.
+    """
 
+    # Call rocotostat and store output
+    rocoto_db = f"{expt_dict['expt_dir']}/FV3LAM_wflow.db"
+    rocotorun_cmd = ["rocotostat", f"-w {expt_dict['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
+    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    rsout = p.stdout
+
+    # Parse each line of rocotostat output, extracting relevant information 
+    untracked_tasks = []
+    for line in rsout.split('\n'):
+        # Skip blank lines and dividing lines of '=====...'
+        if not line:
+            continue
+        if line[0] == '=':
+            continue
+        line_array = line.split()
+        # Skip header lines
+        if line_array[0] == 'CYCLE':
+            continue
+        # We should now just have lines describing jobs, in the form:
+        # line_array = ['cycle','task','jobid','status','exit status','num tries','walltime']
+
+        # As defined in update_expt_status(), the "task names" in the dictionary are a combination
+        # of the task name and cycle
+        taskname = f'{line_array[1]}_{line_array[0]}'
+
+        # If we're already tracking this task, continue
+        if expt_dict.get(taskname):
+            continue
+
+        # Otherwise, extract information into dictionary of untracked tasks
+        untracked_tasks.append(taskname)
+
+    if untracked_tasks:
+        # We want to give this a couple loops before reporting that it is "stuck"
+        if expt_dict['status'] == 'SUCCEEDED':
+            expt_dict['status'] = 'STALLED'
+        elif expt_dict['status'] == 'STALLED':
+            expt_dict['status'] = 'STUCK'
+        elif expt_dict['status'] == 'STUCK':
+            msg = f"WARNING: For experiment {name}, there are some jobs that are not being submitted:"
+            for ut in untracked_tasks:
+                msg += ut
+            msg = msg + f"""WARNING: For experiment {name},
+                there are some jobs that are not being submitted. 
+                It could be that your jobs are being throttled at the system level, or
+                some task dependencies have not been met.
+
+                If you continue to see this message, there may be an error with your
+                experiment configuration.
+
+                You can use ctrl-c to pause this script and inspect log files.
+                """
+            logging.warning(dedent(msg))
+        else:
+            logging.fatal("Some kind of horrible thing has happened")
+            raise ValueError(dedent(
+                  f"""Some kind of horrible thing has happened to the experiment status
+                  for experiment {name}
+                  status is {expt["status"]}
+                  untracked tasknames are {untracked_tasks}"""))
+    else:
+        expt_dict["status"] = "COMPLETE"
+
+    return expt_dict
