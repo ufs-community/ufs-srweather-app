@@ -320,22 +320,21 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         statuses.append(expt[task]["status"])
 
     if "DEAD" in statuses:
-        still_live = ["RUNNING", "SUBMITTING", "QUEUED"]
+        still_live = ["RUNNING", "SUBMITTING", "QUEUED", "FAILED"]
         if any(status in still_live for status in statuses):
             logging.debug(f'DEAD job in experiment {name}; continuing to track until all jobs are complete')
             expt["status"] = "DYING"
         else:
             expt["status"] = "DEAD"
-        return expt
-
-    if "UNKNOWN" in statuses:
+            return expt
+    elif "UNKNOWN" in statuses:
         expt["status"] = "ERROR"
-
-    if "RUNNING" in statuses:
+    elif "RUNNING" in statuses:
         expt["status"] = "RUNNING"
     elif "QUEUED" in statuses:
         expt["status"] = "QUEUED"
-    elif "SUBMITTING" in statuses:
+    elif "FAILED" in statuses or "SUBMITTING" in statuses:
+        # Job in "FAILED" status means it will be retried
         expt["status"] = "SUBMITTING"
     elif "SUCCEEDED" in statuses:
         # If all task statuses are "SUCCEEDED", set the experiment status to "SUCCEEDED". This
@@ -559,7 +558,7 @@ def compare_rocotostat(expt_dict,name):
             raise ValueError(dedent(
                   f"""Some kind of horrible thing has happened to the experiment status
                   for experiment {name}
-                  status is {expt["status"]}
+                  status is {expt_dict["status"]}
                   untracked tasknames are {untracked_tasks}"""))
     else:
         expt_dict["status"] = "COMPLETE"
