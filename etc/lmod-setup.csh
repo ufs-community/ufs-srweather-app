@@ -36,7 +36,11 @@ else if ( "$L_MACHINE" == singularity ) then
    module purge
 
 else if ( "$L_MACHINE" == gaea ) then
-   source /lustre/f2/dev/role.epic/contrib/Lmod_init.csh
+   set ENV="/lustre/f2/dev/role.epic/contrib/apps/lmod/lmod/init/csh"
+   source $ENV
+
+   setenv LMOD_SYSTEM_DEFAULT_MODULES "modules/3.2.11.4"
+   module --initial_load --no_redirect restore
 
 else if ( "$L_MACHINE" == odin ) then
    module unload modules
