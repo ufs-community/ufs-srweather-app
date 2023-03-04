@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -42,26 +42,16 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs METplus for ensemble-stat on
-the UPP output files by initialization time for all forecast hours for 
-gridded data.
+This is the ex-script for the task that runs METplus for point-stat on
+the UPP output files by initialization time for all forecast hours.
 ========================================================================"
-
-#-----------------------------------------------------------------------
-#
-# Begin grid-to-grid ensemble vx.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "Starting ensemble-stat verification"
 
 #
 #-----------------------------------------------------------------------
 #
 # Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
-# ively) from CDATE. Read in FHR and create a comma-separated list
-# for METplus to run over. Determine the number padding needed based
-# on number of ensemble members.
+# ively) from CDATE. Also read in FHR and create a comma-separated list
+# for METplus to run over.
 #
 #-----------------------------------------------------------------------
 #
@@ -75,8 +65,6 @@ export fhr_last
 
 fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
 export fhr_list
-
-NUM_PAD=3
 
 #
 #-----------------------------------------------------------------------
@@ -96,8 +84,13 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=$EXPTDIR/$CDATE
-    export OUTPUT_BASE=$EXPTDIR
+    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
+      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
+    else
+      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd
+      export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}
+    fi
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -111,24 +104,36 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-# Create LOG_SUFFIX to read into METplus conf files.
+# Create INPUT_BASE to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
-
-if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=ensgrid_${CDATE}_${VAR}_${ACCUM}h
-else
-  LOG_SUFFIX=ensgrid_${CDATE}_${VAR}
+LOG_SUFFIX="PointStat"
+if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
+  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
 fi
 
 #
 #-----------------------------------------------------------------------
 #
-# Export some environment variables passed in by the XML 
+# Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------
 #
+if [[ ! -d "$OBS_DIR" ]]; then
+  print_err_msg_exit "\
+  Exiting: OBS_DIR does not exist."
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Export some environment variables passed in by the XML and run METplus 
+#
+#-----------------------------------------------------------------------
+#
+export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH
@@ -137,27 +142,10 @@ export MET_CONFIG
 export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
-export NUM_ENS_MEMBERS 
-export NUM_PAD
-export LOG_SUFFIX
 
-#
-#-----------------------------------------------------------------------
-#
-# Run METplus 
-#
-#-----------------------------------------------------------------------
-#
-if [ ${VAR} == "APCP" ]; then
-  acc="${ACCUM}h" # for stats output prefix in EnsembleStatConfig
-  ${METPLUS_PATH}/ush/run_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/EnsembleStat_${VAR}${acc}.conf
-else
-  ${METPLUS_PATH}/ush/run_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/EnsembleStat_${VAR}.conf
-fi
+${METPLUS_PATH}/ush/run_metplus.py \
+  -c ${METPLUS_CONF}/common.conf \
+  -c ${METPLUS_CONF}/PointStat_${VAR}.conf
 
 #
 #-----------------------------------------------------------------------
@@ -168,7 +156,7 @@ fi
 #
 print_info_msg "
 ========================================================================
-METplus ensemble-stat grid completed successfully.
+METplus point-stat completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

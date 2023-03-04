@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid_mean|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_enspoint|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -42,18 +42,17 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs METplus for grid-stat on
-the UPP output files by initialization time for all forecast hours for 
-gridded data.
+This is the ex-script for the task that runs METplus for point-stat on
+the UPP output files by initialization time for all forecast hours.
 ========================================================================"
 
 #-----------------------------------------------------------------------
 #
-# Begin grid-to-grid vx on ensemble output.
+# Begin grid-to-point ensemble vx.
 #
 #-----------------------------------------------------------------------
 #
-print_info_msg "$VERBOSE" "Starting grid-stat verification"
+print_info_msg "$VERBOSE" "Starting point-based ensemble-stat verification"
 
 #
 #-----------------------------------------------------------------------
@@ -83,7 +82,7 @@ export fhr_list
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_BASE=$COMOUT/metout/${CDATE}/metprd/ensemble_stat
+    export INPUT_BASE=$COMIN
     export OUTPUT_BASE=$COMOUT/metout
     export MEM_BASE=$OUTPUT_BASE
     export LOG_DIR=$LOGDIR
@@ -93,7 +92,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/ensemble_stat
+    export INPUT_BASE=$EXPTDIR/$CDATE
     export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
@@ -108,16 +107,11 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-# Create INPUT_BASE and LOG_SUFFIX to read into METplus conf files.
+# Create LOG_SUFFIX to read into METplus conf files.
 #
 #-----------------------------------------------------------------------
 #
-
-if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=ensgrid_mean_${CDATE}_${VAR}_${ACCUM}h
-else
-  LOG_SUFFIX=ensgrid_mean_${CDATE}_${VAR}
-fi
+LOG_SUFFIX="EnsembleStat"
 
 #
 #-----------------------------------------------------------------------
@@ -134,10 +128,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Export some environment variables passed in by the XML 
+# Export some environment variables passed in by the XML and run METplus 
 #
 #-----------------------------------------------------------------------
 #
+export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH
@@ -146,25 +141,11 @@ export MET_CONFIG
 export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
-export LOG_SUFFIX
+export NUM_ENS_MEMBERS
 
-#
-#-----------------------------------------------------------------------
-#
-# Run METplus 
-#
-#-----------------------------------------------------------------------
-#
-if [ ${VAR} == "APCP" ]; then
-  export acc="${ACCUM}h"
-  ${METPLUS_PATH}/ush/run_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}${acc}_mean.conf
-else
-  ${METPLUS_PATH}/ush/run_metplus.py \
-    -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}_mean.conf
-fi
+${METPLUS_PATH}/ush/run_metplus.py \
+  -c ${METPLUS_CONF}/common.conf \
+  -c ${METPLUS_CONF}/EnsembleStat_${VAR}.conf
 
 #
 #-----------------------------------------------------------------------
@@ -175,7 +156,7 @@ fi
 #
 print_info_msg "
 ========================================================================
-METplus grid-stat completed successfully.
+METplus ensemble-stat completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
