@@ -103,16 +103,6 @@ if __name__ == "__main__":
 class Testing(unittest.TestCase):
     def test_calculate_cost(self):
         USHdir = os.path.dirname(os.path.abspath(__file__))
-        params = calculate_cost(None)
-        self.assertCountEqual(params, [36, 1987440, 36, 28689])
+        params = calculate_cost('config.community.yaml')
+        self.assertCountEqual(params, [180, 28689, 180, 28689])
 
-    def setUp(self):
-        set_env_var("DEBUG", False)
-        set_env_var("VERBOSE", False)
-        set_env_var("PREDEF_GRID_NAME", "RRFS_CONUS_3km")
-        set_env_var("DT_ATMOS", 36)
-        set_env_var("LAYOUT_X", 18)
-        set_env_var("LAYOUT_Y", 36)
-        set_env_var("BLOCKSIZE", 28)
-        set_env_var("QUILTING", False)
-        set_env_var("RUN_ENVIR", "community")
