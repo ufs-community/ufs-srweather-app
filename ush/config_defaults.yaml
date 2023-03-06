@@ -2013,6 +2013,38 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
 
 #----------------------------
+# PLOT_ALLVARS config parameters
+#-----------------------------
+task_plot_allvars:
+  TN_PLOT_ALLVARS: "plot_allvars"
+  NNODES_PLOT_ALLVARS: 1
+  PPN_PLOT_ALLVARS: 24
+  WTIME_PLOT_ALLVARS: 01:00:00
+  MAXTRIES_PLOT_ALLVARS: 1
+  #-------------------------------------------------------------------------
+  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
+  # from postprocessing are located. Make this a template to compare
+  # multiple cycle and dates. COMOUT_REF should end with:
+  #    nco mode: $PDY/$cyc
+  #    community mode: $PDY$cyc/postprd
+  # We don't do this inside the code, so that we can compare nco vs com runs.
+  #-------------------------------------------------------------------------
+  COMOUT_REF: ""
+  #------------------------------
+  # Plot fcts start and increment
+  #------------------------------
+  PLOT_FCST_START: 0
+  PLOT_FCST_INC: 3
+  #-----------------------------------
+  # By default the end is FCST_LEN_HRS
+  #-----------------------------------
+  PLOT_FCST_END: ""
+  #------------------------------------------------------------------------------
+  # Domains to plot. Currently supported are either "conus" or "regional" or both
+  #-------------------------------------------------------------------------------
+  PLOT_DOMAINS: ["conus"]
+
+#----------------------------
 # GET OBS CCPA config parameters
 #-----------------------------
 task_get_obs_ccpa:
@@ -2046,268 +2078,334 @@ task_get_obs_ndas:
   MAXTRIES_GET_OBS_NDAS: 1
 
 #----------------------------
-# VX_GRIDSTAT config parameters
+# run_met_gridstat_vx_apcp01h config parameters
 #-----------------------------
-task_run_vx_gridstat:
-  TN_VX_GRIDSTAT: "run_gridstatvx"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT: 2
+task_run_met_gridstat_vx_apcp01h:
+  TN_RUN_MET_GRIDSTAT_VX_APCP01h: "run_MET_GridStat_vx_APCP01h"
+  NNODES_RUN_MET_GRIDSTAT_VX_APCP01H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_APCP01H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_APCP01H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_APCP01H: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP01H: 2
 
 #----------------------------
-# VX_GRIDSTAT_REFC config parameters
+# run_met_gridstat_vx_apcp03h config parameters
 #-----------------------------
-task_run_vx_gridstat_refc:
-  TN_VX_GRIDSTAT_REFC: "run_gridstatvx_refc"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_REFC: 2
+task_run_met_gridstat_vx_apcp03h:
+  TN_RUN_MET_GRIDSTAT_VX_APCP03H: "run_MET_GridStat_vx_APCP03h"
+  NNODES_RUN_MET_GRIDSTAT_VX_APCP03H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_APCP03H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_APCP03H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_APCP03H: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP03H: 2
 
 #----------------------------
-# VX_GRIDSTAT_RETOP config parameters
+# run_met_gridstat_vx_apcp06h config parameters
 #-----------------------------
-task_run_vx_gridstat_retop:
-  TN_VX_GRIDSTAT_RETOP: "run_gridstatvx_retop"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_RETOP: 2
+task_run_met_gridstat_vx_apcp06h:
+  TN_RUN_MET_GRIDSTAT_VX_APCP06H: "run_MET_GridStat_vx_APCP06h"
+  NNODES_RUN_MET_GRIDSTAT_VX_APCP06H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_APCP06H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_APCP06H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_APCP06H: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP06H: 2
 
 #----------------------------
-# VX_GRIDSTAT_03h config parameters
+# run_met_gridstat_vx_apcp24h config parameters
 #-----------------------------
-task_run_vx_gridstat_03h:
-  TN_VX_GRIDSTAT_03h: "run_gridstatvx_03h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_03h: 2
+task_run_met_gridstat_vx_apcp24h:
+  TN_RUN_MET_GRIDSTAT_VX_APCP24H: "run_MET_GridStat_vx_APCP24h"
+  NNODES_RUN_MET_GRIDSTAT_VX_APCP24H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_APCP24H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_APCP24H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_APCP24H: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_APCP24H: 2
 
 #----------------------------
-# VX_GRIDSTAT_06h config parameters
+# run_met_gridstat_vx_refc config parameters
 #-----------------------------
-task_run_vx_gridstat_06h:
-  TN_VX_GRIDSTAT_06h: "run_gridstatvx_06h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_06h: 2
+task_run_met_gridstat_vx_refc:
+  TN_RUN_MET_GRIDSTAT_VX_REFC: "run_MET_GridStat_vx_REFC"
+  NNODES_RUN_MET_GRIDSTAT_VX_REFC: 1
+  PPN_RUN_MET_GRIDSTAT_VX_REFC: 1
+  MEM_RUN_MET_GRIDSTAT_VX_REFC: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_REFC: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_REFC: 2
 
 #----------------------------
-# VX_GRIDSTAT_24h config parameters
+# run_met_gridstat_vx_retop config parameters
 #-----------------------------
-task_run_vx_gridstat_24h:
-  TN_VX_GRIDSTAT_24h: "run_gridstatvx_24h"
-  NNODES_VX_GRIDSTAT: 1
-  PPN_VX_GRIDSTAT: 1
-  MEM_VX_GRIDSTAT: 2G
-  WTIME_VX_GRIDSTAT: 02:00:00
-  MAXTRIES_VX_GRIDSTAT_24h: 2
+task_run_met_gridstat_vx_retop:
+  TN_RUN_MET_GRIDSTAT_VX_RETOP: "run_MET_GridStat_vx_RETOP"
+  NNODES_RUN_MET_GRIDSTAT_VX_RETOP: 1
+  PPN_RUN_MET_GRIDSTAT_VX_RETOP: 1
+  MEM_RUN_MET_GRIDSTAT_VX_RETOP: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_RETOP: 02:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_RETOP: 2
 
 #----------------------------
-# VX_POINTSTAT config parameters
+# run_met_pointstat_vx_sfc config parameters
 #-----------------------------
-task_run_vx_pointstat:
-  TN_VX_POINTSTAT: "run_pointstatvx"
-  NNODES_VX_POINTSTAT: 1
-  PPN_VX_POINTSTAT: 1
-  MEM_VX_POINTSTAT: 2G
-  WTIME_VX_POINTSTAT: 01:00:00
-  MAXTRIES_VX_POINTSTAT: 2
+task_run_met_pointstat_vx_sfc:
+  TN_RUN_MET_POINTSTAT_VX_SFC: "run_MET_PointStat_vx_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_SFC: 2
 
 #----------------------------
-# VX_ENSGRID config parameters
+# run_met_pointstat_vx_upa config parameters
 #-----------------------------
-task_run_vx_ensgrid:
-  TN_VX_ENSGRID: "run_ensgridvx"
-  MAXTRIES_VX_ENSGRID: 2
-  TN_VX_ENSGRID_03h: "run_ensgridvx_03h"
-  MAXTRIES_VX_ENSGRID_03h: 2
-  TN_VX_ENSGRID_06h: "run_ensgridvx_06h"
-  MAXTRIES_VX_ENSGRID_06h: 2
-  TN_VX_ENSGRID_24h: "run_ensgridvx_24h"
-  MAXTRIES_VX_ENSGRID_24h: 2
-  TN_VX_ENSGRID_RETOP: "run_ensgridvx_retop"
-  MAXTRIES_VX_ENSGRID_RETOP: 2
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  MEM_VX_ENSGRID: 2G
-  WTIME_VX_ENSGRID: 01:00:00
+task_run_met_pointstat_vx_upa:
+  TN_RUN_MET_POINTSTAT_VX_UPA: "run_MET_PointStat_vx_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_UPA: 2
 
 #----------------------------
-# VX_ENSGRID_REFC config parameters
+# run_met_ensemblestat_vx_apcp01h config parameters
 #-----------------------------
-task_run_vx_ensgrid_refc:
-  TN_VX_ENSGRID_REFC: "run_ensgridvx_refc"
-  NNODES_VX_ENSGRID: 1
-  PPN_VX_ENSGRID: 1
-  MEM_VX_ENSGRID: 2G
-  WTIME_VX_ENSGRID: 01:00:00
-  MAXTRIES_VX_ENSGRID_REFC: 2
+task_run_met_ensemblestat_vx_apcp01h:
+  TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H: "run_MET_EnsembleStat_vx_APCP01h"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP01H: 2
 
 #----------------------------
-# VX_ENSGRID_MEAN config parameters
+# run_met_ensemblestat_vx_apcp03h config parameters
 #-----------------------------
-task_run_vx_ensgrid_mean:
-  TN_VX_ENSGRID_MEAN: "run_ensgridvx_mean"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN: 2
+task_run_met_ensemblestat_vx_apcp03h:
+  TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H: "run_MET_EnsembleStat_vx_APCP03h"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP03H: 2
 
 #----------------------------
-# VX_ENSGRID_MEAN_03h config parameters
+# run_met_ensemblestat_vx_apcp06h config parameters
 #-----------------------------
-task_run_vx_ensgrid_mean_03h:
-  TN_VX_ENSGRID_MEAN_03h: "run_ensgridvx_mean_03h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_03h: 2
+task_run_met_ensemblestat_vx_apcp06h:
+  TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H: "run_MET_EnsembleStat_vx_APCP06h"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP06H: 2
 
 #----------------------------
-# VX_ENSGRID_MEAN_06h config parameters
+# run_met_ensemblestat_vx_apcp24h config parameters
 #-----------------------------
-task_run_vx_ensgrid_mean_06h:
-  TN_VX_ENSGRID_MEAN_06h: "run_ensgridvx_mean_06h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_06h: 2
+task_run_met_ensemblestat_vx_apcp24h:
+  TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H: "run_MET_EnsembleStat_vx_APCP24h"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_APCP24H: 2
 
 #----------------------------
-# VX_ENSGRID_MEAN_24h config parameters
+# run_met_ensemblestat_vx_refc config parameters
 #-----------------------------
-task_run_vx_ensgrid_mean_24h:
-  TN_VX_ENSGRID_MEAN_24h: "run_ensgridvx_mean_24h"
-  NNODES_VX_ENSGRID_MEAN: 1
-  PPN_VX_ENSGRID_MEAN: 1
-  MEM_VX_ENSGRID_MEAN: 2G
-  WTIME_VX_ENSGRID_MEAN: 01:00:00
-  MAXTRIES_VX_ENSGRID_MEAN_24h: 2
+task_run_met_ensemblestat_vx_refc:
+  TN_RUN_MET_ENSEMBLESTAT_VX_REFC: "run_MET_EnsembleStat_vx_REFC"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_REFC: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_REFC: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_REFC: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_REFC: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_REFC: 2
 
 #----------------------------
-# VX_ENSGRID_PROB config parameters
+# run_met_ensemblestat_vx_retop config parameters
 #-----------------------------
-task_run_vx_ensgrid_prob:
-  TN_VX_ENSGRID_PROB: "run_ensgridvx_prob"
-  NNODES_VX_ENSGRID_PROB: 1
-  TN_VX_ENSGRID_PROB_RETOP: "run_ensgridvx_prob_retop"
-  MAXTRIES_VX_ENSGRID_PROB_RETOP: 2
-  TN_VX_ENSGRID_PROB_REFC: "run_ensgridvx_prob_refc"
-  MAXTRIES_VX_ENSGRID_PROB_REFC: 2
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB: 2
+task_run_met_ensemblestat_vx_retop:
+  TN_RUN_MET_ENSEMBLESTAT_VX_RETOP: "run_MET_EnsembleStat_vx_RETOP"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_RETOP: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_RETOP: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_RETOP: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_RETOP: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_RETOP: 2
 
 #----------------------------
-# VX_ENSGRID_PROB_03h config parameters
+# run_met_ensemblestat_vx_sfc config parameters
 #-----------------------------
-task_run_vx_ensgrid_prob_03h:
-  TN_VX_ENSGRID_PROB_03h: "run_ensgridvx_prob_03h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_03h: 2
+task_run_met_ensemblestat_vx_sfc:
+  TN_RUN_MET_ENSEMBLESTAT_VX_SFC: "run_MET_EnsembleStat_vx_SFC"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_SFC: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_SFC: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_SFC: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_SFC: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_SFC: 2
 
 #----------------------------
-# VX_ENSGRID_PROB_06h config parameters
+# run_met_ensemblestat_vx_upa config parameters
 #-----------------------------
-task_run_vx_ensgrid_prob_06h:
-  TN_VX_ENSGRID_PROB_06h: "run_ensgridvx_prob_06h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_06h: 2
+task_run_met_ensemblestat_vx_upa:
+  TN_RUN_MET_ENSEMBLESTAT_VX_UPA: "run_MET_EnsembleStat_vx_UPA"
+  NNODES_RUN_MET_ENSEMBLESTAT_VX_UPA: 1
+  PPN_RUN_MET_ENSEMBLESTAT_VX_UPA: 1
+  MEM_RUN_MET_ENSEMBLESTAT_VX_UPA: 2G
+  WTIME_RUN_MET_ENSEMBLESTAT_VX_UPA: 01:00:00
+  MAXTRIES_RUN_MET_ENSEMBLESTAT_VX_UPA: 2
 
 #----------------------------
-# VX_ENSGRID_PROB_24h config parameters
+# run_met_gridstat_vx_ensmean_apcp01h config parameters
 #-----------------------------
-task_run_vx_ensgrid_prob_24h:
-  TN_VX_ENSGRID_PROB_24h: "run_ensgridvx_prob_24h"
-  NNODES_VX_ENSGRID_PROB: 1
-  PPN_VX_ENSGRID_PROB: 1
-  MEM_VX_ENSGRID_PROB: 2G
-  WTIME_VX_ENSGRID_PROB: 01:00:00
-  MAXTRIES_VX_ENSGRID_PROB_24h: 2
+task_run_met_gridstat_vx_ensmean_apcp01h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: "run_MET_GridStat_vx_ensmean_APCP01h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H: 2
 
 #----------------------------
-# VX_ENSPOINT config parameters
+# run_met_gridstat_vx_ensmean_apcp03h config parameters
 #-----------------------------
-task_run_vx_enspoint:
-  TN_VX_ENSPOINT: "run_enspointvx"
-  NNODES_VX_ENSPOINT: 1
-  PPN_VX_ENSPOINT: 1
-  MEM_VX_ENSPOINT: 2G
-  WTIME_VX_ENSPOINT: 01:00:00
-  MAXTRIES_VX_ENSPOINT: 2
+task_run_met_gridstat_vx_ensmean_apcp03h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: "run_MET_GridStat_vx_ensmean_APCP03h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H: 2
 
 #----------------------------
-# VX_ENSPOINT_MEAN config parameters
+# run_met_gridstat_vx_ensmean_apcp06h config parameters
 #-----------------------------
-task_run_vx_enspoint_mean:
-  TN_VX_ENSPOINT_MEAN: "run_enspointvx_mean"
-  NNODES_VX_ENSPOINT_MEAN: 1
-  PPN_VX_ENSPOINT_MEAN: 1
-  MEM_VX_ENSPOINT_MEAN: 2G
-  WTIME_VX_ENSPOINT_MEAN: 01:00:00
-  MAXTRIES_VX_ENSPOINT_MEAN: 2
+task_run_met_gridstat_vx_ensmean_apcp06h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: "run_MET_GridStat_vx_ensmean_APCP06h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H: 2
 
 #----------------------------
-# VX_ENSPOINT_PROB config parameters
+# run_met_gridstat_vx_ensmean_apcp24h config parameters
 #-----------------------------
-task_run_vx_enspoint_prob:
-  TN_VX_ENSPOINT_PROB: "run_enspointvx_prob"
-  NNODES_VX_ENSPOINT_PROB: 1
-  PPN_VX_ENSPOINT_PROB: 1
-  MEM_VX_ENSPOINT_PROB: 2G
-  WTIME_VX_ENSPOINT_PROB: 01:00:00
-  MAXTRIES_VX_ENSPOINT_PROB: 2
+task_run_met_gridstat_vx_ensmean_apcp24h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: "run_MET_GridStat_vx_ensmean_APCP24h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H: 2
 
 #----------------------------
-# PLOT_ALLVARS config parameters
+# run_met_pointstat_vx_ensmean_sfc config parameters
 #-----------------------------
-task_plot_allvars:
-  TN_PLOT_ALLVARS: "plot_allvars"
-  NNODES_PLOT_ALLVARS: 1
-  PPN_PLOT_ALLVARS: 24
-  WTIME_PLOT_ALLVARS: 01:00:00
-  MAXTRIES_PLOT_ALLVARS: 1
-  #-------------------------------------------------------------------------
-  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
-  # from postprocessing are located. Make this a template to compare
-  # multiple cycle and dates. COMOUT_REF should end with:
-  #    nco mode: $PDY/$cyc
-  #    community mode: $PDY$cyc/postprd
-  # We don't do this inside the code, so that we can compare nco vs com runs.
-  #-------------------------------------------------------------------------
-  COMOUT_REF: ""
-  #------------------------------
-  # Plot fcts start and increment
-  #------------------------------
-  PLOT_FCST_START: 0
-  PLOT_FCST_INC: 3
-  #-----------------------------------
-  # By default the end is FCST_LEN_HRS
-  #-----------------------------------
-  PLOT_FCST_END: ""
-  #------------------------------------------------------------------------------
-  # Domains to plot. Currently supported are either "conus" or "regional" or both
-  #-------------------------------------------------------------------------------
-  PLOT_DOMAINS: ["conus"]
+task_run_met_pointstat_vx_ensmean_sfc:
+  TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: "run_MET_PointStat_vx_ensmean_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC: 2
+
+#----------------------------
+# run_met_pointstat_vx_ensmean_upa config parameters
+#-----------------------------
+task_run_met_pointstat_vx_ensmean_upa:
+  TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: "run_MET_PointStat_vx_ensmean_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_apcp01h config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_apcp01h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: "run_MET_GridStat_vx_ensprob_APCP01h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_apcp03h config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_apcp03h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: "run_MET_GridStat_vx_ensprob_APCP03h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_apcp06h config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_apcp06h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: "run_MET_GridStat_vx_ensprob_APCP06h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_apcp24h config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_apcp24h:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: "run_MET_GridStat_vx_ensprob_APCP24h"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_refc config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_refc:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: "run_MET_GridStat_vx_ensprob_REFC"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC: 2
+
+#----------------------------
+# run_met_gridstat_vx_ensprob_retop config parameters
+#-----------------------------
+task_run_met_gridstat_vx_ensprob_retop:
+  TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: "run_MET_GridStat_vx_ensprob_RETOP"
+  NNODES_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 1
+  PPN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 1
+  MEM_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 2G
+  WTIME_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 01:00:00
+  MAXTRIES_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP: 2
+
+#----------------------------
+# run_met_pointstat_vx_ensprob_sfc config parameters
+#-----------------------------
+task_run_met_pointstat_vx_ensprob_sfc:
+  TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: "run_MET_PointStat_vx_ensprob_SFC"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSPROB_SFC: 2
+
+#----------------------------
+# run_met_pointstat_vx_ensprob_upa config parameters
+#-----------------------------
+task_run_met_pointstat_vx_ensprob_upa:
+  TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: "run_MET_PointStat_vx_ensprob_UPA"
+  NNODES_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 1
+  PPN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 1
+  MEM_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 2G
+  WTIME_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 01:00:00
+  MAXTRIES_RUN_MET_POINTSTAT_VX_ENSPROB_UPA: 2
 
 #----------------------------
 # AQM_ICS config parameters
