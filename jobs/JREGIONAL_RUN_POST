@@ -132,6 +132,27 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
+# Create a flag file to make rocoto aware that the run_post task has
+# successfully completed. This flag is necessary for varying forecast
+# hours (FCST_LEN_HRS: -1)
+#
+#-----------------------------------------------------------------------
+#
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  for i_cdate in "${!ALL_CDATES[@]}"; do
+    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
+      break
+    fi
+  done
+  fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
+  if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+    touch "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Run job postamble.
 #
 #-----------------------------------------------------------------------

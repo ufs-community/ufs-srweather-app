@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_pre_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_pre_post|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -67,10 +67,13 @@ cd_vrfy $DATA
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
       break
     fi
   done
+  if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
+    rm_vrfy -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
+  fi
 fi
 
 ist=1
