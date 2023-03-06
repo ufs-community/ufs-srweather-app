@@ -2549,6 +2549,17 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# REF2TTEN config parameters
+#-----------------------------
+task_run_ref2tten:
+  TN_RADAR_REFL2TTEN: "radar_refl2tten"
+  NNODES_RUN_REF2TTEN: 1
+  PPN_RUN_REF2TTEN: 1
+  MEM_RUN_REF2TTEN: 20G
+  WTIME_RUN_REF2TTEN: 00:30:00
+  MAXTRIES_RUN_REF2TTEN: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
