@@ -879,20 +879,10 @@ workflow:
   # SYMLINK_FIX_FILES:
   # Symlink fix files to experiment directory if true; otherwise copy the files.
   #
-  # GET_OBS:
-  # Task modulefile name for all get_obs_* tasks
-  #
-  # TN_VX:
-  # Task name to use in forming the modulefile name for all verification
-  # tasks.
-  #
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
   SYMLINK_FIX_FILES: true
-
-  GET_OBS: "get_obs"
-  TN_VX: "run_vx"
   #
   #-----------------------------------------------------------------------
   #
