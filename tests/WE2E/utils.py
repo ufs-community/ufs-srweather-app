@@ -77,6 +77,10 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
         total_core_hours += ch
     if "ERROR" in statuses:
         total_status = "ERROR"
+    elif "RUNNING" in statuses:
+        total_status = "RUNNING"
+    elif "QUEUED" in statuses:
+        total_status = "QUEUED"
     elif "DEAD" in statuses:
         total_status = "DEAD"
     elif "COMPLETE" in statuses:
@@ -166,8 +170,8 @@ def create_expt_dict(expt_dir: str) -> dict:
             logging.debug(f'Skipping directory {item}, experiment XML file not found')
             continue
         #Update the experiment dictionary
-        logging.info(f"Reading status of experiment {item}")
-        update_expt_status(expt_dict[item],item,True)
+        logging.debug(f"Reading status of experiment {item}")
+        update_expt_status(expt_dict[item],item,True,False)
     summary_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
 
     return summary_file, expt_dict
@@ -226,7 +230,7 @@ def write_monitor_file(monitor_file: str, expt_dict: dict):
         raise
 
 
-def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
+def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool = False) -> dict:
     """
     This function reads the dictionary showing the location of a given experiment, runs a
     `rocotorun` command to update the experiment (running new jobs and updating the status of
@@ -267,6 +271,9 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         refresh (bool):    If true, this flag will check an experiment status even if it is listed
                            as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
                            that may have been restarted.
+        debug   (bool):    Will capture all output from rocotorun. This will allow information such
+                           as job cards and job submit messages to appear in the log files, but can
+                           slow down the process drastically.
     Returns:
         dict: The updated experiment dictionary.
     """
@@ -279,13 +286,19 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False) -> dict:
         logging.info(f"Updating database for experiment {name}")
     # Update experiment, read rocoto database
     rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
-    rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
-    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    logging.debug(p.stdout)
+    if debug:
+        rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
+        p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        logging.debug(p.stdout)
 
-    #Run rocotorun again to get around rocotobqserver proliferation issue
-    p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    logging.debug(p.stdout)
+        #Run rocotorun again to get around rocotobqserver proliferation issue
+        p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        logging.debug(p.stdout)
+    else:
+        rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
+        subprocess.run(rocotorun_cmd)
+        #Run rocotorun again to get around rocotobqserver proliferation issue
+        subprocess.run(rocotorun_cmd)
 
     logging.debug(f"Reading database for experiment {name}, updating experiment dictionary")
     try:

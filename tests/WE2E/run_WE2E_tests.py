@@ -212,10 +212,11 @@ def run_we2e_tests(homedir, args) -> None:
         monitor_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
         write_monitor_file(monitor_file,monitor_yaml)
         try:
-            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs, debug=args.debug)
+            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs,
+                                        debug=args.debug)
         except KeyboardInterrupt:
             logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
-            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs} -d={args.debug}\n")
         else:
             logging.info("All experiments are complete")
             logging.info(f"Summary of results available in {monitor_file}")
@@ -457,7 +458,6 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
     parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will help keep the screen uncluttered')
     parser.add_argument('-p', '--procs', type=int, help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, with provided number of parallel tasks', default=1)
-
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
     parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments', default='')
