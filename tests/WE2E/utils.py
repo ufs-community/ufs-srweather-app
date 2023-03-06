@@ -5,14 +5,12 @@ A collection of utilities used by the various WE2E scripts
 import os
 import re
 import sys
-import argparse
 import logging
 import subprocess
 import sqlite3
-import time
 import glob
 from textwrap import dedent
-from datetime import datetime, timedelta
+from datetime import datetime
 from contextlib import closing
 from multiprocessing import Pool
 
@@ -25,8 +23,6 @@ from python_utils import (
     load_config_file,
     load_shell_config
 )
-
-from check_python_version import check_python_version
 
 REPORT_WIDTH = 100
 
@@ -98,7 +94,7 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
     summary_file = f'WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
     print(f"\nDetailed summary written to {summary_file}\n")
 
-    with open(summary_file, 'w') as f:
+    with open(summary_file, 'w', encoding="utf-8") as f:
         for line in summary:
             f.write(f"{line}\n")
         f.write("\nDetailed summary of each experiment:\n")
@@ -217,7 +213,7 @@ def calculate_core_hours(expt_dict: dict) -> dict:
 
 def write_monitor_file(monitor_file: str, expt_dict: dict):
     try:
-        with open(monitor_file,"w") as f:
+        with open(monitor_file,"w", encoding="utf-8") as f:
             f.write("### WARNING ###\n")
             f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY WORKFKLOW SCRIPTS\n")
             f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
@@ -369,7 +365,6 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
 
                 You can use ctrl-c to pause this script and inspect log files.
                 """))
-              
     else:
         logging.fatal("Some kind of horrible thing has happened")
         raise ValueError(dedent(
@@ -386,7 +381,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
 
     return expt
 
-def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = False) -> dict:
+def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = False, debug: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
     the process if given enough parallel processes. Given an experiment dictionary, it will
@@ -399,6 +394,9 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
         expt_dict (dict): A dictionary containing information for all experiments
         procs      (int): The number of parallel processes
         refresh   (bool): "Refresh" flag to pass to update_expt_status()
+        debug     (bool): Will capture all output from rocotorun. This will allow information such
+                          as job cards and job submit messages to appear in the log files, but can
+                          slow down the process drastically.
 
     Returns:
         dict: The updated dictionary of experiment dictionaries
@@ -407,7 +405,7 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
     args = []
     # Define a tuple of arguments to pass to starmap
     for expt in expt_dict:
-        args.append( (expt_dict[expt],expt,refresh) )
+        args.append( (expt_dict[expt],expt,refresh,debug) )
 
     # call update_expt_status() in parallel
     with Pool(processes=procs) as pool:
@@ -416,8 +414,8 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
     # Update dictionary with output from all calls to update_expt_status()
     i = 0
     for expt in expt_dict:
-         expt_dict[expt] = output[i]
-         i += 1
+        expt_dict[expt] = output[i]
+        i += 1
 
     return expt_dict
 
@@ -469,7 +467,7 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
         testdict[link[2]]["alternate_directory_name"] = link[1]
 
     # Print the file
-    with open(txtfile, 'w') as f:
+    with open(txtfile, 'w', encoding="utf-8") as f:
         # Field delimiter character
         d = "\" | \""
         txt_output = ['"Test Name']
@@ -539,7 +537,7 @@ def compare_rocotostat(expt_dict,name):
     p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     rsout = p.stdout
 
-    # Parse each line of rocotostat output, extracting relevant information 
+    # Parse each line of rocotostat output, extracting relevant information
     untracked_tasks = []
     for line in rsout.split('\n'):
         # Skip blank lines and dividing lines of '=====...'

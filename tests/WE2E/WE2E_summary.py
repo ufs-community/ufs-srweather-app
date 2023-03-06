@@ -1,27 +1,16 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import argparse
 import logging
-import subprocess
-import sqlite3
-import time
-from textwrap import dedent
-from datetime import datetime
-from contextlib import closing
 
 sys.path.append("../../ush")
 
-from python_utils import (
-    cfg_to_yaml_str,
-    load_config_file
-)
+from python_utils import load_config_file
 
 from check_python_version import check_python_version
 
-from utils import calculate_core_hours, create_expt_dict, update_expt_status, \
-                  print_WE2E_summary, write_monitor_file
+from utils import calculate_core_hours, create_expt_dict, print_WE2E_summary, write_monitor_file
 
 REPORT_WIDTH = 100
 
@@ -47,12 +36,20 @@ if __name__ == "__main__":
     check_python_version()
 
     #Parse arguments
-    parser = argparse.ArgumentParser(description="Script for creating a job summary printed to screen and a file, either from a yaml experiment file created by monitor_jobs() or from a provided directory of experiments\n")
+    parser = argparse.ArgumentParser(
+                     description="Script for creating a job summary printed to screen and a file, "\
+                     "either from a yaml experiment file created by monitor_jobs() or from a "\
+                     "provided directory of experiments\n")
 
     req = parser.add_mutually_exclusive_group(required=True)
-    req.add_argument('-y', '--yaml_file', type=str, help='YAML-format file specifying the information of jobs to be summarized; for an example file, see monitor_jobs.yaml')
-    req.add_argument('-e', '--expt_dir', type=str, help='The full path of an experiment directory, containing one or more subdirectories with UFS SRW App experiments in them')
-    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+    req.add_argument('-y', '--yaml_file', type=str,
+                     help='YAML-format file specifying the information of jobs to be summarized; '\
+                          'for an example file, see monitor_jobs.yaml')
+    req.add_argument('-e', '--expt_dir', type=str,
+                     help='The full path of an experiment directory, containing one or more '\
+                          'subdirectories with UFS SRW App experiments in them')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
 
     args = parser.parse_args()
 
@@ -74,4 +71,3 @@ if __name__ == "__main__":
 
     #Call function to print summary
     print_WE2E_summary(expt_dict, args.debug)
-

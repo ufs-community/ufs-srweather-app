@@ -7,15 +7,16 @@ from utils import print_test_info
 
 sys.path.append("../../ush")
 
-from check_python_version import check_python_version
-
-
 if __name__ == "__main__":
 
     #Parse arguments
-    parser = argparse.ArgumentParser(description="Script for parsing all test files in the test_configs/ directory, and printing a pipe-delimited summary file of the details of each test.\n")
+    parser = argparse.ArgumentParser(
+                     description="Script for parsing all test files in the test_configs/ "\
+                     "directory, and printing a pipe-delimited summary file of the details of "\
+                     "each test.\n")
 
-    parser.add_argument('-o', '--output_file', type=str, help='File name for test details file', default='')
+    parser.add_argument('-o', '--output_file', type=str,
+                        help='File name for test details file', default='')
 
     args = parser.parse_args()
 

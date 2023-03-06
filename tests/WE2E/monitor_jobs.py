@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 
-import os
-import re
 import sys
 import argparse
 import logging
-import subprocess
-import sqlite3
 import time
 from textwrap import dedent
 from datetime import datetime
-from contextlib import closing
 
 sys.path.append("../../ush")
 
-from python_utils import (
-    cfg_to_yaml_str,
-    flatten_dict,
-    load_config_file,
-    load_shell_config
-)
+from python_utils import load_config_file
 
 from check_python_version import check_python_version
 
 from WE2E_summary import print_WE2E_summary
-from utils import calculate_core_hours, write_monitor_file, update_expt_status, update_expt_status_parallel
+from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
+                  update_expt_status_parallel
 
 def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
@@ -79,7 +70,8 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug:
         for expt in running_expts.copy():
             running_expts[expt] = expt_dict[expt]
             if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
-                logging.info(f'Experiment {expt} is {running_expts[expt]["status"]}; will no longer monitor.')
+                logging.info(f'Experiment {expt} is {running_expts[expt]["status"]};'\
+                              'will no longer monitor.')
                 running_expts.pop(expt)
                 continue
             logging.debug(f'Experiment {expt} status is {expt_dict[expt]["status"]}')
@@ -142,11 +134,18 @@ if __name__ == "__main__":
     logfile='log.monitor_jobs'
 
     #Parse arguments
-    parser = argparse.ArgumentParser(description="Script for monitoring and running jobs in a specified experiment, as specified in a yaml configuration file\n")
+    parser = argparse.ArgumentParser(description="Script for monitoring and running jobs in a "\
+                                                 "specified experiment, as specified in a yaml "\
+                                                 "configuration file\n")
 
-    parser.add_argument('-y', '--yaml_file', type=str, help='YAML-format file specifying the information of jobs to be run; for an example file, see monitor_jobs.yaml', required=True)
-    parser.add_argument('-p', '--procs', type=int, help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, with provided number of parallel tasks', default=1)
-    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
+    parser.add_argument('-y', '--yaml_file', type=str,
+                        help='YAML-format file specifying the information of jobs to be run; '\
+                             'for an example file, see monitor_jobs.yaml', required=True)
+    parser.add_argument('-p', '--procs', type=int, 
+                        help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
+                             'with provided number of parallel tasks', default=1)
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
 
     args = parser.parse_args()
 
