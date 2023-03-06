@@ -6,7 +6,6 @@ import argparse
 
 from python_utils import (
     set_env_var,
-    import_vars,
     load_config_file,
     flatten_dict,
 )
@@ -17,88 +16,68 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 
 
 def calculate_cost(config_fn):
-    global PREDEF_GRID_NAME, QUILTING, GRID_GEN_METHOD
-
-    # import all environment variables
-    IMPORTS = [
-        "PREDEF_GRID_NAME",
-        "QUILTING",
-        "GRID_GEN_METHOD",
-        "DT_ATMOS",
-        "LAYOUT_X",
-        "LAYOUT_Y",
-        "BLOCKSIZE",
-    ]
-    import_vars(env_vars=IMPORTS)
-
     ushdir = os.path.dirname(os.path.abspath(__file__))
 
-    # get grid config parameters (predefined or custom)
-    if PREDEF_GRID_NAME:
-        QUILTING = False
+    cfg_u = load_config_file(config_fn)
+    cfg_u = flatten_dict(cfg_u)
+
+    if 'PREDEF_GRID_NAME' in cfg_u:
         params_dict = set_predef_grid_params(
             USHdir=ushdir,
-            grid_name=PREDEF_GRID_NAME,
-            quilting=QUILTING,
+            grid_name=cfg_u['PREDEF_GRID_NAME'],
+            quilting=True
         )
-        for param, value in params_dict.items():
-            if param in IMPORTS and globals()[param] is not None:
-                params_dict[param] = globals()[param]
-        import_vars(dictionary=params_dict)
+
+        # merge cfg_u with defaults, duplicate keys in cfg_u will overwrite defaults
+        cfg = {**params_dict, **cfg_u}
     else:
-        cfg_u = load_config_file(config_fn)
-        cfg_u = flatten_dict(cfg_u)
-        import_vars(dictionary=cfg_u)
+        cfg = cfg_u
 
     # number of gridpoints (nx*ny) depends on grid generation method
-    if GRID_GEN_METHOD == "GFDLgrid":
+    if cfg['GRID_GEN_METHOD'] == "GFDLgrid":
         grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=GFDLgrid_LON_T6_CTR,
-            lat_of_t6_ctr=GFDLgrid_LAT_T6_CTR,
-            res_of_t6g=GFDLgrid_NUM_CELLS,
-            stretch_factor=GFDLgrid_STRETCH_FAC,
-            refine_ratio_t6g_to_t7g=GFDLgrid_REFINE_RATIO,
-            istart_of_t7_on_t6g=GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G,
-            iend_of_t7_on_t6g=GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G,
-            jstart_of_t7_on_t6g=GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G,
-            jend_of_t7_on_t6g=GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G,
+            lon_of_t6_ctr=cfg['GFDLgrid_LON_T6_CTR'],
+            lat_of_t6_ctr=cfg['GFDLgrid_LAT_T6_CTR'],
+            res_of_t6g=cfg['GFDLgrid_NUM_CELLS'],
+            stretch_factor=cfg['GFDLgrid_STRETCH_FAC'],
+            refine_ratio_t6g_to_t7g=cfg['GFDLgrid_REFINE_RATIO'],
+            istart_of_t7_on_t6g=cfg['GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G'],
+            iend_of_t7_on_t6g=cfg['GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G'],
+            jstart_of_t7_on_t6g=cfg['GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G'],
+            jend_of_t7_on_t6g=cfg['GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G'],
             run_envir="community",
             verbose=False,
             nh4=4,
         )
 
-    elif GRID_GEN_METHOD == "ESGgrid":
+    elif cfg['GRID_GEN_METHOD'] == "ESGgrid":
         constants = load_config_file(os.path.join(ushdir, "constants.yaml"))
         grid_params = set_gridparams_ESGgrid(
-            lon_ctr=ESGgrid_LON_CTR,
-            lat_ctr=ESGgrid_LAT_CTR,
-            nx=ESGgrid_NX,
-            ny=ESGgrid_NY,
-            pazi=ESGgrid_PAZI,
-            halo_width=ESGgrid_WIDE_HALO_WIDTH,
-            delx=ESGgrid_DELX,
-            dely=ESGgrid_DELY,
+            lon_ctr=cfg['ESGgrid_LON_CTR'],
+            lat_ctr=cfg['ESGgrid_LAT_CTR'],
+            nx=cfg['ESGgrid_NX'],
+            ny=cfg['ESGgrid_NY'],
+            pazi=cfg['ESGgrid_PAZI'],
+            halo_width=cfg['ESGgrid_WIDE_HALO_WIDTH'],
+            delx=cfg['ESGgrid_DELX'],
+            dely=cfg['ESGgrid_DELY'],
             constants=constants["constants"],
         )
+    else:
+        raise ValueError("GRID_GEN_METHOD is set to an invalid value")
 
-    NX = grid_params["NX"]
-    NY = grid_params["NY"]
-    cost = [DT_ATMOS, NX * NY]
+    cost = [cfg['DT_ATMOS'], grid_params["NX"] * grid_params["NY"] ]
 
     # reference grid (6-hour forecast on RRFS_CONUS_25km)
     PREDEF_GRID_NAME = "RRFS_CONUS_25km"
 
-    params_dict = set_predef_grid_params(
-        USHdir=os.path.dirname(os.path.abspath(__file__)),
+    refgrid = set_predef_grid_params(
+        USHdir=ushdir,
         grid_name=PREDEF_GRID_NAME,
-        quilting=QUILTING,
+        quilting=True,
     )
-    for param, value in params_dict.items():
-        if param in IMPORTS and globals()[param] is not None:
-            params_dict[param] = globals()[param]
-    import_vars(dictionary=params_dict)
 
-    cost.extend([DT_ATMOS, ESGgrid_NX * ESGgrid_NY])
+    cost.extend([refgrid['DT_ATMOS'], refgrid['ESGgrid_NX'] * refgrid['ESGgrid_NY']])
 
     return cost
 

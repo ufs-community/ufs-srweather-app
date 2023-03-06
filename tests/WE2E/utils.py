@@ -12,12 +12,13 @@ import sqlite3
 import time
 import glob
 from textwrap import dedent
-from datetime import datetime
+from datetime import datetime, timedelta
 from contextlib import closing
 from multiprocessing import Pool
 
 sys.path.append("../../ush")
 
+from calculate_cost import calculate_cost
 from python_utils import (
     cfg_to_yaml_str,
     flatten_dict,
@@ -413,12 +414,18 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
     """Prints a pipe ( | ) delimited text file containing summaries of each test defined by a
     config file in test_configs/*
 
+    Args:
+        txtfile (str): File name for test details file
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
     testdict = dict()
     links = dict()
     for testfile in testfiles:
+        # Calculate relative cost of test based on config settings using legacy script
+        cost_array = calculate_cost(testfile)
+        cost = cost_array[1] / cost_array[3]
+        #Decompose full file path into relevant bits
         pathname, filename = os.path.split(testfile)
         testname = filename[7:-5]
         dirname = os.path.basename(os.path.normpath(pathname))
@@ -430,6 +437,17 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
         else:
             testdict[testname] = load_config_file(testfile)
             testdict[testname]["directory"] = dirname
+            testdict[testname]["cost"] = cost
+            #Calculate number of forecasts for a cycling run
+            if testdict[testname]['workflow']["DATE_FIRST_CYCL"] != testdict[testname]['workflow']["DATE_LAST_CYCL"]:
+                begin = datetime.strptime(testdict[testname]['workflow']["DATE_FIRST_CYCL"], '%Y%m%d%H')
+                end = datetime.strptime(testdict[testname]['workflow']["DATE_LAST_CYCL"], '%Y%m%d%H')
+                diff = end - begin
+                diffh = diff.total_seconds() // 3600
+                nf = diffh // testdict[testname]['workflow']["INCR_CYCL_FREQ"]
+                testdict[testname]["num_fcsts"] = nf
+            else:
+                testdict[testname]["num_fcsts"] = 1
 
     # For each found link, add its info to the appropriate test dictionary entry
     for link in links:
@@ -458,7 +476,8 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
             for line in desc[:-1]:
                 f.write(f"   {line}\n")
             f.write(f"   {desc[-1]}")
-            f.write(f"{d}'0{d}'0")
+            #Write test relative cost and number of test forecasts (for cycling runs)
+            f.write(f"{d}'{round(testdict[expt]['cost'],2)}{d}'{round(testdict[expt]['num_fcsts'])}")
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','PREDEF_GRID_NAME'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','CCPP_PHYS_SUITE'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_ics','EXTRN_MDL_NAME_ICS'))
