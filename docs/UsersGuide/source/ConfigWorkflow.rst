@@ -174,7 +174,7 @@ METplus Parameters
 Test Directories
 ----------------------
 
-These directories are used only by the ``run_WE2E_tests.sh`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test. Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.sh`` script would need to be adjusted accordingly.
+These directories are used only by the ``run_WE2E_tests.py`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test (see :numref:`Chapter %s <WE2E_tests>`). Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.py`` script would need to be adjusted accordingly.
 
 ``TEST_EXTRN_MDL_SOURCE_BASEDIR``: (Default: "")
    This parameter allows testing of user-staged files in a known location on a given platform. This path contains a limited dataset and likely will not be useful for most user experiments. 
