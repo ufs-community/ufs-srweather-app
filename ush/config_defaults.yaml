@@ -2549,6 +2549,32 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# PROCESS RADARREF config parameters
+#-----------------------------
+task_process_radarref:
+  TN_PROCESS_RADAR_REF: "process_radarref"
+  NNODES_PROCESS_RADARREF: 2
+  PPN_PROCESS_RADARREF: 24
+  WTIME_PROCESS_RADARREF: 00:30:00
+  MAXTRIES_PROCESS_RADARREF: 1
+
+  RADAR_REF_THINNING: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for observation preprocess.
+  # RADARREFL_MINS:
+  #   minute from the hour that the NSSL mosaic files will be searched for 
+  #      data preprocess
+  # RADARREFL_TIMELEVEL:
+  #   time level (minute) from the hour that the NSSL mosaic files will be generated 
+  #
+  #-----------------------------------------------------------------------
+  #
+  RADARREFL_MINS: [0, 1, 2, 3]
+  RADARREFL_TIMELEVEL: [0]
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
