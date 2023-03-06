@@ -210,6 +210,53 @@ The full list of options for any of these scripts can be found by using the ``-h
 The option ``--use_cron_to_relaunch`` means that, rather than calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``). By default this script is run every 2 minutes, but we have changed that to 1 minute with the ``--cron_relaunch_intvl_mnts=1`` argument. This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
 
 
+Checking test status and summary
+=================================
+By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to screen when jobs are complete (either successfully or with a failure), and print a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
+However, if the user is using the legacy crontab option, or would like to summarize one or more experiments that are either not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
+In this example, an experiment was generated using the crontab option, and has not yet finished running.
+We use the ``-e`` option to point to the experiment directory and get the current status of the experiment:
+
+   .. code-block::
+
+      ./WE2E_summary.py -e /user/home/PR_466/expt_dirs/
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
+    Updating database for experiment grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v16
+    Updating database for experiment grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR
+    Updating database for experiment specify_template_filenames
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+    Updating database for experiment grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+    Updating database for experiment grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_2017_gfdlmp_regional
+    Updating database for experiment grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR
+    Updating database for experiment grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    Updating database for experiment grid_RRFS_SUBCONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    Updating database for experiment specify_DOT_OR_USCORE
+    Updating database for experiment custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALSE
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    ----------------------------------------------------------------------------------------------------
+    Experiment name                                             | Status    | Core hours used 
+    ----------------------------------------------------------------------------------------------------
+    grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1  COMPLETE              49.72
+    grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v16     DYING                  6.51
+    grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR         COMPLETE             411.84
+    specify_template_filenames                                    COMPLETE              17.36
+    grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR      COMPLETE              16.03
+    grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1be  COMPLETE             318.55
+    grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_2017_g  COMPLETE              17.79
+    grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR            COMPLETE              17.76
+    grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16      RUNNING                0.00
+    grid_RRFS_SUBCONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16   RUNNING                0.00
+    specify_DOT_OR_USCORE                                         QUEUED                 0.00
+    custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALS  QUEUED                 0.00
+    grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS  QUEUED                 0.00
+    ----------------------------------------------------------------------------------------------------
+    Total                                                         RUNNING              855.56
+
+    Detailed summary written to WE2E_summary_20230306173013.txt
+
+As with all python scripts in the App, additional options for this script can be viewed by calling with the ``-h`` argument.
+
+
 .. _WE2ETestInfoFile:
 
 WE2E Test Information File
