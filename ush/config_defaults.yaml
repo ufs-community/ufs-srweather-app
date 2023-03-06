@@ -2549,6 +2549,19 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# POSTANAL config parameters
+#-----------------------------
+task_run_postanal:
+  TN_POSTANAL: "postanal_input"
+  NNODES_RUN_POSTANAL: 1
+  PPN_RUN_POSTANAL: 1
+  WTIME_RUN_POSTANAL: 00:30:00
+  MAXTRIES_RUN_POSTANAL: 1
+  KMP_AFFINITY_RUN_POSTANAL: "scatter"
+  OMP_NUM_THREADS_RUN_POSTANAL: 1
+  OMP_STACKSIZE_RUN_POSTANAL: "1024m"
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
