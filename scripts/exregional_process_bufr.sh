@@ -74,7 +74,7 @@ PREYYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Getting into working directory for BUFR obseration process ..."
+Getting into working directory for BUFR observation process ..."
 
 cd_vrfy ${DATA}
 
@@ -141,9 +141,9 @@ fi
 #
 #-----------------------------------------------------------------------
 
-run_lightning=false
 obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.lghtng.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
+run_lightning=false
 if [ -r "${obs_file}" ]; then
    cp_vrfy "${obs_file}" "lghtngbufr"
    run_lightning=true
