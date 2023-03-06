@@ -2549,6 +2549,17 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufr:
+  TN_PROCESS_BUFR: "process_bufr"
+  NNODES_PROCESS_BUFR: 1
+  PPN_PROCESS_BUFR: 1
+  MEM_PROCESS_BUFR: 20G
+  WTIME_PROCESS_BUFR: 00:30:00
+  MAXTRIES_PROCESS_BUFR: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
