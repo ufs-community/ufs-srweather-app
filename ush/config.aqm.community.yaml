@@ -74,6 +74,7 @@ cpl_aqm_parm:
   DO_AQM_PRODUCT: true
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
+  DO_AQM_RESTART_FCST: false
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
   AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_DUST_FILE_SUFFIX: .nc  
