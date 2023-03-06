@@ -196,11 +196,11 @@ The full list of options for any of these scripts can be found by using the ``-h
 
 Depending on your machine settings, this can reduce the time it takes to run all experiments substantially. 
 
-#. Our final example will run the single experiment "custom_ESGgrid" on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
+#. This example will run the single experiment "custom_ESGgrid" on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
 
 .. note::
 
-   This option is not recommended, as it does not work on some machines.
+   This option is not recommended, as it does not work on some machines and can cause system bottlenecks on others.
 
    .. code-block::
 
@@ -208,23 +208,11 @@ Depending on your machine settings, this can reduce the time it takes to run all
 
 The option ``--use_cron_to_relaunch`` means that, rather than calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``). By default this script is run every 2 minutes, but we have changed that to 1 minute with the ``--cron_relaunch_intvl_mnts=1`` argument. This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
 
-   .. code-block::
 
-      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" cron_relaunch_intvl_mnts="01"
+WE2E Test Information File
+==================================
 
-   In addition, by default, cron jobs will be added to the user's cron table to relaunch the workflows of these experiments every 2 minutes.
-
-
-.. _WE2ETestInfoFile:
-
-The WE2E Test Information File
-================================
-In addition to creating the WE2E tests' experiment directories and optionally creating
-cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
-on the full set of WE2E tests. This file serves as a single location where relevant 
-information about the WE2E tests can be found. It can be imported into Google Sheets 
-using the "|" (pipe symbol) character as the custom field separator. If the user does *not* want ``run_WE2E_tests.sh`` to generate this CSV file the first time it runs, 
-this functionality can be explicitly disabled by including the ``generate_csv_file="FALSE"`` flag as an argument when running this script. 
+If the user wants to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character, and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_WE2E_tests.py`` with the ``--print_test_info`` flag.
 
 The rows of the file/sheet represent the full set of available tests (not just the ones to be run). The columns contain the following information (column titles are included in the CSV file):
 
@@ -294,21 +282,6 @@ The rows of the file/sheet represent the full set of available tests (not just t
   |  ``DT_ATMOS``
   |  ``LBC_SPEC_INTVL_HRS``
   |  ``NUM_ENS_MEMBERS``
-
-Additional fields (columns) may be added to the CSV file in the future.
-
-Note that the CSV file is not part of the ``ufs-srweather-app`` repository and therefore is not tracked by the repository. The ``run_WE2E_tests.sh`` script will generate a CSV file if the ``generate_csv_file`` flag to this script has *not* explicitly been set to false and if either one of the following is true:
-
-#. The CSV file doesn't already exist.
-#. The CSV file does exist, but changes have been made to one or more of the 
-   category subdirectories (e.g., test configuration files modified, added, 
-   or deleted) since the creation of the CSV file. 
-
-Thus, unless the ``generate_csv_file`` flag is set to ``"FALSE"``, the 
-``run_WE2E_tests.sh`` will create a CSV file the first time it is run in a 
-fresh git clone of the SRW App.  The ``generate_csv_file`` flag is provided 
-because the CSV file generation can be slow, so users may wish to skip this 
-step since it is not a necessary part of running the tests.
 
 
 Checking Test Status
