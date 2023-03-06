@@ -54,16 +54,16 @@ test_type=${4:-fundamental}
 #----------------------------------------------------------------------
 opts=
 if [[ "$*" != *"debug"* ]]; then
-   opts="${opts} debug=TRUE"
+   opts="${opts} --debug=TRUE"
 fi
 if [[ "$*" != *"verbose"* ]]; then
-   opts="${opts} verbose=TRUE"
+   opts="${opts} --verbose=TRUE"
 fi
 if [[ "$*" != *"cron_relaunch_intvl_mnts"* ]]; then
-   opts="${opts} cron_relaunch_intvl_mnts=4"
+   opts="${opts} --cron_relaunch_intvl_mnts=4"
 fi
 if [[ "$*" != *"exec_subdir"* ]]; then
-   opts="${opts} exec_subdir=install_${compiler}/exec"
+   opts="${opts} --exec_subdir=install_${compiler}/exec"
 fi
 
 #-----------------------------------------------------------------------
@@ -74,11 +74,11 @@ fi
 source ../../ush/load_modules_wflow.sh ${machine}
 
 # Run the E2E Workflow tests
-./run_WE2E_tests.sh \
-  machine=${machine} \
-  account=${account} \
-  compiler=${compiler} \
-  test_type=${test_type} \
+./run_WE2E_tests.py \
+  --machine=${machine} \
+  --account=${account} \
+  --compiler=${compiler} \
+  --tests=${test_type} \
   ${opts} \
   "${@:5}"
 
