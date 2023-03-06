@@ -37,7 +37,6 @@ Workflow task names.
 <!ENTITY TN_RUN_FCST                               "{{ tn_run_fcst }}">
 <!ENTITY TN_RUN_POST                               "{{ tn_run_post }}">
 <!ENTITY TN_PLOT_ALLVARS                           "{{ tn_plot_allvars }}">
-<!ENTITY GET_OBS                                   "{{ get_obs }}">
 <!ENTITY TN_GET_OBS_CCPA                           "{{ tn_get_obs_ccpa }}">
 <!ENTITY TN_GET_OBS_NDAS                           "{{ tn_get_obs_ndas }}">
 <!ENTITY TN_GET_OBS_MRMS                           "{{ tn_get_obs_mrms }}">
@@ -71,6 +70,13 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP      "{{ tn_run_met_gridstat_vx_ensprob_retop }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC       "{{ tn_run_met_pointstat_vx_ensprob_sfc }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA       "{{ tn_run_met_pointstat_vx_ensprob_upa }}">
+<!--
+Entities used to load the local module files for the TN_GET_OBS_... and
+TN_RUN_VX_... tasks.
+-->
+<!ENTITY GET_OBS_LOCAL_MODULE_FN  "{{get_obs_local_module_fn}}">
+<!ENTITY VX_LOCAL_MODULE_FN       "{{vx_local_module_fn}}">
+
 {%- if run_task_aqm_ics %}
 <!ENTITY TN_AQM_EXTRN_ICS          "{{ tn_aqm_ics }}_ext">
 <!ENTITY TN_AQM_ICS                "{{ tn_aqm_ics }}">
