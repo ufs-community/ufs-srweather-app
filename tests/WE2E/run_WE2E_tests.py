@@ -19,7 +19,7 @@ from python_utils import (
 from check_python_version import check_python_version
 
 from monitor_jobs import monitor_jobs, write_monitor_file
-from utils import print_test_details
+from utils import print_test_info
 
 def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
@@ -466,7 +466,7 @@ if __name__ == "__main__":
     parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this option disables the "monitor" script functionality')
     parser.add_argument('--cron_relaunch_intvl_mnts', type=int, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
     parser.add_argument('--opsroot', type=str, help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for details)')
-    parser.add_argument('--print_test_details', action='store_true', help='Create a "test_details.txt" file summarizing each test prior to starting experiment')
+    parser.add_argument('--print_test_info', action='store_true', help='Create a "WE2E_test_info.txt" file summarizing each test prior to starting experiment')
     parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
 
@@ -481,8 +481,8 @@ if __name__ == "__main__":
         raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
 
     # Print test details (if requested)
-    if args.print_test_details:
-        print_test_details("test_details.txt")
+    if args.print_test_info:
+        print_test_info()
     #Call main function
 
     try:

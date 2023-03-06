@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from utils import print_test_details
+from utils import print_test_info
 
 sys.path.append("../../ush")
 
@@ -20,6 +20,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.output_file:
-        print_test_details(args.output_file)
+        print_test_info(args.output_file)
     else:
-        print_test_details()
+        print_test_info()

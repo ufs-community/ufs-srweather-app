@@ -410,7 +410,7 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
 
 
 
-def print_test_details(txtfile: str = "test_details.txt") -> None:
+def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
     """Prints a pipe ( | ) delimited text file containing summaries of each test defined by a
     config file in test_configs/*
 
@@ -429,7 +429,7 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
         pathname, filename = os.path.split(testfile)
         testname = filename[7:-5]
         dirname = os.path.basename(os.path.normpath(pathname))
-        if os.path.islink(filename):
+        if os.path.islink(testfile):
             targettestfile = os.readlink(testfile)
             targetfilename = os.path.basename(targettestfile)
             targettestname = targetfilename[7:-5]
@@ -450,7 +450,8 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
                 testdict[testname]["num_fcsts"] = 1
 
     # For each found link, add its info to the appropriate test dictionary entry
-    for link in links:
+    for key in links.keys():
+        link = links[key]
         testdict[link[2]]["alternate_name"] = link[0]
         testdict[link[2]]["alternate_directory_name"] = link[1]
 
@@ -474,8 +475,8 @@ def print_test_details(txtfile: str = "test_details.txt") -> None:
                 f.write(f"{d}\n")
             desc = testdict[expt]['metadata']['description'].splitlines()
             for line in desc[:-1]:
-                f.write(f"   {line}\n")
-            f.write(f"   {desc[-1]}")
+                f.write(f"    {line}\n")
+            f.write(f"    {desc[-1]}")
             #Write test relative cost and number of test forecasts (for cycling runs)
             f.write(f"{d}'{round(testdict[expt]['cost'],2)}{d}'{round(testdict[expt]['num_fcsts'])}")
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','PREDEF_GRID_NAME'))
