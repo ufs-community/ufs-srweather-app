@@ -97,7 +97,7 @@ else
     if [ "${FCST_LEN_HRS}" = "-1" ]; then
       for i_cdate in "${!ALL_CDATES[@]}"; do
         if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-          FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+          FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
           break
         fi
       done
@@ -517,7 +517,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
 ===================================================================="
   else
     if [ "${CPL_AQM}" = "TRUE" ]; then
-      post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
+      post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-AQM.txt"
       post_params_fp="${PARMdir}/upp-aqm/params_grib2_tbl_new"
     else
       post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
@@ -534,7 +534,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${post_params_fp} ./params_grib2_tbl_new
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    post_itag_add="aqfcmaq_on=.true.,"
+    post_itag_add="aqf_on=.true.,"
   else
     post_itag_add=""
   fi

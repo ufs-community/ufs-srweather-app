@@ -96,8 +96,8 @@ to the temporary work directory (DATA_FHR):
 ===================================================================="
 else
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
-    post_params_fp="${PARMdir}/upp-aqm/params_grib2_tbl_new"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
+    post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
     post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
@@ -200,7 +200,7 @@ post_mn=${post_time:10:2}
 # Create the input namelist file to the post-processor executable.
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  post_itag_add="aqfcmaq_on=.true.,"
+  post_itag_add="aqf_on=.true.,"
 else
   post_itag_add=""
 fi

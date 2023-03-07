@@ -137,6 +137,24 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         else:
             cycl_next = date_to_str(date_first_cycl + timedelta(hours=expt_config['workflow']['INCR_CYCL_FREQ']), format="%Y%m%d%H00")
 
+        incr_cycl_freq = expt_config["workflow"]["INCR_CYCL_FREQ"]
+        date_2nd_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq), format="%Y%m%d%H00")
+        date_3rd_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2), format="%Y%m%d%H00")
+        date_4th_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*3), format="%Y%m%d%H00")
+        fcst_len_hrs = expt_config["workflow"]["FCST_LEN_HRS"]
+        fcst_len_cycl = expt_config["workflow"]["FCST_LEN_CYCL"]
+        num_fcst_len_cycl = len(fcst_len_cycl)
+        if fcst_len_hrs == -1:
+            all_cdates = expt_config["workflow"]["ALL_CDATES"]
+            num_all_cdates = len(all_cdates)
+            num_cyc_days = num_all_cdates // num_fcst_len_cycl -1
+        else:
+            num_cyc_days = 0
+        date_1st_last_cycl = date_to_str(date_first_cycl + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
+        date_2nd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
+        date_3rd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
+        date_4th_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*3) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
+
         settings.update(
             {
                 #
@@ -153,6 +171,16 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "cdate_first_cycl": date_first_cycl,
                 "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
                 "cycl_next": cycl_next,
+                "date_2nd_cycl": date_2nd_cycl,
+                "date_3rd_cycl": date_3rd_cycl,
+                "date_4th_cycl": date_4th_cycl,
+                "date_1st_last_cycl": date_1st_last_cycl,
+                "date_2nd_last_cycl": date_2nd_last_cycl,
+                "date_3rd_last_cycl": date_3rd_last_cycl,
+                "date_4th_last_cycl": date_4th_last_cycl,
+                "fcst_len_hrs": fcst_len_hrs,
+                "fcst_len_cycl": fcst_len_cycl,
+                "num_fcst_len_cycl": num_fcst_len_cycl,
                 #
                 # Ensemble-related parameters.
                 #
