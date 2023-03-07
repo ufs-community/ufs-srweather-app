@@ -51,6 +51,7 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
         expt_details.append('')
         expt_details.append('-'*REPORT_WIDTH)
         expt_details.append(f'Detailed summary of experiment {expt}')
+        expt_details.append(f"in directory {expt_dict[expt]['expt_dir']}")
         expt_details.append(f'{" "*40} | Status    | Walltime   | Core hours used')
         expt_details.append('-'*REPORT_WIDTH)
 
