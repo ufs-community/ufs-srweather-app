@@ -454,7 +454,7 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
         txt_output = ['"Test Name']
         txt_output.append(f'(Subdirectory){d}Alternate Test Names')
         txt_output.append(f'(Subdirectories){d}Test Purpose/Description{d}Relative Cost of Running Dynamics')
-        txt_output.append(f'(1 corresponds to running a 6-hour forecast on the RRFS_CONUS_25km predefined grid using the default time step){d}PREDEF_GRID_NAME{d}CCPP_PHYS_SUITE{d}EXTRN_MDL_NAME_ICS{d}EXTRN_MDL_NAME_LBCS{d}DATE_FIRST_CYCL{d}DATE_LAST_CYCL{d}INCR_CYCL_FREQ{d}FCST_LEN_HRS{d}LBC_SPEC_INTVL_HRS{d}NUM_ENS_MEMBERS')
+        txt_output.append(f'(1 corresponds to running a 6-hour forecast on the RRFS_CONUS_25km predefined grid using the default time step){d}PREDEF_GRID_NAME{d}CCPP_PHYS_SUITE{d}EXTRN_MDL_NAME_ICS{d}EXTRN_MDL_NAME_LBCS{d}DATE_FIRST_CYCL{d}DATE_LAST_CYCL{d}INCR_CYCL_FREQ{d}FCST_LEN_HRS{d}DT_ATMOS{d}LBC_SPEC_INTVL_HRS{d}NUM_ENS_MEMBERS')
 
         for line in txt_output:
             f.write(f"{line}\n")
