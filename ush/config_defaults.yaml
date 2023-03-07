@@ -899,9 +899,13 @@ workflow:
   # DO_REAL_TIME:
   # switch for real-time run
   #
+  # DO_FCST_RESTART:
+  # Flag turning on/off restart capability of forecast task
+  #
   #-----------------------------------------------------------------------
   #
   DO_REAL_TIME: false
+  DO_FCST_RESTART: false
   #
   #-----------------------------------------------------------------------
   #
@@ -2756,9 +2760,6 @@ cpl_aqm_parm:
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
   #
-  # DO_AQM_RESTART_FCST:
-  # Flag turning on/off restart capability of run_fcst
-  #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
@@ -2862,7 +2863,6 @@ cpl_aqm_parm:
   DO_AQM_GEFS_LBCS: false
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
-  DO_AQM_RESTART_FCST: false
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_DIR: ""

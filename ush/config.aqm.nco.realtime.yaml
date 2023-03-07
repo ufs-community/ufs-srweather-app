@@ -25,6 +25,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: true
+  DO_FCST_RESTART: false
   COLDSTART: false
   WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
@@ -91,7 +92,6 @@ cpl_aqm_parm:
   DO_AQM_PRODUCT: true
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
-  DO_AQM_RESTART_FCST: false
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
   AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_DUST_FILE_SUFFIX: .nc

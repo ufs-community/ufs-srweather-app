@@ -362,10 +362,8 @@ FV3_GFS_v16:
     hord_tm: 5
     hord_vt: 5
     k_split: 6
-    make_nh: False
     n_split: 6
     n_sponge: 10
-    na_init: 0
     nudge_dz: False
     res_latlon_dynamics: ''
     rf_fast: !!python/none
