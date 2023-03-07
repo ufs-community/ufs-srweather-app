@@ -233,13 +233,13 @@ elif [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ]; then
   grid_specs_rrfs="lambert:-97.5:38.500000 237.280472:1799:3000 21.138123:1059:3000"
 elif [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
   grid_specs_rrfs="rot-ll:247.000000:-35.000000:0.000000 299.000000:4881:0.025000 -37.0000000:2961:0.025000"
-elif [ ${PREDEF_GRID_NAME} = "GSD_RAP13km" ]; then
+elif [ ${PREDEF_GRID_NAME} = "RRFS_NA_13km" ]; then
   grid_specs_rrfs="rot-ll:254.000000:-36.000000:0.000000 304.174600:956:0.1169118 -48.5768500:831:0.1170527"
 fi
 if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km_HRRRIC" ] || \
    [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ] || \
    [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ] || \
-   [ ${PREDEF_GRID_NAME} = "GSD_RAP13km" ]; then
+   [ ${PREDEF_GRID_NAME} = "RRFS_NA_13km" ]; then
 
   if [ -f ${FFG_DIR}/latest.FFG ]; then
     cp_vrfy ${FFG_DIR}/latest.FFG .
