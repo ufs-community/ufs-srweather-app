@@ -26,4 +26,5 @@ task_get_extrn_lbcs:
 task_run_fcst:
   WTIME_RUN_FCST: 01:00:00
 verification:
+  RUN_TASKS_METVX_DET: true
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
