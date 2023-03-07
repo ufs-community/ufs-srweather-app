@@ -40,7 +40,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     # Create summary table as list of strings
     summary = []
     summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Experiment name {" "*43} | Status    | Core hours used ')
+    summary.append(f'Experiment name {" "*48} | Status    | Core hours used ')
     summary.append('-'*REPORT_WIDTH)
     total_core_hours = 0
     statuses = []
@@ -51,7 +51,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         expt_details.append('')
         expt_details.append('-'*REPORT_WIDTH)
         expt_details.append(f'Detailed summary of experiment {expt}')
-        expt_details.append(f"in directory {expt_dict[expt]['expt_dir']}")
+        expt_details.append(f"in directory {expts_dict[expt]['expt_dir']}")
         expt_details.append(f'{" "*40} | Status    | Walltime   | Core hours used')
         expt_details.append('-'*REPORT_WIDTH)
 
@@ -70,7 +70,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
                 expt_details[-1] = f'{expt_details[-1]}            -'
         expt_details.append('-'*REPORT_WIDTH)
         expt_details.append(f'Total {" "*34}  {statuses[-1]:<12s} {" "*11} {ch:>13.2f}')
-        summary.append(f'{expt[:60]:<60s}  {statuses[-1]:<12s}  {ch:>13.2f}')
+        summary.append(f'{expt[:65]:<65s}  {statuses[-1]:<12s}  {ch:>13.2f}')
         total_core_hours += ch
     if "ERROR" in statuses:
         total_status = "ERROR"
@@ -85,7 +85,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     else:
         total_status = "UNKNOWN"
     summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Total {" "*54}  {total_status:<12s}  {total_core_hours:>13.2f}')
+    summary.append(f'Total {" "*59}  {total_status:<12s}  {total_core_hours:>13.2f}')
 
     # Print summary to screen
     for line in summary:
