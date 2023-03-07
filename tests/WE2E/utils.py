@@ -26,12 +26,12 @@ from python_utils import (
 
 REPORT_WIDTH = 100
 
-def print_WE2E_summary(expt_dict: dict, debug: bool = False):
+def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
 
     Args:
-        expt_dict   (dict): A dictionary containing the information needed to run
-                            one or more experiments. See example file monitor_jobs.yaml
+        expts_dict  (dict): A dictionary containing the information needed to run
+                            one or more experiments. See example file WE2E_tests.yaml
         debug       (bool): [optional] Enable extra output for debugging
     Returns:
         None
@@ -45,8 +45,8 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
     total_core_hours = 0
     statuses = []
     expt_details = []
-    for expt in expt_dict:
-        statuses.append(expt_dict[expt]["status"])
+    for expt in expts_dict:
+        statuses.append(expts_dict[expt]["status"])
         ch = 0
         expt_details.append('')
         expt_details.append('-'*REPORT_WIDTH)
@@ -55,15 +55,15 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
         expt_details.append(f'{" "*40} | Status    | Walltime   | Core hours used')
         expt_details.append('-'*REPORT_WIDTH)
 
-        for task in expt_dict[expt]:
+        for task in expts_dict[expt]:
             # Skip non-task entries
             if task in ["expt_dir","status"]:
                 continue
-            status = expt_dict[expt][task]["status"]
-            walltime = expt_dict[expt][task]["walltime"]
+            status = expts_dict[expt][task]["status"]
+            walltime = expts_dict[expt][task]["walltime"]
             expt_details.append(f'{task[:40]:<40s}  {status:<12s} {walltime:>10.1f}')
-            if "core_hours" in expt_dict[expt][task]:
-                task_ch = expt_dict[expt][task]["core_hours"]
+            if "core_hours" in expts_dict[expt][task]:
+                task_ch = expts_dict[expt][task]["core_hours"]
                 ch += task_ch
                 expt_details[-1] = f'{expt_details[-1]}  {task_ch:>13.2f}'
             else:
@@ -102,45 +102,7 @@ def print_WE2E_summary(expt_dict: dict, debug: bool = False):
         for line in expt_details:
             f.write(f"{line}\n")
 
-def calculate_core_hours(expt_dict: dict) -> dict:
-    """
-    Function takes in an experiment dictionary, reads the var_defns file for necessary information,
-    and calculates the core hours used by each task, updating expt_dict with this info
-
-    Args:
-        expt_dict (dict) : Experiment dictionary
-    Returns:
-        dict : Experiment dictionary updated with core hours
-    """
-
-    for expt in expt_dict:
-        # Read variable definitions file
-        vardefs = load_shell_config(os.path.join(expt_dict[expt]["expt_dir"],"var_defns.sh"))
-        vdf = flatten_dict(vardefs)
-        cores_per_node = vdf["NCORES_PER_NODE"]
-        for task in expt_dict[expt]:
-            # Skip non-task entries
-            if task in ["expt_dir","status"]:
-                continue
-            # Cycle is last 12 characters, task name is rest (minus separating underscore)
-            taskname = task[:-13]
-            # Handle task names that have ensemble and/or fhr info appended with regex
-            taskname = re.sub('_mem\d{3}', '', taskname)
-            taskname = re.sub('_f\d{3}', '', taskname)
-            nnodes_var = f'NNODES_{taskname.upper()}'
-            if nnodes_var in vdf:
-                nnodes = vdf[nnodes_var]
-                # Users are charged for full use of nodes, so core hours are CPN * nodes * time in hrs
-                core_hours = cores_per_node * nnodes * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = True
-            else:
-                # If we can't find the number of nodes, assume full usage (may undercount)
-                core_hours = expt_dict[expt][task]['cores'] * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = False
-            expt_dict[expt][task]['core_hours'] = round(core_hours,2)
-    return expt_dict
-
-def create_expt_dict(expt_dir: str) -> dict:
+def create_expts_dict(expt_dir: str) -> dict:
     """
     Function takes in a directory, searches that directory for subdirectories containing
     experiments, and creates a skeleton dictionary that can be filled out by update_expt_status()
@@ -152,7 +114,7 @@ def create_expt_dict(expt_dir: str) -> dict:
     """
     contents = os.listdir(expt_dir)
 
-    expt_dict=dict()
+    expts_dict=dict()
     for item in contents:
         # Look for FV3LAM_wflow.xml to indicate directories with experiments in them
         fullpath = os.path.join(expt_dir, item)
@@ -160,36 +122,37 @@ def create_expt_dict(expt_dir: str) -> dict:
             continue
         xmlfile = os.path.join(expt_dir, item, 'FV3LAM_wflow.xml')
         if os.path.isfile(xmlfile):
-            expt_dict[item] = dict()
-            expt_dict[item].update({"expt_dir": os.path.join(expt_dir,item)})
-            expt_dict[item].update({"status": "CREATED"})
+            expts_dict[item] = dict()
+            expts_dict[item].update({"expt_dir": os.path.join(expt_dir,item)})
+            expts_dict[item].update({"status": "CREATED"})
         else:
             logging.debug(f'Skipping directory {item}, experiment XML file not found')
             continue
         #Update the experiment dictionary
         logging.debug(f"Reading status of experiment {item}")
-        update_expt_status(expt_dict[item],item,True,False,False)
+        update_expt_status(expts_dict[item],item,True,False,False)
     summary_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
 
-    return summary_file, expt_dict
+    return summary_file, expts_dict
 
-def calculate_core_hours(expt_dict: dict) -> dict:
+def calculate_core_hours(expts_dict: dict) -> dict:
     """
     Function takes in an experiment dictionary, reads the var_defns file for necessary information,
-    and calculates the core hours used by each task, updating expt_dict with this info
+    and calculates the core hours used by each task, updating expts_dict with this info
 
     Args:
-        expt_dict (dict) : Experiment dictionary
+        expts_dict  (dict): A dictionary containing the information needed to run
+                            one or more experiments. See example file WE2E_tests.yaml
     Returns:
-        dict : Experiment dictionary updated with core hours
+        dict : Experiments dictionary updated with core hours
     """
 
-    for expt in expt_dict:
+    for expt in expts_dict:
         # Read variable definitions file
-        vardefs = load_shell_config(os.path.join(expt_dict[expt]["expt_dir"],"var_defns.sh"))
+        vardefs = load_shell_config(os.path.join(expts_dict[expt]["expt_dir"],"var_defns.sh"))
         vdf = flatten_dict(vardefs)
         cores_per_node = vdf["NCORES_PER_NODE"]
-        for task in expt_dict[expt]:
+        for task in expts_dict[expt]:
             # Skip non-task entries
             if task in ["expt_dir","status"]:
                 continue
@@ -201,27 +164,29 @@ def calculate_core_hours(expt_dict: dict) -> dict:
             nnodes_var = f'NNODES_{taskname.upper()}'
             if nnodes_var in vdf:
                 nnodes = vdf[nnodes_var]
-                # Users are charged for full use of nodes, so core hours are CPN * nodes * time in hrs
-                core_hours = cores_per_node * nnodes * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = True
+                # Users are charged for full use of nodes, so core hours = CPN * nodes * time in hrs
+                core_hours = cores_per_node * nnodes * expts_dict[expt][task]['walltime'] / 3600
+                expts_dict[expt][task]['exact_count'] = True
             else:
                 # If we can't find the number of nodes, assume full usage (may undercount)
-                core_hours = expt_dict[expt][task]['cores'] * expt_dict[expt][task]['walltime'] / 3600
-                expt_dict[expt][task]['exact_count'] = False
-            expt_dict[expt][task]['core_hours'] = round(core_hours,2)
-    return expt_dict
+                core_hours = expts_dict[expt][task]['cores'] * \
+                             expts_dict[expt][task]['walltime'] / 3600
+                expts_dict[expt][task]['exact_count'] = False
+            expts_dict[expt][task]['core_hours'] = round(core_hours,2)
+    return expts_dict
 
 
-def write_monitor_file(monitor_file: str, expt_dict: dict):
+def write_monitor_file(monitor_file: str, expts_dict: dict):
     try:
         with open(monitor_file,"w", encoding="utf-8") as f:
             f.write("### WARNING ###\n")
-            f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY WORKFKLOW SCRIPTS\n")
+            f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY WORKFLOW SCRIPTS\n")
             f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
-            f.writelines(cfg_to_yaml_str(expt_dict))
+            f.writelines(cfg_to_yaml_str(expts_dict))
     except:
         logging.fatal("\n********************************\n")
-        logging.fatal(f"WARNING WARNING WARNING\nFailure occurred while writing monitor file {monitor_file}")
+        logging.fatal(f"WARNING WARNING WARNING\n")
+        logging.fatal("Failure occurred while writing monitor file {monitor_file}")
         logging.fatal("File may be corrupt or invalid for re-run!!")
         logging.fatal("\n********************************\n")
         raise
@@ -252,8 +217,9 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     ERROR:   Could not read the rocoto database file. This will require manual intervention to
              solve, so we will no longer monitor this experiment.
              This status may also appear if we fail to read the rocoto database file.
-    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED, SUBMITTED,
-             or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
+    RUNNING: One or more jobs are at status RUNNING, and the rest are either status QUEUED,
+             SUBMITTED, or SUCCEEDED. This is a normal state; we will continue to monitor this
+             experiment.
     QUEUED:  One or more jobs are at status QUEUED, and some others may be at status SUBMITTED or
              SUCCEEDED.
              This is a normal state; we will continue to monitor this experiment.
@@ -288,15 +254,19 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         if refresh:
             logging.info(f"Updating database for experiment {name}")
         if debug:
-            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
-            p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml",
+                             f"-d {rocoto_db}", "-v 10"]
+            p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
 
             #Run rocotorun again to get around rocotobqserver proliferation issue
-            p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
         else:
-            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}"]
+            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml",
+                             f"-d {rocoto_db}"]
             subprocess.run(rocotorun_cmd)
             #Run rocotorun again to get around rocotobqserver proliferation issue
             subprocess.run(rocotorun_cmd)
@@ -319,8 +289,9 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
             return expt
 
     for task in db:
-        # For each entry from rocoto database, store that task's info under a dictionary key named TASKNAME_CYCLE
-        # Cycle comes from the database in Unix Time (seconds), so convert to human-readable
+        # For each entry from rocoto database, store that task's info under a dictionary key named
+        # TASKNAME_CYCLE; Cycle comes from the database in Unix Time (seconds), so convert to
+        # human-readable
         cycle = datetime.utcfromtimestamp(task[1]).strftime('%Y%m%d%H%M')
         if f"{task[0]}_{cycle}" not in expt:
             expt[f"{task[0]}_{cycle}"] = dict()
@@ -338,7 +309,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     if "DEAD" in statuses:
         still_live = ["RUNNING", "SUBMITTING", "QUEUED", "FAILED"]
         if any(status in still_live for status in statuses):
-            logging.debug(f'DEAD job in experiment {name}; continuing to track until all jobs are complete')
+            logging.debug(f'DEAD job in experiment {name}; continuing to track until all jobs are '\
+                           'complete')
             expt["status"] = "DYING"
         else:
             expt["status"] = "DEAD"
@@ -386,7 +358,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
 
     return expt
 
-def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = False, debug: bool = False) -> dict:
+def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = False,
+                                debug: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
     the process if given enough parallel processes. Given an experiment dictionary, it will
@@ -396,7 +369,7 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
     Making use of the python multiprocessing starmap functionality, takes
 
     Args:
-        expt_dict (dict): A dictionary containing information for all experiments
+        expts_dict (dict): A dictionary containing information for all experiments
         procs      (int): The number of parallel processes
         refresh   (bool): "Refresh" flag to pass to update_expt_status()
         debug     (bool): Will capture all output from rocotorun. This will allow information such
@@ -409,8 +382,8 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
 
     args = []
     # Define a tuple of arguments to pass to starmap
-    for expt in expt_dict:
-        args.append( (expt_dict[expt],expt,refresh,debug) )
+    for expt in expts_dict:
+        args.append( (expts_dict[expt],expt,refresh,debug) )
 
     # call update_expt_status() in parallel
     with Pool(processes=procs) as pool:
@@ -418,11 +391,11 @@ def update_expt_status_parallel(expt_dict: dict, procs: int, refresh: bool = Fal
 
     # Update dictionary with output from all calls to update_expt_status()
     i = 0
-    for expt in expt_dict:
-        expt_dict[expt] = output[i]
+    for expt in expts_dict:
+        expts_dict[expt] = output[i]
         i += 1
 
-    return expt_dict
+    return expts_dict
 
 
 
@@ -455,9 +428,12 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
             testdict[testname]["directory"] = dirname
             testdict[testname]["cost"] = cost
             #Calculate number of forecasts for a cycling run
-            if testdict[testname]['workflow']["DATE_FIRST_CYCL"] != testdict[testname]['workflow']["DATE_LAST_CYCL"]:
-                begin = datetime.strptime(testdict[testname]['workflow']["DATE_FIRST_CYCL"], '%Y%m%d%H')
-                end = datetime.strptime(testdict[testname]['workflow']["DATE_LAST_CYCL"], '%Y%m%d%H')
+            if testdict[testname]['workflow']["DATE_FIRST_CYCL"] != \
+                    testdict[testname]['workflow']["DATE_LAST_CYCL"]:
+                begin = datetime.strptime(testdict[testname]['workflow']["DATE_FIRST_CYCL"],
+                                          '%Y%m%d%H')
+                end = datetime.strptime(testdict[testname]['workflow']["DATE_LAST_CYCL"],
+                                        '%Y%m%d%H')
                 diff = end - begin
                 diffh = diff.total_seconds() // 3600
                 nf = diffh // testdict[testname]['workflow']["INCR_CYCL_FREQ"]
@@ -486,7 +462,8 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
             f.write(f"\"{expt}\n(")
             f.write(f"{testdict[expt]['directory']}){d}")
             if "alternate_name" in testdict[expt]:
-                f.write(f"{testdict[expt]['alternate_name']}\n({testdict[expt]['alternate_directory_name']}){d}")
+                f.write(f"{testdict[expt]['alternate_name']}\n"\
+                        f"({testdict[expt]['alternate_directory_name']}){d}")
             else:
                 f.write(f"{d}\n")
             desc = testdict[expt]['metadata']['description'].splitlines()
@@ -497,14 +474,17 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
             f.write(f"{d}'{round(testdict[expt]['cost'],2)}{d}'{round(testdict[expt]['num_fcsts'])}")
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','PREDEF_GRID_NAME'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','CCPP_PHYS_SUITE'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_ics','EXTRN_MDL_NAME_ICS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs','EXTRN_MDL_NAME_LBCS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_ics',
+                                                'EXTRN_MDL_NAME_ICS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs',
+                                                'EXTRN_MDL_NAME_LBCS'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_FIRST_CYCL'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_LAST_CYCL'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','INCR_CYCL_FREQ'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','FCST_LEN_HRS'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_run_fcst','DT_ATMOS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs','LBC_SPEC_INTVL_HRS'))
+            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs',
+                                                'LBC_SPEC_INTVL_HRS'))
             f.write(f"{d}" + get_or_print_blank(testdict[expt],'global','NUM_ENS_MEMBERS') + "\n")
 
 def get_or_print_blank(d,key1,key2):
@@ -538,7 +518,8 @@ def compare_rocotostat(expt_dict,name):
 
     # Call rocotostat and store output
     rocoto_db = f"{expt_dict['expt_dir']}/FV3LAM_wflow.db"
-    rocotorun_cmd = ["rocotostat", f"-w {expt_dict['expt_dir']}/FV3LAM_wflow.xml", f"-d {rocoto_db}", "-v 10"]
+    rocotorun_cmd = ["rocotostat", f"-w {expt_dict['expt_dir']}/FV3LAM_wflow.xml",
+                     f"-d {rocoto_db}", "-v 10"]
     p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     rsout = p.stdout
 
@@ -575,7 +556,7 @@ def compare_rocotostat(expt_dict,name):
         elif expt_dict['status'] == 'STALLED':
             expt_dict['status'] = 'STUCK'
         elif expt_dict['status'] == 'STUCK':
-            msg = f"WARNING: For experiment {name}, there are some jobs that are not being submitted:"
+            msg = f"WARNING: For experiment {name}, there are jobs that are not being submitted:"
             for ut in untracked_tasks:
                 msg += ut
             msg = msg + f"""WARNING: For experiment {name},

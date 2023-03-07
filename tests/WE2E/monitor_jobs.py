@@ -17,18 +17,17 @@ from WE2E_summary import print_WE2E_summary
 from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
                   update_expt_status_parallel
 
-def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
+def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
 
     Args:
-        expt_dict   (dict): A dictionary containing the information needed to run
+        expts_dict  (dict): A dictionary containing the information needed to run
                             one or more experiments. See example file monitor_jobs.yaml
         monitor_file (str): [optional]
         debug       (bool): [optional] Enable extra output for debugging
     Returns:
         str: The name of the file used for job monitoring (when script is finished, this 
              contains results/summary)
-
     """
 
     starttime = datetime.now()
@@ -37,68 +36,65 @@ def monitor_jobs(expt_dict: dict, monitor_file: str = '', procs: int = 1, debug:
         monitor_file = f'WE2E_tests_{starttime.strftime("%Y%m%d%H%M%S")}.yaml'
     logging.info(f"Writing information for all experiments to {monitor_file}")
 
-    write_monitor_file(monitor_file,expt_dict)
+    write_monitor_file(monitor_file,expts_dict)
 
     # Perform initial setup for each experiment
     logging.info("Checking tests available for monitoring...")
 
     if procs > 1:
         print(f'Starting experiments in parallel with {procs} processes')
-        expt_dict = update_expt_status_parallel(expt_dict, procs, True, debug)
+        expts_dict = update_expt_status_parallel(expts_dict, procs, True, debug)
     else:
-        for expt in expt_dict:
+        for expt in expts_dict:
             logging.info(f"Starting experiment {expt} running")
-            expt_dict[expt] = update_expt_status(expt_dict[expt], expt, True, debug)
+            expts_dict[expt] = update_expt_status(expts_dict[expt], expt, True, debug)
 
-    write_monitor_file(monitor_file,expt_dict)
+    write_monitor_file(monitor_file,expts_dict)
 
-    logging.info(f'Setup complete; monitoring {len(expt_dict)} experiments')
+    logging.info(f'Setup complete; monitoring {len(expts_dict)} experiments')
     logging.info('Use ctrl-c to pause job submission/monitoring')
 
     #Make a copy of experiment dictionary; will use this copy to monitor active experiments
-    running_expts = expt_dict.copy()
+    running_expts = expts_dict.copy()
 
     i = 0
     while running_expts:
         i += 1
         if procs > 1:
-            expt_dict = update_expt_status_parallel(expt_dict, procs)
+            expts_dict = update_expt_status_parallel(expts_dict, procs)
         else:
             for expt in running_expts.copy():
-                expt_dict[expt] = update_expt_status(expt_dict[expt], expt)
+                expts_dict[expt] = update_expt_status(expts_dict[expt], expt)
 
         for expt in running_expts.copy():
-            running_expts[expt] = expt_dict[expt]
-            if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']: 
+            running_expts[expt] = expts_dict[expt]
+            if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']:
                 logging.info(f'Experiment {expt} is {running_expts[expt]["status"]};'\
                               'will no longer monitor.')
                 running_expts.pop(expt)
                 continue
-            logging.debug(f'Experiment {expt} status is {expt_dict[expt]["status"]}')
+            logging.debug(f'Experiment {expt} status is {expts_dict[expt]["status"]}')
 
-
-        write_monitor_file(monitor_file,expt_dict)
+        write_monitor_file(monitor_file,expts_dict)
         endtime = datetime.now()
         total_walltime = endtime - starttime
 
         logging.debug(f"Finished loop {i}\nWalltime so far is {str(total_walltime)}")
-        
         #Slow things down just a tad between loops so experiments behave better
         time.sleep(5)
-
 
     endtime = datetime.now()
     total_walltime = endtime - starttime
 
-    logging.info(f'All {len(expt_dict)} experiments finished in {str(total_walltime)}')
-    logging.info(f'Calculating core-hour usage and printing final summary')
+    logging.info(f'All {len(expts_dict)} experiments finished in {str(total_walltime)}')
+    logging.info('Calculating core-hour usage and printing final summary')
 
     # Calculate core hours and update yaml
-    expt_dict = calculate_core_hours(expt_dict)
-    write_monitor_file(monitor_file,expt_dict)
+    expts_dict = calculate_core_hours(expts_dict)
+    write_monitor_file(monitor_file,expts_dict)
 
     #Call function to print summary
-    print_WE2E_summary(expt_dict, debug)
+    print_WE2E_summary(expts_dict, debug)
 
     return monitor_file
 
@@ -141,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument('-y', '--yaml_file', type=str,
                         help='YAML-format file specifying the information of jobs to be run; '\
                              'for an example file, see monitor_jobs.yaml', required=True)
-    parser.add_argument('-p', '--procs', type=int, 
+    parser.add_argument('-p', '--procs', type=int,
                         help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
                              'with provided number of parallel tasks', default=1)
     parser.add_argument('-d', '--debug', action='store_true',
@@ -151,7 +147,7 @@ if __name__ == "__main__":
 
     setup_logging(logfile,args.debug)
 
-    expt_dict = load_config_file(args.yaml_file)
+    expts_dict = load_config_file(args.yaml_file)
 
     if args.procs < 1:
         raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
@@ -159,7 +155,7 @@ if __name__ == "__main__":
     #Call main function
 
     try:
-        monitor_jobs(expt_dict,args.yaml_file,args.procs,args.debug)
+        monitor_jobs(expts_dict,args.yaml_file,args.procs,args.debug)
     except KeyboardInterrupt:
         logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
         logging.info(f"{__file__} -y={args.yaml_file} -p={args.procs}\n")

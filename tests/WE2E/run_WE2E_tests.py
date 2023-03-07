@@ -65,7 +65,7 @@ def run_we2e_tests(homedir, args) -> None:
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
-                    # We just want the test name in this list, so cut out the 
+                    # We just want the test name in this list, so cut out the
                     # "config." prefix and ".yaml" extension
                     tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
@@ -332,20 +332,24 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if not cfg_bcs.get('USE_USER_STAGED_EXTRN_FILES'):
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_{ics_or_lbcs} section of config')
+        logging.debug('USE_USER_STAGED_EXTRN_FILES not specified or False in '\
+                      f'task_get_extrn_{ics_or_lbcs} section of config')
         return cfg_bcs
 
     # If EXTRN_MDL_SYSBASEDIR_* is "set_to_non_default_location_in_testing_script", replace with
     # test value from machine file
-    if cfg_bcs.get(f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}') == "set_to_non_default_location_in_testing_script":
+    if cfg_bcs.get(f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}') == \
+                    "set_to_non_default_location_in_testing_script":
         if f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}' in mach['platform']:
             if os.path.isdir(mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} from machine file does not exist or is not a directory")
+                raise FileNotFoundError("Non-default input file location "\
+                                        f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} from machine "\
+                                        "file does not exist or is not a directory")
             cfg_bcs[f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}'] = \
                     mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']
         else:
-            raise KeyError(f"Non-default input file location "\
-                            "TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} not set in machine file")
+            raise KeyError("Non-default input file location "\
+                           f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} not set in machine file")
         return cfg_bcs
 
     # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data
@@ -356,9 +360,9 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
                        "has not been specified in the machine file for this platform")
     if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
         raise FileNotFoundError(dedent(
-                                f"""The directory for staged test data specified in this platform's machine file
-                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
-                                does not exist."""))
+                f"""The directory for staged test data specified in this platform's machine file
+                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
+                does not exist."""))
 
     # Different input data types have different directory structures; set data dir accordingly
     if cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}'] == 'FV3GFS':
@@ -458,34 +462,57 @@ if __name__ == "__main__":
     logfile='log.run_WE2E_tests'
 
     #Parse arguments
-    parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted in CAPS), see ush/config_defaults.yaml\n")
+    parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted "\
+                                            "in CAPS), see ush/config_defaults.yaml\n")
     # Create a group for optional arguments so they can be listed after required args
     optional = parser._action_groups.pop()
     required = parser.add_argument_group('required arguments')
 
-    required.add_argument('-m', '--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
-    required.add_argument('-a', '--account', type=str, help='Account name for running submitted jobs', required=True)
-    required.add_argument('-t', '--tests', type=str, nargs="*", help="""Can be one of three options (in order of priority):
+    required.add_argument('-m', '--machine', type=str,
+                          help='Machine name; see ush/machine/ for valid values', required=True)
+    required.add_argument('-a', '--account', type=str,
+                          help='Account name for running submitted jobs', required=True)
+    required.add_argument('-t', '--tests', type=str, nargs="*",
+                          help="""Can be one of three options (in order of priority):
     1. A test name or list of test names.
     2. A test suite name ("fundamental", "comprehensive", or "all")
     3. The name of a file (full or relative path) containing a list of test names.
     """, required=True)
 
-    parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
-    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
-    parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will help keep the screen uncluttered')
-    parser.add_argument('-p', '--procs', type=int, help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, with provided number of parallel tasks', default=1)
+    parser.add_argument('-c', '--compiler', type=str,
+                        help='Compiler used for building the app', default='intel')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
+    parser.add_argument('-q', '--quiet', action='store_true',
+                        help='Suppress console output from workflow generation; this will help '\
+                             'keep the screen uncluttered')
+    parser.add_argument('-p', '--procs', type=int,
+                        help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
+                             'with provided number of parallel tasks', default=1)
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
-    parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments', default='')
-    parser.add_argument('--expt_basedir', type=str, help='Explicitly set EXPT_BASEDIR for all experiments')
-    parser.add_argument('--exec_subdir', type=str, help='Explicitly set EXEC_SUBDIR for all experiments')
-    parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this option disables the "monitor" script functionality')
-    parser.add_argument('--cron_relaunch_intvl_mnts', type=int, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
-    parser.add_argument('--opsroot', type=str, help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for details)')
-    parser.add_argument('--print_test_info', action='store_true', help='Create a "WE2E_test_info.txt" file summarizing each test prior to starting experiment')
-    parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
-    parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
+    parser.add_argument('--run_envir', type=str,
+                        help='Overrides RUN_ENVIR variable to a new value ("nco" or "community") '\
+                             'for all experiments', default='')
+    parser.add_argument('--expt_basedir', type=str,
+                        help='Explicitly set EXPT_BASEDIR for all experiments')
+    parser.add_argument('--exec_subdir', type=str,
+                        help='Explicitly set EXEC_SUBDIR for all experiments')
+    parser.add_argument('--use_cron_to_relaunch', action='store_true',
+                        help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this '\
+                             'option disables the "monitor" script functionality')
+    parser.add_argument('--cron_relaunch_intvl_mnts', type=int,
+                        help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
+    parser.add_argument('--opsroot', type=str,
+                        help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for '\
+                             'more details on this variable)')
+    parser.add_argument('--print_test_info', action='store_true',
+                        help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
+                             'starting experiment')
+    parser.add_argument('--debug_tests', action='store_true',
+                        help='Explicitly set DEBUG=TRUE for all experiments')
+    parser.add_argument('--verbose_tests', action='store_true',
+                        help='Explicitly set VERBOSE=TRUE for all experiments')
 
     parser._action_groups.append(optional)
 
@@ -495,7 +522,8 @@ if __name__ == "__main__":
     if args.modulefile is None:
         args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
     if args.procs < 1:
-        raise ValueError('You can not have less than one parallel process; select a valid value for --procs')
+        raise ValueError('You can not have less than one parallel process; select a valid value '\
+                         'for --procs')
 
     # Print test details (if requested)
     if args.print_test_info:
