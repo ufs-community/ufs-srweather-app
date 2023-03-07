@@ -241,7 +241,7 @@ fi
 #                   = 1 for FV3LAM
 #-----------------------------------------------------------------------
 
-if [ ${PREDEF_GRID_NAME} == "GSD_RAP13km" ]; then
+if [ ${PREDEF_GRID_NAME} == "RRFS_NA_13km" ]; then
    npts_rad_number=1
    metar_impact_radius_number=9
 else

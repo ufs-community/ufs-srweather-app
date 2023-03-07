@@ -878,38 +878,6 @@
 #
 #-----------------------------------------------------------------------
 #
-# Emulation of GSD's RAP domain with ~13km cell size.
-#
-#-----------------------------------------------------------------------
-#
-"GSD_RAP13km":
-  GRID_GEN_METHOD: "ESGgrid"
-  ESGgrid_LON_CTR: -106.0
-  ESGgrid_LAT_CTR: 54.0
-  ESGgrid_DELX: 13000.0
-  ESGgrid_DELY: 13000.0
-  ESGgrid_NX: 960
-  ESGgrid_NY: 960
-  ESGgrid_WIDE_HALO_WIDTH: 6
-  DT_ATMOS: 50
-  LAYOUT_X: 16
-  LAYOUT_Y: 16
-  BLOCKSIZE: 30
-  QUILTING:
-    WRTCMP_write_groups: 1
-    WRTCMP_write_tasks_per_group: 16
-    WRTCMP_output_grid: "rotated_latlon"
-    WRTCMP_cen_lon: -106.0
-    WRTCMP_cen_lat: 54.0
-    WRTCMP_lon_lwr_left: -55.82538869
-    WRTCMP_lat_lwr_left: -48.57685654
-    WRTCMP_lon_upr_rght: 55.82538869
-    WRTCMP_lat_upr_rght: 48.57685654
-    WRTCMP_dlon: 0.11691181
-    WRTCMP_dlat: 0.11691181
-#
-#-----------------------------------------------------------------------
-#
 # 13-km AQM NA grid for Online-CMAQ.
 #
 #-----------------------------------------------------------------------
