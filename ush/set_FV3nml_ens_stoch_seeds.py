@@ -192,7 +192,7 @@ class Testing(unittest.TestCase):
         set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
-        set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
+        set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml_base"))
         set_env_var("DO_SHUM", True)
         set_env_var("DO_SKEB", True)
         set_env_var("DO_SPPT", True)
