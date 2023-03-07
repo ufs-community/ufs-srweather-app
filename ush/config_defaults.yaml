@@ -2549,6 +2549,17 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# CLDANAL_NONVAR config parameters
+#-----------------------------
+task_run_nonvarcldanl:
+  TN_CLDANL_NONVAR: "cldanl_nonvar"
+  NNODES_RUN_NONVARCLDANL: 1
+  PPN_RUN_NONVARCLDANL: 1
+  MEM_RUN_NONVARCLDANL: 20G
+  WTIME_RUN_NONVARCLDANL: 00:30:00
+  MAXTRIES_RUN_NONVARCLDANL: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
