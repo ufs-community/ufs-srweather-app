@@ -920,6 +920,7 @@ workflow:
   COLDSTART: true
   WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
+
 #----------------------------
 # NCO specific variables
 #-----------------------------
@@ -954,6 +955,14 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  # (where yyyymmdd and hh are as described above), the directory in which
+  # the forecast output files will be placed will be:
+  #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
+  # 
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -964,6 +973,7 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
+
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'
@@ -973,6 +983,35 @@ nco:
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  # New additions from RRFS_dev1
+  #
+  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES_BASEDIR: '{{ NWGES }}'
+  RRFSE_NWGES: '{{ OPSROOT }}/nwges'
+  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
+  ENSCTRL_NWGES: '{{ OPSROOT }}/nwges'
+  ENSCTRL_NWGES_BASEDIR: '{{ ENSCTRL_NWGES}}'
+
+  ENSCTRL_COMIN: '{{ COMIN_BASEDIR}}'
+  ENSCTRL_COMOUT: '{{ COMOUT_BASEDIR}}'
+  ENSCTRL_COMROOT: '{{ ENSCTRL_COMOUT }}'
+  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
+  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # FG_ROOTDIR:
+  #  First Guess Root Directory, APP will find corresponding first guess
+  #  fields from this directory. RRFS will find FG under NWGES_BASEDIR,
+  #  but we needs to explicitly specify where to find FG for RTMA.
+  #  So this parameter only matters for RTMA
+  #
+  #-----------------------------------------------------------------------
+  #
+  FG_ROOTDIR: ""
 
   #
   #-----------------------------------------------------------------------
