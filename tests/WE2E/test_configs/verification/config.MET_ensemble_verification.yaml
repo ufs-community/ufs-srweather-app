@@ -38,4 +38,6 @@ global:
   NUM_ENS_MEMBERS: 2
 
 verification:
+  RUN_TASKS_METVX_DET: true
+  RUN_TASKS_METVX_ENS: true
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
