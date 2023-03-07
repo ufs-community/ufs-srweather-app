@@ -166,7 +166,15 @@ cannot be empty:
       fmt="${METplus_time_fmt}"
       ;;
     "%HHH")
-      fmt="%03d"
+#
+# Print format assumes that the argument to printf (i.e. the number to 
+# print out) may be a float.  If we instead assume an integer and use
+# "%03d" as the format, the printf function below will fail if the argument
+# happens to be a float.  The "%03.0f" format will work for both a float
+# and an integer argument (and will truncate the float and print out a
+# 3-digit integer).
+#
+      fmt="%03.0f"
       ;;
     *)
       print_err_msg_exit "\
@@ -193,9 +201,27 @@ METplus time string template passed to this function is:
       formatted_time=$( ${DATE_UTIL} --date="${valid_time_str} + ${time_shift_str}" +"${fmt}" )
       ;;
     "lead")
-      lead_hrs=$(( ($( ${DATE_UTIL} --date="${valid_time_str} + ${time_shift_str}" +"%s" ) \
-                  - $( ${DATE_UTIL} --date="${init_time_str}" +"%s" ) \
-                   )/${secs_per_hour} ))
+      lead_secs=$(( $( ${DATE_UTIL} --date="${valid_time_str} + ${time_shift_str}" +"%s" ) \
+               - $( ${DATE_UTIL} --date="${init_time_str}" +"%s" ) ))
+      lead_hrs=$( bc -l <<< "${lead_secs}/${SECS_PER_HOUR}" )
+#
+# Check to make sure lead_hrs is an integer.
+#
+      lead_hrs_trunc=$( bc <<< "${lead_secs}/${SECS_PER_HOUR}" )
+      lead_hrs_rem=$( bc -l <<< "${lead_hrs} - ${lead_hrs_trunc}" )
+      if [ "${lead_hrs_rem}" != "0" ]; then
+        print_err_msg_exit "\
+The lead in hours (lead_hrs) must be an integer but isn't:
+  lead_hrs = ${lead_hrs}
+The lead in seconds (lead_secs) is:
+  lead_secs = ${lead_secs}
+The remainder (lead_hrs_rem) after dividing the lead_secs by SECS_PER_HOUR
+= ${SECS_PER_HOUR} is:
+  lead_hrs_rem = ${lead_hrs_rem}"
+      fi
+#
+# Get the lead in the propper format.
+#
       formatted_time=$( printf "${fmt}" "${lead_hrs}" )
       ;;
     *)
