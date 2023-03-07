@@ -286,7 +286,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         if not refresh:
             logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
             expt["status"] = "ERROR"
-            return expt
+
+        return expt
 
     for task in db:
         # For each entry from rocoto database, store that task's info under a dictionary key named
