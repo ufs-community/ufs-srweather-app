@@ -41,11 +41,8 @@ cd ${we2e_test_dir}
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
 ./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
-    expt_basedir=${we2e_experiment_base_dir} \
-    opsroot=${nco_dir} | tee ${progress_file}
-
-# Progress file
-progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
+    --expt_basedir=${we2e_experiment_base_dir} \
+    --opsroot=${nco_dir} | tee ${progress_file}
 
 # Set exit code to number of failures
 set +e

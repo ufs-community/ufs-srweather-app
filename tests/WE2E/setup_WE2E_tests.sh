@@ -54,10 +54,10 @@ test_type=${4:-fundamental}
 #----------------------------------------------------------------------
 opts=
 if [[ "$*" != *"debug"* ]]; then
-   opts="${opts} --debug=TRUE"
+   opts="${opts} --debug"
 fi
 if [[ "$*" != *"verbose"* ]]; then
-   opts="${opts} --verbose=TRUE"
+   opts="${opts} --verbose"
 fi
 if [[ "$*" != *"cron_relaunch_intvl_mnts"* ]]; then
    opts="${opts} --cron_relaunch_intvl_mnts=4"
