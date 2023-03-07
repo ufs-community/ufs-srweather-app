@@ -2549,6 +2549,17 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# SAVE RESTART config parameters
+#-----------------------------
+task_save_restart:
+  TN_SAVE_RESTART: "save_restart"
+  NNODES_SAVE_RESTART: 1
+  PPN_SAVE_RESTART: 1
+  MEM_SAVE_RESTART: 2G
+  WTIME_SAVE_RESTART: 00:15:00
+  MAXTRIES_SAVE_RESTART: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
