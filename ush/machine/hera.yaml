@@ -17,6 +17,7 @@ platform:
   QUEUE_HPSS: batch
   RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL
+  RUN_CMD_AQMLBC: srun --export=ALL -n ${NUMTS}
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL
   RUN_CMD_AQM: srun -n ${nprocs} --export=ALL
