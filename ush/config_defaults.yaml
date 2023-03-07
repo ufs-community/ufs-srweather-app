@@ -5,7 +5,7 @@ metadata:
   description: >-
     Default configuration for an experiment. The valid values for most of the
     parameters are specified in valid_param_vals.yaml
-  version: !!str '1.0'
+  version: !!str '2.0'
 #----------------------------
 # USER config parameters
 #----------------------------
@@ -214,8 +214,11 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
+  # SCHED_NATIVE_CMD
   # Allows an extra parameter to be passed to SCHEDULER (SLURM/PBSPRO) via 
   # XML Native command
+  #
+  #-----------------------------------------------------------------------
   #
   SCHED_NATIVE_CMD: ""
 
@@ -424,11 +427,16 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
+  # WORKFLOW_ID
   # Unique ID for workflow run that will be set in setup.py
+  #
+  # TAG
+  # Prepend all task name with this name if specified
   #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_ID: ""
+  TAG: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1174,6 +1182,173 @@ workflow_switches:
   RUN_TASK_POST_STAT_PM25: false
   RUN_TASK_BIAS_CORRECTION_O3: false
   RUN_TASK_BIAS_CORRECTION_PM25: false
+
+#----------------------------
+# DO_ parameters. These look like workflow switches since some
+# of them are used in FV3LAM_wflow.xml
+#-----------------------------
+rrfs:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set parameters associated with running retrospective experiments.  Definitions:
+  #
+  # DO_RRFS_DEV:
+  # Flag to turn on RRFS dev workflow. Should be removed
+  # in the future once SRW and RRFS dev workflows are completely integrated
+  #
+  # DO_RETRO:
+  # Flag turn on the retrospective experiments.
+  #
+  # DO_SPINUP:
+  # Flag turn on the spin-up cycle.
+  #
+  # DO_POST_SPINUP:
+  # Flag turn on the UPP for spin-up cycle.
+  #
+  # DO_POST_PROD:
+  # Flag turn on the UPP for prod cycle.
+  #
+  # DO_PARALLEL_PRDGEN:
+  # Flag turn on parallel wgrib2 runs in prdgen .
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
+  DO_RETRO: true # Turn this on temporarily
+  DO_POST_PROD: false # Turn this off temporarily
+  DO_SPINUP: false
+  DO_POST_SPINUP: false
+  DO_PARALLEL_PRDGEN: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with ensembles.  Definitions:
+  #
+  # DO_ENSCONTROL: 
+  # In ensemble mode, whether or not to run member 1 as control member
+  #
+  # DO_GSIOBSERVER:
+  # Decide whether or not to run GSI observer
+  #
+  # DO_ENKFUPDATE:
+  # Decide whether or not to run EnKF update for the ensemble members
+  #
+  # DO_ENKF_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity EnKF update for the ensemble members
+  #
+  # DO_ENVAR_RADAR_REF:
+  # Decide whether or not to run Radar Reflectivity hybrid analysis
+  #
+  # DO_RECENTER:
+  # Decide whether or not to run recenter for the ensemble members
+  #
+  # DO_SAVE_INPUT:
+  # Decide whether or not to run save_input after the DA analysis  
+  #
+  # DO_ENS_GRAPHICS:
+  # Flag to turn on/off ensemble graphics. Turns OFF deterministic
+  # graphics.
+  #
+  # DO_ENSPOST:
+  # Flag to turn on/off python ensemble postprocessing for WPC testbeds.
+  #
+  # DO_ENSINIT:
+  # Decide whether or not to do ensemble initialization by running 1 timestep ensemble
+  # forecast and recentering on the deterministic analysis
+  #
+  # DO_ENSFCST:
+  # Flag that determines whether to run ensemble free forecasts (for
+  # each set of specified cycles).  If this is set to "TRUE", NUM_ENS_MEMBERS_FCST
+  # forecasts are run for each specified cycle, each with a different set of stochastic
+  # seed values. 
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_ENSFCST: false
+  DO_ENSCONTROL: false
+  DO_GSIOBSERVER: false
+  DO_ENKFUPDATE: false
+  DO_ENKF_RADAR_REF: false
+  DO_ENVAR_RADAR_REF: false
+  DO_RECENTER: false
+  DO_ENS_GRAPHICS: false
+  DO_ENSPOST: false
+  DO_ENSINIT: false
+  DO_SAVE_INPUT: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with running data assimilation.  Definitions:
+  #
+  # DO_DACYCLE:
+  # Flag that determines whether to run a data assimilation cycle.
+  #
+  # DO_SURFACE_CYCLE:
+  # Flag that determines whether to continue cycle surface fields.
+  #
+  # DO_SOIL_ADJUST:
+  # Flag that determines whether to adjust soil T and Q based on
+  # the lowest level T/Q analysis increments.
+  #
+  # DO_UPDATE_BC:
+  # Flag that determines whether to update boundary conditions based on the 
+  # analysis results
+  #
+  # DO_RADDA:
+  # Flag that determines whether to assimilate satellite radiance data
+  #
+  # DO_BUFRSND:
+  # Decide whether or not to run EMC BUFR sounding
+  #
+  # DO_SMOKE_DUST
+  # Flag turn on smoke and dust for RRFS-SD
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_DACYCLE: false
+  DO_SURFACE_CYCLE: false
+  DO_SOIL_ADJUST: false
+  DO_UPDATE_BC: false
+  DO_RADDA: false
+  DO_BUFRSND: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for JEDI options
+  # DO_JEDI_ENVAR_IODA:
+  #      Flag turn on the JEDI-IODA converters for EnVAR.  It requires GSI 
+  #      to produce NetCDF diag files
+  #-----------------------------------------------------------------------
+  #
+  DO_JEDI_ENVAR_IODA: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for analysis options
+  # DO_NONVAR_CLDANAL: 
+  #     Flag turn on the non-var cloud analysis.
+  # DO_REFL2TTEN: 
+  #     Flag turn on the radar reflectivity to temperature tendenecy.
+  # DO_NLDN_LGHT
+  #     Flag turn on processing NLDN NetCDF lightning data
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_NONVAR_CLDANAL: false
+  DO_REFL2TTEN: false
+  DO_NLDN_LGHT: false
+  DO_SMOKE_DUST: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # IS_RTMA:
+  #   If true, some ICs,LBCs,GSI rocoto tasks will be turned off
+  #
+  #-----------------------------------------------------------------------
+  #
+  IS_RTMA: false
 
 #----------------------------
 # MAKE GRID config parameters
