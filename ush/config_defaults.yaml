@@ -63,6 +63,7 @@ user:
   PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
   MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+  GRAPHICSdir: '{{ [HOMEdir, "python_graphics"]|path_join }}'
   VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
@@ -2547,6 +2548,44 @@ task_bias_correction_pm25:
   KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 128
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
+
+#----------------------------
+# GRAPHICS config parameters
+#-----------------------------
+task_run_graphics:
+  TN_RUN_GRAPHICS: "run_graphics"
+  NNODES_RUN_GRAPHICS: 1
+  PPN_RUN_GRAPHICS: 12
+  WTIME_RUN_GRAPHICS: 00:30:00
+  MAXTRIES_RUN_GRAPHICS: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set the tiles (or subdomains) for creating graphics in a Rocoto metatask.
+  # Do not include references to the grids that are produced in separate grib
+  # files (set with ADDNL_OUTPUT_GRIDS above). Those will be added in setup.sh
+  #
+  # TILE_LABELS
+  # A space separated list (string is fine, no need for array) of the labels
+  # applied to the groupings of tiles to be run as a single batch jobs. For
+  # example, you may label the set of tiles SE,NE,SC,NC,SW,NW as "regions", and
+  # the full input domain as "full" if you wanted those to run in two domains. The
+  # length must match the length of TILE_SETS.
+  #
+  # TILE_SETS
+  # A space separated list of tile groupings to plot. Space-separated sets
+  # indicate which ones will be grouped in a single batch job, comma sepated items
+  # are the tiles to be plotted in that batch job. For example:
+  #    TILE_SETS="full SW,SC,SE NW,NC,NE"
+  #    TILE_LABELS="full southern_regions northern_regions"
+  # would plot maps for the full domain in a batch job separately from the
+  # southern regions, using a third batch job for the northern regions. The
+  # space-separated list must match the length of TILE_LABELS.
+  #
+  #-----------------------------------------------------------------------
+  #
+  TILE_LABELS: "full"
+  TILE_SETS: "full"
 
 #----------------------------
 # global config parameters
