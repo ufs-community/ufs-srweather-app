@@ -124,16 +124,6 @@ symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-## Symlink to halo-3 grid file with "halo3" stripped from name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
-#if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
-#   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-#   [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "FALSE" ]; then
-#  symlink="C${GFDLgrid_NUM_CELLS}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#else
-#  symlink="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#fi
-
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
@@ -275,8 +265,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
                        relative="${relative_link_flag}"
 
   # create symlink to PT for point source in Online-CMAQ
-  if [ "${RUN_TASK_POINT_SOURCE}" = "TRUE" ]; then
-    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  if [ -f ${target} ]; then
     symlink="PT.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
 	                       relative="${relative_link_flag}"
@@ -595,12 +585,6 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
 
   mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
-  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
-    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-    done
-  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -662,13 +646,16 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fi
     done
 
-    if [ "${CPL_AQM}" = "TRUE" ]; then	
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-    fi
   done
 
 fi
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+    mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+    mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+  done
+fi
+
 #
 #-----------------------------------------------------------------------
 #
