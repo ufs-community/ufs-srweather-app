@@ -16,7 +16,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_obs_mrms" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
