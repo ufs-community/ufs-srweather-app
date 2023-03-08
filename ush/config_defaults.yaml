@@ -159,6 +159,10 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
+  # REMOVE_MEMORY:
+  # Boolean flag determining whether to remove the memory flag for the
+  # Rocoto XML. Some platforms are not configured to accept the memory
+  # flag, so must not be included at all in the XML.
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
@@ -175,6 +179,7 @@ platform:
   QUEUE_HPSS: ""
   PARTITION_FCST: ""
   QUEUE_FCST: ""
+  REMOVE_MEMORY: False
   #
   #-----------------------------------------------------------------------
   #
@@ -1952,17 +1957,11 @@ global:
   # A list of names for the ensemble member names following the format
   # mem001, mem002, etc.
   #
-  # FV3_NML_ENSMEM_FPS:
-  # Paths to the ensemble member corresponding namelists in the
-  # experiment directory
-  #
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
-  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
-  FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-
+  ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
   #
   #-----------------------------------------------------------------------
   #
@@ -2080,7 +2079,7 @@ global:
 #-----------------------------
 verification:
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
+  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
 
 #----------------------------
 # CPL_AQM config parameters
@@ -2251,10 +2250,10 @@ cpl_aqm_parm:
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
 rocoto:
-  attrs:
-  cycledefs:
-  entities:
-  log:
+  attrs: ""
+  cycledefs: ""
+  entities: ""
+  log: ""
   tasks:
-    taskgroups:
+    taskgroups: ""
 
