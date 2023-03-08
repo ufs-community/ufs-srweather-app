@@ -96,7 +96,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}
+    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/$CDATE
     export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
@@ -105,7 +105,6 @@ else
     export MEM_STAR="mem*/"
     export MEM_CUSTOM="{custom?fmt=%s}/"
     export DOT_MEM_CUSTOM=
-
 fi
 export DOT_ENSMEM=${dot_ensmem}
 
@@ -141,6 +140,7 @@ export POST_OUTPUT_DOMAIN_NAME
 export NUM_ENS_MEMBERS 
 export NUM_PAD
 export LOG_SUFFIX
+
 #
 #-----------------------------------------------------------------------
 #

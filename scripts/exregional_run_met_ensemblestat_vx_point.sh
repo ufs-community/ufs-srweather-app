@@ -116,7 +116,7 @@ LOG_SUFFIX="EnsembleStat"
 #
 #-----------------------------------------------------------------------
 #
-# Check for existence of top-level OBS_DIR
+# Check for existence of top-level OBS_DIR 
 #
 #-----------------------------------------------------------------------
 #
@@ -128,7 +128,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Export some environment variables passed in by the XML and run METplus
+# Export some environment variables passed in by the XML and run METplus 
 #
 #-----------------------------------------------------------------------
 #
