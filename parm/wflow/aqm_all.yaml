@@ -1,0 +1,183 @@
+default_aqm_task: &default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "{{ jobname }}" "&JOBSdir;/JREGIONAL_{{ jobname|upper }}"'
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+  memory: 2G
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_nexus_gfs_sfc:
+  <<: *default_aqm
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  dependency:
+    or:
+      and:
+        streq:
+          left: do_real_time
+          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+        datadep_gfs:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+      streq:
+        left: retro
+        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
+
+metatask_nexus_emission:
+  var:
+    nspt: '{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}'
+  task_nexus_emission_#nspt#:
+    <<: *default_aqm
+    command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"'
+    nnodes: 4
+    ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION }}'
+    walltime: 01:00:00
+    envars:
+      nspt: #nspt#
+    dependency:
+      taskdep:
+        attrs:
+          task: nexus_gfs_sfc
+
+task_nexus_post_split:
+  <<: *default_aqm
+  dependency:
+    metataskdep:
+      attrs:
+        metatask: nexus_emission
+
+task_fire_emission:
+  <<: *default_aqm
+
+task_point_source:
+  <<: *default_aqm
+  walltime: 01:00:00
+  dependency:
+    or_make_grid:
+      datadep_grid:
+        attrs:
+          age: 00:00:00:05
+        text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+      streq:
+        left: staged_grid
+        right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+
+task_aqm_ics_ext:
+  <<: *default_aqm
+  attrs:
+    cycledefs: at_start
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"'
+  envars:
+    PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
+  dependency:
+    and:
+      taskdep:
+        attrs:
+          task: make_ics_det
+      or:
+        datadep_date_tag_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+        datadep_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
+
+task_aqm_ics:
+  <<: *default_aqm
+  attrs:
+    cycledefs: cycled
+    maxtries: '2'
+  envars:
+    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMIN;</cyclestr>'
+  dependency:
+    and:
+      taskdep:
+        attrs:
+          task: make_ics_det
+      or:
+        datadep_date_tag_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{- cycl_freq -}}">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+        datadep_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: <cyclestr offset="-{{- cycl_freq -}}">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc</datadep>
+
+task_aqm_lbcs:
+  <<: *default_aqm
+  ppn: 24
+  dependency:
+    taskdep:
+      attrs:
+        task: make_lbcs
+
+task_pre_post_stat:
+  <<: *default_aqm
+  dependency:
+    or_do_post:
+      and_run_post: # If post was meant to run, wait on the whole post metatask
+        taskvalid:
+          attrs:
+            task: run_post_det_000
+        metataskdep:
+          attrs:
+            metatask: run_post_det
+      and_inline_post: # If inline post ran, wait on the forecast task to complete
+        not:
+          taskvalid:
+            attrs:
+              task: run_post_det_000
+        taskdep:
+          attrs:
+            task: run_fcst_det
+
+task_post_stat_o3:
+  <<: *default_aqm
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
+task_post_stat_pm25:
+  <<: *default_aqm
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_o3:
+  <<: *default_aqm
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_pm25:
+  <<: *default_aqm
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+

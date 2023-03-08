@@ -6,6 +6,7 @@ rocoto:
     ACCOUNT: '{{ user.ACCOUNT }}'
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
     COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ nco.COMIN_BASEDIR }}/@Y@m@d@H{% endif %}'
+    COMINgfs: '{{ platform.get("COMINgfs") }}'
     FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
     JOBSDIR: '{{ user.JOBSdir }}'
@@ -24,8 +25,9 @@ rocoto:
     QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
     RUN: '{{ nco.RUN }}'
     SCHED_NATIVE_CMD: '{{ platform.SCHED_NATIVE_CMD }}'
-    SCRIPTSDIR: '{{ user.SCRIPTSdir }}'
+    SCRIPTSdir: '{{ user.SCRIPTSdir }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    USHdir: '&USHdir;'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
   attrs:
     cyclethrottle: "20"

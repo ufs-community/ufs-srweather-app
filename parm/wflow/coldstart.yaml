@@ -5,7 +5,7 @@ default_task: &default_task
     maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    USHdir: '{{ user.USHdir }}'
+    USHdir: '&USHdir;'
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
@@ -41,7 +41,7 @@ task_get_extrn_ics:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: !cycstr [value="&COMINgfs;/gfs.@Y@m@d/@H/atmos", offset="-{{ workflow.INCR_CYCL_FREQ }}"]
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -68,7 +68,7 @@ task_get_extrn_lbcs:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: !cycstr [value="&COMINgfs;/gfs.@Y@m@d/@H/atmos", offset="-{{ workflow.INCR_CYCL_FREQ }}"]
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -178,6 +178,15 @@ metatask_run_ensemble:
             attrs:
               task: point_source
         or_aqm_ics:
+          and_no_aqm_ics:
+            not:
+              taskvalid:
+                attrs:
+                  task: aqm_ics_ext
+            not:
+              taskvalid:
+                attrs:
+                  task: aqm_ics
           and_aqm_atstart:
             taskvalid:
               attrs:
@@ -200,7 +209,4 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: aqm_lbcs
-
-
-
 

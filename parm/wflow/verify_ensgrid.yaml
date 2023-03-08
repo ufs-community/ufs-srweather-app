@@ -1,15 +1,18 @@
-default_task_verify_ens: &default_task
+default_task_verify_ens: &default_task_verify_ens
   account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    USHdir: '{{ user.USHdir }}'
+    USHdir: '&USHdir;'
     PDY: !cycstr '@Y@m@d'
     cyc: !cycstr "@H"
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
-    FHR: '{% for h in range(0, expt.fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %}'
+    FHR: '{% for h in range(1, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    nprocs: '{{ nnodes * ppn }}'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -26,10 +29,11 @@ metatask_ensgridvx:
     VAR: APCP REFC RETOP
     OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
   task_run_ensgridvx_#VAR#:
+    <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
     envars:
       <<: *default_vars
-      ACCUM: 01
+      ACCUM: '01'
       OBS_DIR: '#OBS_DIR#'
       VAR: '#VAR#'
     dependency:
@@ -42,23 +46,24 @@ metatask_ensgridvx_prob:
     VAR: APCP REFC RETOP
     OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
   task_run_ensgridvx_prob_#VAR#:
+    <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"'
     envars:
       <<: *default_vars
-      ACCUM: 01
+      ACCUM: '01'
       OBS_DIR: '#OBS_DIR#'
       VAR: '#VAR#'
     dependency:
       metataskdep:
         attrs:
-          metatask: run_ensgridvx_#VAR#
+          metatask: ensgridvx
 
 metatask_ensgridvx_acc:
   var:
-    ACCUM_HR: 03 06 24
-    FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
+    ACCUM_HR: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    FCST_HR_LIST: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
   task_run_ensgridvx_#ACCUM_HR#h:
-    <<: *default_task
+    <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
     envars:
       <<: *default_vars
@@ -77,11 +82,11 @@ metatask_ensgridvx_stats:
     statlc: mean prob
   metatask_ensgridvx_acc:
     var:
-      ACCUM_HR: 03 06 24
-      FCST_HR_LIST: '&3HRLY_FH; &6HRLY_FH; &24HRLY_FH;'
+      ACCUM_HR: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      FCST_HR_LIST: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
     task_run_ensgridvx_#statlc#_#ACCUM_HR#h:
-      <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_#STAT#"'
+      <<: *default_task_verify_ens
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_#stat#"'
       envars:
         <<: *default_vars
         ACCUM: '#ACCUM_HR#'
@@ -93,8 +98,8 @@ metatask_ensgridvx_stats:
           attrs:
             task: run_ensgridvx_APCP
   task_run_enspointvx_#statlc#:
-    <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_#STAT#"'
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_#stat#"'
     envars:
       <<: *default_vars
       OBS_DIR: '&NDAS_OBS_DIR;'
@@ -104,7 +109,7 @@ metatask_ensgridvx_stats:
           task: run_vx_enspoint
 
 task_vx_enspoint:
-  <<: *default_task
+  <<: *default_task_verify_ens
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT"'
   envars:
     <<: *default_vars

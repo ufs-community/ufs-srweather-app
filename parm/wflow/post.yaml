@@ -6,7 +6,7 @@ default_task_post: &default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSDIR;/JREGIONAL_RUN_POST"'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    USHdir: '{{ user.USHdir }}'
+    USHdir: '&USHdir;'
     PDY: !cycstr '@Y@m@d'
     cyc: !cycstr '@H'
     fhr: '#fhr#'
@@ -38,11 +38,11 @@ metatask_run_ens_post:
               task: run_fcst_#mem#
           and:
             datadep_dyn:
-              text: !cycstr '&FCST_DIR;/dynf#fhr#.nc'
+              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#.nc'
               attrs:
                 age: '05:00'
             datadep_phy:
-              text: !cycstr '&FCST_DIR;/phyf#fhr#.nc'
+              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#.nc'
               attrs:
                 age: '05:00'
 
@@ -64,11 +64,11 @@ metatask_run_ens_post:
                 task: run_fcst_#mem#
             and:
               datadep_dyn:
-                text: !cycstr '&FCST_DIR;/dynf#fhr#:#fmn#:00.nc'
+                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#:#fmn#:00.nc'
                 attrs:
                   age: '05:00'
               datadep_phy:
-                text: !cycstr '&FCST_DIR;/phyf#fhr#:#fmn#:00.nc'
+                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#:#fmn#:00.nc'
                 attrs:
                   age: '05:00'
 
