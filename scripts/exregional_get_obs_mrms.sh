@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_obs_mrms" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -61,12 +61,12 @@ s_dd=`echo ${start_valid} | cut -c7-8`    # day (DD) of start time
 s_hh=`echo ${start_valid} | cut -c9-10`   # hour (HH) of start time
 start_valid_ut=`$DATE_UTIL -ud ''${s_yyyy}-${s_mm}-${s_dd}' UTC '${s_hh}':00:00' +%s` # convert start time to universal time
 
-end_fcst_sec=`expr ${fcst_length} \* 3600` # convert last forecast lead hour to seconds
-end_valid_ut=`expr ${start_valid_ut} + ${end_fcst_sec}` # calculate current forecast time in universal time
+end_fcst_sec=$(( ${fcst_length} * 3600 )) # convert last forecast lead hour to seconds
+end_valid_ut=$(( ${start_valid_ut} + ${end_fcst_sec} )) # calculate current forecast time in universal time
 
 cur_ut=${start_valid_ut}
 current_fcst=0
-fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
+fcst_sec=$(( ${current_fcst} * 3600 )) # convert forecast lead hour to seconds
 
 while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
   cur_time=`$DATE_UTIL -ud '1970-01-01 UTC '${cur_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
@@ -155,8 +155,8 @@ Did you forget to run \"module load hpss\"?\
 
   # Increment
   current_fcst=$((${current_fcst} + 1)) # hourly increment
-  fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
-  cur_ut=`expr ${start_valid_ut} + ${fcst_sec}`
+  fcst_sec=$(( ${current_fcst} * 3600 )) # convert forecast lead hour to seconds
+  cur_ut=$(( ${start_valid_ut} + ${fcst_sec} ))
   
 done
 #
