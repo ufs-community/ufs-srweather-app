@@ -3,7 +3,7 @@
   {%- for tag, values in dep_dict.items() %}
     {%- set tag_type = tag.split("_")[0] %}
     {%- if values is mapping %}
-      <{{ tag_type -}} {% for attr, val in values.pop("attrs", {}).items() %} {{ attr }}="{{ val }}"{%- endfor -%}{%- if "taskdep" in tag_type %}/{%- endif %}>
+      <{{ tag_type -}} {% for attr, val in values.pop("attrs", {}).items() %} {{ attr }}="{{ val }}"{%- endfor -%}{%- if tag_type in ["taskdep", "metataskdep", "taskvalid"] %}/{%- endif %}>
       {%- if values.get("text") %}
         {{ values.pop("text") }}
       </{{ tag_type }}>
