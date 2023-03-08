@@ -195,10 +195,10 @@ EOF
   #
   #-----------------------------------------------------------------------
   #
-   PREP_STEP
-   eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
-        Call to executable to run lightning process returned with nonzero exit code."
-   POST_STEP
+  PREP_STEP
+  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
+       Call to executable to run lightning process returned with nonzero exit code."
+  POST_STEP
 fi
 
 #
