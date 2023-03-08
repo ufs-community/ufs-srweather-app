@@ -73,7 +73,7 @@
     dwind_2d = .false.
     dz_min = 2
     external_eta = .true.
-    external_ic = {{ fv_core_external_ic }}
+    external_ic = .true.
     fill = .true.
     full_zs_filter = .false.
     fv_debug = .false.
@@ -92,14 +92,14 @@
     kord_tm = -9
     kord_tr = 9
     kord_wz = 9
-    make_nh = {{ fv_core_make_nh }}
-    mountain = {{ fv_core_mountain }}
+    make_nh = .true.
+    mountain = .false.
     n_split = 5
     n_sponge = 24
     n_zs_filter = 0
-    na_init = {{ fv_core_na_init }}
+    na_init = 1
     ncep_ic = .false.
-    nggps_ic = {{ fv_core_nggps_ic }}
+    nggps_ic = .true.
     no_dycore = .false.
     nord = 3
     npz = 64
@@ -121,7 +121,7 @@
     tau = 5.0
     use_hydro_pressure = .false.
     vtdm4 = 0.02
-    warm_start = {{ fv_core_warm_start }}
+    warm_start = .false.
     write_restart_with_bcs = .false.
     z_tracer = .true.
 /

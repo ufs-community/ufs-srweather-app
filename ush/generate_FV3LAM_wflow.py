@@ -431,8 +431,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     log_info(
         f"""
-        Setting parameters in weather model's namelist file (FV3_NML_TMPL_FP):
-        FV3_NML_TMPL_FP = '{FV3_NML_TMPL_FP}'"""
+        Setting parameters in weather model's namelist file (FV3_NML_FP):
+        FV3_NML_FP = '{FV3_NML_FP}'"""
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
@@ -754,7 +754,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "-u",
                 settings_str,
                 "-o",
-                FV3_NML_TMPL_FP,
+                FV3_NML_FP,
             ]
         )
     except:
@@ -770,7 +770,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                   Physics suite to extract from yaml configuration file:
                     CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
                   Full path to output namelist file:
-                    FV3_NML_TMPL_FP = '{FV3_NML_TMPL_FP}'
+                    FV3_NML_FP = '{FV3_NML_FP}'
                   Namelist settings specified on command line:\n
                     settings =\n\n"""
             )

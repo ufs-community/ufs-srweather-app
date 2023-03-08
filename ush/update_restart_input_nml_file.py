@@ -24,12 +24,13 @@ from fill_jinja_template import fill_jinja_template
 
 
 def update_restart_input_nml_file(
-    fv_core_external_ic, fv_core_make_nh, fv_core_mountain, fv_core_na_init, fv_core_nggps_ic, fv_core_warm_start
+    run_dir, fv_core_external_ic, fv_core_make_nh, fv_core_mountain, fv_core_na_init, fv_core_nggps_ic, fv_core_warm_start
 ):
     """Update the FV3 input.nml file for restart in the specified
     run directory
 
     Args:
+        run_dir: run directory
         fv_core_external_ic : parameter external_ic
         fv_core_make_nh : parameter make_nh
         fv_core_mountain : parameter mountain
@@ -64,7 +65,6 @@ def update_restart_input_nml_file(
     dot_fv_core_external_ic_dot=f".{lowercase(str(fv_core_external_ic))}."
     dot_fv_core_make_nh_dot=f".{lowercase(str(fv_core_make_nh))}."
     dot_fv_core_mountain_dot=f".{lowercase(str(fv_core_mountain))}."
-    dot_fv_core_na_init_dot=f".{lowercase(str(fv_core_na_init))}."
     dot_fv_core_nggps_ic_dot=f".{lowercase(str(fv_core_nggps_ic))}."
     dot_fv_core_warm_start_dot=f".{lowercase(str(fv_core_warm_start))}."
     #
@@ -80,7 +80,7 @@ def update_restart_input_nml_file(
         "fv_core_external_ic": dot_fv_core_external_ic_dot,
         "fv_core_make_nh": dot_fv_core_make_nh_dot,
         "fv_core_mountain": dot_fv_core_mountain_dot,
-        "fv_core_na_init": dot_fv_core_na_init_dot,
+        "fv_core_na_init": fv_core_na_init,
         "fv_core_nggps_ic": dot_fv_core_nggps_ic_dot,
         "fv_core_warm_start": dot_fv_core_warm_start_dot,
     }
@@ -105,7 +105,8 @@ def update_restart_input_nml_file(
     #
     # -----------------------------------------------------------------------
     #
-    fv3_input_nml_fp = os.path.join(run_dir, "input.nml")
+    fv3_input_nml_tmpl_fp = os.path.join(run_dir, FV3_NML_TMPL_FN) 
+    fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN)
 
     try:
         fill_jinja_template(
@@ -114,9 +115,9 @@ def update_restart_input_nml_file(
                 "-u",
                 settings_str,
                 "-t",
-                MODEL_CONFIG_TMPL_FP,
+                fv3_input_nml_tmpl_fp,
                 "-o",
-                model_config_fp,
+                fv3_input_nml_fp,
             ]
         )
     except:
@@ -139,55 +140,59 @@ def update_restart_input_nml_file(
 
 def parse_args(argv):
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description="Creates model configuration file.")
+    parser = argparse.ArgumentParser(description="Update FV3 input.nml file for restart.")
 
     parser.add_argument(
-        "-r", "--run-dir", dest="run_dir", required=True, help="Run directory."
-    )
-
-    parser.add_argument(
-        "-c",
-        "--cdate",
-        dest="cdate",
+        "-r", "--run_dir",
+        dest="run_dir",
         required=True,
-        help="Date string in YYYYMMDD format.",
+        help="Run directory."
     )
 
     parser.add_argument(
-        "-f",
-        "--fcst_len_hrs",
-        dest="fcst_len_hrs",
+        "-a", "--fv_core_external_ic",
+        dest="fv_core_external_ic",
         required=True,
-        help="Forecast length in hours.",
+        help="Parameter external_ic.",
     )
 
     parser.add_argument(
-        "-s",
-        "--sub-hourly-post",
-        dest="sub_hourly_post",
+        "-b", "--fv_core_make_nh",
+        dest="fv_core_make_nh",
         required=True,
-        help="Set sub hourly post to either TRUE/FALSE by passing corresponding string.",
+        help="Parameter make_nh.",
     )
 
     parser.add_argument(
-        "-d",
-        "--dt-subhourly-post-mnts",
-        dest="dt_subhourly_post_mnts",
+        "-c", "--fv_core_mountain",
+        dest="fv_core_mountain",
         required=True,
-        help="Subhourly post minitues.",
+        help="Parameter mountain.",
     )
 
     parser.add_argument(
-        "-t",
-        "--dt-atmos",
-        dest="dt_atmos",
+        "-d", "--fv_core_na_init",
+        dest="fv_core_na_init",
         required=True,
-        help="Forecast model's main time step.",
+        help="Parameter na_init.",
     )
 
     parser.add_argument(
-        "-p",
-        "--path-to-defns",
+        "-e", "--fv_core_nggps_ic",
+        dest="fv_core_nggps_ic",
+        required=True,
+        help="Parameter nggps_ic.",
+    )
+
+    parser.add_argument(
+        "-f", "--fv_core_warm_start",
+        dest="fv_core_warm_start",
+        required=True,
+        help="Parameter warm_start.",
+    )
+
+    parser.add_argument(
+        "-p", "--path-to-defns",
         dest="path_to_defns",
         required=True,
         help="Path to var_defns file.",
@@ -201,11 +206,12 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    create_model_configure_file(
+    update_restart_input_nml_file(
         run_dir=args.run_dir,
-        cdate=str_to_type(args.cdate),
-        fcst_len_hrs=str_to_type(args.fcst_len_hrs),
-        sub_hourly_post=str_to_type(args.sub_hourly_post),
-        dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
-        dt_atmos=str_to_type(args.dt_atmos),
+        fv_core_external_ic=str_to_type(args.fv_core_external_ic),
+        fv_core_make_nh=str_to_type(args.fv_core_make_nh),
+        fv_core_mountain=str_to_type(args.fv_core_mountain),
+        fv_core_na_init=str_to_type(args.fv_core_na_init),
+        fv_core_nggps_ic=str_to_type(args.fv_core_nggps_ic),
+        fv_core_warm_start=str_to_type(args.fv_core_warm_start),
     )
