@@ -851,8 +851,20 @@ workflow:
   #   the new name unique.
   #
   # * "upgrade":
-  #    save a copy and then upgrade the preexisting $EXPDIR directory
-  #    keep intact for other preexisting directories
+  #    If method is set to "upgrade", 
+  #     keep preexisting directory intact except that
+  #     when preexisting directory is $EXPDIR, do the following:
+  #       save all old files to a subdirecotry oldxxx/ and then
+  #       populate new files into the $EXPDIR directory
+  #    This is useful to keep ongoing runs uninterrupted:
+  #     rocotoco *db files and previous cycles will stay and hence
+  #       1. no need to manually cp/mv *db files and previous cycles back
+  #       2. no need to manually restart related rocoto tasks failed during
+  #            the workflow generation process
+  #    This may best suit for incremental system upgrades.
+  #   
+  #    Alternatively, one can always elect to use the "rename" option 
+  #      and then manually do the above aftermath
   #
   # * "quit":
   #   The preexisting directory is left unchanged, but execution of the
