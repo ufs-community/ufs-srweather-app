@@ -25,22 +25,13 @@ workflow:
   DO_REAL_TIME: false
 nco:
   NET: aqm
-workflow_switches:
-  RUN_TASK_MAKE_GRID: true
-  RUN_TASK_MAKE_OROG: true
-  RUN_TASK_MAKE_SFC_CLIMO: true
-  RUN_TASK_RUN_POST: false
-  RUN_TASK_AQM_ICS: true
-  RUN_TASK_AQM_LBCS: true
-  RUN_TASK_NEXUS_GFS_SFC: true
-  RUN_TASK_NEXUS_EMISSION: true
-  RUN_TASK_FIRE_EMISSION: true
-  RUN_TASK_POINT_SOURCE: true
-  RUN_TASK_PRE_POST_STAT: true
-  RUN_TASK_POST_STAT_O3: false
-  RUN_TASK_POST_STAT_PM25: false
-  RUN_TASK_BIAS_CORRECTION_O3: false
-  RUN_TASK_BIAS_CORRECTION_PM25: false
+rocoto:
+  taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
+  tasks:
+    task_post_stat_O3:
+    task_post_stat_PM25:
+    task_bias_correction_O3:
+    task_bias_correction_PM25:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf

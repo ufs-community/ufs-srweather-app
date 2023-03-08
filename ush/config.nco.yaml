@@ -16,11 +16,8 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_PLOT_ALLVARS: false
+rocoto:
+  taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 nco:
   NET: rrfs
   model_ver: v1.0

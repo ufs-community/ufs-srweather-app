@@ -33,22 +33,8 @@ nco:
   model_ver: v7.0
   RUN: aqm_nco_aqmna13km
   OPSROOT: /path/to/custom/opsroot
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: false
-  RUN_TASK_AQM_ICS: true
-  RUN_TASK_AQM_LBCS: true
-  RUN_TASK_NEXUS_GFS_SFC: true
-  RUN_TASK_NEXUS_EMISSION: true
-  RUN_TASK_FIRE_EMISSION: true
-  RUN_TASK_POINT_SOURCE: true
-  RUN_TASK_PRE_POST_STAT: true
-  RUN_TASK_POST_STAT_O3: true
-  RUN_TASK_POST_STAT_PM25: true
-  RUN_TASK_BIAS_CORRECTION_O3: true
-  RUN_TASK_BIAS_CORRECTION_PM25: true
+rocoto:
+  taskgroups: '{{ ["parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
 task_make_grid:
   GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
