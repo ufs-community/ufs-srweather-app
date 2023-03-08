@@ -51,9 +51,14 @@ user:
   # ACCOUNT:
   # The account under which to submit jobs to the queue.
   #
+  # SERVICE_ACCOUNT:
+  # The account under which to submit non-reservation jobs to the queue.
+  # Defaults to ACCOUNT if not set.
+  #
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
+  SERVICE_ACCOUNT: ""
 
   HOMEdir: '{{ user.HOMEdir }}'
   USHdir: '{{ user.USHdir }}'
@@ -159,6 +164,47 @@ platform:
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
+  # PARTITION_GRAPHICS
+  # Partition to which graphics tasks are submitted
+  #
+  # QUEUE_GRAPHICS
+  # Queue for graphics tasks
+  #
+  # PARTITION_ANALYSIS
+  # Partion to which analysis tasks are submitted
+  #
+  # QUEUE_ANALYSIS:
+  # The queue or QOS to which the task that runs a analysis is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # PARTITION_PRDGEN:
+  # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+  # the partition to which the task that remaps output grids is submitted.  If 
+  # this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.  This is not used if SCHED is not set to 
+  # "slurm".
+  #
+  # QUEUE_PRDGEN:
+  # The queue or QOS to which the task that prodgen is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # PARTITION_POST:
+  # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
+  # the partition to which the task that upp is submitted.
+  #
+  # QUEUE_POST:
+  # The queue or QOS to which the task that upp is submitted.  
+  # If this is not set or set to an empty string, it will be (re)set to a 
+  # machine-dependent value.
+  #
+  # RESERVATION:
+  # The reservation for major tasks.  
+  #
+  # RESERVATION_POST:
+  # The reservation for post tasks.  
+  #
   #-----------------------------------------------------------------------
   #
   WORKFLOW_MANAGER: ""
@@ -175,6 +221,16 @@ platform:
   QUEUE_HPSS: ""
   PARTITION_FCST: ""
   QUEUE_FCST: ""
+  PARTITION_GRAPHICS: ""
+  QUEUE_GRAPHICS: ""
+  PARTITION_ANALYSIS: ""
+  QUEUE_ANALYSIS: ""
+  PARTITION_PRDGEN: ""
+  QUEUE_PRDGEN: ""
+  PARTITION_POST: ""
+  QUEUE_POST: ""
+  RESERVATION: ""
+  RESERVATION_POST: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -821,6 +877,78 @@ workflow:
   # This is valid only when FCST_LEN_HRS = -1.
   # This pattern is recurred for all cycle dates.
   #
+  # STARTYEAR,STARTMONTH,STARTDAY,STARTHOUR:
+  # Year,month,day and hour of the first cycle in the set of forecasts to run
+  # ENDYEAR,ENDMONTH,ENDDAY,ENDHOUR
+  # Year,month,day and hour of the last cycle in the set of forecasts to run
+  #
+  # CYCL_HRS:
+  # An array containing the hours of the day at which to launch forecasts.
+  # Forecasts are launched at these hours on each day from DATE_FIRST_CYCL
+  # to DATE_LAST_CYCL, inclusive.  Each element of this array must be a 
+  # two-digit string representing an integer that is less than or equal to
+  # 23, e.g. "00", "03", "12", "23".
+  #
+  # CYCL_HRS_SPINSTART:
+  # An array containing the hours of the day at which the spin up cycle starts.
+  #
+  # CYCL_HRS_PRODSTART:
+  # An array containing the hours of the day at which the product cycle starts,
+  # from cold start input or from spin-up cycle forcast
+  #
+  # CYCL_HRS_PRODSTART_ENS:
+  # An array containing the hours of the day at which the product cycle starts,
+  # from cold start input or from spin-up cycle forcast, for the ensemble.
+  # this is only needed for locating the RRFS ensemble files for the the deterministic hybrid analysis.
+  #
+  # CYCL_HRS_RECENTER:
+  # An array containing the hours of the day at which the ensemble recenter is on
+  #
+  # CYCL_HRS_STOCH
+  # An array containing the hours of the day at which the stochastics physcis is on
+  # this might include: SPPT, SHUM, SKEB, SPP, LSM_SPP
+  #
+  # BOUNDARY_LEN_HRS
+  # The length of boundary condition for normal forecast, in integer hours.
+  #
+  # BOUNDARY_LONG_LEN_HRS
+  # The length of boundary condition for long forecast, in integer hours.
+  #
+  # BOUNDARY_PROC_GROUP_NUM
+  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
+  #
+  # FCST_LEN_HRS_SPINUP:
+  # The length of each forecast in spin up cycles, in integer hours.
+  #
+  # FCST_LEN_HRS_CYCLES:
+  # The length of forecast for each cycle, in integer hours.
+  # When it empty, all forecast will be FCST_LEN_HRS
+  #
+  # DA_CYCLE_INTERV:
+  # Data assimilation cycle interval, in integer hours for now.
+  #
+  # RESTART_INTERVAL:
+  # frequency of the output restart files (unit:hour). 
+  # Default=0: restart files are produced at the end of a forecast run
+  # For example, i) RESTART_INTERVAL: 1 -1 => restart files are produced 
+  # every hour with the prefix "YYYYMMDD.HHmmSS." in the RESTART directory
+  # ii) RESTART_INTERVAL: 1 2 5 => restart files are produced only when 
+  # fh = 1, 2, and 5.
+  #
+  #
+  # RESTART_INTERVAL_LONG:
+  # Set up frequenency or list of the forecast hours that FV3 should
+  # generate the restart files.
+  #
+  # POSTPROC_LEN_HRS:
+  # The length of post process, in integer hours.
+  #
+  # POSTPROC_LONG_LEN_HRS:
+  # The length of long post process, in integer hours.
+  #
+  # CYCL_HRS_HYB_FV3LAM_ENS:
+  # An array containing the hours of the day at which the GSI hybrid using FV3LAM ensemeble.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -833,6 +961,31 @@ workflow:
     - 12
     - 6
 
+  STARTYEAR: "YYYY"
+  STARTMONTH: "MM"
+  STARTDAY: "DD"
+  STARTHOUR: "HH"
+  ENDYEAR: "YYYY"
+  ENDMONTH: "MM"
+  ENDDAY: "DD"
+  ENDHOUR: "HH"
+  CYCL_HRS: []
+  CYCL_HRS_SPINSTART: []
+  CYCL_HRS_PRODSTART: []
+  CYCL_HRS_PRODSTART_ENS: []
+  CYCL_HRS_RECENTER: []
+  CYCL_HRS_STOCH: []
+  BOUNDARY_LEN_HRS: 0
+  BOUNDARY_LONG_LEN_HRS: 0
+  BOUNDARY_PROC_GROUP_NUM: 1
+  POSTPROC_LEN_HRS: 1
+  POSTPROC_LONG_LEN_HRS: 1
+  FCST_LEN_HRS_SPINUP: 1
+  FCST_LEN_HRS_CYCLES: []
+  DA_CYCLE_INTERV: 3
+  RESTART_INTERVAL: 0 # was 3,6 in rrfs_dev
+  RESTART_INTERVAL_LONG: 0 # was 3.6 in rrfs_dev
+  CYCL_HRS_HYB_FV3LAM_ENS: [ "99" ]
   #
   #-----------------------------------------------------------------------
   #
@@ -876,10 +1029,17 @@ workflow:
   # messages are printed to out.  Note that if DEBUG is set to TRUE, then
   # VERBOSE will also get reset to TRUE if it isn't already.
   #
+  # SAVE_CYCLE_LOG:
+  # This is a flag that determines whether or not save
+  # the information related to data assimilation cycling, such as background
+  # used in each cycle
+  #
   #-----------------------------------------------------------------------
   #
   VERBOSE: true
   DEBUG: false
+  SAVE_CYCLE_LOG: true
+
   #
   #-----------------------------------------------------------------------
   #
@@ -1349,6 +1509,91 @@ rrfs:
   #-----------------------------------------------------------------------
   #
   IS_RTMA: false
+
+#----------------------------------
+# Start times for different setups
+#----------------------------------
+start_time:
+  START_TIME_SPINUP: 01:10:00
+  START_TIME_PROD: 02:20:00
+  START_TIME_CONVENTIONAL_SPINUP: 00:40:00
+  START_TIME_LATE_ANALYSIS: 01:40:00
+  START_TIME_CONVENTIONAL: 00:40:00
+  START_TIME_NSSLMOSIAC: 00:45:00
+  START_TIME_LIGHTNINGNC: 00:45:00
+  START_TIME_PROCSMOKE: 00:45:00
+
+#----------------------------------
+# Cycle definiton for each group
+#----------------------------------
+cycledefs:
+  #-----------------------------------------------------------------------
+  #
+  # Set cycle definition for each group.  The cycle definition sets the cycle
+  # time that the group will run. It has two way to set up:
+  #  1) 00 HHs DDs MMs YYYYs *
+  #       HHs can be "01-03/01" or "01,02,03" or "*"
+  #       DDs,MMs can be "01-03" or "01,02,03" or "*"
+  #       YYYYs can be "2020-2021" or "2020,2021" or "*"
+  #  2)   start_time(YYYYMMDDHH00) end_time(YYYYMMDDHH00) interval(HH:MM:SS)
+  #       for example: 202104010000 202104310000 12:00:00
+  #  The default cycle definition is:
+  #     "00 01 01 01 2100 *"
+  #  which will likely never get to run.
+  #
+  # Definitions:
+  #
+  # AT_START_CYCLEDEF:
+  # cycle definition for "at start" group
+  # This group runs: make_grid, make_orog, make_sfc_climo
+  #
+  # INITIAL_CYCLEDEF:
+  # cycle definition for "initial" group
+  # This group runs get_extrn_ics, make_ics
+  #
+  # BOUNDARY_CYCLEDEF:
+  # cycle definition for "boundary" group
+  # This group runs: get_extrn_lbcs,make_lbcs
+  #
+  # BOUNDARY_LONG_CYCLEDEF:
+  # cycle definition for "boundary_long" group
+  # This group runs: get_extrn_lbcs_long,make_lbcs
+  #
+  # SPINUP_CYCLEDEF:
+  # cycle definition for spin-up cycle group
+  # This group runs: anal_gsi_input_spinup and data process, run_fcst_spinup, run_post_spinup
+  #
+  # PROD_CYCLEDEF:
+  # cycle definition for product cycle group
+  # This group runs: anal_gsi_input and data process, run_fcst, python_skewt, run_post, run_clean
+  #
+  # SAVEINPUT_CYCLEDEF:
+  # cycle definition for saving INPUT files
+  # This group runs: saveinput
+  #
+  # RECENTER_CYCLEDEF:
+  # cycle definition for recenter cycle group
+  # This group runs: recenter
+  #
+  # PRODLONG_CYCLEDEF:
+  # same as PROD_CYCLEDEF, but for long forecast 
+  #
+  # ARCHIVE_CYCLEDEF:
+  # cycle definition for "archive" group
+  # This group runs: run_archive
+  #
+  #-----------------------------------------------------------------------
+  #
+  AT_START_CYCLEDEF: "00 01 01 01 2100 *"
+  INITIAL_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_CYCLEDEF: "00 01 01 01 2100 *"
+  BOUNDARY_LONG_CYCLEDEF: "00 01 01 01 2100 *"
+  SPINUP_CYCLEDEF: "00 01 01 01 2100 *"
+  PROD_CYCLEDEF: "00 01 01 01 2100 *"
+  PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
+  RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
+  ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
+  SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
 
 #----------------------------
 # MAKE GRID config parameters
