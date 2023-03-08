@@ -114,9 +114,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=ensgrid_prob_${CDATE}_${VAR}_${ACCUM}h
+  LOG_SUFFIX=GridStat_ensprob_${VAR}${ACCUM}h_${CDATE}
 else
-  LOG_SUFFIX=ensgrid_prob_${CDATE}_${VAR}
+  LOG_SUFFIX=GridStat_ensprob_${VAR}_${CDATE}
 fi
 
 #
@@ -159,11 +159,11 @@ if [ ${VAR} == "APCP" ]; then
   export acc="${ACCUM}h"
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}${acc}_prob.conf
+    -c ${METPLUS_CONF}/GridStat_ensprob_${VAR}${acc}.conf
 else
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
-    -c ${METPLUS_CONF}/GridStat_${VAR}_prob.conf
+    -c ${METPLUS_CONF}/GridStat_ensprob_${VAR}.conf
 fi
 
 #

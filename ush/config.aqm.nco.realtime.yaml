@@ -10,8 +10,8 @@ workflow:
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023013000'
-  DATE_LAST_CYCL: '2023013018'
+  DATE_FIRST_CYCL: '2023021700'
+  DATE_LAST_CYCL: '2023021718'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: -1
   FCST_LEN_CYCL:
@@ -35,6 +35,14 @@ nco:
   OPSROOT: /path/to/custom/opsroot
 rocoto:
   taskgroups: '{{ ["parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
+  tasks:
+    task_get_extrn_lbcs:
+      walltime: 02:00:00
+    metatask_run_ensemble:
+      task_run_fcst_#mem#:
+        walltime: 04:00:00
+    task_aqm_lbcs:
+      walltime: 01:00:00
 task_make_grid:
   GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
@@ -50,20 +58,16 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
-  WTIME_GET_EXTRN_LBCS: 02:00:00
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6 18
-  WTIME_RUN_FCST: 04:00:00
   QUILTING: true
   PRINT_ESMF: false
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
-task_aqm_lbcs:
-  WTIME_AQM_LBCS: 01:00:00
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
@@ -75,7 +79,8 @@ cpl_aqm_parm:
   DO_AQM_DUST: true
   DO_AQM_CANOPY: false
   DO_AQM_PRODUCT: true
-  DO_AQM_SAVE_AIRNOW_HIST: true
+  DO_AQM_SAVE_AIRNOW_HIST: false
+  DO_AQM_SAVE_FIRE: false
   AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
   AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
   AQM_DUST_FILE_SUFFIX: .nc

@@ -2109,6 +2109,9 @@ cpl_aqm_parm:
   # DO_AQM_SAVE_AIRNOW_HIST:
   # Save bias-correction airnow training data
   #
+  # DO_AQM_SAVE_FIRE:
+  # Archive fire emission file to HPSS
+  #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
@@ -2144,6 +2147,9 @@ cpl_aqm_parm:
   # 
   # AQM_FIRE_FILE_SUFFIX:
   # Suffix and extension of AQM FIRE file
+  #
+  # AQM_FIRE_ARCHV_DIR:
+  # Path to the archive directory for RAVE emission files on HPSS
   #
   # AQM_RC_FIRE_FREQUENCY:
   # Fire frequency in aqm.rc
@@ -2207,7 +2213,8 @@ cpl_aqm_parm:
   DO_AQM_PRODUCT: true
   DO_AQM_CHEM_LBCS: true
   DO_AQM_GEFS_LBCS: false
-  DO_AQM_SAVE_AIRNOW_HIST: true
+  DO_AQM_SAVE_AIRNOW_HIST: false
+  DO_AQM_SAVE_FIRE: false
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_DIR: ""
@@ -2225,6 +2232,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
+  AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
 
   AQM_RC_FIRE_FREQUENCY: "static"
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"

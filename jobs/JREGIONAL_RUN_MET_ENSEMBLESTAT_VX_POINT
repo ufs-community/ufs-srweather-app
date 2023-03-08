@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_enspoint_mean" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_enspoint" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -54,7 +54,7 @@ by initialitation time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_vx_enspoint_mean.sh || \
+$SCRIPTSdir/exregional_run_met_ensemblestat_vx_point.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
