@@ -31,9 +31,4 @@ global:
   NUM_ENS_MEMBERS: 2
 rocoto:
   tasks:
-    task_make_grid:
-    task_make_orog:
-    task_make_sfc_climo:
-    metatask_run_ens_post:
-      metatask_run_sub_hourly_post:
-      metatask_sub_hourly_last_hour_post:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

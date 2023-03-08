@@ -11,11 +11,12 @@ workflow:
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_VX_GRIDSTAT: true
-  RUN_TASK_VX_POINTSTAT: true
-  RUN_TASK_VX_ENSGRID: true
-  RUN_TASK_VX_ENSPOINT: true
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml", "parm/wflow/verify_ensgrid.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_#mem#:
+        walltime: 01:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -25,8 +26,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
-  WTIME_RUN_FCST: 01:00:00
 global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2
