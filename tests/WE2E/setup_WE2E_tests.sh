@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-[ -n "$HOME" ] && exec -c "$0" "$@"
+
+# `exec -c` runs this script with clean environment; this avoids some problems
+# with double-loading conda environments. Since we do need $HOME to be set for
+# rocoto to run properly, pass it as an argument and export it later
+
+[ -n "$HOME" ] && exec -c "$0" "$HOME" "$@"
 
 #----------------------------------------------------------------------
 #  Wrapper for the automation of UFS Short Range Weather App Workflow
@@ -26,8 +31,9 @@
 
 function usage {
   echo
-  echo "Usage: $0 machine account [compiler] [test_type] [others] | -h"
+  echo "Usage: $0 homedir machine account [compiler] [test_type] [others] | -h"
   echo
+  echo "       homedir       [required] user's home directory; this space must be writable"
   echo "       machine       [required] is one of: ${machines[@]}"
   echo "       account       [required] case sensitive name of the user-specific slurm account"
   echo "       compiler      [optional] compiler used to build binaries (intel or gnu)"
@@ -42,12 +48,21 @@ function usage {
 machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
-[[ $# -le 1 ]] && usage
+[[ $# -le 2 ]] && usage
 
-machine=${1,,}
-account=$2
-compiler=${3:-intel}
-test_type=${4:-fundamental}
+homedir=$1
+machine=${2,,}
+account=$3
+compiler=${4:-intel}
+test_type=${5:-fundamental}
+
+echo $homedir
+echo $machine
+echo $account
+echo $compiler
+echo $test_type
+
+
 
 #----------------------------------------------------------------------
 # Set some default options, if user did not pass them
@@ -69,6 +84,8 @@ fi
 #-----------------------------------------------------------------------
 # Run E2E Tests
 #-----------------------------------------------------------------------
+# Export HOME environment variable; needed for rocoto
+export HOME=$homedir
 
 # Load Python Modules
 source ../../ush/load_modules_wflow.sh ${machine}
@@ -80,5 +97,5 @@ source ../../ush/load_modules_wflow.sh ${machine}
   --compiler=${compiler} \
   --tests=${test_type} \
   ${opts} \
-  "${@:5}"
+  "${@:6}"
 
