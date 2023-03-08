@@ -206,6 +206,7 @@ platform:
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
   RUN_CMD_AQM: ""
+  RUN_CMD_AQMLBC: ""
 
   #
   #-----------------------------------------------------------------------

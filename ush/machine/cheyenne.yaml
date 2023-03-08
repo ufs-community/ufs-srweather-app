@@ -31,4 +31,4 @@ platform:
   FIXshp: /glade/p/ral/jntp/UFS_SRW_App/develop/NaturalEarth
 data:
   ics_lbcs:
-    FV3GFS: /glade/collections/rda/data/ds084.1/${yyyy}/${yyyymmdd}
+    FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}
