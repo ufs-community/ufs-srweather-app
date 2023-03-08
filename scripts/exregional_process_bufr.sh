@@ -307,7 +307,6 @@ fi
 # Build namelist for METAR cloud
 #
 #   analysis_time   : process obs used for this analysis date (YYYYMMDDHH)
-#   analysis_minute : process obs used for this analysis minute (integer)
 #   prepbufrfile    : input prepbufr file name
 #   twindin         : observation time window (real: hours before and after analysis time)
 #
