@@ -484,7 +484,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-
+# Create or copy the intermediate template file of FV3 input.nml 
+#
+#-----------------------------------------------------------------------
+#
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
@@ -495,10 +498,50 @@ cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
 else
-  create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${DATA}/${FV3_NML_FN}" \
-                         relative="${relative_link_flag}"
+  cp_vrfy "${FV3_NML_TMPL_FP}" "${DATA}/${FV3_NML_TMPL_FN}"
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Finalize FV3 input.nml by updating the parameters for restart
+#
+#-----------------------------------------------------------------------
+#
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+  fv_core_external_ic="false"
+  fv_core_make_nh="false"
+  fv_core_mountain="true"
+  fv_core_na_init="0"
+  fv_core_nggps_ic="false"
+  fv_core_warm_start="true"
+else
+  fv_core_external_ic="true"
+  fv_core_mountain="false"
+  fv_core_nggps_ic="true"
+  fv_core_warm_start="false"
+  if [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v16" ]; then
+    fv_core_make_nh="false"
+    fv_core_na_init="0"
+  else
+    fv_core_make_nh="true"
+    fv_core_na_init="1"
+  fi
+fi
+
+python3 $USHdir/update_restart_input_nml_file.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --run_dir "${DATA}" \
+    --fv_core_external_ic "${fv_core_external_ic}" \
+    --fv_core_make_nh "${fv_core_make_nh}" \
+    --fv_core_mountain "${fv_core_mountain}" \
+    --fv_core_na_init "${fv_core_na_init}" \
+    --fv_core_nggps_ic "${fv_core_nggps_ic}" \
+    --fv_core_warm_start "${fv_core_warm_start}" \
+    || print_err_msg_exit "\
+Call to function to update the FV3 input.nml file for restart for the 
+current cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
 #
 #-----------------------------------------------------------------------
 #
