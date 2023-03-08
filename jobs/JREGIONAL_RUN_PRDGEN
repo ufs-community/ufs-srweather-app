@@ -62,12 +62,7 @@ files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-CYCLE_TYPE=${CYCLE_TYPE:-prod}
-if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-fi
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 #
 #-----------------------------------------------------------------------
 #
@@ -87,17 +82,9 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  if [ ${CYCLE_TYPE} = "spinup" ]; then
-    export COMOUT="${COMOUT}_spinup"
-  else
-    export COMOUT="${COMOUT}"
-  fi
+  export COMOUT="${COMOUT}"
 else
-  if [ ${CYCLE_TYPE} = "spinup" ]; then
-    export COMOUT="${DATA}/postprd_spinup"
-  else
-    export COMOUT="${DATA}/postprd"
-  fi
+  export COMOUT="${DATA}/postprd"
 fi
 mkdir_vrfy -p "${COMOUT}"
 
