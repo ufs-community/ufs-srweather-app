@@ -484,7 +484,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    rocoto_tasks = expt_config["rocoto"]["tasks"]
+    rocoto_config = expt_config.get('rocoto', {})
+    rocoto_tasks = rocoto_config.get("tasks")
     run_make_grid = rocoto_tasks.get('task_make_grid') is not None
     run_make_orog = rocoto_tasks.get('task_make_orog') is not None
     run_make_sfc_climo = rocoto_tasks.get('task_make_sfc_climo') is not None
@@ -513,6 +514,29 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                   WORKFLOW_MANAGER = {expt_config["platform"].get("WORKFLOW_MANAGER")}\n"""
                 )
             )
+
+    def remove_tag(tasks, tag):
+        """ Remove the tag for all the tasks in the workflow """
+
+        if not isinstance(tasks, dict):
+            return
+        for task, task_settings in tasks.items():
+            task_type = task.split("_", maxsplit=1)[0]
+            if task_type == "task":
+                task_settings.pop(tag)
+            elif task_type == "metatask":
+                remove_tag(task_settings)
+
+    # Remove all memory tags for platforms that do not support them
+    remove_memory = expt_config["platform"].get("REMOVE_MEMORY")
+    if remove_memory:
+        remove_tag(rocoto_tasks, "memory")
+
+    # When not running subhourly post, remove those tasks, if they exist
+    if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
+        post_meta = rocoto_tasks.get("metatask_run_ens_post")
+        post_meta.pop("metatask_run_sub_hourly_post")
+        post_meta.pop("metatask_sub_hourly_last_hour_post")
 
     #
     # -----------------------------------------------------------------------
@@ -1013,6 +1037,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
+        # Set the rocoto string for the fcst output location
+        rocoto_config["entities"]["FCST_DIR"] = "{{ nco.COMOUT_BASEDIR }}/@Y@m@d@H"
+
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
 
@@ -1027,6 +1054,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
+
+        # Update the rocoto string for the fcst output location if
+        # running an ensemble in nco mode
+        if global_sect["DO_ENSEMBLE"]:
+            rocoto_config["entities"]["FCST_DIR"] = \
+                "{{ nco.DATAROOT }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
+
     if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
 
@@ -1137,7 +1171,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
 
-    task_defs = expt_config.get('rocoto', {}).get('tasks')
+    task_defs = rocoto_config.get('tasks')
 
     # Ensemble verification can only be run in ensemble mode
     do_ensemble = global_sect["DO_ENSEMBLE"]

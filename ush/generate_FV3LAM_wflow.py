@@ -821,10 +821,9 @@ class Testing(unittest.TestCase):
             "user": {
                 "MACHINE": "linux",
             },
-            "workflow_switches": {
-                "RUN_TASK_MAKE_GRID": True,
-                "RUN_TASK_MAKE_OROG": True,
-                "RUN_TASK_MAKE_SFC_CLIMO": True,
+            "rocoto": {
+                "taskgroups": \
+                    '\'{{ ["parm/wflow/prep.yaml","parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}\''
             },
         }
         update_dict(cfg_updates, nco_test_config)
