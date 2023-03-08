@@ -20,13 +20,8 @@ init_concentrations: {{ init_concentrations | lower }}
 
 run_aerosol: true
 
-{%- if ccpp_phys_suite in ["FV3_GFS_v15p2", "FV3_GFS_v16"] %}
 mp_tracer_map: gfdl
 dy_tracer_map_start: 9
-{%- elif ccpp_phys_suite in ["FV3_GFS_v17_p8"]  %}
-mp_tracer_map: thompson
-dy_tracer_map_start: 11
-{%- endif %}
 
 ctm_aod: true
 ctm_pmdiag: true
@@ -156,7 +151,7 @@ dust_type: fengsha
 dust_format: netcdf
 dust_file: {{ aqm_rc_dust_file_fp }}
 dust_frequency: monthly
-dust_alpha: 15.0
+dust_alpha: 3.0
 dust_species::
     CLAYF       1.00000   clayfrac     1
     SANDF       1.00000   sandfrac     1
@@ -299,32 +294,32 @@ fire_species::
     PSI     0.0018     PM2.5       KG/M2/S
     PSO4    0.0126     PM2.5       KG/M2/S
     PTI     0.0001     PM2.5       KG/M2/S
-    NO      0.013      CO          KG/M2/S
-    NO2     0.037      CO          KG/M2/S
-    SO2     0.008      CO          KG/M2/S
-    NH3     0.015      CO          KG/M2/S
-    CO      1.000      CO          KG/M2/S
-    ACET    0.001092   CO          KG/M2/S
-    ALD2    0.0009828  CO          KG/M2/S
-    ALDX    0.0030368  CO          KG/M2/S
-    BENZ    0.0009612  CO          KG/M2/S
-    CH4     0.0092508  CO          KG/M2/S
-    ETH     0.0022048  CO          KG/M2/S
-    ETHA    0.0011804  CO          KG/M2/S
-    ETHY    0.0005304  CO          KG/M2/S
-    ETOH    3.64e-05   CO          KG/M2/S
-    FORM    0.0043316  CO          KG/M2/S
-    IOLE    0.0004836  CO          KG/M2/S
-    ISOP    0.0001976  CO          KG/M2/S
-    KET     0.0002652  CO          KG/M2/S
-    MEOH    0.0039364  CO          KG/M2/S
-    OLE     0.0034424  CO          KG/M2/S
-    PAR     0.0074776  CO          KG/M2/S
-    PRPA    0.0004888  CO          KG/M2/S
-    TERP    0.0004316  CO          KG/M2/S
-    TOL     0.0013208  CO          KG/M2/S
-    UNR     0.0100516  CO          KG/M2/S
-    XYL     0.0002964  CO          KG/M2/S
+    NO      0.0450     CO          KG/M2/S
+    NO2     0.0050     CO          KG/M2/S
+    SO2     0.0080     CO          KG/M2/S
+    NH3     0.0150     CO          KG/M2/S
+    CO      1.0000     CO          KG/M2/S
+    ACET    0.0000     CO          KG/M2/S
+    ALD2    0.0000     CO          KG/M2/S
+    ALDX    0.0000     CO          KG/M2/S
+    BENZ    0.0000     CO          KG/M2/S
+    CH4     0.0000     CO          KG/M2/S
+    ETH     0.0000     CO          KG/M2/S
+    ETHA    0.0000     CO          KG/M2/S
+    ETHY    0.0000     CO          KG/M2/S
+    ETOH    0.0000     CO          KG/M2/S
+    FORM    0.0000     CO          KG/M2/S
+    IOLE    0.0000     CO          KG/M2/S
+    ISOP    0.0000     CO          KG/M2/S
+    KET     0.0000     CO          KG/M2/S
+    MEOH    0.0000     CO          KG/M2/S
+    OLE     0.0000     CO          KG/M2/S
+    PAR     0.0000     CO          KG/M2/S
+    PRPA    0.0000     CO          KG/M2/S
+    TERP    0.0000     CO          KG/M2/S
+    TOL     0.0000     CO          KG/M2/S
+    UNR     0.0000     CO          KG/M2/S
+    XYL     0.0000     CO          KG/M2/S
     FRP     1000000    MeanFRP     1
 ::
 
@@ -335,7 +330,7 @@ pt_type: point-source
 pt_file: INPUT/PT.nc
 pt_frequency: hourly
 pt_plume_rise: default
-pt_layers: 32
+pt_layers: 24
 pt_latlon_names: LATITUDE LONGITUDE
 pt_stack_diameter:    STKDM
 pt_stack_height:      STKHT

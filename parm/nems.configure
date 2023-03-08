@@ -11,22 +11,22 @@ logKindFlag:            ESMF_LOGKIND_MULTI_ON_ERROR
 # EARTH #
 EARTH_component_list: ATM AQM
 EARTH_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # ATM #
 ATM_model:                      fv3
 ATM_petlist_bounds:             -1 -1
 ATM_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # AQM #
 AQM_model:                      aqm
 AQM_petlist_bounds:             -1 -1
 AQM_attributes::
-  Verbosity = max
-  Diagnostic = 131072
+  Verbosity = 0
+  Diagnostic = 0
 ::
 
 # Run Sequence #

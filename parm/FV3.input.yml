@@ -361,9 +361,9 @@ FV3_GFS_v16:
     hord_mt: 5
     hord_tm: 5
     hord_vt: 5
-    k_split: 6
+    k_split: 1
     make_nh: False
-    n_split: 6
+    n_split: 8
     n_sponge: 10
     na_init: 0
     nudge_dz: False

@@ -72,6 +72,7 @@ task_run_fcst:
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6 18
   WTIME_RUN_FCST: 04:00:00
+  OMP_NUM_THREADS_RUN_FCST: 1
   QUILTING: true
   PRINT_ESMF: false
 task_run_post:
