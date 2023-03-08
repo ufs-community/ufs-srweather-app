@@ -157,7 +157,12 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
 
         # set number of restart intervals for restart capability
         restart_interval = expt_config["task_run_fcst"]["RESTART_INTERVAL"]
-        restart_hrs = restart_interval.split()
+        restart_hrs = []
+        if " " in str(restart_interval):
+            restart_hrs = restart_interval.split()
+        else:
+            restart_hrs.append(str(restart_interval))
+
         num_restart_hrs = len(restart_hrs)
         if fcst_len_hrs == -1 and num_fcst_len_cycl > 1:
             restart_hrs_fcst1 = [ihs for ihs in restart_hrs if int(ihs) <= fcst_len_cycl[0]]
@@ -426,8 +431,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     log_info(
         f"""
-        Setting parameters in weather model's namelist file (FV3_NML_FP):
-        FV3_NML_FP = '{FV3_NML_FP}'"""
+        Setting parameters in weather model's namelist file (FV3_NML_TMPL_FP):
+        FV3_NML_TMPL_FP = '{FV3_NML_TMPL_FP}'"""
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
@@ -749,7 +754,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "-u",
                 settings_str,
                 "-o",
-                FV3_NML_FP,
+                FV3_NML_TMPL_FP,
             ]
         )
     except:
@@ -765,7 +770,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                   Physics suite to extract from yaml configuration file:
                     CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
                   Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
+                    FV3_NML_TMPL_FP = '{FV3_NML_TMPL_FP}'
                   Namelist settings specified on command line:\n
                     settings =\n\n"""
             )
