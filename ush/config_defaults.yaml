@@ -643,6 +643,8 @@ workflow:
   GLOBAL_VAR_DEFNS_FP: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}'
   WFLOW_LAUNCH_SCRIPT_FP: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}'
   WFLOW_LAUNCH_LOG_FP: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}'
+
+  PYTHON_GRAPHICS_YML_FN: "rrfs_subset.yml"
   #
   #-----------------------------------------------------------------------
   #
