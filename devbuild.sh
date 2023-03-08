@@ -217,12 +217,11 @@ if [ "${DEFAULT_BUILD}" = true ]; then
   BUILD_UPP="on"
 fi
 
-# Choose components to build for Online-CMAQ
+# Choose components to build for air quality modeling (Online-CMAQ)
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ "${DEFAULT_BUILD}" = true ]; then
     BUILD_NEXUS="on"
     BUILD_AQM_UTILS="on"
-    BUILD_UPP="off"
   fi
   if [ "${PLATFORM}" = "wcoss2" ]; then
     BUILD_POST_STAT="on"
