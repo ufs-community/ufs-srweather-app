@@ -199,6 +199,9 @@ platform:
   # RUN_CMD_AQM:
   # The run command for some AQM tasks.
   #
+  # RUN_CMD_AQMLBC:
+  # The run command for the AQM_LBCS task.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_CMD_SERIAL: ""
@@ -206,6 +209,7 @@ platform:
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
   RUN_CMD_AQM: ""
+  RUN_CMD_AQMLBC: ""
 
   #
   #-----------------------------------------------------------------------
