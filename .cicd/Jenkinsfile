@@ -122,7 +122,7 @@ pipeline {
                             echo "Initializing SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
                             cleanWs()
                             checkout scm
-                            module load git
+                            source 'module load git'
                             sh '"${WORKSPACE}/manage_externals/checkout_externals"'
                         }
                     }
