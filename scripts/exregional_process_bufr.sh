@@ -229,7 +229,7 @@ fi
 #   ioption       : interpolation options
 #                   = 1 is nearest neighrhood
 #                   = 2 is median of cloudy fov
-#   bkversion     : grid type (background will be used in the analysis)
+#   grid_type     : grid type (background will be used in the analysis)
 #                   = 0 for ARW  (default)
 #                   = 1 for FV3LAM
 #-----------------------------------------------------------------------
