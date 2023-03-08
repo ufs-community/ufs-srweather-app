@@ -152,7 +152,7 @@ fi
 #   minute        : process obs used for this analysis minute (integer)
 #   trange_start  : obs time window start (minutes before analysis time)
 #   trange_end    : obs time window end (minutes after analysis time)
-#   bkversion     : grid type (background will be used in the analysis)
+#   grid_type     : grid type (background will be used in the analysis)
 #                   0 for ARW  (default)
 #                   1 for FV3LAM
 #-----------------------------------------------------------------------
