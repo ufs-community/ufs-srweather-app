@@ -374,9 +374,6 @@ platform:
   # FIXsfc:
   # System directory where surface climatology data is located
   #
-  # FIXgsi:
-  # System directory where GSI fixed files are located
-  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -385,7 +382,6 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
-  FIXgsi: ""
   #
   #-----------------------------------------------------------------------
   #
