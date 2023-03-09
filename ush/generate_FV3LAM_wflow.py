@@ -485,6 +485,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "npx": npx,
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
+        "io_layout": [IO_LAYOUT_X, IO_LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
     })
     if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or

@@ -75,15 +75,34 @@ else
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
-fi
+gridspec_dir=${NWGES_BASEDIR}/grid_spec
 
+#
+#-----------------------------------------------------------------------
+#
+# Assign variable length forecast hours
+#
+#-----------------------------------------------------------------------
+#
+if [ $DO_RRFS_DEV = "TRUE" ]; then
+    if [ $CYCLE_TYPE = "spinup" ]; then
+        FCST_LEN_HRS=$FCST_LEN_HRS_SPINUP
+    else
+        len="${#FCST_LEN_HRS_CYCLES}"
+        if [ $len -gt $cyc ]; then
+            FCST_LEN_HRS="${FCST_LEN_HRS_CYCLES[$cyc]}"
+        fi
+    fi
+else
+    if [ "${FCST_LEN_HRS}" = "-1" ]; then
+      for i_cdate in "${!ALL_CDATES[@]}"; do
+        if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+          FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
+          break
+        fi
+      done
+    fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -204,7 +223,10 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_RAP" ]  || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]  || \
+   [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15_thompson_mynn_lam3km" ]; then
 
   fileids=( "ss" "ls" )
   for fileid in "${fileids[@]}"; do
@@ -242,33 +264,82 @@ of the current run directory (DATA), where
 cd_vrfy ${DATA}/INPUT
 
 #
+# Forecast background
+#
+BKTYPE=1    # cold start using INPUT
+if [ -r ${DATA}/INPUT/coupler.res ] ; then
+  BKTYPE=0  # cycling using RESTART
+fi
+print_info_msg "$VERBOSE" "
+The forecast has BKTYPE $BKTYPE (1:cold start ; 0 cycling)"
+
+n_iolayouty=$(($IO_LAYOUT_Y-1))
+list_iolayout=$(seq 0 $n_iolayouty)
+
+if [ $DO_RRFS_DEV = "FALSE" ]; then
+   PREFIX="${NET}.${cycle}${dot_ensmem}."
+else
+   PREFIX=""
+fi
+#
 # The symlinks to be created point to files in the same directory (INPUT),
 # so it's most straightforward to use relative paths.
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+if [ ${BKTYPE} -eq 1 ]; then
+    target="${INPUT_DATA}/${PREFIX}gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+else
+    target="fv_core.res.tile1.nc"
+fi
 symlink="gfs_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
+if [ -f "${target}.0000" ]; then
+  for ii in ${list_iolayout}
+  do
+    iii=$(printf %4.4i $ii)
+    create_symlink_to_file target="$target.${iii}" symlink="$symlink.${iii}" \
                        relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="sfc_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
+  done
+else
+    create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
+fi
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-symlink="gfs_ctrl.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-
-for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+#
+# Symlink sfc data
+#
+if [ ${BKTYPE} -eq 1 ]; then
+  target="${INPUT_DATA}/${PREFIX}sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
-done
+else
+  if [ -f "sfc_data.nc.0000" ] || [ -f "sfc_data.nc" ]; then
+    print_info_msg "$VERBOSE" "
+    sfc_data.nc is available at INPUT directory"
+  else
+    print_err_msg_exit "\
+    sfc_data.nc is not available for cycling"
+  fi
+fi
+
+#
+# Symlink gfs_ctrl and bndy data
+#
+if [ $DO_RRFS_DEV = "FALSE" ]; then
+  target="${INPUT_DATA}/${PREFIX}gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  
+  
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${INPUT_DATA}/${PREFIX}gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                           relative="${relative_link_flag}"
+  done
+fi
 
 if [ "${CPL_AQM}" = "TRUE" ]; then
   target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
@@ -282,6 +353,27 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     symlink="PT.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
 	                       relative="${relative_link_flag}"
+  fi
+fi
+#
+# Smoke and dust
+#
+if [ "${DO_SMOKE_DUST}" = "TRUE" ]; then
+  ln_vrfy -snf  ${FIXsmoke}/${PREDEF_GRID_NAME}/dust12m_data.nc  ${DATA}/INPUT/dust12m_data.nc
+  ln_vrfy -snf  ${FIXsmoke}/${PREDEF_GRID_NAME}/emi_data.nc      ${DATA}/INPUT/emi_data.nc
+  yyyymmddhh=${cdate:0:10}
+  echo ${yyyymmddhh}
+  if [ ${CYCLE_TYPE} == "spinup" ]; then
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00_spinup.nc
+  else
+    smokefile=${NWGES_BASEDIR}/RAVE_INTP/SMOKE_RRFS_data_${yyyymmddhh}00.nc
+  fi
+  echo "try to use smoke file=",${smokefile}
+  if [ -f ${smokefile} ]; then
+    ln_vrfy -snf ${smokefile} ${DATA}/INPUT/SMOKE_RRFS_data.nc
+  else
+    ln_vrfy -snf ${FIXsmoke}/${PREDEF_GRID_NAME}/dummy_24hr_smoke.nc ${DATA}/INPUT/SMOKE_RRFS_data.nc
+    echo "smoke file is not available, use dummy_24hr_smoke.nc instead"
   fi
 fi
 #
@@ -336,6 +428,7 @@ for (( i=0; i<${num_symlinks}; i++ )); do
                          relative="${relative_link_flag}"
 
 done
+
 #
 #-----------------------------------------------------------------------
 #
@@ -416,24 +509,29 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
+    post_params_fp="${CUSTOM_POST_PARAMS_FP}"
     print_info_msg "
 ====================================================================
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
+  CUSTOM_POST_PARAMS_FP = \"${CUSTOM_POST_PARAMS_FP}\"
 ===================================================================="
   else
     if [ "${CPL_AQM}" = "TRUE" ]; then
       post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
+      post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
     else
       post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+      post_params_fp="${PARMdir}/upp/params_grib2_tbl_new"
     fi
     print_info_msg "
 ====================================================================
   post_config_fp = \"${post_config_fp}\"
+  post_params_fp = \"${post_params_fp}\"
 ===================================================================="
   fi
   cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-  cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+  cp_vrfy ${post_params_fp} ./params_grib2_tbl_new
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
@@ -448,6 +546,50 @@ cat > itag <<EOF
  KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
 /
 EOF
+fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Choose namelist file to use
+#
+#-----------------------------------------------------------------------
+#
+STOCH="FALSE"
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
+   [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
+
+   if [ "${DO_RRFS_DEV}" = "TRUE" ]; then
+     for cyc_start in "${CYCL_HRS_STOCH[@]}"; do
+       if [ ${HH} -eq ${cyc_start} ]; then 
+         STOCH="TRUE"
+       fi
+     done
+   else
+     STOCH="TRUE"
+   fi
+
+fi
+
+if [ ${BKTYPE} -eq 0 ]; then
+  # cycling, using namelist for cycling forecast
+  if [ "${STOCH}" == "TRUE" ]; then
+    ln_vrfy -sf ${FV3_NML_RESTART_STOCH_FP} ${DATA}/${FV3_NML_FN}
+   else
+    ln_vrfy -sf ${FV3_NML_RESTART_FP} ${DATA}/${FV3_NML_FN}
+  fi
+else
+  if [ -f "INPUT/cycle_surface.done" ]; then
+    # namelist for cold start with surface cycle
+    ln_vrfy -sf ${FV3_NML_CYCSFC_FP} ${DATA}/${FV3_NML_FN}
+  else
+    # cold start, using namelist for cold start
+    if [ "${STOCH}" == "TRUE" ]; then
+      ln_vrfy -sf ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+     else
+      ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+    fi
+  fi
 fi
 
 if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -481,12 +623,16 @@ cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
 fi
+
 #
 #-----------------------------------------------------------------------
 #
-
-if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
-   [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
+# Set stochastic physics seeds
+#
+#-----------------------------------------------------------------------
+#
+if [ "$STOCH" == "TRUE" ]; then
+  cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
@@ -494,11 +640,8 @@ Call to function to create the ensemble-based namelist for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-else
-  create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${DATA}/${FV3_NML_FN}" \
-                         relative="${relative_link_flag}"
 fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -533,6 +676,28 @@ python3 $USHdir/create_diag_table_file.py \
 Call to function to create a diag table file for the current cycle's 
 (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+#
+#-----------------------------------------------------------------------
+#
+# If INPUT/phy_data.nc exists, convert it from NetCDF4 to NetCDF3
+# (happens for cycled runs, not cold-started)
+#
+#-----------------------------------------------------------------------
+#
+if [[ -f phy_data.nc ]] ; then
+  echo "convert phy_data.nc from NetCDF4 to NetCDF3"
+  cd INPUT
+  rm -f phy_data.nc3 phy_data.nc4
+  cp -fp phy_data.nc phy_data.nc4
+  if ( ! time ( module purge ; module load intel szip hdf5 netcdf nco ; module list ; set -x ; ncks -3 --64 phy_data.nc4 phy_data.nc3) ) ; then
+    mv -f phy_data.nc4 phy_data.nc
+    rm -f phy_data.nc3
+    echo "NetCDF 4=>3 conversion failed. :-( Continuing with NetCDF 4 data."
+  else
+    mv -f phy_data.nc3 phy_data.nc
+  fi
+  cd ..
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -633,43 +798,94 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fhr_d=${fhr}
     fi
 
+    # set post_mn
     post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
     post_mn=${post_time:10:2}
+
+    # set suffixes
     post_mn_or_null=""
     post_fn_suffix="GrbF${fhr_d}"
     post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
 
+    basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+    symlink_suffix="${dot_ensmem/./_}_${basetime}f${fhr}${post_mn}"
+
+    #
+    # write grib file to COMOUT
+    #
     if [ "${CPL_AQM}" = "TRUE" ]; then
-      fids=( "cmaq" )
+        
+        bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.cmaq.${post_renamed_fn_suffix}
+    
+        wgrib2 CMAQ.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+        ln_vrfy -sf ${bgdawp} ${COMOUT}/CMAQ${symlink_suffix}
+    
+        if [ $SENDDBN = "TRUE" ]; then
+            $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+        fi
+    
+        # Move phy and dyn files to COMIN only for AQM in NCO mode
+        if [ "${RUN_ENVIR}" = "nco" ]; then
+          mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+          mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+        fi
+    
     else
-      fids=( "prslev" "natlev" )
-    fi
-
-    for fid in "${fids[@]}"; do
-      FID=$(echo_uppercase $fid)
-      post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
- 
-      mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
-      if [ $RUN_ENVIR != "nco" ]; then
-        basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-        symlink_suffix="_${basetime}f${fhr}${post_mn}"
-        create_symlink_to_file target="${post_renamed_fn}" \
-                         symlink="${FID}${symlink_suffix}" \
-	                 relative="TRUE"
-      fi
-      # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
-        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-      fi
-    done
-
-    if [ "${CPL_AQM}" = "TRUE" ]; then	
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+        if [ $DO_RRFS_DEV = "TRUE" ]; then
+            bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgdawp.${post_renamed_fn_suffix}
+            bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgrd3d.${post_renamed_fn_suffix}
+        else
+            bgdawp=${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.${post_renamed_fn_suffix}
+            bgrd3d=${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.${post_renamed_fn_suffix}
+        fi
+        if [ ${DO_RRFS_DEV} = "TRUE" ] && [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+            wgrib2 BGDAWP.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+            wgrib2 BGRD3D.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/BGDAWP${symlink_suffix}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/BGRD3D${symlink_suffix}
+        else
+            wgrib2 PRSLEV.${post_fn_suffix} -set center 7 -grib ${bgdawp}
+            wgrib2 NATLEV.${post_fn_suffix} -set center 7 -grib ${bgrd3d}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/PRSLEV${symlink_suffix}
+            ln_vrfy -sf ${bgdawp} ${COMOUT}/NATLEV${symlink_suffix}
+        fi
+        if [ $SENDDBN = "TRUE" ]; then
+           $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgdawp}
+           $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgrd3d}
+        fi
+        
+        if [ -f IFIFIP.${post_fn_suffix} ]; then
+           bgifi=${COMOUT}/${NET}.${cycle}${dot_ensmem}.bgifi.${post_renamed_fn_suffix}
+           wgrib2 IFIFIP.${post_fn_suffix} -set center 7 -grib ${bgifi}
+           ln_vrfy -sf ${bgifi} ${COMOUT}/BGIFI${symlink_suffix}
+    
+           if [ $SENDDBN = "TRUE" ]; then
+              $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${bgifi}
+           fi
+        fi
     fi
   done
 
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Save grid_spec files for restart subdomain.
+#
+#-----------------------------------------------------------------------
+#
+if [ ${BKTYPE} -eq 1 ] && [ ${n_iolayouty} -ge 1 ]; then
+  for ii in ${list_iolayout}
+  do
+    iii=$(printf %4.4i $ii)
+    if [ -f "grid_spec.nc.${iii}" ]; then
+      cp_vrfy grid_spec.nc.${iii} ${gridspec_dir}/fv3_grid_spec.${iii}
+    else
+      print_err_msg_exit "\
+      Cannot create symlink because target does not exist:
+      target = \"grid_spec.nc.$iii\""
+    fi
+  done
 fi
 #
 #-----------------------------------------------------------------------

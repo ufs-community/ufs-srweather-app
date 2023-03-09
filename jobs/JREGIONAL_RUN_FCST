@@ -63,21 +63,35 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
+CYCLE_TYPE=${CYCLE_TYPE:-prod}
+CYCLE_SUBTYPE=${CYCLE_SUBTYPE:-empty}
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam_spinup"
+  if  [ ${CYCLE_SUBTYPE} == "ensinit" ]; then
+    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam_ensinit"
+  fi
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/fcst_fv3lam"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Create the INPUT and RESTART directories under the run directory.
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir_vrfy -p ${DATA}/INPUT
 mkdir_vrfy -p ${DATA}/RESTART
+cd_vrfy $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Set the input directory.
+#
+#-----------------------------------------------------------------------
+#
+if [ $DO_RRFS_DEV = "TRUE" ]; then
+  export INPUT_DATA="${DATA}/INPUT"
+else
+  if [ $RUN_ENVIR = "nco" ]; then
+      export INPUT_DATA="${COMIN}"
+  else
+      export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
