@@ -18,7 +18,7 @@ task_get_extrn_ics:
   EXTRN_MDL_FILES_ICS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: RAP
+  EXTRN_MDL_NAME_LBCS: HRRR
   LBC_SPEC_INTVL_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
