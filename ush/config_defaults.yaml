@@ -475,6 +475,60 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Setup default observation locations for data assimilation:
+  #
+  #    OBSPATH:   observation BUFR file path
+  #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
+  #    LIGHTNING_ROOT: location of lightning observations
+  #    ENKF_FCSTL: location of global ensemble forecast
+  #    FFG_DIR: location of flash flood guidance for QPF comparison
+  #
+  # Setup default locations for global SST and update time:
+  #   SST_ROOT: locations of global SST
+  #   SST_update_hour: cycle time for updating SST 
+  #
+  # Setup default locations for GVF and update time:
+  #   GVF_ROOT: locations of GVF observations
+  #   GVF_update_hour: cycle time for updating GVF 
+  #
+  # Setup default locations for IMS snow/ice and update time:
+  #   IMSSNOW_ROOT: locations of IMS snow/ice observations
+  #   SNOWICE_update_hour: cycle time for updating snow/ice 
+  #
+  # Setup default resource data locations for soil surgery and time:
+  #   RAPHRR_SOIL_ROOT: locations of RAP/HRRR forecast netcdf files
+  #   SOIL_SURGERY_time: cycle time for soil surgery 
+  #
+  # Setup default locations for FIRE_RRFS files and update time
+  #  FIRE_RAVE_DIR
+  #  FIRE_RRFS_update_hour
+  #
+  #-----------------------------------------------------------------------
+  #
+  ARCHIVEDIR: ""
+  NCARG_ROOT: ""
+  NCL_HOME: ""
+  OBSPATH: ""
+  OBSPATH_NSSLMOSIAC: ""
+  LIGHTNING_ROOT: ""
+  ENKF_FCST: ""
+  FFG_DIR: ""
+  SST_ROOT: ""
+  GVF_ROOT: ""
+  IMSSNOW_ROOT: ""
+  RAPHRR_SOIL_ROOT: ""
+  FIRE_RAVE_DIR: ""
+  AIRCRAFT_REJECT: ""
+  SFCOBS_USELIST: ""
+
+  NCL_REGION: "conus"
+  SST_update_hour: 99
+  GVF_update_hour: 99
+  SNOWICE_update_hour: 99
+  SOIL_SURGERY_time: 9999999999
 
 #-----------------------------
 # WORKFLOW config parameters

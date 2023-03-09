@@ -9,6 +9,14 @@ platform:
   QUEUE_FCST: normal
   PARTITION_HPSS: normal
   QUEUE_HPSS: normal
+  PARTITION_GRAPHICS: normal
+  QUEUE_GRAPHICS: normal
+  PARTITION_ANALYSIS: normal
+  QUEUE_ANALYSIS: normal
+  PARTITION_PRDGEN: normal
+  QUEUE_PRDGEN: normal
+  PARTITION_POST: normal
+  QUEUE_POST: normal
   RUN_CMD_FCST: ibrun -np $nprocs
   RUN_CMD_POST: ibrun -np $nprocs
   RUN_CMD_SERIAL: time

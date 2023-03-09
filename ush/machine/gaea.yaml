@@ -12,6 +12,10 @@ platform:
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
+  QUEUE_GRAPHICS: normal
+  QUEUE_ANALYSIS: normal
+  QUEUE_PRDGEN: normal
+  QUEUE_POST: normal
   RUN_CMD_FCST: srun --export=ALL --mpi=pmi2 -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL --mpi=pmi2 -n $nprocs
   RUN_CMD_SERIAL: time

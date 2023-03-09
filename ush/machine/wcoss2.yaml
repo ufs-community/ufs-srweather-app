@@ -12,6 +12,10 @@ platform:
   QUEUE_DEFAULT: dev
   QUEUE_FCST: dev
   QUEUE_HPSS: dev_transfer
+  QUEUE_GRAPHICS: dev
+  QUEUE_ANALYSIS: dev
+  QUEUE_PRDGEN: dev
+  QUEUE_POST: dev
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
   RUN_CMD_SERIAL: mpiexec

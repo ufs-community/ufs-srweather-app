@@ -15,6 +15,14 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
+  PARTITION_GRAPHICS: orion
+  QUEUE_GRAPHICS: batch
+  PARTITION_ANALYSIS: orion
+  QUEUE_ANALYSIS: batch
+  PARTITION_PRDGEN: orion
+  QUEUE_PRDGEN: batch
+  PARTITION_POST: orion
+  QUEUE_POST: batch
   RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL
   RUN_CMD_SERIAL: time

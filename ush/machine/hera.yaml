@@ -15,6 +15,14 @@ platform:
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch
+  PARTITION_GRAPHICS: hera
+  QUEUE_GRAPHICS: batch
+  PARTITION_ANALYSIS: hera
+  QUEUE_ANALYSIS: batch
+  PARTITION_PRDGEN: hera
+  QUEUE_PRDGEN: batch
+  PARTITION_POST: hera
+  QUEUE_POST: batch
   RUN_CMD_FCST: srun --export=ALL
   RUN_CMD_POST: srun --export=ALL
   RUN_CMD_SERIAL: time
@@ -35,7 +43,21 @@ platform:
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-
+  ARCHIVEDIR: ""
+  NCARG_ROOT: ""
+  NCL_HOME: ""
+  OBSPATH: "/scratch2/BMC/zrtrr/rli/data/obs_rap"
+  OBSPATH_NSSLMOSIAC: "/scratch2/BMC/zrtrr/rli/data/reflectivity"
+  LIGHTNING_ROOT: "/scratch2/BMC/zrtrr/rli/data/lightning"
+  ENKF_FCST: "/scratch2/BMC/zrtrr/rli/data/enkf/atm"
+  FFG_DIR: ""
+  SST_ROOT: "/scratch2/BMC/zrtrr/rli/data/highres_sst"
+  GVF_ROOT: "/scratch2/BMC/zrtrr/rli/data/gvf/grib2"
+  IMSSNOW_ROOT: "/scratch2/BMC/zrtrr/rli/data/snow/ims96/grib2"
+  RAPHRR_SOIL_ROOT: ""
+  FIRE_RAVE_DIR: ""
+  AIRCRAFT_REJECT: "/scratch2/BMC/zrtrr/rli/data/amdar_reject_lists"
+  SFCOBS_USELIST: "/scratch2/BMC/zrtrr/rli/data/mesonet_uselists"
 data:
   obs:
     RAP_obs: /scratch2/BMC/public/data/grids/rap/obs
@@ -50,4 +72,3 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
   PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt
-

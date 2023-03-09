@@ -12,6 +12,10 @@ platform:
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular
   QUEUE_HPSS: regular
+  QUEUE_GRAPHICS: regular
+  QUEUE_ANALYSIS: regular
+  QUEUE_PRDGEN: regular
+  QUEUE_POST: regular
   RUN_CMD_FCST: mpirun -np ${PE_MEMBER01}
   RUN_CMD_POST: mpirun -np $nprocs
   RUN_CMD_SERIAL: time
