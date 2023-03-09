@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 import unittest
+import logging
 from textwrap import dedent
 
 from python_utils import (
@@ -15,6 +16,8 @@ from python_utils import (
     load_shell_config,
     flatten_dict,
 )
+
+from set_namelist import set_namelist
 
 
 def update_restart_input_nml_file(run_dir):
@@ -54,12 +57,12 @@ def update_restart_input_nml_file(run_dir):
     #
     settings = {}
     settings["fv_core_nml"] = {
-        "external_ic": false,
-        "make_nh": false,
-        "mountain": true,
+        "external_ic": False,
+        "make_nh": False,
+        "mountain": True,
         "na_init": 0,
-        "nggps_ic": false,
-        "warm_start": true,
+        "nggps_ic": False,
+        "warm_start": True,
     }
 
     settings_str = cfg_to_yaml_str(settings)
