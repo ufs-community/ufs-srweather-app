@@ -2549,6 +2549,23 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+# PREPSTART config parameters
+#-----------------------------
+task_run_prepstart:
+  TN_PREP_START: "prep_start"
+  TN_PREP_CYC: "prep_cyc"
+  TN_PREP_CYC_SPINUP: "prep_cyc_spinup"
+  TN_PREP_CYC_PROD: "prep_cyc_prod"
+  TN_PREP_CYC_ENSMEAN: "prep_cyc_ensmean"
+  TN_CALC_ENSMEAN: "calc_ensmean"
+  NNODES_RUN_PREPSTART: 1
+  PPN_RUN_PREPSTART: 1
+  MEM_RUN_PREPSTART: 24G
+  WTIME_RUN_PREPSTART: 00:10:00
+  WTIME_RUN_PREPSTART_ENSMEAN: 00:10:00
+  MAXTRIES_RUN_PREPSTART: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
@@ -2706,6 +2723,17 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+  # Set parameters associated with running data assimilation.  Definitions:
+  #
+  # SURFACE_CYCLE_DELAY_HRS:
+  # The surface cycle usually happens in cold start cycle. But there is
+  # a need to delay surface cycle to the warm start cycle following the
+  # cold start cycle. This one sets how many hours we want the surface
+  # cycle being delayed.
+  #
+  #-----------------------------------------------------------------------
+  #
+  SURFACE_CYCLE_DELAY_HRS: 1
 
 #----------------------------
 # verification parameters
