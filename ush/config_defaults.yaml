@@ -1308,6 +1308,12 @@ workflow_switches:
   RUN_TASK_POST_STAT_PM25: false
   RUN_TASK_BIAS_CORRECTION_O3: false
   RUN_TASK_BIAS_CORRECTION_PM25: false
+
+#----------------------------
+# DO_ parameters. These look like workflow switches since some
+# of them are used in FV3LAM_wflow.xml
+#-----------------------------
+rrfs:
   #
   #-----------------------------------------------------------------------
   #
@@ -1344,12 +1350,6 @@ workflow_switches:
   #-----------------------------------------------------------------------
   #
   # Set switches associated with ensembles.  Definitions:
-  #
-  # DO_ENSEMBLE:
-  # Flag that determines whether to run a set of ensemble forecasts (for
-  # each set of specified cycles).  If this is set to true, NUM_ENS_MEMBERS
-  # forecasts are run for each cycle, each with a different set of stochastic
-  # seed values.  Otherwise, a single forecast is run for each cycle.
   #
   # DO_ENSCONTROL: 
   # In ensemble mode, whether or not to run member 1 as control member
@@ -1391,7 +1391,6 @@ workflow_switches:
   #
   #-----------------------------------------------------------------------
   #
-  DO_ENSEMBLE: false
   DO_ENSFCST: false
   DO_ENSCONTROL: false
   DO_GSIOBSERVER: false
@@ -2554,7 +2553,6 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
-  LBC_SPEC_FCST_HRS: '( {% for h in range(0 if workflow_switches.DO_RRFS_DEV else task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS + [workflow.FCST_LEN_HRS, workflow.BOUNDARY_LEN_HRS]|max, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}{{ "%d " % h }}{% endfor %} )'
 
 #----------------------------
 # FORECAST config parameters
@@ -3607,6 +3605,12 @@ global:
   #
   # Set parameters associated with running ensembles.  Definitions:
   #
+  # DO_ENSEMBLE:
+  # Flag that determines whether to run a set of ensemble forecasts (for
+  # each set of specified cycles).  If this is set to true, NUM_ENS_MEMBERS
+  # forecasts are run for each cycle, each with a different set of stochastic
+  # seed values.  Otherwise, a single forecast is run for each cycle.
+  #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
   # This variable also controls the naming of the ensemble member directories.
@@ -3636,6 +3640,7 @@ global:
   # 
   #-----------------------------------------------------------------------
   #
+  DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
   NUM_ENS_MEMBERS_FCST: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'

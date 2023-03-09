@@ -49,6 +49,7 @@ workflow_switches:
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
   RUN_TASK_PLOT_ALLVARS: false
+rrfs:
   DO_DACYCLE: true
   DO_SURFACE_CYCLE: true
   DO_SPINUP: true
@@ -130,6 +131,7 @@ task_run_graphics:
   TILE_LABELS: "full"
   TILE_SETS: "full"
 global:
+  DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 9
   HALO_BLEND: 20
   PRINT_DIFF_PGR: true

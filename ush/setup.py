@@ -1105,7 +1105,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
 
     # Ensemble verification can only be run in ensemble mode
-    do_ensemble = workflow_switches["DO_ENSEMBLE"]
+    do_ensemble = global_sect["DO_ENSEMBLE"]
     run_task_vx_ensgrid = workflow_switches["RUN_TASK_VX_ENSGRID"]
     run_task_vx_enspoint = workflow_switches["RUN_TASK_VX_ENSPOINT"]
     if (not do_ensemble) and (run_task_vx_ensgrid or run_task_vx_enspoint):
