@@ -1,7 +1,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that
+# This file defines a function that evaluates a METplus time-string 
+# template.
 #
 #-----------------------------------------------------------------------
 #
