@@ -437,6 +437,21 @@ platform:
   # FIXsfc:
   # System directory where surface climatology data is located
   #
+  # FIXgsi:
+  # System directory where GSI fixed files are loacated
+  #
+  # FIXsmoke:
+  # System directory where smoke and dust fixed files are loacated
+  #
+  # FIXbufr:
+  # System directory where bufrsnd fixed files are loacated
+  #
+  # FIXcrtm:
+  # System directory where CRTM fixed files are loacated
+  #
+  # FIXcrtmupp:
+  # System directory where CRTM fixed files specifically for UPP are loacated
+  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -445,6 +460,11 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
+  FIXgsi: ""
+  FIXsmoke: ""
+  FIXbufr: ""
+  FIXcrtm: ""
+  FIXcrtmupp: ""
   #
   #-----------------------------------------------------------------------
   #
