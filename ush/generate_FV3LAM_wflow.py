@@ -213,8 +213,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         # from the jinja template file.
         #
         try:
+            # Until all of RRFS is merged lets temporarily ignore undefined template variables
+            # This is needed to have all the workflow in at the beginning, then add testable tasks one
+            # one by one. Once everything is merged this should be removed.
             fill_jinja_template(
-                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
+                ["-i", "-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
             )
         except:
             logging.info(

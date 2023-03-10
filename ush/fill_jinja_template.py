@@ -187,6 +187,12 @@ def parse_args(argv):
         help="Suppress all output",
     )
     parser.add_argument(
+        "-i",
+        "--ignore_undefined",
+        action="store_true",
+        help="Ignore undefined jinja template variables",
+    )
+    parser.add_argument(
         "-u",
         "--user_config",
         help="Command-line user config options in YAML-formatted string",
@@ -279,7 +285,7 @@ def fill_jinja_template(argv):
     tvars = {}
     for var in template_vars:
 
-        if cfg.get(var, "NULL") == "NULL":
+        if (not cla.ignore_undefined) and (cfg.get(var, "NULL") == "NULL"):
             raise KeyError(f"{var} does not exist in user-supplied settings!")
 
         if not cla.quiet:

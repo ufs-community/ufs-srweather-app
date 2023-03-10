@@ -752,6 +752,7 @@ MODULES_RUN_TASK_FP script.
 {%- if do_rrfs_dev %}
 
 <!-- beginning of meta block for prod spinup  -->
+{%- if do_smoke_dust or do_nonvar_cldanal or do_refl2tten or do_enkf_radar_ref or do_envar_radar_ref %}
 <metatask name="data_preprocessing">
   
 {%- if do_spinup %}
@@ -926,7 +927,12 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 -->
 {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
 </metatask>
+{%- endif %}
 <!-- end of meta block for prod spinup  -->
 
 {%- endif %}
@@ -2337,6 +2343,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
+{%- if tn_prep_cyc_prod %}
   <task name="&TN_PREP_CYC_PROD;{{ uscore_ensmem_name }}" cycledefs="prodcyc,prodcyc_long" maxtries="{{ maxtries_run_prepstart }}">
 
     &RSRV_DEFAULT;
@@ -2452,6 +2459,7 @@ MODULES_RUN_TASK_FP script.
     </dependency>
 
   </task>
+{%- endif %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -3387,7 +3395,7 @@ MODULES_RUN_TASK_FP script.
 ************************************************************************
 ************************************************************************
 -->
-{%- if do_rrfs_dev %}
+{%- if do_rrfs_dev and wtime_run_fcst_long %}
   <task name="&TN_RUN_FCST;_prod_long{{ uscore_ensmem_name }}" cycledefs="prodcyc_long" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
@@ -3480,6 +3488,7 @@ MODULES_RUN_TASK_FP script.
 {%- if not do_ensfcst %}
 {%- if not is_rtma %}
 {%- if do_rrfs_dev %}
+{%- if tn_save_restart %}
   <metatask name="&TN_SAVE_RESTART;_prod">
 
     <var name="fhr"> {{ restart_interval }} </var>
@@ -3571,6 +3580,7 @@ MODULES_RUN_TASK_FP script.
     </task>
 
   </metatask>
+{%- endif %}
 {%- endif %}
 {%- endif %}
 {%- endif %}
@@ -4183,6 +4193,7 @@ the <task> tag to be identical to the ones above for other output times.
 {%- if do_rrfs_dev %}
 {%- if machine in ["JET", "HERA"]  %}
 {%- if not do_ensemble %}
+{%- if ppn_run_graphics %} <!-- maybe removed later -->
 <!--
 ************************************************************************
 ************************************************************************
@@ -4272,6 +4283,7 @@ the <task> tag to be identical to the ones above for other output times.
 ************************************************************************
 ************************************************************************
 -->
+{%- endif %}
 {%- endif %}
 {%- endif %}
 {%- endif %}
