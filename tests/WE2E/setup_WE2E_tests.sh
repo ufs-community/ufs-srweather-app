@@ -31,9 +31,8 @@
 
 function usage {
   echo
-  echo "Usage: $0 homedir machine account [compiler] [test_type] [others] | -h"
+  echo "Usage: $0 machine account [compiler] [test_type] [others] | -h"
   echo
-  echo "       homedir       [required] user's home directory; this space must be writable"
   echo "       machine       [required] is one of: ${machines[@]}"
   echo "       account       [required] case sensitive name of the user-specific slurm account"
   echo "       compiler      [optional] compiler used to build binaries (intel or gnu)"
@@ -55,14 +54,6 @@ machine=${2,,}
 account=$3
 compiler=${4:-intel}
 test_type=${5:-fundamental}
-
-echo $homedir
-echo $machine
-echo $account
-echo $compiler
-echo $test_type
-
-
 
 #----------------------------------------------------------------------
 # Set some default options, if user did not pass them
