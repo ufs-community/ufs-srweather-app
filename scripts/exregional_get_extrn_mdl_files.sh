@@ -70,6 +70,14 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   file_set="fcst"
+  if [ "${FCST_LEN_HRS}" = "-1" ]; then
+    for i_cdate in "${!ALL_CDATES[@]}"; do
+      if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
+        FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
+        break
+      fi
+    done
+  fi
   end_hr=$FCST_LEN_HRS
   if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
      end_hr=$BOUNDARY_LEN_HRS
@@ -85,17 +93,6 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   fi
   last_time=$((TIME_OFFSET_HRS + end_hr))
 
-  #--- Revisits this for AQM ----#
-  #first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
-  #if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  #  for i_cdate in "${!ALL_CDATES[@]}"; do
-  #    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-  #      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-  #      break
-  #    fi
-  #  done
-  #fi
-  #last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
 
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
