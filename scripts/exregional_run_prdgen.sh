@@ -171,16 +171,13 @@ basetime=$( date +%y%j%H%M -d "${yyyymmdd} ${hh}" )
 
 # Create index (idx) files
 net4=$(echo ${NET:0:4} | tr '[:upper:]' '[:lower:]')
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.prslev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
-wgrib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2.idx
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.natlev.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
-wgrib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2.idx
-if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.ififip.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
-  ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.ififip.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
-  wgrib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2.idx
-fi
-ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.testbed.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
-wgrib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2.idx
+for leveltype in prslev natlev ififip testbed
+do
+  if [ -f ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]; then
+    ln_vrfy -sf --relative ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
+    wgrib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2.idx
+  fi
+done
 
 #-----------------------------------------------
 # Remap to additional output grids if requested
@@ -222,55 +219,25 @@ sed -n -e '751,$p' $DATAprdgen/prslevf${fhr}.txt >& $DATAprdgen/conus_ak_4.txt
 sed -n -e '1,500p' $DATAprdgen/prslevf${fhr}.txt >& $DATAprdgen/hi_pr_1.txt
 sed -n -e '501,$p' $DATAprdgen/prslevf${fhr}.txt >& $DATAprdgen/hi_pr_2.txt
 
-mkdir -p $DATAprdgen/prdgen_conus_1
-mkdir -p $DATAprdgen/prdgen_conus_2
-mkdir -p $DATAprdgen/prdgen_conus_3
-mkdir -p $DATAprdgen/prdgen_conus_4
-mkdir -p $DATAprdgen/prdgen_ak_1
-mkdir -p $DATAprdgen/prdgen_ak_2
-mkdir -p $DATAprdgen/prdgen_ak_3
-mkdir -p $DATAprdgen/prdgen_ak_4
-mkdir -p $DATAprdgen/prdgen_hi_1
-mkdir -p $DATAprdgen/prdgen_hi_2
-mkdir -p $DATAprdgen/prdgen_pr_1
-mkdir -p $DATAprdgen/prdgen_pr_2
-mkdir -p $DATAprdgen/prdgen_namerica_1
-mkdir -p $DATAprdgen/prdgen_namerica_2
-mkdir -p $DATAprdgen/prdgen_namerica_3
-mkdir -p $DATAprdgen/prdgen_namerica_4
-mkdir -p $DATAprdgen/prdgen_namerica_5
-mkdir -p $DATAprdgen/prdgen_namerica_6
-mkdir -p $DATAprdgen/prdgen_namerica_7
-mkdir -p $DATAprdgen/prdgen_namerica_8
-mkdir -p $DATAprdgen/prdgen_namerica_9
-mkdir -p $DATAprdgen/prdgen_namerica_10
-
 # Create script to execute production generation tasks in parallel using CFP
 echo "#!/bin/bash" > $DATAprdgen/poescript_${fhr}
 echo "export DATA=${DATAprdgen}" >> $DATAprdgen/poescript_${fhr}
 echo "export COMOUT=${COMOUT}" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 1 conus ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 2 conus ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 3 conus ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 4 conus ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 1 ak ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 2 ak ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 3 ak ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 4 ak ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 1 hi ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 2 hi ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 1 pr ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 2 pr ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 1 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 2 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 3 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 4 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 5 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 6 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 7 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 8 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 9 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
-echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc 10 namerica ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
+
+tasks=(4 4 2 2 10)
+domains=(conus ak hi pr namerica)
+count=0
+for i in ${domains[@]}
+do
+  domain=$i
+  for task in $(seq ${tasks[count]})
+  do
+    mkdir -p $DATAprdgen/prdgen_${domain}_${task}
+    echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc $task $domain ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
+  done
+  count=$count+1
+done
+
 echo "wait" >> $DATAprdgen/poescript_${fhr}
 chmod 775 $DATAprdgen/poescript_${fhr}
 
@@ -289,42 +256,19 @@ POST_STEP
 # reassemble the output grids
 #----------------------------------------
 
-cat $DATAprdgen/prdgen_conus_1/conus_1.grib2 \
-    $DATAprdgen/prdgen_conus_2/conus_2.grib2 \
-    $DATAprdgen/prdgen_conus_3/conus_3.grib2 \
-    $DATAprdgen/prdgen_conus_4/conus_4.grib2 \
-    > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.conus_3km.grib2
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.conus_3km.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.conus_3km.grib2.idx
-
-cat $DATAprdgen/prdgen_ak_1/ak_1.grib2 \
-    $DATAprdgen/prdgen_ak_2/ak_2.grib2 \
-    $DATAprdgen/prdgen_ak_3/ak_3.grib2 \
-    $DATAprdgen/prdgen_ak_4/ak_4.grib2 \
-    > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.ak.grib2
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.ak.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.ak.grib2.idx
-
-cat $DATAprdgen/prdgen_hi_1/hi_1.grib2 \
-    $DATAprdgen/prdgen_hi_2/hi_2.grib2 \
-    > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.hi.grib2
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.hi.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.hi.grib2.idx
-
-cat $DATAprdgen/prdgen_pr_1/pr_1.grib2 \
-    $DATAprdgen/prdgen_pr_2/pr_2.grib2 \
-    > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.pr.grib2
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.pr.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.pr.grib2.idx
-
-cat $DATAprdgen/prdgen_namerica_1/namerica_1.grib2 \
-    $DATAprdgen/prdgen_namerica_2/namerica_2.grib2 \
-    $DATAprdgen/prdgen_namerica_3/namerica_3.grib2 \
-    $DATAprdgen/prdgen_namerica_4/namerica_4.grib2 \
-    $DATAprdgen/prdgen_namerica_5/namerica_5.grib2 \
-    $DATAprdgen/prdgen_namerica_6/namerica_6.grib2 \
-    $DATAprdgen/prdgen_namerica_7/namerica_7.grib2 \
-    $DATAprdgen/prdgen_namerica_8/namerica_8.grib2 \
-    $DATAprdgen/prdgen_namerica_9/namerica_9.grib2 \
-    $DATAprdgen/prdgen_namerica_10/namerica_10.grib2 \
-    > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.namerica.grib2
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.namerica.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.namerica.grib2.idx
+tasks=(4 4 2 2 10)
+domains=(conus ak hi pr namerica)
+count=0
+for i in ${domains[@]}
+do
+  domain=$i
+  for task in $(seq ${tasks[count]})
+  do
+    cat $DATAprdgen/prdgen_${domain}_${task}/${domain}_${task}.grib2 >> ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2
+  done
+  wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2.idx
+  count=$count+1
+done
 
 else
   echo "this grid is not ready for parallel prdgen: ${PREDEF_GRID_NAME}"
@@ -386,24 +330,9 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       mkdir -p ${COMOUT}/${grid}_grid
       cp_vrfy ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
-      if [ $leveltype = 'prslev' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2
-         wgrib2 ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.prslev.f${fhr}.${gridname}grib2.idx
-      fi
-
-      if [ $leveltype = 'natlev' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2
-         wgrib2 ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.natlev.f${fhr}.${gridname}grib2.idx
-      fi
-
-      if [[ $leveltype = 'ififip' ]] && [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2  ]]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2
-         wgrib2 ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.ififip.f${fhr}.${gridname}grib2.idx
-      fi
-
-      if [ $leveltype = 'testbed' ]; then
-         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2
-         wgrib2 ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.testbed.f${fhr}.${gridname}grib2.idx
+      if [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]]; then
+         ln_vrfy -fs --relative ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2
+         wgrib2 ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2 -s > ${COMOUT}/${net4}.${cycle}.${leveltype}.f${fhr}.${gridname}grib2.idx
       fi
 
     done
