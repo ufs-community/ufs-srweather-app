@@ -15,7 +15,7 @@ pipeline {
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable hera
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'orion'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Uncomment the following line to re-enable comprehensive tests
@@ -80,7 +80,7 @@ pipeline {
                         name 'SRW_PLATFORM'
                         // Uncomment line below to re-add use of Hera
                         // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'cheyenne', 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -94,7 +94,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -116,6 +116,14 @@ pipeline {
                 }
 
                 stages {
+                    // Setup shell environment
+                    stage('Load Environment') {
+                        steps {
+                            echo "Loading shell environment on ${env.SRW_PLATFORM}"
+                            sh '"source $HOME/.bashrc"'
+                        }
+                    }
+
                     // Clean the workspace, checkout the repository, and run checkout_externals
                     stage('Initialize') {
                         steps {
