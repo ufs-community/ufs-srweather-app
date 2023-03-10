@@ -37,3 +37,7 @@ task_run_fcst:
 task_run_post:
   NNODES_RUN_POST: 8
   PPN_RUN_POST: 12
+task_run_prdgen:
+  RUN_TASK_RUN_PRDGEN: true
+  DO_PARALLEL_PRDGEN: true
+  PPN_RUN_PRDGEN: 22
