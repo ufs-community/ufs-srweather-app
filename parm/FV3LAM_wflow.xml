@@ -1405,16 +1405,13 @@ it, we'd have to include more jinja if-statements here.
 
 
 {#-
-Obs pre-processing tasks that must be run either if deterministic or
-ensemble verification tasks are going to be run.
+Tasks for combining (adding) hourly APCP (accumulated precipitation) from
+forecasts to obtain APCP obs for longer accumulation periods (3 hours,
+6 hours, etc).  These are needed for downstream verification tasks (both
+deterministic and ensemble).
 #}
 {%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
 
-{#-
-Tasks for combining (adding) hourly APCP (accumulated precipitation) from
-forecasts to obtain APCP obs for longer accumulation periods (3 hours,
-6 hours, etc).
-#}
   {%- if ("APCP" in vx_fields) %}
 
     {%- for accum_hh in vx_apcp_accums_hh -%}
@@ -1450,15 +1447,14 @@ forecasts to obtain APCP obs for longer accumulation periods (3 hours,
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>TN</name><value>{{tn}}</value></envar>
     <envar><name>VAR</name><value>{{field}}</value></envar>
     <envar><name>ACCUM_HH</name><value>{{accum_hh}}</value></envar>
-    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
     <envar><name>obs_or_fcst</name><value>fcst</value></envar>
+    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
+    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{slash_ensmem_subdir}}</cyclestr></value></envar>
           {%- if is_ens_fcst or run_tasks_metvx_ens %}
@@ -1651,15 +1647,14 @@ CCPA observations to obtain APCP obs for longer accumulation periods
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
-    <envar><name>TN</name><value>{{tn}}</value></envar>
     <envar><name>VAR</name><value>{{field}}</value></envar>
     <envar><name>ACCUM_HH</name><value>{{accum_hh}}</value></envar>
-    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
     <envar><name>obs_or_fcst</name><value>obs</value></envar>
+    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
+    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value></value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr></cyclestr></value></envar>
 

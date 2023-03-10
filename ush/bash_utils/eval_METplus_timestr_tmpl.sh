@@ -61,7 +61,7 @@ function eval_METplus_timestr_tmpl() {
 #
 #-----------------------------------------------------------------------
 #
-  print_input_args valid_args
+  print_input_args "valid_args"
 #
 #-----------------------------------------------------------------------
 #
@@ -221,7 +221,7 @@ The remainder (lead_hrs_rem) after dividing the lead_secs by SECS_PER_HOUR
   lead_hrs_rem = ${lead_hrs_rem}"
       fi
 #
-# Get the lead in the propper format.
+# Get the lead in the proper format.
 #
       formatted_time=$( printf "${fmt}" "${lead_hrs}" )
       ;;
