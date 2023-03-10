@@ -31,14 +31,15 @@
 
 function usage {
   echo
-  echo "Usage: $0 machine account [compiler] [test_type] [others] | -h"
+  echo "Usage: $0 machine account [compiler] [tests] [others] | -h"
   echo
-  echo "       machine       [required] is one of: ${machines[@]}"
-  echo "       account       [required] case sensitive name of the user-specific slurm account"
-  echo "       compiler      [optional] compiler used to build binaries (intel or gnu)"
-  echo "       test_type     [optional] test type: fundamental or comprehensive or all or any other name"
-  echo "       others        [optional] All other arguments are forwarded to run_WE2E_tests.sh"
-  echo "       -h            display this help"
+  echo "       machine   [required] is one of: ${machines[@]}"
+  echo "       account   [required] case sensitive name of the user-specific slurm account"
+  echo "       compiler  [optional] compiler used to build binaries (intel or gnu)"
+  echo "       tests     [optional] tests to run: can be a suite (all|comprehensive|fundamental)
+                            a filename, or a test name"
+  echo "       others    [optional] All other arguments are forwarded to run_WE2E_tests.sh"
+  echo "       -h        display this help"
   echo
   exit 1
 
@@ -53,7 +54,7 @@ homedir=$1
 machine=${2,,}
 account=$3
 compiler=${4:-intel}
-test_type=${5:-fundamental}
+tests=${5:-fundamental}
 
 #----------------------------------------------------------------------
 # Set some default options, if user did not pass them
@@ -86,7 +87,7 @@ source ../../ush/load_modules_wflow.sh ${machine}
   --machine=${machine} \
   --account=${account} \
   --compiler=${compiler} \
-  --tests=${test_type} \
+  --tests=${tests} \
   ${opts} \
   "${@:6}"
 
