@@ -1405,10 +1405,11 @@ it, we'd have to include more jinja if-statements here.
 
 
 {#-
-Tasks for pre-processing of APCP forecasts.  These must be run either if
-deterministic or ensemble verification tasks are going to be run.
+Obs pre-processing tasks that must be run either if deterministic or
+ensemble verification tasks are going to be run.
 #}
 {%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+
 {#-
 Tasks for combining (adding) hourly APCP (accumulated precipitation) from
 forecasts to obtain APCP obs for longer accumulation periods (3 hours,
