@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine_apcp|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -238,6 +238,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# First, set the base file names.
+#
 metplus_config_tmpl_fn="${met_tool_pc}_${obs_or_fcst}"
 metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}${USCORE_ENSMEM_NAME_OR_NULL}_$CDATE"
@@ -246,12 +248,14 @@ metplus_log_fn="${metplus_config_fn}${USCORE_ENSMEM_NAME_OR_NULL}_$CDATE"
 # of the configuration file because in this case, the output files from
 # METplus are not placed under cycle directories (so another method is
 # necessary to associate the configuration file with the cycle for which
-# it is associated with).
+# it is used).
 #
 if [ "${obs_or_fcst}" = "obs" ]; then
   metplus_config_fn="${metplus_log_fn}"
 fi
-
+#
+# Add prefixes and suffixes (extensions) to the base file names.
+#
 metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
 metplus_config_fn="${metplus_config_fn}.conf"
 metplus_log_fn="metplus.log.${metplus_log_fn}"

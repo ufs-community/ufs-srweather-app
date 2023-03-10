@@ -2068,9 +2068,9 @@ task_get_obs_ndas:
   MAXTRIES_GET_OBS_NDAS: 1
 
 #----------------------------
-# tn_run_met_pcpcombine_apcp config parameters
+# tn_run_met_pcpcombine config parameters
 #-----------------------------
-task_tn_run_met_pcpcombine_apcp:
+task_tn_run_met_pcpcombine:
   TN_RUN_MET_PCPCOMBINE: "run_MET_PcpCombine"
 #
   NNODES_RUN_MET_PCPCOMBINE_OBS: 1
