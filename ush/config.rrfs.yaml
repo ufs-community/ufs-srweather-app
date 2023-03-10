@@ -50,19 +50,19 @@ workflow_switches:
   RUN_TASK_MAKE_SFC_CLIMO: false
   RUN_TASK_PLOT_ALLVARS: false
 rrfs:
-  DO_DACYCLE: true
-  DO_SURFACE_CYCLE: true
-  DO_SPINUP: true
+  DO_DACYCLE: false # turn on later
+  DO_SURFACE_CYCLE: false # turn on later
+  DO_SPINUP: false # turn on later
   DO_RETRO: true
-  DO_NONVAR_CLDANAL: true
-  DO_REFL2TTEN: true # turn off later
-  DO_NLDN_LGHT: true # turn off later
-  DO_SOIL_ADJUST: true
+  DO_NONVAR_CLDANAL: false # turn on later
+  DO_REFL2TTEN: false
+  DO_NLDN_LGHT: false
+  DO_SOIL_ADJUST: false # turn on later
   DO_RADDA: false
   DO_BUFRSND: false
   DO_RRFS_DEV: false
-  DO_POST_SPINUP: true
-  DO_POST_PROD: true
+  DO_POST_SPINUP: false # true
+  DO_POST_PROD: false # true
 cycledefs:
   INITIAL_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0300 ", workflow.DATE_LAST_CYCL[0:8], "2300 12:00:00"]|join }}'
   BOUNDARY_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0000 ", workflow.DATE_LAST_CYCL[0:8], "2300 06:00:00"]|join }}'
