@@ -124,7 +124,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
@@ -536,7 +537,7 @@ settings="
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev_fcst_rrfsL65.txt,
  'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},
@@ -673,6 +674,20 @@ The following variables were being used:
   fvcom_exe = \"${fvcom_exe}\""
   POST_STEP
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+for i in ${INPUT_DATA}/*.nc; do
+    file=$(basename $i)
+    prefix="${NET}.${cycle}${dot_ensmem}."
+    file=${file#"$prefix"}
+    file=${file/f000/000}
+    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file}
+done
 #
 #-----------------------------------------------------------------------
 #
