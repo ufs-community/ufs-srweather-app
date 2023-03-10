@@ -90,6 +90,7 @@ Workflow task names.
 <!ENTITY TAG                       "">
 {%- endif %}
 
+<!ENTITY TN_PLOT_ALLVARS           "{{ tn_plot_allvars }}">
 <!ENTITY GET_OBS                   "{{ get_obs }}">
 <!ENTITY TN_GET_OBS_CCPA           "{{ tn_get_obs_ccpa }}">
 <!ENTITY TN_GET_OBS_NDAS           "{{ tn_get_obs_ndas }}">
