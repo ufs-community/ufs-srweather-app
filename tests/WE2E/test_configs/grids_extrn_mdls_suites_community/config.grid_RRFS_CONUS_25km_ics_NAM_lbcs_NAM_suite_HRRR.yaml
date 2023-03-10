@@ -3,6 +3,8 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUS_25km grid using the HRRR
     physics suite with ICs and LBCs derived from the NAM.
+    This test also runs with two ensemble members, and ensures the MET
+    ensemble-specific tasks run successfully.
 user:
   RUN_ENVIR: community
 workflow:
@@ -12,6 +14,11 @@ workflow:
   DATE_LAST_CYCL: '2021061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+workflow_switches:
+  RUN_TASK_VX_GRIDSTAT: true
+  RUN_TASK_VX_POINTSTAT: true
+  RUN_TASK_VX_ENSGRID: true
+  RUN_TASK_VX_ENSPOINT: true
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: NAM
   USE_USER_STAGED_EXTRN_FILES: true
@@ -19,3 +26,11 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: NAM
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
+global:
+  DO_ENSEMBLE: true
+  NUM_ENS_MEMBERS: 2
+verification:
+  RUN_TASKS_METVX_DET: true
+  RUN_TASKS_METVX_ENS: true
+  VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
+
