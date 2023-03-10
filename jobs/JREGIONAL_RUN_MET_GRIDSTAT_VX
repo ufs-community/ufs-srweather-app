@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------
 #
 # This script runs METplus for grid-stat on the UPP output files by 
-# initialization time for all forecast hours for gridded analysis.
+# initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid_mean" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_gridstat" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -53,7 +53,7 @@ Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
 This is the J-job script for the task that runs METplus for grid-stat
-on gridded fields by initialization time for all forecast hours.
+by initialization time for all forecast hours.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -63,7 +63,7 @@ on gridded fields by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_vx_ensgrid_mean.sh || \
+$SCRIPTSdir/exregional_run_met_gridstat_vx.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

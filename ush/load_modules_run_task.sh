@@ -115,7 +115,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     module load mod_ufs-utils
   elif [ "${task_name}" = "run_fcst" ]; then
     module load mod_ufs-weather-model
-  elif [ "${task_name}" = "run_post" ]; then
+  elif [ "${task_name}" = "run_post" ] && [ "${machine}" != "wcoss2" ]; then
     module load mod_upp
   elif [ "${task_name}" = "aqm_lbcs" ] || \
        [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \

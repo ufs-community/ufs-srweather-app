@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_enspoint_mean|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_ensgrid_mean|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -42,18 +42,18 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs METplus for point-stat on
-the UPP output files by initialization time for all forecast hours.
+This is the ex-script for the task that runs METplus for grid-stat on
+the UPP output files by initialization time for all forecast hours for 
+gridded data.
 ========================================================================"
 
+#-----------------------------------------------------------------------
+#
+# Begin grid-to-grid vx on ensemble output.
 #
 #-----------------------------------------------------------------------
 #
-# Begin grid-to-point vx on ensemble output.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "$VERBOSE" "Starting point-stat verification"
+print_info_msg "$VERBOSE" "Starting grid-stat verification"
 
 #
 #-----------------------------------------------------------------------
@@ -112,7 +112,12 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 #-----------------------------------------------------------------------
 #
-LOG_SUFFIX=enspoint_mean_${CDATE}
+
+if [ ${VAR} == "APCP" ]; then
+  LOG_SUFFIX=GridStat_ensmean_${VAR}${ACCUM}h_${CDATE}
+else
+  LOG_SUFFIX=GridStat_ensmean_${VAR}_${CDATE}
+fi
 
 #
 #-----------------------------------------------------------------------
@@ -129,11 +134,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Export some environment variables passed in by the XML and run METplus 
+# Export some environment variables passed in by the XML 
 #
 #-----------------------------------------------------------------------
 #
-export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
 export METPLUS_PATH
@@ -142,14 +146,26 @@ export MET_CONFIG
 export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
+export LOG_SUFFIX
 
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_conus_sfc_mean.conf
+#
+#-----------------------------------------------------------------------
+#
+# Run METplus 
+#
+#-----------------------------------------------------------------------
+#
+if [ ${VAR} == "APCP" ]; then
+  export acc="${ACCUM}h"
+  ${METPLUS_PATH}/ush/run_metplus.py \
+    -c ${METPLUS_CONF}/common.conf \
+    -c ${METPLUS_CONF}/GridStat_ensmean_${VAR}${acc}.conf
+else
+  ${METPLUS_PATH}/ush/run_metplus.py \
+    -c ${METPLUS_CONF}/common.conf \
+    -c ${METPLUS_CONF}/GridStat_ensmean_${VAR}.conf
+fi
 
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_upper_air_mean.conf
 #
 #-----------------------------------------------------------------------
 #
@@ -159,7 +175,7 @@ ${METPLUS_PATH}/ush/run_metplus.py \
 #
 print_info_msg "
 ========================================================================
-METplus ensemble-stat completed successfully.
+METplus grid-stat completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

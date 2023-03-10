@@ -97,7 +97,7 @@ mm="${PDY:4:2}"
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
       break
     fi
   done
@@ -215,7 +215,7 @@ Please ensure that you've built this executable."
 #----------------------------------------------------------------------
 #
   PREP_STEP
-  eval ${RUN_CMD_UTILS} -n ${NUMTS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) to generate chemical and GEFS LBCs
 file for RRFS-CMAQ failed:
