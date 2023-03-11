@@ -508,6 +508,15 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+  # Rearrange input/result files
+  mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy phyf*.nc "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy atmos_*.nc "${DATA}/tmp_FCST_RESTART"
+  cp_vrfy input.nml "${DATA}/tmp_FCST_RESTART/input.nml_org"
+  cp_vrfy model_configure "${DATA}/tmp_FCST_RESTART/model_configure_org"
+
+  # Update FV3 input.nml for restart
   python3 $USHdir/update_restart_input_nml_file.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
@@ -534,12 +543,6 @@ current cycle's (cdate) run directory (DATA) failed:
   nhr_restart="${fnm_rst_hms_max:0:2}"
   CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${nhr_restart} hours" "+%Y%m%d%H" )
   FCST_LEN_HRS=$(( FCST_LEN_HRS - 10#${nhr_restart} ))
-
-  # Rearrange result files
-  mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy phyf*.nc "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy atmos_*.nc "${DATA}/tmp_FCST_RESTART"
 
   # Create new soft-link of LBC files for restart
   cd_vrfy ${DATA}/INPUT
