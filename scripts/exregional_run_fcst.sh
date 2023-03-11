@@ -503,11 +503,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Replace parameter values for restart in FV3 input.nml and model_configure
+# Replace parameter values for restart in FV3 input.nml and model_configure.
+# Add restart files to INPUT directory.
 #
 #-----------------------------------------------------------------------
 #
-#do_fcst_rst_post="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   cp_vrfy input.nml input.nml_org
   cp_vrfy model_configure model_configure_org
