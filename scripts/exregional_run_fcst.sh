@@ -507,7 +507,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+do_fcst_rst_post="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+  set -x
+
   # Rearrange input/result files
   mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
   mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
@@ -540,15 +543,49 @@ current cycle's (cdate) run directory (DATA) failed:
   fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
  
   # Adjust start date, forecast length of restart run for model_configure
-  nhr_restart="${fnm_rst_hms_max:0:2}"
+  cdate_org=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC" "+%s" )
+  cdate_res=$( $DATE_UTIL --utc --date "${fnm_rst_pdy_max} ${fnm_rst_hms_max:0:2} UTC" "+%s" )
+  nhr_restart=$(( ( cdate_res - cdate_org )/(60*60) ))
+  FCST_LEN_HRS=$(( FCST_LEN_HRS - nhr_restart ))
   CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${nhr_restart} hours" "+%Y%m%d%H" )
-  FCST_LEN_HRS=$(( FCST_LEN_HRS - 10#${nhr_restart} ))
+
+  # Create soft-link of restart files
+  cd_vrfy ${DATA}/INPUT
+  rm_vrfy sfc_data.nc
+  rm_vrfy phy_data.nc
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.coupler.res"
+  symlink="coupler.res"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_core.res.nc"
+  symlink="fv_core.res.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_core.res.tile1.nc"
+  symlink="fv_core.res.tile1.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_srf_wnd.res.tile1.nc"
+  symlink="fv_srf_wnd.res.tile1.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_tracer.res.tile1.nc"
+  symlink="fv_tracer.res.tile1.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.phy_data.nc"
+  symlink="phy_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.sfc_data.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
 
   # Create new soft-link of LBC files for restart
-  cd_vrfy ${DATA}/INPUT
   rm_vrfy gfs_bndy.tile7.*.nc
   for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    fhr_rst=$(( fhr + 10#${nhr_restart} ))
+    fhr_rst=$(( fhr + nhr_restart ))
     fhr_rst_3d=$( printf '%03d' ${fhr_rst} )
     target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr_rst_3d}.nc"
     symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
@@ -643,7 +680,7 @@ POST_STEP
 #
 if [ "${do_fcst_rst_post}" = "TRUE" ]; then
   for fhr in $(seq -f "%03g" 1 ${FCST_LEN_HRS}); do
-    fhr_rst=$(( fhr + 10#${nhr_restart} ))
+    fhr_rst=$(( fhr + nhr_restart ))
     fhr_rst_3d=$( printf '%03d' ${fhr_rst} )
     mv_vrfy ${DATA}/dynf${fhr}.nc ${DATA}/dynf${fhr_rst_3d}.nc
     mv_vrfy ${DATA}/phyf${fhr}.nc ${DATA}/phyf${fhr_rst_3d}.nc
