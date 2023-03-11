@@ -503,10 +503,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Replace parameters for restart in the FV3 input.nml file
+# Replace parameter values for restart in FV3 input.nml and model_configure
 #
 #-----------------------------------------------------------------------
 #
+set -x
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   python3 $USHdir/update_restart_input_nml_file.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
@@ -516,6 +517,31 @@ Call to function to update the FV3 input.nml file for restart for the
 current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+
+  # Search for available restart files and find the latest hour
+  fnm_rst_pdy=()
+  fnm_rst_hms=() 
+  for fnm_rst in "${DATA}/RESTART"/*; do
+    fnm_rst_base=$( basename "${fnm_rst}" )
+    fnm_rst_pdy+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $1 }' ) )
+    fnm_rst_hms+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $2 }' ) )
+  done
+
+  # Find latest restart hour
+  fnm_rst_pdy_max=$( printf '%s\n' "${fnm_rst_pdy[@]}" | sort -nu | tail -1 )
+  fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
+ 
+  NHR_RESTART="${fnm_rst_hms_max[0:2]}"
+
+  # Rearrange input/result files
+  mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy phyf*.nc "${DATA}/tmp_FCST_RESTART"
+  mv_vrfy atmos_*.nc "${DATA}/tmp_FCST_RESTART"
+
+  # Adjust start date, forecast length of restart run for model_configure
+  CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${NHR_RESTART} hours" "+%Y%m%d%H" )
+  FCST_LEN_HRS=$(( FCST_LEN_HRS - NHR_RESTART ))
 fi
 #
 #-----------------------------------------------------------------------

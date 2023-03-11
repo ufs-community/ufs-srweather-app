@@ -899,13 +899,9 @@ workflow:
   # DO_REAL_TIME:
   # switch for real-time run
   #
-  # DO_FCST_RESTART:
-  # Flag turning on/off restart capability of forecast task
-  #
   #-----------------------------------------------------------------------
   #
   DO_REAL_TIME: false
-  DO_FCST_RESTART: false
   #
   #-----------------------------------------------------------------------
   #
@@ -1940,6 +1936,15 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_FCST_RESTART:
+  # Flag turning on/off restart capability of forecast task
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_FCST_RESTART: false
 
 #----------------------------
 # POST config parameters

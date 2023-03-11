@@ -25,7 +25,6 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: true
-  DO_FCST_RESTART: false
   COLDSTART: false
   WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
@@ -75,6 +74,7 @@ task_run_fcst:
   WTIME_RUN_FCST: 04:00:00
   QUILTING: true
   PRINT_ESMF: false
+  DO_FCST_RESTART: false
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
 task_aqm_lbcs:
