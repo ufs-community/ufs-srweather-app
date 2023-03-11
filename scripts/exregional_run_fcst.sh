@@ -531,17 +531,30 @@ current cycle's (cdate) run directory (DATA) failed:
   fnm_rst_pdy_max=$( printf '%s\n' "${fnm_rst_pdy[@]}" | sort -nu | tail -1 )
   fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
  
-  NHR_RESTART="${fnm_rst_hms_max[0:2]}"
+  # Adjust start date, forecast length of restart run for model_configure
+  NHR_RESTART="${fnm_rst_hms_max:0:2}"
+  CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${NHR_RESTART} hours" "+%Y%m%d%H" )
+  FCST_LEN_HRS=$(( FCST_LEN_HRS - 10#${NHR_RESTART} ))
 
-  # Rearrange input/result files
+  # Rearrange result files
   mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
   mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
   mv_vrfy phyf*.nc "${DATA}/tmp_FCST_RESTART"
   mv_vrfy atmos_*.nc "${DATA}/tmp_FCST_RESTART"
 
-  # Adjust start date, forecast length of restart run for model_configure
-  CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${NHR_RESTART} hours" "+%Y%m%d%H" )
-  FCST_LEN_HRS=$(( FCST_LEN_HRS - NHR_RESTART ))
+  # Create new soft-link of LBC files for restart
+  cd_vrfy ${DATA}/INPUT
+  rm_vrfy gfs_bndy.tile7.*.nc
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    fhr_rst=$(( fhr + 10#${NHR_RESTART} ))
+    fhr_rst_3d=$( printf '%03d' ${fhr_rst} )
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr_rst_3d}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  done
+  cd_vrfy ${DATA}   
+
 fi
 #
 #-----------------------------------------------------------------------
