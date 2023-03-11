@@ -1742,6 +1742,9 @@ task_run_fcst:
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
   #
+  # FHROT:
+  # Forecast hour at restart
+  #
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
   # Default=0: restart files are produced at the end of a forecast run
@@ -1760,9 +1763,9 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
+  FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
-
   #
   #-----------------------------------------------------------------------
   #

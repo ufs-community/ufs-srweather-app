@@ -507,17 +507,10 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-do_fcst_rst_post="FALSE"
+#do_fcst_rst_post="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  set -x
-
-  # Rearrange input/result files
-  mkdir_vrfy "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy dynf*.nc "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy phyf*.nc "${DATA}/tmp_FCST_RESTART"
-  mv_vrfy atmos_*.nc "${DATA}/tmp_FCST_RESTART"
-  cp_vrfy input.nml "${DATA}/tmp_FCST_RESTART/input.nml_org"
-  cp_vrfy model_configure "${DATA}/tmp_FCST_RESTART/model_configure_org"
+  cp_vrfy input.nml input.nml_org
+  cp_vrfy model_configure model_configure_org
 
   # Update FV3 input.nml for restart
   python3 $USHdir/update_restart_input_nml_file.py \
@@ -542,15 +535,18 @@ current cycle's (cdate) run directory (DATA) failed:
   fnm_rst_pdy_max=$( printf '%s\n' "${fnm_rst_pdy[@]}" | sort -nu | tail -1 )
   fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
  
-  # Adjust start date, forecast length of restart run for model_configure
+  # Compute start hour of restart run for model_configure
   cdate_org=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC" "+%s" )
   cdate_res=$( $DATE_UTIL --utc --date "${fnm_rst_pdy_max} ${fnm_rst_hms_max:0:2} UTC" "+%s" )
-  nhr_restart=$(( ( cdate_res - cdate_org )/(60*60) ))
-  FCST_LEN_HRS=$(( FCST_LEN_HRS - nhr_restart ))
-  CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${nhr_restart} hours" "+%Y%m%d%H" )
+  FHROT=$(( ( cdate_res - cdate_org )/(60*60) ))
 
-  # Create soft-link of restart files
+  # Create soft-link of restart files to INPUT
   cd_vrfy ${DATA}/INPUT
+  rm_vrfy coupler.res
+  rm_vrfy fv_core.res.nc
+  rm_vrfy fv_core.res.tile1.nc
+  rm_vrfy fv_srf_wnd.res.tile1.nc
+  rm_vrfy fv_tracer.res.tile1.nc
   rm_vrfy sfc_data.nc
   rm_vrfy phy_data.nc
 
@@ -582,17 +578,6 @@ current cycle's (cdate) run directory (DATA) failed:
   symlink="sfc_data.nc"
   create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
 
-  # Create new soft-link of LBC files for restart
-  rm_vrfy gfs_bndy.tile7.*.nc
-  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-    fhr_rst=$(( fhr + nhr_restart ))
-    fhr_rst_3d=$( printf '%03d' ${fhr_rst} )
-    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr_rst_3d}.nc"
-    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
-  done
-  do_fcst_rst_post="TRUE"
   cd_vrfy ${DATA}   
 fi
 #
@@ -607,6 +592,7 @@ python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
+  --fhrot "${FHROT}" \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
@@ -671,25 +657,6 @@ eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
 Call to executable to run FV3-LAM forecast returned with nonzero exit
 code."
 POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# Post work when DO_FCST_RESTART is true.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${do_fcst_rst_post}" = "TRUE" ]; then
-  for fhr in $(seq -f "%03g" 1 ${FCST_LEN_HRS}); do
-    fhr_rst=$(( fhr + nhr_restart ))
-    fhr_rst_3d=$( printf '%03d' ${fhr_rst} )
-    mv_vrfy ${DATA}/dynf${fhr}.nc ${DATA}/dynf${fhr_rst_3d}.nc
-    mv_vrfy ${DATA}/phyf${fhr}.nc ${DATA}/phyf${fhr_rst_3d}.nc
-  done
-  for fhr in $(seq -f "%03g" 0 ${nhr_restart}); do
-    mv_vrfy ${DATA}/tmp_FCST_RESTART/dynf${fhr}.nc ${DATA}/dynf${fhr}.nc
-    mv_vrfy ${DATA}/tmp_FCST_RESTART/phyf${fhr}.nc ${DATA}/phyf${fhr}.nc
-  done
-fi
 #
 #-----------------------------------------------------------------------
 #

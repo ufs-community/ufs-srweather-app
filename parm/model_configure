@@ -7,6 +7,7 @@ start_hour:              {{ start_hour }}
 start_minute:            0
 start_second:            0
 nhours_fcst:             {{ nhours_fcst }}
+fhrot:                   {{ fhrot }}
 RUN_CONTINUE:            .false.
 ENS_SPS:                 .false.
 dt_atmos:                {{ dt_atmos }}
