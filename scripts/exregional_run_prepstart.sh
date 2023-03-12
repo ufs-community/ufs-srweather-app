@@ -52,6 +52,7 @@ specified cycle.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
+eval ${PRE_TASK_CMDS_RUN_PREPSTART}
 
 nprocs=$((NNODES_RUN_PREPSTART*PPN_RUN_PREPSTART))
 

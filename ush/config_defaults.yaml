@@ -2033,7 +2033,7 @@ task_make_grid:
   GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G: ""
   GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G: ""
   GFDLgrid_USE_NUM_CELLS_IN_FILENAMES: ""
-  #
+
 #----------------------------
 # MAKE OROG config parameters
 #-----------------------------
@@ -2280,6 +2280,7 @@ task_run_prepstart:
   WTIME_RUN_PREPSTART: 00:10:00
   WTIME_RUN_PREPSTART_ENSMEAN: 00:10:00
   MAXTRIES_RUN_PREPSTART: 1
+  PRE_TASK_CMDS_RUN_PREPSTART: ""
 
 #----------------------------
 # PROCESS RADARREF config parameters
@@ -2367,6 +2368,7 @@ task_run_anal:
   KMP_AFFINITY_RUN_ANAL: "scatter"
   OMP_NUM_THREADS_RUN_ANAL: 1
   OMP_STACKSIZE_RUN_ANAL: "1024m"
+  PRE_TASK_CMDS_RUN_ANAL: ""
 
 #----------------------------
 # POSTANAL config parameters
@@ -2380,6 +2382,7 @@ task_run_postanal:
   KMP_AFFINITY_RUN_POSTANAL: "scatter"
   OMP_NUM_THREADS_RUN_POSTANAL: 1
   OMP_STACKSIZE_RUN_POSTANAL: "1024m"
+  PRE_TASK_CMDS_RUN_POSTANAL: ""
 
 #----------------------------
 # CLDANAL_NONVAR config parameters
@@ -2416,6 +2419,7 @@ task_run_enkf:
   KMP_AFFINITY_RUN_ENKF: "scatter"
   OMP_NUM_THREADS_RUN_ENKF: 1
   OMP_STACKSIZE_RUN_ENKF: "1024m"
+  PRE_TASK_CMDS_RUN_ENKF: ""
 
 #----------------------------
 # RECENTER config parameters
@@ -2426,6 +2430,7 @@ task_run_recenter:
   PPN_RUN_RECENTER: 20
   WTIME_RUN_RECENTER: 01:00:00
   MAXTRIES_RUN_RECENTER: 1
+  PRE_TASK_CMDS_RUN_RECENTER: ""
 
 #----------------------------
 # SAVE RESTART config parameters
@@ -2508,6 +2513,7 @@ task_make_ics:
   KMP_AFFINITY_MAKE_ICS: "scatter"
   OMP_NUM_THREADS_MAKE_ICS: 1
   OMP_STACKSIZE_MAKE_ICS: "1024m"
+  PRE_TASK_CMDS_MAKE_ICS: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -2557,6 +2563,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  PRE_TASK_CMDS_MAKE_LBCS: ""
 
 #----------------------------
 # FORECAST config parameters
@@ -2606,6 +2613,7 @@ task_run_fcst:
   KMP_AFFINITY_RUN_FCST: "scatter"
   OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
   OMP_STACKSIZE_RUN_FCST: "1024m"
+  PRE_TASK_CMDS_RUN_FCST: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -2873,6 +2881,7 @@ task_run_post:
   KMP_AFFINITY_RUN_POST: "scatter"
   OMP_NUM_THREADS_RUN_POST: 1
   OMP_STACKSIZE_RUN_POST: "1024m"
+  PRE_TASK_CMDS_RUN_POST: ""
   #
   #-----------------------------------------------------------------------
   #

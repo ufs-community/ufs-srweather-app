@@ -36,6 +36,48 @@ platform:
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
   COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
+task_make_ics:
+  PRE_TASK_CMDS_MAKE_ICS: |
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+    export FI_MR_CACHE_MAX_COUNT=0;
+    export MPICH_OFI_STARTUP_CONNECT=1;
+task_run_fcst:
+  PRE_TASK_CMDS_RUN_FCST: |
+    export MPICH_ABORT_ON_ERROR=1;
+    export MALLOC_MMAP_MAX_=0;
+    export MALLOC_TRIM_THRESHOLD_=134217728;
+    export FORT_FMT_NO_WRAP_MARGIN=true;
+    export MPICH_REDUCE_NO_SMP=1;
+    export FOR_DISABLE_KMP_MALLOC=TRUE;
+    export FI_OFI_RXM_RX_SIZE=40000;
+    export FI_OFI_RXM_TX_SIZE=40000;
+    export MPICH_OFI_STARTUP_CONNECT=1;
+    export MPICH_OFI_VERBOSE=1;
+    export MPICH_OFI_NIC_VERBOSE=1;
+    export FI_MR_CACHE_MAX_COUNT=0;
+    export MPICH_OFI_STARTUP_CONNECT=1;
+task_run_post:
+  PRE_TASK_CMDS_RUN_POST: |
+    export MP_IOAGENT_CNT=all;
+    export MP_IO_BUFFER_SIZE=8M;
+    export MP_BINDPROC=NO;
+    export MP_SHARED_MEMORY=yes;
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+task_run_anal:
+  PRE_TASK_CMDS_RUN_ANAL:
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+task_run_postanal:
+  PRE_TASK_CMDS_RUN_POSTANAL:
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+task_run_prepstart:
+  PRE_TASK_CMDS_RUN_PREPSTART:
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+task_run_enkf:
+  PRE_TASK_CMDS_RUN_ENKF:
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
+task_run_recenter:
+  PRE_TASK_CMDS_RUN_RECENTER:
+    export FI_OFI_RXM_SAR_LIMIT=3145728;
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}

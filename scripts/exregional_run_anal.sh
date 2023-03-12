@@ -62,6 +62,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_ANAL}
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
+eval ${PRE_TASK_CMDS_RUN_ANAL}
 
 nprocs=$((NNODES_RUN_ANAL*PPN_RUN_ANAL))
 

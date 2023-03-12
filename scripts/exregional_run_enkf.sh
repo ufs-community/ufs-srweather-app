@@ -81,6 +81,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_ENKF}
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
+eval ${PRE_TASK_CMDS_RUN_ENKF}
 
 nprocs=$((NNODES_RUN_ENKF*PPN_RUN_ENKF))
 #

@@ -63,6 +63,7 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
+eval ${PRE_TASK_CMDS_RUN_POST}
 
 nprocs=$(( NNODES_RUN_POST*PPN_RUN_POST ))
 if [ -z "${RUN_CMD_POST:-}" ] ; then
