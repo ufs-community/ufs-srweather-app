@@ -202,18 +202,26 @@ Directories and files.
 <!ENTITY FG_ROOT                  "{{ nwges_basedir }}">
 {%- endif %}
 
+<!-- Temporarily turn off fcst_fv3lam subdirectory usage -->
+<!-- until run_fcst of rrfs_dev is merged                -->
+{%- if do_rrfs_dev %}
+<!ENTITY FCST_DIR                  "fcst_fv3lam/">
+{%- else %}
+<!ENTITY FCST_DIR                  "">
+{%- endif %}
+
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/fcst_fv3lam/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;phy">
 {%- endif %}
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/fcst_fv3lam/dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/fcst_fv3lam/phy">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_DIR;dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_DIR;phy">
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}">
 {%- endif %}
 
