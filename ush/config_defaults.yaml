@@ -58,7 +58,7 @@ user:
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
-  SERVICE_ACCOUNT: ""
+  SERVICE_ACCOUNT: '{{ user.ACCOUNT }}'
 
   HOMEdir: '{{ user.HOMEdir }}'
   USHdir: '{{ user.USHdir }}'

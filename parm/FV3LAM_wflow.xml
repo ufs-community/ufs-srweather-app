@@ -1076,7 +1076,7 @@ MODULES_RUN_TASK_FP script.
 
   <task name="&TN_GET_EXTRN_ICS;{{ uscore_ensmem_name }}" cycledefs="initial" maxtries="{{ maxtries_get_extrn_ics }}">
 
-    &RSRV_DEFAULT;
+    &RSRV_HPSS;
     &WALL_LIMIT_PRE;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
 
@@ -1165,7 +1165,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_GET_EXTRN_LBCS;{{ uscore_ensmem_name }}" cycledefs="boundary" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &WALL_LIMIT_PRE;
-    &RSRV_DEFAULT;
+    &RSRV_HPSS;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
 
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
