@@ -825,10 +825,19 @@ workflow:
   # FCST_LEN_HRS:
   # The length of each forecast, in integer hours.
   #
+  # SHORT_FCST_LEN:
+  # The length of the shorter forecast in integer hours in a system that
+  # varies the length of the forecast by time of day forecasts for a
+  # shorter period. There is no need for the user to update this value
+  # directly. It is updated in setup.py based on 
+  #
   # FCST_LEN_CYCL:
   # The length of forecast for each cycle date in integer hours.
   # This is valid only when FCST_LEN_HRS = -1.
   # This pattern is recurred for all cycle dates.
+  # Must have the same number of entries as cycles per day, or if less
+  # than one day the entries must include the length of each cycle to be
+  # run.
   #
   #-----------------------------------------------------------------------
   #
@@ -841,6 +850,7 @@ workflow:
     - 12
     - 12
     - 6
+  SHORT_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}-1{% endif %}'
 
   #
   #-----------------------------------------------------------------------

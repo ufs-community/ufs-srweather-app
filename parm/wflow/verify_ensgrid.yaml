@@ -24,47 +24,45 @@ default_task_verify_ens: &default_task_verify_ens
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-metatask_ensgridvx:
+metatask_EnsembleStat:
   var:
-    VAR: APCP REFC RETOP
-    OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
-  task_run_ensgridvx_#VAR#:
+    VAR: REFC RETOP
+  task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"'
     envars:
       <<: *default_vars
       ACCUM: '01'
-      OBS_DIR: '#OBS_DIR#'
+      OBS_DIR: '&MRMS_OBS_DIR;'
       VAR: '#VAR#'
     dependency:
       metataskdep:
         attrs:
           metatask: run_ensemble
 
-metatask_ensgridvx_prob:
+metatask_GridStat_ensprob:
   var:
-    VAR: APCP REFC RETOP
-    OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
-  task_run_ensgridvx_prob_#VAR#:
+    VAR: REFC RETOP
+  task_run_MET_GridStat_vx_ensprob_#VAR#:
     <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_PROB"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"'
     envars:
       <<: *default_vars
       ACCUM: '01'
-      OBS_DIR: '#OBS_DIR#'
+      OBS_DIR: '&MRMS_OBS_DIR;'
       VAR: '#VAR#'
     dependency:
-      metataskdep:
+      taskdep:
         attrs:
-          metatask: ensgridvx
+          task: run_MET_EnsembleStat_vx_#VAR#
 
-metatask_ensgridvx_acc:
+metatask_EnsembleStat_acc:
   var:
-    ACCUM_HR: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-    FCST_HR_LIST: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
-  task_run_ensgridvx_#ACCUM_HR#h:
+    ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
+  task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
     <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"'
     envars:
       <<: *default_vars
       ACCUM: '#ACCUM_HR#'
@@ -74,19 +72,19 @@ metatask_ensgridvx_acc:
     dependency:
       taskdep:
         attrs:
-          task: run_ensgridvx_APCP
+          task: run_MET_EnsembleStat_vx_APCP
 
-metatask_ensgridvx_stats:
+metatask_ensemble_vx_stats:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_ensgridvx_acc:
+  metatask_GridStat_ens_acc:
     var:
-      ACCUM_HR: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
       FCST_HR_LIST: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
-    task_run_ensgridvx_#statlc#_#ACCUM_HR#h:
+    task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HR#h:
       <<: *default_task_verify_ens
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSGRID_#stat#"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENS#stat#"'
       envars:
         <<: *default_vars
         ACCUM: '#ACCUM_HR#'
@@ -96,25 +94,31 @@ metatask_ensgridvx_stats:
       dependency:
         taskdep:
           attrs:
-            task: run_ensgridvx_APCP
-  task_run_enspointvx_#statlc#:
+            task: run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h
+  metatask_PointStat_ens:
+    var:
+      VAR: SFC UPA
+    task_run_MET_PointStat_vx_ens#statlc#_#VAR#:
+      <<: *default_task_verify_ens
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENS#stat#"'
+      envars:
+        <<: *default_vars
+        OBS_DIR: '&NDAS_OBS_DIR;'
+      dependency:
+        taskdep:
+          attrs:
+            task: run_MET_EnsembleStat_vx_#VAR#
+
+metatask_EnsembleStat_point:
+  var:
+    VAR: SFC UPA
+  task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT_#stat#"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"'
     envars:
       <<: *default_vars
       OBS_DIR: '&NDAS_OBS_DIR;'
     dependency:
-      taskdep:
+      metataskdep:
         attrs:
-          task: run_vx_enspoint
-
-task_vx_enspoint:
-  <<: *default_task_verify_ens
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_ENSPOINT"'
-  envars:
-    <<: *default_vars
-    OBS_DIR: '&NDAS_OBS_DIR;'
-  dependency:
-    metataskdep:
-      attrs:
-        metatask: run_ensemble
+          metatask: run_ensemble

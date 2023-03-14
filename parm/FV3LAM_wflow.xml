@@ -69,8 +69,10 @@
 ]>
 <workflow {% for attr, val in attrs.items() %}{{ attr }}="{{ val }}" {% endfor %}>
 
-  {%- for group, value in cycledefs.items() %}
-  <cycledef group="{{ group }}">{{ value.get("dates") }}</cycledef>
+  {%- for group, cdefs in cycledefs.items() %}
+    {%- for cdef in cdef %}
+  <cycledef group="{{ group }}">{{ cdef }}</cycledef>
+    {%- endfor %}
   {%- endfor %}
 
   <log>{{ log }}</log>

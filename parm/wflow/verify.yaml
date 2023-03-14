@@ -56,20 +56,18 @@ task_get_obs_ndas:
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00
 
-metatask_ens_vx:
+metatask_vx_ens_member:
   var:
     mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "det" }}{% endif %}'
-  metatask_gridstatvx:
+  metatask_GridStat:
     var:
-      VAR: APCP REFC RETOP
-      OBS: ccpa mrms mrms
-      OBS_DIR: '&CCPA_OBS_DIR; &MRMS_OBS_DIR; &MRMS_OBS_DIR;'
-    task_gridstatvx_#VAR#_#mem#:
+      VAR: REFC RETOP
+    task_run_MET_GridStat_vx_#VAR#_#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
         <<: *default_vars
-        OBS_DIR: '#OBS_DIR#'
+        OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
         ACCUM: '01'
       walltime: 02:00:00
@@ -79,14 +77,14 @@ metatask_ens_vx:
             not:
               taskvalid:
                 attrs:
-                  task: get_obs_#OBS#
+                  task: get_obs_mrms
             and:
               taskvalid:
                 attrs:
-                  task: get_obs_#OBS#
+                  task: get_obs_mrms
               taskdep:
                 attrs:
-                  task: get_obs_#OBS#
+                  task: get_obs_mrms
           or_do_post: &post_files_exist
             and_run_post: # If post was meant to run, wait on the whole post metatask
               taskvalid:
@@ -104,13 +102,13 @@ metatask_ens_vx:
                 attrs:
                   task: run_fcst_det
   
-  metatask_gridstatvx_acc:
+  metatask_GridStat_acc:
     var:
-      ACCUM_HR: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-      FCST_HR_LIST: '{% for ah in [3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
-    task_gridstatvx_#ACCUM_HR#h_#mem#:
+      ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
+    task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_GRIDSTAT"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
         <<: *default_vars
         FHR: '#FCST_HR_LIST#'
@@ -119,28 +117,46 @@ metatask_ens_vx:
         ACCUM: '#ACCUM_HR#'
       walltime: 02:00:00
       dependency:
-        taskdep:
-          attrs:
-            task: run_gridstatvx_APCP
-  
-  
-  task_run_pointstatvx_#mem#:
-    <<: *default_task
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_VX_POINTSTAT"'
-    walltime: 01:00:00
-    dependency:
-      and:
-        <<: *post_files_exist
-        or_get_obs: # Get obs complete if turned on
-          not:
-            taskvalid:
-              attrs:
-                task: get_obs_ndas
-          and:
-            taskvalid:
-              attrs:
-                task: get_obs_ndas
-            taskdep:
-              attrs:
-                task: get_obs_ndas
+        and:
+          <<: *post_files_exist
+          or_get_obs: # Ensure get_obs task is complete if it's turned on
+            not:
+              taskvalid:
+                attrs:
+                  task: get_obs_ccpa
+            and:
+              taskvalid:
+                attrs:
+                  task: get_obs_ccpa
+              taskdep:
+                attrs:
+                  task: get_obs_ccpa
+
+  metatask_PointStat:
+    var:
+      VAR: SFC UPA
+    task_run_MET_PointStat_vx_#VAR#_#mem#:
+      <<: *default_task
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
+      envars:
+        <<: *default_vars
+        FHR: '#FCST_HR_LIST#'
+        OBS_DIR: '&NDAS_OBS_DIR;'
+        VAR: '#VAR#'
+      walltime: 01:00:00
+      dependency:
+        and:
+          <<: *post_files_exist
+          or_get_obs: # Get obs complete if turned on
+            not:
+              taskvalid:
+                attrs:
+                  task: get_obs_ndas
+            and:
+              taskvalid:
+                attrs:
+                  task: get_obs_ndas
+              taskdep:
+                attrs:
+                  task: get_obs_ndas
   
