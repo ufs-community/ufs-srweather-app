@@ -192,7 +192,7 @@ if [ ${PREDEF_GRID_NAME} = "RRFS_NA_3km" ]; then
 
 DATA=$COMOUT
 DATAprdgen=$DATA/prdgen_${fhr}
-mkdir $DATAprdgen
+mkdir_vrfy $DATAprdgen
 
 wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.grib2 >& $DATAprdgen/prslevf${fhr}.txt
 
@@ -227,12 +227,11 @@ echo "export COMOUT=${COMOUT}" >> $DATAprdgen/poescript_${fhr}
 tasks=(4 4 2 2 10)
 domains=(conus ak hi pr namerica)
 count=0
-for i in ${domains[@]}
+for domain in ${domains[@]}
 do
-  domain=$i
   for task in $(seq ${tasks[count]})
   do
-    mkdir -p $DATAprdgen/prdgen_${domain}_${task}
+    mkdir_vrfy -p $DATAprdgen/prdgen_${domain}_${task}
     echo "$SCRIPTSdir/exregional_run_prdgen_subpiece.sh $fhr $cyc $task $domain ${DATAprdgen} ${COMOUT} &" >> $DATAprdgen/poescript_${fhr}
   done
   count=$count+1
@@ -259,9 +258,8 @@ POST_STEP
 tasks=(4 4 2 2 10)
 domains=(conus ak hi pr namerica)
 count=0
-for i in ${domains[@]}
+for domain in ${domains[@]}
 do
-  domain=$i
   for task in $(seq ${tasks[count]})
   do
     cat $DATAprdgen/prdgen_${domain}_${task}/${domain}_${task}.grib2 >> ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2
@@ -299,7 +297,7 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       
       eval grid_specs=\$grid_specs_${grid}
       subdir=${COMOUT}/${grid}_grid
-      mkdir -p ${subdir}/${fhr}
+      mkdir_vrfy -p ${subdir}/${fhr}
       bg_remap=${subdir}/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       # Interpolate fields to new grid
@@ -327,7 +325,7 @@ if [ ${#ADDNL_OUTPUT_GRIDS[@]} -gt 0 ]; then
       rm -f ${subdir}/${fhr}/tmp_${grid}.grib2
 
       # Save to com directory 
-      mkdir -p ${COMOUT}/${grid}_grid
+      mkdir_vrfy -p ${COMOUT}/${grid}_grid
       cp_vrfy ${bg_remap} ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2
 
       if [[ -f ${COMOUT}/${grid}_grid/${NET}.${cycle}${dot_ensmem}.${leveltype}.f${fhr}.${POST_OUTPUT_DOMAIN_NAME}.grib2 ]]; then

@@ -81,9 +81,7 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  export COMOUT="${COMOUT}"
-else
+if [ "${RUN_ENVIR}" = "community" ]; then
   export COMOUT="${DATA}/postprd"
 fi
 mkdir_vrfy -p "${COMOUT}"
