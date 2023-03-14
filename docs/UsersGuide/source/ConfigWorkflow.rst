@@ -1240,7 +1240,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``NNODES_RUN_PRDGEN``: (Default: 1) 
    Number of nodes to use for the job.
 
-``PPN_RUN_PRDGEN``: (Default: 1)
+``PPN_RUN_PRDGEN``: (Default: 22)
    Number of :term:`MPI` processes per node.
 
 ``WTIME_RUN_PRDGEN``: (Default: 00:30:00)

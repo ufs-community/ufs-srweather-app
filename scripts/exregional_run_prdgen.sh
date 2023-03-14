@@ -153,13 +153,6 @@ if [[ ! -z ${TESTBED_FIELDS_FN} ]]; then
     echo "${PARMdir}/upp/${TESTBED_FIELDS_FN} not found"
   fi
 fi
-if [[ ! -z ${TESTBED_FIELDS_FN2} ]]; then
-  if [[ -f "${PARMdir}/upp/${TESTBED_FIELDS_FN2}" ]]; then
-    wgrib2 ${natlev} | grep -F -f "${PARMdir}/upp/${TESTBED_FIELDS_FN2}" | wgrib2 -i -append -grib ${testbed} ${natlev}
-  else
-    echo "${PARMdir}/upp/${TESTBED_FIELDS_FN2} not found"
-  fi
-fi
 
 gridname=""
 if [ ${PREDEF_GRID_NAME} = "RRFS_CONUS_3km" ]; then

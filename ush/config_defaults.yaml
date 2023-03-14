@@ -2037,7 +2037,7 @@ task_run_post:
 task_run_prdgen:
   TN_RUN_PRDGEN: "run_prdgen"
   NNODES_RUN_PRDGEN: 1
-  PPN_RUN_PRDGEN: 1
+  PPN_RUN_PRDGEN: 22
   WTIME_RUN_PRDGEN: 00:30:00
   MAXTRIES_RUN_PRDGEN: 1
   KMP_AFFINITY_RUN_PRDGEN: "scatter"
