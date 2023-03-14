@@ -58,7 +58,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
 
         for task in expts_dict[expt]:
             # Skip non-task entries
-            if task in ["expt_dir","status"]:
+            if task in ["expt_dir","status","start_time","walltime"]:
                 continue
             status = expts_dict[expt][task]["status"]
             walltime = expts_dict[expt][task]["walltime"]
@@ -161,7 +161,7 @@ def calculate_core_hours(expts_dict: dict) -> dict:
         cores_per_node = vdf["NCORES_PER_NODE"]
         for task in expts_dict[expt]:
             # Skip non-task entries
-            if task in ["expt_dir","status"]:
+            if task in ["expt_dir","status","start_time","walltime"]:
                 continue
             # Cycle is last 12 characters, task name is rest (minus separating underscore)
             taskname = task[:-13]
@@ -190,6 +190,9 @@ def write_monitor_file(monitor_file: str, expts_dict: dict):
             f.write("### THIS FILE IS AUTO_GENERATED AND REGULARLY OVER-WRITTEN BY WORKFLOW SCRIPTS\n")
             f.write("### EDITS MAY RESULT IN MISBEHAVIOR OF EXPERIMENTS RUNNING\n")
             f.writelines(cfg_to_yaml_str(expts_dict))
+    except KeyboardInterrupt:
+        logging.warning("\nRefusing to interrupt during file write; try again\n")
+        write_monitor_file(monitor_file,expts_dict)
     except:
         logging.fatal("\n********************************\n")
         logging.fatal(f"WARNING WARNING WARNING\n")
@@ -309,7 +312,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     statuses = list()
     for task in expt:
         # Skip non-task entries
-        if task in ["expt_dir","status"]:
+        if task in ["expt_dir","status","start_time","walltime"]:
             continue
         statuses.append(expt[task]["status"])
 
