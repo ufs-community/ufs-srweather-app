@@ -54,7 +54,7 @@ The SRW App requires input files to run. These include static datasets, initial 
    +--------------+------------------------------------------------------------------------------+
    | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data/      |
    +--------------+------------------------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/input_model_data/                          |
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_data/develop/input_model_data/                         |
    +--------------+------------------------------------------------------------------------------+
    | Orion        | /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data/       |
    +--------------+------------------------------------------------------------------------------+
