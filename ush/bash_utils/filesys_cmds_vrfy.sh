@@ -65,10 +65,14 @@ function filesys_cmd_vrfy() {
 #
 #-----------------------------------------------------------------------
 #
-  local caller_fp=$( $READLINK -f "${BASH_SOURCE[2]}" )
-  local caller_fn=$( basename "${caller_fp}" )
-  local caller_dir=$( dirname "${caller_fp}" )
-  local caller_name="${FUNCNAME[2]}"
+  local caller_name="main"
+  local caller_fp=""
+  if [ -z "${BASH_SOURCE[2]-x}" ]; then
+    caller_fp=$( $READLINK -f "${BASH_SOURCE[2]}" )
+    local caller_fn=$( basename "${caller_fp}" )
+    local caller_dir=$( dirname "${caller_fp}" )
+    caller_name="${FUNCNAME[2]}"
+  fi
 #
 #-----------------------------------------------------------------------
 #

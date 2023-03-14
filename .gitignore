@@ -5,6 +5,7 @@ fix/
 include/
 lib/
 share/
+modulefiles/extrn_comp_build/
 sorc/*/
 tests/WE2E/WE2E_test_info.csv
 tests/WE2E/*.txt

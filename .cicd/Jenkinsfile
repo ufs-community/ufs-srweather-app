@@ -78,7 +78,9 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        // Uncomment line below to re-add use of Hera
+                        // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'cheyenne', 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {

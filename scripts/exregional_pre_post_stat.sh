@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_pre_post|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -47,16 +47,6 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_PRE_POST_STAT}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_PRE_POST_STAT}
-export OMP_STACKSIZE=${OMP_STACKSIZE_PRE_POST_STAT}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------
@@ -77,10 +67,13 @@ cd_vrfy $DATA
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
       break
     fi
   done
+  if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
+    rm_vrfy -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
+  fi
 fi
 
 ist=1

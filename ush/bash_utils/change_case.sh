@@ -46,30 +46,6 @@ function echo_uppercase() {
 #
   local func_name="${FUNCNAME[0]}"
 #
-#-----------------------------------------------------------------------
-#
-# Get information about the script or function that calls this function.
-# Note that caller_name will be set as follows:
-#
-# 1) If the caller is a function, caller_name will be set to the name of
-#    that function.
-# 2) If the caller is a sourced script, caller_name will be set to
-#    "script".  Note that a sourced script cannot be the top level
-#    script since by defintion, it is sourced by another script or func-
-#    tion.
-# 3) If the caller is the top-level script, caller_name will be set to
-#    "main".
-#
-# Thus, if caller_name is set to "script" or "main", the caller is a
-# script, and if it is set to anything else, the caller is a function.
-#
-#-----------------------------------------------------------------------
-#
-  local caller_fp=$( $READLINK -f "${BASH_SOURCE[1]}" )
-  local caller_fn=$( basename "${caller_fp}" )
-  local caller_dir=$( dirname "${caller_fp}" )
-  local caller_name="${FUNCNAME[1]}"
-#
 # Get input string
 
   local input
@@ -160,30 +136,6 @@ function echo_lowercase() {
 #-----------------------------------------------------------------------
 #
   local func_name="${FUNCNAME[0]}"
-#
-#-----------------------------------------------------------------------
-#
-# Get information about the script or function that calls this function.
-# Note that caller_name will be set as follows:
-#
-# 1) If the caller is a function, caller_name will be set to the name of 
-#    that function.
-# 2) If the caller is a sourced script, caller_name will be set to 
-#    "script".  Note that a sourced script cannot be the top level 
-#    script since by defintion, it is sourced by another script or func-
-#    tion.
-# 3) If the caller is the top-level script, caller_name will be set to
-#    "main".
-#
-# Thus, if caller_name is set to "script" or "main", the caller is a 
-# script, and if it is set to anything else, the caller is a function.
-#
-#-----------------------------------------------------------------------
-#
-  local caller_fp=$( $READLINK -f "${BASH_SOURCE[1]}" )
-  local caller_fn=$( basename "${caller_fp}" )
-  local caller_dir=$( dirname "${caller_fp}" )
-  local caller_name="${FUNCNAME[1]}"
 #
 # Get input string
 

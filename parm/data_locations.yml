@@ -155,6 +155,7 @@ GDAS:
           - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
         fcst:
           - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nc
   nomads:
     protocol: download
     url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
@@ -271,3 +272,120 @@ NAM:
       fcst:
         - nam.t{hh}z.awphys{fcst_hr:02d}.tm00.grib2
 
+##########################
+##########################
+###  Observation Data  ###
+##########################
+##########################
+
+GFS_obs:
+  hpss:
+    protocol: htar
+    archive_format: zip
+    archive_path:
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/gfs/prepbufr
+    archive_file_names:
+      prepbufr:
+        obs:
+          - "{yyyymmdd}0000.zip"
+      tcvitals:
+        obs: 
+          - "{yyyymmdd}0000.zip"
+    file_names:
+      prepbufr:
+        obs:
+          - "{yy}{jjj}{hh}00.gfs.t{hh}z.prepbufr.nr"
+      tcvitals:
+        obs:
+          - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
+
+RAP_obs:
+  hpss:
+    protocol: htar
+    archive_format: zip
+    archive_path:
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
+    archive_internal_dir:
+      - ./
+    archive_file_names:
+      - "{yyyymmddhh}00.zip"
+    file_names:
+      obs:
+        - "{yyyymmddhh}.rap.t{hh}z.prepbufr.tm00"
+        - "{yyyymmddhh}.rap.t{hh}z.1bamua.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.1bhrs4.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.1bmhs.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.amsr2.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.ascatt.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.ascatw.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.atms.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.atmsdb.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.crisf4.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.crsfdb.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.esamua.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.esatms.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.eshrs3.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.esiasi.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.esmhs.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d.nr"
+        - "{yyyymmddhh}.rap.t{hh}z.gsrasr.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.gsrcsr.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.iasidb.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d.nr"
+        - "{yyyymmddhh}.rap.t{hh}z.lgycld.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.mtiasi.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.nexrad.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.rassda.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
+        - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
+  aws:
+    protocol: download
+    url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
+    file_names:
+      obs: 
+        - rap.t{hh}z.prepbufr.tm00.nr
+        - rap.t{hh}z.1bamua.tm00.bufr_d
+        - rap.t{hh}z.1bhrs4.tm00.bufr_d
+        - rap.t{hh}z.1bmhs.tm00.bufr_d
+        - rap.t{hh}z.amsr2.tm00.bufr_d
+        - rap.t{hh}z.ascatt.tm00.bufr_d
+        - rap.t{hh}z.ascatw.tm00.bufr_d
+        - rap.t{hh}z.atms.tm00.bufr_d
+        - rap.t{hh}z.atmsdb.tm00.bufr_d
+        - rap.t{hh}z.crisf4.tm00.bufr_d
+        - rap.t{hh}z.crsfdb.tm00.bufr_d
+        - rap.t{hh}z.esamua.tm00.bufr_d
+        - rap.t{hh}z.esatms.tm00.bufr_d
+        - rap.t{hh}z.eshrs3.tm00.bufr_d
+        - rap.t{hh}z.esiasi.tm00.bufr_d
+        - rap.t{hh}z.esmhs.tm00.bufr_d
+        - rap.t{hh}z.gpsipw.tm00.bufr_d
+        - rap.t{hh}z.gpsipw.tm00.bufr_d.nr
+        - rap.t{hh}z.gsrasr.tm00.bufr_d
+        - rap.t{hh}z.gsrcsr.tm00.bufr_d
+        - rap.t{hh}z.iasidb.tm00.bufr_d
+        - rap.t{hh}z.lghtng.tm00.bufr_d
+        - rap.t{hh}z.lghtng.tm00.bufr_d.nr
+        - rap.t{hh}z.lgycld.tm00.bufr_d
+        - rap.t{hh}z.mtiasi.tm00.bufr_d
+        - rap.t{hh}z.nexrad.tm00.bufr_d
+        - rap.t{hh}z.rassda.tm00.bufr_d
+        - rap.t{hh}z.satwnd.tm00.bufr_d
+        - rap.t{hh}z.sevasr.tm00.bufr_d
+        - rap.t{hh}z.ssmisu.tm00.bufr_d
+
+###########################
+###########################
+####### Fix Files #########
+###########################
+###########################
+
+GSI-FIX:
+  remote:
+    protocol: download
+    url: https://epic-sandbox-srw.s3.amazonaws.com
+    file_names:
+      - gsi-fix.22.07.27.tar.gz

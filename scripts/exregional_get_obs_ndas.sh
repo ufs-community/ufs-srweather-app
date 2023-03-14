@@ -141,8 +141,13 @@ echo "vhh_noZero=$vhh_noZero"
       TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
       echo "CALLING: ${TarCommand}"
       htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
-    else
+    elif [[ ${vyyyymmdd} -gt 20200226 && ${vyyyymmdd} -le 20220627 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_nam_prod_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
+      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
+      echo "CALLING: ${TarCommand}"
+      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
+    else
+      TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_obsproc_v1.0_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
       TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
       echo "CALLING: ${TarCommand}"
       htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`

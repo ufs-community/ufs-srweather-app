@@ -54,6 +54,10 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
         COMROOT=$COMROOT setpdy.sh
         . ./PDY
     fi
+else
+    export PDYm1=$( $DATE_UTIL --date "${PDY} -1 day" "+%Y%m%d" )
+    export PDYm2=$( $DATE_UTIL --date "${PDY} -2 day" "+%Y%m%d" )
+    export PDYm3=$( $DATE_UTIL --date "${PDY} -3 day" "+%Y%m%d" )
 fi
 export CDATE=${PDY}${cyc}
 #
@@ -120,6 +124,8 @@ else
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
     export COMINext="${EXTROOT}/${PDY}${cyc}"
 fi
+export COMIN_PDY="${COMIN_BASEDIR}/${RUN}.${PDY}"
+export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 
 #
 #-----------------------------------------------------------------------

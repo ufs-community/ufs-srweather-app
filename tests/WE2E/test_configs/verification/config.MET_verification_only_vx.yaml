@@ -4,14 +4,17 @@ metadata:
     can successfully run the MET deterministic verification tasks but
     using staged observation and forecast files (i.e. with other tasks
     such as pre-processing, forecast, and post-processing deactivated).
+
 user:
   RUN_ENVIR: community
+
 workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019061500'
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+
 workflow_switches:
 #
 # This test assumes that the post-processed forecast files are staged
@@ -30,22 +33,26 @@ workflow_switches:
   RUN_TASK_RUN_POST: false
 #
 # This test assumes the observation files are staged.  Thus, deactivate
-# the GET_OBS_... tasks and instead specify the obs staging directories.
+# the GET_OBS_... tasks.  Note we do not specify the obs staging directories
+# (CCPA_OBS_DIR, MRMS_OBS_DIR, and NDAS_OBS_DIR) because those will be
+# automatically set (in a platform-dependent way using the machine file)
+# by the script that runs the WE2E tests.
 #
   RUN_TASK_GET_OBS_CCPA: false
-  CCPA_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/ccpa/proc'
   RUN_TASK_GET_OBS_MRMS: false
-  MRMS_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/mrms/proc'
   RUN_TASK_GET_OBS_NDAS: false
-  NDAS_OBS_DIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/obs/ndas/proc'
 #
 # Turn on verification tasks.
 #
   RUN_TASK_VX_GRIDSTAT: true
   RUN_TASK_VX_POINTSTAT: true
+
+#
+# In the "verification" section below, we don't explicitly set the location 
+# of the staged forecast files (via VX_FCST_INPUT_BASEDIR) because this
+# location gets set automatically by the script that runs the WE2E tests.
+# The script sets the location in a platform-dependent way using the
+# appropriate machine file.
+#
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-#
-# Since the forecast files are staged, specify the base staging directory.
-#
-  VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/DTC_ensemble_task/staged/fcst_det'

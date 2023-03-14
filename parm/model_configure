@@ -1,6 +1,5 @@
 total_member:            1
 PE_MEMBER01:             {{ PE_MEMBER01 }}
-print_esmf:              {{ print_esmf }}
 start_year:              {{ start_year }}
 start_month:             {{ start_month }}
 start_day:               {{ start_day }}
@@ -11,7 +10,6 @@ nhours_fcst:             {{ nhours_fcst }}
 RUN_CONTINUE:            .false.
 ENS_SPS:                 .false.
 dt_atmos:                {{ dt_atmos }}
-cpl:                     {{ cpl }}
 calendar:                'julian'
 memuse_verbose:          .false.
 atmos_nthreads:          {{ atmos_nthreads }}

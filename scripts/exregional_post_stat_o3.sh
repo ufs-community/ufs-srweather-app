@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -117,7 +117,7 @@ POST_STEP
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
       break
     fi
   done

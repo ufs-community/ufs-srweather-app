@@ -37,7 +37,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     within each member directory housed within each cycle directory. Files
     of any two ensemble members differ only in their stochastic "seed"
     parameter values.  These namelist files are generated when this file is
-    called as part of the RUN_FCST_TN task.
+    called as part of the TN_RUN_FCST task.
 
     Args:
         cdate

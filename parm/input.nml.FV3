@@ -28,6 +28,7 @@
 /
 
 &diag_manager_nml
+    max_output_fields = 450
     prepend_date = .false.
 /
 
@@ -47,7 +48,7 @@
 
 &fms_nml
     clock_grain = 'ROUTINE'
-    domains_stack_size = 5000000
+    domains_stack_size = 12000000
     print_memory_usage = .false.
 /
 
