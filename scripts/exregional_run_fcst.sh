@@ -450,6 +450,24 @@ cat > itag <<EOF
 EOF
 fi
 
+#
+#-----------------------------------------------------------------------
+#
+# Choose namelist file to use
+#
+#-----------------------------------------------------------------------
+#
+STOCH="FALSE"
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
+   [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
+     STOCH="TRUE"
+fi
+if [ "${STOCH}" == "TRUE" ]; then
+  ln_vrfy -sf ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+ else
+  ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+fi
+
 if [ "${CPL_AQM}" = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
@@ -484,9 +502,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-
-if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
-   [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
+# Set stochastic physics seeds
+#
+#-----------------------------------------------------------------------
+#
+if [ "$STOCH" == "TRUE" ]; then
+  cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
@@ -494,10 +515,6 @@ Call to function to create the ensemble-based namelist for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
-else
-  create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${DATA}/${FV3_NML_FN}" \
-                         relative="${relative_link_flag}"
 fi
 #
 #-----------------------------------------------------------------------
