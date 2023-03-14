@@ -67,8 +67,10 @@ cd_vrfy $DATA
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-  if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
-    rm_vrfy -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
+
+  post_complete_file=${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt
+  if [ -f ${post_complete_file} ] ; then
+    rm_vrfy -f ${post_complete_file}
   fi
 fi
 
