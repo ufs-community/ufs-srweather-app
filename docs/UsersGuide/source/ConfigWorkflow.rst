@@ -1234,7 +1234,8 @@ Basic Task Parameters
 ---------------------------------
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task.
 
-``TN_RUN_PRDGEN``: (Default: "run_prdgen")   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
+``TN_RUN_PRDGEN``: (Default: "run_prdgen")
+   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
 
 ``NNODES_RUN_PRDGEN``: (Default: 1) 
    Number of nodes to use for the job.
@@ -1258,7 +1259,7 @@ For each workflow task, certain parameter values must be passed to the job sched
    Controls the size of the stack for threads created by the OpenMP implementation.
 
 ``DO_PARALLEL_PRDGEN``: (Default: false)
-   Flag that determines whether to use CFP to run the product generation job in parallel.  This should be used with the RRFS_NA_3km grid and PPN_RUN_PRDGEN should be set to 22.
+   Flag that determines whether to use CFP to run the product generation job in parallel.  CFP is a utility that allows the user to launch a number of small jobs across nodes/cpus in one batch command.  This option should be used with the ``RRFS_NA_3km`` grid and ``PPN_RUN_PRDGEN`` should be set to 22.
 
 ``ADDNL_OUTPUT_GRIDS``: (Default: [])
    Set additional output grids for wgrib2 remapping, if any.  Space-separated list of strings, e.g., ( "130" "242" "clue").  Default is no additional grids.
