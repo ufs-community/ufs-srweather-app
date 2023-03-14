@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'UFS Short-Range Weather App Users Guide'
+project = 'UFS Short-Range Weather App Documentation'
 copyright = '2020, '
 author = ' '
 
@@ -79,7 +79,8 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build',
+                    '.DS_Store',]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -156,7 +157,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'UFS-SRWeatherApp.tex', 'UFS Short-Range Weather App Users Guide',
+    (master_doc, 'UFS-SRWeatherApp.tex', 'UFS Short-Range Weather App Documentation',
      ' ', 'manual'),
 ]
 
@@ -166,7 +167,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'UFS-SRWeatherApp', 'UFS Short-Range Weather App Users Guide',
+    (master_doc, 'UFS-SRWeatherApp', 'UFS Short-Range Weather App Documentation',
      [author], 1)
 ]
 
