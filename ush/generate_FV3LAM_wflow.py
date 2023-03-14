@@ -1,3 +1,10 @@
+
+"""
+generate_FV3LAM_wflow.py
+====================================
+Experiment generation script
+"""
+
 #!/usr/bin/env python3
 
 import os

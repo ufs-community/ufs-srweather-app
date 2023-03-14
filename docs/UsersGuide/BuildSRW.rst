@@ -22,7 +22,7 @@ To build the SRW App, users will complete the following steps:
 
 .. _AppBuildProc:
 
-.. figure:: _static/SRW_build_process.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_build_process.png
    :alt: Flowchart describing the SRW App build process. 
 
    *Overview of the SRW App Build Process*

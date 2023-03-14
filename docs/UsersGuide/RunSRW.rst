@@ -28,7 +28,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
 .. _AppOverallProc:
 
-.. figure:: _static/SRW_run_process.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_run_process.png
    :alt: Flowchart describing the SRW App workflow steps. 
 
    *Overall Layout of the SRW App Workflow*
@@ -848,7 +848,7 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 
 .. _WorkflowGeneration:
 
-.. figure:: _static/SRW_regional_workflow_gen.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_regional_workflow_gen.png
    :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, set_ozone_param.py, set_thompson_mp_fix_files.py, config_defaults.yaml, config.yaml, and valid_param_vals.yaml. Then, it sets a number of variables, including FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script sets up YAML-compliant strings and generates the actual Rocoto workflow XML file from the template file (fill_jinja_template.py). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script. 
 
    *Experiment Generation Description*
@@ -873,7 +873,7 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: _static/SRW_wflow_flowchart.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_wflow_flowchart.png
    :alt: Flowchart of the workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
    *Flowchart of the Workflow Tasks*

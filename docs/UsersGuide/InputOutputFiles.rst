@@ -105,7 +105,7 @@ Migratory Route of the Input Files in the Workflow
 
 .. _MigratoryRoute:
 
-.. figure:: _static/SRW_wflow_input_path.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_wflow_input_path.png
    :alt: Flowchart showing how information from the physics suite travels from the configuration file to the setup file to the workflow generation script to the run forecast ex-script. As this information is fed from one file to the next, file paths and variables required for workflow execution are set. 
 
    *Migratory Route of Input Files*

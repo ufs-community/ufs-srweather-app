@@ -478,7 +478,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 
 
-.. bibliography:: references.bib
+.. bibliography:: ../references.bib
 
 
 
