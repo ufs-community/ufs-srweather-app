@@ -2008,8 +2008,8 @@ task_run_post:
   # is set to true.
   #
   # TESTBED_FIELDS_FN
-  # The file which lists grib2 fields to be extracted to bgsfc for testbed
-  # Empty string means no need to generate bgsfc for testbed
+  # The file which lists grib2 fields to be extracted for testbed files
+  # Empty string means no need to generate testbed files
   #
   # POST_OUTPUT_DOMAIN_NAME:
   # Domain name (in lowercase) used in constructing the names of the output 
@@ -2030,7 +2030,6 @@ task_run_post:
   CUSTOM_POST_CONFIG_FP: ""
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
   TESTBED_FIELDS_FN: ""
-  TESTBED_FIELDS_FN2: ""
 
 #----------------------------
 # RUN PRDGEN config parameters
