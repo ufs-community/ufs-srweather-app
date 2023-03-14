@@ -22,3 +22,4 @@ task_get_extrn_lbcs:
 task_run_fcst:
   LAYOUT_X: 10
   LAYOUT_Y: 4
+  BLOCKSIZE: 40
