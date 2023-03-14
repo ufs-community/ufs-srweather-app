@@ -185,7 +185,7 @@ EOF
     print_err_msg_exit "\
   The executable specified in exec_fp does not exist:
     exec_fp = \"${exec_fp}\"
-  Build lightning process and rerun."
+  Build rrfs_utl and rerun."
   fi
   #
   #
