@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocess
+This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocessing
 with FV3 for the specified cycle.
 ========================================================================"
 #
