@@ -70,7 +70,7 @@
 <workflow {% for attr, val in attrs.items() %}{{ attr }}="{{ val }}" {% endfor %}>
 
   {%- for group, cdefs in cycledefs.items() %}
-    {%- for cdef in cdef %}
+    {%- for cdef in cdefs %}
   <cycledef group="{{ group }}">{{ cdef }}</cycledef>
     {%- endfor %}
   {%- endfor %}
