@@ -257,12 +257,12 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         return expt
     # Update experiment, read rocoto database
     rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
+    rocoto_xml = f"{expt['expt_dir']}/FV3LAM_wflow.xml"
     if submit:
         if refresh:
             logging.info(f"Updating database for experiment {name}")
         if debug:
-            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml",
-                             f"-d {rocoto_db}", "-v 10"]
+            rocotorun_cmd = ["rocotorun", f"-w {rocoto_xml}", f"-d {rocoto_db}", "-v 10"]
             p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
@@ -272,8 +272,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
                                stderr=subprocess.STDOUT, text=True)
             logging.debug(p.stdout)
         else:
-            rocotorun_cmd = ["rocotorun", f"-w {expt['expt_dir']}/FV3LAM_wflow.xml",
-                             f"-d {rocoto_db}"]
+            rocotorun_cmd = ["rocotorun", f"-w {rocoto_xml}", f"-d {rocoto_db}"]
             subprocess.run(rocotorun_cmd)
             #Run rocotorun again to get around rocotobqserver proliferation issue
             subprocess.run(rocotorun_cmd)
@@ -370,19 +369,17 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
                                 debug: bool = False) -> dict:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
-    the process if given enough parallel processes. Given an experiment dictionary, it will
-    output the updated dictionary.
-
-    parallelizes the call to update_expt_status across the given number of processes.
-    Making use of the python multiprocessing starmap functionality, takes
+    the process if given enough parallel processes. Given a dictionary of experiments, it will
+    pass each individual experiment dictionary to update_expt_status() to be updated, making use
+    of the python multiprocessing starmap functionality to achieve this in parallel
 
     Args:
         expts_dict (dict): A dictionary containing information for all experiments
-        procs      (int): The number of parallel processes
-        refresh   (bool): "Refresh" flag to pass to update_expt_status()
-        debug     (bool): Will capture all output from rocotorun. This will allow information such
-                          as job cards and job submit messages to appear in the log files, but can
-                          slow down the process drastically.
+        procs       (int): The number of parallel processes
+        refresh    (bool): "Refresh" flag to pass to update_expt_status()
+        debug      (bool): Will capture all output from rocotorun. This will allow information such
+                           as job cards and job submit messages to appear in the log files, but can
+                           slow down the process drastically.
 
     Returns:
         dict: The updated dictionary of experiment dictionaries
@@ -450,10 +447,10 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
                 testdict[testname]["num_fcsts"] = 1
 
     # For each found link, add its info to the appropriate test dictionary entry
-    for key in links.keys():
-        link = links[key]
-        testdict[link[2]]["alternate_name"] = link[0]
-        testdict[link[2]]["alternate_directory_name"] = link[1]
+    for key, link in links.items():
+        alt_testname, alt_dirname, link_name = link
+        testdict[link_name]["alternate_name"] = alt_testname
+        testdict[link_name]["alternate_directory_name"] = alt_dirname
 
     # Print the file
     with open(txtfile, 'w', encoding="utf-8") as f:
@@ -480,43 +477,23 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
             f.write(f"    {desc[-1]}")
             #Write test relative cost and number of test forecasts (for cycling runs)
             f.write(f"{d}'{round(testdict[expt]['cost'],2)}{d}'{round(testdict[expt]['num_fcsts'])}")
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','PREDEF_GRID_NAME'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','CCPP_PHYS_SUITE'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_ics',
-                                                'EXTRN_MDL_NAME_ICS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs',
-                                                'EXTRN_MDL_NAME_LBCS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_FIRST_CYCL'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','DATE_LAST_CYCL'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','INCR_CYCL_FREQ'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'workflow','FCST_LEN_HRS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_run_fcst','DT_ATMOS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'task_get_extrn_lbcs',
-                                                'LBC_SPEC_INTVL_HRS'))
-            f.write(f"{d}" + get_or_print_blank(testdict[expt],'global','NUM_ENS_MEMBERS') + "\n")
+            # Bundle various variables with their corresponding sections for more compact coding
+            key_pairs = [ ('workflow', 'PREDEF_GRID_NAME'),
+                          ('workflow', 'CCPP_PHYS_SUITE'),
+                          ('task_get_extrn_ics', 'EXTRN_MDL_NAME_ICS'),
+                          ('task_get_extrn_lbcs', 'EXTRN_MDL_NAME_LBCS'),
+                          ('workflow', 'DATE_FIRST_CYCL'),
+                          ('workflow', 'DATE_LAST_CYCL'),
+                          ('workflow', 'INCR_CYCL_FREQ'),
+                          ('workflow', 'FCST_LEN_HRS'),
+                          ('task_run_fcst', 'DT_ATMOS'),
+                          ('task_get_extrn_lbcs', 'LBC_SPEC_INTVL_HRS'),
+                          ('global', 'NUM_ENS_MEMBERS') ]
 
-def get_or_print_blank(d,key1,key2):
-    """Function that checks the existence of keys in a nested dictionary in the form:
+            for key1, key2 in key_pairs:
+                f.write(f"{d}{testdict[expt].get(key1, {}).get(key2, '')}")
+            f.write("\n")
 
-    dictionary[key1][key2]
-
-    If dictionary[key1][key2] exists, return its value as a string.
-    If either key1 or key2 do not exist, return an empty string
-    
-    Args:
-        d   (dict) : Dictionary to check for keys
-        key1 (str) : The key for dictionary d
-        key2 (str) : The key for dictionary d[key1]
-    Returns:
-        write : A string containing the value of d[key1][key2]
-    """
-
-    if d.get(key1,{}).get(key2):
-        write = f"{d[key1][key2]}"
-    else:
-        write = ""
-
-    return write
 
 def compare_rocotostat(expt_dict,name):
     """Reads the dictionary showing the location of a given experiment, runs a `rocotostat` command
@@ -526,8 +503,8 @@ def compare_rocotostat(expt_dict,name):
 
     # Call rocotostat and store output
     rocoto_db = f"{expt_dict['expt_dir']}/FV3LAM_wflow.db"
-    rocotorun_cmd = ["rocotostat", f"-w {expt_dict['expt_dir']}/FV3LAM_wflow.xml",
-                     f"-d {rocoto_db}", "-v 10"]
+    rocoto_xml = f"{expt_dict['expt_dir']}/FV3LAM_wflow.xml"
+    rocotorun_cmd = ["rocotostat", f"-w {rocoto_xml}", f"-d {rocoto_db}", "-v 10"]
     p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     rsout = p.stdout
 
