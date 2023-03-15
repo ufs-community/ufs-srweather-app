@@ -190,7 +190,7 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(os.path.join(ushdir,"/config.yaml"),"w", encoding="utf-8") as f:
+        with open(os.path.join(ushdir,"config.yaml"),"w", encoding="utf-8") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
@@ -223,7 +223,7 @@ def run_we2e_tests(homedir, args) -> None:
                                         debug=args.debug)
         except KeyboardInterrupt:
             logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
-            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs} -d={args.debug}\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
         else:
             logging.info("All experiments are complete")
             logging.info(f"Summary of results available in {monitor_file}")
