@@ -104,7 +104,6 @@ cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 #   set observation soruce 
 #
 #-----------------------------------------------------------------------
-SUBH=""
 obs_source=rap
 if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
   obs_source=rap_e
@@ -133,7 +132,7 @@ esac
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.lghtng.tm00.bufr_d
+obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}z.lghtng.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_lightning=false
 if [ -r "${obs_file}" ]; then
@@ -209,7 +208,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.lgycld.tm00.bufr_d
+obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}z.lgycld.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_cloud=false
 if [ -r "${obs_file}" ]; then
