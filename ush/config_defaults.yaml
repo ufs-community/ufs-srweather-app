@@ -309,6 +309,7 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
+  MODEL: ""
   MET_INSTALL_DIR: ""
   MET_BIN_EXEC: ""
   METPLUS_PATH: ""
@@ -374,6 +375,9 @@ platform:
   # FIXsfc:
   # System directory where surface climatology data is located
   #
+  # FIXgsi:
+  # System directory where GSI fixed files are located
+  # 
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -382,6 +386,7 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
+  FIXgsi: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -412,7 +417,17 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Setup default observation locations for data assimilation:
+  #
+  #    LIGHTNING_ROOT: location of lightning observations
+  #
+  #-----------------------------------------------------------------------
+  #
+  LIGHTNING_ROOT: ""
+    
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -1131,6 +1146,21 @@ workflow_switches:
   RUN_TASK_POST_STAT_PM25: false
   RUN_TASK_BIAS_CORRECTION_O3: false
   RUN_TASK_BIAS_CORRECTION_PM25: false
+
+#----------------------------
+# DO_ parameters. These look like workflow switches since some
+# of them are used in FV3LAM_wflow.xml
+#-----------------------------
+rrfs:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_NLDN_LGHT
+  #     Flag turn on processing NLDN NetCDF lightning data  
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_NLDN_LGHT: false
 
 #----------------------------
 # MAKE GRID config parameters
@@ -2549,6 +2579,17 @@ task_bias_correction_pm25:
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
 
 #----------------------------
+#  PROCESS LIGHTNING config parameters
+#-----------------------------
+task_process_lightning:
+  PROCESS_LIGHTNING_TN: "process_lightning"
+  NNODES_PROCESS_LIGHTNING: 1
+  PPN_PROCESS_LIGHTNING: 1
+  MEM_PROCESS_LIGHTNING: 2G
+  WTIME_PROCESS_LIGHTNING: 00:30:00
+  MAXTRIES_PROCESS_LIGHTNING: 1
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
@@ -2900,4 +2941,3 @@ cpl_aqm_parm:
   PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
 
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
-
