@@ -55,4 +55,5 @@ workflow_switches:
 # appropriate machine file.
 #
 verification:
+  RUN_TASKS_METVX_DET: true
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km

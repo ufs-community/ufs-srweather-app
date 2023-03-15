@@ -23,9 +23,9 @@ Parameters needed by the job scheduler.
 Workflow task names.
 -->
 {%- if sched_native_cmd  %}
-<!ENTITY SCHED_NATIVE_CMD          "{{ sched_native_cmd }}">
+<!ENTITY SCHED_NATIVE_CMD                          "{{ sched_native_cmd }}">
 {%- else %}
-<!ENTITY SCHED_NATIVE_CMD          "">
+<!ENTITY SCHED_NATIVE_CMD                          "">
 {%- endif %}
 <!ENTITY TN_MAKE_GRID                              "{{ tn_make_grid }}">
 <!ENTITY TN_MAKE_OROG                              "{{ tn_make_orog }}">
@@ -43,11 +43,13 @@ Workflow task names.
 <!ENTITY TN_RUN_POST_CYC4                          "{{ tn_run_post }}_c4">
 {%- endif%}
 <!ENTITY TN_PLOT_ALLVARS                           "{{ tn_plot_allvars }}">
-<!ENTITY GET_OBS                                   "{{ get_obs }}">
 <!ENTITY TN_GET_OBS_CCPA                           "{{ tn_get_obs_ccpa }}">
 <!ENTITY TN_GET_OBS_NDAS                           "{{ tn_get_obs_ndas }}">
 <!ENTITY TN_GET_OBS_MRMS                           "{{ tn_get_obs_mrms }}">
-<!ENTITY TN_VX                                     "{{ tn_vx }}">
+{%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+<!ENTITY TN_RUN_MET_PCPCOMBINE                     "{{ tn_run_met_pcpcombine }}">
+{%- endif%}
+{%- if run_tasks_metvx_det %}
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_APCP01H            "{{ tn_run_met_gridstat_vx_apcp01h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_APCP03H            "{{ tn_run_met_gridstat_vx_apcp03h }}">
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_APCP06H            "{{ tn_run_met_gridstat_vx_apcp06h }}">
@@ -56,6 +58,8 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_RETOP              "{{ tn_run_met_gridstat_vx_retop }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_SFC               "{{ tn_run_met_pointstat_vx_sfc }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_UPA               "{{ tn_run_met_pointstat_vx_upa }}">
+{%- endif%}
+{%- if run_tasks_metvx_ens %}
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H        "{{ tn_run_met_ensemblestat_vx_apcp01h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H        "{{ tn_run_met_ensemblestat_vx_apcp03h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H        "{{ tn_run_met_ensemblestat_vx_apcp06h }}">
@@ -78,6 +82,11 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP      "{{ tn_run_met_gridstat_vx_ensprob_retop }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC       "{{ tn_run_met_pointstat_vx_ensprob_sfc }}">
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA       "{{ tn_run_met_pointstat_vx_ensprob_upa }}">
+{%- endif%}
+<!ENTITY GET_OBS_LOCAL_MODULE_FN  "{{get_obs_local_module_fn}}">
+{%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+<!ENTITY VX_LOCAL_MODULE_FN       "{{vx_local_module_fn}}">
+{%- endif %}
 {%- if run_task_aqm_ics %}
 <!ENTITY TN_AQM_EXTRN_ICS          "{{ tn_aqm_ics }}_ext">
 <!ENTITY TN_AQM_ICS                "{{ tn_aqm_ics }}">
@@ -1392,6 +1401,110 @@ it, we'd have to include more jinja if-statements here.
 
   </task>
 {%- endif %}
+
+
+
+{#-
+Tasks for combining (adding) hourly APCP (accumulated precipitation) from
+forecasts to obtain APCP obs for longer accumulation periods (3 hours,
+6 hours, etc).  These are needed for downstream verification tasks (both
+deterministic and ensemble).
+#}
+{%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+
+  {%- if ("APCP" in vx_fields) %}
+
+    {%- for accum_hh in vx_apcp_accums_hh -%}
+      {%- set obtype = "CCPA" %}
+      {%- set field = "APCP" %}
+      {%- set accum = accum_hh|int %}
+      {%- set fieldname = field ~ accum_hh ~ "h" %}
+      {%- set base_tn = tn_run_met_pcpcombine -%}
+      {%- set tn = base_tn ~ "_fcst_" ~ fieldname ~ uscore_ensmem_name -%}
+      {%- set maxtries = maxtries_run_met_pcpcombine_fcst -%}
+      {%- set nnodes = nnodes_run_met_pcpcombine_fcst -%}
+      {%- set ppn = ppn_run_met_pcpcombine_fcst -%}
+      {%- set wtime = wtime_run_met_pcpcombine_fcst -%}
+
+      {%- set is_ens_fcst = false -%}
+
+      {%- if (accum > 1) and (fcst_len_hrs >= accum) %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="{{tn}}" cycledefs="forecast" maxtries="{{maxtries}}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"</command>
+    <nodes>{{nnodes}}:ppn={{ppn}}</nodes>
+    <walltime>{{wtime}}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>{{tn}}</jobname>
+    <join><cyclestr>&LOGDIR;/{{tn}}_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>VAR</name><value>{{field}}</value></envar>
+    <envar><name>ACCUM_HH</name><value>{{accum_hh}}</value></envar>
+    <envar><name>obs_or_fcst</name><value>fcst</value></envar>
+    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
+    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
+    <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{slash_ensmem_subdir}}</cyclestr></value></envar>
+          {%- if is_ens_fcst or run_tasks_metvx_ens %}
+    <envar><name>MEM_INDX_OR_NULL</name><value>#{{ensmem_indx_name}}#</value></envar>
+          {%- else %}
+    <envar><name>MEM_INDX_OR_NULL</name><value></value></envar>
+          {%- endif %}
+
+    <dependency>
+      <and>
+{#- Redundant dependency to simplify jinja code. #}
+        <streq><left>TRUE</left><right>TRUE</right></streq>
+{#-
+If the post-processed forecast output needed for verification is being
+generated by the TN_RUN_FCST task (by having RUN_TASK_RUN_FCST and
+WRITE_DOPOST both set to TRUE, which causes UPP to be called inline,
+i.e. from within the weather model), then include a dependency on the
+TN_RUN_FCST task.
+#}
+        {%- if run_task_run_fcst and write_dopost %}
+        <taskdep task="&TN_RUN_FCST;{{uscore_ensmem_name}}"/>
+{#-
+Otherwise, if UPP is being called separately from the forecast (by
+having RUN_TASK_RUN_POST set to TRUE), then inlude a dependency on the
+TN_RUN_POST metatask (which runs UPP for all forecast output hours).
+
+Note that in this case, we have to wait until the whole TN_RUN_POST
+metatask is complete before this task can launch, i.e. we cannot launch
+this task as the UPP output files for each forecast output hour become
+available.  This is because the loop over forecast hours for this task
+is performed within MET/METplus, not here in rocoto, whereas the loop
+over forecast hours for the post-processing is done by rocoto in this
+xml.  This may be changed in the future.
+#}
+        {%- elif run_task_run_post %}
+        <metataskdep metatask="&TN_RUN_POST;{{uscore_ensmem_name}}"/>
+        {%- endif %}
+      </and>
+    </dependency>
+
+  </task>
+      {%- endif %}
+    {%- endfor %}
+
+  {%- endif %}
+
+{%- endif %}
+
+
+
 {%- if run_task_get_obs_ccpa %}
 <!--
 ************************************************************************
@@ -1400,7 +1513,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_GET_OBS_CCPA;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ccpa }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"</command>
     <nodes>{{ nnodes_get_obs_ccpa }}:ppn={{ ppn_get_obs_ccpa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_ccpa }}</memory>
@@ -1432,7 +1545,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_GET_OBS_MRMS;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_mrms }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"</command>
     <nodes>{{ nnodes_get_obs_mrms }}:ppn={{ ppn_get_obs_mrms }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_mrms }}</memory>
@@ -1465,7 +1578,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_GET_OBS_NDAS;" cycledefs="forecast" maxtries="{{ maxtries_get_obs_ndas }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS;" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GET_OBS_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"</command>
     <nodes>{{ nnodes_get_obs_ndas }}:ppn={{ ppn_get_obs_ndas }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_obs_ndas }}</memory>
@@ -1488,6 +1601,92 @@ it, we'd have to include more jinja if-statements here.
   </task>
 {%- endif %}
 
+
+
+
+{#-
+Obs pre-processing tasks that must be run if either deterministic or
+ensemble verification tasks are going to be run.
+#}
+{%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+{#-
+Tasks for combining (adding) hourly APCP (accumulated precipitation) from
+CCPA observations to obtain APCP obs for longer accumulation periods 
+(3 hours, 6 hours, etc).
+#}
+  {%- if ("APCP" in vx_fields) %}
+
+    {%- for accum_hh in vx_apcp_accums_hh -%}
+      {%- set obtype = "CCPA" %}
+      {%- set field = "APCP" -%}
+      {%- set accum = accum_hh|int %}
+      {%- set fieldname = field ~ accum_hh ~ "h" -%}
+      {%- set base_tn = tn_run_met_pcpcombine -%}
+      {%- set tn = base_tn ~ "_obs_" ~ fieldname -%}
+      {%- set maxtries = maxtries_run_met_pcpcombine_obs -%}
+      {%- set nnodes = nnodes_run_met_pcpcombine_obs -%}
+      {%- set ppn = ppn_run_met_pcpcombine_obs -%}
+      {%- set wtime = wtime_run_met_pcpcombine_obs -%}
+
+      {%- if (accum > 1) and (fcst_len_hrs >= accum) %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="{{tn}}" cycledefs="forecast" maxtries="{{maxtries}}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"</command>
+    <nodes>{{nnodes}}:ppn={{ppn}}</nodes>
+    <walltime>{{wtime}}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>{{tn}}</jobname>
+    <join><cyclestr>&LOGDIR;/{{tn}}_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>VAR</name><value>{{field}}</value></envar>
+    <envar><name>ACCUM_HH</name><value>{{accum_hh}}</value></envar>
+    <envar><name>obs_or_fcst</name><value>obs</value></envar>
+    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
+    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
+    <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value></value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr></cyclestr></value></envar>
+
+    <dependency>
+      <and>
+  {%- if run_task_get_obs_ccpa %}
+        <taskdep task="&TN_GET_OBS_CCPA;"/>
+  {%- else %}
+{#-
+We only check for the existence of the top-level CCPA observations
+directory, not the individual daily subdirectories within.  This is
+because this and other downstream vx tasks can complete successfully
+even when some obs files are missing (the check for individual files is
+done by the scripts that this task calls).
+#}
+        <datadep><cyclestr>&CCPA_OBS_DIR;</cyclestr></datadep>
+  {%- endif %}
+      </and>
+    </dependency>
+
+  </task>
+      {%- endif %}
+
+    {%- endfor %}
+  {%- endif %}
+
+{%- endif %}
+
+
+
+
+
 {%- if run_task_vx_gridstat %}
 <!--
 ************************************************************************
@@ -1496,7 +1695,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_apcp01h }}:ppn={{ ppn_run_met_gridstat_vx_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_apcp01h }}</memory>
@@ -1548,7 +1747,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_APCP03H;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_apcp03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_apcp03h }}:ppn={{ ppn_run_met_gridstat_vx_apcp03h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_apcp03h }}</memory>
@@ -1576,7 +1775,10 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}"/>
+      <and>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_obs_APCP03h"/>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_fcst_APCP03h{{uscore_ensmem_name}}"/>
+      </and>
     </dependency>
 
   </task>
@@ -1590,7 +1792,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_APCP06H;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_apcp06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_apcp06h }}:ppn={{ ppn_run_met_gridstat_vx_apcp06h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_apcp06h }}</memory>
@@ -1618,7 +1820,10 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}"/>
+      <and>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_obs_APCP06h"/>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_fcst_APCP06h{{uscore_ensmem_name}}"/>
+      </and>
     </dependency>
 
   </task>
@@ -1632,7 +1837,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_APCP24H;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_apcp24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_apcp24h }}:ppn={{ ppn_run_met_gridstat_vx_apcp24h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_apcp24h }}</memory>
@@ -1660,7 +1865,10 @@ it, we'd have to include more jinja if-statements here.
     {%- endif %}
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}"/>
+      <and>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_obs_APCP24h"/>
+        <taskdep task="&TN_RUN_MET_PCPCOMBINE;_fcst_APCP24h{{uscore_ensmem_name}}"/>
+      </and>
     </dependency>
 
   </task>
@@ -1673,7 +1881,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_REFC;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_refc }}:ppn={{ ppn_run_met_gridstat_vx_refc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_refc }}</memory>
@@ -1723,7 +1931,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_RETOP;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_retop }}:ppn={{ ppn_run_met_gridstat_vx_retop }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_retop }}</memory>
@@ -1752,7 +1960,7 @@ it, we'd have to include more jinja if-statements here.
     <dependency>
       <and>
 {#- Redundant dependency to simplify jinja code. #}
-      <streq><left>TRUE</left><right>TRUE</right></streq>
+        <streq><left>TRUE</left><right>TRUE</right></streq>
   {%- if run_task_get_obs_mrms %}
         <taskdep task="&TN_GET_OBS_MRMS;"/>
   {%- endif %}
@@ -1775,7 +1983,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_SFC;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_sfc }}">
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_sfc }}:ppn={{ ppn_run_met_pointstat_vx_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_sfc }}</memory>
@@ -1804,7 +2012,7 @@ it, we'd have to include more jinja if-statements here.
     <dependency>
       <and>
 {#- Redundant dependency to simplify jinja code. #}
-      <streq><left>TRUE</left><right>TRUE</right></streq>
+        <streq><left>TRUE</left><right>TRUE</right></streq>
   {%- if run_task_get_obs_ndas %}
         <taskdep task="&TN_GET_OBS_NDAS;"/>
   {%- endif %}
@@ -1824,7 +2032,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_UPA;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_upa }}">
     &RSRV_DEFAULT;
 
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_upa }}:ppn={{ ppn_run_met_pointstat_vx_upa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_upa }}</memory>
@@ -1853,7 +2061,7 @@ it, we'd have to include more jinja if-statements here.
     <dependency>
       <and>
 {#- Redundant dependency to simplify jinja code. #}
-      <streq><left>TRUE</left><right>TRUE</right></streq>
+        <streq><left>TRUE</left><right>TRUE</right></streq>
   {%- if run_task_get_obs_ndas %}
         <taskdep task="&TN_GET_OBS_NDAS;"/>
   {%- endif %}
@@ -1880,7 +2088,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_apcp01h }}:ppn={{ ppn_run_met_ensemblestat_vx_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_apcp01h }}</memory>
@@ -1916,7 +2124,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_apcp03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_apcp03h }}:ppn={{ ppn_run_met_ensemblestat_vx_apcp03h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_apcp03h }}</memory>
@@ -1953,7 +2161,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_apcp06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_apcp06h }}:ppn={{ ppn_run_met_ensemblestat_vx_apcp06h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_apcp06h }}</memory>
@@ -1990,7 +2198,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_apcp24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_apcp24h }}:ppn={{ ppn_run_met_ensemblestat_vx_apcp24h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_apcp24h }}</memory>
@@ -2026,7 +2234,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_REFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_refc }}:ppn={{ ppn_run_met_ensemblestat_vx_refc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_refc }}</memory>
@@ -2060,7 +2268,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_RETOP;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_retop }}:ppn={{ ppn_run_met_ensemblestat_vx_retop }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_retop }}</memory>
@@ -2096,7 +2304,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_sfc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_sfc }}:ppn={{ ppn_run_met_ensemblestat_vx_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_sfc }}</memory>
@@ -2129,7 +2337,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_upa }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_upa }}:ppn={{ ppn_run_met_ensemblestat_vx_upa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_upa }}</memory>
@@ -2165,7 +2373,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensmean_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensmean_apcp01h }}:ppn={{ ppn_run_met_gridstat_vx_ensmean_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensmean_apcp01h }}</memory>
@@ -2201,7 +2409,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP03H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensmean_apcp03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensmean_apcp03h }}:ppn={{ ppn_run_met_gridstat_vx_ensmean_apcp03h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensmean_apcp03h }}</memory>
@@ -2238,7 +2446,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP06H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensmean_apcp06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensmean_apcp06h }}:ppn={{ ppn_run_met_gridstat_vx_ensmean_apcp06h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensmean_apcp06h }}</memory>
@@ -2275,7 +2483,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSMEAN_APCP24H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensmean_apcp24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensmean_apcp24h }}:ppn={{ ppn_run_met_gridstat_vx_ensmean_apcp24h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensmean_apcp24h }}</memory>
@@ -2313,7 +2521,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensmean_sfc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_ensmean_sfc }}:ppn={{ ppn_run_met_pointstat_vx_ensmean_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_ensmean_sfc }}</memory>
@@ -2346,7 +2554,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_ENSMEAN_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensmean_upa }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSMEAN"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_ensmean_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensmean_upa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_ensmean_upa }}</memory>
@@ -2382,7 +2590,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp01h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp01h }}</memory>
@@ -2418,7 +2626,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp03h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp03h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp03h }}</memory>
@@ -2455,7 +2663,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp06h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp06h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp06h }}</memory>
@@ -2492,7 +2700,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp24h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp24h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp24h }}</memory>
@@ -2528,7 +2736,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_REFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_refc }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_refc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_refc }}</memory>
@@ -2562,7 +2770,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_RETOP;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_retop }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_retop }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_retop }}</memory>
@@ -2598,7 +2806,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_ENSPROB_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensprob_sfc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_ensprob_sfc }}:ppn={{ ppn_run_met_pointstat_vx_ensprob_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_ensprob_sfc }}</memory>
@@ -2631,7 +2839,7 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_RUN_MET_POINTSTAT_VX_ENSPROB_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_pointstat_vx_ensprob_upa }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_VX;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_pointstat_vx_ensprob_upa }}:ppn={{ ppn_run_met_pointstat_vx_ensprob_upa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_pointstat_vx_ensprob_upa }}</memory>
