@@ -1196,10 +1196,8 @@ the <task> tag to be identical to the ones above for other output times.
 -->
 <metatask name="&TN_RUN_PRDGEN;{{ uscore_ensmem_name }}">
 
-    <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}
-</var>
-    <task name="&TN_RUN_PRDGEN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="forecast" max
-tries="{{ maxtries_run_prdgen }}">                 
+    <var name="fhr">{% for h in range(0, fcst_len_hrs+1) %}{{ " %03d" % h }}{% endfor %}</var>
+    <task name="&TN_RUN_PRDGEN;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="forecast" maxtries="{{ maxtries_run_prdgen }}">
       &RSRV_DEFAULT;
       <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_PRDGEN;" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"</command>
 
