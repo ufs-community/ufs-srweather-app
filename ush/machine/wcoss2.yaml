@@ -36,6 +36,7 @@ platform:
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
   COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
+  OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
 task_make_ics:
   PRE_TASK_CMDS_MAKE_ICS: |
     export FI_OFI_RXM_SAR_LIMIT=3145728;

@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocess
+This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocessing
 with FV3 for the specified cycle.
 ========================================================================"
 #
@@ -74,7 +74,7 @@ PREYYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Getting into working directory for BUFR obseration process ..."
+Getting into working directory for BUFR observation process ..."
 
 cd_vrfy ${DATA}
 
@@ -89,7 +89,7 @@ print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
 #
 #-----------------------------------------------------------------------
 
-cp_vrfy ${fixgriddir}/fv3_grid_spec          fv3sar_grid_spec.nc
+cp_vrfy ${fixgriddir}/fv3_grid_spec fv3sar_grid_spec.nc
 
 #-----------------------------------------------------------------------
 #
@@ -104,34 +104,13 @@ cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 #   set observation soruce 
 #
 #-----------------------------------------------------------------------
-if [[ "${NET}" = "RTMA"* ]]; then
-  SUBH=$(date +%M -d "${START_DATE}")
-  obs_source="rtma_ru"
-  obsfileprefix=${obs_source}
-  obspath_tmp=${OBSPATH}/${obs_source}.${YYYYMMDD}
-
-else
-  SUBH=""
-  obs_source=rap
-  if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
-    obs_source=rap_e
-  fi
-
-  case $MACHINE in
-
-  "WCOSS2")
-
-    obsfileprefix=${obs_source}
-    obspath_tmp=${OBSPATH}/${obs_source}.${YYYYMMDD}
-
-    ;;
-  *)
-
-    obsfileprefix=${YYYYMMDDHH}.${obs_source}
-    obspath_tmp=${OBSPATH}
-
-  esac
+obs_source=rap
+if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
+  obs_source=rap_e
 fi
+
+# evaluate template path that uses `obs_source`
+eval OBSPATH_TEMPLATE=${OBSPATH_TEMPLATE}
 
 #
 #-----------------------------------------------------------------------
@@ -141,9 +120,9 @@ fi
 #
 #-----------------------------------------------------------------------
 
-run_lightning=false
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.lghtng.tm00.bufr_d
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lghtng.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
+run_lightning=false
 if [ -r "${obs_file}" ]; then
    cp_vrfy "${obs_file}" "lghtngbufr"
    run_lightning=true
@@ -160,12 +139,14 @@ fi
 #   minute        : process obs used for this analysis minute (integer)
 #   trange_start  : obs time window start (minutes before analysis time)
 #   trange_end    : obs time window end (minutes after analysis time)
-#   bkversion     : grid type (background will be used in the analysis)
+#   grid_type     : grid type (background will be used in the analysis)
 #                   0 for ARW  (default)
 #                   1 for FV3LAM
 #-----------------------------------------------------------------------
 
-cat << EOF > namelist.lightning
+if [[ "$run_lightning" == true ]]; then
+
+  cat << EOF > namelist.lightning
  &setup
   analysis_time = ${YYYYMMDDHH},
   minute=00,
@@ -177,35 +158,34 @@ cat << EOF > namelist.lightning
 
 EOF
 
-#
-#-----------------------------------------------------------------------
-#
-# link/copy executable file to working directory 
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="process_Lightning.exe"
-exec_fp="$EXECdir/${exec_fn}"
-
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable specified in exec_fp does not exist:
-  exec_fp = \"${exec_fp}\"
-Build lightning process and rerun."
-fi
-#
-#
-#-----------------------------------------------------------------------
-#
-# Run the process for lightning bufr file 
-#
-#-----------------------------------------------------------------------
-#
-if [[ "$run_lightning" == true ]]; then
-   PREP_STEP
-   eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
-        Call to executable to run lightning process returned with nonzero exit code."
-   POST_STEP
+  #
+  #-----------------------------------------------------------------------
+  #
+  # link/copy executable file to working directory 
+  #
+  #-----------------------------------------------------------------------
+  #
+  exec_fn="process_Lightning.exe"
+  exec_fp="$EXECdir/${exec_fn}"
+  
+  if [ ! -f "${exec_fp}" ]; then
+    print_err_msg_exit "\
+  The executable specified in exec_fp does not exist:
+    exec_fp = \"${exec_fp}\"
+  Build rrfs_utl and rerun."
+  fi
+  #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Run the process for lightning bufr file 
+  #
+  #-----------------------------------------------------------------------
+  #
+  PREP_STEP
+  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
+       Call to executable to run lightning process returned with nonzero exit code."
+  POST_STEP
 fi
 
 #
@@ -216,7 +196,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.lgycld.tm00.bufr_d
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lgycld.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_cloud=false
 if [ -r "${obs_file}" ]; then
@@ -236,12 +216,12 @@ fi
 #   ioption       : interpolation options
 #                   = 1 is nearest neighrhood
 #                   = 2 is median of cloudy fov
-#   bkversion     : grid type (background will be used in the analysis)
+#   grid_type     : grid type (background will be used in the analysis)
 #                   = 0 for ARW  (default)
 #                   = 1 for FV3LAM
 #-----------------------------------------------------------------------
 
-if [ ${PREDEF_GRID_NAME} == "RRFS_NA_13km" ] || [ ${PREDEF_GRID_NAME} == "RRFS_CONUS_13km" ] ; then
+if [ ${PREDEF_GRID_NAME} == "RRFS_NA_13km" ]  || [ ${PREDEF_GRID_NAME} == "RRFS_CONUS_13km" ] ; then
    npts_rad_number=1
    metar_impact_radius_number=9
 else
@@ -249,7 +229,9 @@ else
    metar_impact_radius_number=15
 fi
 
-cat << EOF > namelist.nasalarc
+if [[ "$run_cloud" == true ]]; then
+
+  cat << EOF > namelist.nasalarc
  &setup
   analysis_time = ${YYYYMMDDHH},
   bufrfile='NASALaRCCloudInGSI_bufr.bufr',
@@ -259,46 +241,45 @@ cat << EOF > namelist.nasalarc
  /
 EOF
 
-#
-#-----------------------------------------------------------------------
-#
-# Copy the executable to the run directory.
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="process_larccld.exe"
-exec_fp="$EXECdir/${exec_fn}"
-
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable specified in exec_fp does not exist:
-  exec_fp = \"${exec_fp}\"
-Build lightning process and rerun."
-fi
-#
-#
-#-----------------------------------------------------------------------
-#
-# Run the process for NASA LaRc cloud  bufr file 
-#
-#-----------------------------------------------------------------------
-#
-if [[ "$run_cloud" == true ]]; then
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Copy the executable to the run directory.
+  #
+  #-----------------------------------------------------------------------
+  #
+  exec_fn="process_larccld.exe"
+  exec_fp="$EXECdir/${exec_fn}"
+  
+  if [ ! -f "${exec_fp}" ]; then
+    print_err_msg_exit "\
+  The executable specified in exec_fp does not exist:
+    exec_fp = \"${exec_fp}\"
+  Build rrfs_utl and rerun."
+  fi
+  #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Run the process for NASA LaRc cloud  bufr file 
+  #
+  #-----------------------------------------------------------------------
+  #
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
        Call to executable to run NASA LaRC Cloud process returned with nonzero exit code."
   POST_STEP
+
 fi
 
 #
-#-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
 #
 # Link to the observation prepbufr bufr file for METAR cloud
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.prepbufr.tm00 
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.prepbufr.tm00 
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_metar=false
 if [ -r "${obs_file}" ]; then
@@ -313,13 +294,14 @@ fi
 # Build namelist for METAR cloud
 #
 #   analysis_time   : process obs used for this analysis date (YYYYMMDDHH)
-#   analysis_minute : process obs used for this analysis minute (integer)
 #   prepbufrfile    : input prepbufr file name
 #   twindin         : observation time window (real: hours before and after analysis time)
 #
 #-----------------------------------------------------------------------
 
-cat << EOF > namelist.metarcld
+if [[ "$run_metar" == true ]]; then
+
+  cat << EOF > namelist.metarcld
  &setup
   analysis_time = ${YYYYMMDDHH},
   prepbufrfile='prepbufr',
@@ -329,31 +311,30 @@ cat << EOF > namelist.metarcld
  /
 EOF
 
-#
-#-----------------------------------------------------------------------
-#
-# Copy the executable to the run directory.
-#
-#-----------------------------------------------------------------------
-#
-exec_fn="process_metarcld.exe"
-exec_fp="$EXECdir/${exec_fn}"
-
-if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable specified in exec_fp does not exist:
-  exec_fp = \"$exec_fp\"
-Build lightning process and rerun."
-fi
-#
-#
-#-----------------------------------------------------------------------
-#
-# Run the process for METAR cloud bufr file 
-#
-#-----------------------------------------------------------------------
-#
-if [[ "$run_metar" == true ]]; then
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Copy the executable to the run directory.
+  #
+  #-----------------------------------------------------------------------
+  #
+  exec_fn="process_metarcld.exe"
+  exec_fp="$EXECdir/${exec_fn}"
+  
+  if [ ! -f "${exec_fp}" ]; then
+    print_err_msg_exit "\
+  The executable specified in exec_fp does not exist:
+    exec_fp = \"$exec_fp\"
+  Build rrfs_utl and rerun."
+  fi
+  #
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Run the process for METAR cloud bufr file 
+  #
+  #-----------------------------------------------------------------------
+  #
   PREP_STEP
   eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\
     Call to executable to run METAR cloud process returned with nonzero exit code."
