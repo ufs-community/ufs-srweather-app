@@ -444,6 +444,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         SDF_USES_RUC_LSM
     ):
         lsoil = 9
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+        lsoil = ""
     #
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the namelist variables that are physics-

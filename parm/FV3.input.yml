@@ -316,10 +316,17 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     avg_max_length: 3600.0
     cdmbgwd: [0.88, 0.04]
     do_deep: False
+    do_gsl_drag_ls_bl: False
+    do_gsl_drag_ss: True
+    do_gsl_drag_tofd: True
     do_mynnsfclay: True
     do_ugwp: False
+    do_ugwp_v0: False
+    do_ugwp_v0_nst_only: False
+    do_ugwp_v0_orog_only: False
     fhswr: 900.0
     fhlwr: 900.0
+    gwd_opt: 2
     iaer: 1011
     iccn: 2
     icliq_sw: 2
@@ -337,16 +344,20 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     iopt_snf: 4
     iopt_stc: 1
     iopt_tbot: 2
-    iopt_trs: 2
+    iopt_trs: !!python/none
     iovr: 3
     ldiag_ugwp: False
     lgfdlmprad: False
     lsm: 1
+    lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: False    
+    nstf_name: [2, 1, 0, 0, 0]
+    sfclay_compute_flux: !!python/none
     xkzminv: 0.3
     xkzm_m: 1.0
     xkzm_h: 1.0
+  surf_map_nml: !!python/none
 
 FV3_GFS_v16:
   cires_ugwp_nml:

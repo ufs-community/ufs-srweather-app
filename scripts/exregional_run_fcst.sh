@@ -204,7 +204,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
+if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15_thompson_mynn_lam3km" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
 
   fileids=( "ss" "ls" )
   for fileid in "${fileids[@]}"; do
@@ -540,43 +540,16 @@ current cycle's (cdate) run directory (DATA) failed:
   cdate_res=$( $DATE_UTIL --utc --date "${fnm_rst_pdy_max} ${fnm_rst_hms_max:0:2} UTC" "+%s" )
   FHROT=$(( ( cdate_res - cdate_org )/(60*60) ))
 
-  # Create soft-link of restart files to INPUT
+  # Create soft-link of restart files in INPUT directory
   cd_vrfy ${DATA}/INPUT
-  rm_vrfy coupler.res
-  rm_vrfy fv_core.res.nc
-  rm_vrfy fv_core.res.tile1.nc
-  rm_vrfy fv_srf_wnd.res.tile1.nc
-  rm_vrfy fv_tracer.res.tile1.nc
-  rm_vrfy sfc_data.nc
-  rm_vrfy phy_data.nc
 
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.coupler.res"
-  symlink="coupler.res"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_core.res.nc"
-  symlink="fv_core.res.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_core.res.tile1.nc"
-  symlink="fv_core.res.tile1.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_srf_wnd.res.tile1.nc"
-  symlink="fv_srf_wnd.res.tile1.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.fv_tracer.res.tile1.nc"
-  symlink="fv_tracer.res.tile1.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.phy_data.nc"
-  symlink="phy_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
-
-  target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.sfc_data.nc"
-  symlink="sfc_data.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  fileids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+  for fileid in "${fileids[@]}"; do
+    rm_vrfy "${fileid}"
+    target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.${fileid}"
+    symlink="${fileid}"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  done
 
   cd_vrfy ${DATA}   
 fi
