@@ -42,11 +42,11 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
 
     if procs > 1:
         print(f'Starting experiments in parallel with {procs} processes')
-        update_expt_status_parallel(expts_dict, procs, True, debug)
+        expts_dict = update_expt_status_parallel(expts_dict, procs, True, debug)
     else:
         for expt in expts_dict:
             logging.info(f"Starting experiment {expt} running")
-            update_expt_status(expts_dict[expt], expt, True, debug)
+            expts_dict[expt] = update_expt_status(expts_dict[expt], expt, True, debug)
 
     write_monitor_file(monitor_file,expts_dict)
 
@@ -60,10 +60,10 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
     while running_expts:
         i += 1
         if procs > 1:
-            update_expt_status_parallel(expts_dict, procs)
+            expts_dict = update_expt_status_parallel(expts_dict, procs)
         else:
             for expt in running_expts.copy():
-                update_expt_status(expts_dict[expt], expt)
+                expts_dict[expt] = update_expt_status(expts_dict[expt], expt)
 
         for expt in running_expts.copy():
             running_expts[expt] = expts_dict[expt]
@@ -89,7 +89,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
     logging.info('Calculating core-hour usage and printing final summary')
 
     # Calculate core hours and update yaml
-    calculate_core_hours(expts_dict)
+    expts_dict = calculate_core_hours(expts_dict)
     write_monitor_file(monitor_file,expts_dict)
 
     #Call function to print summary

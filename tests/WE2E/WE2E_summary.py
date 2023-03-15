@@ -12,25 +12,6 @@ from check_python_version import check_python_version
 
 from utils import calculate_core_hours, create_expts_dict, print_WE2E_summary, write_monitor_file
 
-def WE2E_summary(args):
-    yaml_file = args.yaml_file
-
-    # Set up dictionary of experiments
-    if args.expt_dir:
-        yaml_file, expts_dict = create_expts_dict(args.expt_dir)
-    elif args.yaml_file:
-        expts_dict = load_config_file(args.yaml_file)
-    else:
-        raise ValueError(f'Bad arguments; run {__file__} -h for more information')
-
-    # Calculate core hours and update yaml
-    calculate_core_hours(expts_dict)
-    write_monitor_file(yaml_file,expts_dict)
-
-    #Call function to print summary
-    print_WE2E_summary(expts_dict, args.debug)
-
-
 def setup_logging(debug: bool = False) -> None:
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
@@ -72,4 +53,19 @@ if __name__ == "__main__":
 
     setup_logging(args.debug)
 
-    WE2E_summary(args)
+    yaml_file = args.yaml_file
+
+    # Set up dictionary of experiments
+    if args.expt_dir:
+        yaml_file, expts_dict = create_expts_dict(args.expt_dir)
+    elif args.yaml_file:
+        expts_dict = load_config_file(args.yaml_file)
+    else:
+        raise ValueError(f'Bad arguments; run {__file__} -h for more information')
+
+    # Calculate core hours and update yaml
+    expts_dict = calculate_core_hours(expts_dict)
+    write_monitor_file(yaml_file,expts_dict)
+
+    #Call function to print summary
+    print_WE2E_summary(expts_dict, args.debug)
