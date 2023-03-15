@@ -190,7 +190,7 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(ushdir + "/config.yaml","w", encoding="utf-8") as f:
+        with open(os.path.join(ushdir,"/config.yaml"),"w", encoding="utf-8") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
@@ -370,12 +370,13 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
             cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}'] = \
                     dflt[f'task_get_extrn_{ics_or_lbcs}'][f'FV3GFS_FILE_FMT_{I_OR_L}']
         cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = \
-                f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/{cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}']}/${{yyyymmddhh}}"
+                os.path.join(f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}",
+                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}",f"{cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}']}",
+                f"${{yyyymmddhh}}")
     else:
         cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = \
-                f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/${{yyyymmddhh}}"
+                os.path.join(f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}",
+                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/${{yyyymmddhh}}")
 
     return cfg_bcs
 

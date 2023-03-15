@@ -25,7 +25,8 @@ from python_utils import (
 )
 
 REPORT_WIDTH = 100
-
+EXPT_COLUMN_WIDTH = 65
+TASK_COLUMN_WIDTH = 40
 def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
 
@@ -40,7 +41,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     # Create summary table as list of strings
     summary = []
     summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Experiment name {" "*48} | Status    | Core hours used ')
+    summary.append(f'Experiment name {" "*(EXPT_COLUMN_WIDTH-17)} | Status    | Core hours used ')
     summary.append('-'*REPORT_WIDTH)
     total_core_hours = 0
     statuses = []
@@ -52,7 +53,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         expt_details.append('-'*REPORT_WIDTH)
         expt_details.append(f'Detailed summary of experiment {expt}')
         expt_details.append(f"in directory {expts_dict[expt]['expt_dir']}")
-        expt_details.append(f'{" "*40} | Status    | Walltime   | Core hours used')
+        expt_details.append(f'{" "*TASK_COLUMN_WIDTH}| Status    | Walltime   | Core hours used')
         expt_details.append('-'*REPORT_WIDTH)
 
         for task in expts_dict[expt]:
@@ -61,7 +62,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
                 continue
             status = expts_dict[expt][task]["status"]
             walltime = expts_dict[expt][task]["walltime"]
-            expt_details.append(f'{task[:40]:<40s}  {status:<12s} {walltime:>10.1f}')
+            expt_details.append(f'{task[:TASK_COLUMN_WIDTH]:<{TASK_COLUMN_WIDTH}s}  {status:<12s} {walltime:>10.1f}')
             if "core_hours" in expts_dict[expt][task]:
                 task_ch = expts_dict[expt][task]["core_hours"]
                 ch += task_ch
@@ -69,8 +70,8 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
             else:
                 expt_details[-1] = f'{expt_details[-1]}            -'
         expt_details.append('-'*REPORT_WIDTH)
-        expt_details.append(f'Total {" "*34}  {statuses[-1]:<12s} {" "*11} {ch:>13.2f}')
-        summary.append(f'{expt[:65]:<65s}  {statuses[-1]:<12s}  {ch:>13.2f}')
+        expt_details.append(f'Total {" "*(TASK_COLUMN_WIDTH - 6)}  {statuses[-1]:<12s} {" "*11} {ch:>13.2f}')
+        summary.append(f'{expt[:EXPT_COLUMN_WIDTH]:<{EXPT_COLUMN_WIDTH}s}  {statuses[-1]:<12s}  {ch:>13.2f}')
         total_core_hours += ch
     if "ERROR" in statuses:
         total_status = "ERROR"
@@ -85,7 +86,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     else:
         total_status = "UNKNOWN"
     summary.append('-'*REPORT_WIDTH)
-    summary.append(f'Total {" "*59}  {total_status:<12s}  {total_core_hours:>13.2f}')
+    summary.append(f'Total {" "*(EXPT_COLUMN_WIDTH - 6)}  {total_status:<12s}  {total_core_hours:>13.2f}')
 
     # Print summary to screen
     for line in summary:
@@ -149,7 +150,13 @@ def calculate_core_hours(expts_dict: dict) -> dict:
 
     for expt in expts_dict:
         # Read variable definitions file
-        vardefs = load_shell_config(os.path.join(expts_dict[expt]["expt_dir"],"var_defns.sh"))
+        vardefs_file = os.path.join(expts_dict[expt]["expt_dir"],"var_defns.sh")
+        if not os.path.isfile(vardefs_file):
+            logging.warning(f"\nWARNING: For experiment {expt}, variable definitions file")
+            logging.warning(f"{vardefs_file}\ndoes not exist!\n\nDropping experiment from summary")
+            continue
+        logging.debug(f'Reading variable definitions file {vardefs_file}')
+        vardefs = load_shell_config(vardefs_file)
         vdf = flatten_dict(vardefs)
         cores_per_node = vdf["NCORES_PER_NODE"]
         for task in expts_dict[expt]:

@@ -12,7 +12,7 @@
 #
 #  The wrapper loads the appropriate workflow environment for the
 #  machine, and sets the machine test suite file before invoking the
-#  run_WE2E_tests.sh.
+#  run_WE2E_tests.py script.
 #
 #  The script is dependent on a successful build of this repo using the
 #  tests/build.sh script in the ufs-srweather-app repository.  The UFS
@@ -38,7 +38,7 @@ function usage {
   echo "       compiler  [optional] compiler used to build binaries (intel or gnu)"
   echo "       tests     [optional] tests to run: can be a suite (all|comprehensive|fundamental)
                             a filename, or a test name"
-  echo "       others    [optional] All other arguments are forwarded to run_WE2E_tests.sh"
+  echo "       others    [optional] All other arguments are forwarded to run_WE2E_tests.py"
   echo "       -h        display this help"
   echo
   exit 1

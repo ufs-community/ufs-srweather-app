@@ -13,9 +13,8 @@ from python_utils import load_config_file
 
 from check_python_version import check_python_version
 
-from WE2E_summary import print_WE2E_summary
 from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
-                  update_expt_status_parallel
+                  update_expt_status_parallel, print_WE2E_summary
 
 def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
