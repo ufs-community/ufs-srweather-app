@@ -29,6 +29,7 @@ platform:
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_VX_FCST_INPUT_BASEDIR: '/scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
   FIXaer: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_am
   FIXlut: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_lut
   FIXorg: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_orog

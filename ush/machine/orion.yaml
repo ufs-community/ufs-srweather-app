@@ -26,6 +26,7 @@ platform:
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data
   TEST_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
   FIXaer: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_am
   FIXlut: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_lut
   FIXorg: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_orog

@@ -23,6 +23,7 @@ platform:
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   FIXaer: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_am
   FIXlut: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_lut
   FIXorg: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_orog
