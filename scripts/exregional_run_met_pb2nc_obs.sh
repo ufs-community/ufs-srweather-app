@@ -63,7 +63,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the MET/METplus tool ${met_tool_sc}
+This is the ex-script for the task that runs the METplus tool ${met_tool_pc}
 to convert NDAS prep buffer observation files to NetCDF format.
 ========================================================================"
 #
@@ -110,9 +110,9 @@ OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_sc}_obs"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
 OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
-STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_sc}_obs"
+STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -301,7 +301,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-MET/METplus ${met_tool_sc} tool completed successfully.
+METplus ${met_tool_pc} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
