@@ -82,19 +82,7 @@ def cycstr(loader, node):
     ''' Returns a cyclestring Element whose content corresponds to the
     input node argument '''
 
-    try:
-        arg = loader.construct_mapping(node, deep=True)
-    except yaml.constructor.ConstructorError:
-        arg = loader.construct_scalar(node)
-
-    if isinstance(arg, str):
-        string = arg
-        cyc = ET.Element('cyclestr')
-    else:
-        string = arg.pop('value')
-        cyc = ET.Element('cyclestr', attrib=arg)
-    cyc.text = string
-    #return cyc
+    arg = loader.construct_scalar(node)
     return f'<cyclestr>{arg}</cyclestr>'
 
 def include(filepaths):

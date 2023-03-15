@@ -293,7 +293,6 @@ def fill_jinja_template(argv, config_dict=None):
 
     # Fill in XML template
     xml_contents = template.render(**tvars)
-    print(xml_contents)
     with open(cla.outxml, "w") as fn:
         fn.write(xml_contents)
 

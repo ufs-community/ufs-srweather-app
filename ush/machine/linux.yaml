@@ -35,4 +35,4 @@ rocoto:
     task_run_fcst:
       cores: '{{ PE_MEMBER01 }}'
       native: '--cpus-per-task {{ OMP_NUM_THREADS_RUN_FCST }} --exclusive'
-      nodes: ''
+      nodes:
