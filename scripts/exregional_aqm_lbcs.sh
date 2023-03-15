@@ -215,7 +215,7 @@ Please ensure that you've built this executable."
 #----------------------------------------------------------------------
 #
   PREP_STEP
-  eval ${RUN_CMD_UTILS} -n ${NUMTS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
 Call to executable (exec_fp) to generate chemical and GEFS LBCs
 file for RRFS-CMAQ failed:
