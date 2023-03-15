@@ -27,6 +27,7 @@ from python_utils import (
 REPORT_WIDTH = 100
 EXPT_COLUMN_WIDTH = 65
 TASK_COLUMN_WIDTH = 40
+
 def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
 
@@ -136,7 +137,7 @@ def create_expts_dict(expt_dir: str) -> dict:
 
     return summary_file, expts_dict
 
-def calculate_core_hours(expts_dict: dict) -> dict:
+def calculate_core_hours(expts_dict: dict) -> None:
     """
     Function takes in an experiment dictionary, reads the var_defns file for necessary information,
     and calculates the core hours used by each task, updating expts_dict with this info
@@ -145,7 +146,7 @@ def calculate_core_hours(expts_dict: dict) -> dict:
         expts_dict  (dict): A dictionary containing the information needed to run
                             one or more experiments. See example file WE2E_tests.yaml
     Returns:
-        dict : Experiments dictionary updated with core hours
+        None
     """
 
     for expt in expts_dict:
@@ -180,7 +181,6 @@ def calculate_core_hours(expts_dict: dict) -> dict:
                              expts_dict[expt][task]['walltime'] / 3600
                 expts_dict[expt][task]['exact_count'] = False
             expts_dict[expt][task]['core_hours'] = round(core_hours,2)
-    return expts_dict
 
 
 def write_monitor_file(monitor_file: str, expts_dict: dict):
@@ -200,7 +200,7 @@ def write_monitor_file(monitor_file: str, expts_dict: dict):
 
 
 def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool = False,
-                       submit: bool = True) -> dict:
+                       submit: bool = True) -> None:
     """
     This function reads the dictionary showing the location of a given experiment, runs a
     `rocotorun` command to update the experiment (running new jobs and updating the status of
@@ -249,12 +249,12 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
                            workflow by calling rocotorun. If simply generating a report, set this
                            to False
     Returns:
-        dict: The updated experiment dictionary.
+        None
     """
 
     #If we are no longer tracking this experiment, return unchanged
     if (expt["status"] in ['DEAD','ERROR','COMPLETE']) and not refresh:
-        return expt
+        return
     # Update experiment, read rocoto database
     rocoto_db = f"{expt['expt_dir']}/FV3LAM_wflow.db"
     if submit:
@@ -293,8 +293,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         if not refresh:
             logging.warning(f"Unable to read database {rocoto_db}\nCan not track experiment {name}")
             expt["status"] = "ERROR"
-
-        return expt
+        return
 
     for task in db:
         # For each entry from rocoto database, store that task's info under a dictionary key named
@@ -322,7 +321,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
             expt["status"] = "DYING"
         else:
             expt["status"] = "DEAD"
-            return expt
+            return
     elif "RUNNING" in statuses:
         expt["status"] = "RUNNING"
     elif "QUEUED" in statuses:
@@ -364,10 +363,9 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     if expt["status"] in ["SUCCEEDED","STALLED","STUCK"]:
         expt = compare_rocotostat(expt,name)
 
-    return expt
 
 def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = False,
-                                debug: bool = False) -> dict:
+                                debug: bool = False) -> None:
     """
     This function updates an entire set of experiments in parallel, drastically speeding up
     the process if given enough parallel processes. Given an experiment dictionary, it will
@@ -385,7 +383,7 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
                           slow down the process drastically.
 
     Returns:
-        dict: The updated dictionary of experiment dictionaries
+        None
     """
 
     args = []
@@ -395,16 +393,7 @@ def update_expt_status_parallel(expts_dict: dict, procs: int, refresh: bool = Fa
 
     # call update_expt_status() in parallel
     with Pool(processes=procs) as pool:
-        output = pool.starmap(update_expt_status, args)
-
-    # Update dictionary with output from all calls to update_expt_status()
-    i = 0
-    for expt in expts_dict:
-        expts_dict[expt] = output[i]
-        i += 1
-
-    return expts_dict
-
+        pool.starmap(update_expt_status, args)
 
 
 def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
