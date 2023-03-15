@@ -199,6 +199,9 @@ platform:
   # RUN_CMD_AQM:
   # The run command for some AQM tasks.
   #
+  # RUN_CMD_AQMLBC:
+  # The run command for the AQM_LBCS task.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_CMD_SERIAL: ""
@@ -206,6 +209,7 @@ platform:
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
   RUN_CMD_AQM: ""
+  RUN_CMD_AQMLBC: ""
 
   #
   #-----------------------------------------------------------------------
@@ -672,7 +676,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if user.RUN_ENVIR == "community" else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
