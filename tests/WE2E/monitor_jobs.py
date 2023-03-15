@@ -92,10 +92,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
         #Slow things down just a tad between loops so experiments behave better
         time.sleep(5)
 
-    endtime = datetime.now()
-    total_walltime = endtime - monitor_start
-
-    logging.info(f'All {len(expts_dict)} experiments finished in {str(total_walltime)}')
+    logging.info(f'All {len(expts_dict)} experiments finished')
     logging.info('Calculating core-hour usage and printing final summary')
 
     # Calculate core hours and update yaml
