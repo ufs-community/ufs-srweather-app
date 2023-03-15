@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs lightning preprocess
+This is the ex-script for the task that runs lightning preprocessing
 with FV3 for the specified cycle.
 ========================================================================"
 #
@@ -53,18 +53,19 @@ with FV3 for the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
+#START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
+START_DATE=$(echo "${PDY} ${cyc}")
 YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-JJJ=$(date +%j -d "${START_DATE}")
+#JJJ=$(date +%j -d "${START_DATE}")
 
-YYYY=${YYYYMMDDHH:0:4}
-MM=${YYYYMMDDHH:4:2}
-DD=${YYYYMMDDHH:6:2}
-HH=${YYYYMMDDHH:8:2}
-YYYYMMDD=${YYYYMMDDHH:0:8}
+#YYYY=${YYYYMMDDHH:0:4}
+#MM=${YYYYMMDDHH:4:2}
+#DD=${YYYYMMDDHH:6:2}
+#HH=${YYYYMMDDHH:8:2}
+#YYYYMMDD=${YYYYMMDDHH:0:8}
 
-YYJJJHH=$(date +"%y%j%H" -d "${START_DATE}")
-PREYYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
+#YYJJJHH=$(date +"%y%j%H" -d "${START_DATE}")
+#EARLY_YYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
 
 #
 #-----------------------------------------------------------------------
@@ -99,17 +100,9 @@ cp_vrfy ${fixgriddir}/fv3_grid_spec          fv3sar_grid_spec.nc
 run_lightning=false
 filenum=0
 LIGHTNING_FILE=${LIGHTNING_ROOT}/vaisala/netcdf
-for n in 00 05 ; do
-  filename=${LIGHTNING_FILE}/${YYJJJHH}${n}0005r
-  if [ -r ${filename} ]; then
-  ((filenum += 1 ))
-    ln -sf ${filename} ./NLDN_lightning_${filenum}
-  else
-   echo " ${filename} does not exist"
-  fi
-done
-for n in 55 50 45 40 35 ; do
-  filename=${LIGHTNING_FILE}/${PREYYJJJHH}${n}0005r
+for incr in $(seq -25 5 5) ; do 
+  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+  filename=${LIGHTNING_FILE}/${filedate}0005r
   if [ -r ${filename} ]; then
   ((filenum += 1 ))
     ln -sf ${filename} ./NLDN_lightning_${filenum}
@@ -178,10 +171,14 @@ fi
 
 if [[ "$run_lightning" == true ]]; then
     PREP_STEP
-    eval $RUN_CMD_UTILS --account=${ACCOUNT} --nodes=1-1 --tasks-per-node=1 --time 00:30:00 ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg "\  
-        Call to executable to run lightning (nc) process returned with nonzero exit code."
+    eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
+    print_err_msg_exit "\
+    Call to executable (exec_fp) to run lightning (nc) process returned 
+    with nonzero exit code:
+      exec_fp = \"${exec_fp}\""
     POST_STEP
 fi
+
 #
 #-----------------------------------------------------------------------
 #

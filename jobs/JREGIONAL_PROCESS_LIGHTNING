@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This J-JOB script runs the NetCDF ligthning observation preprocess 
+# This J-JOB script runs the NetCDF lightning observation preprocess 
 #      for the FV3-LAM model
 #
 #-----------------------------------------------------------------------
