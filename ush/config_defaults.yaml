@@ -199,6 +199,9 @@ platform:
   # RUN_CMD_AQM:
   # The run command for some AQM tasks.
   #
+  # RUN_CMD_AQMLBC:
+  # The run command for the AQM_LBCS task.
+  #
   #-----------------------------------------------------------------------
   #
   RUN_CMD_SERIAL: ""
@@ -206,6 +209,7 @@ platform:
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
   RUN_CMD_AQM: ""
+  RUN_CMD_AQMLBC: ""
 
   #
   #-----------------------------------------------------------------------
@@ -605,7 +609,7 @@ workflow:
   FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
   FV3_NML_FN: "input.nml"
   FV3_EXEC_FN: "ufs_model"
-  
+
   DATA_TABLE_FN: "data_table"
   DIAG_TABLE_FN: "diag_table"
   FIELD_TABLE_FN: "field_table"
@@ -672,7 +676,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if user.RUN_ENVIR == "community" else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -879,20 +883,10 @@ workflow:
   # SYMLINK_FIX_FILES:
   # Symlink fix files to experiment directory if true; otherwise copy the files.
   #
-  # GET_OBS:
-  # Task modulefile name for all get_obs_* tasks
-  #
-  # TN_VX:
-  # Task name to use in forming the modulefile name for all verification
-  # tasks.
-  #
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
   SYMLINK_FIX_FILES: true
-
-  GET_OBS: "get_obs"
-  TN_VX: "run_vx"
   #
   #-----------------------------------------------------------------------
   #
@@ -2078,10 +2072,28 @@ task_get_obs_ndas:
   MAXTRIES_GET_OBS_NDAS: 1
 
 #----------------------------
+# tn_run_met_pcpcombine config parameters
+#-----------------------------
+task_tn_run_met_pcpcombine:
+  TN_RUN_MET_PCPCOMBINE: "run_MET_PcpCombine"
+#
+  NNODES_RUN_MET_PCPCOMBINE_OBS: 1
+  PPN_RUN_MET_PCPCOMBINE_OBS: 1
+  MEM_RUN_MET_PCPCOMBINE_OBS: 2G
+  WTIME_RUN_MET_PCPCOMBINE_OBS: 00:30:00
+  MAXTRIES_RUN_MET_PCPCOMBINE_OBS: 2
+#
+  NNODES_RUN_MET_PCPCOMBINE_FCST: 1
+  PPN_RUN_MET_PCPCOMBINE_FCST: 1
+  MEM_RUN_MET_PCPCOMBINE_FCST: 2G
+  WTIME_RUN_MET_PCPCOMBINE_FCST: 00:30:00
+  MAXTRIES_RUN_MET_PCPCOMBINE_FCST: 2
+  
+#----------------------------
 # run_met_gridstat_vx_apcp01h config parameters
 #-----------------------------
 task_run_met_gridstat_vx_apcp01h:
-  TN_RUN_MET_GRIDSTAT_VX_APCP01h: "run_MET_GridStat_vx_APCP01h"
+  TN_RUN_MET_GRIDSTAT_VX_APCP01H: "run_MET_GridStat_vx_APCP01h"
   NNODES_RUN_MET_GRIDSTAT_VX_APCP01H: 1
   PPN_RUN_MET_GRIDSTAT_VX_APCP01H: 1
   MEM_RUN_MET_GRIDSTAT_VX_APCP01H: 2G
@@ -2599,13 +2611,16 @@ global:
   # Paths to the ensemble member corresponding namelists in the
   # experiment directory
   #
+  # ENS_TIME_LAG_HRS:
+  # Time lag (in hours) to use for each ensemble member.
+  #
   #-----------------------------------------------------------------------
   #
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %} "mem%03d, " % m {% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-
+  ENS_TIME_LAG_HRS: '[ {% for m in range(NUM_ENS_MEMBERS) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #
@@ -2708,22 +2723,91 @@ global:
   #
 
 #----------------------------
-# verification parameters
-#
-# VX_FCST_MODEL_NAME:
-# String that specifies a descriptive name for the model being verified.
-# This is used in forming the names of the verification output files as
-# well as in the contents of those files.
-#
-# VX_FCST_INPUT_BASEDIR:
-# Location of top-level directory containing forecast (but not obs) files
-# that will be used as input into METplus for verification.  If not
-# specified, this gets set to EXPTDIR.
-#
+# verification (vx) parameters
 #-----------------------------
 verification:
+  # Move some of the following to another section at some point.
+  #
+  # GET_OBS_LOCAL_MODULE_FN:
+  # Local task modulefile name for all GET_OBS_* tasks.
+  #
+  GET_OBS_LOCAL_MODULE_FN: 'get_obs'
+  #
+  # Templates for CCPA observation files.
+  #
+  OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
+  OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  #
+  # VX_LOCAL_MODULE_FN:
+  # Name (without extension) of the local module file for running the vx
+  # tasks in the workflow.
+  #
+  VX_LOCAL_MODULE_FN: 'run_vx'
+  #
+  # RUN_TASKS_METVX_DET:
+  # Flag that specifies whether to run deterministic verification.  If set
+  # to True, this will run deterministic vx on the post-processed forecast
+  # output.  This post-processed output may consist of a single forecast
+  # or an ensemble of foreasts, and it may be staged from previous runs of
+  # the SRW App or may be generated by running the TN_RUN_FCST task as part
+  # of the current SRW-App-generated experiment.
+  #
+  # RUN_TASKS_METVX_ENS:
+  # Flag that specifies whether to run ensemble verification.  The ensemble
+  # forecast output on which vx will be run may be staged or generated by
+  # running an ensemble of forecasts with the weather model as part of the
+  # current SRW-App-generated experiment.
+  #
+  RUN_TASKS_METVX_DET: False
+  RUN_TASKS_METVX_ENS: False
+  #
+  # VX_FCST_MODEL_NAME:
+  # String that specifies a descriptive name for the model being verified.
+  # This is used in forming the names of the verification output files as
+  # well as in the contents of those files.
+  #
+  # VX_FIELDS:
+  # The fields or groups of fields on which to run verification.
+  #
+  # VX_APCP_ACCUMS_HH:
+  # The 2-digit accumulation periods (in units of hours) to consider for
+  # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
+  # VX_APCP_ACCUMS_HH must contain at least one element.  If not,
+  # VX_APCP_ACCUMS_HH will be ignored.
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_APCP_ACCUMS_HH: [ "01", "03", "06", "24" ]
+  #
+  # VX_FCST_INPUT_BASEDIR:
+  # Location of top-level directory containing forecast (but not obs) files
+  # that will be used as input into METplus for verification.  If not
+  # specified, this gets set to EXPTDIR.
+  #
+  # VX_OUTPUT_BASEDIR:
+  # Top-level directory in which METplus will place its output.
+  #
   VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
+  VX_OUTPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  #
+  # File name and path templates are used in the verification tasks.
+  #
+  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd'
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  #
+  # For verification tasks that need observational data, this specifies
+  # the maximum number of observation files that may be missing.  If more
+  # than this number are missing, the verification task will error out.
+  #
+  # Note that this is a crude way of checking that there are enough obs to
+  # conduct verification since this number should probably depend on the
+  # field being verified, the time interval between observations, the
+  # length of the forecast, etc.  An alternative may be to specify the
+  # maximum allowed fraction of obs files that can be missing (i.e. the
+  # number missing divided by the number that are expected to exist).
+  #
+  NUM_MISSING_OBS_FILES_MAX: 2
 
 #----------------------------
 # CPL_AQM config parameters

@@ -307,10 +307,20 @@ but the element with index i=${i} is empty:
 #
 #-----------------------------------------------------------------------
 #
+# Set the separator used in each arg=value pair.  This is simply an equal
+# sign.
+#
+  sep="="
   for arg_val_pair in "${@:2}"; do
-
-    arg_name=$(echo ${arg_val_pair} | cut -f1 -d=)
-    arg_value=$(echo ${arg_val_pair} | cut -f2 -d=)
+#
+# Get the argument name and its value using bash variable substitution/
+# expansion.  The %% operator deletes the longest trailing portion of
+# arg_val_pair that matches the pattern that follows %%, while the #
+# operator deletes the shortest leading portion of arg_val_pair that
+# matches the pattern that follows #.
+#
+    arg_name=${arg_val_pair%%"$sep"*}
+    arg_value=${arg_val_pair#*"$sep"}
 #
 # If the first character of the argument's value is an opening parenthe-
 # sis and its last character is a closing parenthesis, then the argument
