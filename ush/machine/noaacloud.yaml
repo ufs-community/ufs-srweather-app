@@ -29,4 +29,6 @@ platform:
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
   ics_lbcs:
-    FV3GFS: /contrib/GST/model_data/FV3GFS/${yyyymmdd}${hh}
+    FV3GFS:
+      nemsio: /contrib/EPIC/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /contrib/EPIC/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 

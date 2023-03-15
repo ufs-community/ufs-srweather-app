@@ -31,4 +31,6 @@ platform:
   FIXshp: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/NaturalEarth
 data:
   ics_lbcs:
-    FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
+    FV3GFS:
+      nemsio: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
