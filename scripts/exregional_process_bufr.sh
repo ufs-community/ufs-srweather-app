@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocess
+This is the ex-script for the task that runs bufr (cloud, metar, lightning) preprocessing
 with FV3 for the specified cycle.
 ========================================================================"
 #
@@ -172,7 +172,7 @@ EOF
     print_err_msg_exit "\
   The executable specified in exec_fp does not exist:
     exec_fp = \"${exec_fp}\"
-  Build lightning process and rerun."
+  Build rrfs_utl and rerun."
   fi
   #
   #
@@ -255,7 +255,7 @@ EOF
     print_err_msg_exit "\
   The executable specified in exec_fp does not exist:
     exec_fp = \"${exec_fp}\"
-  Build lightning process and rerun."
+  Build rrfs_utl and rerun."
   fi
   #
   #
@@ -325,7 +325,7 @@ EOF
     print_err_msg_exit "\
   The executable specified in exec_fp does not exist:
     exec_fp = \"$exec_fp\"
-  Build lightning process and rerun."
+  Build rrfs_utl and rerun."
   fi
   #
   #
