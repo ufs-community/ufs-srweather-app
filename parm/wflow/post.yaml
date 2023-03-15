@@ -1,7 +1,7 @@
 default_task_post: &default_task
   account: '&ACCOUNT;'
   attrs:
-    cycledefs: #cycledef#
+    cycledefs: '#cycledef#'
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSDIR;/JREGIONAL_RUN_POST"'
   envars: &default_vars

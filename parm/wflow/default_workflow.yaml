@@ -27,7 +27,7 @@ rocoto:
     SCHED_NATIVE_CMD: '{{ platform.SCHED_NATIVE_CMD }}'
     SCRIPTSdir: '{{ user.SCRIPTSdir }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
-    USHdir: '&USHdir;'
+    USHdir: '{{ user.USHdir }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
   attrs:
     cyclethrottle: "20"

@@ -157,14 +157,14 @@ def load_config_for_setup(ushdir, default_config, user_config):
     if taskgroups:
         cfg_wflow['rocoto']['tasks']['taskgroups'] = taskgroups
 
-
     # Extend yaml here on just the rocoto section to include the
     # appropriate groups of tasks
     extend_yaml(cfg_wflow)
 
+
     # Put the entries expanded under taskgroups in tasks
     rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
-    rocoto_tasks.update(yaml.load(rocoto_tasks.pop("taskgroups"),Loader=yaml.SafeLoader))
+    cfg_wflow["rocoto"]["tasks"] = yaml.load(rocoto_tasks.pop("taskgroups"),Loader=yaml.SafeLoader)
 
     # Update wflow config from user one more time to make sure any of
     # the "null" settings are removed, i.e., tasks turned off.
@@ -188,7 +188,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
 
     # Add jobname entry to each remaining task
-    add_jobname(rocoto_tasks)
+    add_jobname(cfg_wflow["rocoto"]["tasks"])
 
     # Update default config with the constants, the machine config, and
     # then the user_config
@@ -214,7 +214,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Update the cfg_d against itself now, to remove any "null"
     # stranglers.
     update_dict(cfg_d, cfg_d)
-
 
     # Set "Home" directory, the top-level ufs-srweather-app directory
     homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
@@ -534,9 +533,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # When not running subhourly post, remove those tasks, if they exist
     if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
-        post_meta = rocoto_tasks.get("metatask_run_ens_post")
-        post_meta.pop("metatask_run_sub_hourly_post")
-        post_meta.pop("metatask_sub_hourly_last_hour_post")
+        post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
+        post_meta.pop("metatask_run_sub_hourly_post", None)
+        post_meta.pop("metatask_sub_hourly_last_hour_post", None)
 
     #
     # -----------------------------------------------------------------------

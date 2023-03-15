@@ -176,75 +176,81 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
     if not isinstance(yaml_dict, dict):
         return
 
-    for k, v in yaml_dict.items():
+    for k, val in yaml_dict.items():
 
-        if isinstance(v, dict):
-            extend_yaml(v, full_dict, yaml_dict)
+        if isinstance(val, dict):
+            extend_yaml(val, full_dict, yaml_dict)
         else:
 
-            # Save a bit of compute and only do this part for strings that
-            # contain the jinja double brackets.
-            v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
-            if isinstance(v, ET.Element):
-                print('ELEMENT VSTR', v_str, v.text, yaml_dict)
-            is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
-            if is_a_template:
-                # Find expressions first, and process them as a single template
-                # if they exist
-                # Find individual double curly brace template in the string
-                # otherwise. We need one substitution template at a time so that
-                # we can opt to leave some un-filled when they are not yet set.
-                # For example, we can save cycle-dependent templates to fill in
-                # at run time.
-                if "{%" in v_str:
-                    templates = [v_str]
-                else:
-                    # Separates out all the double curly bracket pairs
-                    templates = [m.group() for m in
-                            re.finditer(r"{{[^}]*}}|\S", v_str)  if '{{'
-                            in m.group()]
-                data = []
-                for template in templates:
-                    j2env = jinja2.Environment(
-                        loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
-                    )
-                    j2env.filters["path_join"] = path_join
-                    j2env.filters["days_ago"] = days_ago
-                    j2env.filters["include"] = include
-                    try:
-                        j2tmpl = j2env.from_string(template)
-                    except:
-                        print(f"ERROR filling template: {template}, {v_str}")
-                        raise
-                    try:
-                        # Fill in a template that has the appropriate variables
-                        # set.
-                        template = j2tmpl.render(parent=parent, **yaml_dict, **full_dict)
-                    except jinja2.exceptions.UndefinedError as e:
-                        # Leave a templated field as-is in the resulting dict
-                        pass
-                    except ValueError:
-                        pass
-                    except TypeError:
-                        pass
-                    except ZeroDivisionError:
-                        pass
-                    except:
-                        print(f"{k}: {template}")
-                        raise
+            if not isinstance(val, list):
+                val = [val]
 
-                    data.append(template)
-
-                for tmpl, rendered in zip(templates, data):
-                    v_str = str_to_type(v_str.replace(tmpl, rendered))
-
+            for v_idx, v in enumerate(val):
+                # Save a bit of compute and only do this part for strings that
+                # contain the jinja double brackets.
+                v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
                 if isinstance(v, ET.Element):
-                    print('Replacing ET text with', v_str)
-                    v.text = v_str
-                else:
-                    # Put the full template line back together as it was,
-                    # filled or not
-                    yaml_dict[k] = v_str
+                    print('ELEMENT VSTR', v_str, v.text, yaml_dict)
+                is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
+                if is_a_template:
+                    # Find expressions first, and process them as a single template
+                    # if they exist
+                    # Find individual double curly brace template in the string
+                    # otherwise. We need one substitution template at a time so that
+                    # we can opt to leave some un-filled when they are not yet set.
+                    # For example, we can save cycle-dependent templates to fill in
+                    # at run time.
+                    if "{%" in v_str:
+                        templates = [v_str]
+                    else:
+                        # Separates out all the double curly bracket pairs
+                        templates = [m.group() for m in
+                                re.finditer(r"{{[^}]*}}|\S", v_str)  if '{{'
+                                in m.group()]
+                    data = []
+                    for template in templates:
+                        j2env = jinja2.Environment(
+                            loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
+                        )
+                        j2env.filters["path_join"] = path_join
+                        j2env.filters["days_ago"] = days_ago
+                        j2env.filters["include"] = include
+                        try:
+                            j2tmpl = j2env.from_string(template)
+                        except:
+                            print(f"ERROR filling template: {template}, {v_str}")
+                            raise
+                        try:
+                            # Fill in a template that has the appropriate variables
+                            # set.
+                            template = j2tmpl.render(parent=parent, **yaml_dict, **full_dict)
+                        except jinja2.exceptions.UndefinedError as e:
+                            # Leave a templated field as-is in the resulting dict
+                            pass
+                        except ValueError:
+                            pass
+                        except TypeError:
+                            pass
+                        except ZeroDivisionError:
+                            pass
+                        except:
+                            print(f"{k}: {template}")
+                            raise
+
+                        data.append(template)
+
+                    for tmpl, rendered in zip(templates, data):
+                        v_str = str_to_type(v_str.replace(tmpl, rendered))
+
+                    if isinstance(v, ET.Element):
+                        print('Replacing ET text with', v_str)
+                        v.text = v_str
+                    elif isinstance(yaml_dict[k], list):
+                        yaml_dict[k][v_idx] = v_str
+                    else:
+                        # Put the full template line back together as it was,
+                        # filled or not
+                        yaml_dict[k] = v_str
 
 
 ##########
