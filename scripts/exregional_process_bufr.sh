@@ -109,20 +109,8 @@ if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
   obs_source=rap_e
 fi
 
-case $MACHINE in
-
-"WCOSS2")
-
-  obsfileprefix=${obs_source}
-  obspath_tmp=${OBSPATH}/${obs_source}.${YYYYMMDD}
-
-  ;;
-*)
-
-  obsfileprefix=${YYYYMMDDHH}.${obs_source}
-  obspath_tmp=${OBSPATH}
-
-esac
+# evaluate template path that uses `obs_source`
+eval OBSPATH_TEMPLATE=${OBSPATH_TEMPLATE}
 
 #
 #-----------------------------------------------------------------------
@@ -132,7 +120,7 @@ esac
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}z.lghtng.tm00.bufr_d
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lghtng.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_lightning=false
 if [ -r "${obs_file}" ]; then
@@ -208,7 +196,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}z.lgycld.tm00.bufr_d
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lgycld.tm00.bufr_d
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_cloud=false
 if [ -r "${obs_file}" ]; then
@@ -291,7 +279,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.prepbufr.tm00 
+obs_file=${OBSPATH_TEMPLATE}.t${HH}z.prepbufr.tm00 
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_metar=false
 if [ -r "${obs_file}" ]; then
