@@ -1442,7 +1442,7 @@ deterministic and ensemble).
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
     <jobname>{{tn}}</jobname>
-    <join><cyclestr>&LOGDIR;/{{tn}}_@Y@m@d@H.log</cyclestr></join>
+    <join>&LOGDIR;/{{tn}}_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
@@ -1642,7 +1642,7 @@ CCPA observations to obtain APCP obs for longer accumulation periods
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <native>&SCHED_NATIVE_CMD;</native>
     <jobname>{{tn}}</jobname>
-    <join><cyclestr>&LOGDIR;/{{tn}}_@Y@m@d@H.log</cyclestr></join>
+    <join>&LOGDIR;/{{tn}}_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
 
     <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
     <envar><name>USHdir</name><value>&USHdir;</value></envar>
