@@ -4,55 +4,53 @@
 Air Quality Modeling (Online-CMAQ)
 =====================================
 
-This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
-
-
 The standard SRW App distribution uses the uncoupled version of the UFS Weather Model (atmosphere-only). However, users have the option to use a coupled version of the SRW App that includes the standard distribution (atmospheric model) plus the Air Quality Model (AQM).
 
-The AQM is a UFS Application that dynamically couples the Community Multiscale Air Quality (CMAQ) model with the UFS Weather Model through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ model, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS Weather Model as tracers.
+The AQM is a UFS Application that dynamically couples the Community Multiscale Air Quality (:term:`CMAQ`) model with the UFS Weather Model through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ model, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS Weather Model as tracers.
 
 Quick Start Guide (Online-CMAQ)
 ==================================
 
-Clone the ``develop`` branch of the authoritative repository:
+Clone the ``develop`` branch of the authoritative SRW App repository:
 
 .. code-block:: console
 
    git clone -b develop https://github.com/ufs-community/ufs-srweather-app
    cd ufs-srweather-app
 
-Note that the latest hash of the develop branch might not be tested with the sample scripts of Online-CMAQ. Therefore, if you want to check out the stable (verified) version for Online-CMAQ, you can check out the following hash:
+Note that the latest hash of the ``develop`` branch might not be tested with the sample scripts of Online-CMAQ. To check out the stable (verified) version for Online-CMAQ, users can check out the following hash:
 
 .. code-block:: console
 
    git checkout ff6f103
 
-Check the hashes of the external components in ``ufs-srweather-app/Externals.cfg``. This will check out the following hashes of the external components that are specified in ``Externals.cfg`` (as of 03/08/2023):
+This will check out the following hashes of the external components, which are specified in ``ufs-srweather-app/Externals.cfg`` (as of 03/08/2023):
 
-.. table:: Externals for AQM
+.. table:: Externals for Online-CMAQ
 
    +--------------------+--------------+
-   | Component	         | Hash         |
+   | Component          | Hash         |
    +====================+==============+
-   | UFS_UTILS	         | ca9bed8      |
+   | UFS_UTILS          | ca9bed8      |
    +--------------------+--------------+
    | ufs-weather-model	| e051e0e      |
    +--------------------+--------------+
-   | UPP	               | 2b2c84a      |
+   | UPP                | 2b2c84a      |
    +--------------------+--------------+
-   | NEXUS	            | 3842818      |
+   | NEXUS              | 3842818      |
    +--------------------+--------------+
-   | AQM-utils	         | e078c70      |
+   | AQM-utils          | e078c70      |
    +--------------------+--------------+
 
-Replace the above hashes if you want to check out different ones.
-If you want to use another branch for development, you can comment out the hash line and uncomment the branch line with a new ``repo_url`` address. For example:
+Users may replace the hashes above with different ones if they prefer. For example, users can comment out the hash line and uncomment the branch line with a new ``repo_url`` address to use a different branch for development. 
 
 .. code-block:: console
 
    repo_url = https://github.com/chan-hoo/ufs-weather-model
    branch = feature/for_example
    #hash = e051e0e
+
+Note that the repository URL has been changed to check out code from a user's personal ``ufs-weather-model`` fork rather than the authoritative UFS community repository. 
 
 Check out the external components:
 

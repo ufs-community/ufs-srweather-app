@@ -693,8 +693,6 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
 
 .. _task_get_extrn_ics:
 
-.. _task_get_extrn_ics:
-
 GET_EXTRN_ICS Configuration Parameters
 =========================================
 
