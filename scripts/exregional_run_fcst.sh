@@ -48,13 +48,21 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
+# Set environment variables.
 #
 #-----------------------------------------------------------------------
 #
 export KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
 export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
+export MPI_TYPE_DEPTH=20
+export ESMF_RUNTIME_COMPLIANCECHECK=OFF:depth=4
+if [ "${PRINT_ESMF}" = "TRUE" ]; then
+  export ESMF_RUNTIME_PROFILE=ON
+  export ESMF_RUNTIME_PROFILE_OUTPUT="SUMMARY"
+fi
+export PSM_RANKS_PER_CONTEXT=4
+export PSM_SHAREDCONTEXTS=1
 #
 #-----------------------------------------------------------------------
 #

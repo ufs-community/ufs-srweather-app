@@ -21,10 +21,10 @@ OPTIONS
       CCPP suites (CCPP_SUITES) to include in build; delimited with ','
   --enable-options="OPTION1,OPTION2,..."
       enable ufs-weather-model options; delimited with ','
-      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
+      (e.g. UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
   --disable-options="OPTION1,OPTION2,..."
       disable ufs-weather-model options; delimited with ','
-      (e.g. 32BIT | INLINE_POST | UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
+      (e.g. UFS_GOCART | MOM6 | CICE6 | WW3 | CMEPS)
   --continue
       continue with existing build
   --remove
