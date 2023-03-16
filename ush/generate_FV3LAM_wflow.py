@@ -367,12 +367,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
-    log_info(
-        f"""
-        Copying the template NEMS configuration file to the experiment directory...""",
-        verbose=verbose,
-    )
-    cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
     # Copy the CCPP physics suite definition file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-

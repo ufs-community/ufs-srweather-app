@@ -315,11 +315,13 @@ FV3_GFS_v15_thompson_mynn_lam3km:
   gfs_physics_nml:
     avg_max_length: 3600.0
     cdmbgwd: [0.88, 0.04]
+    debug: True
     do_deep: False
     do_gsl_drag_ls_bl: False
     do_gsl_drag_ss: True
     do_gsl_drag_tofd: True
     do_mynnsfclay: True
+    do_tofd: False
     do_ugwp: False
     do_ugwp_v0: False
     do_ugwp_v0_nst_only: False
@@ -353,6 +355,7 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     lsoil_lsm: !!python/none
     ltaerosol: False    
     nstf_name: [2, 1, 0, 0, 0]
+    print_diff_pgr: True
     sfclay_compute_flux: !!python/none
     xkzminv: 0.3
     xkzm_m: 1.0

@@ -82,7 +82,6 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "PE_MEMBER01": PE_MEMBER01,
         "start_year": yyyy,
         "start_month": mm,
         "start_day": dd,
@@ -90,7 +89,6 @@ def create_model_configure_file(
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
-        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
         "write_dopost": dot_write_dopost,
         "quilting": dot_quilting_dot,
@@ -349,11 +347,9 @@ class Testing(unittest.TestCase):
         set_env_var("USHdir", USHdir)
         set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)
         set_env_var("MODEL_CONFIG_TMPL_FP", MODEL_CONFIG_TMPL_FP)
-        set_env_var("PE_MEMBER01", 24)
         set_env_var("FCST_LEN_HRS", 72)
         set_env_var("FHROT", 0)
         set_env_var("DT_ATMOS", 1)
-        set_env_var("OMP_NUM_THREADS_RUN_FCST", 1)
         set_env_var("RESTART_INTERVAL", 4)
 
         set_env_var("WRTCMP_write_groups", 1)
