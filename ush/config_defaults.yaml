@@ -1195,9 +1195,7 @@ nco:
   # The beginning portion of the directory that will contain the output 
   # files from the forecast for a given cycle.  For a cycle 
   # that starts on the date specified by yyyymmdd and hour specified by hh
-  # (where yyyymmdd and hh are as described above), the directory in which
-  # the forecast output files will be placed will be:
-  #   $NWGES/$NET/$envir/$RUN.$yyyymmdd/$hh
+  #   ${NWGES}/yyyymmddhh
   # 
   # For more information on NCO standards
   #   
