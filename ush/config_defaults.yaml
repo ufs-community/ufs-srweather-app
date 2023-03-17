@@ -2744,10 +2744,12 @@ verification:
   #
   GET_OBS_LOCAL_MODULE_FN: 'get_obs'
   #
-  # Templates for CCPA observation files.
+  # Templates for CCPA, MRMS, and NDAS observation files.
   #
   OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
   OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
+  OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_NDAS_SFCorUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
   OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: '${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'
   #
