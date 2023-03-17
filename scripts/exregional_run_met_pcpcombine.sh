@@ -30,7 +30,7 @@ source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFN
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -112,7 +112,7 @@ set_vx_params \
 # was initialized 1 hour before the current CDATE, while a time lag of 0
 # means the current member was initialized on CDATE.
 #
-# Note that if we're not running ensemble verification (i.e. if we're 
+# Note that if we're not running ensemble verification (i.e. if we're
 # running verification for a single deterministic forecast), the time
 # lag gets set to 0.
 #
@@ -121,7 +121,7 @@ set_vx_params \
 time_lag="0"
 if [ "${obs_or_fcst}" = "fcst" ]; then
   time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because 
+# Convert to seconds.  We do this as a separate step using bc because
 # bash's $((...)) arithmetic operator can't handle floats well.
   time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
 fi
@@ -140,13 +140,13 @@ FCST_INPUT_FN_TEMPLATE=""
 
 if [ "${obs_or_fcst}" = "obs" ]; then
 
-  OBS_INPUT_DIR="${OBS_DIR}"                                               
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )     
+  OBS_INPUT_DIR="${OBS_DIR}"
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"                                       
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"                    
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )      
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"     
+  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"
+  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
+  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
+  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
 

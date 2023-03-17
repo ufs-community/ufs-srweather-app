@@ -59,7 +59,7 @@ by initialization time for all forecast hours.
 #-----------------------------------------------------------------------
 #
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# bles.
 #
 #-----------------------------------------------------------------------
 #
