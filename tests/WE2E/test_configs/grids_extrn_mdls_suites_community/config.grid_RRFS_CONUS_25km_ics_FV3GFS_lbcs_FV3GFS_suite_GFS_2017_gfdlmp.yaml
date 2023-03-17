@@ -4,14 +4,14 @@ metadata:
     completes successfully on the RRFS_CONUS_25km grid using the GFS_2017_gfdlmp
     physics suite with ICs and LBCs derived from the FV3GFS.
     This test additionally includes the cycling ensemble capability, with
-    2 members run over 4 cycles.
+    2 members run over 2 cycles.
 user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
   PREDEF_GRID_NAME: RRFS_CONUS_25km
-  DATE_FIRST_CYCL: '2019070100'
-  DATE_LAST_CYCL: '2019070212'
+  DATE_FIRST_CYCL: '2019070112'
+  DATE_LAST_CYCL: '2019070200'
   INCR_CYCL_FREQ: 12
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
