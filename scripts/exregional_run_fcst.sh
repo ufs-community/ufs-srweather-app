@@ -61,8 +61,6 @@ if [ "${PRINT_ESMF}" = "TRUE" ]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT="SUMMARY"
 fi
-export PSM_RANKS_PER_CONTEXT=4
-export PSM_SHAREDCONTEXTS=1
 #
 #-----------------------------------------------------------------------
 #
