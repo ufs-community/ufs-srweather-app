@@ -303,7 +303,7 @@
 #"gfs_dyn",         "ntr1",          "ntr1",          "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",         "ntr2",          "ntr2",          "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",         "facd",          "facd",          "fv3_history",  "all",  .false.,  "none",  2
-#"gfs_dyn",         "co",            "co",            "fv3_history",  "all",  .false.,  "none",  2
+"gfs_dyn",          "co",            "co",            "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",         "aldx",          "aldx",          "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",         "glyd",          "glyd",          "fv3_history",  "all",  .false.,  "none",  2
 #"gfs_dyn",         "gly",           "gly",           "fv3_history",  "all",  .false.,  "none",  2
