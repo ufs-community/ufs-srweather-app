@@ -97,9 +97,17 @@ Load the python environment for the workflow:
    # On all systems (including WCOSS2):
    module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<machine>
-   conda activate regional_workflow
 
 where ``<machine>`` is ``hera`` or ``wcoss2``. The workflow should load on other platforms listed under the ``MACHINE`` variable in :numref:`Section %s <user>`, but users may need to adjust other elements of the process when running on those platforms. 
+
+If the console outputs a message, the user should run the commands specified in the message. For example, if the output says: 
+
+.. code-block:: console
+
+   Please do the following to activate conda:
+       > conda activate regional_workflow
+
+then the user should run ``conda activate regional_workflow``. Otherwise, the user can continue with configuring the workflow. 
 
 .. _AQMConfig:
 
