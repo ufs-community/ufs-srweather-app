@@ -1765,7 +1765,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_APCP01H;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_apcp01h }}:ppn={{ ppn_run_met_gridstat_vx_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_apcp01h }}</memory>
@@ -1783,9 +1783,11 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
+    <envar><name>obs_or_fcst</name><value>obs</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
@@ -1951,7 +1953,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_REFC;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_refc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_refc }}:ppn={{ ppn_run_met_gridstat_vx_refc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_refc }}</memory>
@@ -1969,8 +1971,11 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>MRMS</value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
+    <envar><name>obs_or_fcst</name><value>obs</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
@@ -2001,7 +2006,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_RETOP;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_retop }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_retop }}:ppn={{ ppn_run_met_gridstat_vx_retop }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_retop }}</memory>
@@ -2019,8 +2024,11 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>MRMS</value></envar>
     <envar><name>VAR</name><value>RETOP</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
+    <envar><name>obs_or_fcst</name><value>obs</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
