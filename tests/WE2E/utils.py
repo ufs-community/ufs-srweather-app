@@ -113,7 +113,7 @@ def create_expts_dict(expt_dir: str) -> dict:
     Returns:
         dict : Experiment dictionary
     """
-    contents = os.listdir(expt_dir)
+    contents = sorted(os.listdir(expt_dir))
 
     expts_dict=dict()
     for item in contents:
