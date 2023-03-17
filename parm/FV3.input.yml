@@ -354,7 +354,7 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: False    
-    nstf_name: [2, 1, 0, 0, 0]
+    nstf_name: [2, 0, 0, 0, 0]
     print_diff_pgr: True
     sfclay_compute_flux: !!python/none
     xkzminv: 0.3
