@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+run_WE2E_tests.py
+====================================
+Runs the user's WE2E tests.
+"""
+
 import os
 import sys
 import glob

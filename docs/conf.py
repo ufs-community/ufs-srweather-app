@@ -54,6 +54,11 @@ extensions = [
     'sphinxcontrib.bibtex',
 ]
 
+# Autodoc configuration:
+autodoc_mock_imports = ["python_utils", "setup", "set_FV3nml_sfc_climo_filenames", 
+   "get_crontab_contents", "fill_jinja_template", "set_namelist", "check_python_version"]
+
+
 bibtex_bibfiles = ['references.bib']
 #bibtex_bibfiles = ['refs.bib']
 
