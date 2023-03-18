@@ -2688,7 +2688,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp01h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp01h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp01h }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp01h }}</memory>
@@ -2706,9 +2706,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -2724,7 +2725,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP03H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp03h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp03h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp03h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp03h }}</memory>
@@ -2742,9 +2743,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM_HH</name><value>03</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H;"/>
@@ -2761,7 +2763,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP06H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp06h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp06h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp06h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp06h }}</memory>
@@ -2779,9 +2781,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM_HH</name><value>06</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H;"/>
@@ -2798,7 +2801,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_GRIDSTAT_VX_ENSPROB_APCP24H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_gridstat_vx_ensprob_apcp24h }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"</command>
     <nodes>{{ nnodes_run_met_gridstat_vx_ensprob_apcp24h }}:ppn={{ ppn_run_met_gridstat_vx_ensprob_apcp24h }}</nodes>
     {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_gridstat_vx_ensprob_apcp24h }}</memory>
@@ -2816,9 +2819,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
     <envar><name>ACCUM_HH</name><value>24</value></envar>
+    <envar><name>MET_TOOL</name><value>GRIDSTAT</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H;"/>
