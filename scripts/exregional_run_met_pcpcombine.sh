@@ -64,7 +64,7 @@ Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs the METplus ${met_tool_pc}
-that combines hourly accumulated precipitation (APCP) data to generate
+tool to combine hourly accumulated precipitation (APCP) data to generate
 files containing multi-hour accumulated precipitation (e.g. 3-hour, 6-
 hour, 24-hour).  The input files can come from either observations or
 a forecast.

@@ -21,7 +21,7 @@ source_config_for_task "task_run_vx_ensgrid_mean|task_run_post" ${GLOBAL_VAR_DEF
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -122,7 +122,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Check for existence of top-level OBS_DIR 
+# Check for existence of top-level OBS_DIR.
 #
 #-----------------------------------------------------------------------
 #
@@ -130,7 +130,6 @@ if [[ ! -d "$OBS_DIR" ]]; then
   print_err_msg_exit "\
   Exiting: OBS_DIR does not exist."
 fi
-
 #
 #-----------------------------------------------------------------------
 #
