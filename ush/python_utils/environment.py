@@ -58,7 +58,12 @@ def str_to_type(s, return_string=0):
     Returns:
         a float, int, boolean, datetime, or the string itself when all else fails
     """
-    s = s.strip("\"'")
+    s = s.strip()
+    if s.startswith('"') and s.endswith('"'):
+        s = s.strip('"')
+    elif s.startswith("'") and s.endswith("'"):
+        s = s.strip("'")
+
     if return_string != 1:
         if s.lower() in ["true", "yes", "yeah"]:
             return True
