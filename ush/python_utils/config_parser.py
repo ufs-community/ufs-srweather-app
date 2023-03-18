@@ -42,11 +42,14 @@ from .run_command import run_command
 ##########
 # YAML
 ##########
-def load_yaml_config(config_file):
-    """Safe load a yaml file"""
+def load_yaml_config(config_file_or_string):
+    """Safe load a yaml file or yaml string"""
 
-    with open(config_file, "r") as f:
-        cfg = yaml.safe_load(f)
+    if os.path.isfile(config_file_or_string):
+        with open(config_file_or_string, "r") as f:
+            cfg = yaml.safe_load(f)
+    else:
+        cfg = yaml.safe_load(config_file_or_string)
 
     return cfg
 
@@ -249,12 +252,15 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
 ##########
 # JSON
 ##########
-def load_json_config(config_file):
-    """Load json config file"""
+def load_json_config(config_file_or_string):
+    """Load json config file or json string"""
 
     try:
-        with open(config_file, "r") as f:
-            cfg = json.load(f)
+        if os.path.isfile(config_file_or_string):
+            with open(config_file_or_string, "r") as f:
+                cfg = json.load(f)
+        else:
+            cfg = json.loads(config_file_or_string)
     except json.JSONDecodeError as e:
         raise Exception(f"Unable to load json file {config_file}")
 
@@ -270,42 +276,39 @@ def cfg_to_json_str(cfg):
 ##########
 # SHELL
 ##########
-def load_shell_as_ini_config(file_name, return_string=1):
-    """Load shell config file with embedded structure in comments"""
+def load_shell_as_ini_config(config_file_or_string, return_string=1):
+    """Load shell config file or shell string with embedded structure in comments"""
 
-    # read contents and replace comments as sections
-    with open(file_name, "r") as file:
-        cfg = file.read()
-        cfg = cfg.replace("# [", "[")
-        cfg = cfg.replace("\\\n", " ")
+    # read content
+    if os.path.isfile(config_file_or_string):
+        with open(config_file_or_string, "r") as file:
+            cfg = file.read()
+    else:
+        cfg = config_file
 
-    # write content to temp file and load it as ini
-    temp_file = os.path.join(os.getcwd(), "_temp." + str(os.getpid()) + ".ini")
-    with open(temp_file, "w") as file:
-        file.write(cfg)
+    # replace comments to be sections
+    cfg = cfg.replace("# [", "[")
+    cfg = cfg.replace("\\\n", " ")
 
     # load it as a structured ini file
-    try:
-        cfg = load_ini_config(temp_file, return_string)
-    finally:
-        os.remove(temp_file)
+    cfg = load_ini_config(cfg, return_string)
 
     return cfg
 
 
-def load_shell_config(config_file, return_string=0):
+def load_shell_config(config_file_or_string, return_string=0):
     """Loads old style shell config files.
     We source the config script in a subshell and gets the variables it sets
 
     Args:
-         config_file: path to config file script
+         config_file_or_string: path to config file or a string with its contents
     Returns:
          dictionary that should be equivalent to one obtained from parsing a yaml file.
     """
 
     # First try to load it as a structured shell config file
     try:
-        cfg = load_shell_as_ini_config(config_file, return_string)
+        cfg = load_shell_as_ini_config(config_file_or_string, return_string)
         return cfg
     except:
         pass
@@ -314,12 +317,16 @@ def load_shell_config(config_file, return_string=0):
     # do a diff to get variables specifically defined/updated in the script
     # Method sounds brittle but seems to work ok so far
     pid = os.getpid()
+    if os.path.isfile(config_file_or_string):
+        source_config = f""". {config_file}"""
+    else:
+        source_config = f"""eval "{config_file}" """
     code = dedent(
         f"""      #!/bin/bash
       t1="./t1.{pid}"
       t2="./t2.{pid}"
       (set -o posix; set) > $t1
-      {{ . {config_file}; set +x; }} &>/dev/null
+      {{ {source_config}; set +x; }} &>/dev/null
       (set -o posix; set) > $t2
       diff $t1 $t2 | grep "> " | cut -c 3-
       rm -rf $t1 $t2
@@ -338,51 +345,57 @@ def load_shell_config(config_file, return_string=0):
     return cfg
 
 
+
 def cfg_to_shell_str(cfg, kname=None):
     """Get contents of config file as shell script string"""
 
     shell_str = ""
+    shell_str_sub = ""
     for k, v in cfg.items():
-        if isinstance(v, dict):
-            if kname:
-                n_kname = f"{kname}.{k}"
-            else:
-                n_kname = f"{k}"
-            shell_str += f"# [{n_kname}]\n"
-            shell_str += cfg_to_shell_str(v, n_kname)
-            shell_str += "\n"
-            continue
-        # others
-        v1 = list_to_str(v)
-        if isinstance(v, list):
-            shell_str += f"{k}={v1}\n"
+        if kname:
+            n_kname = f"{kname}.{k}"
         else:
+            n_kname = f"{k}"
+
+        if isinstance(v, dict):
+            shell_str_sub += cfg_to_shell_str(v, n_kname)
+            continue
+        elif isinstance(v, list):
+            for va in v:
+                if isinstance(va, dict):
+                    shell_str_sub += cfg_to_shell_str(va, n_kname)
+                else:
+                    v1 = list_to_str(v)
+                    shell_str_sub += f"{k}={v1}\n"
+                    break
+        else:
+            v1 = list_to_str(v)
             # replace some problematic chars
             v1 = v1.replace("'", '"')
             v1 = v1.replace("\n", " ")
             # end problematic
             shell_str += f"{k}='{v1}'\n"
-    return shell_str
+
+    c = "" if kname is not None and "." in kname else "\n"
+    if (shell_str == "") and (shell_str_sub != ""):
+        return c + shell_str_sub
+
+    return c + f"# [{kname}]\n" + shell_str + shell_str_sub
 
 
 ##########
 # INI
 ##########
-def load_ini_config(config_file, return_string=0):
-    """Load a config file with a format similar to Microsoft's INI files"""
-
-    if not os.path.exists(config_file):
-        raise FileNotFoundError(
-            dedent(
-                f"""
-                The specified configuration file does not exist:
-                '{config_file}'"""
-            )
-        )
+def load_ini_config(config_file_or_string, return_string=0):
+    """Load a config file or string with a format similar to Microsoft's INI files"""
 
     config = configparser.RawConfigParser()
     config.optionxform = str
-    config.read(config_file)
+    if os.path.isfile(config_file_or_string):
+        config.read(config_file_or_string)
+    else:
+        config.read_string(config_file_or_string)
+
     config_dict = {s: dict(config.items(s)) for s in config.sections()}
     for _, vs in config_dict.items():
         for k, v in vs.items():
@@ -405,22 +418,39 @@ def cfg_to_ini_str(cfg, kname=None):
     """Get contents of config file as ini string"""
 
     ini_str = ""
+    ini_str_sub = ""
     for k, v in cfg.items():
-        if isinstance(v, dict):
-            if kname:
-                n_kname = f"{kname}.{k}"
-            else:
-                n_kname = f"{k}"
-            ini_str += f"[{n_kname}]\n"
-            ini_str += cfg_to_ini_str(v, n_kname)
-            ini_str += "\n"
-            continue
-        v1 = list_to_str(v, True)
-        if isinstance(v, list):
-            ini_str += f"{k}={v1}\n"
+        if kname:
+            n_kname = f"{kname}.{k}"
         else:
-            ini_str += f"{k}='{v1}'\n"
-    return ini_str
+            n_kname = f"{k}"
+        if isinstance(v, dict):
+            ini_str_sub += cfg_to_ini_str(v, n_kname)
+            continue
+        elif isinstance(v, list):
+            for va in v:
+                if isinstance(va, dict):
+                    ini_str_sub += cfg_to_ini_str(va, n_kname)
+                else:
+                    v1 = list_to_str(v, True)
+                    ini_str_sub += f"{k}={v1}\n"
+                    break
+        else:
+            v1 = list_to_str(v, True)
+            # replace some problematic chars
+            v1 = v1.replace("'", '"')
+            v1 = v1.replace("\n", " ")
+            # end problematic
+            if isinstance(v, list):
+                ini_str += f"{k}={v1}\n"
+            else:
+                ini_str += f"{k}='{v1}'\n"
+
+    c = "" if kname is not None and "." in kname else "\n"
+    if (ini_str == "") and (ini_str_sub != ""):
+        return c + ini_str_sub
+
+    return c + f"[{kname}]\n" + ini_str + ini_str_sub
 
 
 ##########
@@ -432,34 +462,72 @@ def xml_to_dict(root, return_string):
     cfg = {}
     for child in root:
         if len(list(child)) > 0:
-            r = xml_to_dict(child, return_string)
-            cfg[child.tag] = r
+            value = xml_to_dict(child, return_string)
         else:
-            cfg[child.tag] = str_to_list(child.text, return_string)
+            value = str_to_list(child.text, return_string)
+
+        k = child.tag
+        if k in cfg:
+            if not isinstance(cfg[k], list):
+                cfg[k] = [ cfg[k] ]
+        if len(child.attrib) == 0:
+            if k in cfg:
+                cfg[k].append(value)
+            else:
+                cfg[k] = value
+        else:
+            cfg_l = {}
+            if value is None:
+                cfg_l.update({"attrib": child.attrib})
+            else:
+                cfg_l.update({"attrib": child.attrib, "valuea": value})
+            if k in cfg:
+                cfg[k].append(cfg_l)
+            else:
+                cfg[k] = cfg_l
     return cfg
 
 
-def dict_to_xml(d, tag):
+def dict_to_xml(d, elem):
     """Convert dictionary to an xml tree"""
 
-    elem = ET.Element(tag)
     for k, v in d.items():
-        if isinstance(v, dict):
-            r = dict_to_xml(v, k)
-            elem.append(r)
+        if k == "valuea":
+            if isinstance(v, dict):
+                dict_to_xml(v, elem)
+            else:
+                elem.text = list_to_str(v, True)
+        elif isinstance(v, dict):
+            if k == "attrib":
+                for ka, va in v.items():
+                    elem.set(ka, va)
+            else:
+                child = ET.Element(k)
+                dict_to_xml(v, child)
+                elem.append(child)
+        elif isinstance(v, list):
+            for va in v:
+                child = ET.Element(k)
+                if isinstance(va, dict):
+                    dict_to_xml(va, child)
+                else:
+                    child.text = list_to_str(v, True)
+                elem.append(child)
         else:
             child = ET.Element(k)
             child.text = list_to_str(v, True)
             elem.append(child)
 
-    return elem
 
+def load_xml_config(config_file_or_string, return_string=0):
+    """Load xml config file or xml string"""
 
-def load_xml_config(config_file, return_string=0):
-    """Load xml config file"""
+    if os.path.isfile(config_file_or_string):
+        tree = ET.parse(config_file_or_string)
+        root = tree.getroot()
+    else:
+        root = ET.fromstring(config_file_or_string)
 
-    tree = ET.parse(config_file)
-    root = tree.getroot()
     cfg = xml_to_dict(root, return_string)
     return cfg
 
@@ -467,7 +535,8 @@ def load_xml_config(config_file, return_string=0):
 def cfg_to_xml_str(cfg):
     """Get contents of config file as a xml string"""
 
-    root = dict_to_xml(cfg, "root")
+    root = ET.Element("root")
+    dict_to_xml(cfg, root)
     r = ET.tostring(root, encoding="unicode")
     r = minidom.parseString(r)
     r = r.toprettyxml(indent="  ")
@@ -590,21 +659,52 @@ def filter_dict(dict_o, keys_regex):
 ##################
 # CONFIG loader
 ##################
-def load_config_file(file_name, return_string=0):
-    """Load config file based on file name extension"""
+def load_config_file_(config_file_or_string, return_string=0, rendered=None):
+    """Load config file based on file name extension
 
-    ext = os.path.splitext(file_name)[1][1:]
+    Args:
+       config_file_or_string: path to config file or string of contents
+       return_string: can be [0, 1, 2]
+       rendered: if config_file_or_string is jinja templated, this var contains the 
+                 rendered content of the file
+    """
+
+    ext = os.path.splitext(config_file_or_string)[1][1:]
+    config_file_or_string = (config_file_or_string if rendered is None else rendered)
+
     if ext == "sh":
-        return load_shell_config(file_name, return_string)
+        return load_shell_config(config_file_or_string, return_string)
     if ext == "ini":
-        return load_ini_config(file_name, return_string)
+        return load_ini_config(config_file_or_string, return_string)
     if ext == "json":
-        return load_json_config(file_name)
+        return load_json_config(config_file_or_string)
     if ext in ["yaml", "yml"]:
-        return load_yaml_config(file_name)
+        return load_yaml_config(config_file_or_string)
     if ext == "xml":
-        return load_xml_config(file_name, return_string)
+        return load_xml_config(config_file_or_string, return_string)
     return None
+
+def render_jinja_template(config_file_or_string, context):
+    """ Render a jinja templated config file. """
+
+    with open(config_file_or_string) as f:
+        template = jinja2.Template(f.read())
+        return template.render(context)
+
+    return None
+
+
+def load_config_file(config_file_or_string, return_string=0, context=None):
+    """ Load jinja templated config file. """
+
+    if context is not None:
+        if not isinstance(context, dict):
+            context = load_config_file_(context)
+        rendered = render_jinja_template(config_file_or_string, context)
+
+        return load_config_file_(config_file_or_string, return_string, rendered)
+    else:
+        return load_config_file_(config_file_or_string, return_string)
 
 
 ##################
@@ -635,6 +735,13 @@ def cfg_main():
         help="Flatten resulting dictionary",
     )
     parser.add_argument(
+        "--context",
+        "-x",
+        dest="context",
+        required=False,
+        help="File containing dictionary of context used for rendering another file that is jinja templated",
+    )
+    parser.add_argument(
         "--template-cfg",
         "-t",
         dest="template",
@@ -659,7 +766,7 @@ def cfg_main():
     )
 
     args = parser.parse_args()
-    cfg = load_config_file(args.cfg, 2)
+    cfg = load_config_file(args.cfg, 2, args.context)
 
     if args.validate:
         cfg_t = load_config_file(args.validate, 1)
