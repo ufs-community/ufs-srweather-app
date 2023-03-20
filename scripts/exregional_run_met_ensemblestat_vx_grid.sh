@@ -117,7 +117,7 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=EnsembleStat_${VAR}${ACCUM}h_${CDATE}
+  LOG_SUFFIX=EnsembleStat_${VAR}${ACCUM_HH}h_${CDATE}
 else
   LOG_SUFFIX=EnsembleStat_${VAR}_${CDATE}
 fi
@@ -149,7 +149,7 @@ export LOG_SUFFIX
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  acc="${ACCUM}h" # for stats output prefix in EnsembleStatConfig
+  acc="${ACCUM_HH}h" # for stats output prefix in EnsembleStatConfig
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
     -c ${METPLUS_CONF}/EnsembleStat_${VAR}${acc}.conf
