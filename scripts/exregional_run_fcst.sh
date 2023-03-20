@@ -517,6 +517,7 @@ fi
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   cp_vrfy input.nml input.nml_org
   cp_vrfy model_configure model_configure_org
+  relative_link_flag="FALSE"
 
   # Update FV3 input.nml for restart
   python3 $USHdir/update_restart_input_nml_file.py \
