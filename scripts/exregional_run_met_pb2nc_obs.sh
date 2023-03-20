@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -49,8 +49,8 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-met_tool_sc="pcp_combine"
-met_tool_pc="PcpCombine"
+met_tool_sc="pb2nc"
+met_tool_pc="Pb2nc"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,11 +63,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus ${met_tool_pc}
-that combines hourly accumulated precipitation (APCP) data to generate
-files containing multi-hour accumulated precipitation (e.g. 3-hour, 6-
-hour, 24-hour).  The input files can come from either observations or
-a forecast.
+This is the ex-script for the task that runs the METplus tool ${met_tool_pc}
+to convert NDAS prep buffer observation files to NetCDF format.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -104,61 +101,18 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
-# If performing forecast ensemble verification, get the time lag (if any)
-# of the current ensemble forecast member.  The time lag is the duration
-# (in units of seconds) by which the current forecast member was initialized
-# before the current cycle date and time (with the latter specified by
-# CDATE).  For example, a time lag of 3600 means that the current member
-# was initialized 1 hour before the current CDATE, while a time lag of 0
-# means the current member was initialized on CDATE.
-#
-# Note that if we're not running ensemble verification (i.e. if we're 
-# running verification for a single deterministic forecast), the time
-# lag gets set to 0.
-#
-#-----------------------------------------------------------------------
-#
-time_lag="0"
-if [ "${obs_or_fcst}" = "fcst" ]; then
-  time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because 
-# bash's $((...)) arithmetic operator can't handle floats well.
-  time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set paths and file templates for input to and output from the MET/
 # METplus tool to be run as well as other file/directory parameters.
 #
 #-----------------------------------------------------------------------
 #
-OBS_INPUT_DIR=""
-OBS_INPUT_FN_TEMPLATE=""
-FCST_INPUT_DIR=""
-FCST_INPUT_FN_TEMPLATE=""
+OBS_INPUT_DIR="${OBS_DIR}"
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
-if [ "${obs_or_fcst}" = "obs" ]; then
-
-  OBS_INPUT_DIR="${OBS_DIR}"                                               
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )     
-
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"                                       
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"                    
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )      
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"     
-
-elif [ "${obs_or_fcst}" = "fcst" ]; then
-
-  FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE} )
-
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_fcst"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-
-fi
+OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
+OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
+STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -166,22 +120,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${obs_or_fcst}" = "obs" ]; then
-  base_dir="${OBS_INPUT_DIR}"
-  fn_template="${OBS_INPUT_FN_TEMPLATE}"
-elif [ "${obs_or_fcst}" = "fcst" ]; then
-  base_dir="${FCST_INPUT_DIR}"
-  fn_template="${FCST_INPUT_FN_TEMPLATE}"
-fi
-
 set_vx_fhr_list \
   cdate="${CDATE}" \
   fcst_len_hrs="${FCST_LEN_HRS}" \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
-  base_dir="${base_dir}" \
-  fn_template="${fn_template}" \
-  check_hourly_files="TRUE" \
+  base_dir="${OBS_INPUT_DIR}" \
+  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
+  check_hourly_files="FALSE" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -240,19 +186,17 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${met_tool_pc}_${obs_or_fcst}"
-metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_fn="${metplus_config_fn}${USCORE_ENSMEM_NAME_OR_NULL}_$CDATE"
+metplus_config_tmpl_fn="${met_tool_pc}_obs"
 #
-# If operating on observation files, append the cycle date to the name
-# of the configuration file because in this case, the output files from
-# METplus are not placed under cycle directories (so another method is
-# necessary to associate the configuration file with the cycle for which
-# it is used).
+# If operating on observation files, 
+# Note that we append the cycle date to the name of the configuration
+# file because we are considering only observations when using Pb2NC, so
+# the output files from METplus are not placed under cycle directories.
+# Thus, another method is necessary to associate the configuration file
+# with the cycle for which it is used.
 #
-if [ "${obs_or_fcst}" = "obs" ]; then
-  metplus_config_fn="${metplus_log_fn}"
-fi
+metplus_config_fn="${metplus_config_tmpl_fn}_$CDATE"
+metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
@@ -340,7 +284,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+Calling METplus to run MET's ${met_tool_sc} tool on observations of type: ${OBTYPE}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \

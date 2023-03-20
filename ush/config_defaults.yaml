@@ -2607,6 +2607,17 @@ task_get_obs_ndas:
   MAXTRIES_GET_OBS_NDAS: 1
 
 #----------------------------
+# tn_run_met_pb2nc_obs config parameters
+#-----------------------------
+task_tn_run_met_pb2nc_obs:
+  TN_RUN_MET_PB2NC_OBS: "run_MET_Pb2nc_obs"
+  NNODES_RUN_MET_PB2NC_OBS: 1
+  PPN_RUN_MET_PB2NC_OBS: 1
+  MEM_RUN_MET_PB2NC_OBS: 2G
+  WTIME_RUN_MET_PB2NC_OBS: 00:30:00
+  MAXTRIES_RUN_MET_PB2NC_OBS: 2
+
+#----------------------------
 # tn_run_met_pcpcombine config parameters
 #-----------------------------
 task_tn_run_met_pcpcombine:
@@ -3281,6 +3292,8 @@ verification:
   #
   OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
   OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_NDAS_SFCorUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
+  OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: '${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'
   #
   # VX_LOCAL_MODULE_FN:
   # Name (without extension) of the local module file for running the vx

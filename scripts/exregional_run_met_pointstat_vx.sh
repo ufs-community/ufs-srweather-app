@@ -12,6 +12,15 @@ source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_
 #
 #-----------------------------------------------------------------------
 #
+# Source files defining auxiliary functions for verification.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/set_vx_params.sh
+. $USHdir/set_vx_fhr_list.sh
+#
+#-----------------------------------------------------------------------
+#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #
@@ -21,7 +30,7 @@ source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -59,13 +68,6 @@ yyyymmdd=${PDY}
 hh=${cyc}
 export CDATE
 export hh
-
-fhr_last=`echo ${FHR}  | awk '{ print $NF }'`
-export fhr_last
-
-fhr_list=`echo ${FHR} | $SED "s/ /,/g"`
-export fhr_list
-
 #
 #-----------------------------------------------------------------------
 #
@@ -84,13 +86,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
-    else
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}
-    fi
+    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd
+    export OUTPUT_BASE=${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -109,11 +106,30 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 LOG_SUFFIX="PointStat"
-if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
-  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-fi
+#if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+#  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2`
+#  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
+#fi
 
+#
+#-----------------------------------------------------------------------
+#
+# Set the array of forecast hours for which to run the MET/METplus tool.
+#
+#-----------------------------------------------------------------------
+#
+export OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/Pb2nc_obs"
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+
+set_vx_fhr_list \
+  cdate="${CDATE}" \
+  fcst_len_hrs="${FCST_LEN_HRS}" \
+  field="$VAR" \
+  accum_hh="${ACCUM_HH}" \
+  base_dir="${OBS_INPUT_DIR}" \
+  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
+  check_hourly_files="FALSE" \
+  outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
 #
@@ -142,11 +158,12 @@ export MET_CONFIG
 export VX_FCST_MODEL_NAME
 export NET
 export POST_OUTPUT_DOMAIN_NAME
+export OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+export FHR_LIST
 
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${METPLUS_CONF}/PointStat_${VAR}.conf
-
 #
 #-----------------------------------------------------------------------
 #

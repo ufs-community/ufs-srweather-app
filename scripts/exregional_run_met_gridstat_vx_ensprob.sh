@@ -83,7 +83,7 @@ export fhr_list
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_BASE=$COMOUT/metout/${CDATE}/metprd/ensemble_stat
+    export INPUT_BASE=$COMOUT/metout/${CDATE}/metprd/EnsembleStat
     export OUTPUT_BASE=$COMOUT/metout
     export MEM_BASE=$OUTPUT_BASE
     export LOG_DIR=$LOGDIR
@@ -93,7 +93,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/ensemble_stat
+    export INPUT_BASE=${EXPTDIR}/${CDATE}/metprd/EnsembleStat
     export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
@@ -114,7 +114,7 @@ export DOT_ENSMEM=${dot_ensmem}
 #
 
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=GridStat_ensprob_${VAR}${ACCUM}h_${CDATE}
+  LOG_SUFFIX=GridStat_ensprob_${VAR}${ACCUM_HH}h_${CDATE}
 else
   LOG_SUFFIX=GridStat_ensprob_${VAR}_${CDATE}
 fi
@@ -156,7 +156,7 @@ export LOG_SUFFIX
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  export acc="${ACCUM}h"
+  export acc="${ACCUM_HH}h"
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
     -c ${METPLUS_CONF}/GridStat_ensprob_${VAR}${acc}.conf

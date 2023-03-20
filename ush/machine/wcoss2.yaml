@@ -35,7 +35,7 @@ platform:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
-  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
+  COMINairnow: /lfs/h1/ops/prod/dcom
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
