@@ -162,7 +162,6 @@ fi
 OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_ensprob"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensprob"
-LOG_SUFFIX="_${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensprob_${CDATE}"
 #
 #-----------------------------------------------------------------------
 #

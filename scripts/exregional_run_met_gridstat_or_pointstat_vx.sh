@@ -220,7 +220,6 @@ fi
 OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-LOG_SUFFIX="_${FIELDNAME_IN_MET_FILEDIR_NAMES}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}"
 #
 #-----------------------------------------------------------------------
 #
