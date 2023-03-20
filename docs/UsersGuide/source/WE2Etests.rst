@@ -3,7 +3,7 @@
 ==================================
 Workflow End-to-End (WE2E) Tests
 ==================================
-The SRW App contains a set of end-to-end tests that exercise various workflow configurations of the SRW App. These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto workflow manager to run their individual workflows. The purpose of these tests is to ensure that new changes to the App do not break existing functionality and capabilities. 
+The SRW App contains a set of end-to-end tests that exercise various workflow configurations of the SRW App. These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto workflow manager to run their individual workflows from start to finish. The purpose of these tests is to ensure that new changes to the App do not break existing functionality and capabilities. 
 
 Note that the WE2E tests are not regression tests---they do not check whether 
 current results are identical to previously established baselines. They also do
@@ -34,13 +34,13 @@ The test configuration files for these categories are located in the following d
    ufs-srweather-app/tests/WE2E/test_configs/grids_extrn_mdls_suites_nco
    ufs-srweather-app/tests/WE2E/test_configs/wflow_features
 
-The script to run the WE2E tests is named ``run_WE2E_tests.sh`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Chapter %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.sh`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls ``generate_FV3LAM_wflow.py``, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_WE2E_tests.py`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Chapter %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.py`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls the ``generate_FV3LAM_wflow()`` function, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
 
-Since ``run_WE2E_tests.sh`` calls ``generate_FV3LAM_wflow.py`` for each test, the 
-Python modules required for experiment generation must be loaded before ``run_WE2E_tests.sh`` 
+As with any other experiment within the App, the 
+Python modules required for experiment generation must be loaded before ``run_WE2E_tests.py`` 
 can be called. See :numref:`Section %s <SetUpPythonEnv>` for information on loading the Python
-environment on supported platforms. Note also that ``run_WE2E_tests.sh`` assumes that all of 
-the executables have been built (see :numref:`Section %s <BuildExecutables>`). If they have not, then ``run_WE2E_tests.sh`` will still generate the experiment directories, but the workflows will fail.
+environment on supported platforms. Note also that ``run_WE2E_tests.py`` assumes that all of 
+the executables have been built (see :numref:`Section %s <BuildExecutables>`). If they have not, then ``run_WE2E_tests.py`` will still generate the experiment directories, but the workflows will fail.
 
 Supported Tests
 ===================
@@ -50,24 +50,111 @@ The full list of WE2E tests is extensive; it is not recommended to run all the t
 Running the WE2E Tests
 ================================
 
-Users may specify the set of tests to run by creating a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Then, they pass the name of that file to ``run_WE2E_tests.sh``. For example, to run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following commands from the ``WE2E`` working directory (``ufs-srweather-app/tests/WE2E/``):
+Users may specify the set of tests to run in one of three ways. First, users can pass the name of a single test or list of tests to the script. Secondly, they can pass an option to run the ``fundamental`` or ``comprehensive`` suite of tests, or ``all`` tests (not recommended). Finally, users can create a text file, such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). Any one of these options can be passed to the ``run_WE2E_tests.py`` script via the ``--tests`` or ``-t`` option. 
+
+For example, to run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` (from the ``wflow_features`` and ``grids_extrn_mdls_suites_community`` categories, respectively), users would enter the following commands from the ``WE2E`` working directory (``ufs-srweather-app/tests/WE2E/``):
 
 .. code-block:: console
 
-   cat > my_tests.txt
-   custom_ESGgrid
-   grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+   echo "custom_ESGgrid" > my_tests.txt
+   echo "grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16" >> my_tests.txt
 
-(and ``Ctrl + D`` to exit). For each test in ``my_tests.txt``, ``run_WE2E_tests.sh`` will generate a new experiment directory and, by default, create a new :term:`cron` job in the user's cron table that will (re)launch the workflow every 2 minutes. This cron job calls the workflow launch script (``launch_FV3LAM_wflow.sh``) until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
+For each specified test, ``run_WE2E_tests.py`` will generate a new experiment directory and, by default, launch a second function ``monitor_jobs()`` that will continuously monitor active jobs, submit new jobs, and track the success or failure status of the experiment in a ``.yaml`` file. Finally, when all jobs have finished running (successfully or not), the function ``print_WE2E_summary()`` will print a summary of the jobs to screen, including the job's success or failure, timing information, and (if on an appropriately configured platform) the number of core hours used. An example run would look like this: 
 
-The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` can be called with the ``my_tests.txt`` file above. These examples assume that the user has already built the SRW App and loaded the regional workflow as described in :numref:`Section %s <SetUpPythonEnv>`.
+.. code-block:: console
+
+   $ ./run_WE2E_tests.py -t custom_ESGgrid -m hera -a gsd-fv3 --expt_basedir "test_set_01" -q
+   Checking that all tests are valid
+   Will run 1 tests:
+   /user/home/ufs-srweather-app/tests/WE2E/test_configs/wflow_features/config.custom_ESGgrid.yaml
+   Calling workflow generation function for test custom_ESGgrid
+
+   Workflow for test custom_ESGgrid successfully generated in
+   /user/home/expt_dirs/test_set_01/custom_ESGgrid
+
+   calling function that monitors jobs, prints summary
+   Writing information for all experiments to WE2E_tests_20230302214843.yaml
+   Checking tests available for monitoring...
+   Starting experiment custom_ESGgrid running
+   Updating database for experiment custom_ESGgrid
+   Setup complete; monitoring 1 experiments
+   Use ctrl-c to pause job submission/monitoring
+   Experiment custom_ESGgrid is COMPLETE; will no longer monitor.
+   All 1 experiments finished in 0:13:50.851855
+   Calculating core-hour usage and printing final summary
+   ----------------------------------------------------------------------------------------------------
+   Experiment name                                             | Status    | Core hours used 
+   ----------------------------------------------------------------------------------------------------
+   custom_ESGgrid                                                COMPLETE              35.92
+   ----------------------------------------------------------------------------------------------------
+   Total                                                         COMPLETE              35.92
+
+   Detailed summary written to WE2E_summary_20230302220233.txt
+
+   All experiments are complete
+   Summary of results available in WE2E_tests_20230302214843.yaml
+
+
+As the script runs, detailed debug output is written to the file ``log.run_WE2E_tests``. This can be useful for debugging if something goes wrong. You can also use the ``-d`` flag to print all this output to screen during the run, but this can get quite cluttered.
+
+The final job summary is written by the ``print_WE2E_summary()``; this prints a short summary of experiments to screen, and prints a more detailed summary of all jobs for all experiments in the indicated ``.txt`` file.
+
+.. code-block:: console
+
+   $ cat WE2E_summary_20230302220233.txt
+   ----------------------------------------------------------------------------------------------------
+   Experiment name                                             | Status    | Core hours used 
+   ----------------------------------------------------------------------------------------------------
+   custom_ESGgrid                                                COMPLETE              35.92
+   ----------------------------------------------------------------------------------------------------
+   Total                                                         COMPLETE              35.92
+
+   Detailed summary of each experiment:
+
+   ----------------------------------------------------------------------------------------------------
+   Detailed summary of experiment custom_ESGgrid
+                                            | Status    | Walltime   | Core hours used
+   ----------------------------------------------------------------------------------------------------
+   make_grid_201907010000                    SUCCEEDED          12.0           0.13
+   get_extrn_ics_201907010000                SUCCEEDED           7.0           0.08
+   get_extrn_lbcs_201907010000               SUCCEEDED           6.0           0.07
+   make_orog_201907010000                    SUCCEEDED          62.0           0.69
+   make_sfc_climo_201907010000               SUCCEEDED          41.0           0.91
+   make_ics_201907010000                     SUCCEEDED         180.0           8.00
+   make_lbcs_201907010000                    SUCCEEDED         228.0          10.13
+   run_fcst_201907010000                     SUCCEEDED         208.0          13.87
+   run_post_f000_201907010000                SUCCEEDED          15.0           0.33
+   run_post_f001_201907010000                SUCCEEDED          15.0           0.33
+   run_post_f002_201907010000                SUCCEEDED          15.0           0.33
+   run_post_f003_201907010000                SUCCEEDED          12.0           0.27
+   run_post_f004_201907010000                SUCCEEDED          12.0           0.27
+   run_post_f005_201907010000                SUCCEEDED          11.0           0.24
+   run_post_f006_201907010000                SUCCEEDED          12.0           0.27
+   ----------------------------------------------------------------------------------------------------
+   Total                                     COMPLETE                         35.92
+
+
+One might have noticed the line during the experiment run that reads "Use ctrl-c to pause job submission/monitoring". The ``monitor_jobs()`` function (called automatically after all experiments are generated) is designed to be easily paused and re-started if necessary. If you wish to stop actively submitting jobs, simply quitting the script using "ctrl-c" will stop the function, and give a short message on how to continue the experiment.
+
+.. code-block:: console
+
+   Setup complete; monitoring 1 experiments
+   Use ctrl-c to pause job submission/monitoring
+   ^C
+
+
+   User interrupted monitor script; to resume monitoring jobs run:
+
+   ./monitor_jobs.py -y=WE2E_tests_20230302214324.yaml -p=1
+
+The full list of options for any of these scripts can be found by using the ``-h`` flag. The examples below demonstrate several of the more common options for ``run_WE2E_tests.py``. These examples (as well as those above) assume that the user has already built the SRW App and loaded the appropriate python environment as described in :numref:`Section %s <SetUpPythonEnv>`.
 
 #. To run the tests listed in ``my_tests.txt`` on Hera and charge the computational
-   resources used to the "rtrr" account, use:
+   resources used to the "rtrr" account:
 
    .. code-block::
 
-      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr"
+      ./run_WE2E_tests.py --tests=my_tests.txt --machine=hera --account=rtrr
 
    This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ufs-srweather-app repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the following two experiment directories will be created:
 
@@ -76,85 +163,106 @@ The examples below demonstrate several common ways that ``run_WE2E_tests.sh`` ca
       ${HOMEdir}/../expt_dirs/custom_ESGgrid
       ${HOMEdir}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
-   In addition, by default, cron jobs will be added to the user's cron table to relaunch the workflows of these experiments every 2 minutes.
+   Once these experiment directories are created, the script will call the ``monitor_jobs()`` function. This function runs ``rocotorun`` in the background to monitor the status of jobs in each experiment directory, tracking the status of jobs as they run and complete, and submitting new jobs when they are ready. The progress of ``monitor_jobs()`` is tracked in a file ``WE2E_tests_{datetime}.yaml``, where {datetime} is the date and time (in ``yyyymmddhhmmss`` format) that the file was created.
 
-#. To change the frequency with which the cron relaunch jobs are submitted
-   from the default of 2 minutes to 1 minute, use:
-
-   .. code-block::
-
-      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" cron_relaunch_intvl_mnts="01"
-
-#. To disable use of cron (which implies that the worfkow for each test will have to be relaunched manually from within each experiment directory), use:
+#. Our second example will run the fundamental suite of tests on Orion, charging computational resources to the "gsd-fv3" account, and placing the experiment subdirectories in a subdirectory named ``test_set_01``:
 
    .. code-block::
 
-      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" use_cron_to_relaunch="FALSE"
-
-   In this case, the user will have to go into each test's experiment directory and either manually run the ``launch_FV3LAM_wflow.sh`` script or use the Rocoto commands described in :numref:`Chapter %s <RocotoInfo>` to (re)launch the workflow. Note that if using the Rocoto commands directly, the log file ``log.launch_FV3LAM_wflow`` will not be created; in this case, the status of the workflow can be checked using the ``rocotostat`` command (see :numref:`Section %s <RocotoManualRun>` or :numref:`Section %s <RocotoStatCmd>`).
-
-#. To place the experiment subdirectories in a subdirectory named ``test_set_01`` under 
-   ``${HOMEdir}/../expt_dirs`` (instead of immediately under ``expt_dirs``), use:
-
-   .. code-block::
-
-      ./run_WE2E_tests.sh tests_file="my_tests.txt" machine="hera" account="rtrr" expt_basedir="test_set_01"
+      ./run_WE2E_tests.py -t fundamental -m hera -a gsd-fv3 --expt_basedir "test_set_01" -q
 
    In this case, the full paths to the experiment directories will be:
 
    .. code-block::
 
-      ${HOMEdir}/../expt_dirs/test_set_01/custom_ESGgrid
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v15p2
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+      ${HOMEdir}/../expt_dirs/test_set_01/nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
 
-   This is useful for grouping various sets of tests.
+   The ``--expt_basedir`` option is useful for grouping various sets of tests. It can also be given a full path as an argument, which will place experiments in the given location. 
 
-#. To use a test list file (again named ``my_tests.txt``) located in a custom location instead of in the same directory as ``run_WE2E_tests.sh`` and to have the experiment directories be placed in a specific, non-default location (e.g., ``/path/to/custom/expt_dirs``), use:
+   The ``-q`` flag (as used in the first example shown above), is helpful for keeping the screen less cluttered; this will suppress the output from ``generate_FV3LAM_wflow()``, only printing important messages (warnings and errors) to screen. As always, this output will still be available in the ``log.run_WE2E_tests`` file.
+
+#. By default, the job monitoring and submission process is serial, using a single task. For test suites that contain many experiments, this means that the script may take a long time to return to a given experiment and submit the next job, due to the amount of time it takes for the ``rocotorun`` command to complete. In order to speed this process up, provided you have access to a node with the appropriate availability (e.g., submitting from a compute node), you can run the job monitoring processes in parallel using the ``-p`` option:
 
    .. code-block::
 
-      ./run_WE2E_tests.sh tests_file="/path/to/custom/location/my_tests.txt" machine="hera" account="rtrr" expt_basedir="/path/to/custom/expt_dirs"
+      ./run_WE2E_tests.py -m=jet -a=gsd-fv3-dev -t=all -q -p 6
 
-The full usage statement for ``run_WE2E_tests.sh`` is as follows:
+   Depending on your machine settings, this can reduce the time it takes to run all experiments substantially. 
 
-.. code-block::
+#. This example will run the single experiment "custom_ESGgrid" on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
 
-   ./run_WE2E_tests.sh \
-      tests_file="..." \
-      machine="..." \
-      account="..." \
-      [expt_basedir="..."] \
-      [exec_subdir="..."] \
-      [use_cron_to_relaunch="..."] \
-      [cron_relaunch_intvl_mnts="..."] \
-      [verbose="..."] \
-      [generate_csv_file="..."] \
-      [machine_file="..."] \
-      [stmp="..."] \
-      [ptmp="..."] \
-      [compiler="..."] \
-      [build_env_fn="..."]
+.. note::
 
-The arguments in brackets are optional. A complete description of these arguments can be 
-obtained by issuing:
+   This option is not recommended, as it does not work on some machines and can cause system bottlenecks on others.
 
-.. code-block::
+   .. code-block::
 
-   ./run_WE2E_tests.sh --help
+      ./run_WE2E_tests.py -t=custom_ESGgrid -m=hera -a=fv3lam --use_cron_to_relaunch --cron_relaunch_intvl_mnts=1
 
-from within the ``ufs-srweather-app/tests/WE2E`` directory.
+The option ``--use_cron_to_relaunch`` means that, rather than calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``). By default this script is run every 2 minutes, but we have changed that to 1 minute with the ``--cron_relaunch_intvl_mnts=1`` argument. This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
+
+
+Checking test status and summary
+=================================
+By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to screen when jobs are complete (either successfully or with a failure), and print a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
+However, if the user is using the legacy crontab option, or would like to summarize one or more experiments that are either not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
+In this example, an experiment was generated using the crontab option, and has not yet finished running.
+We use the ``-e`` option to point to the experiment directory and get the current status of the experiment:
+
+   .. code-block::
+
+      ./WE2E_summary.py -e /user/home/PR_466/expt_dirs/
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
+    Updating database for experiment grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v16
+    Updating database for experiment grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR
+    Updating database for experiment specify_template_filenames
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+    Updating database for experiment grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+    Updating database for experiment grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_2017_gfdlmp_regional
+    Updating database for experiment grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR
+    Updating database for experiment grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    Updating database for experiment grid_RRFS_SUBCONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    Updating database for experiment specify_DOT_OR_USCORE
+    Updating database for experiment custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALSE
+    Updating database for experiment grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+    ----------------------------------------------------------------------------------------------------
+    Experiment name                                             | Status    | Core hours used 
+    ----------------------------------------------------------------------------------------------------
+    grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1  COMPLETE              49.72
+    grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v16     DYING                  6.51
+    grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_HRRR         COMPLETE             411.84
+    specify_template_filenames                                    COMPLETE              17.36
+    grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR      COMPLETE              16.03
+    grid_RRFS_CONUScompact_3km_ics_HRRR_lbcs_RAP_suite_RRFS_v1be  COMPLETE             318.55
+    grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_2017_g  COMPLETE              17.79
+    grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_HRRR            COMPLETE              17.76
+    grid_RRFS_CONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16      RUNNING                0.00
+    grid_RRFS_SUBCONUS_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16   RUNNING                0.00
+    specify_DOT_OR_USCORE                                         QUEUED                 0.00
+    custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALS  QUEUED                 0.00
+    grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS  QUEUED                 0.00
+    ----------------------------------------------------------------------------------------------------
+    Total                                                         RUNNING              855.56
+
+    Detailed summary written to WE2E_summary_20230306173013.txt
+
+As with all python scripts in the App, additional options for this script can be viewed by calling with the ``-h`` argument.
 
 
 .. _WE2ETestInfoFile:
 
-The WE2E Test Information File
-================================
-In addition to creating the WE2E tests' experiment directories and optionally creating
-cron jobs to launch their workflows, the ``run_WE2E_tests.sh`` script generates a CSV (Comma-Separated Value) file named ``WE2E_test_info.csv`` that contains information 
-on the full set of WE2E tests. This file serves as a single location where relevant 
-information about the WE2E tests can be found. It can be imported into Google Sheets 
-using the "|" (pipe symbol) character as the custom field separator. If the user does *not* want ``run_WE2E_tests.sh`` to generate this CSV file the first time it runs, 
-this functionality can be explicitly disabled by including the ``generate_csv_file="FALSE"`` flag as an argument when running this script. 
+WE2E Test Information File
+==================================
+
+If the user wants to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character, and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_WE2E_tests.py`` with the ``--print_test_info`` flag.
 
 The rows of the file/sheet represent the full set of available tests (not just the ones to be run). The columns contain the following information (column titles are included in the CSV file):
 
@@ -225,80 +333,6 @@ The rows of the file/sheet represent the full set of available tests (not just t
   |  ``LBC_SPEC_INTVL_HRS``
   |  ``NUM_ENS_MEMBERS``
 
-Additional fields (columns) may be added to the CSV file in the future.
-
-Note that the CSV file is not part of the ``ufs-srweather-app`` repository and therefore is not tracked by the repository. The ``run_WE2E_tests.sh`` script will generate a CSV file if the ``generate_csv_file`` flag to this script has *not* explicitly been set to false and if either one of the following is true:
-
-#. The CSV file doesn't already exist.
-#. The CSV file does exist, but changes have been made to one or more of the 
-   category subdirectories (e.g., test configuration files modified, added, 
-   or deleted) since the creation of the CSV file. 
-
-Thus, unless the ``generate_csv_file`` flag is set to ``"FALSE"``, the 
-``run_WE2E_tests.sh`` will create a CSV file the first time it is run in a 
-fresh git clone of the SRW App.  The ``generate_csv_file`` flag is provided 
-because the CSV file generation can be slow, so users may wish to skip this 
-step since it is not a necessary part of running the tests.
-
-
-Checking Test Status
-======================
-If :term:`cron` jobs are used to periodically relaunch the tests, the status of each test can be checked by viewing the end of the log file (``log.launch_FV3LAM_wflow``). Otherwise (or alternatively), the ``rocotorun``/``rocotostat`` combination of commands can be used. (See :numref:`Section %s <RocotoManualRun>` for details.)
-
-The SRW App also provides the script ``get_expts_status.sh`` in the directory 
-``ufs-srweather-app/tests/WE2E``, which can be used to generate 
-a status summary for all tests in a given base directory. This script updates
-the workflow status of each test by internally calling ``launch_FV3LAM_wflow.sh``. Then, it prints out the status of the various tests in the command prompt. It also creates 
-a status report file named ``expts_status_${create_date}.txt`` (where ``create_date``
-is a time stamp in ``YYYYMMDDHHmm`` format corresponding to the creation date/time
-of the report) and places it in the experiment base directory. By default, this status file 
-contains the last 40 lines from the end of the ``log.launch_FV3LAM_wflow`` file. This number can be adjusted via the ``num_log_lines`` argument. These lines include the experiment status as well as the task status table generated by ``rocotostat`` so that, in case of failure, it is convenient to pinpoint the task that failed. 
-For details on the usage of ``get_expts_stats.sh``, issue the following command from the ``WE2E`` directory:
-
-.. code-block::
-
-   ./get_expts_status.sh --help
-
-Here is an example of how to call ``get_expts_status.sh`` from the ``WE2E`` directory:
-
-.. code-block::  console
-
-   ./get_expts_status.sh expts_basedir=/path/to/expt_dirs/set01
-
-The path for ``expts_basedir`` should be an absolute path. 
-
-Here is an example of output from the ``get_expts_status.sh`` script:
-
-.. code-block::  console
-
-   Checking for active experiment directories in the specified experiments
-   base directory (expts_basedir):
-     expts_basedir = "/path/to/expt_dirs/set01"
-   ...
-   
-   The number of active experiments found is:
-     num_expts = 2
-   The list of experiments whose workflow status will be checked is:
-     'custom_ESGgrid'
-     'grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16'
-
-   ======================================
-   Checking workflow status of experiment "custom_ESGgrid" ...
-   Workflow status:  SUCCESS
-   ======================================
-
-   ======================================
-   Checking workflow status of experiment "grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16" ...
-   Workflow status:  IN PROGRESS
-   ======================================
-
-   A status report has been created in:
-      expts_status_fp = "/path/to/expt_dirs/set01/expts_status_202204211440.txt"
-
-   DONE.
-
-The "Workflow status" field of each test indicates the status of its workflow. 
-The values that this can take on are "SUCCESS", "FAILURE", and "IN PROGRESS".
 
 Modifying the WE2E System
 ============================
@@ -329,30 +363,6 @@ To add a new test named, e.g., ``new_test01``, to one of the existing test categ
 #. Edit the contents of ``config.new_test01.yaml`` by modifying existing experiment variable values and/or adding new variables such that the test runs with the intended configuration.
 
 
-.. _AddNewCategory:
-
-Adding a New WE2E Test Category
------------------------------------
-
-To create a new test category called, e.g., ``new_category``:
-
-#. In the directory ``ufs-srweather-app/tests/WE2E/test_configs``, create a new directory named ``new_category``.
-
-#. In the file ``get_WE2Etest_names_subdirs_descs.sh``, add the element ``"new_category"`` to the array ``category_subdirs``, which contains the list of categories/subdirectories in which to search for test configuration files. Thus, ``category_subdirs`` becomes:
-
-   .. code-block:: console
-
-     category_subdirs=( \
-       "." \
-       "grids_extrn_mdls_suites_community" \
-       "grids_extrn_mdls_suites_nco" \
-       "wflow_features" \
-       "new_category" \
-       )
-
-New tests can now be added to ``new_category`` using the procedure described in :numref:`Section %s <AddNewTest>`.
-
-
 .. _CreateAltTestNames:
 
 Creating Alternate Names for a Test
@@ -378,7 +388,7 @@ In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25k
    * A primary test can have more than one alternate test name (by having more than one symlink pointing to the test's configuration file).
    * The symlinks representing the alternate test names can be in the same or a different category directory.
    * The ``--relative`` flag makes the symlink relative (i.e., within/below the ``tests`` directory) so that it stays valid when copied to other locations. (Note, however, that this flag is platform-dependent and may not exist on some platforms.)
-   * To determine whether a test has one or more alternate names, a user can view the CSV file ``WE2E_test_info.csv`` generated by the ``run_WE2E_tests.sh`` script. Recall from :numref:`Section %s <WE2ETestInfoFile>` that column 1 of this CSV file contains the test's primary name (and its category) while column 2 contains any alternate names (and their categories).
-   * With this primary/alternate test naming convention, a user can list either the primary test name or one of the alternate test names in the experiments list file (e.g., ``my_tests.txt``) read in by ``run_WE2E_tests.sh``. If more than one name is listed for the same test (e.g., the primary name and and an alternate name, two alternate names, etc.), ``run_WE2E_tests.sh`` will exit with a warning message and will **not** run any tests.
+   * To determine whether a test has one or more alternate names, a user can view the file ``WE2E_test_info.txt`` as described in :numref:`Section %s <WE2ETestInfoFile>`
+   * With this primary/alternate test naming convention via symbolic links, if more than one name is listed for the same test (e.g., the primary name and and an alternate name, two alternate names, etc.), ``run_WE2E_tests.py`` will only run the test once 
 
 

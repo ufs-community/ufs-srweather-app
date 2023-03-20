@@ -6,6 +6,7 @@ import glob
 import argparse
 import logging
 from textwrap import dedent
+from datetime import datetime
 
 sys.path.append("../../ush")
 
@@ -17,8 +18,8 @@ from python_utils import (
 
 from check_python_version import check_python_version
 
-from monitor_jobs import monitor_jobs
-
+from monitor_jobs import monitor_jobs, write_monitor_file
+from utils import print_test_info
 
 def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
@@ -64,11 +65,13 @@ def run_we2e_tests(homedir, args) -> None:
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
-                    # We just want the test namein this list, so cut out the "config." prefix and ".yaml" extension
+                    # We just want the test name in this list, so cut out the
+                    # "config." prefix and ".yaml" extension
                     tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
-                # I am writing this section of code under protest; we should use args.run_envir to check for run_envir-specific files!
+                # I am writing this section of code under protest; we should use args.run_envir to
+                # check for run_envir-specific files!
                 prefix = f"machine_suites/{user_spec_tests[0]}"
                 testfilename = f"{prefix}.{machine}.{args.compiler}.nco"
                 if not os.path.isfile(testfilename):
@@ -82,27 +85,31 @@ def run_we2e_tests(homedir, args) -> None:
                     else:
                         if not run_envir:
                             run_envir = 'community'
-                            logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
+                            logging.debug(f'{testfilename} exists for this platform and run_envir'\
+                                           'has not been specified\n'\
                                            'Setting run_envir = {run_envir} for all tests')
                 else:
                     if not run_envir:
                         run_envir = 'nco'
-                        logging.debug(f'{testfilename} exists for this platform and run_envir has not been specified'\
+                        logging.debug(f'{testfilename} exists for this platform and run_envir has'\
+                                       'not been specified\n'\
                                        'Setting run_envir = {run_envir} for all tests')
                 logging.debug(f"Reading test file: {testfilename}")
-                with open(testfilename) as f:
+                with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
             else:
-                # If we have gotten this far then the only option left for user_spec_tests is a file containing test names
+                # If we have gotten this far then the only option left for user_spec_tests is a
+                # file containing test names
                 logging.debug(f'Checking if {user_spec_tests} is a file containing test names')
                 if os.path.isfile(user_spec_tests[0]):
-                    with open(user_spec_tests[0]) as f:
+                    with open(user_spec_tests[0], encoding="utf-8") as f:
                         tests_to_check = [x.rstrip() for x in f]
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
-                    does not appear to be a valid test name, a valid test suite, or a file containing valid test names.
+                    does not appear to be a valid test name, a valid test suite, or a file
+                    containing valid test names.
 
                     Check your inputs and try again.
                     """))
@@ -143,6 +150,10 @@ def run_we2e_tests(homedir, args) -> None:
                 if 'nco' not in test_cfg:
                     test_cfg['nco'] = dict()
                 test_cfg['nco'].update({"model_ver": "we2e"})
+        if args.opsroot:
+            if 'nco' not in test_cfg:
+                test_cfg['nco'] = dict()
+            test_cfg['nco'].update({"OPSROOT": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -162,32 +173,32 @@ def run_we2e_tests(homedir, args) -> None:
         if args.verbose_tests:
             test_cfg['workflow'].update({"VERBOSE": args.verbose_tests})
 
+
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
         if 'task_get_extrn_ics' in test_cfg:
-            logging.debug(test_cfg['task_get_extrn_ics'])
-            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_ics(test_cfg,machine_defaults,config_defaults)
-            logging.debug(test_cfg['task_get_extrn_ics'])
+            test_cfg['task_get_extrn_ics'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,
+                                                                      config_defaults,"ics")
         if 'task_get_extrn_lbcs' in test_cfg:
-            logging.debug(test_cfg['task_get_extrn_lbcs'])
-            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_lbcs(test_cfg,machine_defaults,config_defaults)
-            logging.debug(test_cfg['task_get_extrn_lbcs'])
+            test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,
+                                                                       config_defaults,"lbcs")
 
         if 'verification' in test_cfg:
-            logging.debug(test_cfg['verification'])
-        test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,config_defaults)
-        logging.debug(test_cfg['verification'])
+            test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,
+                                                               config_defaults)
 
-        logging.debug(f"Writing updated config.yaml for test {test_name}\nbased on specified command-line arguments:\n")
+        logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
+                       "based on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
-        with open(ushdir + "/config.yaml","w") as f:
+        with open(os.path.join(ushdir,"config.yaml"),"w", encoding="utf-8") as f:
             f.writelines(cfg_to_yaml_str(test_cfg))
 
         logging.info(f"Calling workflow generation function for test {test_name}\n")
         if args.quiet:
             console_handler = logging.getLogger().handlers[1]
             console_handler.setLevel(logging.WARNING)
-        expt_dir = generate_FV3LAM_wflow(ushdir,logfile=f"{ushdir}/log.generate_FV3LAM_wflow",debug=args.debug)
+        expt_dir = generate_FV3LAM_wflow(ushdir,logfile=f"{ushdir}/log.generate_FV3LAM_wflow",
+                                         debug=args.debug)
         if args.quiet:
             if args.debug:
                 console_handler.setLevel(logging.DEBUG)
@@ -205,12 +216,20 @@ def run_we2e_tests(homedir, args) -> None:
 
     if not args.use_cron_to_relaunch:
         logging.info("calling function that monitors jobs, prints summary")
-        monitor_file = monitor_jobs(monitor_yaml, debug=args.debug)
-
-        logging.info("All experiments are complete")
-        logging.info(f"Summary of results available in {monitor_file}")
-
-
+        monitor_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
+        write_monitor_file(monitor_file,monitor_yaml)
+        try:
+            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs,
+                                        debug=args.debug)
+        except KeyboardInterrupt:
+            logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
+        else:
+            logging.info("All experiments are complete")
+            logging.info(f"Summary of results available in {monitor_file}")
+    else:
+        logging.info("All experiments have been generated; using cron to submit workflows")
+        logging.info("To view running experiments in cron try `crontab -l`")
 
 
 
@@ -252,11 +271,12 @@ def check_tests(tests: list) -> list:
         if os.path.islink(testfile):
             if os.path.realpath(testfile) in tests_to_run:
                 logging.warning(dedent(f"""WARNING: test file {testfile} is a symbolic link to a
-                                test file ({os.path.realpath(testfile)}) that is also included in the
-                                test list. Only the latter test will be run."""))
+                                test file ({os.path.realpath(testfile)}) that is also included in
+                                the test list. Only the latter test will be run."""))
                 tests_to_run.remove(testfile)
     if len(tests_to_run) != len(set(tests_to_run)):
-        logging.warning("\nWARNING: Duplicate test names were found in list. Removing duplicates and continuing.\n")
+        logging.warning("\nWARNING: Duplicate test names were found in list. "\
+                        "Removing duplicates and continuing.\n")
         tests_to_run = list(set(tests_to_run))
     return tests_to_run
 
@@ -283,121 +303,82 @@ def check_test(test: str) -> str:
     return config
 
 
-def check_task_get_extrn_ics(cfg: dict, mach: dict, dflt: dict) -> dict:
+def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str = "") -> dict:
     """
-    Function for checking and updating various settings in task_get_extrn_ics section of test config yaml
+    Function for checking and updating various settings in task_get_extrn_ics or 
+    task_get_extrn_lbcs section of test config yaml
 
     Args:
         cfg  : Dictionary loaded from test config file
         mach : Dictionary loaded from machine settings file
         dflt : Dictionary loaded from default config file
+        ics_or_lbcs: Perform checks for ICs task or LBCs task
+
     Returns:
-        cfg_ics : Updated dictionary for task_get_extrn_ics section of test config
+        cfg_bcs : Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
     """
 
-    #Make our lives easier by shortening some dictionary calls
-    cfg_ics = cfg['task_get_extrn_ics']
+    if ics_or_lbcs not in ["lbcs", "ics"]:
+        raise ValueError("ics_or_lbcs must be set to 'lbcs' or 'ics'")
 
-    # If RUN_TASK_GET_EXTRN_ICS is explicitly set to false, do nothing and return
-    if 'workflow_switches' in cfg:
-        if 'RUN_TASK_GET_EXTRN_ICS' in cfg['workflow_switches']:
-            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_ICS'] is False:
-                return cfg_ics
+    I_OR_L = ics_or_lbcs.upper()
+
+    #Make our lives easier by shortening some dictionary calls
+    cfg_bcs = cfg[f'task_get_extrn_{ics_or_lbcs}']
+
+    # If RUN_TASK_GET_EXTRN_* is explicitly set to false, do nothing and return
+    if cfg.get('workflow_switches', {}).get(f'RUN_TASK_GET_EXTRN_{I_OR_L}', True) is False:
+        return cfg_bcs
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_ics.get('USE_USER_STAGED_EXTRN_FILES'):
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_ics section of config')
-        return cfg_ics
+    if not cfg_bcs.get('USE_USER_STAGED_EXTRN_FILES'):
+        logging.debug('USE_USER_STAGED_EXTRN_FILES not specified or False in '\
+                      f'task_get_extrn_{ics_or_lbcs} section of config')
+        return cfg_bcs
 
-    # If EXTRN_MDL_SYSBASEDIR_ICS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg_ics.get('EXTRN_MDL_SYSBASEDIR_ICS') == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS from machine file does not exist or is not a directory")
-            cfg_ics['EXTRN_MDL_SYSBASEDIR_ICS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS']
+    # If EXTRN_MDL_SYSBASEDIR_* is "set_to_non_default_location_in_testing_script", replace with
+    # test value from machine file
+    if cfg_bcs.get(f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}') == \
+                    "set_to_non_default_location_in_testing_script":
+        if f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}' in mach['platform']:
+            if os.path.isdir(mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']):
+                raise FileNotFoundError("Non-default input file location "\
+                                        f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} from machine "\
+                                        "file does not exist or is not a directory")
+            cfg_bcs[f'EXTRN_MDL_SYSBASEDIR_{I_OR_L}'] = \
+                    mach['platform'][f'TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L}']
         else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS not set in machine file")
-        return cfg_ics
+            raise KeyError("Non-default input file location "\
+                           f"TEST_ALT_EXTRN_MDL_SYSBASEDIR_{I_OR_L} not set in machine file")
+        return cfg_bcs
 
-    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
+    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data
+    # directory exists
     cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
     if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
         raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
                        "has not been specified in the machine file for this platform")
     if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
-        raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
-                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
-                                does not exist."""))
+        raise FileNotFoundError(dedent(
+                f"""The directory for staged test data specified in this platform's machine file
+                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
+                does not exist."""))
 
-    # Different input data types have different directory structures, so set the data directory accordingly
-    if cfg_ics['EXTRN_MDL_NAME_ICS'] == 'FV3GFS':
-        if 'FV3GFS_FILE_FMT_ICS' not in cfg_ics:
-            cfg_ics['FV3GFS_FILE_FMT_ICS'] = dflt['task_get_extrn_ics']['FV3GFS_FILE_FMT_ICS']
-        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/{cfg_ics['FV3GFS_FILE_FMT_ICS']}/${{yyyymmddhh}}"
+    # Different input data types have different directory structures; set data dir accordingly
+    if cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}'] == 'FV3GFS':
+        if f'FV3GFS_FILE_FMT_{I_OR_L}' not in cfg_bcs:
+            cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}'] = \
+                    dflt[f'task_get_extrn_{ics_or_lbcs}'][f'FV3GFS_FILE_FMT_{I_OR_L}']
+        cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = \
+                os.path.join(f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}",
+                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}",f"{cfg_bcs[f'FV3GFS_FILE_FMT_{I_OR_L}']}",
+                f"${{yyyymmddhh}}")
     else:
-        cfg_ics['EXTRN_MDL_SOURCE_BASEDIR_ICS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                  f"{cfg_ics['EXTRN_MDL_NAME_ICS']}/${{yyyymmddhh}}"
+        cfg_bcs[f'EXTRN_MDL_SOURCE_BASEDIR_{I_OR_L}'] = \
+                os.path.join(f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}",
+                f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/${{yyyymmddhh}}")
 
-    return cfg_ics
-
-def check_task_get_extrn_lbcs(cfg: dict, mach: dict, dflt: dict) -> dict:
-    """
-    Function for checking and updating various settings in task_get_extrn_lbcs section of test config yaml
-
-    Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-    Returns:
-        cfg_lbcs : Updated dictionary for task_get_extrn_lbcs section of test config
-    """
-
-    #Make our lives easier by shortening some dictionary calls
-    cfg_lbcs = cfg['task_get_extrn_lbcs']
-
-    # If RUN_TASK_GET_EXTRN_LBCS is explicitly set to false, do nothing and return
-    if 'workflow_switches' in cfg:
-        if 'RUN_TASK_GET_EXTRN_LBCS' in cfg['workflow_switches']:
-            if cfg['workflow_switches']['RUN_TASK_GET_EXTRN_LBCS'] is False:
-                return cfg_lbcs
-
-    # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
-    if not cfg_lbcs.get('USE_USER_STAGED_EXTRN_FILES'):
-        logging.debug(f'USE_USER_STAGED_EXTRN_FILES not specified or False in task_get_extrn_lbcs section of config')
-        return cfg_lbcs
-
-    # If EXTRN_MDL_SYSBASEDIR_LBCS is "set_to_non_default_location_in_testing_script", replace with test value from machine file
-    if cfg_lbcs.get('EXTRN_MDL_SYSBASEDIR_LBCS') == "set_to_non_default_location_in_testing_script":
-        if 'TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS' in mach['platform']:
-            if os.path.isdir(mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']):
-                raise FileNotFoundError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS from machine file does not exist or is not a directory")
-                cfg_lbcs['EXTRN_MDL_SYSBASEDIR_LBCS'] = mach['platform']['TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS']
-        else:
-            raise KeyError(f"Non-default input file location TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS not set in machine file")
-        return cfg_lbcs
-
-    # Because USE_USER_STAGED_EXTRN_FILES is true, only look on disk, and ensure the staged data directory exists
-    cfg['platform']['EXTRN_MDL_DATA_STORES'] = "disk"
-    if 'TEST_EXTRN_MDL_SOURCE_BASEDIR' not in mach['platform']:
-        raise KeyError("TEST_EXTRN_MDL_SOURCE_BASEDIR, the directory for staged test data,"\
-                       "has not been specified in the machine file for this platform")
-    if not os.path.isdir(mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']):
-        raise FileNotFoundError(dedent(f"""The directory for staged test data specified in this platform's machine file
-                                TEST_EXTRN_MDL_SOURCE_BASEDIR = {mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}
-                                does not exist."""))
-
-    # Different input data types have different directory structures, so set the data directory accordingly
-    if cfg_lbcs['EXTRN_MDL_NAME_LBCS'] == 'FV3GFS':
-        if 'FV3GFS_FILE_FMT_LBCS' not in cfg_lbcs:
-            cfg_lbcs['FV3GFS_FILE_FMT_LBCS'] = dflt['task_get_extrn_lbcs']['FV3GFS_FILE_FMT_LBCS']
-        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/{cfg_lbcs['FV3GFS_FILE_FMT_LBCS']}/${{yyyymmddhh}}"
-    else:
-        cfg_lbcs['EXTRN_MDL_SOURCE_BASEDIR_LBCS'] = f"{mach['platform']['TEST_EXTRN_MDL_SOURCE_BASEDIR']}/"\
-                                                    f"{cfg_lbcs['EXTRN_MDL_NAME_LBCS']}/${{yyyymmddhh}}"
-
-    return cfg_lbcs
+    return cfg_bcs
 
 def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
     """
@@ -423,7 +404,7 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
         return cfg_vx
 
     # Attempt to obtain the values of RUN_TASK_RUN_FCST, WRITE_DO_POST, and RUN_TASK_RUN_POST
-    # from the test configuration dictionary.  If not available there, get them from the default 
+    # from the test configuration dictionary.  If not available there, get them from the default
     # configuration dictionary.
     flags = {'RUN_TASK_RUN_FCST': False, 'WRITE_DOPOST': False, 'RUN_TASK_RUN_POST': False}
     for section in ['workflow_switches', 'task_run_fcst']:
@@ -442,9 +423,10 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
         if 'TEST_VX_FCST_INPUT_BASEDIR' in mach['platform']:
             cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['platform']['TEST_VX_FCST_INPUT_BASEDIR']
         else:
-            raise KeyError(f"Non-default forecast file location for verification (TEST_VX_FCST_INPUT_BASEDIR) not set in machine file")
+            cfg_vx['VX_FCST_INPUT_BASEDIR'] = ''
 
     return cfg_vx
+
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:
     """
@@ -455,7 +437,7 @@ def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> N
 
     formatter = logging.Formatter("%(name)-16s %(levelname)-8s %(message)s")
 
-    fh = logging.FileHandler(logfile, mode='w')
+    fh = logging.FileHandler(logfile, mode='a')
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logging.getLogger().addHandler(fh)
@@ -481,31 +463,57 @@ if __name__ == "__main__":
     logfile='log.run_WE2E_tests'
 
     #Parse arguments
-    parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted in CAPS), see ush/config_defaults.yaml\n")
-    optional = parser._action_groups.pop() # Create a group for optional arguments so they can be listed after required args
+    parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted "\
+                                            "in CAPS), see ush/config_defaults.yaml\n")
+    # Create a group for optional arguments so they can be listed after required args
+    optional = parser._action_groups.pop()
     required = parser.add_argument_group('required arguments')
 
-    required.add_argument('-m', '--machine', type=str, help='Machine name; see ush/machine/ for valid values', required=True)
-    required.add_argument('-a', '--account', type=str, help='Account name for running submitted jobs', required=True)
-    required.add_argument('-t', '--tests', type=str, nargs="*", help="""Can be one of three options (in order of priority):
+    required.add_argument('-m', '--machine', type=str,
+                          help='Machine name; see ush/machine/ for valid values', required=True)
+    required.add_argument('-a', '--account', type=str,
+                          help='Account name for running submitted jobs', required=True)
+    required.add_argument('-t', '--tests', type=str, nargs="*",
+                          help="""Can be one of three options (in order of priority):
     1. A test name or list of test names.
     2. A test suite name ("fundamental", "comprehensive", or "all")
     3. The name of a file (full or relative path) containing a list of test names.
     """, required=True)
 
-    parser.add_argument('-c', '--compiler', type=str, help='Compiler used for building the app', default='intel')
-    parser.add_argument('-d', '--debug', action='store_true', help='Script will be run in debug mode with more verbose output')
-    parser.add_argument('-q', '--quiet', action='store_true', help='Suppress console output from workflow generation; this will help keep the screen uncluttered')
-
+    parser.add_argument('-c', '--compiler', type=str,
+                        help='Compiler used for building the app', default='intel')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
+    parser.add_argument('-q', '--quiet', action='store_true',
+                        help='Suppress console output from workflow generation; this will help '\
+                             'keep the screen uncluttered')
+    parser.add_argument('-p', '--procs', type=int,
+                        help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
+                             'with provided number of parallel tasks', default=1)
 
     parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
-    parser.add_argument('--run_envir', type=str, help='Overrides RUN_ENVIR variable to a new value ( "nco" or "community" ) for all experiments', default='')
-    parser.add_argument('--expt_basedir', type=str, help='Explicitly set EXPT_BASEDIR for all experiments')
-    parser.add_argument('--exec_subdir', type=str, help='Explicitly set EXEC_SUBDIR for all experiments')
-    parser.add_argument('--use_cron_to_relaunch', action='store_true', help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this option disables the "monitor" script functionality')
-    parser.add_argument('--cron_relaunch_intvl_mnts', type=str, help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
-    parser.add_argument('--debug_tests', action='store_true', help='Explicitly set DEBUG=TRUE for all experiments')
-    parser.add_argument('--verbose_tests', action='store_true', help='Explicitly set VERBOSE=TRUE for all experiments')
+    parser.add_argument('--run_envir', type=str,
+                        help='Overrides RUN_ENVIR variable to a new value ("nco" or "community") '\
+                             'for all experiments', default='')
+    parser.add_argument('--expt_basedir', type=str,
+                        help='Explicitly set EXPT_BASEDIR for all experiments')
+    parser.add_argument('--exec_subdir', type=str,
+                        help='Explicitly set EXEC_SUBDIR for all experiments')
+    parser.add_argument('--use_cron_to_relaunch', action='store_true',
+                        help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this '\
+                             'option disables the "monitor" script functionality')
+    parser.add_argument('--cron_relaunch_intvl_mnts', type=int,
+                        help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
+    parser.add_argument('--opsroot', type=str,
+                        help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for '\
+                             'more details on this variable)')
+    parser.add_argument('--print_test_info', action='store_true',
+                        help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
+                             'starting experiment')
+    parser.add_argument('--debug_tests', action='store_true',
+                        help='Explicitly set DEBUG=TRUE for all experiments')
+    parser.add_argument('--verbose_tests', action='store_true',
+                        help='Explicitly set VERBOSE=TRUE for all experiments')
 
     parser._action_groups.append(optional)
 
@@ -514,7 +522,13 @@ if __name__ == "__main__":
     #Set defaults that need other argument values
     if args.modulefile is None:
         args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
+    if args.procs < 1:
+        raise ValueError('You can not have less than one parallel process; select a valid value '\
+                         'for --procs')
 
+    # Print test details (if requested)
+    if args.print_test_info:
+        print_test_info()
     #Call main function
 
     try:
