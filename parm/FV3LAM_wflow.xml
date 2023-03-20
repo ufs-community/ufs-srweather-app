@@ -2396,7 +2396,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_sfc }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_sfc }}:ppn={{ ppn_run_met_ensemblestat_vx_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_sfc }}</memory>
@@ -2414,8 +2414,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>NDAS</value></envar>
     <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>ENSEMBLESTAT</value></envar>
 
     <dependency>
       <and>
@@ -2432,7 +2434,7 @@ done by the scripts that this task calls).
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_upa }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
     <nodes>{{ nnodes_run_met_ensemblestat_vx_upa }}:ppn={{ ppn_run_met_ensemblestat_vx_upa }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_run_met_ensemblestat_vx_upa }}</memory>
@@ -2450,8 +2452,10 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
+    <envar><name>OBTYPE</name><value>NDAS</value></envar>
     <envar><name>VAR</name><value>UPA</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>ENSEMBLESTAT</value></envar>
 
     <dependency>
       <and>
