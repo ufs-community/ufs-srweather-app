@@ -135,9 +135,9 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
   mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 
-  cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 fi
 
 #-----------------------------------------------------------------------------
@@ -196,10 +196,10 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
   mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
   mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-  cp_vrfy ${COMINairnow}/${yyyy}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  cp_vrfy ${COMINairnow}/${yyyy_m1}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${yyyy_m2}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${yyyy_m3}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp_vrfy ${COMINairnow}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 fi
 
 #-----------------------------------------------------------------------

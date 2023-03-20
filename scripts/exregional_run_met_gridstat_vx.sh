@@ -84,13 +84,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    if [[ ${DO_ENSEMBLE} == "FALSE" ]]; then
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}
-    else
-      export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd
-      export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR}
-    fi
+    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd
+    export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -109,15 +104,15 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${ACCUM_HH}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
 else
   LOG_SUFFIX=GridStat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
 fi
 
-if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR} | cut -d"/" -f2`
-  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-fi
+#if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+#  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2`
+#  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
+#fi
 
 #
 #-----------------------------------------------------------------------
@@ -139,6 +134,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+export EXPTDIR
 export LOG_SUFFIX
 export MET_INSTALL_DIR
 export MET_BIN_EXEC
@@ -157,7 +153,7 @@ export POST_OUTPUT_DOMAIN_NAME
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  export acc="${ACCUM}h" # for stats output prefix in GridStatConfig
+  export acc="${ACCUM_HH}h" # for stats output prefix in GridStatConfig
   ${METPLUS_PATH}/ush/run_metplus.py \
     -c ${METPLUS_CONF}/common.conf \
     -c ${METPLUS_CONF}/GridStat_${VAR}${acc}.conf

@@ -38,58 +38,15 @@ else
 fi
 
 cd ${we2e_test_dir}
-./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
-    expt_basedir=${we2e_experiment_base_dir} \
-    opsroot=${nco_dir}
-
-# Run the new run_srw_tests script if the machine is Cheyenne.
-if [[ "${platform}" = "cheyenne" ]]; then
-    cd ${workspace}/ush
-    ./run_srw_tests.py -e=${we2e_experiment_base_dir}
-    cd ${we2e_test_dir}
-fi
-
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
-
-# Allow the tests to start before checking for status.
-# TODO: Create a parameter that sets the initial start delay.
-if [[ "${platform}" != "cheyenne" ]]; then
-    sleep 300
-fi
-
-# Wait for all tests to complete.
-while true; do
-
-    # Check status of all experiments
-    ./get_expts_status.sh expts_basedir="${we2e_experiment_base_dir}" \
-         verbose="FALSE" | tee ${progress_file}
-
-    # Exit loop only if there are not tests in progress
-    set +e
-    grep -q "Workflow status:  IN PROGRESS" ${progress_file}
-    exit_code=$?
-    set -e
-
-    if [[ $exit_code -ne 0 ]]; then
-       break
-    fi
-
-    # TODO: Create a paremeter that sets the poll frequency.
-    sleep 60
-done
-
-# Allow we2e cron jobs time to complete and clean up themselves
-# TODO: Create parameter that sets the interval for the we2e cron jobs; this
-# value should be some factor of that interval to ensure the cron jobs execute
-# before the workspace is cleaned up.
-if [[ "${platform}" != "cheyenne" ]]; then
-    sleep 600
-fi
+./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
+    --expt_basedir=${we2e_experiment_base_dir} \
+    --opsroot=${nco_dir} | tee ${progress_file}
 
 # Set exit code to number of failures
 set +e
-failures=$(grep "Workflow status:  FAILURE" ${progress_file} | wc -l)
+failures=$(grep " DEAD    " ${progress_file} | wc -l)
 if [[ $failures -ne 0 ]]; then
     failures=1
 fi
