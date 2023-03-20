@@ -95,6 +95,7 @@ Workflow task names.
 <!ENTITY TN_GET_OBS_NDAS           "{{ tn_get_obs_ndas }}">
 <!ENTITY TN_GET_OBS_MRMS           "{{ tn_get_obs_mrms }}">
 {%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+<!ENTITY TN_RUN_MET_PB2NC_OBS                      "{{ tn_run_met_pb2nc_obs }}">
 <!ENTITY TN_RUN_MET_PCPCOMBINE                     "{{ tn_run_met_pcpcombine }}">
 {%- endif%}
 {%- if run_tasks_metvx_det %}
@@ -4695,10 +4696,79 @@ xml.  This may be changed in the future.
 ************************************************************************
 -->
 {#-
-Obs pre-processing tasks that must be run if either deterministic or
-ensemble verification tasks are going to be run.
+Obs processing tasks that must be run if either deterministic or ensemble
+verification tasks are going to be run.
 #}
 {%- if run_tasks_metvx_det or run_tasks_metvx_ens %}
+
+{#-
+Task for pre-processing of NDAS observations to convert prep-buffer files
+to NetCDF format.
+    {%- set obtype = "NDAS" %}
+#}
+  {%- if ("SFC" in vx_fields) or ("UPA" in vx_fields) %}
+{#-
+This for-loop isn't strictly necessary because it loops over only one 
+item, but having it allows for the use of the "set" tag to define new
+variables within the loop (in Jinja, it is not possible to define variables
+outside a loop unless one uses a namespace, which would be overkill in
+this case).  So here we opt for a redundant for-loop.
+#}
+    {%- for obtype in ["NDAS"] -%}
+      {%- set tn = tn_run_met_pb2nc_obs -%}
+      {%- set maxtries = maxtries_run_met_pb2nc_obs -%}
+      {%- set nnodes = nnodes_run_met_pb2nc_obs -%}
+      {%- set ppn = ppn_run_met_pb2nc_obs -%}
+      {%- set wtime = wtime_run_met_pb2nc_obs -%}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="{{tn}}" cycledefs="forecast" maxtries="{{maxtries}}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"</command>
+    <nodes>{{nnodes}}:ppn={{ppn}}</nodes>
+    <walltime>{{wtime}}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>{{tn}}</jobname>
+    <join>&LOGDIR;/{{tn}}_<cyclestr>@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>obs_or_fcst</name><value>obs</value></envar>
+    <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
+    <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
+
+    <dependency>
+      <and>
+  {%- if run_task_get_obs_ndas %}
+        <taskdep task="&TN_GET_OBS_NDAS;"/>
+  {%- else %}
+{#-
+We only check for the existence of the NDAS observations directory, not
+for individual prepbufr files within.  This is because this and other
+downstream vx tasks can complete successfully even when some obs files
+are missing (the check for individual files is done by the scripts that
+this task calls).
+#}
+        <datadep><cyclestr>&NDAS_OBS_DIR;</cyclestr></datadep>
+  {%- endif %}
+      </and>
+    </dependency>
+
+  </task>
+    {%- endfor %}
+
+  {%- endif %}
+
 {#-
 Tasks for combining (adding) hourly APCP (accumulated precipitation) from
 CCPA observations to obtain APCP obs for longer accumulation periods 
@@ -4808,10 +4878,10 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>01</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
   {%- endif %}
 
@@ -4860,10 +4930,10 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>03</value></envar>
+    <envar><name>ACCUM_HH</name><value>03</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
     {%- endif %}
 
@@ -4905,10 +4975,10 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>06</value></envar>
+    <envar><name>ACCUM_HH</name><value>06</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
     {%- endif %}
 
@@ -4950,10 +5020,10 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>24</value></envar>
+    <envar><name>ACCUM_HH</name><value>24</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
     {%- endif %}
 
@@ -4995,8 +5065,8 @@ done by the scripts that this task calls).
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>REFC</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
   {%- endif %}
 
@@ -5045,8 +5115,8 @@ done by the scripts that this task calls).
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>RETOP</value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
   {%- endif %}
 
@@ -5094,11 +5164,11 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
   {%- endif %}
 
@@ -5114,6 +5184,7 @@ done by the scripts that this task calls).
   {%- elif run_task_run_post %}
         <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
   {%- endif %}
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
       </and>
     </dependency>
 
@@ -5143,11 +5214,11 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>UPA</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
     <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value>{{uscore_ensmem_name}}</value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
   {%- if do_ensemble %}
-    <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
     <envar><name>ENSMEM_INDX</name><value><cyclestr>#{{ ensmem_indx_name }}#</cyclestr></value></envar>
   {%- endif %}
 
@@ -5163,6 +5234,7 @@ done by the scripts that this task calls).
   {%- elif run_task_run_post %}
         <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
   {%- endif %}
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
       </and>
     </dependency>
 
@@ -5201,7 +5273,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>01</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
 
     <dependency>
       <metataskdep metatask="run_ensemble"/>
@@ -5237,7 +5309,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>03</value></envar>
+    <envar><name>ACCUM_HH</name><value>03</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -5274,7 +5346,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>06</value></envar>
+    <envar><name>ACCUM_HH</name><value>06</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -5311,7 +5383,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>24</value></envar>
+    <envar><name>ACCUM_HH</name><value>24</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -5419,7 +5491,10 @@ done by the scripts that this task calls).
     <envar><name>VAR</name><value>SFC</value></envar>
 
     <dependency>
-      <metataskdep metatask="run_ensemble"/>
+      <and>
+        <metataskdep metatask="run_ensemble"/>
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
+      </and>
     </dependency>
 
   </task>
@@ -5452,7 +5527,10 @@ done by the scripts that this task calls).
     <envar><name>VAR</name><value>UPA</value></envar>
 
     <dependency>
-      <metataskdep metatask="run_ensemble"/>
+      <and>
+        <metataskdep metatask="run_ensemble"/>
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
+      </and>
     </dependency>
 
   </task>
@@ -5486,7 +5564,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>01</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -5522,7 +5600,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>03</value></envar>
+    <envar><name>ACCUM_HH</name><value>03</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H;"/>
@@ -5559,7 +5637,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>06</value></envar>
+    <envar><name>ACCUM_HH</name><value>06</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H;"/>
@@ -5596,7 +5674,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>24</value></envar>
+    <envar><name>ACCUM_HH</name><value>24</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H;"/>
@@ -5632,8 +5710,8 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;"/>
@@ -5665,8 +5743,8 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>UPA</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;"/>
@@ -5703,7 +5781,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(1, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>01</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
@@ -5739,7 +5817,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(3, fcst_len_hrs+1, 3) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>03</value></envar>
+    <envar><name>ACCUM_HH</name><value>03</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H;"/>
@@ -5776,7 +5854,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(6, fcst_len_hrs+1, 6) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>06</value></envar>
+    <envar><name>ACCUM_HH</name><value>06</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H;"/>
@@ -5813,7 +5891,7 @@ done by the scripts that this task calls).
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
     <envar><name>FHR</name><value><cyclestr> {% for h in range(24, fcst_len_hrs+1, 24) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>APCP</value></envar>
-    <envar><name>ACCUM</name><value>24</value></envar>
+    <envar><name>ACCUM_HH</name><value>24</value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP24H;"/>
@@ -5917,8 +5995,8 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_SFC;"/>
@@ -5950,8 +6028,8 @@ done by the scripts that this task calls).
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>FHR</name><value><cyclestr> {% for h in range(0, fcst_len_hrs+1) %}{{ " %02d" % h  }}{% endfor %} </cyclestr></value></envar>
     <envar><name>VAR</name><value>UPA</value></envar>
+    <envar><name>ACCUM_HH</name><value></value></envar>
 
     <dependency>
       <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_UPA;"/>

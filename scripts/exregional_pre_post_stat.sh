@@ -96,6 +96,8 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 
   ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
 
+  ncks -v aod ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
+
   (( ist=ist+1 ))
 done
 
@@ -127,6 +129,7 @@ ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.
 mv_vrfy ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
 mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
 mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
+mv_vrfy ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
 #
 #-----------------------------------------------------------------------
 #
