@@ -64,6 +64,7 @@ task_run_fcst:
   LAYOUT_Y: 34
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6 18
+  OMP_NUM_THREADS_RUN_FCST: 1
   QUILTING: true
   PRINT_ESMF: false
 task_run_post:

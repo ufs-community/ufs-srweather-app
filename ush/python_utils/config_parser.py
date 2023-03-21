@@ -149,7 +149,6 @@ def days_ago(arg):
             datetime.timedelta(days=arg)).strftime("%Y%m%d00")
 
 def extend_yaml(yaml_dict, full_dict=None, parent=None):
-
     """
     Updates yaml_dict inplace by rendering any existing Jinja2 templates
     that exist in a value.

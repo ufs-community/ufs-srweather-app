@@ -2,8 +2,10 @@ metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
     completes successfully with MET deterministic verification.
+
 user:
   RUN_ENVIR: community
+
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   PREDEF_GRID_NAME: RRFS_CONUS_25km
@@ -17,10 +19,12 @@ rocoto:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
+
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
+
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6

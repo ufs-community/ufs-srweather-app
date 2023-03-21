@@ -11,6 +11,7 @@ platform:
   QUEUE_HPSS: workq
   RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL -n 1
+  RUN_CMD_PRDGEN: srun --export=ALL -n 1
   RUN_CMD_SERIAL: srun --export=ALL -n 1
   RUN_CMD_UTILS: srun --export=ALL -n $nprocs
   SCHED_NATIVE_CMD: --export=NONE

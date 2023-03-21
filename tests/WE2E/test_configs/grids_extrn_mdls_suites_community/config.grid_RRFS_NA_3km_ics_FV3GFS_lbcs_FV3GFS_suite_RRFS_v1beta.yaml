@@ -26,7 +26,10 @@ task_make_ics:
   OMP_STACKSIZE_MAKE_ICS: 2048m
 task_run_fcst:
   OMP_STACKSIZE_RUN_FCST: 2048m
+task_run_prdgen:
+  DO_PARALLEL_PRDGEN: true
 rocoto:
+  taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml"]|include }}'
   tasks:
     task_make_orog:
       walltime: 01:00:00
@@ -40,3 +43,4 @@ rocoto:
     task_run_post_mem#mem#_f#fhr#:
       ppn: 12
       nnodes: 8
+

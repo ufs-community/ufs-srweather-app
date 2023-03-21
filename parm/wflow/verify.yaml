@@ -57,6 +57,65 @@ task_get_obs_ndas:
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00
 
+task_run_MET_Pb2nc_obs:
+  <<: *default_task
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars:
+    <<: *default_vars
+
+
+task_run_MET_PcpCombine_obs_APCP#ACCUM_HR#h:
+  <<: *default_task
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars:
+    <<: *default_vars
+    VAR: APCP
+    ACCUM_HH: '#ACCUM_HR#'
+    obs_or_fcst: obs
+    OBTYPE: CCPA
+    OBS_DIR: '&CCPA_OBS_DIR;'
+  dependency:
+    and:
+      taskdep:
+        attrs:
+          task: get_obs_ccpa
+      datadep:
+        text: "&CCPA_OBS_DIR;"
+
+task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h:
+  <<: *default_task
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars:
+    <<: *default_vars
+    VAR: APCP
+    ACCUM_HH: '#ACCUM_HR#'
+    obs_or_fcst: fcst
+    OBTYPE: CCPA
+    OBS_DIR: '&CCPA_OBS_DIR;'
+  dependency:
+    or_do_post: &post_files_exist
+      and_run_post: # If post was meant to run, wait on the whole post metatask
+        taskvalid:
+          attrs:
+            task: run_post_mem#mem#_f000
+        metataskdep:
+          attrs:
+            metatask: run_ens_post
+      and_inline_post: # If inline post ran, wait on the forecast task to complete
+        not:
+          taskvalid:
+            attrs:
+              task: run_post_mem#mem#_f000
+        taskdep:
+          attrs:
+            task: run_fcst_mem#mem#
+
 metatask_vx_ens_member:
   attrs:
     mode: serial
@@ -88,22 +147,8 @@ metatask_vx_ens_member:
               taskdep:
                 attrs:
                   task: get_obs_mrms
-          or_do_post: &post_files_exist
-            and_run_post: # If post was meant to run, wait on the whole post metatask
-              taskvalid:
-                attrs:
-                  task: run_post_mem#mem#_f000
-              metataskdep:
-                attrs:
-                  metatask: run_ens_post
-            and_inline_post: # If inline post ran, wait on the forecast task to complete
-              not:
-                taskvalid:
-                  attrs:
-                    task: run_post_mem#mem#_f000
-              taskdep:
-                attrs:
-                  task: run_fcst_mem#mem#
+          or_do_post:
+            <<: *post_files_exist
   
   metatask_GridStat_acc:
     attrs:
