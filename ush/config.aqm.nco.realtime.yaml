@@ -70,7 +70,7 @@ task_run_fcst:
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 24 36 48 60
+  RESTART_INTERVAL: 6 24 36 48 60
   WTIME_RUN_FCST: 04:00:00
   OMP_NUM_THREADS_RUN_FCST: 1
   QUILTING: true
@@ -78,6 +78,7 @@ task_run_fcst:
   DO_FCST_RESTART: false
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
+  USE_CUSTOM_POST_CONFIG_FILE: false
 task_aqm_lbcs:
   WTIME_AQM_LBCS: 01:00:00
 global:
