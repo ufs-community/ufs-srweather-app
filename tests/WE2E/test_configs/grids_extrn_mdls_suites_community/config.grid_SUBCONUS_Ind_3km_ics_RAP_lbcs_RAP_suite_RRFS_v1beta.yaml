@@ -2,7 +2,7 @@ metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
     completes successfully on the SUBCONUS_Ind_3km grid using the RRFS_v1beta
-    physics suite with ICs derived from HRRR and LBCs derived from the RAP.
+    physics suite with ICs and LBCs derived from the RAP.
 user:
   RUN_ENVIR: community
 workflow:

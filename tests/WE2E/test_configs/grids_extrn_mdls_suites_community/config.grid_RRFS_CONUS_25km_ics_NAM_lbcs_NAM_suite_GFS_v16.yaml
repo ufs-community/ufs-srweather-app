@@ -1,7 +1,7 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUS_25km grid using the HRRR
+    completes successfully on the RRFS_CONUS_25km grid using the GFS_v16
     physics suite with ICs and LBCs derived from the NAM.
     This test also runs with two ensemble members, and ensures the MET
     ensemble-specific tasks run successfully.

@@ -2,7 +2,7 @@ metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
     completes successfully on the SUBCONUS_Ind_3km grid using the GFS_v16
-    physics suite with ICs and LBCs derived from the FV3GFS.
+    physics suite with ICs and LBCs derived from the NAM.
 user:
   RUN_ENVIR: community
 workflow:
