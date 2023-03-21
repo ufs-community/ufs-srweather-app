@@ -162,6 +162,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_or_null=""
@@ -190,14 +191,14 @@ if [ "${grid_or_point}" = "grid" ]; then
         ;;
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
+    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
   fi
 
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
-  FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
+  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
 
 fi
 #
