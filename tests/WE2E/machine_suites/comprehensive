@@ -16,7 +16,6 @@ inline_post
 specify_DOT_OR_USCORE
 specify_DT_ATMOS_LAYOUT_XY_BLOCKSIZE
 specify_RESTART_INTERVAL
-specify_template_filenames
 community_ensemble_2mems
 community_ensemble_2mems_stoch
 community_ensemble_008mems

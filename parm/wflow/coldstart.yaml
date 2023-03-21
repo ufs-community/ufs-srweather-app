@@ -75,8 +75,8 @@ task_get_extrn_lbcs:
 
 metatask_run_ensemble:
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "det" }}{% endif %}'
-  task_make_ics_#mem#:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  task_make_ics_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSDIR;/JREGIONAL_MAKE_ICS"'
     envars:
@@ -115,7 +115,7 @@ metatask_run_ensemble:
             left: staged_sfc_climo
             right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
 
-  task_make_lbcs_#mem#:
+  task_make_lbcs_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSDIR;/JREGIONAL_MAKE_LBCS"'
     envars:
@@ -131,7 +131,7 @@ metatask_run_ensemble:
           attrs:
             task: get_extrn_lbcs
 
-  task_run_fcst_#mem#:
+  task_run_fcst_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSDIR;/JREGIONAL_RUN_FCST"'
     envars:
@@ -149,10 +149,10 @@ metatask_run_ensemble:
       and:
         taskdep_make_ics:
           attrs:
-            task: make_ics_#mem#
+            task: make_ics_mem#mem#
         taskdep_make_lbcs:
           attrs:
-            task: make_lbcs_#mem#
+            task: make_lbcs_mem#mem#
         or_nexus_emission:
           not:
             taskvalid:

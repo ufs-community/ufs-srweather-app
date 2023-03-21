@@ -698,12 +698,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
               )
               raise ValueError
 
-        # Build cycledefs entries for the short and long forecasts
+        # Build cycledefs entries for the long forecasts
         # Short forecast cycles will be relevant to all intended
         # forecasts...after all, a 12 hour forecast also encompasses a 3
-        # hour forecast
-        rocoto_config['cycledefs']['short_forecast'] = \
-            f'{date_first_cycl}00 {date_last_cycl}00 {incr_cycl_freq}:00:00'
+        # hour forecast, so the short ones will be consistent with the
+        # existing default forecast cycledef
+
+        # Reset the hours to the short forecast length
+        workflow_config["FCST_LEN_HRS"] = min(fcst_len_cycl)
 
         # Find the entries that match the long forecast, and map them to
         # their time of day.
@@ -712,7 +714,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         long_cycles = [i * incr_cycl_freq for i in long_indices]
 
         # add one forecast entry per cycle per day
-        fcst_cdef = rocoto_config['cycledefs']['forecast']
+        fcst_cdef = rocoto_config['cycledefs']['long_forecast']
         fcst_cdef = []
 
         for hh in long_cycles:

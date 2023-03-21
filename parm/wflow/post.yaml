@@ -25,18 +25,18 @@ default_task_post: &default_task
 
 metatask_run_ens_post:
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}det{% endif %}'
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_run_post:
     var:
-      fhr: '{% for h in range(1, workflow.FCST_LEN_HRS+1) %}{{ " %03d" % h }}{% endfor %}'
-      cycledef: '{% for h in range(1, workflow.FCST_LEN_HRS+1) %}{% if h <= workflow.SHORT_FCST_LEN %}short_forecast {% else %}forecast {% endif %}{% endfor %}'
-    task_run_post_#mem#_f#fhr#:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_HRS %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    task_run_post_mem#mem#_f#fhr#:
       <<: *default_task
       dependency:
         or:
           taskdep:
             attrs:
-              task: run_fcst_#mem#
+              task: run_fcst_mem#mem#
           and:
             datadep_dyn:
               text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#.nc'
@@ -53,7 +53,7 @@ metatask_run_ens_post:
     metatask_sub_hourly_post:
       var:
         fmn: '{% for min in range(0, 60, task_run_post.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
-      task_run_post_#mem#_f#fhr##fmn#: &subhourly_run_post_task
+      task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
         <<: *default_task
         envars:
           <<: *default_vars
@@ -62,7 +62,7 @@ metatask_run_ens_post:
           or:
             taskdep:
               attrs:
-                task: run_fcst_#mem#
+                task: run_fcst_mem#mem#
             and:
               datadep_dyn:
                 text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#:#fmn#:00.nc'
@@ -77,5 +77,5 @@ metatask_run_ens_post:
     var:
       fhr: '{{ " %03d" % workflow.FCST_LEN_HRS }}'
       fmn: '00'
-    task_run_post_#mem#_f#fhr##fmn#:
+    task_run_post_mem#mem#_f#fhr##fmn#:
       <<: *subhourly_run_post_task

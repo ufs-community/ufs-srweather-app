@@ -34,16 +34,16 @@ task_plot_allvars:
       and_run_post: # If post was meant to run, wait on the whole post metatask
         taskvalid:
           attrs:
-            task: run_post_000
+            task: run_post_mem000_f000
         metataskdep:
           attrs:
-            metatask: run_post
+            metatask: run_ens_post
       and_inline_post: # If inline post ran, wait on the forecast task to complete
         not:
           taskvalid:
             attrs:
-              task: run_post_000
+              task: run_post_mem000_f000
         taskdep:
           attrs:
-            task: run_fcst
+            task: run_fcst_mem000
 

@@ -15,7 +15,7 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml", "parm/wflow/verify_ensgrid.yaml"]|include }}'
     metatask_run_ensemble:
-      task_run_fcst_#mem#:
+      task_run_fcst_mem#mem#:
         walltime: 01:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS

@@ -55,6 +55,7 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 yyyymmdd=${PDY}
 hh=${cyc}
 export CDATE
@@ -109,9 +110,9 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${ACCUM}h_mem${ENSMEM_INDX}_${CDATE}
 else
-  LOG_SUFFIX=GridStat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}_mem${ENSMEM_INDX}_${CDATE}
 fi
 
 if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then

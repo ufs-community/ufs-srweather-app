@@ -39,7 +39,7 @@ rocoto:
     task_get_extrn_lbcs:
       walltime: 02:00:00
     metatask_run_ensemble:
-      task_run_fcst_#mem#:
+      task_run_fcst_mem#mem#:
         walltime: 04:00:00
     task_aqm_lbcs:
       walltime: 01:00:00

@@ -91,7 +91,7 @@ task_aqm_ics_ext:
     and:
       taskdep:
         attrs:
-          task: make_ics_det
+          task: make_ics_mem000
       or:
         datadep_date_tag_tracer:
           attrs:
@@ -113,7 +113,7 @@ task_aqm_ics:
     and:
       taskdep:
         attrs:
-          task: make_ics_det
+          task: make_ics_mem000
       or:
         datadep_date_tag_tracer:
           attrs:
@@ -139,18 +139,18 @@ task_pre_post_stat:
       and_run_post: # If post was meant to run, wait on the whole post metatask
         taskvalid:
           attrs:
-            task: run_post_det_000
+            task: run_post_mem000_f000
         metataskdep:
           attrs:
-            metatask: run_post_det
+            metatask: run_post_mem000
       and_inline_post: # If inline post ran, wait on the forecast task to complete
         not:
           taskvalid:
             attrs:
-              task: run_post_det_000
+              task: run_post_mem000_f000
         taskdep:
           attrs:
-            task: run_fcst_det
+            task: run_fcst_mem000
 
 task_post_stat_o3:
   <<: *default_aqm

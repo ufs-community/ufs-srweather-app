@@ -33,7 +33,7 @@ rocoto:
     task_bias_correction_O3:
     task_bias_correction_PM25:
     metatask_run_fcst_ens:
-      task_run_fcst_#mem#:
+      task_run_fcst_mem#mem#:
         walltime: 02:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS

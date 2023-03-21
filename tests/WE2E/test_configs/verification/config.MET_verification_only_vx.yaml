@@ -25,8 +25,7 @@ rocoto:
     task_get_obs_ccpa:
     task_get_obs_mrms:
     task_get_obs_ndas:
-workflow_switches:
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-  VX_FCST_INPUT_BASEDIR: '{{ machine.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
 

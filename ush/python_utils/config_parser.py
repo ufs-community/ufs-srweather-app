@@ -228,7 +228,9 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                         data.append(template)
 
                     for tmpl, rendered in zip(templates, data):
-                        v_str = str_to_type(v_str.replace(tmpl, rendered))
+                        v_str = v_str.replace(tmpl, rendered)
+                        if "string" not in tmpl:
+                            v_str = str_to_type(v_str)
 
                     if isinstance(v, ET.Element):
                         print('Replacing ET text with', v_str)

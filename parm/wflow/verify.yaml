@@ -11,8 +11,9 @@ default_task_verify: &default_task
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
-    FHR: '{% for h in range(1, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    ENSMEM_INDX: "#mem#"
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -57,12 +58,14 @@ task_get_obs_ndas:
   walltime: 02:00:00
 
 metatask_vx_ens_member:
+  attrs:
+    mode: serial
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "det" }}{% endif %}'
+    mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_GridStat:
     var:
       VAR: REFC RETOP
-    task_run_MET_GridStat_vx_#VAR#_#mem#:
+    task_run_MET_GridStat_vx_#VAR#_mem#mem#:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
@@ -89,24 +92,26 @@ metatask_vx_ens_member:
             and_run_post: # If post was meant to run, wait on the whole post metatask
               taskvalid:
                 attrs:
-                  task: run_post_det_f000
+                  task: run_post_mem#mem#_f000
               metataskdep:
                 attrs:
-                  metatask: run_post
+                  metatask: run_ens_post
             and_inline_post: # If inline post ran, wait on the forecast task to complete
               not:
                 taskvalid:
                   attrs:
-                    task: run_post_det_f000
+                    task: run_post_mem#mem#_f000
               taskdep:
                 attrs:
-                  task: run_fcst_det
+                  task: run_fcst_mem#mem#
   
   metatask_GridStat_acc:
+    attrs:
+      mode: serial
     var:
       ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
       FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
-    task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_#mem#:
+    task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
@@ -118,7 +123,8 @@ metatask_vx_ens_member:
       walltime: 02:00:00
       dependency:
         and:
-          <<: *post_files_exist
+          or_do_post:
+            <<: *post_files_exist
           or_get_obs: # Ensure get_obs task is complete if it's turned on
             not:
               taskvalid:
@@ -135,7 +141,7 @@ metatask_vx_ens_member:
   metatask_PointStat:
     var:
       VAR: SFC UPA
-    task_run_MET_PointStat_vx_#VAR#_#mem#:
+    task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
       envars:
@@ -146,7 +152,8 @@ metatask_vx_ens_member:
       walltime: 01:00:00
       dependency:
         and:
-          <<: *post_files_exist
+          or_do_post:
+            <<: *post_files_exist
           or_get_obs: # Get obs complete if turned on
             not:
               taskvalid:

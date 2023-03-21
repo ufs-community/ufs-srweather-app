@@ -16,8 +16,6 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-rocoto:
-  taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 nco:
   NET: rrfs
   model_ver: v1.0
@@ -36,11 +34,9 @@ task_plot_allvars:
   COMOUT_REF: ""
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km
-
 rocoto:
+  taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
   tasks:
-    task_make_grid: !null
-    task_make_orog: !null
-    task_make_sfc_climo: !null
-    task_run_fcst:
-      wtime: 01:00:00
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00

@@ -37,6 +37,6 @@ rocoto:
       nnodes: 12
       ppn: 4
       walltime: 01:00:00
-    task_run_post_#mem#_f#fhr#:
+    task_run_post_mem#mem#_f#fhr#:
       ppn: 12
       nnodes: 8

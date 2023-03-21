@@ -827,13 +827,14 @@ workflow:
   # Default is 24, which means cycle_freq=24:00:00
   #
   # FCST_LEN_HRS:
-  # The length of each forecast, in integer hours.
+  # The length of each forecast, in integer hours. The short forecast
+  # length when there are different lengths.
   #
-  # SHORT_FCST_LEN:
-  # The length of the shorter forecast in integer hours in a system that
+  # LONG_FCST_LEN_HRS:
+  # The length of the longer forecast in integer hours in a system that
   # varies the length of the forecast by time of day forecasts for a
   # shorter period. There is no need for the user to update this value
-  # directly. It is updated in setup.py based on 
+  # directly, as it is derived from FCST_LEN_CYCL when FCST_LEN_HRS=-1
   #
   # FCST_LEN_CYCL:
   # The length of forecast for each cycle date in integer hours.
@@ -854,7 +855,7 @@ workflow:
     - 12
     - 12
     - 6
-  SHORT_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}-1{% endif %}'
+  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
   #
   #-----------------------------------------------------------------------
