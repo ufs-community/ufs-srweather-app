@@ -455,38 +455,6 @@ cat > itag <<EOF
 /
 EOF
 fi
-
-if [ "${CPL_AQM}" = "TRUE" ]; then
-#
-#-----------------------------------------------------------------------
-#
-# Setup air quality model cold/warm start
-#
-#-----------------------------------------------------------------------
-#
-  init_concentrations="false"
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
-    init_concentrations="true"
-  fi
-#
-#-----------------------------------------------------------------------
-#
-# Call the function that creates the aqm.rc file within each
-# cycle directory.
-#
-#-----------------------------------------------------------------------
-#
-  python3 $USHdir/create_aqm_rc_file.py \
-    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-    --cdate "$CDATE" \
-    --run-dir "${DATA}" \
-    --init-concentration "${init_concentrations}" \
-    || print_err_msg_exit "\
-Call to function to create an aqm.rc file for the current
-cycle's (cdate) run directory (DATA) failed:
-  cdate = \"${CDATE}\"
-  DATA = \"${DATA}\""
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -514,10 +482,15 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+flag_fcst_restart="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   cp_vrfy input.nml input.nml_org
   cp_vrfy model_configure model_configure_org
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    cp_vrfy aqm.rc aqm.rc_org
+  fi
   relative_link_flag="FALSE"
+  flag_fcst_restart="TRUE"
 
   # Update FV3 input.nml for restart
   python3 $USHdir/update_restart_input_nml_file.py \
@@ -560,6 +533,39 @@ current cycle's (cdate) run directory (DATA) failed:
 
   cd_vrfy ${DATA}   
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Setup air quality model cold/warm start
+#
+#-----------------------------------------------------------------------
+#
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
+    init_concentrations="true"
+  else
+    init_concentrations="false"
+  fi
+#
+#-----------------------------------------------------------------------
+#
+# Call the function that creates the aqm.rc file within each
+# cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+  python3 $USHdir/create_aqm_rc_file.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --cdate "$CDATE" \
+    --run-dir "${DATA}" \
+    --init_concentrations "${init_concentrations}" \
+    || print_err_msg_exit "\
+Call to function to create an aqm.rc file for the current
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+fi
+
 #
 #-----------------------------------------------------------------------
 #
