@@ -133,13 +133,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_ensmem_subdir_or_null=""
   if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
     ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+    DOT_ENSMEM_OR_NULL=".$ENSMEM"
+  else 
+    DOT_ENSMEM_OR_NULL=""
   fi
-  DOT_ENSMEM_OR_NULL=".$ENSMEM"
 else
   slash_cdate_ensmem_subdir_or_null="/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
   DOT_ENSMEM_OR_NULL=""
@@ -162,8 +165,8 @@ if [ "${obs_or_fcst}" = "obs" ]; then
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
 
-  FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE} )
+  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_fcst"

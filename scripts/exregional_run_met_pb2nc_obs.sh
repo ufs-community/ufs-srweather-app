@@ -108,20 +108,20 @@ set_vx_params \
 #
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  slash_cdate_ensmem_subdir_or_null=""
   if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
     ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+    DOT_ENSMEM_OR_NULL=".$ENSMEM"
+  else 
+    DOT_ENSMEM_OR_NULL=""
   fi
-  DOT_ENSMEM_OR_NULL=".$ENSMEM"
 else
-  slash_cdate_ensmem_subdir_or_null="/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
   DOT_ENSMEM_OR_NULL=""
 fi
 
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
-OUTPUT_BASE="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}"
+OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
 OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
 STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"

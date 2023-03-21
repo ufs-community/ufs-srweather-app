@@ -418,7 +418,12 @@ def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
     # VX_FCST_INPUT_BASEDIR to the default directory for the experiment.  Otherwise, set
     # it to the value of TEST_VX_FCST_INPUT_BASEDIR in the machine file.
     if (flags['RUN_TASK_RUN_FCST'] and flags['WRITE_DOPOST']) or flags['RUN_TASK_RUN_POST']:
-        cfg_vx['VX_FCST_INPUT_BASEDIR'] = dflt['workflow']['EXPTDIR']
+        # In NCO mode, the UPP output files are placed in a different location than in 
+        # community mode.  Thus, set VX_FCST_INPUT_BASEDIR accordingly.
+        if cfg['user']['RUN_ENVIR'] == 'nco':
+            cfg_vx['VX_FCST_INPUT_BASEDIR'] = '$COMOUT/../..'
+        else:
+            cfg_vx['VX_FCST_INPUT_BASEDIR'] = dflt['workflow']['EXPTDIR']
     else:
         if 'TEST_VX_FCST_INPUT_BASEDIR' in mach['platform']:
             cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['platform']['TEST_VX_FCST_INPUT_BASEDIR']
