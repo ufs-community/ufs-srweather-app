@@ -10,6 +10,7 @@ platform:
   MET_INSTALL_DIR: /contrib/EPIC/spack-stack/envs/srw-develop-intel/install/intel/2021.3.0/met
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs
+  RUN_CMD_PRDGEN: mpiexec -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -np $nprocs
   SCHED_NATIVE_CMD: --export=NONE
