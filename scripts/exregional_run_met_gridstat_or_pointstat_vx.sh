@@ -182,13 +182,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  slash_cdate_ensmem_subdir_or_null=""
+  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+  fi
+  DOT_ENSMEM_OR_NULL=".$ENSMEM"
+else
+  slash_cdate_ensmem_subdir_or_null="/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
+  DOT_ENSMEM_OR_NULL=""
+fi
+
 if [ "${grid_or_point}" = "grid" ]; then
 
   OBS_INPUT_FN_TEMPLATE=""
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/PcpCombine_obs"
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/metprd/PcpCombine_fcst"
+    FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
     FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
   else
     OBS_INPUT_DIR="${OBS_DIR}"
@@ -205,19 +217,19 @@ if [ "${grid_or_point}" = "grid" ]; then
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
     FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
-    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE} )
+    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
   fi
 
 elif [ "${grid_or_point}" = "point" ]; then
 
-  OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/Pb2nc_obs"
+  OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE} )
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
 fi
 
-OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
@@ -299,8 +311,8 @@ else
   metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi
 metplus_config_tmpl_fn="${met_tool_pc}_${metplus_config_tmpl_fn}"
-metplus_config_fn="${met_tool_pc}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_fn="${metplus_config_fn}${USCORE_ENSMEM_NAME_OR_NULL}"
+metplus_config_fn="${met_tool_pc}_${FIELDNAME_IN_MET_FILEDIR_NAMES}${USCORE_ENSMEM_NAME_OR_NULL}"
+metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
@@ -377,7 +389,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #

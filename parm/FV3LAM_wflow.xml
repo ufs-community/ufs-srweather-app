@@ -1656,6 +1656,8 @@ this case).  So here we opt for a redundant for-loop.
     <envar><name>obs_or_fcst</name><value>obs</value></envar>
     <envar><name>OBTYPE</name><value>{{obtype}}</value></envar>
     <envar><name>OBS_DIR</name><value>&{{obtype}}_OBS_DIR;</value></envar>
+    <envar><name>USCORE_ENSMEM_NAME_OR_NULL</name><value></value></envar>
+    <envar><name>SLASH_ENSMEM_SUBDIR_OR_NULL</name><value><cyclestr></cyclestr></value></envar>
 
     <dependency>
       <and>
@@ -2233,13 +2235,13 @@ done by the scripts that this task calls).
     <envar><name>MET_TOOL</name><value>ENSEMBLESTAT</value></envar>
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
+      <metataskdep metatask="run_ensemble"/>
     </dependency>
 
   </task>
   {%- endif %}
 
-  {%- if fcst_len_hrs >= 6 %}   
+  {%- if fcst_len_hrs >= 6 %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -2271,7 +2273,7 @@ done by the scripts that this task calls).
     <envar><name>MET_TOOL</name><value>ENSEMBLESTAT</value></envar>
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
+      <metataskdep metatask="run_ensemble"/>
     </dependency>
 
   </task>
@@ -2309,7 +2311,7 @@ done by the scripts that this task calls).
     <envar><name>MET_TOOL</name><value>ENSEMBLESTAT</value></envar>
 
     <dependency>
-      <taskdep task="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;"/>
+      <metataskdep metatask="run_ensemble"/>
     </dependency>
 
   </task>

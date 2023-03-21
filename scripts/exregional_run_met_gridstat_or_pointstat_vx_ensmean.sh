@@ -161,11 +161,18 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  slash_cdate_or_null=""
+else
+  slash_cdate_or_null="/${CDATE}"
+fi
+
 if [ "${grid_or_point}" = "grid" ]; then
 
   OBS_INPUT_FN_TEMPLATE=""
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/PcpCombine_obs"
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
   else
     OBS_INPUT_DIR="${OBS_DIR}"
@@ -183,24 +190,24 @@ if [ "${grid_or_point}" = "grid" ]; then
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
   fi
 # Keep for when splitting GenEnsProd from EnsembleStat.
-#  FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}/$CDATE/metprd/gen_ens_prod"
+#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
 #  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-  FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}/$CDATE/metprd/EnsembleStat"
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
   FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
 
 elif [ "${grid_or_point}" = "point" ]; then
 
-  OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/Pb2nc_obs"
+  OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
 # Keep for when splitting GenEnsProd from EnsembleStat.
-#  FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}/${CDATE}/metprd/gen_ens_prod"
+#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
 #  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-  FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}/${CDATE}/metprd/EnsembleStat"
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
   FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
 
 fi
 
-OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_ensmean"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensmean"
 #
@@ -369,7 +376,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #

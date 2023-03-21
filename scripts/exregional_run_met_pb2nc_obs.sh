@@ -106,10 +106,22 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  slash_cdate_ensmem_subdir_or_null=""
+  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+  fi
+  DOT_ENSMEM_OR_NULL=".$ENSMEM"
+else
+  slash_cdate_ensmem_subdir_or_null="/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
+  DOT_ENSMEM_OR_NULL=""
+fi
+
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
-OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
 OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
 STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"
@@ -195,7 +207,7 @@ metplus_config_tmpl_fn="${met_tool_pc}_obs"
 # Thus, another method is necessary to associate the configuration file
 # with the cycle for which it is used.
 #
-metplus_config_fn="${metplus_config_tmpl_fn}_$CDATE"
+metplus_config_fn="${metplus_config_tmpl_fn}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -273,7 +285,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #

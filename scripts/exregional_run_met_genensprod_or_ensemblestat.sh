@@ -162,13 +162,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  slash_cdate_or_null=""
+else
+  slash_cdate_or_null="/${CDATE}"
+fi
+
 if [ "${grid_or_point}" = "grid" ]; then
 
   OBS_INPUT_FN_TEMPLATE=""
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/PcpCombine_obs"
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${VX_OUTPUT_BASEDIR}"
+    FCST_INPUT_DIR="${vx_output_basedir}"
   else
     OBS_INPUT_DIR="${OBS_DIR}"
     case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
@@ -188,7 +195,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 
 elif [ "${grid_or_point}" = "point" ]; then
 
-  OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/Pb2nc_obs"
+  OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
 
@@ -208,8 +215,16 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
   SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    cdate_ensmem_subdir_or_null=""
+    DOT_ENSMEM_OR_NULL=".mem${mem_indx_fmt}"
+  else
+    cdate_ensmem_subdir_or_null="${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
+    DOT_ENSMEM_OR_NULL=""
+  fi
+
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    template="${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
+    template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
   else
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi
@@ -224,7 +239,7 @@ ${FCST_INPUT_FN_TEMPLATE},
 
 done
 
-OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
@@ -384,7 +399,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #

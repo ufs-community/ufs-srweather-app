@@ -2803,13 +2803,13 @@ verification:
   # Top-level directory in which METplus will place its output.
   #
   VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR if ((workflow_switches.RUN_TASK_RUN_FCST and task_run_fcst.WRITE_DOPOST) or workflow_switches.RUN_TASK_RUN_POST) }}'
-  VX_OUTPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  VX_OUTPUT_BASEDIR: '{{ "$COMOUT/metout" if user.RUN_ENVIR == "nco" else workflow.EXPTDIR }}'
   #
-  # File name and path templates are used in the verification tasks.
+  # File name and path templates used in the verification tasks.
   #
-  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd'
-  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  FCST_SUBDIR_TEMPLATE: '{{ "${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}" if user.RUN_ENVIR == "nco" else "{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd" }}{% raw %}{% endraw %}'
+  FCST_FN_TEMPLATE: '{{ "${NET}.t{init?fmt=%H?shift=-${time_lag}}z" }}{{ "${DOT_ENSMEM_OR_NULL}" if user.RUN_ENVIR == "nco" else "" }}{{ ".prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2" }}{% raw %}{% endraw %}'
+  FCST_FN_METPROC_TEMPLATE: '{{ "${NET}.t{init?fmt=%H?}z" }}{{ "${DOT_ENSMEM_OR_NULL}" if user.RUN_ENVIR == "nco" else "" }}{{ ".prslev.f{lead?fmt=%HHH?}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc" }}{% raw %}{% endraw %}'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
