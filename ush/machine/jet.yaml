@@ -26,12 +26,14 @@ platform:
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
   FIXaer: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsi: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+  LIGHTNING_ROOT: /mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/lightning
 data:
   ics_lbcs:
     FV3GFS:

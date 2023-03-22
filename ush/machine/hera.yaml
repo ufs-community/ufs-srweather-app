@@ -29,13 +29,14 @@ platform:
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_app/develop/dummy_FV3GFS_sys_dir
   TEST_VX_FCST_INPUT_BASEDIR: '/scratch2/BMC/det/UFS_SRW_App/develop/output_data/fcst_det/{{workflow.PREDEF_GRID_NAME}}'
   FIXaer: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_aer
+  FIXgsi: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_am
   FIXlut: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_lut
   FIXorg: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_orog
   FIXsfc: /scratch2/BMC/det/UFS_SRW_App/develop/fix/fix_sfc_climo
   FIXshp: /scratch2/BMC/det/UFS_SRW_App/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-
+  LIGHTNING_ROOT: /scratch2/BMC/zrtrr/rli/data/lightning
 data:
   obs:
     RAP_obs: /scratch2/BMC/public/data/grids/rap/obs
