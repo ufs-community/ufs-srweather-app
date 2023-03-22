@@ -16,6 +16,7 @@ source_config_for_task "task_run_vx_ensgrid_prob|task_run_vx_enspoint_prob|task_
 #
 #-----------------------------------------------------------------------
 #
+. $USHdir/set_met_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -42,28 +43,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Specify the set of valid argument names for this script/function.
-# Then process the arguments provided to this script/function (which
-# should consist of a set of name-value pairs of the form arg1="value1",
-# etc).
+# Get the name of the MET/METplus tool in different formats that may be
+# needed from the global variable MET_TOOL.
 #
 #-----------------------------------------------------------------------
 #
-valid_args=( \
-  "met_tool_sc" \
-  "met_tool_pc" \
-  )
-process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-print_input_args "valid_args"
+set_met_tool_name \
+  met_tool="${MET_TOOL}" \
+  outvarname_met_tool_sc="met_tool_sc" \
+  outvarname_met_tool_pc="met_tool_pc"
 #
 #-----------------------------------------------------------------------
 #

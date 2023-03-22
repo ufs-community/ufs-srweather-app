@@ -57,34 +57,12 @@ gen_ens_prod tool or its ensemble_stat tool for ensemble verification.
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the MET/METplus tool this task will call.  (Note: "sc"
-# is for "snake case", i.e. using underscores as separators, and "pc" is
-# for "Pascal case", i.e. no separators but first letter of each word
-# capitalized.)
-#
-#-----------------------------------------------------------------------
-#
-valid_vals_MET_TOOL=( "GENENSPROD" "ENSEMBLESTAT" )
-check_var_valid_value "MET_TOOL" "valid_vals_MET_TOOL"
-
-if [ "${MET_TOOL}" = "GENENSPROD" ]; then
-  met_tool_sc="gen_ens_prod"
-  met_tool_pc="GenEnsProd"
-elif [ "${MET_TOOL}" = "ENSEMBLESTAT" ]; then
-  met_tool_sc="ensemble_stat"
-  met_tool_pc="EnsembleStat"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_met_genensprod_or_ensemblestat.sh \
-  met_tool_sc="${met_tool_sc}" \
-  met_tool_pc="${met_tool_pc}" || \
+$SCRIPTSdir/exregional_run_met_genensprod_or_ensemblestat.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

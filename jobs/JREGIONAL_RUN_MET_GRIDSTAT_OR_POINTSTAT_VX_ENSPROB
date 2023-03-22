@@ -58,34 +58,12 @@ probabilities of a specified field (or group of fields).
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the MET/METplus tool this task will call.  (Note: "sc"
-# is for "snake case", i.e. using underscores as separators, and "pc" is
-# for "Pascal case", i.e. no separators but first letter of each word
-# capitalized.)
-#
-#-----------------------------------------------------------------------
-#
-valid_vals_MET_TOOL=( "GRIDSTAT" "POINTSTAT" )
-check_var_valid_value "MET_TOOL" "valid_vals_MET_TOOL"
-
-if [ "${MET_TOOL}" = "GRIDSTAT" ]; then
-  met_tool_sc="grid_stat"
-  met_tool_pc="GridStat"
-elif [ "${MET_TOOL}" = "POINTSTAT" ]; then
-  met_tool_sc="point_stat"
-  met_tool_pc="PointStat"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_met_gridstat_or_pointstat_vx_ensprob.sh \
-  met_tool_sc="${met_tool_sc}" \
-  met_tool_pc="${met_tool_pc}" || \
+$SCRIPTSdir/exregional_run_met_gridstat_or_pointstat_vx_ensprob.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

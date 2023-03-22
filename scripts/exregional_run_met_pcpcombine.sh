@@ -16,6 +16,7 @@ source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFN
 #
 #-----------------------------------------------------------------------
 #
+. $USHdir/set_met_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -42,15 +43,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the MET/METplus tool this task will call.  (Note: "sc"
-# is for "snake case", i.e. using underscores as separators, and "pc" is
-# for "Pascal case", i.e. no separators but first letter of each word
-# capitalized.)
+# Get the name of the MET/METplus tool in different formats that may be
+# needed from the global variable MET_TOOL.
 #
 #-----------------------------------------------------------------------
 #
-met_tool_sc="pcp_combine"
-met_tool_pc="PcpCombine"
+set_met_tool_name \
+  met_tool="${MET_TOOL}" \
+  outvarname_met_tool_sc="met_tool_sc" \
+  outvarname_met_tool_pc="met_tool_pc"
 #
 #-----------------------------------------------------------------------
 #
@@ -140,7 +141,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
     ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
     DOT_ENSMEM_OR_NULL=".$ENSMEM"
-  else 
+  else
     DOT_ENSMEM_OR_NULL=""
   fi
 else
