@@ -8,7 +8,7 @@ platform:
   METPLUS_PATH: /contrib/met/METplus/METplus-4.1.1
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /contrib/met/10.1.1
-  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/FV3LAM_pregen
+  DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: sjet,vjet,kjet,xjet
   QUEUE_DEFAULT: batch
   PARTITION_FCST: sjet,vjet,kjet,xjet

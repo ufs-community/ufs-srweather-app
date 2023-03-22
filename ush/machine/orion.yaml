@@ -8,7 +8,7 @@ platform:
   METPLUS_PATH: /apps/contrib/MET/METplus/METplus-4.1.1
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /apps/contrib/MET/10.1.1
-  DOMAIN_PREGEN_BASEDIR: /work/noaa/fv3-cam/UFS_SRW_App/develop/FV3LAM_pregen
+  DOMAIN_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: orion
   QUEUE_DEFAULT: batch
   PARTITION_FCST: orion
