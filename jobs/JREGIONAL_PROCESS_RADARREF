@@ -1,13 +1,15 @@
 #!/bin/bash
 
+
 #
 #-----------------------------------------------------------------------
 #
-# This J-JOB script runs the preprocess of BUFR files
+# This J-JOB script runs the radar reflectivity preprocess 
 #      for the FV3-LAM model
 #
 #-----------------------------------------------------------------------
 #
+
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +18,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_process_bufr" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_process_radarref" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
@@ -50,9 +52,8 @@ print_info_msg "
 ========================================================================
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
-
-This is the J-job script for the task that runs a BUFR preprocess for 
-the specified cycle.
+This is the J-job script for the task that runs a radar reflectivity 
+preprocess with FV3 for the specified cycle.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -62,9 +63,9 @@ the specified cycle.
 #-----------------------------------------------------------------------
 #
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA:-${COMIN}/process_bufr_spinup}"
+  DATA="${DATA:-${COMIN}/process_radarref_spinup}"
 else
-  DATA="${DATA:-${COMIN}/process_bufr}"
+  DATA="${DATA:-${COMIN}/process_radarref}"
 fi
 mkdir_vrfy -p ${DATA}
 #
@@ -75,7 +76,7 @@ mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_process_bufr.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_process_radarref.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
@@ -94,4 +95,3 @@ job_postamble
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
