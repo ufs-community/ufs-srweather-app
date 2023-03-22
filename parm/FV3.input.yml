@@ -290,6 +290,7 @@ FV3_GFS_v15p2:
     lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: !!python/none
+    nstf_name: [2, 0, 0, 0, 0]
     shal_cnv: True
     shinhong: False
     ttendlim: !!python/none
