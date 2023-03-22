@@ -409,7 +409,7 @@ FV3_GFS_v16:
     lndp_type: !!python/none
     lsoil: 4
     n_var_lndp: !!python/none
-    nstf_name: [2, 1, 0, 0, 0]
+    nstf_name: [2, 0, 0, 0, 0]
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
     satmedmf: True
