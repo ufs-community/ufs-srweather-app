@@ -174,7 +174,7 @@ METplus Parameters
 Test Directories
 ----------------------
 
-These directories are used only by the ``run_WE2E_tests.sh`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test. Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.sh`` script would need to be adjusted accordingly.
+These directories are used only by the ``run_WE2E_tests.py`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test (see :numref:`Chapter %s <WE2E_tests>`). Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.py`` script would need to be adjusted accordingly.
 
 ``TEST_EXTRN_MDL_SOURCE_BASEDIR``: (Default: "")
    This parameter allows testing of user-staged files in a known location on a given platform. This path contains a limited dataset and likely will not be useful for most user experiments. 
@@ -463,6 +463,9 @@ Baseline Workflow Tasks
 
 ``RUN_TASK_RUN_POST``: (Default: true)
    Flag that determines whether to run the ``TN_RUN_POST`` task. Valid values: ``True`` | ``False``
+
+``RUN_TASK_RUN_PRDGEN``: (Default: false)
+   Flag that determines whether to run the ``TN_RUN_PRDGEN`` task. Valid values: ``True`` | ``False``
 
 .. _VXTasks:
 
@@ -1221,6 +1224,49 @@ Set parameters for customizing the :term:`UPP`.
       $NET.tHHz.[var_name].f###.${POST_OUTPUT_DOMAIN_NAME}.grib2
    
    Note that this variable is first changed to lower case before being used to construct the file names.
+
+RUN_PRDGEN Configuration Parameters
+=====================================
+
+Non-default parameters for the ``run_prdgen`` task are set in the ``task_run_prdgen:`` section of the ``config.yaml`` file.
+
+Basic Task Parameters
+---------------------------------
+For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task.
+
+``TN_RUN_PRDGEN``: (Default: "run_prdgen")
+   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
+
+``NNODES_RUN_PRDGEN``: (Default: 1) 
+   Number of nodes to use for the job.
+
+``PPN_RUN_PRDGEN``: (Default: 22)
+   Number of :term:`MPI` processes per node.
+
+``WTIME_RUN_PRDGEN``: (Default: 00:30:00)
+   Maximum time for the task to complete.
+
+``MAXTRIES_RUN_PRDGEN``: (Default: 2)
+   Maximum number of times to attempt the task.
+
+``KMP_AFFINITY_RUN_PRDGEN``: (Default: "scatter")
+   Intel Thread Affinity Interface for the ``run_prdgen`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
+
+``OMP_NUM_THREADS_RUN_PRDGEN``: (Default: 1) 
+   The number of OpenMP threads to use for parallel regions.
+
+``OMP_STACKSIZE_RUN_PRDGEN``: (Default: "1024m")
+   Controls the size of the stack for threads created by the OpenMP implementation.
+
+``DO_PARALLEL_PRDGEN``: (Default: false)
+   Flag that determines whether to use CFP to run the product generation job in parallel.  CFP is a utility that allows the user to launch a number of small jobs across nodes/cpus in one batch command.  This option should be used with the ``RRFS_NA_3km`` grid and ``PPN_RUN_PRDGEN`` should be set to 22.
+
+``ADDNL_OUTPUT_GRIDS``: (Default: [])
+   Set additional output grids for wgrib2 remapping, if any.  Space-separated list of strings, e.g., ( "130" "242" "clue").  Default is no additional grids.
+
+``TESTBED_FIELDS_FN``: (Default: "")
+   The file which lists grib2 fields to be extracted for testbed files.  Empty string means no need to generate testbed files.
+
 
 .. _get-obs-ccpa:
 

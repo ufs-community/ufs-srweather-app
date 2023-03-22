@@ -66,7 +66,7 @@ hh=${GFS_SFC_CDATE:8:2}
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL[$i_cdate]}"
+      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
       break
     fi
   done

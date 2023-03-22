@@ -14,9 +14,11 @@ platform:
   QUEUE_HPSS: dev_transfer
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
+  RUN_CMD_PRDGEN: mpiexec -n ${nprocs} --cpu-bind core cfp
   RUN_CMD_SERIAL: mpiexec
   RUN_CMD_UTILS: mpiexec -n ${nprocs}
   RUN_CMD_AQM: mpiexec -n ${nprocs} -ppn ${ppn_run_aqm} --cpu-bind core -depth ${omp_num_threads_run_aqm}
+  RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data
@@ -30,7 +32,7 @@ platform:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
-  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
+  COMINairnow: /lfs/h1/ops/prod/dcom
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}

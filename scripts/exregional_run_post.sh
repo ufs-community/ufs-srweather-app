@@ -94,7 +94,7 @@ to the temporary work directory (DATA_FHR):
 ===================================================================="
 else
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    post_config_fp="${PARMdir}/upp-aqm/postxconfig-NT-fv3lam_cmaq.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
   fi
@@ -187,7 +187,7 @@ post_mn=${post_time:10:2}
 # Create the input namelist file to the post-processor executable.
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  post_itag_add="aqfcmaq_on=.true.,"
+  post_itag_add="aqf_on=.true.,"
 else
   post_itag_add=""
 fi
@@ -288,8 +288,8 @@ for fid in "${fids[@]}"; do
   fi
 done
 
-# Move phy and dyn files to COMIN only for AQM in NCO mode
-if [ "${CPL_AQM}" = "TRUE" ] && [ "${RUN_ENVIR}" = "nco" ]; then
+# Move phy and dyn files to COMIN only for AQM
+if [ "${CPL_AQM}" = "TRUE" ]; then
   mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
   mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
 fi

@@ -597,7 +597,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if rem_recur == 0:
             fcst_len_cycl = fcst_len_cycl * num_recur
             num_fcst_len_cycl = len(fcst_len_cycl)
-            workflow_config["FCST_LEN_CYCL"] = fcst_len_cycl
+            workflow_config.update({"FCST_LEN_CYCL_ALL": fcst_len_cycl})
             workflow_config.update({"ALL_CDATES": all_cdates})
         else:
             raise Exception(

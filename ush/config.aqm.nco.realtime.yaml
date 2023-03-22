@@ -37,7 +37,7 @@ workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false
   RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: false
+  RUN_TASK_RUN_POST: true
   RUN_TASK_AQM_ICS: true
   RUN_TASK_AQM_LBCS: true
   RUN_TASK_NEXUS_GFS_SFC: true
@@ -72,6 +72,7 @@ task_run_fcst:
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6 18
   WTIME_RUN_FCST: 04:00:00
+  OMP_NUM_THREADS_RUN_FCST: 1
   QUILTING: true
   PRINT_ESMF: false
 task_run_post:
