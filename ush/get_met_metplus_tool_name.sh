@@ -1,15 +1,17 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that uses the specified name of the MET
-# METplus tool without separators (e.g. underscores) and in either lower
-# or upper case (met_tool) to set its name in "snake case" (i.e. using
-# underscores as separators) and "pascal case" (i.e. no separators but
-# first letter of each word capitalized.)
+# This file defines a function that uses the given generic name of a MET/
+# METplus tool (generic_tool_name; this is a name that does not contain
+# any separators like underscores and that may be in upper or lower case)
+# to set its name in MET (met_tool_name) and in METplus (metplus_tool_name).
+# Note that the tool name in MET is in "snake case" (i.e. uses underscores
+# as separators with all lower case) while that in METplus is in "pascal
+# case" (i.e. no separators and with first letter of each word capitalized).
 #
 #-----------------------------------------------------------------------
 #
-function set_met_tool_name() {
+function get_met_metplus_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
@@ -29,9 +31,9 @@ function set_met_tool_name() {
 #-----------------------------------------------------------------------
 #
   local valid_args=( \
-        "met_tool" \
-        "outvarname_met_tool_sc" \
-        "outvarname_met_tool_pc" \
+        "generic_tool_name" \
+        "outvarname_met_tool_name" \
+        "outvarname_metplus_tool_name" \
         )
   process_args valid_args "$@"
 #
@@ -51,8 +53,8 @@ function set_met_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
-  local _met_tool_sc_ \
-        _met_tool_pc_
+  local _generic_tool_name_name_ \
+        _metplus_tool_name_
 #
 #-----------------------------------------------------------------------
 #
@@ -61,38 +63,39 @@ function set_met_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
-  met_tool=${met_tool,,}
-  valid_vals_met_tool=( \
+  generic_tool_name=${generic_tool_name,,}
+  valid_vals_generic_tool_name=( \
     "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "ENSEMBLESTAT" \
     "pb2nc" "pcpcombine" "gridstat" "pointstat" "ensemblestat" \
     )
-  check_var_valid_value "met_tool" "valid_vals_met_tool"
+  check_var_valid_value "generic_tool_name" "valid_vals_generic_tool_name"
 
-  case "${met_tool}" in
+  case "${generic_tool_name}" in
     "pb2nc")
-      _met_tool_sc_="pb2nc"
-      _met_tool_pc_="Pb2nc"
+      _met_tool_name_="pb2nc"
+      _metplus_tool_name_="Pb2nc"
       ;;
     "pcpcombine")
-      _met_tool_sc_="pcp_combine"
-      _met_tool_pc_="PcpCombine"
+      _met_tool_name_="pcp_combine"
+      _metplus_tool_name_="PcpCombine"
       ;;
     "gridstat")
-      _met_tool_sc_="grid_stat"
-      _met_tool_pc_="GridStat"
+      _met_tool_name_="grid_stat"
+      _metplus_tool_name_="GridStat"
       ;;
     "pointstat")
-      _met_tool_sc_="point_stat"
-      _met_tool_pc_="PointStat"
+      _met_tool_name_="point_stat"
+      _metplus_tool_name_="PointStat"
       ;;
     "ensemblestat")
-      _met_tool_sc_="ensemble_stat"
-      _met_tool_pc_="EnsembleStat"
+      _met_tool_name_="ensemble_stat"
+      _metplus_tool_name_="EnsembleStat"
       ;;
     *)
       print_err_msg_exit "\
-Value specified for met_tool is unupported:
-  met_tool = \"${met_tool}\""
+Generic name specified for MET/METplus tool (generic_tool_name) is
+unupported:
+  generic_tool_name = \"${generic_tool_name}\""
       ;;
   esac
 #
@@ -102,12 +105,12 @@ Value specified for met_tool is unupported:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "${outvarname_met_tool_sc}" ]; then
-    printf -v ${outvarname_met_tool_sc} "%s" "${_met_tool_sc_}"
+  if [ ! -z "${outvarname_met_tool_name}" ]; then
+    printf -v ${outvarname_met_tool_name} "%s" "${_met_tool_name_}"
   fi
 
-  if [ ! -z "${outvarname_met_tool_pc}" ]; then
-    printf -v ${outvarname_met_tool_pc} "%s" "${_met_tool_pc_}"
+  if [ ! -z "${outvarname_metplus_tool_name}" ]; then
+    printf -v ${outvarname_metplus_tool_name} "%s" "${_metplus_tool_name_}"
   fi
 #
 #-----------------------------------------------------------------------

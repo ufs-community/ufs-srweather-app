@@ -16,7 +16,7 @@ source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFN
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/set_met_tool_name.sh
+. $USHdir/get_met_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -48,10 +48,10 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-set_met_tool_name \
-  met_tool="${MET_TOOL}" \
-  outvarname_met_tool_sc="met_tool_sc" \
-  outvarname_met_tool_pc="met_tool_pc"
+get_met_metplus_tool_name \
+  generic_tool_name="${MET_TOOL}" \
+  outvarname_met_tool_name="met_tool_name" \
+  outvarname_metplus_tool_name="metplus_tool_name"
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +64,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus ${met_tool_pc}
+This is the ex-script for the task that runs the METplus ${metplus_tool_name}
 tool to combine hourly accumulated precipitation (APCP) data to generate
 files containing multi-hour accumulated precipitation (e.g. 3-hour, 6-
 hour, 24-hour).  The input files can come from either observations or
@@ -160,7 +160,7 @@ if [ "${obs_or_fcst}" = "obs" ]; then
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )
 
   OUTPUT_BASE="${vx_output_basedir}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
+  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
   OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
@@ -170,7 +170,7 @@ elif [ "${obs_or_fcst}" = "fcst" ]; then
   FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_ensmem_subdir_or_null}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_fcst"
+  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_fcst"
   OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
@@ -256,7 +256,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${met_tool_pc}_${obs_or_fcst}"
+metplus_config_tmpl_fn="${metplus_tool_name}_${obs_or_fcst}"
 metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}${USCORE_ENSMEM_NAME_OR_NULL}"
 metplus_log_fn="${metplus_config_fn}_$CDATE"
 #
@@ -356,7 +356,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+Calling METplus to run MET's ${met_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -373,7 +373,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${met_tool_pc} tool completed successfully.
+METplus ${metplus_tool_name} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

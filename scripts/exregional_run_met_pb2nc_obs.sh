@@ -16,7 +16,7 @@ source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/set_met_tool_name.sh
+. $USHdir/get_met_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -48,10 +48,10 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-set_met_tool_name \
-  met_tool="${MET_TOOL}" \
-  outvarname_met_tool_sc="met_tool_sc" \
-  outvarname_met_tool_pc="met_tool_pc"
+get_met_metplus_tool_name \
+  generic_tool_name="${MET_TOOL}" \
+  outvarname_met_tool_name="met_tool_name" \
+  outvarname_metplus_tool_name="metplus_tool_name"
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +64,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus tool ${met_tool_pc}
+This is the ex-script for the task that runs the METplus tool ${metplus_tool_name}
 to convert NDAS prep buffer observation files to NetCDF format.
 ========================================================================"
 #
@@ -123,9 +123,9 @@ OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${vx_output_basedir}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
 OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
-STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"
+STAGING_DIR="${OUTPUT_BASE}/stage/${metplus_tool_name}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -199,7 +199,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${met_tool_pc}_obs"
+metplus_config_tmpl_fn="${metplus_tool_name}_obs"
 #
 # Note that we append the cycle date to the name of the configuration
 # file because we are considering only observations when using Pb2NC, so
@@ -306,7 +306,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool on observations of type: ${OBTYPE}"
+Calling METplus to run MET's ${met_tool_name} tool on observations of type: ${OBTYPE}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -323,7 +323,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${met_tool_pc} tool completed successfully.
+METplus ${metplus_tool_name} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

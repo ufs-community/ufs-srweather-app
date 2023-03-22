@@ -16,7 +16,7 @@ source_config_for_task "task_run_vx_ensgrid_prob|task_run_vx_enspoint_prob|task_
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/set_met_tool_name.sh
+. $USHdir/get_met_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -48,10 +48,10 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-set_met_tool_name \
-  met_tool="${MET_TOOL}" \
-  outvarname_met_tool_sc="met_tool_sc" \
-  outvarname_met_tool_pc="met_tool_pc"
+get_met_metplus_tool_name \
+  generic_tool_name="${MET_TOOL}" \
+  outvarname_met_tool_name="met_tool_name" \
+  outvarname_metplus_tool_name="metplus_tool_name"
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +64,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus ${met_tool_pc}
+This is the ex-script for the task that runs the METplus ${metplus_tool_name}
 tool to perform verification of the specified field (VAR) on the ensemble
 frequencies/probabilities.
 ========================================================================"
@@ -155,7 +155,7 @@ elif [ "${grid_or_point}" = "point" ]; then
 fi
 
 OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_ensprob"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_ensprob"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensprob"
 #
 #-----------------------------------------------------------------------
@@ -247,8 +247,8 @@ if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
 else
   metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi
-metplus_config_tmpl_fn="${met_tool_pc}_ensprob_${metplus_config_tmpl_fn}"
-metplus_config_fn="${met_tool_pc}_ensprob_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+metplus_config_tmpl_fn="${metplus_tool_name}_ensprob_${metplus_config_tmpl_fn}"
+metplus_config_fn="${metplus_tool_name}_ensprob_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -337,7 +337,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+Calling METplus to run MET's ${met_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -354,7 +354,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${met_tool_pc} tool completed successfully.
+METplus ${metplus_tool_name} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
