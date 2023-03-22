@@ -8,21 +8,22 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Orion ]===])
 load("contrib")
 load("noaatools")
 
-load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.1"))
-load(pathJoin("python", os.getenv("python_ver") or "3.9.2"))
 
-prepend_path("MODULEPATH","/work/noaa/epic-ps/role-epic-ps/hpc-stack/libs/intel-2022.1.2/modulefiles/stack")
-load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
-load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1.2"))
-load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver") or "2022.1.2"))
+prepend_path("MODULEPATH", "/work/noaa/epic-ps/role-epic-ps/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core")
+load("stack-intel/2022.0.2")
+load("stack-intel-oneapi-mpi/2021.5.1")
+load("cmake/3.22.1")
 
-load("srw_common")
+prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
+miniconda3_ver=os.getenv("miniconda3_ver") or "3.9.7"
+load(pathJoin("stack-python", miniconda3_ver))
 
-load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
-load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
+load("ufs-srw-app-env/unified-dev")
+
+load("nccmp/1.9.0.1")
+load("nco/5.0.6")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
 setenv("CMAKE_Platform","orion.intel")
-
