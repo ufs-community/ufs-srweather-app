@@ -1,3 +1,2 @@
--- load("hpss")
 load("ncarenv")
-load("miniconda_regional_workflow-cmaq")
+load("miniconda_regional_workflow_cmaq")
