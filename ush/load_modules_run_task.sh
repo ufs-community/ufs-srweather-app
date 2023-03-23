@@ -185,15 +185,15 @@ fi
 #
 # Load the .local module file if available for the given task
 #
-modulefile_local="${task_name}.local"
-if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
-  module load "${modulefile_local}" || print_err_msg_exit "\
-  Loading .local module file (in directory specified by mod-
-  ules_dir) for the specified task (task_name) failed:
-    task_name = \"${task_name}\"
-    modulefile_local = \"${modulefile_local}\"
-    modules_dir = \"${modules_dir}\""    
-fi
+#modulefile_local="${task_name}.local"
+#if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
+#  module load "${modulefile_local}" || print_err_msg_exit "\
+#  Loading .local module file (in directory specified by mod-
+#  ules_dir) for the specified task (task_name) failed:
+#    task_name = \"${task_name}\"
+#    modulefile_local = \"${modulefile_local}\"
+#    modules_dir = \"${modules_dir}\""    
+#fi
 
 module list
 
@@ -202,11 +202,11 @@ module list
 # must be done within the script, and not inside the module. Do that
 # now.
 
-if [ -n "${SRW_ENV:-}" ] ; then
-  set +u
-  conda activate ${SRW_ENV}
-  set -u
-fi
+#if [ -n "${SRW_ENV:-}" ] ; then
+#  set +u
+#  conda activate ${SRW_ENV}
+#  set -u
+#fi
 
 if [ -n "${AQM_ENV:-}" ] ; then
   set +u

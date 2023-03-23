@@ -17,11 +17,11 @@ prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 miniconda3_ver=os.getenv("miniconda3_ver") or "3.9.7"
 load(pathJoin("stack-python", miniconda3_ver))
 
---load("ufs-srw-app-env/unified-dev")
+load("ufs-srw-app-env/unified-dev")
 
-load("srw_common_spack")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
+load("yafyaml/0.5.1")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
