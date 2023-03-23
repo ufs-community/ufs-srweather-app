@@ -24,7 +24,6 @@ rocoto:
     QUEUE_FCST: '{{ platform.get("QUEUE_FCST") }}'
     QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
     RUN: '{{ nco.RUN }}'
-    SCHED_NATIVE_CMD: '{{ platform.SCHED_NATIVE_CMD }}'
     SCRIPTSdir: '{{ user.SCRIPTSdir }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     USHdir: '{{ user.USHdir }}'
