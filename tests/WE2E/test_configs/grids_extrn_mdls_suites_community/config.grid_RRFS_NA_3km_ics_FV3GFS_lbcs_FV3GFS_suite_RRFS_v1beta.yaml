@@ -15,6 +15,8 @@ workflow:
   DATE_LAST_CYCL: '2019070100'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+workflow_switches:
+  RUN_TASK_RUN_PRDGEN: true
 task_make_orog:
   WTIME_MAKE_OROG: 01:00:00
 task_get_extrn_ics:
@@ -37,3 +39,6 @@ task_run_fcst:
 task_run_post:
   NNODES_RUN_POST: 8
   PPN_RUN_POST: 12
+task_run_prdgen:
+  DO_PARALLEL_PRDGEN: true
+  PPN_RUN_PRDGEN: 22
