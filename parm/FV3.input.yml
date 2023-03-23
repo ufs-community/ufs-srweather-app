@@ -371,6 +371,8 @@ FV3_GFS_v16:
     agrid_vel_rst: False
     d2_bg_k1: 0.2
     d2_bg_k2: 0.0
+    delt_max: 0.002
+    dz_min: 6
     fv_sg_adj: 450
     hord_dp: -5
     hord_mt: 5
@@ -389,6 +391,7 @@ FV3_GFS_v16:
     <<: *gfs_gfdl_cloud_mp
     mp_time: 150.0
     reiflag: 2
+    rthresh: 1.0e-06
     sedi_transport: True
     tau_l2v: 225.0
     tau_v2l: 150.0
