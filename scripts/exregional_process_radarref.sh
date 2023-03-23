@@ -55,7 +55,7 @@ eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
 
-gridspec_dir=${NWGES_BASEDIR}/grid_spec
+#gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #
 #-----------------------------------------------------------------------
 #
@@ -64,15 +64,16 @@ gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #
 #-----------------------------------------------------------------------
 #
-START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
+#START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
+START_DATE=$(echo "${PDY} ${cyc}")
 YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-JJJ=$(date +%j -d "${START_DATE}")
+#JJJ=$(date +%j -d "${START_DATE}")
 
 YYYY=${YYYYMMDDHH:0:4}
 MM=${YYYYMMDDHH:4:2}
 DD=${YYYYMMDDHH:6:2}
 HH=${YYYYMMDDHH:8:2}
-YYYYMMDD=${YYYYMMDDHH:0:8}
+#YYYYMMDD=${YYYYMMDDHH:0:8}
 
 #
 #-----------------------------------------------------------------------
@@ -119,11 +120,9 @@ for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
   mkdir_vrfy ${DATA}/${bigmin}
   cd ${DATA}/${bigmin}
 
-  fixdir=$FIXgsi/
-  fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
+  pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
 
-  print_info_msg "$VERBOSE" "fixdir is $fixdir"
-  print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
+  print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 
 #
 #-----------------------------------------------------------------------
@@ -133,15 +132,15 @@ for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
 #-----------------------------------------------------------------------
 
   if [ ${BKTYPE} -eq 1 ]; then
-    cp_vrfy ${fixgriddir}/fv3_grid_spec          fv3sar_grid_spec.nc
+    cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
   else
     if [ "${IO_LAYOUT_Y}" == "1" ]; then
-      cp_vrfy ${fixgriddir}/fv3_grid_spec          fv3sar_grid_spec.nc
+      cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
     else
       for ii in $list_iolayout
       do
         iii=$(printf %4.4i $ii)
-        cp_vrfy ${gridspec_dir}/fv3_grid_spec.${iii}   fv3sar_grid_spec.nc.${iii}
+        cp_vrfy ${pregen_grid_dir}/fv3_grid_spec.${iii}   fv3sar_grid_spec.nc.${iii}
       done
     fi
   fi
@@ -224,7 +223,7 @@ esac
 # copy bufr table from fix directory
 #
 #-----------------------------------------------------------------------
-  BUFR_TABLE=${fixdir}/prepobs_prep_RAP.bufrtable
+  BUFR_TABLE=${FIXgsi}/prepobs_prep_RAP.bufrtable
 
   cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 
