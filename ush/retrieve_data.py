@@ -608,6 +608,10 @@ def config_exists(arg):
     load it with YAML's safe loader and return the resulting dict.
     """
 
+    #If no value provided, look in default location
+    if not arg:
+        arg = os.path.join(dirname(dirname(__file__)),"parm","data_locations.yml")
+
     # Check for existence of file
     if not os.path.exists(arg):
         msg = f"{arg} does not exist!"
@@ -743,27 +747,14 @@ def main(argv):
     """
 
     cla = parse_args(argv)
-    cla.fcst_hrs = arg_list_to_range(cla.fcst_hrs)
 
-    if cla.members:
-        cla.members = arg_list_to_range(cla.members)
-
+    print(cla.config)
     setup_logging(cla.debug)
     print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
     for name, val in cla.__dict__.items():
         if name not in ["config"]:
             print(f"{name:>15s}: {val}")
     print(f"{('-' * 80)}\n{('-' * 80)}")
-
-    if "disk" in cla.data_stores:
-        # Make sure a path was provided.
-        if not cla.input_file_path:
-            raise argparse.ArgumentTypeError(
-                (
-                    "You must provide an input_file_path when choosing "
-                    " disk as a data store!"
-                )
-            )
 
     if "hpss" in cla.data_stores:
         # Make sure hpss module is loaded
@@ -913,7 +904,7 @@ def parse_args(argv):
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
         in this repository is in parm/data_locations.yml",
-        required=True,
+        required=False,
         type=config_exists,
         
     )
@@ -974,7 +965,7 @@ def parse_args(argv):
         "--ics_or_lbcs",
         choices=("ICS", "LBCS"),
         help="Flag for whether ICS or LBCS.",
-        required=True
+        required=False
     )
 
     # Optional
@@ -1026,7 +1017,29 @@ def parse_args(argv):
         help="Name of the summary file to be written to the output \
         directory",
     )
-    return parser.parse_args(argv)
+
+    # Make modifications/checks for given values
+
+    args = parser.parse_args(argv)
+
+    # convert range arguments if necessary 
+    args.fcst_hrs = arg_list_to_range(args.fcst_hrs)
+    if args.members:
+        args.members = arg_list_to_range(cla.members)
+
+    # Check required arguments for various conditions
+    if not args.ics_or_lbcs and args.file_set in ["anl", "fcst"]:
+        raise argparse.ArgumentTypeError(f"--ics_or_lbcs is a required " \
+              f"argument when --file_set = {args.file_set}")
+
+    # Check valid arguments for various conditions
+    valid_data_stores = ["hpss", "nomads", "aws", "disk", "remote"]
+    for store in args.data_stores:
+        if store not in valid_data_stores:
+            raise argparse.ArgumentTypeError(f"Invalid value '{store}' provided " \
+                  f"for --data_stores; valid values are {valid_data_stores}")
+
+    return args
 
 
 if __name__ == "__main__":
