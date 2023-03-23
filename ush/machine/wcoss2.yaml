@@ -44,6 +44,33 @@ data:
     RAP: compath.py ${envir}/rap/${rap_ver}/rap.${PDYext}
     NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDYext}
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
+  rrfs:
+    retro:
+      OBSPATH: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/obs_rap"
+      OBSPATH_NSSLMOSIAC: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/reflectivity"
+      LIGHTNING_ROOT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/lightning"
+      ENKF_FCST: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/enkf/atm"
+      FFG_DIR: ""
+      SST_ROOT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/highres_sst"
+      GVF_ROOT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/gvf/grib2"
+      IMSSNOW_ROOT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/snow/ims96/grib2"
+      RAPHRR_SOIL_ROOT: ""
+      FIRE_RAVE_DIR: ""
+      AIRCRAFT_REJECT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/amdar_reject_list"
+      SFCOBS_USELIST: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/mesonet_uselists"
+    real:
+      OBSPATH: "/lfs/h1/ops/prod/com/obsproc/v1.1"
+      OBSPATH_NSSLMOSIAC: "/lfs/h1/ops/prod/dcom/ldmdata/obs/upperair/mrms/conus/MergedReflectivityQC"
+      LIGHTNING_ROOT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/lightning"
+      ENKF_FCST: "/lfs/h1/ops/prod/com/gfs/v16.3"
+      FFG_DIR: ""
+      SST_ROOT: "/lfs/h1/ops/prod/com/gfs/v16.3"
+      GVF_ROOT: "/lfs/h1/ops/prod/dcom/viirs"
+      IMSSNOW_ROOT: "/lfs/h1/ops/prod/com/obsproc/v1.1"
+      RAPHRR_SOIL_ROOT: ""
+      FIRE_RAVE_DIR: "/lfs/h2/emc/physics/noscrub/partha.bhattacharjee/RAVE_rawdata/RAVE_NA"
+      AIRCRAFT_REJECT: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/amdar_reject_list"
+      SFCOBS_USELIST: "/lfs/h2/emc/lam/noscrub/emc.lam/rrfs_retro_data/mesonet_uselists"
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
   AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio

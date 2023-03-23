@@ -54,3 +54,30 @@ data:
     GFS_obs:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+  rrfs:
+    retro:
+      OBSPATH: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/obs_rap"
+      OBSPATH_NSSLMOSIAC: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/reflectivity"
+      LIGHTNING_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/lightning"
+      ENKF_FCST: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/enkf/atm"
+      FFG_DIR: ""
+      SST_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/highres_sst"
+      GVF_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/gvf/grib2"
+      IMSSNOW_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/snow/ims96/grib2"
+      RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/rap_hrrr_soil"
+      FIRE_RAVE_DIR: ""
+      AIRCRAFT_REJECT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/amdar_reject_lists"
+      SFCOBS_USELIST: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/mesonet_uselists"
+    real:
+      OBSPATH: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/obs_rap"
+      OBSPATH_NSSLMOSIAC: "/public/data/radar/nssl/mrms/conus"
+      LIGHTNING_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/lightning"
+      ENKF_FCST: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/enkf/atm"
+      FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
+      SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
+      GVF_ROOT: "/public/data/sat/ncep/viirs/gvf/grib2"
+      IMSSNOW_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/snow/ims96/grib2"
+      RAPHRR_SOIL_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/rap_hrrr_soil"
+      FIRE_RAVE_DIR: ""
+      AIRCRAFT_REJECT: "/home/amb-verif/acars_RR/amdar_reject_lists"
+      SFCOBS_USELIST: "/lfs4/BMC/amb-verif/rap_ops_mesonet_uselists"

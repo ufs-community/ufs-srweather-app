@@ -484,10 +484,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     )
     get_extrn_lbcs["EXTRN_MDL_SYSBASEDIR_LBCS"] = extrn_mdl_sysbasedir_lbcs
 
-    # remove the data key -- it's not needed beyond this point
-    if "data" in expt_config:
-        expt_config.pop("data")
-
     # Check for the user-specified directories for external model files if
     # USE_USER_STAGED_EXTRN_FILES is set to TRUE
     task_keys = zip(
@@ -512,6 +508,26 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                     model files are stored.
                       {data_key} = \"{basedir}\"'''
                 )
+
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Set RRFS data paths for retrospective/realtime runs
+    #
+    # -----------------------------------------------------------------------
+    #
+    if expt_config["rrfs"]["DO_RRFS_DEV"]:
+        mode = "retro" if expt_config["rrfs"]["DO_RETRO"] else "real"
+        rrfs = expt_config.get("data", {}).get("rrfs")
+        if rrfs is not None:
+            for k,v in rrfs[mode].items():
+                expt_config["platform"][k] = v
+
+    # -----------------------------------------------------------------------
+    # remove the data key -- it's not needed beyond this point
+    # -----------------------------------------------------------------------
+    if "data" in expt_config:
+        expt_config.pop("data")
 
     #
     # -----------------------------------------------------------------------
