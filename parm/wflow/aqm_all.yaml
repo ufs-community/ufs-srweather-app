@@ -1,5 +1,5 @@
 default_aqm_task: &default_aqm
-  command: '&LOAD_MODULES_RUN_TASK_FP; "{{ jobname }}" "&JOBSdir;/JREGIONAL_{{ jobname|upper }}"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "{{ jobname }}" "&JOBSDIR;/JREGIONAL_{{ jobname|upper }}"'
   account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
@@ -45,7 +45,7 @@ metatask_nexus_emission:
     nspt: '{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}'
   task_nexus_emission_#nspt#:
     <<: *default_aqm
-    command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&JOBSDIR;/JREGIONAL_NEXUS_EMISSION"'
     nnodes: 4
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION }}'
     walltime: 01:00:00
@@ -84,7 +84,7 @@ task_aqm_ics_ext:
   attrs:
     cycledefs: at_start
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSDIR;/JREGIONAL_AQM_ICS"'
   envars:
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
   dependency:
