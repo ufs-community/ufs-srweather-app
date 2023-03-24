@@ -35,8 +35,8 @@ task_plot_allvars:
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km
 rocoto:
-  taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
   tasks:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00

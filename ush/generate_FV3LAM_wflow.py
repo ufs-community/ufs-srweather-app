@@ -822,8 +822,10 @@ class Testing(unittest.TestCase):
                 "MACHINE": "linux",
             },
             "rocoto": {
-                "taskgroups": \
-                    '\'{{ ["parm/wflow/prep.yaml","parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}\''
+                "tasks": {
+                    "taskgroups": \
+                        '\'{{ ["parm/wflow/prep.yaml","parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}\''
+                },
             },
         }
         update_dict(cfg_updates, nco_test_config)
