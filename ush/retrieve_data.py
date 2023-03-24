@@ -305,8 +305,8 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
     if isinstance(file_templates, dict):
-        if cla.file_type is not None:
-            file_templates = file_templates[cla.file_type]
+        if cla.file_fmt is not None:
+            file_templates = file_templates[cla.file_fmt]
         file_templates = file_templates[cla.file_set]
     if not file_templates:
         msg = "No file naming convention found. They must be provided \
@@ -475,8 +475,8 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     # Could be a list of lists
     archive_file_names = store_specs.get("archive_file_names", {})
-    if cla.file_type is not None:
-        archive_file_names = archive_file_names[cla.file_type]
+    if cla.file_fmt is not None:
+        archive_file_names = archive_file_names[cla.file_fmt]
 
     if isinstance(archive_file_names, dict):
         archive_file_names = archive_file_names[cla.file_set]
@@ -562,11 +562,21 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cmd = f'htar -xvf {existing_archive} {" ".join(source_paths)}'
 
                 logging.info(f"Running command \n {cmd}")
-                subprocess.run(
-                    cmd,
-                    check=True,
-                    shell=True,
-                )
+
+                try:
+                    r = subprocess.run(
+                        cmd,
+                        check=False,
+                        shell=True,
+                    )
+                except:
+                    if r.returncode == 11:
+                        # Continue if files missing from archive; we will check later if this is
+                        # an acceptable condition
+                        logging.warning("One or more files not found in zip archive")
+                        pass
+                    else:
+                        raise Exception("Error running archive extraction command")
 
                 # Check that files exist and Remove any data transfer artifacts.
                 # Returns {'hpss': []}, turn that into a new dict of
@@ -607,10 +617,6 @@ def config_exists(arg):
     Check to ensure that the provided config file exists. If it does,
     load it with YAML's safe loader and return the resulting dict.
     """
-
-    #If no value provided, look in default location
-    if not arg:
-        arg = os.path.join(dirname(dirname(__file__)),"parm","data_locations.yml")
 
     # Check for existence of file
     if not os.path.exists(arg):
@@ -748,13 +754,22 @@ def main(argv):
 
     cla = parse_args(argv)
 
-    print(cla.config)
     setup_logging(cla.debug)
     print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
     for name, val in cla.__dict__.items():
         if name not in ["config"]:
             print(f"{name:>15s}: {val}")
     print(f"{('-' * 80)}\n{('-' * 80)}")
+
+    if "disk" in cla.data_stores:
+        # Make sure a path was provided.
+        if not cla.input_file_path:
+            raise argparse.ArgumentTypeError(
+                (
+                    "You must provide an input_file_path when choosing "
+                    " disk as a data store!"
+                )
+            )
 
     if "hpss" in cla.data_stores:
         # Make sure hpss module is loaded
@@ -772,21 +787,18 @@ def main(argv):
             )
             sys.exit(1)
 
-    known_data_info = cla.config.get(cla.external_model, {})
+    known_data_info = cla.config.get(cla.data_type, {})
     if not known_data_info:
-        msg = dedent(
-            f"""No data stores have been defined for
-               {cla.external_model}! Only checking provided disk
-               location"""
-        )
+        msg = f"No data stores have been defined for {cla.data_type}!"
         if cla.input_file_path is None:
             cla.data_stores = ["disk"]
             raise KeyError(msg)
         logging.info(msg)
+        logging.info(f"Checking provided disk location {cla.input_file_path}")
 
     unavailable = {}
     for data_store in cla.data_stores:
-        logging.info(f"Checking {data_store} for {cla.external_model}")
+        logging.info(f"Checking {data_store} for {cla.data_type}")
         store_specs = known_data_info.get(data_store, {})
 
         if data_store == "disk":
@@ -925,7 +937,7 @@ def parse_args(argv):
         type=to_lower,
     )
     parser.add_argument(
-        "--external_model",
+        "--data_type",
         choices=(
             "FV3GFS",
             "GFS_obs",
@@ -951,7 +963,7 @@ def parse_args(argv):
         processed.  If more than 3 arguments, the list is processed \
         as-is. default=[0]",
         nargs="+",
-        required=False,                    # relaxed this arg option, and set a default value when not used
+        required=False,
         default=[0],
         type=int,
     )
@@ -991,7 +1003,7 @@ def parse_args(argv):
         nargs="*",
     )
     parser.add_argument(
-        "--file_type",
+        "--file_fmt",
         choices=("grib2", "nemsio", "netcdf", "prepbufr", "tcvitals"),
         help="External model file format",
     )

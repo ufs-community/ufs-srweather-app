@@ -306,7 +306,7 @@ RAP_obs:
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
     archive_internal_dir:
-      - ./
+      - ""
     archive_file_names:
       - "{yyyymmddhh}00.zip"
     file_names:
