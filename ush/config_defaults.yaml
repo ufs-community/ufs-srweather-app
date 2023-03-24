@@ -1445,9 +1445,6 @@ rrfs:
   # DO_POST_PROD:
   # Flag turn on the UPP for prod cycle.
   #
-  # DO_PARALLEL_PRDGEN:
-  # Flag turn on parallel wgrib2 runs in prdgen .
-  #
   #-----------------------------------------------------------------------
   #
   DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
@@ -1455,7 +1452,6 @@ rrfs:
   DO_POST_PROD: false # Turn this off temporarily
   DO_SPINUP: false
   DO_POST_SPINUP: false
-  DO_PARALLEL_PRDGEN: false
   #
   #-----------------------------------------------------------------------
   #
