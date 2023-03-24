@@ -61,6 +61,14 @@ Workflow task names.
 <!ENTITY TN_RUN_MET_POINTSTAT_VX_UPA               "{{ tn_run_met_pointstat_vx_upa }}">
 {%- endif%}
 {%- if run_tasks_metvx_ens %}
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_APCP01H          "{{ tn_run_met_genensprod_vx_apcp01h }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_APCP03H          "{{ tn_run_met_genensprod_vx_apcp03h }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_APCP06H          "{{ tn_run_met_genensprod_vx_apcp06h }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_APCP24H          "{{ tn_run_met_genensprod_vx_apcp24h }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_REFC             "{{ tn_run_met_genensprod_vx_refc }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_RETOP            "{{ tn_run_met_genensprod_vx_retop }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_SFC              "{{ tn_run_met_genensprod_vx_sfc }}">
+<!ENTITY TN_RUN_MET_GENENSPROD_VX_UPA              "{{ tn_run_met_genensprod_vx_upa }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H        "{{ tn_run_met_ensemblestat_vx_apcp01h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP03H        "{{ tn_run_met_ensemblestat_vx_apcp03h }}">
 <!ENTITY TN_RUN_MET_ENSEMBLESTAT_VX_APCP06H        "{{ tn_run_met_ensemblestat_vx_apcp06h }}">
@@ -2174,6 +2182,300 @@ done by the scripts that this task calls).
 ************************************************************************
 ************************************************************************
 -->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_apcp01h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_apcp01h }}:ppn={{ ppn_run_met_genensprod_vx_apcp01h }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_apcp01h }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_apcp01h }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_APCP01H;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_APCP01H;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+  {%- if fcst_len_hrs >= 3 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_APCP03H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_apcp03h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_apcp03h }}:ppn={{ ppn_run_met_genensprod_vx_apcp03h }}</nodes>
+    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_apcp03h }}</memory>
+    {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_apcp03h }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_APCP03H;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_APCP03H;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM_HH</name><value>03</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+  {%- endif %}
+  {%- if fcst_len_hrs >= 6 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_APCP06H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_apcp06h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_apcp06h }}:ppn={{ ppn_run_met_genensprod_vx_apcp06h }}</nodes>
+    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_apcp06h }}</memory>
+    {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_apcp06h }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_APCP06H;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_APCP06H;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM_HH</name><value>06</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+  {%- endif %}
+  {%- if fcst_len_hrs >= 24 %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_APCP24H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_apcp24h }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_GENENSPROD"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_apcp24h }}:ppn={{ ppn_run_met_genensprod_vx_apcp24h }}</nodes>
+    {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_apcp24h }}</memory>
+    {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_apcp24h }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_APCP24H;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_APCP24H;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&CCPA_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>CCPA</value></envar>
+    <envar><name>VAR</name><value>APCP</value></envar>
+    <envar><name>ACCUM_HH</name><value>24</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+  {%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_REFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_refc }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_refc }}:ppn={{ ppn_run_met_genensprod_vx_refc }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_refc }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_refc }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_REFC;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_REFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>MRMS</value></envar>
+    <envar><name>VAR</name><value>REFC</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_RETOP;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_retop }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_retop }}:ppn={{ ppn_run_met_genensprod_vx_retop }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_retop }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_retop }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_RETOP;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_RETOP;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&MRMS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>MRMS</value></envar>
+    <envar><name>VAR</name><value>RETOP</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <metataskdep metatask="run_ensemble"/>
+    </dependency>
+
+  </task>
+{%- if run_task_vx_enspoint %}
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_SFC;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_sfc }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_sfc }}:ppn={{ ppn_run_met_genensprod_vx_sfc }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_sfc }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_sfc }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_SFC;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>NDAS</value></envar>
+    <envar><name>VAR</name><value>SFC</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <and>
+        <metataskdep metatask="run_ensemble"/>
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&TN_RUN_MET_GENENSPROD_VX_UPA;" cycledefs="forecast" maxtries="{{ maxtries_run_met_genensprod_vx_upa }}">
+
+    &RSRV_DEFAULT;
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&VX_LOCAL_MODULE_FN;" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"</command>
+    <nodes>{{ nnodes_run_met_genensprod_vx_upa }}:ppn={{ ppn_run_met_genensprod_vx_upa }}</nodes>
+  {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
+    <memory>{{ mem_run_met_genensprod_vx_upa }}</memory>
+  {%- endif %}
+    <walltime>{{ wtime_run_met_genensprod_vx_upa }}</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <native>&SCHED_NATIVE_CMD;</native>
+    <jobname>&TN_RUN_MET_GENENSPROD_VX_UPA;</jobname>
+    <join>&LOGDIR;/&TN_RUN_MET_GENENSPROD_VX_UPA;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
+
+    <envar><name>GLOBAL_VAR_DEFNS_FP</name><value>&GLOBAL_VAR_DEFNS_FP;</value></envar>
+    <envar><name>USHdir</name><value>&USHdir;</value></envar>
+    <envar><name>OBS_DIR</name><value>&NDAS_OBS_DIR;</value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
+    <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
+    <envar><name>OBTYPE</name><value>NDAS</value></envar>
+    <envar><name>VAR</name><value>UPA</value></envar>
+    <envar><name>ACCUM_HH</name><value>01</value></envar>
+    <envar><name>MET_TOOL</name><value>GENENSPROD</value></envar>
+
+    <dependency>
+      <and>
+        <metataskdep metatask="run_ensemble"/>
+        <taskdep task="&TN_RUN_MET_PB2NC_OBS;"/>
+      </and>
+    </dependency>
+
+  </task>
+{%- endif %}
+<!--
+************************************************************************
+************************************************************************
+-->
   <task name="&TN_RUN_MET_ENSEMBLESTAT_VX_APCP01H;" cycledefs="forecast" maxtries="{{ maxtries_run_met_ensemblestat_vx_apcp01h }}">
 
     &RSRV_DEFAULT;
@@ -2205,7 +2507,6 @@ done by the scripts that this task calls).
     </dependency>
 
   </task>
-
   {%- if fcst_len_hrs >= 3 %}
 <!--
 ************************************************************************
@@ -2243,7 +2544,6 @@ done by the scripts that this task calls).
 
   </task>
   {%- endif %}
-
   {%- if fcst_len_hrs >= 6 %}
 <!--
 ************************************************************************
@@ -2281,7 +2581,6 @@ done by the scripts that this task calls).
 
   </task>
   {%- endif %}
-
   {%- if fcst_len_hrs >= 24 %}
 <!--
 ************************************************************************
@@ -2319,7 +2618,6 @@ done by the scripts that this task calls).
 
   </task>
   {%- endif %}
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -2355,7 +2653,6 @@ done by the scripts that this task calls).
     </dependency>
 
   </task>
-
 <!--
 ************************************************************************
 ************************************************************************

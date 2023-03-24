@@ -2189,6 +2189,94 @@ task_run_met_pointstat_vx_upa:
   MAXTRIES_RUN_MET_POINTSTAT_VX_UPA: 2
 
 #----------------------------
+# run_met_genensprod_vx_apcp01h config parameters
+#-----------------------------
+task_run_met_genensprod_vx_apcp01h:
+  TN_RUN_MET_GENENSPROD_VX_APCP01H: "run_MET_GenEnsProd_vx_APCP01h"
+  NNODES_RUN_MET_GENENSPROD_VX_APCP01H: 1
+  PPN_RUN_MET_GENENSPROD_VX_APCP01H: 1
+  MEM_RUN_MET_GENENSPROD_VX_APCP01H: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_APCP01H: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_APCP01H: 2
+
+#----------------------------
+# run_met_genensprod_vx_apcp03h config parameters
+#-----------------------------
+task_run_met_genensprod_vx_apcp03h:
+  TN_RUN_MET_GENENSPROD_VX_APCP03H: "run_MET_GenEnsProd_vx_APCP03h"
+  NNODES_RUN_MET_GENENSPROD_VX_APCP03H: 1
+  PPN_RUN_MET_GENENSPROD_VX_APCP03H: 1
+  MEM_RUN_MET_GENENSPROD_VX_APCP03H: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_APCP03H: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_APCP03H: 2
+
+#----------------------------
+# run_met_genensprod_vx_apcp06h config parameters
+#-----------------------------
+task_run_met_genensprod_vx_apcp06h:
+  TN_RUN_MET_GENENSPROD_VX_APCP06H: "run_MET_GenEnsProd_vx_APCP06h"
+  NNODES_RUN_MET_GENENSPROD_VX_APCP06H: 1
+  PPN_RUN_MET_GENENSPROD_VX_APCP06H: 1
+  MEM_RUN_MET_GENENSPROD_VX_APCP06H: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_APCP06H: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_APCP06H: 2
+
+#----------------------------
+# run_met_genensprod_vx_apcp24h config parameters
+#-----------------------------
+task_run_met_genensprod_vx_apcp24h:
+  TN_RUN_MET_GENENSPROD_VX_APCP24H: "run_MET_GenEnsProd_vx_APCP24h"
+  NNODES_RUN_MET_GENENSPROD_VX_APCP24H: 1
+  PPN_RUN_MET_GENENSPROD_VX_APCP24H: 1
+  MEM_RUN_MET_GENENSPROD_VX_APCP24H: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_APCP24H: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_APCP24H: 2
+
+#----------------------------
+# run_met_genensprod_vx_refc config parameters
+#-----------------------------
+task_run_met_genensprod_vx_refc:
+  TN_RUN_MET_GENENSPROD_VX_REFC: "run_MET_GenEnsProd_vx_REFC"
+  NNODES_RUN_MET_GENENSPROD_VX_REFC: 1
+  PPN_RUN_MET_GENENSPROD_VX_REFC: 1
+  MEM_RUN_MET_GENENSPROD_VX_REFC: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_REFC: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_REFC: 2
+
+#----------------------------
+# run_met_genensprod_vx_retop config parameters
+#-----------------------------
+task_run_met_genensprod_vx_retop:
+  TN_RUN_MET_GENENSPROD_VX_RETOP: "run_MET_GenEnsProd_vx_RETOP"
+  NNODES_RUN_MET_GENENSPROD_VX_RETOP: 1
+  PPN_RUN_MET_GENENSPROD_VX_RETOP: 1
+  MEM_RUN_MET_GENENSPROD_VX_RETOP: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_RETOP: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_RETOP: 2
+
+#----------------------------
+# run_met_genensprod_vx_sfc config parameters
+#-----------------------------
+task_run_met_genensprod_vx_sfc:
+  TN_RUN_MET_GENENSPROD_VX_SFC: "run_MET_GenEnsProd_vx_SFC"
+  NNODES_RUN_MET_GENENSPROD_VX_SFC: 1
+  PPN_RUN_MET_GENENSPROD_VX_SFC: 1
+  MEM_RUN_MET_GENENSPROD_VX_SFC: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_SFC: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_SFC: 2
+
+#----------------------------
+# run_met_genensprod_vx_upa config parameters
+#-----------------------------
+task_run_met_genensprod_vx_upa:
+  TN_RUN_MET_GENENSPROD_VX_UPA: "run_MET_GenEnsProd_vx_UPA"
+  NNODES_RUN_MET_GENENSPROD_VX_UPA: 1
+  PPN_RUN_MET_GENENSPROD_VX_UPA: 1
+  MEM_RUN_MET_GENENSPROD_VX_UPA: 2G
+  WTIME_RUN_MET_GENENSPROD_VX_UPA: 01:00:00
+  MAXTRIES_RUN_MET_GENENSPROD_VX_UPA: 2
+
+#----------------------------
 # run_met_ensemblestat_vx_apcp01h config parameters
 #-----------------------------
 task_run_met_ensemblestat_vx_apcp01h:
