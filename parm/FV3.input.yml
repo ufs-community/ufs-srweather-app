@@ -391,7 +391,6 @@ FV3_GFS_v16:
     <<: *gfs_gfdl_cloud_mp
     mp_time: 150.0
     reiflag: 2
-    rthresh: 1.0e-06
     sedi_transport: True
     tau_l2v: 225.0
     tau_v2l: 150.0
