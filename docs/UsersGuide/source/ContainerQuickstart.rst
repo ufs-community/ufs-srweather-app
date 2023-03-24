@@ -322,7 +322,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_ICS: []
          EXTRN_MDL_DATA_STORES: disk
 
@@ -333,7 +333,7 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
       .. code-block:: console
 
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
          EXTRN_MDL_FILES_LBCS: []
          EXTRN_MDL_DATA_STORES: disk
 
