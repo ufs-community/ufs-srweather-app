@@ -1851,8 +1851,8 @@ task_run_post:
   #
   #-----------------------------------------------------------------------
   #
-  USE_CUSTOM_POST_CONFIG_FILE: false
-  CUSTOM_POST_CONFIG_FP: ""
+  USE_CUSTOM_POST_CONFIG_FILE: true
+  CUSTOM_POST_CONFIG_FP: '{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt'
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
   TESTBED_FIELDS_FN: ""
 
