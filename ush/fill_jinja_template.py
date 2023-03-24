@@ -272,7 +272,7 @@ def fill_jinja_template(argv, config_dict=None):
     cfg = cla.config if cla.config is not None else {}
 
     if config_dict is not None:
-        update_dict(cfg, config_dict)
+        update_dict(cfg, config_dict, quiet=cla.quiet)
 
     # Update cfg with (optional) command-line entries, overriding those in YAML file
     if cla.user_config:
