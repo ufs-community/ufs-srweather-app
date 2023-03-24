@@ -14,13 +14,13 @@ def check_for_preexist_dir_file(path, method):
 
     Args:
         path: path to directory
-        method: could be any of [ 'delete', 'upgrade', 'rename', 'quit' ]
+        method: could be any of [ 'delete', 'reuse', 'rename', 'quit' ]
     Returns:
         None
     """
 
     try:
-        check_var_valid_value(method, ["delete", "upgrade", "rename", "quit"])
+        check_var_valid_value(method, ["delete", "reuse", "rename", "quit"])
     except ValueError:
         errmsg = dedent(
             f"""
@@ -33,7 +33,7 @@ def check_for_preexist_dir_file(path, method):
     if os.path.exists(path):
         if method == "delete":
             rm_vrfy(" -rf ", path)
-        elif method == "rename" or method == "upgrade":
+        elif method == "rename" or method == "reuse":
             now = datetime.now()
             d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
