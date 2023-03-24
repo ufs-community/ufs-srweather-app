@@ -40,5 +40,6 @@ verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
 rocoto:
   tasks:
-    task_run_fcst:
-      walltime: 02:00:00
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00

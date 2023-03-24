@@ -114,12 +114,14 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
+        args = ["-o", wflow_xml_fp,
+                "-t", template_xml_fp,
+                "-c", rocoto_yaml_fp ]
+        if not debug:
+            args.append("-q")
+
         try:
-            fill_jinja_template(
-                ["-o", wflow_xml_fp,
-                 "-t", template_xml_fp,
-                 "-c", rocoto_yaml_fp ],
-            )
+            fill_jinja_template(args)
         except:
             raise Exception(
                 dedent(

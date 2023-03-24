@@ -1365,15 +1365,16 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     if fcst_config["WRITE_DOPOST"]:
         # Turn off run_post
-        removed_task = task_defs.pop('metatask_run_ens_post', None)
+        task_name = 'metatask_run_ens_post'
+        removed_task = task_defs.pop(task_name, None)
         if removed_task:
             logger.warning(
                 dedent(
                     f"""
-                           Inline post is turned on, deactivating post-processing tasks:
-                           Removing {removed_task} from task definitions
-                           list.
-                           """
+                     Inline post is turned on, deactivating post-processing tasks:
+                     Removing {task_name} from task definitions
+                     list.
+                     """
                 )
             )
 
