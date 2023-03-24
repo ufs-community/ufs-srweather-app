@@ -210,18 +210,16 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v15_thompson_mynn_lam3km" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
-
-  fileids=( "ss" "ls" )
-  for fileid in "${fileids[@]}"; do
-    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${fileid}.tile${TILE_RGNL}.halo${NH0}.nc"
-    symlink="oro_data_${fileid}.nc"
+suites=( FV3_HRRR FV3_GFS_v15_thompson_mynn_lam3km  FV3_GFS_v17_p8 )
+if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
+  file_ids=( "ss" "ls" )
+  for file_id in "${file_ids[@]}"; do
+    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
+    symlink="oro_data_${file_id}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"
   done
-
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -484,10 +482,10 @@ fi
 #
 flag_fcst_restart="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp_vrfy input.nml input.nml_org
-  cp_vrfy model_configure model_configure_org
+  cp_vrfy input.nml input.nml_orig
+  cp_vrfy model_configure model_configure_orig
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp_vrfy aqm.rc aqm.rc_org
+    cp_vrfy aqm.rc aqm.rc_orig
   fi
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
@@ -523,11 +521,11 @@ current cycle's (cdate) run directory (DATA) failed:
   # Create soft-link of restart files in INPUT directory
   cd_vrfy ${DATA}/INPUT
 
-  fileids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
-  for fileid in "${fileids[@]}"; do
-    rm_vrfy "${fileid}"
-    target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.${fileid}"
-    symlink="${fileid}"
+  file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+  for file_id in "${file_ids[@]}"; do
+    rm_vrfy "${file_id}"
+    target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.${file_id}"
+    symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
 

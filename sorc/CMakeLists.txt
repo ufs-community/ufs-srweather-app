@@ -57,7 +57,6 @@ if (BUILD_UFS)
     "-DNETCDF_DIR=$ENV{NETCDF}"
     "-D32BIT=ON"
     "-DINLINE_POST=ON"
-    "-DMPI=ON"
     "-DAPP=${APP}"
   )
   
