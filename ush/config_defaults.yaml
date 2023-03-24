@@ -416,14 +416,6 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # observation file templates used in process_bufr
-  #
-  #-----------------------------------------------------------------------
-  #
-  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -2589,6 +2581,14 @@ task_process_bufr:
   MEM_PROCESS_BUFR: 20G
   WTIME_PROCESS_BUFR: 00:30:00
   MAXTRIES_PROCESS_BUFR: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # observation file templates used in process_bufr
+  #
+  #-----------------------------------------------------------------------
+  #
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
 
 #----------------------------
 # global config parameters
