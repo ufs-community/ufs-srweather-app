@@ -1433,9 +1433,6 @@ rrfs:
   # Flag to turn on RRFS dev workflow. Should be removed
   # in the future once SRW and RRFS dev workflows are completely integrated
   #
-  # DO_RETRO:
-  # Flag turn on the retrospective experiments.
-  #
   # DO_SPINUP:
   # Flag turn on the spin-up cycle.
   #
@@ -1448,7 +1445,6 @@ rrfs:
   #-----------------------------------------------------------------------
   #
   DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
-  DO_RETRO: true # Turn this on temporarily
   DO_POST_PROD: false # Turn this off temporarily
   DO_SPINUP: false
   DO_POST_SPINUP: false

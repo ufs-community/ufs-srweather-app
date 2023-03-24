@@ -53,7 +53,6 @@ rrfs:
   DO_DACYCLE: false # turn on later
   DO_SURFACE_CYCLE: false # turn on later
   DO_SPINUP: false # turn on later
-  DO_RETRO: true
   DO_NONVAR_CLDANAL: false # turn on later
   DO_REFL2TTEN: false
   DO_NLDN_LGHT: false
