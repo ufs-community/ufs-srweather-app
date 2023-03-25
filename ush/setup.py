@@ -517,7 +517,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # -----------------------------------------------------------------------
     #
     if expt_config["rrfs"]["DO_RRFS_DEV"]:
-        mode = "retro" if expt_config["rrfs"]["DO_RETRO"] else "real"
+        mode = "real" if expt_config["workflow"]["DO_REAL_TIME"] else "retro"
         rrfs = expt_config.get("data", {}).get("rrfs")
         if rrfs is not None:
             for k,v in rrfs[mode].items():
