@@ -210,3 +210,9 @@ metatask_run_ensemble:
             attrs:
               task: aqm_lbcs
 
+task_get_da_obs:
+  <<: *default_task
+  nnodes: 1
+  ppn: 1
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSDIR;/JREGIONAL_GET_DA_OBS"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'

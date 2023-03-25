@@ -48,26 +48,6 @@ RRFS data assimilation tasks.
 #
 #-----------------------------------------------------------------------
 #
-# Extract from CDATE the starting year, month, day, and hour of the
-# forecast.  These are needed below for various operations.
-#
-#-----------------------------------------------------------------------
-#
-START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
-YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-JJJ=$(date +%j -d "${START_DATE}")
-
-YYYY=${YYYYMMDDHH:0:4}
-MM=${YYYYMMDDHH:4:2}
-DD=${YYYYMMDDHH:6:2}
-HH=${YYYYMMDDHH:8:2}
-YYYYMMDD=${YYYYMMDDHH:0:8}
-
-YYJJJHH=$(date +"%y%j%H" -d "${START_DATE}")
-PREYYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
-#
-#-----------------------------------------------------------------------
-#
 # Enter working directory; set up variables for call to retrieve_data.py
 #
 #-----------------------------------------------------------------------
@@ -80,15 +60,11 @@ cd_vrfy ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-# if path has space in between it is a command, otherwise
-# treat it as a template path
+# Set up optional flags for calling retrieve_data.py
 #
 #-----------------------------------------------------------------------
 #
-input_file_path=$(eval echo ${input_file_path})
-if [[ $input_file_path = *" "* ]]; then
-  input_file_path=$(eval ${input_file_path})
-fi
+additional_flags=""
 
 if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   additional_flags="$additional_flags \
@@ -112,9 +88,9 @@ python3 -u ${USHdir}/retrieve_data.py \
   --debug \
   --file_set obs \
   --config ${PARMdir}/data_locations.yml \
-  --cycle_date ${EXTRN_MDL_CDATE} \
-  --data_stores ${data_stores} \
-  --data_type ${obs_type} \
+  --cycle_date ${PDY}${cyc} \
+  --data_stores hpss \
+  --data_type RAP_obs \
   --output_path ${DATA} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"

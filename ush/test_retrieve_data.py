@@ -344,3 +344,60 @@ class FunctionalTesting(unittest.TestCase):
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 5)
+
+    def test_rap_obs_from_hpss(self):
+
+        """Get RAP observations from hpss for a 09z time"""
+
+        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'obs',
+                '--config', self.config,
+                '--cycle_date', '2023032109',
+                '--data_stores', 'hpss',
+                '--data_type', 'RAP_obs',
+                '--output_path', tmp_dir,
+                '--debug',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 29)
+
+    def test_rap_e_obs_from_hpss(self):
+
+        """Get RAP observations from hpss for a 12z time;
+           at 00z and 12z we expect to see additional files
+           with the 'rap_e' naming convention"""
+
+        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'obs',
+                '--config', self.config,
+                '--cycle_date', '2023032112',
+                '--data_stores', 'hpss',
+                '--data_type', 'RAP_obs',
+                '--output_path', tmp_dir,
+                '--debug',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 31)
+

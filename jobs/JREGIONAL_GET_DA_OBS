@@ -49,28 +49,16 @@ This script retrieves observation data for RRFS data assimilation tasks.
 #
 #-----------------------------------------------------------------------
 #
-# Set the external model start time
-#
-#-----------------------------------------------------------------------
-#
-
-yyyymmdd=${PDY}
-hh=${cyc}
-export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
-
-#
-#-----------------------------------------------------------------------
-#
 # Create the directory where the GSI obs files should be stored
 #
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
     export DATA="${COMINext}"
-    mkdir_vrfy -p "${INPUT_OBS_DIR}"
+    mkdir_vrfy -p "${DATA}"
 else
-    export DATA="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
-    mkdir_vrfy -p "${INPUT_OBS_DIR}"
+    export DATA="${COMIN}/gsi"
+    mkdir_vrfy -p "${DATA}"
 fi
 #
 #-----------------------------------------------------------------------
