@@ -66,16 +66,16 @@ export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIM
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_OBS_DIR="${COMINext}"
+    export DATA="${COMINext}"
     mkdir_vrfy -p "${INPUT_OBS_DIR}"
 else
-    export INPUT_OBS_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
+    export DATA="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
     mkdir_vrfy -p "${INPUT_OBS_DIR}"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# Call the ex-script for this J-job
 #
 #-----------------------------------------------------------------------
 #

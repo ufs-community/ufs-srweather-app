@@ -98,7 +98,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Call script to retrieve files
+# Call script to retrieve RAP obs bufr files
 #
 #-----------------------------------------------------------------------
 #
@@ -110,12 +110,11 @@ fi
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
   --debug \
-  --file_set ${file_set} \
+  --file_set obs \
   --config ${PARMdir}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
-  --external_model ${EXTRN_MDL_NAME} \
-  --fcst_hrs ${fcst_hrs[@]} \
+  --data_type ${obs_type} \
   --output_path ${DATA} \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
@@ -126,79 +125,6 @@ Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
-#
-#-----------------------------------------------------------------------
-#
-# Merge GEFS files
-#
-#-----------------------------------------------------------------------
-#
-if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
-    
-    # This block of code sets the forecast hour range based on ICS/LBCS
-    if [ "${ICS_OR_LBCS}" = "LBCS" ]; then
-        fcst_hrs_tmp=( $fcst_hrs )
-        all_fcst_hrs_array=( $(seq ${fcst_hrs_tmp[0]} ${fcst_hrs_tmp[2]} ${fcst_hrs_tmp[1]}) )
-    else
-        all_fcst_hrs_array=( ${fcst_hrs} )
-    fi
-
-    # Loop through ensemble member numbers and forecast hours
-    for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
-        sorted_fn=( )
-        for fcst_hr in "${all_fcst_hrs_array[@]}"; do
-            # Read in filenames from $EXTRN_MDL_FNS and sort them
-            base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
-            filenames_array=`awk -F= '/EXTRN_MDL_FNS/{print $2}' $base_path/${EXTRN_DEFNS}`
-            for filename in ${filenames_array[@]}; do
-                IFS='.' read -ra split_fn <<< "$filename"
-                if [ `echo -n $filename | tail -c 2` == `printf %02d $fcst_hr` ] && [ "${split_fn[1]}" == "t${hh}z" ] ; then
-                    if [ "${split_fn[2]}" == 'pgrb2a' ] ; then
-                        sorted_fn+=( "$filename" )
-                    elif [ "${split_fn[2]}" == 'pgrb2b' ] ; then
-                        sorted_fn+=( "$filename" )
-                    elif [ "${split_fn[2]}" == "pgrb2af`printf %02d $fcst_hr`" ] ; then
-                        sorted_fn+=( "$filename" )
-                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %02d $fcst_hr`" ] ; then
-                        sorted_fn+=( "$filename" )
-                    elif [ "${split_fn[2]}" == "pgrb2af`printf %03d $fcst_hr`" ] ; then
-                        sorted_fn+=( "$filename" )
-                    elif [ "${split_fn[2]}" == "pgrb2bf`printf %03d $fcst_hr`" ] ; then
-                        sorted_fn+=( "$filename" )
-                    fi
-                fi
-            done
-
-            # Define filename lists used to check if files exist
-            fn_list_1=( ${sorted_fn[0]} ${sorted_fn[1]}
-                       "gep$num.t${hh}z.pgrb2.0p50.f`printf %03d $fcst_hr`" )
-            fn_list_2=( ${sorted_fn[2]} ${sorted_fn[3]}
-                       "gep$num.t${hh}z.pgrb2`printf %02d $fcst_hr`" )
-            fn_list_3=( ${sorted_fn[4]} ${sorted_fn[5]}
-                       "gep$num.t${hh}z.pgrb2`printf %03d $fcst_hr`" )
-            echo ${fn_list_1[@]}
-            fn_lists=( "fn_list_1" "fn_list_2" "fn_list_3" )
-
-            # Look for filenames, if they exist, merge files together
-            printf "Looking for files in $base_path\n"
-            for fn in "${fn_lists[@]}"; do
-                fn_str="$fn[@]"
-                fn_array=( "${!fn_str}" )
-                if [ -f "$base_path/${fn_array[0]}" ] && [ -f "$base_path/${fn_array[1]}" ]; then
-                    printf "Found files: ${fn_array[0]} and ${fn_array[1]} \nCreating new file: ${fn_array[2]}\n"
-                    cat $base_path/${fn_array[0]} $base_path/${fn_array[1]} > $base_path/${fn_array[2]}
-                    merged_fn+=( "${fn_array[2]}" )
-                fi
-            done
-        done
-        # If merge files exist, update the extrn_defn file
-        merged_fn_str="( ${merged_fn[@]} )"
-        printf "Merged files are: ${merged_fn_str} \nUpdating ${EXTRN_DEFNS}\n\n"
-        echo "$(awk -F= -v val="${merged_fn_str}" '/EXTRN_MDL_FNS/ {$2=val} {print}' OFS== $base_path/${EXTRN_DEFNS})" > $base_path/${EXTRN_DEFNS}
-        merged_fn=()
-        mod_fn_list=()
-    done
-fi
 #
 #-----------------------------------------------------------------------
 #
