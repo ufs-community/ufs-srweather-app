@@ -43,23 +43,23 @@ The SRW App requires input files to run. These include static datasets, initial 
 .. _DataLocations:
 .. table:: Data Locations for Level 1 Systems
 
-   +--------------+-----------------------------------------------------------------+
-   | Machine      | File location                                                   |
-   +==============+=================================================================+
-   | Cheyenne     | /glade/p/ral/jntp/UFS_SRW_App/develop/input_model_data/         |
-   +--------------+-----------------------------------------------------------------+
-   | Gaea         | /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/     |
-   +--------------+-----------------------------------------------------------------+
-   | Hera         | /scratch2/BMC/det/UFS_SRW_App/develop/input_model_data/         |
-   +--------------+-----------------------------------------------------------------+
-   | Jet          | /mnt/lfs4/BMC/wrfruc/UFS_SRW_App/develop/input_model_data/      |
-   +--------------+-----------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_App/develop/input_model_data/             |
-   +--------------+-----------------------------------------------------------------+
-   | Orion        | /work/noaa/fv3-cam/UFS_SRW_App/develop/input_model_data/        |
-   +--------------+-----------------------------------------------------------------+
-   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/   |
-   +--------------+-----------------------------------------------------------------+ 
+   +--------------+------------------------------------------------------------------------------+
+   | Machine      | File location                                                                |
+   +==============+==============================================================================+
+   | Cheyenne     | /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/         |
+   +--------------+------------------------------------------------------------------------------+
+   | Gaea         | /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/      |
+   +--------------+------------------------------------------------------------------------------+
+   | Hera         | /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/      |
+   +--------------+------------------------------------------------------------------------------+
+   | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data/      |
+   +--------------+------------------------------------------------------------------------------+
+   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_data/develop/input_model_data/                         |
+   +--------------+------------------------------------------------------------------------------+
+   | Orion        | /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data/       |
+   +--------------+------------------------------------------------------------------------------+
+   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/                |
+   +--------------+------------------------------------------------------------------------------+ 
     
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
@@ -507,11 +507,11 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
          EXPT_SUBDIR: run_basic_srw
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
          EXTRN_MDL_DATA_STORES: disk
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/pdata/ncep/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
          EXTRN_MDL_DATA_STORES: disk
 
 To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
