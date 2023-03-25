@@ -1387,7 +1387,11 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_BIAS_CORRECTION_O3;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_o3 }}">
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_O3;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"</command>
+{%- if machine in ["WCOSS2"]  %}
+    <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}:tpp={{ omp_num_threads_bias_correction_o3 }}</nodes>
+{%- else %}
     <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}</nodes>
+{%- endif %}
 {%- if machine not in ["GAEA"]  %}
     <memory>{{ mem_bias_correction_o3 }}</memory>
 {%- endif %}
@@ -1418,7 +1422,11 @@ it, we'd have to include more jinja if-statements here.
   <task name="&TN_BIAS_CORRECTION_PM25;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_pm25 }}">
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_PM25;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"</command>
+{%- if machine in ["WCOSS2"]  %}
+    <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}:tpp={{ omp_num_threads_bias_correction_pm25 }}</nodes>
+{%- else %}
     <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}</nodes>
+{%- endif %}
 {%- if machine not in ["GAEA"]  %}
     <memory>{{ mem_bias_correction_pm25 }}</memory>
 {%- endif %}
@@ -1441,7 +1449,6 @@ it, we'd have to include more jinja if-statements here.
 
   </task>
 {%- endif %}
-
 
 
 {#-
