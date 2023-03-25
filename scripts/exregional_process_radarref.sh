@@ -55,7 +55,6 @@ eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
 
-#gridspec_dir=${NWGES_BASEDIR}/grid_spec
 #
 #-----------------------------------------------------------------------
 #
@@ -64,16 +63,13 @@ nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
 #
 #-----------------------------------------------------------------------
 #
-#START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
 START_DATE=$(echo "${PDY} ${cyc}")
 YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-#JJJ=$(date +%j -d "${START_DATE}")
 
 YYYY=${YYYYMMDDHH:0:4}
 MM=${YYYYMMDDHH:4:2}
 DD=${YYYYMMDDHH:6:2}
 HH=${YYYYMMDDHH:8:2}
-#YYYYMMDD=${YYYYMMDDHH:0:8}
 
 #
 #-----------------------------------------------------------------------
@@ -87,22 +83,17 @@ HH=${YYYYMMDDHH:8:2}
 BKTYPE=0
 if [ ${DO_SPINUP} == "TRUE" ]; then
   if [ ${CYCLE_TYPE} == "spinup" ]; then
-    for cyc_start in "${CYCL_HRS_SPINSTART[@]}"; do
-      if [ ${HH} -eq ${cyc_start} ]; then
-        BKTYPE=1
-      fi
-    done
+    if [[ ${CYCL_HRS_SPINSTART[@]} =~ "$HH" ]] ; then
+      BKTYPE=1
+    fi
   fi
 else
-  for cyc_start in "${CYCL_HRS_PRODSTART[@]}"; do
-    if [ ${HH} -eq ${cyc_start} ]; then
-        BKTYPE=1
-    fi
-  done
+  if [[ ${CYCL_HRS_PRODSTART[@]} =~ "$HH" ]] ; then
+    BKTYPE=1
+  fi
 fi
 
 n_iolayouty=$(($IO_LAYOUT_Y-1))
-list_iolayout=$(seq 0 $n_iolayouty)
 
 #
 #-----------------------------------------------------------------------
@@ -115,10 +106,10 @@ list_iolayout=$(seq 0 $n_iolayouty)
 print_info_msg "$VERBOSE" "
 Getting into working directory for radar reflectivity process ..."
 
-for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
-  bigmin=$( printf %2.2i $bigmin )
-  mkdir_vrfy ${DATA}/${bigmin}
-  cd ${DATA}/${bigmin}
+for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
+  timelevel=$( printf %2.2i $timelevel )
+  mkdir_vrfy ${DATA}/${timelevel}
+  cd ${DATA}/${timelevel}
 
   pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
 
@@ -132,15 +123,14 @@ for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
 #-----------------------------------------------------------------------
 
   if [ ${BKTYPE} -eq 1 ]; then
-    cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
+    cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
   else
     if [ "${IO_LAYOUT_Y}" == "1" ]; then
-      cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
+      cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
     else
-      for ii in $list_iolayout
+      for iii in $(seq -w 0 $(printf %4.4i $n_iolayouty))
       do
-        iii=$(printf %4.4i $ii)
-        cp_vrfy ${pregen_grid_dir}/fv3_grid_spec.${iii}   fv3sar_grid_spec.nc.${iii}
+        cp_vrfy ${pregen_grid_dir}/fv3_grid_spec.${iii} fv3sar_grid_spec.nc.${iii}
       done
     fi
   fi
@@ -152,38 +142,27 @@ for bigmin in ${RADARREFL_TIMELEVEL[@]}; do
 #
 #-----------------------------------------------------------------------
 
-
-case $MACHINE in
-
-"WCOSS2")
-
-  obs_appendix=grib2.gz
-  ;;
-"JET" | "HERA" | "ORION")
-
-  obs_appendix=grib2
-esac
-
   NSSL=${OBSPATH_NSSLMOSIAC}
 
   mrms="MergedReflectivityQC"
 
 # Link to the MRMS operational data
-  echo "bigmin = ${bigmin}"
+  echo "timelevel = ${timelevel}"
   echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
 
 # Link to the MRMS operational data
+# This loop finds files closest to the given "timelevel"
   for min in ${RADARREFL_MINS[@]}
   do
-    min=$( printf %2.2i $((bigmin+min)) )
+    min=$( printf %2.2i $((timelevel+min)) )
     echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${HH}":"${min}
-    s=0
-    while [[ $s -le 59 ]]; do
-      ss=$(printf %2.2i ${s})
-      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.${obs_appendix}
+    sec=0
+    while [[ $sec -le 59 ]]; do
+      ss=$(printf %2.2i ${sec})
+      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.${OBS_APPENDIX}
       if [ -s $nsslfile ]; then
         echo 'Found '${nsslfile}
-        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${HH}${min}*.${obs_appendix}
+        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${HH}${min}*.${OBS_APPENDIX}
         numgrib2=$(ls ${NSSL}/${nsslfile1} | wc -l)
         echo 'Number of GRIB-2 files: '${numgrib2}
         if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
@@ -192,18 +171,13 @@ esac
           echo 'Creating links for ${YYYY}${MM}${DD}-${HH}${min}'
         fi
       fi
-      ((s+=1))
+      ((sec+=1))
     done
   done
 
-# remove filelist_mrms if zero bytes
-  if [ ! -s filelist_mrms ]; then
-    rm -f filelist_mrms
-  fi
-
   if [ -s filelist_mrms ]; then
 
-     if [ ${obs_appendix} == "grib2.gz" ]; then
+     if [ ${OBS_APPENDIX} == "grib2.gz" ]; then
         gzip -d *.gz
         mv filelist_mrms filelist_mrms_org
         ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${HH}????.grib2 > filelist_mrms
@@ -213,7 +187,10 @@ esac
      print_info_msg "$VERBOSE" "Using radar data from: `head -1 filelist_mrms | cut -c10-15`"
      print_info_msg "$VERBOSE" "NSSL grib2 file levels = $numgrib2"
   else
-     echo "WARNING: Not enough radar reflectivity files available for loop ${bigmin}."
+     # remove filelist_mrms if zero bytes
+     rm -f filelist_mrms
+
+     echo "WARNING: Not enough radar reflectivity files available for loop ${timelevel}."
      continue
   fi
 
@@ -323,7 +300,7 @@ EOF
     Call to executable to run radar refl process returned with nonzero exit code."
   POST_STEP
 
-done # done with the bigmin for-loop
+done # done with the timelevel for-loop
 #
 #-----------------------------------------------------------------------
 #

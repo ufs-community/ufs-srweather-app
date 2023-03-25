@@ -7,6 +7,27 @@
 # This J-JOB script runs the radar reflectivity preprocess 
 #      for the FV3-LAM model
 #
+# Description:
+#
+#   RRFS runs a pre-processing task on MRMS radar reflectivity files.
+#   Specifically the process_radarref task executes process_NSSL_mosaic.exe
+#   from rrfs-utl on files 
+#       like MergedReflectivityQC_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.grib2.
+#
+# Arguments needed for the corresponding ex-script
+#
+#   FIXgsi
+#   OBSPATH_NSSLMOSIAC 
+#   DO_SPINUP
+#   CYCLE_TYPE 
+#   CYCL_HRS_SPINSTART
+#   CYCL_HRS_PRODSTART
+#   IO_LAYOUT_Y
+#   RADARREF_TIMELEVEL
+#   RADARREF_MINS
+#   RADAR_REF_THINNING
+#   OBS_APPENDIX
+#  
 #-----------------------------------------------------------------------
 #
 
