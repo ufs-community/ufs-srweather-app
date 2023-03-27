@@ -839,7 +839,6 @@ MODULES_RUN_TASK_FP script.
     <native>{{ native_run_fcst }}</native>
   {%- elif machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}:tpp={{ omp_num_threads_run_fcst }}</nodes>
-    <native>&SCHED_NATIVE_CMD;</native>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- else %}
     <nodes>{{ nnodes_run_fcst }}:ppn={{ ppn_run_fcst }}</nodes>
