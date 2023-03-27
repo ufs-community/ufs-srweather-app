@@ -53,19 +53,8 @@ with FV3 for the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-#START_DATE=$(echo "${CDATE}" | sed 's/\([[:digit:]]\{2\}\)$/ \1/')
 START_DATE=$(echo "${PDY} ${cyc}")
 YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-#JJJ=$(date +%j -d "${START_DATE}")
-
-#YYYY=${YYYYMMDDHH:0:4}
-#MM=${YYYYMMDDHH:4:2}
-#DD=${YYYYMMDDHH:6:2}
-#HH=${YYYYMMDDHH:8:2}
-#YYYYMMDD=${YYYYMMDDHH:0:8}
-
-#YYJJJHH=$(date +"%y%j%H" -d "${START_DATE}")
-#EARLY_YYJJJHH=$(date +"%y%j%H" -d "${START_DATE} 1 hours ago")
 
 #
 #-----------------------------------------------------------------------
