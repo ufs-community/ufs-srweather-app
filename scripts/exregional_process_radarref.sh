@@ -159,10 +159,10 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
     sec=0
     while [[ $sec -le 59 ]]; do
       ss=$(printf %2.2i ${sec})
-      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.${OBS_APPENDIX}
+      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.${OBS_SUFFIX}
       if [ -s $nsslfile ]; then
         echo 'Found '${nsslfile}
-        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${HH}${min}*.${OBS_APPENDIX}
+        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${HH}${min}*.${OBS_SUFFIX}
         numgrib2=$(ls ${NSSL}/${nsslfile1} | wc -l)
         echo 'Number of GRIB-2 files: '${numgrib2}
         if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
@@ -177,7 +177,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
 
   if [ -s filelist_mrms ]; then
 
-     if [ ${OBS_APPENDIX} == "grib2.gz" ]; then
+     if [ ${OBS_SUFFIX} == "grib2.gz" ]; then
         gzip -d *.gz
         mv filelist_mrms filelist_mrms_org
         ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${HH}????.grib2 > filelist_mrms

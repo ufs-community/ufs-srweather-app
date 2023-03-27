@@ -2685,14 +2685,14 @@ task_process_radarref:
   # RADARREFL_TIMELEVEL:
   #   time level (minute) from the hour that the NSSL mosaic files will be generated 
   #
-  # OBS_APPENDIX
+  # OBS_SUFFIX
   #   machine specific grib2 file name extension (grib2 or grib2.gz)
   #
   #-----------------------------------------------------------------------
   #
   RADARREFL_MINS: [0, 1, 2, 3]
   RADARREFL_TIMELEVEL: [0]
-  OBS_APPENDIX: grib2
+  OBS_SUFFIX: grib2
 
 #----------------------------
 # global config parameters
