@@ -226,10 +226,14 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
 
                         data.append(template)
 
+                    convert_type = True
                     for tmpl, rendered in zip(templates, data):
                         v_str = v_str.replace(tmpl, rendered)
-                        if "string" not in tmpl:
-                            v_str = str_to_type(v_str)
+                        if "string" in tmpl:
+                            convert_type = False
+
+                    if convert_type:
+                        v_str = str_to_type(v_str)
 
                     if isinstance(v, ET.Element):
                         print('Replacing ET text with', v_str)

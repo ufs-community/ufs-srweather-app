@@ -64,8 +64,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 set -x
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_NEXUS_EMISSION*PPN_NEXUS_EMISSION ))
-ppn_run_aqm="${PPN_NEXUS_EMISSION}"
 omp_num_threads_run_aqm="${OMP_NUM_THREADS_NEXUS_EMISSION}"
 
 if [ -z "${RUN_CMD_AQM:-}" ] ; then

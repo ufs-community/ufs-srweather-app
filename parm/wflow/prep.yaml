@@ -26,12 +26,12 @@ default_task_prep: &default_task
 task_make_grid:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
 
 task_make_orog:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSDIR;/JREGIONAL_MAKE_OROG"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   dependency:
     or: &make_grid_satisfied
       and:
@@ -49,7 +49,7 @@ task_make_orog:
 task_make_sfc_climo:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSDIR;/JREGIONAL_MAKE_SFC_CLIMO"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   nnodes: 2
   dependency:
     and:

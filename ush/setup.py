@@ -714,13 +714,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         long_cycles = [i * incr_cycl_freq for i in long_indices]
 
         # add one forecast entry per cycle per day
-        fcst_cdef = rocoto_config['cycledefs']['long_forecast']
         fcst_cdef = []
 
         for hh in long_cycles:
-            first = date_first_cycl.replace(hour=hh)
-            last = date_last_cycl.replace(hour=hh)
+            first = date_first_cycl.replace(hour=hh).strftime("%Y%m%d%H")
+            last = date_last_cycl.replace(hour=hh).strftime("%Y%m%d%H")
             fcst_cdef.append(f'{first}00 {last}00 24:00:00')
+
+        rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
 
     #
     # -----------------------------------------------------------------------

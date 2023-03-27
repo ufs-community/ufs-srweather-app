@@ -5,7 +5,7 @@ user:
   MACHINE: [hera or wcoss2]
   ACCOUNT: [account name]
 workflow:
-  USE_CRON_TO_RELAUNCH: true
+  USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
@@ -26,13 +26,13 @@ workflow:
 nco:
   NET: aqm
 rocoto:
-  taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
   tasks:
-    task_post_stat_O3:
-    task_post_stat_PM25:
-    task_bias_correction_O3:
-    task_bias_correction_PM25:
-    metatask_run_fcst_ens:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/aqm_all.yaml"]|include }}'
+    task_post_stat_o3:
+    task_post_stat_pm25:
+    task_bias_correction_o3:
+    task_bias_correction_pm25:
+    metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 02:00:00
 task_get_extrn_ics:
