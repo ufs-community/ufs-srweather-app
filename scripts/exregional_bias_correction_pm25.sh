@@ -50,6 +50,7 @@ This is the ex-script for the task that runs BIAS-CORRECTION-PM25.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_PM25}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_PM25}
 export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_PM25}
@@ -83,8 +84,6 @@ DATA="${DATA}/tmp_BIAS_CORRECTION_PM25"
 rm_vrfy -rf $DATA
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-set -x
 
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}

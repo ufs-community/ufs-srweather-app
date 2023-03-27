@@ -50,6 +50,7 @@ This is the ex-script for the task that runs BIAS-CORRECTION-O3.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_O3}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_O3}
 export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_O3}
@@ -83,8 +84,6 @@ DATA="${DATA}/tmp_BIAS_CORRECTION_O3"
 rm_vrfy -rf "$DATA"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-set -x
 
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}
@@ -211,7 +210,7 @@ fi
 
 mkdir_vrfy -p ${DATA}/data/sites
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
- 
+
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
 POST_STEP
