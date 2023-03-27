@@ -11,6 +11,7 @@ platform:
   QUEUE_HPSS: normal
   RUN_CMD_FCST: ibrun -np $nprocs
   RUN_CMD_POST: ibrun -np $nprocs
+  RUN_CMD_PRDGEN: ibrun -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: ibrun -np $nprocs
   SCHED_NATIVE_CMD: --export=NONE

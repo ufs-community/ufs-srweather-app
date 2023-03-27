@@ -2,32 +2,36 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 32
   SCHED: slurm
-  CCPA_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/obs_data/ndas/proc
+  CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   METPLUS_PATH: /usw/met/METplus/METplus-4.1.3
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /usw/met/10.1.2
-  DOMAIN_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen
+  DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
   RUN_CMD_FCST: srun --export=ALL --mpi=pmi2 -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL --mpi=pmi2 -n $nprocs
+  RUN_CMD_PRDGEN: srun --export=ALL --mpi=pmi2 -n $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL --mpi=pmi2 -n $nprocs
   SCHED_NATIVE_CMD: -M c3 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/input_model_data
-  TEST_PREGEN_BASEDIR: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/dummy_FV3GFS_sys_dir
-  FIXaer: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_aer
-  FIXgsm: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_am
-  FIXlut: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_lut
-  FIXorg: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_orog
-  FIXsfc: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/fix/fix_sfc_climo
-  FIXshp: /lustre/f2/pdata/ncep_shared/UFS_SRW_App/develop/NaturalEarth
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  FIXaer: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_gsi
+  FIXgsm: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_am
+  FIXlut: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_lut
+  FIXorg: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_orog
+  FIXsfc: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
+  FIXshp: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/NaturalEarth
 data:
   ics_lbcs:
-    FV3GFS: /lustre/f2/dev/Mark.Potts/EPIC/SRW/model_data/FV3GFS/${yyyymmdd}${hh}
+    FV3GFS:
+      nemsio: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
