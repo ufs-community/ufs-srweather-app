@@ -215,23 +215,23 @@ Directories and files.
 <!-- Temporarily turn off fcst_fv3lam subdirectory usage -->
 <!-- until run_fcst of rrfs_dev is merged                -->
 {%- if do_rrfs_dev %}
-<!ENTITY FCST_DIR                  "fcst_fv3lam/">
+<!ENTITY FCST_SUBDIR                  "fcst_fv3lam/">
 {%- else %}
-<!ENTITY FCST_DIR                  "">
+<!ENTITY FCST_SUBDIR                  "">
 {%- endif %}
 
 {%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_SUBDIR;dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_SUBDIR;phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_DIR;phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_SUBDIR;dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_prod.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/&FCST_SUBDIR;phy">
 {%- endif %}
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_DIR;dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_DIR;phy">
+<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_SUBDIR;dyn">
+<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/&FCST_SUBDIR;phy">
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}">
 {%- endif %}
 
@@ -308,24 +308,6 @@ tasks; and the "FCST" type is used for the TN_RUN_FCST task.
 {%- endif %}
 
 <!-- FROM RRFS_dev1 -->
-{% if not do_real_time %}
-<!ENTITY DEADLINE_PRE      "999:00:00">
-<!ENTITY DEADLINE_ANAL     "999:00:00">
-<!ENTITY DEADLINE_FCST     "999:30:00">
-<!ENTITY DEADLINE_POST     "999:00:00">
-<!ENTITY DEADLINE_GRAPHICS "999:00:00">
-<!ENTITY DEADLINE_RECENTER "999:00:00">
-<!ENTITY DEADLINE_SAVE_RESTART "999:00:00">
-{% else %}
-<!ENTITY DEADLINE_PRE      "16:00:00">
-<!ENTITY DEADLINE_ANAL     "16:00:00">
-<!ENTITY DEADLINE_FCST     "23:30:00">
-<!ENTITY DEADLINE_POST     "24:00:00">
-<!ENTITY DEADLINE_GRAPHICS "24:00:00">
-<!ENTITY DEADLINE_RECENTER "24:00:00">
-<!ENTITY DEADLINE_SAVE_RESTART "24:00:00">
-{% endif %}
-
 <!ENTITY START_TIME_SPINUP "{{ start_time_spinup }}">
 <!ENTITY START_TIME_PROD "{{ start_time_prod }}">
 <!ENTITY START_TIME_CONVENTIONAL_SPINUP "{{ start_time_conventional_spinup }}">
@@ -345,26 +327,16 @@ tasks; and the "FCST" type is used for the TN_RUN_FCST task.
 <!ENTITY WALL_LIMIT_RECENTER ''>
 <!ENTITY WALL_LIMIT_SAVE_RESTART ''>
 {% else %}
-<!ENTITY WALL_LIMIT_PRE '<deadline><cyclestr offset="&DEADLINE_PRE;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_ANAL '<deadline><cyclestr offset="&DEADLINE_ANAL;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_FCST '<deadline><cyclestr offset="&DEADLINE_FCST;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_POST '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_BUFR '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_BUFRSND '<deadline><cyclestr offset="&DEADLINE_POST;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_GRAPHICS '<deadline><cyclestr offset="&DEADLINE_GRAPHICS;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_RECENTER '<deadline><cyclestr offset="&DEADLINE_RECENTER;">@Y@m@d@H@M</cyclestr></deadline>'>
-<!ENTITY WALL_LIMIT_SAVE_RESTART '<deadline><cyclestr offset="&DEADLINE_SAVE_RESTART;">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_PRE '<deadline><cyclestr offset="16:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_ANAL '<deadline><cyclestr offset="16:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_FCST '<deadline><cyclestr offset="23:30:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_POST '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_BUFR '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_BUFRSND '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_GRAPHICS '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_RECENTER '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
+<!ENTITY WALL_LIMIT_SAVE_RESTART '<deadline><cyclestr offset="24:00:00">@Y@m@d@H@M</cyclestr></deadline>'>
 {% endif %}
-
-<!ENTITY STARTYEAR  "{{ startyear }}">
-<!ENTITY STARTMONTH "{{ startmonth }}">
-<!ENTITY STARTDAY   "{{ startday }}">
-<!ENTITY STARTHOUR  "{{ starthour }}">
-
-<!ENTITY ENDYEAR  "{{ endyear }}">
-<!ENTITY ENDMONTH "{{ endmonth }}">
-<!ENTITY ENDDAY   "{{ endday }}">
-<!ENTITY ENDHOUR  "{{ endhour }}">
 
 ]>
 

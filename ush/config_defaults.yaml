@@ -959,11 +959,6 @@ workflow:
   # This is valid only when FCST_LEN_HRS = -1.
   # This pattern is recurred for all cycle dates.
   #
-  # STARTYEAR,STARTMONTH,STARTDAY,STARTHOUR:
-  # Year,month,day and hour of the first cycle in the set of forecasts to run
-  # ENDYEAR,ENDMONTH,ENDDAY,ENDHOUR
-  # Year,month,day and hour of the last cycle in the set of forecasts to run
-  #
   # CYCL_HRS:
   # An array containing the hours of the day at which to launch forecasts.
   # Forecasts are launched at these hours on each day from DATE_FIRST_CYCL
@@ -1029,15 +1024,6 @@ workflow:
     - 12
     - 12
     - 6
-
-  STARTYEAR: "YYYY"
-  STARTMONTH: "MM"
-  STARTDAY: "DD"
-  STARTHOUR: "HH"
-  ENDYEAR: "YYYY"
-  ENDMONTH: "MM"
-  ENDDAY: "DD"
-  ENDHOUR: "HH"
   CYCL_HRS: []
   CYCL_HRS_SPINSTART: []
   CYCL_HRS_PRODSTART: []
