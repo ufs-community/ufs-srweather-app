@@ -72,7 +72,7 @@ data:
     real:
       OBSPATH: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/obs_rap"
       OBSPATH_NSSLMOSIAC: "/public/data/radar/nssl/mrms/conus"
-      LIGHTNING_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/lightning"
+      LIGHTNING_ROOT: "/public/data/lightning"
       ENKF_FCST: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/enkf/atm"
       FFG_DIR: "/public/data/grids/ncep/ffg/grib2"
       SST_ROOT: "/lfs4/BMC/public/data/grids/ncep/sst/0p083deg/grib2"
