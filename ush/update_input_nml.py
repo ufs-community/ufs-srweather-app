@@ -20,9 +20,8 @@ from python_utils import (
 from set_namelist import set_namelist
 
 
-def update_restart_input_nml_file(run_dir):
-    """Update the FV3 input.nml file for restart in the specified
-    run directory
+def update_input_nml(run_dir):
+    """Update the FV3 input.nml file in the specified run directory
 
     Args:
         run_dir: run directory
@@ -38,7 +37,7 @@ def update_restart_input_nml_file(run_dir):
     #
     # -----------------------------------------------------------------------
     #
-    # Update the FV3 input.nml file for restart in the specified run directory.
+    # Update the FV3 input.nml file in the specified run directory.
     #
     # -----------------------------------------------------------------------
     #
@@ -51,19 +50,29 @@ def update_restart_input_nml_file(run_dir):
     #
     # -----------------------------------------------------------------------
     #
-    # Set parameters in fv_core_nml for restart
+    # Set new values of the specific parameters to be updated.
     #
     # -----------------------------------------------------------------------
     #
     settings = {}
-    settings["fv_core_nml"] = {
-        "external_ic": False,
-        "make_nh": False,
-        "mountain": True,
-        "na_init": 0,
-        "nggps_ic": False,
-        "warm_start": True,
-    }
+
+    # For restart run
+    if args.restart:
+        settings["fv_core_nml"] = {
+            "external_ic": False,
+            "make_nh": False,
+            "mountain": True,
+            "na_init": 0,
+            "nggps_ic": False,
+            "warm_start": True,
+        }
+
+    # For nstf_name
+    if args.nstf_name:
+        settings["gfs_physics_nml"] = {
+            "nstf_name": [2, 1, 0, 0, 0],
+        }
+    
 
     settings_str = cfg_to_yaml_str(settings)
 
@@ -137,6 +146,16 @@ def parse_args(argv):
         help="Path to var_defns file.",
     )
 
+    parser.add_argument(
+        "--restart", 
+        action='store_true',
+        help='Update for restart')
+
+    parser.add_argument(
+        "--nstf_name", 
+        action='store_true',
+        help='Update for nstf_name')
+
     return parser.parse_args(argv)
 
 
@@ -145,6 +164,6 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    update_restart_input_nml_file(
+    update_input_nml(
         run_dir=args.run_dir,
     )

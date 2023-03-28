@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -475,6 +475,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Update nstf_name in FV3 input.nml to [2,1,0,0,0]  only for specific 
+# external IC/LBC.
+# However, the restart reproducibility is not guaranteed with this change.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ] || [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
+  python3 $USHdir/update_input_nml.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --run_dir "${DATA}" \
+    --nstf_name || print_err_msg_exit "\
+Call to function to update the FV3 input.nml file for nstf_name for the 
+current cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Replace parameter values for restart in FV3 input.nml and model_configure.
 # Add restart files to INPUT directory.
 #
@@ -491,10 +510,10 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   flag_fcst_restart="TRUE"
 
   # Update FV3 input.nml for restart
-  python3 $USHdir/update_restart_input_nml_file.py \
+  python3 $USHdir/update_input_nml.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
-    || print_err_msg_exit "\
+    --restart || print_err_msg_exit "\
 Call to function to update the FV3 input.nml file for restart for the 
 current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
