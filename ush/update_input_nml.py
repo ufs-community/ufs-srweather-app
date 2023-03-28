@@ -67,10 +67,8 @@ def update_input_nml(run_dir):
             "warm_start": True,
         }
 
-    # For nstf_name
-    if args.nstf_name:
         settings["gfs_physics_nml"] = {
-            "nstf_name": [2, 1, 0, 0, 0],
+            "nstf_name": [2, 0, 0, 0, 0],
         }
     
 
@@ -150,11 +148,6 @@ def parse_args(argv):
         "--restart", 
         action='store_true',
         help='Update for restart')
-
-    parser.add_argument(
-        "--nstf_name", 
-        action='store_true',
-        help='Update for nstf_name')
 
     return parser.parse_args(argv)
 

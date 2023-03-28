@@ -290,7 +290,6 @@ FV3_GFS_v15p2:
     lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: !!python/none
-    nstf_name: [2, 0, 0, 0, 0]
     shal_cnv: True
     shinhong: False
     ttendlim: !!python/none
@@ -355,7 +354,6 @@ FV3_GFS_v15_thompson_mynn_lam3km:
     lsoil: !!python/none
     lsoil_lsm: !!python/none
     ltaerosol: False    
-    nstf_name: [2, 0, 0, 0, 0]
     print_diff_pgr: True
     sfclay_compute_flux: !!python/none
     xkzminv: 0.3
@@ -412,7 +410,6 @@ FV3_GFS_v16:
     lndp_type: !!python/none
     lsoil: 4
     n_var_lndp: !!python/none
-    nstf_name: [2, 0, 0, 0, 0]
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
     satmedmf: True
@@ -523,7 +520,6 @@ FV3_GFS_v17_p8:
     min_lakeice: 0.15
     min_seaice: 0.15
     nsfullradar_diag: !!python/none
-    nstf_name: [2, 0, 0, 0, 0]
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
     qdiag3d: False
