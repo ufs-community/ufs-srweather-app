@@ -1225,7 +1225,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     # Gather all the tasks/metatasks that are defined for verifying
     # ensembles
-    ens_vx_tasks = [task for task in task_defs if "vx_ens" in task]
+    ens_vx_tasks = [task for task in task_defs if "MET_GridStat_vx_ens" in task]
     if (not do_ensemble) and ens_vx_tasks:
         task_str = "\n".join(ens_vx_tasks)
         raise Exception(
@@ -1480,6 +1480,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         configuration file ('{user_config_fn}')."""
     )
 
+    # Final failsafe before writing rocoto yaml to ensure we don't have any invalid dicts
+    # (e.g. metatasks with no tasks, tasks with no associated commands)
+    clean_rocoto_dict(expt_config["rocoto"]["tasks"])
+
     rocoto_yaml_fp = workflow_config["ROCOTO_YAML_FP"]
     with open(rocoto_yaml_fp, 'w') as f:
         yaml.Dumper.ignore_aliases = lambda *args : True
@@ -1514,6 +1518,40 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             )
 
     return expt_config
+
+def clean_rocoto_dict(rocotodict):
+    """Removes any invalid entries from rocoto_dict. Examples of invalid entries are:
+
+    1. A task dictionary containing no "command" key
+    2. A metatask dictionary containing no task dictionaries"""
+
+    # Loop 1: search for tasks with no command key, iterating over metatasks
+    for key in list(rocotodict.keys()):
+        if key.split("_", maxsplit=1)[0] == "metatask":
+            clean_rocoto_dict(rocotodict[key])
+        elif key.split("_", maxsplit=1)[0] in ["task"]:
+            if not rocotodict[key].get("command"):
+                popped = rocotodict.pop(key)
+                logging.warning(f"Invalid task {key} removed due to empty/unset run command")
+                logging.debug(f"Removed entry:\n{popped}")
+
+    # Loop 2: search for metatasks with no tasks in them
+    for key in list(rocotodict.keys()):
+        if key.split("_", maxsplit=1)[0] == "metatask":
+            valid = False
+            for key2 in list(rocotodict[key].keys()):
+                if key2.split("_", maxsplit=1)[0] == "metatask":
+                    clean_rocoto_dict(rocotodict[key][key2])
+                    #After above recursion, any nested empty metatasks will have popped themselves
+                    if rocotodict[key].get(key2):
+                        valid = True
+                elif key2.split("_", maxsplit=1)[0] == "task":
+                    valid = True
+            if not valid:
+                popped = rocotodict.pop(key)
+                logging.warning(f"Invalid/empty metatask {key} removed")
+                logging.debug(f"Removed entry:\n{popped}")
+
 
 
 #
