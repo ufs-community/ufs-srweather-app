@@ -16,8 +16,8 @@ load("cmake/3.22.1")
 prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 load("stack-python")
 
---load("ufs-srw-app-env/unified-dev")
 load("srw_common_spack")
+load("ufs-pyenv")
 
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
