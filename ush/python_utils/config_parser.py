@@ -473,14 +473,15 @@ def xml_to_dict(root, return_string):
         if len(child.attrib) == 0:
             if k in cfg:
                 cfg[k].append(value)
-            else:
+            elif value is not None:
                 cfg[k] = value
         else:
             cfg_l = {}
-            if value is None:
-                cfg_l.update({"attrib": child.attrib})
-            else:
-                cfg_l.update({"attrib": child.attrib, "valuea": value})
+            cfg_l.update({"attrib": child.attrib})
+            if isinstance(value, dict):
+                cfg_l.update(value)
+            elif value is not None:
+                cfg_l.update({"valuea": value})
             if k in cfg:
                 cfg[k].append(cfg_l)
             else:
@@ -511,7 +512,7 @@ def dict_to_xml(d, elem):
                 if isinstance(va, dict):
                     dict_to_xml(va, child)
                 else:
-                    child.text = list_to_str(v, True)
+                    child.text = list_to_str(va, True)
                 elem.append(child)
         else:
             child = ET.Element(k)
