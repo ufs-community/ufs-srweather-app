@@ -78,9 +78,9 @@ Getting into working directory for BUFR observation process ..."
 
 cd_vrfy ${DATA}
 
-fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
+pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
 
-print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
+print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 
 #
 #-----------------------------------------------------------------------
@@ -89,7 +89,7 @@ print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
 #
 #-----------------------------------------------------------------------
 
-cp_vrfy ${fixgriddir}/fv3_grid_spec fv3sar_grid_spec.nc
+cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
 
 #-----------------------------------------------------------------------
 #
