@@ -32,20 +32,23 @@ task_run_fcst:
 task_run_prdgen:
   DO_PARALLEL_PRDGEN: true
 rocoto:
-  taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml"]|include }}'
   tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml"]|include }}'
     task_make_orog:
       walltime: 01:00:00
-    task_make_ics_#mem#:
-      nnodes: 16
-      ppn: 4
-    task_make_lbcs_#mem#:
-      nnodes: 12
-      ppn: 4
-      walltime: 01:00:00
-    task_run_fcst_mem#mem#:
-      walltime: 01:00:00
-    task_run_post_mem#mem#_f#fhr#:
-      ppn: 12
-      nnodes: 8
+    metatask_run_ensemble:
+      task_make_ics_mem#mem#:
+        nnodes: 16
+        ppn: 4
+      task_make_lbcs_mem#mem#:
+        nnodes: 12
+        ppn: 4
+        walltime: 01:00:00
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+    metatask_run_ens_post:
+      metatask_run_post:
+        task_run_post_mem#mem#_f#fhr#:
+          ppn: 12
+          nnodes: 8
 

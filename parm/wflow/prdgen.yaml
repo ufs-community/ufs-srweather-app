@@ -2,8 +2,9 @@ metatask_run_prdgen:
   var:
     mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_run_prdgen_hrs_mem#mem#:
-    fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
-    cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_HRS %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    var:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_HRS %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
     task_run_prdgen_mem#mem#_f#fhr#:
       account: '&ACCOUNT;'
       attrs:
