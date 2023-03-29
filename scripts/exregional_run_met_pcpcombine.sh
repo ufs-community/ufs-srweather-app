@@ -150,8 +150,8 @@ if [ "${obs_or_fcst}" = "obs" ]; then
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
 
-  FCST_INPUT_DIR="${VX_FCST_INPUT_BASEDIR}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE} )
+  FCST_INPUT_DIR="$( eval echo ${VX_FCST_INPUT_DIR} )"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE} )
 
   OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_fcst"

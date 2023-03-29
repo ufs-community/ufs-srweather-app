@@ -1,82 +1,40 @@
 metadata:
-  description: config for Online-CMAQ, AQM_NA_13km, community mode
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    can successfully run the MET deterministic verification tasks but
+    using staged observation and forecast files (i.e. with other tasks
+    such as pre-processing, forecast, and post-processing deactivated).
 user:
   RUN_ENVIR: community
-  MACHINE: [hera or wcoss2]
-  ACCOUNT: [account name]
+  MACHINE: hera
+  ACCOUNT: rtrr
 workflow:
-  USE_CRON_TO_RELAUNCH: false
-  CRON_RELAUNCH_INTVL_MNTS: 3
-  EXPT_SUBDIR: aqm_community_aqmna13
-  PREDEF_GRID_NAME: AQM_NA_13km
-  CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023021700'
-  DATE_LAST_CYCL: '2023021706'
-  INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: -1
-  FCST_LEN_CYCL:
-    - 6
-    - 12
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2019061500'
+  DATE_LAST_CYCL: '2019061500'
+  FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-  VERBOSE: true
   COMPILER: intel
-  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
-  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
-  DO_REAL_TIME: false
-nco:
-  NET: aqm
+  EXPT_SUBDIR: MET_verification_only_vx
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/aqm_all.yaml"]|include }}'
-    task_post_stat_o3:
-    task_post_stat_pm25:
-    task_bias_correction_o3:
-    task_bias_correction_pm25:
-    metatask_run_ensemble:
-      task_run_fcst_mem#mem#:
-        walltime: 02:00:00
-task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  FV3GFS_FILE_FMT_ICS: netcdf
-  EXTRN_MDL_ICS_OFFSET_HRS: 0
-task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 6
-  FV3GFS_FILE_FMT_LBCS: netcdf
-  EXTRN_MDL_LBCS_OFFSET_HRS: 0
-task_run_fcst:
-  DT_ATMOS: 180
-  LAYOUT_X: 50
-  LAYOUT_Y: 34
-  BLOCKSIZE: 16
-  RESTART_INTERVAL: 6
-  QUILTING: true
-  PRINT_ESMF: false
-task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: 793
-global:
-  DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 2
-  HALO_BLEND: 0
-cpl_aqm_parm:
-  CPL_AQM: true
-  DO_AQM_CHEM_LBCS: true
-  DO_AQM_GEFS_LBCS: true
-  DO_AQM_DUST: true
-  DO_AQM_CANOPY: false
-  DO_AQM_PRODUCT: true
-  DO_AQM_SAVE_AIRNOW_HIST: false
-  DO_AQM_SAVE_FIRE: false
-  AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
-  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
-  AQM_DUST_FILE_SUFFIX: .nc  
-  AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
-  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
-  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
-  AQM_FIRE_FILE_SUFFIX: _h72.nc
-  AQM_RC_FIRE_FREQUENCY: hourly
-  AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
-  AQM_GEFS_FILE_PREFIX: geaer
-  NEXUS_GRID_FN: grid_spec_793.nc
-  NUM_SPLIT_NEXUS: 3
-
+    taskgroups: '{{ ["parm/wflow/verify.yaml"]|include }}'
+    task_get_obs_ccpa: null
+    task_get_obs_mrms: null
+    task_get_obs_ndas: null
+    metatask_vx_ens_member:
+      metatask_GridStat_MRMS_mem#mem#:
+        task_run_MET_GridStat_vx_#VAR#_mem#mem#:
+          dependency: null
+      metatask_PointStat_mem#mem#:
+        task_run_MET_PointStat_vx_#VAR#_mem#mem#:
+          dependency: null
+    metatask_GridStat_APCP_acc:
+      metatask_vx_ens_member_acc:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+          dependency: null
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
+  VX_FCST_INPUT_DIR: '{{ platform.get("TEST_VX_FCST_INPUT_DIR") }}'
+platform:
+  BUILD_MOD_FN: build_hera_intel

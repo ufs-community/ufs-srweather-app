@@ -256,7 +256,7 @@ Final (i.e. after filtering for missing files) set of foreast hours is
   if [ "${num_missing_files}" -gt "${NUM_MISSING_OBS_FILES_MAX}" ]; then
     print_err_msg_exit "\
 The number of missing files (num_missing_files) is greater than the
-maximum allowed number (NUM_MISSING_OBS_MAS):
+maximum allowed number (NUM_MISSING_OBS_FILES_MAX):
   num_missing_files = ${num_missing_files}
   NUM_MISSING_OBS_FILES_MAX = ${NUM_MISSING_OBS_FILES_MAX}"
   fi

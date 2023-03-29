@@ -9,7 +9,7 @@ rocoto:
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
-    JOBSDIR: '{{ user.JOBSdir }}'
+    JOBSdir: '{{ user.JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
     LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/@Y@m@d".format(nco.LOGBASEDIR)}}{% else %}{{nco.LOGBASEDIR }}{% endif %}'
     LOGEXT: '{% if user.RUN_ENVIR == "nco" %}{{".{}.log".format(workflow.WORKFLOW_ID)}}{% else %}{{".log"}}{% endif %}'
@@ -33,6 +33,7 @@ rocoto:
     cyclethrottle: "20"
     realtime: "F"
     scheduler: '{{ platform.SCHED }}'
+    taskthrottle: "1000"
   cycledefs:
     at_start:
       - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']

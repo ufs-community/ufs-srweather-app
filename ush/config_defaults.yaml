@@ -995,7 +995,7 @@ nco:
   PACKAGEROOT: '{{ OPSROOT }}/packages'
   DATAROOT: '{{ OPSROOT }}/tmp'
   DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{% if user.RUN_ENVIR == nco %}{{ [OPSROOT, output]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
+  LOGBASEDIR: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
@@ -2112,20 +2112,18 @@ verification:
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
   #
-  # VX_FCST_INPUT_BASEDIR:
-  # Location of top-level directory containing forecast (but not obs) files
-  # that will be used as input into METplus for verification.  If not
-  # specified, this gets set to EXPTDIR.
+  # VX_FCST_INPUT_DIR:
+  # Directory template for the path containing forecast (but not obs) files
+  # that will be used as input into METplus for verification.
   #
   # VX_OUTPUT_BASEDIR:
   # Top-level directory in which METplus will place its output.
   #
-  VX_FCST_INPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  VX_FCST_INPUT_DIR: '{{ workflow.EXPTDIR }}/${CDATE}/mem${ENSMEM_INDX}/postprd'
   VX_OUTPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
   #
   # File name and path templates are used in the verification tasks.
   #
-  FCST_SUBDIR_TEMPLATE: '{init?fmt=%Y%m%d%H?shift=-${time_lag}}/mem${ENSMEM_INDX}/postprd'
   FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
   FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
   #

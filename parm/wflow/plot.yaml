@@ -27,7 +27,7 @@ default_task_plot: &default_task
 
 task_plot_allvars:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSDIR;/JREGIONAL_MAKE_GRID"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
   dependency:
     or_do_post: &post_files_exist

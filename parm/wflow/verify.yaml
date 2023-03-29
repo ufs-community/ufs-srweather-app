@@ -27,7 +27,7 @@ default_task_verify: &default_task
 
 task_get_obs_ccpa:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_CCPA"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"'
   envars:
     <<: *default_vars
     ACCUM_HH: '01'
@@ -38,7 +38,7 @@ task_get_obs_ccpa:
 
 task_get_obs_mrms:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_MRMS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&MRMS_OBS_DIR;'
@@ -52,7 +52,7 @@ task_get_obs_ndas:
   envars:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSDIR;/JREGIONAL_GET_OBS_NDAS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"'
   queue: "&QUEUE_HPSS;"
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00
@@ -62,7 +62,7 @@ task_run_MET_Pb2nc_obs:
   attrs:
     cycledefs: forecast
     maxtries: '2'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_PB2NC_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
     VAR: SFC
@@ -72,11 +72,16 @@ task_run_MET_Pb2nc_obs:
     OBS_DIR: '&NDAS_OBS_DIR;'
   dependency:
     and:
-      taskdep:
-        attrs:
-          task: get_obs_ndas
       datadep:
         text: "&NDAS_OBS_DIR;"
+      or:
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ndas
+        taskdep:
+          attrs:
+            task: get_obs_ndas
 
 metatask_vx_ens_member:
   attrs:
@@ -88,7 +93,7 @@ metatask_vx_ens_member:
       VAR: REFC RETOP
     task_run_MET_GridStat_vx_#VAR#_mem#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&MRMS_OBS_DIR;'
@@ -131,7 +136,7 @@ metatask_vx_ens_member:
       VAR: SFC UPA
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         FHR: '#FCST_HR_LIST#'
@@ -168,7 +173,7 @@ metatask_GridStat_APCP_acc:
     attrs:
       cycledefs: forecast
       maxtries: '2'
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
     envars:
       <<: *default_vars
       VAR: APCP
@@ -177,12 +182,17 @@ metatask_GridStat_APCP_acc:
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
     dependency:
-      and:
-        taskdep:
-          attrs:
-            task: get_obs_ccpa
-        datadep:
-          text: "&CCPA_OBS_DIR;"
+      or:
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ccpa
+        and:
+          taskdep:
+            attrs:
+              task: get_obs_ccpa
+          datadep:
+            text: "&CCPA_OBS_DIR;"
 
   metatask_vx_ens_member_acc:
     var:
@@ -193,7 +203,7 @@ metatask_GridStat_APCP_acc:
       attrs:
         cycledefs: forecast
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
         <<: *default_vars
         VAR: APCP
@@ -207,7 +217,7 @@ metatask_GridStat_APCP_acc:
 
     task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSDIR;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
         <<: *default_vars
         FHR: '#FCST_HR_LIST#'
