@@ -5,18 +5,14 @@ on the CISL machine Cheyenne
 
 whatis([===[Loads libraries needed for running the UFS SRW App on Cheyenne ]===])
 
-load("ncarenv")
-
 append_path("MODULEPATH","/glade/p/ral/jntp/UFS_SRW_app/modules")
 load("rocoto")
 
-unload("python")
-prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core")
+load("stack-intel/19.1.1.217")
+load("stack-intel-mpi/2019.7.217")
 
-if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
-]===])
-end
+prepend_path("MODULEPATH", "/glade/work/jedipara/cheyenne/spack-stack/modulefiles/misc")
+load("stack-python/3.9.12")
 
+load("ufs-pyenv")
