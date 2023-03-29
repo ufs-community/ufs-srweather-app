@@ -11,6 +11,7 @@ platform:
   QUEUE_HPSS: batch
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01} --oversubscribe
   RUN_CMD_POST: mpirun -np $nprocs --oversubscribe
+  RUN_CMD_PRDGEN: mpirun -np $nprocs --oversubscribe
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -np $nprocs --oversubscribe
   SCHED_NATIVE_CMD: --export=NONE
