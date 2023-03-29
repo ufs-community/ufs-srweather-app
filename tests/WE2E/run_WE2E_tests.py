@@ -138,6 +138,8 @@ def run_we2e_tests(homedir, args) -> None:
     for test in tests_to_run:
         #Starting with test yaml template, fill in user-specified and machine- and
         # test-specific options, then write resulting complete config.yaml
+        starttime = datetime.now()
+        starttime_string = starttime.strftime("%Y%m%d%H%M%S")
         test_name = os.path.basename(test).split('.')[1]
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
@@ -212,10 +214,11 @@ def run_we2e_tests(homedir, args) -> None:
             monitor_yaml[test_name] = dict()
             monitor_yaml[test_name].update({"expt_dir": expt_dir})
             monitor_yaml[test_name].update({"status": "CREATED"})
+            monitor_yaml[test_name].update({"start_time": starttime_string})
 
     if not args.use_cron_to_relaunch:
         logging.info("calling function that monitors jobs, prints summary")
-        monitor_file = f'WE2E_tests_{datetime.now().strftime("%Y%m%d%H%M%S")}.yaml'
+        monitor_file = f'WE2E_tests_{starttime_string}.yaml'
         write_monitor_file(monitor_file,monitor_yaml)
         try:
             monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs,

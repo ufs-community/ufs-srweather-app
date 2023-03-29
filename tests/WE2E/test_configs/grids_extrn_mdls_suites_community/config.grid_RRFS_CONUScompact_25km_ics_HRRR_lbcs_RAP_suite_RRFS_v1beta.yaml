@@ -3,9 +3,11 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_v1beta
     physics suite with ICs derived from the HRRR and LBCs derived from the RAP.
+    Also tests the "DOT_OR_USCORE" option
 user:
   RUN_ENVIR: community
 workflow:
+  DOT_OR_USCORE: .
   CCPP_PHYS_SUITE: FV3_RRFS_v1beta
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2020081000'
