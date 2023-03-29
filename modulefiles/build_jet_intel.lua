@@ -15,6 +15,7 @@ prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/spack-stack/modulefiles")
 load("stack-python/3.9.12")
 
 load("srw_common_spack")
+load("ufs-pyenv")
 
 load("prod-util/1.2.2")
 load("nccmp/1.9.0.1")
