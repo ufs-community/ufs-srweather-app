@@ -1733,8 +1733,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
-  OMP_STACKSIZE_RUN_FCST: "1024m"
+  OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in nems.configure
+  OMP_STACKSIZE_RUN_FCST: "512m"
   #
   #-----------------------------------------------------------------------
   #
@@ -1745,6 +1745,9 @@ task_run_fcst:
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
+  #
+  # FHROT:
+  # Forecast hour at restart
   #
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
@@ -1764,9 +1767,9 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
+  FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
-
   #
   #-----------------------------------------------------------------------
   #
@@ -1940,6 +1943,15 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_FCST_RESTART:
+  # Flag turning on/off restart capability of forecast task
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_FCST_RESTART: false
 
 #----------------------------
 # POST config parameters

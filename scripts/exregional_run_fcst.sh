@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -48,13 +48,19 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
+# Set environment variables.
 #
 #-----------------------------------------------------------------------
 #
 export KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
 export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}
+export MPI_TYPE_DEPTH=20
+export ESMF_RUNTIME_COMPLIANCECHECK=OFF:depth=4
+if [ "${PRINT_ESMF}" = "TRUE" ]; then
+  export ESMF_RUNTIME_PROFILE=ON
+  export ESMF_RUNTIME_PROFILE_OUTPUT="SUMMARY"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -204,18 +210,16 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-if [ "${CCPP_PHYS_SUITE}" = "FV3_HRRR" ] || [ "${CCPP_PHYS_SUITE}" = "FV3_GFS_v17_p8" ]; then
-
-  fileids=( "ss" "ls" )
-  for fileid in "${fileids[@]}"; do
-    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${fileid}.tile${TILE_RGNL}.halo${NH0}.nc"
-    symlink="oro_data_${fileid}.nc"
+suites=( "FV3_HRRR" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
+if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
+  file_ids=( "ss" "ls" )
+  for file_id in "${file_ids[@]}"; do
+    target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
+    symlink="oro_data_${file_id}.nc"
     create_symlink_to_file target="$target" symlink="$symlink" \
                            relative="${relative_link_flag}"
   done
-
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -449,8 +453,84 @@ cat > itag <<EOF
 /
 EOF
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Update or copy the FV3 input.nml file
+#
+#-----------------------------------------------------------------------
+#
+if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
+   [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
+  python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
+      --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+      --cdate "$CDATE" || print_err_msg_exit "\
+Call to function to create the ensemble-based namelist for the current
+cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+else
+  cp_vrfy "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Replace parameter values for restart in FV3 input.nml and model_configure.
+# Add restart files to INPUT directory.
+#
+#-----------------------------------------------------------------------
+#
+flag_fcst_restart="FALSE"
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+  cp_vrfy input.nml input.nml_orig
+  cp_vrfy model_configure model_configure_orig
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    cp_vrfy aqm.rc aqm.rc_orig
+  fi
+  relative_link_flag="FALSE"
+  flag_fcst_restart="TRUE"
 
-if [ "${CPL_AQM}" = "TRUE" ]; then
+  # Update FV3 input.nml for restart
+  python3 $USHdir/update_input_nml.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --run_dir "${DATA}" \
+    --restart || print_err_msg_exit "\
+Call to function to update the FV3 input.nml file for restart for the 
+current cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+
+  # Search for available restart files and find the latest hour
+  fnm_rst_pdy=()
+  fnm_rst_hms=() 
+  for fnm_rst in "${DATA}/RESTART"/*; do
+    fnm_rst_base=$( basename "${fnm_rst}" )
+    fnm_rst_pdy+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $1 }' ) )
+    fnm_rst_hms+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $2 }' ) )
+  done
+
+  # Find latest restart hour
+  fnm_rst_pdy_max=$( printf '%s\n' "${fnm_rst_pdy[@]}" | sort -nu | tail -1 )
+  fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
+ 
+  # Compute start hour of restart run for model_configure
+  cdate_org=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC" "+%s" )
+  cdate_res=$( $DATE_UTIL --utc --date "${fnm_rst_pdy_max} ${fnm_rst_hms_max:0:2} UTC" "+%s" )
+  FHROT=$(( ( cdate_res - cdate_org )/(60*60) ))
+
+  # Create soft-link of restart files in INPUT directory
+  cd_vrfy ${DATA}/INPUT
+
+  file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+  for file_id in "${file_ids[@]}"; do
+    rm_vrfy "${file_id}"
+    target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.${file_id}"
+    symlink="${file_id}"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  done
+
+  cd_vrfy ${DATA}   
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -458,9 +538,11 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  init_concentrations="false"
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
     init_concentrations="true"
+  else
+    init_concentrations="false"
   fi
 #
 #-----------------------------------------------------------------------
@@ -474,31 +556,14 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
-    --init-concentration "${init_concentrations}" \
+    --init_concentrations "${init_concentrations}" \
     || print_err_msg_exit "\
 Call to function to create an aqm.rc file for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
 fi
-#
-#-----------------------------------------------------------------------
-#
 
-if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
-   [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-  python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
-      --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-      --cdate "$CDATE" || print_err_msg_exit "\
-Call to function to create the ensemble-based namelist for the current
-cycle's (cdate) run directory (DATA) failed:
-  cdate = \"${CDATE}\"
-  DATA = \"${DATA}\""
-else
-  create_symlink_to_file target="${FV3_NML_FP}" \
-                         symlink="${DATA}/${FV3_NML_FN}" \
-                         relative="${relative_link_flag}"
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -511,6 +576,7 @@ python3 $USHdir/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
+  --fhrot "${FHROT}" \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
