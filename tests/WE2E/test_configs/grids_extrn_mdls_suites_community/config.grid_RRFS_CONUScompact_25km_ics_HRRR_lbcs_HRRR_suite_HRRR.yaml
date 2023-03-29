@@ -3,6 +3,9 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUScompact_25km grid using the HRRR
     physics suite with ICs and LBCs derived from the HRRR.
+    This test also checks the capability of the workflow to have the run_fcst
+    MPI layout (LAYOUT_X and LAYOUT_Y) and its cache block size be set to
+    user-specified values.
 user:
   RUN_ENVIR: community
 workflow:
@@ -23,3 +26,8 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+task_run_fcst:
+  DT_ATMOS: 75
+  LAYOUT_X: 10
+  LAYOUT_Y: 4
+  BLOCKSIZE: 23
