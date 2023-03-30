@@ -500,35 +500,39 @@ current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
 
-  # Search for available restart files and find the latest hour
-  fnm_rst_pdy=()
-  fnm_rst_hms=() 
-  for fnm_rst in "${DATA}/RESTART"/*; do
-    fnm_rst_base=$( basename "${fnm_rst}" )
-    fnm_rst_pdy+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $1 }' ) )
-    fnm_rst_hms+=( $( echo "${fnm_rst_base}" | awk -F"." '{ print $2 }' ) )
-  done
+  # Check that restart files exist at restart_interval
+  file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+  num_file_ids=${#file_ids[*]}
+  IFS=' '
+  echo ${RESTART_INTERVAL}
+  read -a restart_hrs <<< "${RESTART_INTERVAL}"
+  num_restart_hrs=${#restart_hrs[*]}
+  
+  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
+    cdate_restart_hr=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${restart_hrs[ih_rst]} hours" "+%Y%m%d%H" )
+    rst_yyyymmdd="${cdate_restart_hr:0:8}"
+    rst_hh="${cdate_restart_hr:8:2}"
 
-  # Find latest restart hour
-  fnm_rst_pdy_max=$( printf '%s\n' "${fnm_rst_pdy[@]}" | sort -nu | tail -1 )
-  fnm_rst_hms_max=$( printf '%s\n' "${fnm_rst_hms[@]}" | sort -nu | tail -1 )
- 
-  # Compute start hour of restart run for model_configure
-  cdate_org=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC" "+%s" )
-  cdate_res=$( $DATE_UTIL --utc --date "${fnm_rst_pdy_max} ${fnm_rst_hms_max:0:2} UTC" "+%s" )
-  FHROT=$(( ( cdate_res - cdate_org )/(60*60) ))
+    num_rst_files=0
+    for file_id in "${file_ids[@]}"; do
+      if [ -e "${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
+        (( num_rst_files=num_rst_files+1 ))
+      fi
+    done
+    if [ "${num_rst_files}" = "${num_file_ids}" ]; then
+      FHROT="${restart_hrs[ih_rst]}"
+      break
+    fi
+  done
 
   # Create soft-link of restart files in INPUT directory
   cd_vrfy ${DATA}/INPUT
-
-  file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
   for file_id in "${file_ids[@]}"; do
     rm_vrfy "${file_id}"
-    target="${DATA}/RESTART/${fnm_rst_pdy_max}.${fnm_rst_hms_max}.${file_id}"
+    target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
-
   cd_vrfy ${DATA}   
 fi
 #
