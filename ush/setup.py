@@ -522,9 +522,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for task, task_settings in tasks.items():
             task_type = task.split("_", maxsplit=1)[0]
             if task_type == "task":
-                task_settings.pop(tag)
+                task_settings.pop(tag, None)
             elif task_type == "metatask":
-                remove_tag(task_settings)
+                remove_tag(task_settings, tag)
 
     # Remove all memory tags for platforms that do not support them
     remove_memory = expt_config["platform"].get("REMOVE_MEMORY")
