@@ -519,7 +519,7 @@ FV3_GFS_v17_p8:
     lw_file_gas: rrtmgp-data-lw-g128-210809.nc
     min_lakeice: 0.15
     min_seaice: 0.15
-    nsfullradar_diag: !!python/none
+    nsradar_reset: !!python/none
     prautco: [0.00015, 0.00015]
     psautco: [0.0008, 0.0005]
     qdiag3d: False
