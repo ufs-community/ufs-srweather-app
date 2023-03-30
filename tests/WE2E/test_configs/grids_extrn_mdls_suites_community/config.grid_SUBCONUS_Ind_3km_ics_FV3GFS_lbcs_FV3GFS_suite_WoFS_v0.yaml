@@ -1,7 +1,7 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_SUBCONUS_3km grid using the WoFS_v0
+    completes successfully on the SUBCONUS_Ind_3km grid using the WoFS_v0
     physics suite with ICs and LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: community

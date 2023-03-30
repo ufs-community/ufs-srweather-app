@@ -15,7 +15,7 @@ pipeline {
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable hera
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'orion'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Uncomment the following line to re-enable comprehensive tests
@@ -80,7 +80,7 @@ pipeline {
                         name 'SRW_PLATFORM'
                         // Uncomment line below to re-add use of Hera
                         // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'cheyenne', 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'cheyenne', 'gaea', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -94,7 +94,8 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            values 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            // values 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'gaea', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
@@ -136,7 +137,7 @@ pipeline {
                         post {
                             success {
                                 sh 'cd "${WORKSPACE}/${INSTALL_NAME}" && tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" *'
-                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build_${env.SRW_COMPILER}/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.log", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build_${env.SRW_COMPILER}/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.log", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
                         }
                     }
@@ -177,10 +178,10 @@ pipeline {
                         post {
                             always {
                                 // Archive the test log files
-                                sh 'cd "${SRW_WE2E_EXPERIMENT_BASE_DIR}" && tar --create --gzip --verbose --dereference --file "${WORKSPACE}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz" */log.generate_FV3LAM_wflow */log.launch_FV3LAM_wflow */log/*'
+                                sh 'cd "${SRW_WE2E_EXPERIMENT_BASE_DIR}" && tar --create --gzip --verbose --dereference --file "${WORKSPACE}/we2e_test_logs-${SRW_PLATFORM}-${SRW_COMPILER}.tgz" */log.generate_FV3LAM_wflow */log/* ${WORKSPACE}/tests/WE2E/WE2E_tests_*yaml ${WORKSPACE}/tests/WE2E/WE2E_summary*txt ${WORKSPACE}/tests/WE2E/log.*'
                                 // Remove the data sets from the experiments directory to conserve disk space
                                 sh 'find "${SRW_WE2E_EXPERIMENT_BASE_DIR}" -regextype posix-extended -regex "^.*(orog|[0-9]{10})$" -type d | xargs rm -rf'
-                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_results-*-*.txt', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'woc-epic-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_logs-*-*.tgz', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_results-*-*.txt', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'we2e_test_logs-*-*.tgz', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
                         }
                     }

@@ -6,7 +6,7 @@
 # the field being verified and, if the field is accumulated precipitation,
 # the accumulation period (both of which are inputs to this function).
 #
-# As of 20220928, the verification tasks in the SRW App workflow use the 
+# As of 20220928, the verification tasks in the SRW App workflow use the
 # MET/METplus software (MET = Model Evaluation Tools) developed at the
 # DTC (Developmental Testbed Center).
 #
@@ -144,7 +144,7 @@ The accumulation (accum_hh) must be a 2-digit integer:
 
       _grid_or_point_="grid"
       case "${field}" in
-    
+
         "APCP")
           fieldname_in_obs_input="${field}"
           fieldname_in_fcst_input="${field}"
@@ -177,7 +177,7 @@ this observation type (obtype) and field (field) combination:
           fieldname_in_MET_output="${field}"
           fieldname_in_MET_filedir_names="${field}"
           ;;
-    
+
         "RETOP")
           fieldname_in_obs_input="EchoTop18"
           fieldname_in_fcst_input="${field}"
@@ -207,7 +207,7 @@ this observation type (obtype) and field (field) combination:
           fieldname_in_MET_output="${field}"
           fieldname_in_MET_filedir_names="${field}"
           ;;
-    
+
         "UPA")
           fieldname_in_obs_input=""
           fieldname_in_fcst_input=""
