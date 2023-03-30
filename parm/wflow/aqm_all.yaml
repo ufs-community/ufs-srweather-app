@@ -26,7 +26,7 @@ task_nexus_gfs_sfc:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_gfs_sfc" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     or:
       and:
@@ -47,7 +47,7 @@ metatask_nexus_emission:
   task_nexus_emission_#nspt#:
     <<: *default_aqm
     command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
     walltime: 01:00:00
@@ -62,7 +62,7 @@ metatask_nexus_emission:
 task_nexus_post_split:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_post_split" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     metataskdep:
       attrs:
@@ -71,12 +71,12 @@ task_nexus_post_split:
 task_fire_emission:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "fire_emission" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
 
 task_point_source:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "point_source" "&JOBSdir;/JREGIONAL_POINT_SOURCE"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   walltime: 01:00:00
   dependency:
     or_make_grid:
@@ -97,7 +97,7 @@ task_aqm_ics_ext:
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     and:
       taskdep:
@@ -122,7 +122,7 @@ task_aqm_ics:
   envars:
     <<: *default_vars
     PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMIN_DIR;</cyclestr>'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     and:
       taskdep:
@@ -141,7 +141,7 @@ task_aqm_ics:
 task_aqm_lbcs:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_lbcs" "&JOBSdir;/JREGIONAL_AQM_LBCS"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   ppn: 24
   dependency:
     taskdep:
@@ -151,7 +151,7 @@ task_aqm_lbcs:
 task_pre_post_stat:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     taskdep:
       attrs:
@@ -173,7 +173,7 @@ task_pre_post_stat:
 task_post_stat_o3:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_o3" "&JOBSdir;/JREGIONAL_POST_STAT_O3"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
     taskdep:
@@ -183,7 +183,7 @@ task_post_stat_o3:
 task_post_stat_pm25:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_pm25" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
       attrs:
@@ -192,7 +192,7 @@ task_post_stat_pm25:
 task_bias_correction_o3:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_o3" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
       attrs:
@@ -201,7 +201,7 @@ task_bias_correction_o3:
 task_bias_correction_pm25:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_pm25" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"'
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
       attrs:

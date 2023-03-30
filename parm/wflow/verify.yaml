@@ -14,7 +14,7 @@ default_task_verify: &default_task
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     ENSMEM_INDX: "#mem#"
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1

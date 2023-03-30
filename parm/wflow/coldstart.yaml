@@ -25,7 +25,7 @@ task_get_extrn_ics:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
   nnodes: 1
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -52,7 +52,7 @@ task_get_extrn_lbcs:
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
   nnodes: 1
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -82,7 +82,7 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
     dependency:
@@ -121,7 +121,7 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
     dependency:
@@ -138,7 +138,7 @@ metatask_run_ensemble:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       nprocs:
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nodesize: '&NCORES_PER_NODE;'
     nnodes: '{{ task_run_fcst.NNODES_RUN_FCST|int }}'
     partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'

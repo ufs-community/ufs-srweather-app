@@ -20,7 +20,7 @@ metatask_run_prdgen:
         SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
         ENSMEM_INDX: '#mem#'
         nprocs: '{{ parent.nnodes * parent.ppn }}'
-      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H.log'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
       nodes: '{{ nnodes }}:ppn={{ ppn }}'
       nodesize: "&NCORES_PER_NODE;"
@@ -29,4 +29,7 @@ metatask_run_prdgen:
       ppn: 22
       queue: '&QUEUE_DEFAULT;'
       walltime: 00:30:00
-    
+      dependency:
+        taskdep:
+          attrs:
+            task: run_post_mem#mem#_f#fhr#

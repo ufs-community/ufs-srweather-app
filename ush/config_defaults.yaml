@@ -2119,7 +2119,7 @@ verification:
   # VX_OUTPUT_BASEDIR:
   # Top-level directory in which METplus will place its output.
   #
-  VX_FCST_INPUT_DIR: '{{ workflow.EXPTDIR }}/${CDATE}/mem${ENSMEM_INDX}/postprd'
+  VX_FCST_INPUT_DIR: '{{ workflow.EXPTDIR }}/${CDATE}{% if global.DO_ENSEMBLE %}"/mem${ENSMEM_INDX}"{% endif %}/postprd'
   VX_OUTPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
   #
   # File name and path templates are used in the verification tasks.
