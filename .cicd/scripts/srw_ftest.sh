@@ -12,6 +12,8 @@
 #
 [[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
 [[ -n ${BRANCH} ]] || BRANCH="develop"
+[[ -n ${TASKS} ]] || TASKS=""
+[[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=4
 [[ -n ${FORGIVE_PYTHON} ]] || FORGIVE_PYTHON=false
 set -e -u -x
 
@@ -41,7 +43,7 @@ nco_dir="${workspace}/nco_dirs"
 
 pwd
 
-# The following essentially sets up and performs tasks described in the user documentation section: 
+# The following essentially sets up and performs tasks described in the user documentation section:
 #     "Run the Workflow Using Stand-Alone Scripts".
 echo "BRANCH=${BRANCH}"
 
@@ -51,14 +53,12 @@ sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${ACC
 
 # Set directory paths ...
 export EXPTDIR=${workspace}/expt_dirs/test_community
+echo "EXPTDIR=${EXPTDIR}"
 sed "s|^workflow:|workflow:\n  EXPT_BASEDIR: ${workspace}/expt_dirs|1" -i ush/config.yaml
 sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec|1" -i ush/config.yaml
-echo "EXPTDIR=${EXPTDIR}"
 
 # DATA_LOCATION differs on each platform ... find it.
-SRW_DATA_VERS="develop"
-SRW_DATA_PATH=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM,,}.yaml | sed 's|/UFS_SRW_App/|/UFS_SRW_App |g' | awk '{printf "%s", $2}')
-export DATA_LOCATION="${SRW_DATA_PATH}/${SRW_DATA_VERS}/input_model_data"
+export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM,,}.yaml | awk '{printf "%s", $2}')
 echo "DATA_LOCATION=${DATA_LOCATION}"
 
 # Configure a default test ...
@@ -66,7 +66,7 @@ sed "s|^task_get_extrn_ics:|task_get_extrn_ics:\n  EXTRN_MDL_SOURCE_BASEDIR_ICS:
 sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 
 [[ ${FORGIVE_PYTHON} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-# Consistency check ... 
+# Consistency check ...
 cd ${workspace}/ush
         ./config_utils.py -c $(pwd)/config.yaml -v $(pwd)/config_defaults.yaml
 cd ${workspace}
@@ -95,11 +95,13 @@ export cyc=18
 export subcyc=0
 export OMP_NUM_THREADS=1
 
-TASKS=(
+[[ -n ${TASKS} ]] || TASKS=(
                 run_make_grid
+                # Tasks below here require Data Sets from DATA_LOCATION
                 run_get_ics
                 run_get_lbcs
                 run_make_orog
+                # Tasks below here require a valid ACCOUNT
                 run_make_sfc_climo
                 run_make_ics
                 run_make_lbcs
@@ -112,11 +114,11 @@ echo "# Try the first few simple SRW tasks ..."
 results_file=${workspace}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt
 rm -f ${results_file}
 status=0
-for task in ${TASKS[@]:0:4} ; do
+for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
                 echo -n "./$task.sh ... "
-                ./$task.sh > $task-log.txt 2>&1 && echo "done." || echo "FAIL rc=$(( status+=$? ))"
+                ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
                 # stop at the first sign of trouble ...
-                [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: done." >> ${results_file}               
+                [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
 done
 
 # Set exit code to number of failures
