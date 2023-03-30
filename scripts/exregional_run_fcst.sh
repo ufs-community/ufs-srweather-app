@@ -504,7 +504,6 @@ current cycle's (cdate) run directory (DATA) failed:
   file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
   num_file_ids=${#file_ids[*]}
   IFS=' '
-  echo ${RESTART_INTERVAL}
   read -a restart_hrs <<< "${RESTART_INTERVAL}"
   num_restart_hrs=${#restart_hrs[*]}
   
