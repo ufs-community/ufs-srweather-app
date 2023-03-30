@@ -88,10 +88,10 @@ cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
 #-----------------------------------------------------------------------
 run_lightning=false
 filenum=0
-LIGHTNING_FILE=${LIGHTNING_ROOT}/vaisala/netcdf
+
 for incr in $(seq -25 5 5) ; do 
   filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
-  filename=${LIGHTNING_FILE}/${filedate}0005r
+  filename=${LIGHTNING_ROOT}/${filedate}0005r
   if [ -r ${filename} ]; then
   ((filenum += 1 ))
     ln -sf ${filename} ./NLDN_lightning_${filenum}
