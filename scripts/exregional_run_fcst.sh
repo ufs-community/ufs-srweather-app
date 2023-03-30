@@ -7,7 +7,6 @@
 #
 #-----------------------------------------------------------------------
 #
-set -x
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #

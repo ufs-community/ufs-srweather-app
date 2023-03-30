@@ -60,7 +60,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))

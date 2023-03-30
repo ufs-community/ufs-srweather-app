@@ -61,7 +61,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
 nprocs=$(( NNODES_NEXUS_EMISSION*PPN_NEXUS_EMISSION ))

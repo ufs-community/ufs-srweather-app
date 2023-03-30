@@ -83,9 +83,6 @@ fi
 DATA="${DATA}/tmp_POST_STAT_PM25"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-set -x
-
 #
 #-----------------------------------------------------------------------
 #
