@@ -74,7 +74,7 @@ task_run_fcst:
   WTIME_RUN_FCST: 04:00:00
   QUILTING: true
   PRINT_ESMF: false
-  DO_FCST_RESTART: false
+  DO_FCST_RESTART: true
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
   USE_CUSTOM_POST_CONFIG_FILE: false
