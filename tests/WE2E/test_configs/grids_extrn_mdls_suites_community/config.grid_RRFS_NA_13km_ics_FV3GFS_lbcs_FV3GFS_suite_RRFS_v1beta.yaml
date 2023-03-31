@@ -29,10 +29,10 @@ task_run_fcst:
 rocoto:
   tasks:
     metatask_run_ensemble:
-      task_make_ics_#mem#:
+      task_make_ics_mem#mem#:
         nnodes: 12
         ppn: 4
-      task_make_lbcs_#mem#:
+      task_make_lbcs_mem#mem#:
         nnodes: 12
         ppn: 4
         walltime: 01:00:00
