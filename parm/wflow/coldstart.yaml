@@ -140,9 +140,9 @@ metatask_run_ensemble:
       nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nodesize: '&NCORES_PER_NODE;'
-    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST|int }}'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
     partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
-    ppn: '{{ task_run_fcst.PPN_RUN_FCST|int }}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
     queue: '&QUEUE_FCST;'
     walltime: 04:30:00
     dependency:
