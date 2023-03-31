@@ -130,7 +130,7 @@ set_vx_fhr_list \
   cdate="${CDATE}" \
   fcst_len_hrs="${FCST_LEN_HRS}" \
   field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
+  accum_hh="${ACCUM_HH:-}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
   check_hourly_files="FALSE" \

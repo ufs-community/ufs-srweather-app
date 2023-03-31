@@ -1,0 +1,70 @@
+# Settings that will run tasks needed per-experiment to create "fix
+# files" for the stationary grid.
+
+default_task_prep: &default_task
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: at_start
+    maxtries: '2'
+  envars: &default_envars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 1
+  nodesize: "&NCORES_PER_NODE;"
+  ppn: 24
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:20:00
+
+task_make_grid:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+
+task_make_orog:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSdir;/JREGIONAL_MAKE_OROG"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    or: &make_grid_satisfied
+      and:
+        taskvalid:
+          attrs:
+            task: make_grid
+        taskdep_make_grid:
+          attrs:
+            task: make_grid
+      datadep:
+        attrs:
+          age: 00:00:00:05
+        text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+
+task_make_sfc_climo:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  nnodes: 2
+  dependency:
+    and:
+      or_make_grid:
+        <<: *make_grid_satisfied
+      or_make_orog:
+        and:
+          taskvalid:
+            attrs:
+              task: make_orog
+          taskdep_make_orog:
+            attrs:
+              task: make_orog
+        datadep:
+          attrs:
+            age: 00:00:00:05
+          text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+

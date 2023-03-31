@@ -12,6 +12,7 @@ platform:
   QUEUE_DEFAULT: normal
   QUEUE_FCST: normal
   QUEUE_HPSS: normal
+  REMOVE_MEMORY: True
   RUN_CMD_FCST: srun --export=ALL --mpi=pmi2 -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL --mpi=pmi2 -n $nprocs
   RUN_CMD_PRDGEN: srun --export=ALL --mpi=pmi2 -n $nprocs
