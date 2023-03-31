@@ -531,6 +531,11 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     if remove_memory:
         remove_tag(rocoto_tasks, "memory")
 
+    for part in ['PARTITION_HPSS', 'PARTITION_DEFAULT', 'PARTITION_FCST']:
+        partition = expt_config["platform"].get(part)
+        if partition is None:
+            remove_tag(rocoto_tasks, 'partition')
+
     # When not running subhourly post, remove those tasks, if they exist
     if not expt_config.get("task_run_post", {}).get("SUB_HOURLY_POST"):
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
