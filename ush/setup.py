@@ -533,7 +533,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     for part in ['PARTITION_HPSS', 'PARTITION_DEFAULT', 'PARTITION_FCST']:
         partition = expt_config["platform"].get(part)
-        if partition is None:
+        if not partition:
             remove_tag(rocoto_tasks, 'partition')
 
     # When not running subhourly post, remove those tasks, if they exist

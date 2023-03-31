@@ -12,9 +12,6 @@ platform:
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular
   QUEUE_HPSS: regular
-  PARTITION_DEFAULT:
-  PARTITION_FCST:
-  PARTITION_HPSS:
   RUN_CMD_FCST: mpirun -np ${PE_MEMBER01}
   RUN_CMD_POST: mpirun -np $nprocs
   RUN_CMD_PRDGEN: mpirun -np $nprocs
