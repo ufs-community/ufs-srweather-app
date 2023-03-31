@@ -59,7 +59,7 @@ data:
     retro:
       OBSPATH: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/obs_rap"
       OBSPATH_NSSLMOSIAC: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/reflectivity"
-      LIGHTNING_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/lightning"
+      LIGHTNING_ROOT: "/mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/rrfs_retro_data/lightning"
       ENKF_FCST: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/enkf/atm"
       FFG_DIR: ""
       SST_ROOT: "/mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/highres_sst"

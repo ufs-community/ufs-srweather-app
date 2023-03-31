@@ -52,7 +52,7 @@ data:
     retro:
       OBSPATH: "/scratch2/BMC/zrtrr/rli/data/obs_rap"
       OBSPATH_NSSLMOSIAC: "/scratch2/BMC/zrtrr/rli/data/reflectivity"
-      LIGHTNING_ROOT: "/scratch2/BMC/zrtrr/rli/data/lightning"
+      LIGHTNING_ROOT: "/scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/rrfs_retro_data/lightning"
       ENKF_FCST: "/scratch2/BMC/zrtrr/rli/data/enkf/atm"
       FFG_DIR: ""
       SST_ROOT: "/scratch2/BMC/zrtrr/rli/data/highres_sst"
