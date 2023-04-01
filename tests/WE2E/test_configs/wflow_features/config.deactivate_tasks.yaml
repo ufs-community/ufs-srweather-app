@@ -25,10 +25,9 @@ workflow:
   DATE_LAST_CYCL: '2019070100'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_GET_EXTRN_ICS: false
-  RUN_TASK_GET_EXTRN_LBCS: false
-  RUN_TASK_MAKE_ICS: false
-  RUN_TASK_MAKE_LBCS: false
-  RUN_TASK_RUN_FCST: false
-  RUN_TASK_RUN_POST: false
+rocoto:
+  tasks:
+    task_get_extrn_ics:
+    task_get_extrn_lbcs:
+    metatask_run_ensemble:
+    metatask_run_ens_post:

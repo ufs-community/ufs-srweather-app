@@ -23,15 +23,21 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
 task_make_ics:
-  NNODES_MAKE_ICS: 12
-  PPN_MAKE_ICS: 4
   OMP_STACKSIZE_MAKE_ICS: 2048m
-task_make_lbcs:
-  NNODES_MAKE_LBCS: 12
-  PPN_MAKE_LBCS: 4
-  WTIME_MAKE_LBCS: 01:00:00
 task_run_fcst:
   OMP_STACKSIZE_RUN_FCST: 2048m
-task_run_post:
-  NNODES_RUN_POST: 6
-  PPN_RUN_POST: 12
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_make_ics_mem#mem#:
+        nnodes: 12
+        ppn: 4
+      task_make_lbcs_mem#mem#:
+        nnodes: 12
+        ppn: 4
+        walltime: 01:00:00
+    metatask_run_ens_post:
+      metatask_run_post:
+        task_run_post_mem#mem#_f#fhr#:
+          nnodes: 6
+          ppn: 12

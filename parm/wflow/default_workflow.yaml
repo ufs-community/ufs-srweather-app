@@ -1,0 +1,44 @@
+#
+# The defaults that cover a majority of our workflow test experiments.
+#
+rocoto:
+  entities:
+    ACCOUNT: '{{ user.ACCOUNT }}'
+    CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
+    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ nco.COMIN_BASEDIR }}/@Y@m@d@H{% endif %}'
+    COMINgfs: '{{ platform.get("COMINgfs") }}'
+    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
+    GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
+    JOBSdir: '{{ user.JOBSdir }}'
+    LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
+    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/@Y@m@d".format(nco.LOGBASEDIR)}}{% else %}{{nco.LOGBASEDIR }}{% endif %}'
+    LOGEXT: '{% if user.RUN_ENVIR == "nco" %}{{".{}.log".format(workflow.WORKFLOW_ID)}}{% else %}{{".log"}}{% endif %}'
+    MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
+    NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
+    NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
+    NET: '{{ nco.NET }}'
+    PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
+    PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
+    PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
+    QUEUE_DEFAULT: '{{ platform.get("QUEUE_DEFAULT") }}'
+    QUEUE_FCST: '{{ platform.get("QUEUE_FCST") }}'
+    QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
+    RUN: '{{ nco.RUN }}'
+    SCRIPTSdir: '{{ user.SCRIPTSdir }}'
+    SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
+    USHdir: '{{ user.USHdir }}'
+    WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
+    WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
+  attrs:
+    cyclethrottle: "20"
+    realtime: "F"
+    scheduler: '{{ platform.SCHED }}'
+    taskthrottle: "1000"
+  cycledefs:
+    at_start:
+      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
+    forecast:
+      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
+  log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

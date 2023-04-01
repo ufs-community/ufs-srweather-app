@@ -54,3 +54,21 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
   PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt
 
+rocoto:
+  tasks:
+    task_get_extrn_ics:
+      native:
+    task_get_extrn_lbcs:
+      native:
+    task_plot_allvars:
+      native:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores:
+        native: '{{ platform.SCHED_NATIVE_CMD }}'
+        nodes: '{{ parent.nnodes }}:ppn={{ parent.ppn }}:tpp={{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
+        nodesize: '{{ platform.NCORES_PER_NODE }}'
+    task_nexus_emission_#nspt#:
+      nodes: '{{ parent.nnodes }}:ppn={{ parent.ppn }}:tpp={{ task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+    task_fire_emission:
+      native:

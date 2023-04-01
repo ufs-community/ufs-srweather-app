@@ -1,0 +1,81 @@
+default_task_post: &default_task
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: '#cycledef#'
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POST"'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr '@Y@m@d'
+    cyc: !cycstr '@H'
+    fhr: '#fhr#'
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    ENSMEM_INDX: '#mem#'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 2
+  ppn: 24
+  nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:15:00
+
+metatask_run_ens_post:
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  metatask_run_post:
+    var:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_HRS %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    task_run_post_mem#mem#_f#fhr#:
+      <<: *default_task
+      dependency:
+        or:
+          taskdep:
+            attrs:
+              task: run_fcst_mem#mem#
+          and:
+            datadep_dyn:
+              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#.nc'
+              attrs:
+                age: '05:00'
+            datadep_phy:
+              text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#.nc'
+              attrs:
+                age: '05:00'
+
+  metatask_run_sub_hourly_post:
+    var:
+      fhr: '{% for h in range(workflow.FCST_LEN_HRS) %}{{ " %03d" % h }}{% endfor %}'
+    metatask_sub_hourly_post:
+      var:
+        fmn: '{% for min in range(0, 60, task_run_post.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
+      task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
+        <<: *default_task
+        envars:
+          <<: *default_vars
+          fmn: '#fmn#'
+        dependency:
+          or:
+            taskdep:
+              attrs:
+                task: run_fcst_mem#mem#
+            and:
+              datadep_dyn:
+                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/dynf#fhr#:#fmn#:00.nc'
+                attrs:
+                  age: '05:00'
+              datadep_phy:
+                text: !cycstr '&FCST_DIR;&SLASH_ENSMEM_SUBDIR;/phyf#fhr#:#fmn#:00.nc'
+                attrs:
+                  age: '05:00'
+
+  metatask_sub_hourly_last_hour_post:
+    var:
+      fhr: '{{ " %03d" % workflow.FCST_LEN_HRS }}'
+      fmn: '00'
+    task_run_post_mem#mem#_f#fhr##fmn#:
+      <<: *subhourly_run_post_task
