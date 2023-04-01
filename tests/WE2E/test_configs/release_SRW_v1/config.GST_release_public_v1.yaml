@@ -20,5 +20,8 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
-task_run_fcst:
-  WTIME_RUN_FCST: 01:00:00
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00

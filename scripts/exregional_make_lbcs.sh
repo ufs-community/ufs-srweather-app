@@ -65,8 +65,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))
-
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
@@ -103,12 +101,8 @@ mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 LBC_SPEC_FCST_HRS=()
 for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do

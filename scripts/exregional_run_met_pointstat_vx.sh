@@ -64,6 +64,7 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 yyyymmdd=${PDY}
 hh=${cyc}
 export CDATE
@@ -86,8 +87,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd
-    export OUTPUT_BASE=${VX_OUTPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}
+    export INPUT_BASE=$( eval echo ${VX_FCST_INPUT_DIR} )
+    export OUTPUT_BASE=${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -106,10 +107,6 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 LOG_SUFFIX="PointStat"
-#if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-#  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2`
-#  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-#fi
 
 #
 #-----------------------------------------------------------------------
@@ -125,7 +122,7 @@ set_vx_fhr_list \
   cdate="${CDATE}" \
   fcst_len_hrs="${FCST_LEN_HRS}" \
   field="$VAR" \
-  accum_hh="${ACCUM_HH}" \
+  accum_hh="${ACCUM_HH:-}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
   check_hourly_files="FALSE" \

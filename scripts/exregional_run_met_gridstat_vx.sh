@@ -55,6 +55,7 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 yyyymmdd=${PDY}
 hh=${cyc}
 export CDATE
@@ -84,8 +85,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd
-    export OUTPUT_BASE=${EXPTDIR}/${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}
+    export INPUT_BASE=$( eval echo ${VX_FCST_INPUT_DIR} )
+    export OUTPUT_BASE=${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
 
@@ -104,15 +105,10 @@ export DOT_ENSMEM=${dot_ensmem}
 #-----------------------------------------------------------------------
 #
 if [ ${VAR} == "APCP" ]; then
-  LOG_SUFFIX=GridStat_${VAR}${ACCUM_HH}h${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}${ACCUM_HH}h_mem${ENSMEM_INDX}_${CDATE}
 else
-  LOG_SUFFIX=GridStat_${VAR}${USCORE_ENSMEM_NAME_OR_NULL}_${CDATE}
+  LOG_SUFFIX=GridStat_${VAR}_mem${ENSMEM_INDX}_${CDATE}
 fi
-
-#if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-#  ENSMEM=`echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2`
-#  VX_FCST_MODEL_NAME=${VX_FCST_MODEL_NAME}_${ENSMEM}
-#fi
 
 #
 #-----------------------------------------------------------------------
