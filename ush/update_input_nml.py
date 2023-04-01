@@ -71,6 +71,13 @@ def update_input_nml(run_dir):
             "nstf_name": [2, 0, 0, 0, 0],
         }
     
+    # For AQM_NA_13km domain for air quality modeling
+    if args.aqm_na_13km:
+        settings["fv_core_nml"] = {
+            "k_split": 1,
+            "n_split": 8,
+        }
+
 
     settings_str = cfg_to_yaml_str(settings)
 
@@ -148,6 +155,11 @@ def parse_args(argv):
         "--restart", 
         action='store_true',
         help='Update for restart')
+
+    parser.add_argument(
+        "--aqm_na_13km", 
+        action='store_true',
+        help='Update for AQM_NA_13km in air quality modeling')
 
     return parser.parse_args(argv)
 

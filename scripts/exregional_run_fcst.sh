@@ -475,6 +475,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Replace parameter values for air quality modeling using AQM_NA_13km 
+# in FV3 input.nml and model_configure.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${CPL_AQM}" = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
+  python3 $USHdir/update_input_nml.py \
+    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
+    --run_dir "${DATA}" \
+    --aqm_na_13km || print_err_msg_exit "\
+Call to function to update the FV3 input.nml file for air quality modeling
+using AQM_NA_13km for the current cycle's (cdate) run directory (DATA) failed:
+  cdate = \"${CDATE}\"
+  DATA = \"${DATA}\""
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Replace parameter values for restart in FV3 input.nml and model_configure.
 # Add restart files to INPUT directory.
 #
