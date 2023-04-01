@@ -43,11 +43,6 @@ workflow:
   DA_CYCLE_INTERV: 1
   BOUNDARY_LEN_HRS: 18
   BOUNDARY_PROC_GROUP_NUM: 10
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_PLOT_ALLVARS: false
 rrfs:
   DO_DACYCLE: false # turn on later
   DO_SURFACE_CYCLE: false # turn on later
@@ -92,23 +87,13 @@ task_get_extrn_lbcs:
   EXTRN_MDL_LBCS_OFFSET_HRS: 6
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/scratch2/BMC/zrtrr/rli/data/gfs/0p25deg/grib2"
-task_make_ics:
-  NNODES_MAKE_ICS: 3
-  PPN_MAKE_ICS: 20
-task_make_lbcs:
-  NNODES_MAKE_LBCS: 3
-  PPN_MAKE_LBCS: 20
-  WTIME_MAKE_LBCS: 02:00:00
 task_run_fcst:
   DT_ATMOS: 60
   RESTART_INTERVAL: 1
   QUILTING: true
 #  IO_LAYOUT_Y: 1
-  WTIME_RUN_FCST: 02:45:00
 #  FH_DFI_RADAR: "0.0,0.25,0.5"
 task_run_post:
-  NNODES_RUN_POST: 1
-  PPN_RUN_POST: 40
   USE_CUSTOM_POST_CONFIG_FILE: true
   POST_OUTPUT_DOMAIN_NAME: RRFS_CONUS_3km
   CUSTOM_POST_CONFIG_FP: '{{ [user.PARMdir, "upp/postxconfig-NT-fv3lam_rrfs.txt"]|path_join }}'
@@ -119,18 +104,33 @@ task_run_post:
 #  RADARREFL_TIMELEVEL: [0]
 #task_run_prdgen:
 #  ADDNL_OUTPUT_GRIDS: []
-#task_run_anal:
-#  NCORES_RUN_ANAL: 240
-#  NCORES_RUN_OBSERVER: 80
-#task_run_ref2tten:
-#  PPN_RUN_REF2TTEN: 1
-#task_run_nonvarcldanl:
-#  PPN_RUN_NONVARCLDANL: '{{ task_run_fcst.IO_LAYOUT_Y }}'
-#task_run_graphics:
-#  TILE_LABELS: "full"
-#  TILE_SETS: "full"
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 9
   HALO_BLEND: 20
   PRINT_DIFF_PGR: true
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+  metatask_run_ensemble:
+    task_run_fcst_mem#mem#:
+      walltime: 02:45:00
+    task_make_ics_mem#mem#:
+      nnodes: 3
+      ppn: 20
+    task_make_lbcs_mem#mem#:
+      walltime: 02:00:00
+      nnodes: 3
+      ppn: 20
+  metatask_run_ens_post:
+    metatask_run_post:
+      task_run_post_mem#mem#_f#fhr#:
+      nnodes: 1
+      ppn: 40
+  #task_run_ref2tten:
+  #  ppn: 1
+  #task_run_nonvarcldanl:
+  #  ppn: '{{ task_run_fcst.IO_LAYOUT_Y }}'
+  #task_run_anal:
+  #  cores: 240 #anal
+  #  cores: 80 #observer
