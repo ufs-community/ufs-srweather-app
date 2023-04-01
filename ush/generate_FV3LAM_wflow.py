@@ -102,140 +102,31 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             expt_config["user"]["PARMdir"],
             wflow_xml_fn,
         )
+        global_var_defns_fp = expt_config["workflow"]["GLOBAL_VAR_DEFNS_FP"]
 
         log_info(
             f"""
-            Creating rocoto workflow XML file (WFLOW_XML_FP) from jinja template XML
-            file (template_xml_fp):
-              template_xml_fp = '{template_xml_fp}'
+            Creating rocoto workflow XML file (WFLOW_XML_FP):
               WFLOW_XML_FP = '{wflow_xml_fp}'"""
         )
 
         #
-        # Dictionary of settings to pass to fill_jinja
+        # Call the python script to generate the experiment's XML file
         #
-        settings = {}
-        for k, v in flatten_dict(expt_config).items():
-            settings[lowercase(k)] = v
+        rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
+        args = ["-o", wflow_xml_fp,
+                "-t", template_xml_fp,
+                "-c", rocoto_yaml_fp ]
+        if not debug:
+            args.append("-q")
 
-        ensmem_indx_name = ""
-        uscore_ensmem_name = ""
-        slash_ensmem_subdir = ""
-        if expt_config["global"]["DO_ENSEMBLE"]:
-            ensmem_indx_name = "mem"
-            uscore_ensmem_name = f"_mem#{ensmem_indx_name}#"
-            slash_ensmem_subdir = f"/mem#{ensmem_indx_name}#"
-
-        dt_atmos = expt_config["task_run_fcst"]["DT_ATMOS"]
-        date_first_cycl = expt_config["workflow"]["DATE_FIRST_CYCL"]
-        date_last_cycl = expt_config["workflow"]["DATE_LAST_CYCL"]
-        first_file_time = date_first_cycl + timedelta(seconds=dt_atmos)
-        fcst_threads = expt_config["task_run_fcst"]["OMP_NUM_THREADS_RUN_FCST"]
-
-        if date_first_cycl == date_last_cycl:
-            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H00")
-        else:
-            cycl_next = date_to_str(date_first_cycl + timedelta(hours=expt_config['workflow']['INCR_CYCL_FREQ']), format="%Y%m%d%H00")
-
-        incr_cycl_freq = expt_config["workflow"]["INCR_CYCL_FREQ"]
-        date_2nd_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq), format="%Y%m%d%H00")
-        date_3rd_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2), format="%Y%m%d%H00")
-        date_4th_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*3), format="%Y%m%d%H00")
-        fcst_len_hrs = expt_config["workflow"]["FCST_LEN_HRS"]
-        fcst_len_cycl = expt_config["workflow"]["FCST_LEN_CYCL"]
-        num_fcst_len_cycl = len(fcst_len_cycl)
-        if fcst_len_hrs == -1:
-            all_cdates = expt_config["workflow"]["ALL_CDATES"]
-            num_all_cdates = len(all_cdates)
-            num_cyc_days = num_all_cdates // num_fcst_len_cycl -1
-        else:
-            num_cyc_days = 0
-        date_1st_last_cycl = date_to_str(date_first_cycl + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
-        date_2nd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
-        date_3rd_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*2) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
-        date_4th_last_cycl = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq*3) + timedelta(hours=24*num_cyc_days), format="%Y%m%d%H00")
-
-        settings.update(
-            {
-                #
-                # Number of cores used for a task
-                #
-                "ncores_run_fcst": expt_config["task_run_fcst"]["PE_MEMBER01"],
-                "native_run_fcst": f"--cpus-per-task {fcst_threads} --exclusive",
-                "native_nexus_emission": f"--cpus-per-task {expt_config['task_nexus_emission']['OMP_NUM_THREADS_NEXUS_EMISSION']}",
-                #
-                # Parameters that determine the set of cycles to run.
-                #
-                "date_first_cycl": date_to_str(date_first_cycl, format="%Y%m%d%H00"),
-                "date_last_cycl": date_to_str(date_last_cycl, format="%Y%m%d%H00"),
-                "cdate_first_cycl": date_first_cycl,
-                "cycl_freq": f"{expt_config['workflow']['INCR_CYCL_FREQ']:02d}:00:00",
-                "cycl_next": cycl_next,
-                "date_2nd_cycl": date_2nd_cycl,
-                "date_3rd_cycl": date_3rd_cycl,
-                "date_4th_cycl": date_4th_cycl,
-                "date_1st_last_cycl": date_1st_last_cycl,
-                "date_2nd_last_cycl": date_2nd_last_cycl,
-                "date_3rd_last_cycl": date_3rd_last_cycl,
-                "date_4th_last_cycl": date_4th_last_cycl,
-                "fcst_len_hrs": fcst_len_hrs,
-                "fcst_len_cycl": fcst_len_cycl,
-                "num_fcst_len_cycl": num_fcst_len_cycl,
-                #
-                # Ensemble-related parameters.
-                #
-                "ensmem_indx_name": ensmem_indx_name,
-                "uscore_ensmem_name": uscore_ensmem_name,
-                "slash_ensmem_subdir": slash_ensmem_subdir,
-                #
-                # Parameters associated with subhourly post-processed output
-                #
-                "delta_min": expt_config["task_run_post"]["DT_SUBHOURLY_POST_MNTS"],
-                "first_fv3_file_tstr": first_file_time.strftime("000:%M:%S"),
-            }
-        )
-
-        # Log "settings" variable.
-        settings_str = cfg_to_yaml_str(settings)
-
-        log_info(
-            f"""
-            The variable 'settings' specifying values of the rococo XML variables
-            has been set as follows:
-            #-----------------------------------------------------------------------
-            settings =\n\n""",
-            verbose=verbose,
-        )
-        log_info(settings_str, verbose=verbose)
-
-        #
-        # Call the python script to generate the experiment's actual XML file
-        # from the jinja template file.
-        #
         try:
-            fill_jinja_template(
-                ["-q", "-u", settings_str, "-t", template_xml_fp, "-o", wflow_xml_fp]
-            )
+            fill_jinja_template(args)
         except:
-            logging.info(
-                dedent(
-                    f"""
-                      Variable settings specified on command line for
-                      fill_jinja_template.py:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
             raise Exception(
                 dedent(
                     f"""
-                    Call to python script fill_jinja_template.py to create a rocoto workflow
-                    XML file from a template file failed.  Parameters passed to this script
-                    are:
-                      Full path to template rocoto XML file:
-                        template_xml_fp = '{template_xml_fp}'
-                      Full path to output rocoto XML file:
-                        WFLOW_XML_FP = '{wflow_xml_fp}'
+                    Call to fill_jinja_template failed.
                     """
                 )
             )
@@ -763,7 +654,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # the C-resolution of the grid), and this parameter is in most workflow
     # configurations is not known until the grid is created.
     #
-    if not RUN_TASK_MAKE_GRID:
+    if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
         set_FV3nml_sfc_climo_filenames()
 
@@ -883,6 +774,7 @@ if __name__ == "__main__":
                 """
             )
         )
+        raise
     
     # Note workflow generation completion
     log_info(
@@ -931,10 +823,11 @@ class Testing(unittest.TestCase):
             "user": {
                 "MACHINE": "linux",
             },
-            "workflow_switches": {
-                "RUN_TASK_MAKE_GRID": True,
-                "RUN_TASK_MAKE_OROG": True,
-                "RUN_TASK_MAKE_SFC_CLIMO": True,
+            "rocoto": {
+                "tasks": {
+                    "taskgroups": \
+                        '\'{{ ["parm/wflow/prep.yaml","parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}\''
+                },
             },
         }
         update_dict(cfg_updates, nco_test_config)

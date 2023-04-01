@@ -1,0 +1,212 @@
+default_task: &default_task
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    ENSMEM_INDX: '#mem#'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_get_extrn_ics:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  envars:
+    <<: *default_vars
+    ICS_OR_LBCS: ICS
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
+  nnodes: 1
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_HPSS;'
+  walltime: 00:45:00
+  dependency:
+    or:
+      and:
+        streq:
+          left: do_real_time
+          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+        datadep_gfs:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+      streq:
+        left: retro
+        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
+
+task_get_extrn_lbcs:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  envars:
+    <<: *default_vars
+    ICS_OR_LBCS: LBCS
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
+  nnodes: 1
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_HPSS;'
+  walltime: 00:45:00
+  dependency:
+    or:
+      and:
+        streq:
+          left: do_real_time
+          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+        datadep_gfs:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+      streq:
+        left: retro
+        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
+
+metatask_run_ensemble:
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  task_make_ics_mem#mem#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'
+    envars:
+      <<: *default_vars
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nnodes: 4
+    ppn: 12
+    dependency:
+      and: &make_ics_deps
+        taskdep_get_extrn:
+          attrs:
+            task: get_extrn_ics
+        or_grid:
+          datadep_grid:
+            attrs:
+              age: 00:00:00:05
+            text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+          streq:
+            left: staged_grid
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+        or_orog:
+          datadep_orog:
+            attrs:
+              age: 00:00:00:05
+            text: '{{ task_make_orog.OROG_DIR }}/make_orog_task_complete.txt'
+          streq:
+            left: staged_orog
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_orog") %}staged_orog{% endif %}'
+        or_sfc_climo:
+          datadep_sfc_climo:
+            attrs:
+              age: 00:00:00:05
+            text: '{{ task_make_sfc_climo.SFC_CLIMO_DIR }}/make_sfc_climo_task_complete.txt'
+          streq:
+            left: staged_sfc_climo
+            right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
+
+  task_make_lbcs_mem#mem#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
+    envars:
+      <<: *default_vars
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nnodes: 4
+    ppn: 12
+    dependency:
+      and:
+        <<: *make_ics_deps
+        taskdep_get_extrn:
+          attrs:
+            task: get_extrn_lbcs
+
+  task_run_fcst_mem#mem#:
+    <<: *default_task
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
+    envars:
+      <<: *default_vars
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      nprocs:
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nodesize: '&NCORES_PER_NODE;'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
+    partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+    queue: '&QUEUE_FCST;'
+    walltime: 04:30:00
+    dependency:
+      and:
+        taskdep_make_ics:
+          attrs:
+            task: make_ics_mem#mem#
+        taskdep_make_lbcs:
+          attrs:
+            task: make_lbcs_mem#mem#
+        or_nexus_emission:
+          not:
+            taskvalid:
+              attrs:
+                task: nexus_post_split
+          taskdep:
+            attrs:
+              task: nexus_post_split
+        or_fire_emission:
+          not:
+            taskvalid:
+              attrs:
+                task: fire_emission
+          taskdep:
+            attrs:
+              task: fire_emission
+        or_point_source:
+          not:
+            taskvalid:
+              attrs:
+                task: point_source
+          taskdep:
+            attrs:
+              task: point_source
+        or_aqm_ics:
+          and_no_aqm_ics:
+            not:
+              taskvalid:
+                attrs:
+                  task: aqm_ics_ext
+            not:
+              taskvalid:
+                attrs:
+                  task: aqm_ics
+          and_aqm_atstart:
+            taskvalid:
+              attrs:
+                task: aqm_ics_ext
+            taskdep:
+              attrs:
+                task: aqm_ics_ext
+          and_aqm_cycled:
+            taskvalid:
+              attrs:
+                task: aqm_ics
+            taskdep:
+              attrs:
+                task: aqm_ics
+        or_aqm_lbcs:
+          not:
+            taskvalid:
+              attrs:
+                task: aqm_lbcs
+          taskdep:
+            attrs:
+              task: aqm_lbcs
+

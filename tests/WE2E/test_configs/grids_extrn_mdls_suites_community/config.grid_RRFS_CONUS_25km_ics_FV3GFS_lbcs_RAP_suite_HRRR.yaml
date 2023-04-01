@@ -4,18 +4,26 @@ metadata:
     completes successfully on the RRFS_CONUS_25km grid using the HRRR
     physics suite with ICs derived from the FV3GFS and LBCs derived from
     the RAP.
-    Note that this test specifies the file format of the FV3GFS external
-    model data (from which to generate ICs) to be "grib2" as opposed to
-    the default value of "nemsio".
+    This test also ensures that MET deterministic verification runs
+    successfully.
 user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: RRFS_CONUS_25km
-  DATE_FIRST_CYCL: '2020081000'
-  DATE_LAST_CYCL: '2020081000'
+  DATE_FIRST_CYCL: '2019061518'
+  DATE_LAST_CYCL: '2019061518'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+    task_get_obs_ccpa:
+    task_get_obs_mrms:
+    task_get_obs_ndas:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -23,6 +31,7 @@ task_get_extrn_ics:
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 1
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_FILES_LBCS:
-    - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km

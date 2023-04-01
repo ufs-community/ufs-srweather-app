@@ -7,9 +7,7 @@ metadata:
       GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
     to "TRUE" (which is its default value); see the UFS SRW App's User's
     Guide for a description of this variable.
-    The difference between this test and the one named
-      new_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_TRUE
-    is that this one uses almost no stretching by setting the workflow
+    This test uses almost no stretching by setting the workflow
     variable GFDLgrid_STRETCH_FAC very close to 1.  Setting it exactly to
     1 used to cause the workflow to fail because it caused the GFDL grid
     generator to assume a global grid.  This bug should be rechecked, e.g.

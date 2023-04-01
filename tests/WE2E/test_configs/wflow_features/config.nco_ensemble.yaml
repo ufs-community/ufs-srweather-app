@@ -19,10 +19,6 @@ workflow:
   INCR_CYCL_FREQ: 12
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   USE_USER_STAGED_EXTRN_FILES: true
@@ -33,3 +29,6 @@ task_get_extrn_lbcs:
 global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 2
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
