@@ -660,18 +660,30 @@ def filter_dict(dict_o, keys_regex):
 ##################
 # CONFIG loader
 ##################
-def load_config_file_(config_file_or_string, return_string=0, rendered=None):
+def render_jinja_template(config_file_or_string, context):
+    """ Render a jinja templated config file. """
+
+    with open(config_file_or_string) as f:
+        template = jinja2.Template(f.read())
+        return template.render(context)
+
+    return None
+
+
+def load_config_file(config_file_or_string, return_string=0, context=None):
     """Load config file based on file name extension
 
     Args:
        config_file_or_string: path to config file or string of contents
        return_string: can be [0, 1, 2]
-       rendered: if config_file_or_string is jinja templated, this var contains the 
-                 rendered content of the file
+       context: file or dictionary to be used for rendering jinja templated file
     """
 
     ext = os.path.splitext(config_file_or_string)[1][1:]
-    config_file_or_string = (config_file_or_string if rendered is None else rendered)
+    if context is not None:
+        if not isinstance(context, dict):
+            context = load_config_file(context, return_string)
+        config_file_or_string = render_jinja_template(config_file_or_string, context)
 
     if ext == "sh":
         return load_shell_config(config_file_or_string, return_string)
@@ -684,29 +696,6 @@ def load_config_file_(config_file_or_string, return_string=0, rendered=None):
     if ext == "xml":
         return load_xml_config(config_file_or_string, return_string)
     return None
-
-def render_jinja_template(config_file_or_string, context):
-    """ Render a jinja templated config file. """
-
-    with open(config_file_or_string) as f:
-        template = jinja2.Template(f.read())
-        return template.render(context)
-
-    return None
-
-
-def load_config_file(config_file_or_string, return_string=0, context=None):
-    """ Load jinja templated config file. """
-
-    if context is not None:
-        if not isinstance(context, dict):
-            context = load_config_file_(context)
-        rendered = render_jinja_template(config_file_or_string, context)
-
-        return load_config_file_(config_file_or_string, return_string, rendered)
-    else:
-        return load_config_file_(config_file_or_string, return_string)
-
 
 ##################
 # CONFIG main
