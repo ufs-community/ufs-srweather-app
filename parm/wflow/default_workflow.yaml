@@ -36,10 +36,8 @@ rocoto:
     scheduler: '{{ platform.SCHED }}'
     taskthrottle: "1000"
   cycledefs:
-    at_start:
-      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
-    forecast:
-      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
-  log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
+    at_start: '{{ [workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00"), " ", workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00")," ", workflow.INCR_CYCL_FREQ, ":00:00"]|join }}'
+    forecast: '{{ [workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00"), " ", workflow.DATE_LAST_CYCL.strftime("%Y%m%d%H00")," ", workflow.INCR_CYCL_FREQ, ":00:00"]|join }}'
+  log: !cycstr '&LOGDIR;/FV3LAM_wflow&LOGEXT;'
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

@@ -111,20 +111,6 @@ def join_str(loader, node):
     seq = loader.construct_sequence(node)
     return "".join([str(i) for i in seq])
 
-def startstopfreq(loader, node):
-
-    ''' Returns a Rocoto-formatted string for the contents of a cycledef
-    tag. Assume that the items in the node are env variables, and return
-    a Rocoto-formatted string'''
-
-    args = loader.construct_sequence(node)
-
-    # Try to fill the values from environment values, default to the
-    # value provided in the entry.
-    start, stop, freq = (os.environ.get(arg, arg) for arg in args)
-
-    return f'{start}00 {stop}00 {freq}:00:00'
-
 def nowtimestamp(loader, node):
     return "id_" + str(int(datetime.datetime.now().timestamp()))
 
@@ -132,7 +118,6 @@ try:
     yaml.add_constructor("!cycstr", cycstr, Loader=yaml.SafeLoader)
     yaml.add_constructor("!include", include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
-    yaml.add_constructor("!startstopfreq", startstopfreq, Loader=yaml.SafeLoader)
     yaml.add_constructor("!nowtimestamp", nowtimestamp ,Loader=yaml.SafeLoader)
 except NameError:
     pass
