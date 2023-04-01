@@ -58,6 +58,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
       Python dict of configuration settings from YAML files.
     """
 
+    #######################################################
+    # 1. Construct config file ignoring workflow section
+    #######################################################
+
     # Load the default config.
     logging.debug(f"Loading config defaults file {default_config}")
     cfg_d = load_config_file(default_config)
@@ -142,54 +146,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Load the constants file
     cfg_c = load_config_file(os.path.join(ushdir, "constants.yaml"))
 
-
-    # Load the rocoto workflow default file
-    cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
-        "wflow", "default_workflow.yaml"))
-
-    # Takes care of removing any potential "null" entries, i.e.,
-    # unsetting a default value from an anchored default_task
-    update_dict(cfg_wflow, cfg_wflow)
-
-
-    # Take any user-specified taskgroups entry here.
-    taskgroups = cfg_u.get('rocoto', {}).get('tasks', {}).get('taskgroups')
-    if taskgroups:
-        cfg_wflow['rocoto']['tasks']['taskgroups'] = taskgroups
-
-    # Extend yaml here on just the rocoto section to include the
-    # appropriate groups of tasks
-    extend_yaml(cfg_wflow)
-
-
-    # Put the entries expanded under taskgroups in tasks
-    rocoto_tasks = cfg_wflow["rocoto"]["tasks"]
-    cfg_wflow["rocoto"]["tasks"] = yaml.load(rocoto_tasks.pop("taskgroups"),Loader=yaml.SafeLoader)
-
-    # Update wflow config from user one more time to make sure any of
-    # the "null" settings are removed, i.e., tasks turned off.
-    update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
-
-    def add_jobname(tasks):
-        """ Add the jobname entry for all the tasks in the workflow """
-
-        if not isinstance(tasks, dict):
-            return
-        for task, task_settings in tasks.items():
-            task_type = task.split("_", maxsplit=1)[0]
-            if task_type == "task":
-                # Use the provided attribute if it is present, otherwise use
-                # the name in the key
-                tasks[task]["jobname"] = \
-                    task_settings.get("attrs", {}).get("name") or \
-                    task.split("_", maxsplit=1)[1]
-            elif task_type == "metatask":
-                add_jobname(task_settings)
-
-
-    # Add jobname entry to each remaining task
-    add_jobname(cfg_wflow["rocoto"]["tasks"])
-
     # Update default config with the constants, the machine config, and
     # then the user_config
     # Recall: update_dict updates the second dictionary with the first,
@@ -199,17 +155,14 @@ def load_config_for_setup(ushdir, default_config, user_config):
     # Constants
     update_dict(cfg_c, cfg_d)
 
-    # Default workflow settings
-    update_dict(cfg_wflow, cfg_d)
-
-    # Machine settings
-    update_dict(machine_cfg, cfg_d)
-
     # Fixed files
     update_dict(cfg_f, cfg_d)
 
+    # Machine settings (excluding rocoto section)
+    update_dict({ k: v for k,v in machine_cfg.items() if k != "rocoto"}, cfg_d)
+
     # User settings (take precedence over all others)
-    update_dict(cfg_u, cfg_d)
+    update_dict({ k: v for k,v in cfg_u.items() if k != "rocoto"}, cfg_d)
 
     # Update the cfg_d against itself now, to remove any "null"
     # stranglers.
@@ -237,7 +190,68 @@ def load_config_for_setup(ushdir, default_config, user_config):
             if not (v is None or v == ""):
                 cfg_d[sect][k] = str_to_list(v)
 
-    # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
+    #######################################################
+    # 2. Now construct the workflow config part
+    #######################################################
+
+    # Load the rocoto workflow default file
+    cfg_wflow = load_config_file(os.path.join(ushdir, os.pardir, "parm",
+        "wflow", "default_workflow.yaml"), 0, cfg_d)
+
+    # Update wflow config from user one more time to make sure any of
+    # the "null" settings are removed, i.e., tasks turned off.
+    update_dict(cfg_u.get('rocoto', {}), cfg_wflow["rocoto"])
+
+    # Takes care of removing any potential "null" entries, i.e.,
+    # unsetting a default value from an anchored default_task
+    update_dict(cfg_wflow, cfg_wflow)
+
+    # Extend yaml here on just the rocoto section to include the
+    # appropriate groups of tasks
+    extend_yaml(cfg_wflow)
+
+    # Put the entries expanded under taskgroups in tasks
+    rocoto_tasks = cfg_wflow["rocoto"]["tasks"].pop("taskgroups")
+    cfg_tasks = load_config_file(rocoto_tasks, 0, cfg_d)
+    extend_yaml(cfg_tasks)
+    cfg_wflow["rocoto"]["tasks"] = cfg_tasks
+
+    # Machine settings (only rocoto section)
+    update_dict(machine_cfg.get('rocoto', {}), cfg_wflow["rocoto"])
+
+    def add_jobname(tasks):
+        """ Add the jobname entry for all the tasks in the workflow """
+
+        if not isinstance(tasks, dict):
+            return
+        for task, task_settings in tasks.items():
+            task_type = task.split("_", maxsplit=1)[0]
+            if task_type == "task":
+                # Use the provided attribute if it is present, otherwise use
+                # the name in the key
+                tasks[task]["jobname"] = \
+                    task_settings.get("attrs", {}).get("name") or \
+                    task.split("_", maxsplit=1)[1]
+            elif task_type == "metatask":
+                add_jobname(task_settings)
+
+
+    # Add jobname entry to each remaining task
+    add_jobname(cfg_wflow["rocoto"]["tasks"])
+
+    # Default workflow settings
+    update_dict(cfg_wflow, cfg_d)
+
+    # Update the cfg_d against itself now, to remove any "null"
+    # stranglers.
+    update_dict(cfg_d, cfg_d)
+
+    #######################################################
+    #  End config
+    #######################################################
+
+    # Mandatory variables *must* be set in the user's config or the i
+    # machine file; the default value is invalid
     mandatory = [
         "EXPT_SUBDIR",
         "NCORES_PER_NODE",
@@ -268,10 +282,10 @@ def load_config_for_setup(ushdir, default_config, user_config):
             raise Exception(
                 dedent(
                     f"""
-                            Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
+                    Date variable {val}={cfg_d['workflow'][val]} is not in a valid date format.
 
-                            For examples of valid formats, see the Users' Guide.
-                            """
+                    For examples of valid formats, see the Users' Guide.
+                    """
                 )
             )
 
