@@ -5,7 +5,7 @@ user:
   MACHINE: wcoss2
   ACCOUNT: [account name]
 workflow:
-  USE_CRON_TO_RELAUNCH: true
+  USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
@@ -33,22 +33,16 @@ nco:
   model_ver: v7.0
   RUN: aqm_nco_aqmna13km
   OPSROOT: /path/to/custom/opsroot
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_POST: true
-  RUN_TASK_AQM_ICS: true
-  RUN_TASK_AQM_LBCS: true
-  RUN_TASK_NEXUS_GFS_SFC: true
-  RUN_TASK_NEXUS_EMISSION: true
-  RUN_TASK_FIRE_EMISSION: true
-  RUN_TASK_POINT_SOURCE: true
-  RUN_TASK_PRE_POST_STAT: true
-  RUN_TASK_POST_STAT_O3: true
-  RUN_TASK_POST_STAT_PM25: true
-  RUN_TASK_BIAS_CORRECTION_O3: true
-  RUN_TASK_BIAS_CORRECTION_PM25: true
+rocoto:
+  taskgroups: '{{ ["parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
+  tasks:
+    task_get_extrn_lbcs:
+      walltime: 02:00:00
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 04:00:00
+    task_aqm_lbcs:
+      walltime: 01:00:00
 task_make_grid:
   GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
@@ -64,21 +58,17 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
-  WTIME_GET_EXTRN_LBCS: 02:00:00
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6 18
-  WTIME_RUN_FCST: 04:00:00
   OMP_NUM_THREADS_RUN_FCST: 1
   QUILTING: true
   PRINT_ESMF: false
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
-task_aqm_lbcs:
-  WTIME_AQM_LBCS: 01:00:00
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2

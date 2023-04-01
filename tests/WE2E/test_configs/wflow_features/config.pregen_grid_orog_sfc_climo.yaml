@@ -11,10 +11,6 @@ workflow:
   DATE_LAST_CYCL: '2019070100'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   USE_USER_STAGED_EXTRN_FILES: true
@@ -22,3 +18,8 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
+rocoto:
+  tasks:
+    task_make_grid:
+    task_make_orog:
+    task_make_sfc_climo:

@@ -28,7 +28,7 @@ platform:
   TEST_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
-  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
+  TEST_VX_FCST_INPUT_DIR: '{{ "/scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}/${CDATE}/postprd" }}{% raw %}{% endraw %}'
   FIXaer: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_aer
   FIXgsi: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_am
@@ -37,6 +37,18 @@ platform:
   FIXsfc: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
+
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:
 
 data:
   obs:
@@ -52,4 +64,5 @@ cpl_aqm_parm:
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
   PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/YouHua.Tang/nei2016v1-pt
+
 

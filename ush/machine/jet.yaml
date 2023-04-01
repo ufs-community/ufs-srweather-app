@@ -34,7 +34,6 @@ platform:
   FIXsfc: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-  OBSPATH_NSSLMOSIAC: /mnt/lfs4/BMC/wrfruc/Ruifang.Li/data/reflectivity
 data:
   ics_lbcs:
     FV3GFS:
@@ -48,3 +47,14 @@ data:
     GFS_obs:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:
