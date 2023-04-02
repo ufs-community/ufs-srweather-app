@@ -1,12 +1,12 @@
 # Settings that will run tasks needed per-experiment to create "fix
 # files" for the stationary grid.
 
-default_task_plot: &default_task
+default_task_plot: &default_task_plot
   account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
     maxtries: '1'
-  envars: &default_envars
+  envars: &defaults_vars_plot
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr "@Y@m@d"
@@ -26,7 +26,7 @@ default_task_plot: &default_task
   walltime: 01:00:00
 
 task_plot_allvars:
-  <<: *default_task
+  <<: *default_task_plot
   command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:

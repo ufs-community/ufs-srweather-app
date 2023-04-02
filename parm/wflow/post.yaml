@@ -1,10 +1,10 @@
-default_task_post: &default_task
+default_task_post: &default_task_post
   account: '&ACCOUNT;'
   attrs:
     cycledefs: '#cycledef#'
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POST"'
-  envars: &default_vars
+  envars: &defaults_vars_post
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr '@Y@m@d'
@@ -31,7 +31,7 @@ metatask_run_ens_post:
       fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
       cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_CYCL|min %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
     task_run_post_mem#mem#_f#fhr#:
-      <<: *default_task
+      <<: *default_task_post
       dependency:
         or:
           taskdep:
@@ -54,9 +54,9 @@ metatask_run_ens_post:
       var:
         fmn: '{% for min in range(0, 60, task_run_post.DT_SUBHOURLY_POST_MNTS) %}{{ " %02d" % min }}{% endfor %}'
       task_run_post_mem#mem#_f#fhr##fmn#: &subhourly_run_post_task
-        <<: *default_task
+        <<: *default_task_post
         envars:
-          <<: *default_vars
+          <<: *defaults_vars_post
           fmn: '#fmn#'
         dependency:
           or:

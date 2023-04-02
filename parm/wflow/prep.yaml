@@ -1,12 +1,12 @@
 # Settings that will run tasks needed per-experiment to create "fix
 # files" for the stationary grid.
 
-default_task_prep: &default_task
+default_task_prep: &default_task_prep
   account: '&ACCOUNT;'
   attrs:
     cycledefs: at_start
     maxtries: '2'
-  envars: &default_envars
+  envars: &defaults_vars_prep
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr "@Y@m@d"
@@ -24,12 +24,12 @@ default_task_prep: &default_task
   walltime: 00:20:00
 
 task_make_grid:
-  <<: *default_task
+  <<: *default_task_prep
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_grid" "&JOBSdir;/JREGIONAL_MAKE_GRID"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
 
 task_make_orog:
-  <<: *default_task
+  <<: *default_task_prep
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_orog" "&JOBSdir;/JREGIONAL_MAKE_OROG"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
@@ -47,7 +47,7 @@ task_make_orog:
         text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
 
 task_make_sfc_climo:
-  <<: *default_task
+  <<: *default_task_prep
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   nnodes: 2

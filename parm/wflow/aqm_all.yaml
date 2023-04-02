@@ -3,7 +3,7 @@ default_aqm_task: &default_aqm
   attrs:
     cycledefs: forecast
     maxtries: '2'
-  envars: &default_vars
+  envars: &defaults_vars_aqms
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr "@Y@m@d"
@@ -52,7 +52,7 @@ metatask_nexus_emission:
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
     walltime: 01:00:00
     envars:
-      <<: *default_vars
+      <<: *defaults_vars_aqms
       nspt: "#nspt#"
     dependency:
       taskdep:
@@ -96,7 +96,7 @@ task_aqm_ics_ext:
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
   envars:
-    <<: *default_vars
+    <<: *defaults_vars_aqms
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
@@ -121,7 +121,7 @@ task_aqm_ics:
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
   envars:
-    <<: *default_vars
+    <<: *defaults_vars_aqms
     PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMIN_DIR;</cyclestr>'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:

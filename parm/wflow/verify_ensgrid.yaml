@@ -3,7 +3,7 @@ default_task_verify_ens: &default_task_verify_ens
   attrs:
     cycledefs: forecast
     maxtries: '1'
-  envars: &default_vars
+  envars: &default_vars_verify_ens
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr '@Y@m@d'
@@ -31,7 +31,7 @@ metatask_EnsembleStat:
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"'
     envars:
-      <<: *default_vars
+      <<: *default_vars_verify_ens
       ACCUM_HH: '01'
       OBS_DIR: '&MRMS_OBS_DIR;'
       VAR: '#VAR#'
@@ -47,7 +47,7 @@ metatask_GridStat_ensprob:
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENSPROB"'
     envars:
-      <<: *default_vars
+      <<: *default_vars_verify_ens
       ACCUM_HH: '01'
       OBS_DIR: '&MRMS_OBS_DIR;'
       VAR: '#VAR#'
@@ -64,7 +64,7 @@ metatask_EnsembleStat_acc:
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_GRID"'
     envars:
-      <<: *default_vars
+      <<: *default_vars_verify_ens
       ACCUM_HH: '#ACCUM_HR#'
       FHR: '#FCST_HR_LIST#'
       OBS_DIR: '&CCPA_OBS_DIR;'
@@ -103,7 +103,7 @@ metatask_ensemble_vx_stats:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX_ENS#stat#"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify_ens
         ACCUM_HH: '#ACCUM_HR#'
         FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&CCPA_OBS_DIR;'
@@ -119,7 +119,7 @@ metatask_ensemble_vx_stats:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX_ENS#stat#"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify_ens
         OBS_DIR: '&NDAS_OBS_DIR;'
         VAR: '#VAR#'
       dependency:
@@ -134,7 +134,7 @@ metatask_EnsembleStat_point:
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_ENSEMBLESTAT_VX_POINT"'
     envars:
-      <<: *default_vars
+      <<: *default_vars_verify_ens
       OBS_DIR: '&NDAS_OBS_DIR;'
       VAR: '#VAR#'
     dependency:

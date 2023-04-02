@@ -1,9 +1,9 @@
-default_task_verify: &default_task
+default_task_verify: &default_task_verify
   account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
     maxtries: '1'
-  envars: &default_vars
+  envars: &default_vars_verify
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'
     PDY: !cycstr '@Y@m@d'
@@ -26,10 +26,10 @@ default_task_verify: &default_task
   walltime: 00:30:00
 
 task_get_obs_ccpa:
-  <<: *default_task
+  <<: *default_task_verify
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"'
   envars:
-    <<: *default_vars
+    <<: *default_vars_verify
     ACCUM_HH: '01'
     OBS_DIR: '&CCPA_OBS_DIR;'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -37,10 +37,10 @@ task_get_obs_ccpa:
   walltime: 00:45:00
 
 task_get_obs_mrms:
-  <<: *default_task
+  <<: *default_task_verify
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"'
   envars:
-    <<: *default_vars
+    <<: *default_vars_verify
     OBS_DIR: '&MRMS_OBS_DIR;'
     VAR: 'REFC RETOP'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -48,9 +48,9 @@ task_get_obs_mrms:
   walltime: 00:45:00
 
 task_get_obs_ndas:
-  <<: *default_task
+  <<: *default_task_verify
   envars:
-    <<: *default_vars
+    <<: *default_vars_verify
     OBS_DIR: '&NDAS_OBS_DIR;'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"'
   queue: "&QUEUE_HPSS;"
@@ -58,13 +58,13 @@ task_get_obs_ndas:
   walltime: 02:00:00
 
 task_run_MET_Pb2nc_obs:
-  <<: *default_task
+  <<: *default_task_verify
   attrs:
     cycledefs: forecast
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
-    <<: *default_vars
+    <<: *default_vars_verify
     VAR: SFC
     ACCUM_HH: '01'
     obs_or_fcst: obs
@@ -92,10 +92,10 @@ metatask_vx_ens_member:
     var:
       VAR: REFC RETOP
     task_run_MET_GridStat_vx_#VAR#_mem#mem#:
-      <<: *default_task
+      <<: *default_task_verify
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
         ACCUM_HH: '01'
@@ -135,10 +135,10 @@ metatask_vx_ens_member:
     var:
       VAR: SFC UPA
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
-      <<: *default_task
+      <<: *default_task_verify
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify
         FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&NDAS_OBS_DIR;'
         VAR: '#VAR#'
@@ -169,13 +169,13 @@ metatask_GridStat_APCP_acc:
 
 
   task_run_MET_PcpCombine_obs_APCP#ACCUM_HR#h:
-    <<: *default_task
+    <<: *default_task_verify
     attrs:
       cycledefs: forecast
       maxtries: '2'
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
     envars:
-      <<: *default_vars
+      <<: *default_vars_verify
       VAR: APCP
       ACCUM_HH: '#ACCUM_HR#'
       obs_or_fcst: obs
@@ -199,13 +199,13 @@ metatask_GridStat_APCP_acc:
       mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
 
     task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
-      <<: *default_task
+      <<: *default_task_verify
       attrs:
         cycledefs: forecast
         maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify
         VAR: APCP
         ACCUM_HH: '#ACCUM_HR#'
         obs_or_fcst: fcst
@@ -216,10 +216,10 @@ metatask_GridStat_APCP_acc:
           <<: *post_files_exist
 
     task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
-      <<: *default_task
+      <<: *default_task_verify
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
-        <<: *default_vars
+        <<: *default_vars_verify
         FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
