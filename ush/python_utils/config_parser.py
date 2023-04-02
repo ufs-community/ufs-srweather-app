@@ -95,16 +95,14 @@ def include(filepaths):
 
     srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
 
-    cfg = {}
+    contents=""
     for filepath in filepaths:
         abs_path = filepath
         if not os.path.isabs(filepath):
             abs_path = os.path.join(os.path.dirname(srw_path), filepath)
         with open(abs_path, 'r') as fp:
-            contents = yaml.load(fp, Loader=yaml.SafeLoader)
-        for key, value in contents.items():
-            cfg[key] = value
-    return yaml.dump(cfg, sort_keys=False)
+            contents += fp.read()
+    return contents
 
 def join_str(loader, node):
     """Custom tag hangler to join strings"""
