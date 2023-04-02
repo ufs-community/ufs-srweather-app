@@ -34,8 +34,8 @@ nco:
   RUN: aqm_nco_aqmna13km
   OPSROOT: /path/to/custom/opsroot
 rocoto:
-  taskgroups: '{{ ["parm/wflow/all_aqm.yaml", "parm/wflow/coldstart.yaml"]|include }}'
   tasks:
+    taskgroups: '{{ ["parm/wflow/aqm_all.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     task_get_extrn_lbcs:
       walltime: 02:00:00
     metatask_run_ensemble:
