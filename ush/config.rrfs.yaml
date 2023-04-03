@@ -7,6 +7,7 @@ user:
   MACHINE: hera
   ACCOUNT: zrtrr
   SERVICE_ACCOUNT: zrtrr
+  HPSS_ACCOUNT: zrtrr
 platform:
   RESERVATION: ""
   SST_update_hour: 1
