@@ -846,7 +846,8 @@ workflow:
   # This pattern is recurred for all cycle dates.
   # Must have the same number of entries as cycles per day, or if less
   # than one day the entries must include the length of each cycle to be
-  # run.
+  # run. By default, set it to a 1-item list containing the standard
+  # fcst length.
   #
   #-----------------------------------------------------------------------
   #
@@ -855,11 +856,8 @@ workflow:
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
-    - 6
-    - 12
-    - 12
-    - 6
-  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
+    - '{{ FCST_LEN_HRS }}'
+  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
   #
   #-----------------------------------------------------------------------
