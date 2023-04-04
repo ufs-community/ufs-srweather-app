@@ -63,7 +63,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_PRDGEN}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_RUN_PRDGEN*PPN_RUN_PRDGEN ))
 if [ -z "${RUN_CMD_PRDGEN:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \

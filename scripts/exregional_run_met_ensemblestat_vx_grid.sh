@@ -54,7 +54,7 @@ gridded data.
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "Starting ensemble-stat verification"
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -96,7 +96,9 @@ if [ $RUN_ENVIR = "nco" ]; then
     export MEM_CUSTOM=
     export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
 else
-    export INPUT_BASE=${VX_FCST_INPUT_BASEDIR}/$CDATE
+    ENSMEM_INDX='ZZZ'
+    INPUT_BASE=$( eval echo ${VX_FCST_INPUT_DIR} )
+    export INPUT_BASE=${INPUT_BASE/ZZZ/'*'}
     export OUTPUT_BASE=$EXPTDIR
     export MEM_BASE=$EXPTDIR/$CDATE
     export LOG_DIR=${EXPTDIR}/log
