@@ -5,7 +5,7 @@ user:
   MACHINE: wcoss2
   ACCOUNT: [account name]
 workflow:
-  USE_CRON_TO_RELAUNCH: false
+  USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km

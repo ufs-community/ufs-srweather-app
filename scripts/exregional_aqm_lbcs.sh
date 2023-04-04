@@ -62,15 +62,13 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
-
-if [ -z "${RUN_CMD_UTILS:-}" ] ; then
+if [ -z "${RUN_CMD_AQMLBC:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
-  Please set RUN_CMD_UTILS for your platform"
+  Please set RUN_CMD_AQM_LBC for your platform"
 else
   print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  All executables will be submitted with command \'${RUN_CMD_AQMLBC}\'."
 fi
 
 #
