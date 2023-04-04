@@ -663,23 +663,29 @@ def filter_dict(dict_o, keys_regex):
 def render_jinja_template(config_file_or_string, context):
     """ Render a jinja templated config file. """
 
-    with open(config_file_or_string) as f:
-        template = jinja2.Template(f.read())
-        return template.render(context)
+    template = None
+    if os.path.isfile(config_file_or_string):
+        with open(config_file_or_string) as f:
+            template = jinja2.Template(f.read())
+    else:
+        template = jinja2.Template(config_file_or_string)
 
-    return None
+    return template.render(context)
 
 
-def load_config_file(config_file_or_string, return_string=0, context=None):
+def load_config_file(config_file_or_string, return_string=0, context=None, ext="yaml"):
     """Load config file based on file name extension
 
     Args:
        config_file_or_string: path to config file or string of contents
        return_string: can be [0, 1, 2]
        context: file or dictionary to be used for rendering jinja templated file
+       ext: file name extension needed only if config_file_or_string is a string
     """
 
-    ext = os.path.splitext(config_file_or_string)[1][1:]
+    if os.path.isfile(config_file_or_string):
+        ext = os.path.splitext(config_file_or_string)[1][1:]
+
     if context is not None:
         if not isinstance(context, dict):
             context = load_config_file(context, return_string)
