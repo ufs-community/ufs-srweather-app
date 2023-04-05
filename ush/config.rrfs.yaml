@@ -40,19 +40,20 @@ workflow:
   DA_CYCLE_INTERV: 1
   BOUNDARY_LEN_HRS: 18
   BOUNDARY_PROC_GROUP_NUM: 10
+  DO_REAL_TIME: false
 rrfs:
-  DO_DACYCLE: false # turn on later
-  DO_SURFACE_CYCLE: false # turn on later
-  DO_SPINUP: false # turn on later
-  DO_NONVAR_CLDANAL: false # turn on later
-  DO_REFL2TTEN: false
+  DO_DACYCLE: true # turn on later
+  DO_SURFACE_CYCLE: true # turn on later
+  DO_SPINUP: true # turn on later
+  DO_NONVAR_CLDANAL: true # turn on later
+  DO_REFL2TTEN: true
   DO_NLDN_LGHT: false
-  DO_SOIL_ADJUST: false # turn on later
+  DO_SOIL_ADJUST: true # turn on later
   DO_RADDA: false
   DO_BUFRSND: false
   DO_RRFS_DEV: true
-  DO_POST_SPINUP: false # turn on later
-  DO_POST_PROD: false # turn on later
+  DO_POST_SPINUP: true # turn on later
+  DO_POST_PROD: true # turn on later
 cycledefs:
   INITIAL_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0300 ", workflow.DATE_LAST_CYCL[0:8], "2300 12:00:00"]|join }}'
   BOUNDARY_CYCLEDEF: '{{ [workflow.DATE_FIRST_CYCL[0:8], "0000 ", workflow.DATE_LAST_CYCL[0:8], "2300 06:00:00"]|join }}'
@@ -107,7 +108,7 @@ global:
   PRINT_DIFF_PGR: true
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/rrfs_prep.yaml", "parm/wflow/rrfs_spinup.yaml", "parm/wflow/rrfs_prod.yaml", "parm/wflow/post.yaml"]|include }}'
   metatask_run_ensemble:
     task_run_fcst_mem#mem#:
       walltime: 02:45:00
