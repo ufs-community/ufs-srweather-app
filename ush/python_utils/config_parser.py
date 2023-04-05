@@ -663,14 +663,33 @@ def filter_dict(dict_o, keys_regex):
 def render_jinja_template(config_file_or_string, context):
     """ Render a jinja templated config file. """
 
-    template = None
     if os.path.isfile(config_file_or_string):
         with open(config_file_or_string) as f:
-            template = jinja2.Template(f.read())
+            contents = f.read()
     else:
-        template = jinja2.Template(config_file_or_string)
+        contents = config_file_or_string
 
-    return template.render(context)
+    # find single quoted templates
+    pattern = r"'[^']*'"
+    matches = re.findall(pattern, contents)
+    umatches = []
+    for mt in matches:
+        if (len(mt) > 2) and not any(mt in m for m in umatches if m != mt):
+            umatches.append(mt)
+
+    # replace "value templates" so they wont't be rendered
+    for i, m in enumerate(umatches):
+        contents = contents.replace(m, f'__MATCH__{i:06d}')
+
+    # render content
+    template = jinja2.Template(contents)
+    contents = template.render(context)
+
+    # substitute "value templates" back
+    for i, m in enumerate(umatches):
+        contents = contents.replace(f'__MATCH__{i:06d}', m)
+
+    return contents
 
 
 def load_config_file(config_file_or_string, return_string=0, context=None, ext="yaml"):
