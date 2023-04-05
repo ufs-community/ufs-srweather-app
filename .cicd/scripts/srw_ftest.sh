@@ -10,11 +10,17 @@
 # NOTE: At this time, this script is a placeholder for functional test framework.
 # At this time, we are leaving the exercise of graphical plotting for a later stage, perhaps WE2E state.
 #
+# Required:
+#    WORKSPACE=</full/path/to/ufs-srweather-app>
+#    SRW_PLATFORM=<supported_platform_host>
+#    SRW_COMPILER=<intel|gnu>
+#
+# Optional:
 [[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
 [[ -n ${BRANCH} ]] || BRANCH="develop"
 [[ -n ${TASKS} ]] || TASKS=""
 [[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=4
-[[ -n ${FORGIVE_PYTHON} ]] || FORGIVE_PYTHON=false
+[[ -n ${FORGIVE_CONDA} ]] || FORGIVE_CONDA=true
 set -e -u -x
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
@@ -65,21 +71,20 @@ echo "DATA_LOCATION=${DATA_LOCATION}"
 sed "s|^task_get_extrn_ics:|task_get_extrn_ics:\n  EXTRN_MDL_SOURCE_BASEDIR_ICS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 
-[[ ${FORGIVE_PYTHON} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-# Consistency check ...
-cd ${workspace}/ush
-        ./config_utils.py -c $(pwd)/config.yaml -v $(pwd)/config_defaults.yaml
-cd ${workspace}
-
 # Activate the workflow environment ...
 source etc/lmod-setup.sh ${platform,,}
 module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
+
+[[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
 conda activate regional_workflow
 set -e -u
 
 cd ${workspace}/ush
+        # Consistency check ...
+        ./config_utils.py -c $(pwd)/config.yaml -v $(pwd)/config_defaults.yaml
+        # Generate workflow files ...
         ./generate_FV3LAM_wflow.py
 cd ${workspace}
 
