@@ -63,7 +63,7 @@ where the arguments are defined as follows:
 
   method:
   String specifying the action to take if a preexisting version of 
-  dir_or_file is found.  Valid values are \"delete\", \"rename\", and \"quit\".
+  dir_or_file is found.  Valid values are \"delete\", \"reuse\", \"rename\", and \"quit\".
 "
 
   fi
@@ -84,7 +84,7 @@ where the arguments are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  local valid_vals_method=( "delete" "rename" "quit" )
+  local valid_vals_method=( "delete" "reuse" "rename" "quit" )
   check_var_valid_value "method" "valid_vals_method"
 #
 #-----------------------------------------------------------------------
@@ -135,6 +135,15 @@ Moving (renaming) preexisting directory or file to:
   old_dir_or_file = \"${old_dir_or_file}\""
 
       mv_vrfy "${dir_or_file}" "${old_dir_or_file}"
+      ;;
+#
+#-----------------------------------------------------------------------
+#
+# If method is set to "reuse", keep preexisting directory intact.
+#
+#-----------------------------------------------------------------------
+#
+    "reuse")
       ;;
 #
 #-----------------------------------------------------------------------

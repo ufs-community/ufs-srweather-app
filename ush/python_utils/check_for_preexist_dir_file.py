@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from textwrap import dedent
 from .check_var_valid_value import check_var_valid_value
-from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy
+from .filesys_cmds_vrfy import rm_vrfy, mv_vrfy, rsync_vrfy
 from .print_msg import log_info
 
 
@@ -14,13 +14,13 @@ def check_for_preexist_dir_file(path, method):
 
     Args:
         path: path to directory
-        method: could be any of [ 'delete', 'rename', 'quit' ]
+        method: could be any of [ 'delete', 'reuse', 'rename', 'quit' ]
     Returns:
         None
     """
 
     try:
-        check_var_valid_value(method, ["delete", "rename", "quit"])
+        check_var_valid_value(method, ["delete", "reuse", "rename", "quit"])
     except ValueError:
         errmsg = dedent(
             f"""
@@ -33,7 +33,7 @@ def check_for_preexist_dir_file(path, method):
     if os.path.exists(path):
         if method == "delete":
             rm_vrfy(" -rf ", path)
-        elif method == "rename":
+        elif method == "rename" or method == "reuse":
             now = datetime.now()
             d = now.strftime("_old_%Y%m%d_%H%M%S")
             new_path = path + d
@@ -44,7 +44,10 @@ def check_for_preexist_dir_file(path, method):
                 Moving (renaming) preexisting directory or file to:
                     {new_path}"""
             )
-            mv_vrfy(path, new_path)
+            if method == "rename":
+                mv_vrfy(path, new_path)
+            else:
+                rsync_vrfy(path, new_path)
         else:
             raise FileExistsError(
                 dedent(

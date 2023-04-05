@@ -258,12 +258,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
-    log_info(
-        f"""
-        Copying the template NEMS configuration file to the experiment directory...""",
-        verbose=verbose,
-    )
-    cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
     # Copy the CCPP physics suite definition file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -335,6 +329,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         SDF_USES_RUC_LSM
     ):
         lsoil = 9
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+        lsoil = ""
     #
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the namelist variables that are physics-
