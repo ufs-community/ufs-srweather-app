@@ -525,7 +525,8 @@ platform:
   #
   # Setup default observation locations for data assimilation:
   #
-  #    OBSPATH:   observation BUFR file path
+  #    OBSPATH: observation BUFR file path
+  #    OBSPATH_PM: 
   #    OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
   #    LIGHTNING_ROOT: location of lightning observations
   #    ENKF_FCSTL: location of global ensemble forecast
@@ -549,6 +550,7 @@ platform:
   #
   # Setup default locations for FIRE_RRFS files and update time
   #  FIRE_RAVE_DIR
+  #  FIRE_RRFS_ROOT
   #  FIRE_RRFS_update_hour
   #
   #-----------------------------------------------------------------------
@@ -557,6 +559,7 @@ platform:
   NCARG_ROOT: ""
   NCL_HOME: ""
   OBSPATH: ""
+  OBSPATH_PM: ""
   OBSPATH_NSSLMOSIAC: ""
   LIGHTNING_ROOT: ""
   ENKF_FCST: ""
@@ -566,6 +569,7 @@ platform:
   IMSSNOW_ROOT: ""
   RAPHRR_SOIL_ROOT: ""
   FIRE_RAVE_DIR: ""
+  FIRE_RRFS_ROOT: ""
   AIRCRAFT_REJECT: ""
   SFCOBS_USELIST: ""
 
@@ -1076,7 +1080,7 @@ workflow:
   POSTPROC_LONG_LEN_HRS: 1
   FCST_LEN_HRS_SPINUP: 1
   FCST_LEN_HRS_CYCLES: []
-  DA_CYCLE_INTERV: 3
+  DA_CYCLE_INTERV: 1
   CYCL_HRS_HYB_FV3LAM_ENS: [ "99" ]
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
   #
@@ -1344,10 +1348,13 @@ rrfs:
   # DO_ENVAR_RADAR_REF:
   # Decide whether or not to run Radar Reflectivity hybrid analysis
   #
+  # DO_ENVAR_RADAR_REF_ONCE:
+  # Decide whether or not to run Radar Reflectivity hybrid analysis simultaneously with other observations
+  #
   # DO_RECENTER:
   # Decide whether or not to run recenter for the ensemble members
   #
-  # DO_SAVE_INPUT:
+  # DO_SAVE_DA_OUTPUT:
   # Decide whether or not to run save_input after the DA analysis  
   #
   # DO_ENS_GRAPHICS:
@@ -1367,6 +1374,12 @@ rrfs:
   # forecasts are run for each specified cycle, each with a different set of stochastic
   # seed values. 
   #
+  # DO_ENS_RADDA:
+  # It decides whether to include radiance DA in EnKF or not.  Note that when one sets 
+  # 'DO_ENS_RADDA="TRUE"', the radiance DA must be true, i.e., 'DO_RADDA="TRUE"'.  This 
+  # is because the radiance DA in EnKF relies the radiance procedures in the GSI-observer, 
+  # which is mainly controled by DO_RADDA.
+  #
   #-----------------------------------------------------------------------
   #
   DO_ENSFCST: false
@@ -1375,11 +1388,13 @@ rrfs:
   DO_ENKFUPDATE: false
   DO_ENKF_RADAR_REF: false
   DO_ENVAR_RADAR_REF: false
+  DO_ENVAR_RADAR_REF_ONCE: false
   DO_RECENTER: false
   DO_ENS_GRAPHICS: false
   DO_ENSPOST: false
   DO_ENSINIT: false
-  DO_SAVE_INPUT: false
+  DO_SAVE_DA_OUTPUT: false
+  DO_ENS_RADDA: false
   #
   #-----------------------------------------------------------------------
   #
@@ -1388,6 +1403,9 @@ rrfs:
   # DO_DACYCLE:
   # Flag that determines whether to run a data assimilation cycle.
   #
+  # DO_SDDACYCLE:
+  # Flag that determines whether to run a SMOKE and DUST data assimilation cycle.
+  # 
   # DO_SURFACE_CYCLE:
   # Flag that determines whether to continue cycle surface fields.
   #
@@ -1411,6 +1429,7 @@ rrfs:
   #-----------------------------------------------------------------------
   #
   DO_DACYCLE: false
+  DO_SDDACYCLE: false
   DO_SURFACE_CYCLE: false
   DO_SOIL_ADJUST: false
   DO_UPDATE_BC: false
@@ -1537,7 +1556,7 @@ cycledefs:
   PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
   RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
   ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
-  SAVEINPUT_CYCLEDEF: "00 01 01 01 2100 *"
+  SAVEDA_CYCLEDEF: "00 01 01 01 2100 *"
 
 #----------------------------
 # MAKE GRID config parameters
@@ -2154,8 +2173,8 @@ task_run_fcst:
   #
   DT_ATMOS: ""
   FHROT: 0
-  RESTART_INTERVAL: 0 # was 3,6 in rrfs_dev
-  RESTART_INTERVAL_LONG: 0 # was 3.6 in rrfs_dev
+  RESTART_INTERVAL: 0 # was 1,2 in rrfs_dev
+  RESTART_INTERVAL_LONG: 0 # was 1,2 in rrfs_dev
   WRITE_DOPOST: false
   #
   #-----------------------------------------------------------------------
