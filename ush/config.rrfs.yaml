@@ -108,7 +108,7 @@ global:
   PRINT_DIFF_PGR: true
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/rrfs_prep.yaml", "parm/wflow/rrfs_spinup.yaml", "parm/wflow/rrfs_prod.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/rrfs_prep.yaml", "parm/wflow/rrfs_spinup.yaml", "parm/wflow/rrfs_prod.yaml",  "parm/wflow/post.yaml"]|include }}'
   metatask_run_ensemble:
     task_run_fcst_mem#mem#:
       walltime: 02:45:00

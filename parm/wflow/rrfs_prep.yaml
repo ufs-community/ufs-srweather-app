@@ -1,0 +1,170 @@
+{% if not rrfs.DO_ENSFCST %}
+{%- if rrfs.DO_SMOKE_DUST or rrfs.DO_NONVAR_CLDANAL or rrfs.DO_REFL2TTEN or rrfs.DO_ENKF_RADAR_REF or rrfs.DO_ENVAR_RADAR_REF %}
+#################################################################
+# metatask for data preprocessing tasks
+#################################################################
+metatask_data_prep:
+{% if rrfs.DO_SPINUP %}
+  var:
+    cycletype: spinupcyc prodcyc,prodcyc_long
+    type: spinup prod
+{% else %}
+  var:
+    cycletype: prodcyc,prodcyc_long
+    type: prod
+{% endif %}
+#################################################################
+# smoke and dust
+#################################################################
+{% if rrfs.DO_SMOKE_DUST %}
+  task_process_smoke_#type#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: '#cycletype#'
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_smoke" "&JOBSdir;/JREGIONAL_PROCESS_SMOKE"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      CYCLE_TYPE: '#type#'
+      CYCLE_SUBTYPE: ''
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      NWGES_DIR: '&NWGES_BASEDIR;'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_#type#_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+{%- if user.MACHINE not in ["GAEA", "NOAACLOUD"]  %}
+    memory: 80G
+{%- endif %}
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        timedep:
+          text: '<cyclestr offset="&START_TIME_PROCSMOKE;">@Y@m@d@H@M00</cyclestr>'
+{% endif %}
+#################################################################
+# Groups of tasks
+#################################################################
+{%- if rrfs.DO_NONVAR_CLDANAL or rrfs.DO_REFL2TTEN or rrfs.DO_ENKF_RADAR_REF or rrfs.DO_ENVAR_RADAR_REF %}
+#################################################################
+# radar refelectivity
+#################################################################
+  task_process_radarref_#type#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: '#cycletype#'
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_radarref" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      CYCLE_TYPE: '#type#'
+      CYCLE_SUBTYPE: ''
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      RADAR_REF_THINNING: '{{ task_process_radarref.RADAR_REF_THINNING }}'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_#type#_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+    nnodes: 2
+    ppn: 24
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        timedep:
+          text: '<cyclestr offset="&START_TIME_NSSLMOSIAC;">@Y@m@d@H@M00</cyclestr>'
+#################################################################
+# lightning process
+#################################################################
+{% if rrfs.DO_NLDN_LGHT %}
+  task_process_lightning_#type#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: '#cycletype#'
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_lightning" "&JOBSdir;/JREGIONAL_PROCESS_LIGHTNING"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      CYCLE_TYPE: '#type#'
+      CYCLE_SUBTYPE: ''
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_#type#_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        timedep:
+          text: '<cyclestr offset="&START_TIME_LIGHTNINGNC;">@Y@m@d@H@M00</cyclestr>'
+{% endif %}
+#################################################################
+# process bufr
+#################################################################
+  task_process_bufr_#type#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: '#cycletype#'
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_bufr" "&JOBSdir;/JREGIONAL_PROCESS_BUFR"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      CYCLE_TYPE: '#type#'
+      CYCLE_SUBTYPE: ''
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_#type#_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+{%- if user.MACHINE not in ["GAEA", "NOAACLOUD"]  %}
+    memory: 20G
+{%- endif %}
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        timedep:
+          text: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+#################################################################
+# end group of tasks
+#################################################################
+{% endif %}
+#################################################################
+# end data prep metatask
+#################################################################
+{% endif %}
+{% endif %}

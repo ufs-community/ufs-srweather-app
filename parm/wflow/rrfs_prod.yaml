@@ -1,0 +1,507 @@
+#################################################################
+# metatask for prod tasks
+#################################################################
+metatask_run_ensemble_prod:
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+#################################################################
+# prod prep cyc
+#################################################################
+  task_prep_cyc_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc,prodcyc_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_prepstart" "&JOBSdir;/JREGIONAL_RUN_PREPSTART"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      FG_ROOT: '&FG_ROOT;'
+      LBCS_ROOT: '&FG_ROOT;'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:10:00
+    dependency:
+     {%- if rrfs.DO_ENSFCST %}
+     and:
+       datadep:
+         attrs:
+           age: "00:00:05:00"
+         text: '<cyclestr>&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/DA_OUTPUT/coupler.res</cyclestr>'
+       metataskdep:
+         attrs:
+           metatask: make_lbcs_mem#mem#
+     {%- else %}
+     or:
+       and:
+         or:
+           {%- for h in workflow.CYCL_HRS_PRODSTART %}
+           streq:
+             left: {{ h }}
+             right: '<cyclestr>@H</cyclestr>'
+           {%- endfor %}
+{%- if rrfs.DO_SPINUP %}
+{%- if not workflow.DO_REAL_TIME %}
+         datadep:
+           attrs:
+             age: "00:00:01:00"
+           text: '<cyclestr offset="-{{ rrfs.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+{% else %}
+         or:
+           and:
+             timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+             datadep:
+               attrs:
+                 age: "00:00:01:00"
+               text: '<cyclestr offset="-{{ rrfs.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H;&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+           and:
+             timedep: '<cyclestr offset="&START_TIME_PROD;">@Y@m@d@H@M00</cyclestr>'
+             or:
+               {%- for h in range(rrfs.DA_CYCLE_INTERV, 6+1, rrfs.DA_CYCLE_INTERV) %}
+               datadep:
+                 attrs:
+                   age: "00:00:01:00"
+                 text: '<cyclestr offset="-{{ h }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+               {%- endfor %}
+{%- endif %}
+{% else %}
+{%- if not workflow.DO_REAL_TIME %}
+         and:
+           datadep:
+             attrs:
+               age: "00:00:05:00"
+             text: '<cyclestr>&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/ics/gfs_data.tile7.halo0.nc</cyclestr>'
+           or:
+             {%- for h in range(0, rrfs.EXTRN_MDL_ICS_OFFSET_HRS+1) %}
+             datadep:
+               attrs:
+                 age: "00:00:05:00"
+               text: '<cyclestr offset="-{{ h }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/lbcs/gfs_bndy.tile7.{{ "%03d" % workflow.BOUNDARY_LEN_HRS }}.nc</cyclestr>'
+             {%- endfor %}
+{% else %}
+         and:
+            timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+            taskdep:
+              attrs:
+                task: make_ics_mem#mem#
+            or:
+              metataskdep:
+                attrs:
+                  metatask: make_lbcs_mem#mem#
+              metataskdep:
+                attrs:
+                  metatask: make_lbcs_mem#mem#
+                  cycle_offset: '-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00'
+{%- endif %}
+{%- endif %}
+         and:
+           {%- for h in cycl_hrs_prodstart %}
+           strneq:
+             left: {{ h }}
+             right: '<cyclestr>@H</cyclestr>'
+           {%- endfor %}
+{%- if not workflow.DO_REAL_TIME %}
+           datadep:
+             attrs:
+               age: "00:00:01:00"
+             text: '<cyclestr offset="-{{ rrfs.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+{% else %}
+           or:
+             and:
+               timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+               datadep:
+                 attrs:
+                   age: "00:00:01:00"
+                 text: '<cyclestr offset="-{{ rrfs.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+             and:
+               timedep: '<cyclestr offset="&START_TIME_LATE_ANALYSIS;">@Y@m@d@H@M00</cyclestr>'
+               or:
+                 {%- for h in range(rrfs.DA_CYCLE_INTERV+rrfs.DA_CYCLE_INTERV, 6+1, rrfs.DA_CYCLE_INTERV) %}
+                 datadep:
+                   attrs:
+                     age: "00:00:01:00"
+                   text: '<cyclestr offset="-{{ h }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                 {%- endfor %}
+{%- endif %}
+{%- endif %}
+#################################################################
+# prod save restart
+#################################################################
+{%- if not rrfs.DO_ENSFCST %}
+{%- if not rrfs.IS_RTMA %}
+  metatask_save_restart_prod:
+    var:
+      fhr: '{{ task_run_fcst.RESTART_INTERVAL }}'
+    task_save_restart_prod_mem#mem#_f#fhr#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: prodcyc
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "save_restart" "&JOBSdir;/JREGIONAL_SAVE_RESTART"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        subcyc: !cycstr '@M'
+        LOGDIR: !cycstr "&LOGDIR;"
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        CYCLE_TYPE: prod
+        CYCLE_SUBTYPE: ''
+        NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+        fhr: '#fhr#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_prod_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nnodes: 1
+      ppn: 1
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+      queue: '&QUEUE_FCST;'
+      walltime: 00:15:00
+      dependency:
+        and:
+          timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+          or:
+            datadep_one:
+              attrs:
+                age: "01:30"
+              text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/coupler.res</cyclestr>'
+            #datadep_two:
+            #  attrs:
+            #    age: "01:30"
+            #  text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr>'
+#################################################################
+# prod save restart long
+#################################################################
+  metatask_save_restart_prod_long:
+    var:
+      fhr: '{{ task_run_fcst.RESTART_INTERVAL_LONG }}'
+    task_save_restart_prod_long_mem#mem#_f#fhr#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: prodcyc_long
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "save_restart" "&JOBSdir;/JREGIONAL_SAVE_RESTART"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        subcyc: !cycstr '@M'
+        LOGDIR: !cycstr "&LOGDIR;"
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        CYCLE_TYPE: prod
+        CYCLE_SUBTYPE: ''
+        NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+        fhr: '#fhr#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_prod_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nnodes: 1
+      ppn: 1
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+      queue: '&QUEUE_FCST;'
+      walltime: 00:15:00
+      dependency:
+        and:
+          timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+          or:
+            datadep_one:
+              attrs:
+                age: "01:30"
+              text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/coupler.res</cyclestr>'
+            #datadep_two:
+            #  attrs:
+            #    age: "01:30"
+            #  text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_prod/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr>'
+#################################################################
+# end group
+#################################################################
+{%- endif %}
+{%- endif %}
+
+{%- if rrfs.DO_DACYCLE %}
+#################################################################
+# prod GSI analysis 
+#################################################################
+  task_anal_gsi_input_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc,prodcyc_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal_gsi" "&JOBSdir;/JREGIONAL_RUN_ANAL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      nens: '{{ global.NUM_ENS_MEMBERS }}'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      CYCLE_ROOT: '&COMIN_BASEDIR;'
+      RRFSE_FG_ROOT: '&RRFSE_FG_ROOT;'
+      SATBIAS_DIR: '&NWGES_BASEDIR;'
+      GSI_TYPE: 'ANALYSIS'
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 16
+    ppn: 24
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_ANALYSIS %}&PARTITION_ANALYSIS;{% else %}None{% endif %}'
+    queue: '&QUEUE_ANALYSIS;'
+    walltime: 00:30:00
+    dependency:
+      and:
+         timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+         taskdep:
+           attrs:
+             task: prep_cyc_prod_mem#mem#
+         {%- if rrfs.USE_RRFSE_ENS %}
+         or:
+           and_one:
+             or_one:
+             {%- for h in workflow.CYCL_HRS_HYB_FV3LAM_ENS %}
+               streq:
+                 left: {{ h }}
+                 right: '<cyclestr>@H</cyclestr>'
+             {%- endfor %}
+             or_two:
+             {%- if rrfs.DO_SPINUP %}
+               and_one:
+                 or:
+                 {%- for h in workflow.CYCL_HRS_PRODSTART_ENS %}
+                   streq:
+                     left: {{ h }}
+                     right: '<cyclestr>@H</cyclestr>'
+                 {%- endfor %}
+                 {% for h in range(1, global.NUM_ENS_MEMBERS+1) %}
+                 datadep:
+                   attrs:
+                     age: "00:00:01:00"
+                   text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&RRFSE_FG_ROOT;/@Y@m@d@H/mem{{ "%04d" % h  }}/fcst_fv3lam_prod/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                 {%- endfor %}
+               and_two:
+                 or:
+                 {%- for h in workflow.CYCL_HRS_PRODSTART_ENS %}
+                   strneq:
+                     left: {{ h }}
+                     right: '<cyclestr>@H</cyclestr>'
+                 {%- endfor %}
+                 {% for h in range(1, global.NUM_ENS_MEMBERS+1) %}
+                 datadep:
+                   attrs:
+                     age: "00:00:01:00"
+                   text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&RRFSE_FG_ROOT;/@Y@m@d@H/mem{{ "%04d" % h  }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                 {%- endfor %}
+             {%- else %}
+                and_two:
+                {% for h in range(1, num_ens_members+1) %}
+                  datadep:
+                    attrs:
+                      age: "00:00:01:00"
+                    text: '<cyclestr offset="-{{ rrfs.DA_CYCLE_INTERV }}:00:00">&RRFSE_FG_ROOT;/@Y@m@d@H/mem{{ "%04d" % h  }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                {%- endfor %}
+             {%- endif %}
+           and_two:
+           {%- for h in worfklow.CYCL_HRS_HYB_FV3LAM_ENS %}
+             strneq:
+               left: {{ h }}
+               right: '<cyclestr>@H</cyclestr>'
+           {%- endfor %}
+         {%- endif %}
+#################################################################
+# prod nonvar cldanal
+#################################################################
+{%- if rrfs.DO_NONVAR_CLDANAL %}
+  task_cldanl_nonvar_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal" "&JOBSdir;/JREGIONAL_RUN_NONVARCLDANL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        taskdep:
+          attrs:
+            task: process_bufr_prod
+        {%- if rrfs.DO_ENKFUPDATE %}
+        and:
+          {%- if rrfs.DO_ENKF_RADAR_REF %}
+          taskdep:
+            attrs:
+              task: enkf_radarref
+          {%- else %}
+          taskdep:
+            attrs:
+              task: run_enkfupdt
+          {%- endif %}
+        {%- elif rrfs.DO_ENVAR_RADAR_REF %}
+        or:
+          and_one:
+            taskdep:
+              attrs:
+                task: postanal_input_prod_mem#mem#
+            {%- for h in workflow.CYCL_HRS_FV3LAM_ENS %}
+            strneq:
+              left: {{ h }}
+              right: '<cyclestr>@H</cyclestr>'
+            {%- endfor %}
+          and_two:
+            taskdep:
+              attrs:
+                task: enkf_radarref_prod_mem#mem#
+            or:
+              {%- for h in workflow.CYCL_HRS_FV3LAM_ENS %}
+              strneq:
+                left: {{ h }}
+                right: '<cyclestr>@H</cyclestr>'
+              {%- endfor %}
+        {%- else %}
+        taskdep:
+          attrs:
+            task: postanal_input_prod_mem#mem#
+        {%- endif %}
+#################################################################
+# prod postanal 
+#################################################################
+  task_postanal_input_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc,prodcyc_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POSTANAL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      nens: '{{ global.NUM_ENS_MEMBERS }}'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      CYCLE_ROOT: '&COMIN_BASEDIR;'
+      RRFSE_FG_ROOT: '&RRFSE_FG_ROOT;'
+      SATBIAS_DIR: '&NWGES_BASEDIR;'
+      GSI_TYPE: 'ANALYSIS'
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      taskdep:
+        attrs:
+          task: anal_gsi_input_prod_mem#mem#
+#################################################################
+# prod radar refl2tten
+#################################################################
+{%- if rrfs.DO_REFL2TTEN %}
+  task_radar_refl2tten_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc,prodcyc_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal" "&JOBSdir;/JREGIONAL_RUN_REF2TTEN"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        or:
+          taskdep:
+            attrs:
+              task: process_radarref_prod
+          taskdep:
+            attrs:
+              task: process_bufr_prod
+        taskdep:
+          attrs:
+            task: anal_gsi_input_prod_mem#mem#
+{%- endif %}
+#################################################################
+# end groups
+#################################################################
+{%- endif %}
+{%- endif %}
+#################################################################
+# end prod cyc
+#################################################################

@@ -4,40 +4,129 @@
 rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
+    SERVICE_ACCOUNT: '{{ user.SERVICE_ACCOUNT }}'
+    # obs dirs
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
+    MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
+    NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
+    # comin dirs
+    COMIN_BASEDIR: '{{ nco.COMIN_BASEDIR }}'
     COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ nco.COMIN_BASEDIR }}/@Y@m@d@H{% endif %}'
-    COMINgfs: '{{ platform.get("COMINgfs") }}'
-    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
+    COMINgfs: '{{ platform.COMINgfs }}'
+    # others
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
-    JOBSdir: '{{ user.JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
     LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/@Y@m@d".format(nco.LOGBASEDIR)}}{% else %}{{nco.LOGBASEDIR }}{% endif %}'
     LOGEXT: '{% if user.RUN_ENVIR == "nco" %}{{".{}.log".format(workflow.WORKFLOW_ID)}}{% else %}{{".log"}}{% endif %}'
-    MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
-    NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
-    NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
     NET: '{{ nco.NET }}'
-    PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
-    PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
-    PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
-    QUEUE_DEFAULT: '{{ platform.get("QUEUE_DEFAULT") }}'
-    QUEUE_FCST: '{{ platform.get("QUEUE_FCST") }}'
-    QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
     RUN: '{{ nco.RUN }}'
-    SCRIPTSdir: '{{ user.SCRIPTSdir }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
-    USHdir: '{{ user.USHdir }}'
+    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst_prod.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
     COLDSTART: '{{ workflow.COLDSTART }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
+    # reservations
+    NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
+    PARTITION_DEFAULT: '{{ platform.PARTITION_DEFAULT }}'
+    PARTITION_FCST: '{{ platform.PARTITION_FCST }}'
+    PARTITION_HPSS: '{{ platform.PARTITION_HPSS }}'
+    PARTITION_POST: '{{ platform.PARTITION_POST }}'
+    PARTITION_PRDGEN: '{{ platform.PARTITION_PRDGEN }}'
+    PARTITION_ANALYSIS: '{{ platform.PARTITION_ANALYSIS }}'
+    PARTITION_GRAPHICS: '{{ platform.PARTITION_GRAPHICS }}'
+    QUEUE_DEFAULT: '{{ platform.QUEUE_DEFAULT }}'
+    QUEUE_FCST: '{{ platform.QUEUE_FCST }}'
+    QUEUE_HPSS: '{{ platform.QUEUE_HPSS }}'
+    QUEUE_POST: '{{ platform.QUEUE_POST }}'
+    QUEUE_PRDGEN: '{{ platform.QUEUE_PRDGEN }}'
+    QUEUE_ANALYSIS: '{{ platform.QUEUE_ANALYSIS }}'
+    QUEUE_GRAPHICS: '{{ platform.QUEUE_GRAPHICS }}'
+    RRFS_RESERVE: '{% if platform.RESERVATION %}--reservation={{ platform.RESERVATION }}{% else %}{% endif %}'
+    RRFS_POST_RESERVE:  '{% if platform.RESERVATION_POST %}--reservation={{ platform.RESERVATION_POST }}{% else %}{% endif %}'
+    # directories
+    USHdir: '{{ user.USHdir }}'
+    SCRIPTSdir: '{{ user.SCRIPTSdir }}'
+    JOBSdir: '{{ user.JOBSdir }}'
+    # ids
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
+    TAG: '{% if workflow.TAG %}{{ workflow.TAG }}{% else %}{% endif %}'
+    # rrfs
+    OBSPATH: '{{ platform.OBSPATH }}'
+    NWGES_BASEDIR: '{{ nco.NWGES_BASEDIR }}'
+    ENSCTRL_COMIN_BASEDIR: '{{ nco.ENSCTRL_COMIN_BASEDIR }}'
+    ENSCTRL_NWGES_BASEDIR: '{{ nco.ENSCTRL_NWGES_BASEDIR }}'
+    ENSCTRL_COMOUT_BASEDIR: '{{ nco.ENSCTRL_COMOUT_BASEDIR }}'
+    ENSCTRL_COMOUT_DIR: '{{ nco.ENSCTRL_COMOUT_BASEDIR }}/{{ nco.RUN }}.<cyclestr>@Y@m@d@H</cyclestr>'
+    RRFSE_FG_ROOT: '{{ nco.RRFSE_NWGES_BASEDIR }}'
+{%- if rrfs.IS_RTMA %}
+    FG_ROOT: '{{ nco.FG_ROOTDIR }}'
+{%- else %}
+    FG_ROOT: '{{ nco.NWGES_BASEDIR }}'
+{%- endif %}
+{%- if workflow.DO_REAL_TIME %}
+    WALL_LIMIT_PRE: '<deadline><cyclestr offset=16:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_ANAL: '<deadline><cyclestr offset=16:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_FCST: '<deadline><cyclestr offset=23:30:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_POST: '<deadline><cyclestr offset=24:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_GRAPHICS: '<deadline><cyclestr offset=24:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_RECENTER: '<deadline><cyclestr offset=24:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+    WALL_LIMIT_SAVE_RECENTER: '<deadline><cyclestr offset=24:00:00>@Y@m@d@H@M</cyclestr></deadline>'
+{%- else %}
+    WALL_LIMIT_PRE: ''
+    WALL_LIMIT_ANAL: ''
+    WALL_LIMIT_FCST: ''
+    WALL_LIMIT_POST: ''
+    WALL_LIMIT_GRAPHICS: ''
+    WALL_LIMIT_RECENTER: ''
+    WALL_LIMIT_SAVE_RECENTER: ''
+{%- endif %}
+    START_TIME_SPINUP: '{{ start_time.START_TIME_SPINUP }}'
+    START_TIME_PROD: '{{ start_time.START_TIME_PROD }}'
+    START_TIME_CONVENTIONAL_SPINUP: '{{ start_time.START_TIME_CONVENTIONAL_SPINUP }}'
+    START_TIME_LATE_ANALYSIS: '{{ start_time.START_TIME_LATE_ANALYSIS }}'
+    START_TIME_CONVENTIONAL: '{{ start_time.START_TIME_CONVENTIONAL }}'
+    START_TIME_NSSLMOSIAC: '{{ start_time.START_TIME_NSSLMOSIAC }}'
+    START_TIME_LIGHTNINGNC: '{{ start_time.START_TIME_LIGHTNINGNC }}'
+    START_TIME_PROCSMOKE: '{{ start_time.START_TIME_PROCSMOKE }}'
   attrs:
+{%- if workflow.DO_REAL_TIME %}
     cyclethrottle: "20"
+    realtime: "T"
+    cyclelifespan: "01:00:00:00"
+{%- else %}
+    cyclethrottle: "1"
     realtime: "F"
+{%- endif %}
     scheduler: '{{ platform.SCHED }}'
     taskthrottle: "1000"
   cycledefs:
+{%- if not rrfs.DO_RRFS_DEV %}
     at_start: '{{ [workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00"), " ", workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00")," ", workflow.INCR_CYCL_FREQ, ":00:00"]|join }}'
-    forecast: '{{ [workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00"), " ", workflow.DATE_LAST_CYCL.strftime("%Y%m%d%H00")," ", workflow.INCR_CYCL_FREQ, ":00:00"]|join }}'
+    forecast: &DEFCYC '{{ [workflow.DATE_FIRST_CYCL.strftime("%Y%m%d%H00"), " ", workflow.DATE_LAST_CYCL.strftime("%Y%m%d%H00")," ", workflow.INCR_CYCL_FREQ, ":00:00"]|join }}'
+    forecast: *DEFCYC
+    initial: *DEFCYC
+    boundary: *DEFCYC
+    boundary_long: *DEFCYC
+    spinupcyc: *DEFCYC
+    prodcyc: *DEFCYC
+    prodcyc_long: *DEFCYC
+    saveinputcyc: *DEFCYC
+    recentercyc: *DEFCYC
+    archivecyc: *DEFCYC
+{%- else %}
+    at_start: '{{ cycledefs.AT_START_CYCLEDEF }}'
+    forecast: '{{ cycledefs.PROD_CYCLEDEF }}'
+    initial: '{{ cycledefs.INITIAL_CYCLEDEF }}'
+    boundary: '{{ cycledefs.BOUNDARY_CYCLEDEF }}'
+    boundary_long: '{{ cycledefs.BOUNDARY_LONG_CYCLEDEF }}'
+    spinupcyc: '{{ cycledefs.SPINUP_CYCLEDEF }}'
+    prodcyc: '{{ cycledefs.PROD_CYCLEDEF }}'
+    prodcyc_long: '{{ cycledefs.PRODLONG_CYCLEDEF }}'
+{%- if rrfs.DO_SAVE_INPUT %}
+    saveinputcyc: '{{ cycledefs.SAVEINPUT_CYCLEDEF }}'
+{%- endif %}
+    recentercyc: '{{ cycledefs.RECENTER_CYCLEDEF }}'
+    archivecyc: '{{ cycledefs.ARCHIVE_CYCLEDEF }}'
+{%- endif %}
   log: !cycstr '&LOGDIR;/FV3LAM_wflow&LOGEXT;'
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

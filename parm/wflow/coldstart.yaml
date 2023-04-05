@@ -1,95 +1,386 @@
-default_task_cold: &default_task_cold
-  account: '&ACCOUNT;'
-  attrs:
-    cycledefs: forecast
-    maxtries: '1'
-  envars: &defaults_vars_cold
-    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
-    USHdir: '&USHdir;'
-    PDY: !cycstr "@Y@m@d"
-    cyc: !cycstr "@H"
-    nprocs: '{{ parent.nnodes * parent.ppn }}'
-    subcyc: !cycstr "@M"
-    LOGDIR: !cycstr "&LOGDIR;"
-    ENSMEM_INDX: '#mem#'
-  native: '{{ platform.SCHED_NATIVE_CMD }}'
-  nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  nodesize: "&NCORES_PER_NODE;"
-  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
-  queue: '&QUEUE_DEFAULT;'
-  walltime: 00:30:00
-
-task_get_extrn_ics:
-  <<: *default_task_cold
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
-  envars:
-    <<: *defaults_vars_cold
-    ICS_OR_LBCS: ICS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
-  nnodes: 1
-  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  ppn: 1
-  queue: '&QUEUE_HPSS;'
-  walltime: 00:45:00
-  dependency:
-    or:
-      and:
-        streq:
-          left: do_real_time
-          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
-        datadep_gfs:
-          attrs:
-            age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
-      streq:
-        left: retro
-        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
-
-task_get_extrn_lbcs:
-  <<: *default_task_cold
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
-  envars:
-    <<: *defaults_vars_cold
-    ICS_OR_LBCS: LBCS
-  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
-  nnodes: 1
-  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  ppn: 1
-  queue: '&QUEUE_HPSS;'
-  walltime: 00:45:00
-  dependency:
-    or:
-      and:
-        streq:
-          left: do_real_time
-          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
-        datadep_gfs:
-          attrs:
-            age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
-      streq:
-        left: retro
-        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
-
-metatask_run_ensemble:
+#################################################################
+# metatask for coldstart ics/lbcs
+#################################################################
+metatask_run_ensemble_pre:
   var:
     mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-  task_make_ics_mem#mem#:
-    <<: *default_task_cold
-    command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'
+{% if global.DO_ENSEMBLE %}
+  {%- if rrfs.DO_ENSCONTROL %}
+    subdirGE: '/gec00{% for m in range(2, global.NUM_ENS_MEMBERS+1) %}{{ " /gep%02d"%m }}{% endfor %}'
+    memNameWRF: '_mem0000{% for m in range(2, global.NUM_ENS_MEMBERS+1) %}{{ " _mem%04d"%m }}{% endfor %}'
+  {%- else %}
+    subdirGE: '{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ " /gep%02d"%m }}{% endfor %}'
+    memNameWRF: '{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ " _mem%04d"%m }}{% endfor %}'
+    memNameGDAS: '{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ " mem%03d"%m }}{% endfor %}'
+  {%- endif %}
+    subdirGDAS: '{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ " /mem%03d"%m }}{% endfor %}'
+{%- endif %}
+#################################################################
+# ICS
+#################################################################
+  task_get_extrn_ics_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: initial
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
     envars:
-      <<: *defaults_vars_cold
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      ICS_OR_LBCS: ICS
+      GEFS_INPUT_SUBDIR: '#subdirGE#'
+      WRF_MEM_NAME: '#memNameWRF#'
+      GDASENKF_INPUT_SUBDIR: '#subdirGDAS#'
+      GDAS_MEM_NAME: '#memNameGDAS#'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+{%- if user.MACHINE not in ["WCOSS2"] %}
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+{%- endif %}
+{%- if user.MACHINE not in ["GAEA", "NOAACLOUD"]  %}
+    memory: 2G
+{%- endif %}
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_HPSS %}&PARTITION_HPSS;{% else %}None{% endif %}'
+    queue: '&QUEUE_HPSS;'
+    walltime: 00:45:00
+
+{%- if workflow.DO_REAL_TIME %}
+    dependency:
+      {%- if user.MACHINE in ["WCOSS2"]  %}
+      {%- if task_get_extrn_ics.FV3GFS_FILE_FMT_ICS in ["netcdf"] %}
+      datadep:
+        attrs:
+          age: "00:00:05:00"
+        text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}.nc</cyclestr>'
+      {% else %}
+      {%- if task_get_extrn_ics.EXTRN_MDL_NAME_ICS in ["GEFS"] %}
+      datadep:
+        attrs:
+          age: "00:00:05:00"
+        text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/gefs.@Y@m@d/@H/atmos/pgrb2bp5/#subdirGE#.t@Hz.pgrb2b.0p50.f{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {% else %}
+      datadep:
+        attrs:
+          age: "00:00:05:00"
+        text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {%- endif %}
+      {%- endif %}
+      {%- elif user.MACHINE in ["ORION"]  %}
+      datadep:
+        attrs:
+          age: "00:00:05:00"
+        text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@y@j@H000{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {% else %}
+      {%- if task_get_extrn_ics.EXTRN_MDL_NAME_ICS in ["GEFS"] %}
+      datadep:
+        attrs:
+          age: "00:00:05:00"
+        text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/#subdirGE#/@y@j@H000{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {%- elif task_get_extrn_ics.EXTRN_MDL_NAME_ICS in ["GDASENKF"] %}
+      and:
+      {%- if user.MACHINE in ["HERA"] %}
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.atmf00{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}.nc</cyclestr>'
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.sfcf00{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}.nc</cyclestr>'
+      {%- elif user.MACHINE in ["JET"] %}
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@y@j@H00.gdas.t@Hz.atmf00{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}.#memNameGDAS#.nc</cyclestr>'
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@y@j@H00.gdas.t@Hz.sfcf00{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}.#memNameGDAS#.nc</cyclestr>'
+      {%- endif %}
+      and:
+      {%- elif task_get_extrn_ics.EXTRN_MDL_NAME_ICS in ["HRRRDAS"] %}
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@Y@m@d@H/postprd#memNameWRF#/wrfnat#memNameWRF#_00.grib2</cyclestr>'
+      {%- else %}
+      {%- if user.MACHINE in ["JET"] %}
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@y@j@H000{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {%- elif user.MACHINE in ["HERA"] %}
+        datadep:
+          attrs:
+            age: "00:00:05:00"
+          text: '<cyclestr offset="-{{ task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_ICS }}/@y@j@H000{{ "%03d" % task_get_extrn_ics.EXTRN_MDL_ICS_OFFSET_HRS }}</cyclestr>'
+      {%- endif %}
+      {%- endif %}
+      {%- endif %}
+{%- endif %}
+
+{%- if workflow.DO_REAL_TIME %}
+    dependency:
+      datadep:
+        attrs:
+          age: "00:00:00:05"
+        text: '<cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+{%- endif %}
+#################################################################
+# LBCS
+#################################################################
+  task_get_extrn_lbcs_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: boundary
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      ICS_OR_LBCS: LBCS
+      EXTRN_MDL_NAME: '{{ task_get_extrn_lbcs.EXTRN_MDL_NAME_LBCS }}'
+      BOUNDARY_LEN: '{{ workflow.BOUNDARY_LEN_HRS }}'
+      GEFS_INPUT_SUBDIR: '#subdirGE#'
+      GDASENKF_INPUT_SUBDIR: '#subdirGDAS#'
+      GDAS_MEM_NAME: '#memNameGDAS#'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+{%- if user.MACHINE not in ["WCOSS2"] %}
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+{%- endif %}
+{%- if user.MACHINE not in ["GAEA", "NOAACLOUD"]  %}
+    memory: 2G
+{%- endif %}
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_HPSS %}&PARTITION_HPSS;{% else %}None{% endif %}'
+    queue: '&QUEUE_HPSS;'
+    walltime: 00:45:00
+
+{%- if workflow.DO_REAL_TIME %}
+    dependency:
+       and:
+         {%- for h in range(task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS, workflow.BOUNDARY_LEN_HRS+task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS+1, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}
+         {%- if user.MACHINE in ["WCOSS2"]  %}
+         {%- if task_get_extrn_lbcs.FV3GFS_FILE_FMT_LBCS in ["netcdf"]  %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr>'
+         {%- else %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr>'
+         {%- endif %}
+         {%- elif user.MACHINE in ["ORION"]  %}
+         {%- if task_get_extrn_lbcs.FV3GFS_FILE_FMT_LBCS in ["netcdf"]  %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr>'
+         {%- else %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr>'
+         {%- endif %}
+         {%- elif user.MACHINE in ["ORION"]  %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- else %}
+         {%- if task_get_extrn_lbcs.EXTRN_MDL_NAME_LBCS in ["GEFS"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/#subdirGE#/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- elif task_get_extrn_lbcs.EXTRN_MDL_NAME_LBCS in ["GDASENKF"] %}
+         {%- if user.MACHINE in ["HERA"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr>'
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/enkfgdas.@Y@m@d/@H/atmos/#subdirGDAS#/gdas.t@Hz.sfcf{{ "%03d" % h }}.nc</cyclestr>'
+         {%- elif user.MACHINE in ["JET"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H00.gdas.t@Hz.atmf{{ "%03d" % h }}.#memNameGDAS#.nc</cyclestr>'
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H00.gdas.t@Hz.sfcf{{ "%03d" % h }}.#memNameGDAS#.nc</cyclestr>'
+         {%- endif %}
+         {%- else %}
+         {%- if user.MACHINE in ["JET"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- elif user.MACHINE in ["HERA"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS }}:00:00">{{ task_get_extrn_lbcs.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- endif %}
+         {%- endif %}
+         {%- endif %}
+         {%- endfor %}
+{%- endif %}
+
+{%- if workflow.DO_REAL_TIME %}
+    dependency:
+      datadep:
+        attrs:
+          age: "00:00:00:05"
+        text: '<cyclestr offset="-{{- cycl_freq -}}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+{%- endif %}
+#################################################################
+# LBCS long
+#################################################################
+{%- if rrfs.DO_RRFS_DEV %}
+  task_get_extrn_lbcs_long_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: boundary_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      ICS_OR_LBCS: LBCS
+      EXTRN_MDL_NAME: '{{ task_get_extrn_lbcs.EXTRN_MDL_NAME_LBCS }}'
+      BOUNDARY_LEN: '{{ workflow.BOUNDARY_LEN_HRS }}'
+      GEFS_INPUT_SUBDIR: '#subdirGE#'
+      GDASENKF_INPUT_SUBDIR: '#subdirGDAS#'
+      GDAS_MEM_NAME: '#memNameGDAS#'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+{%- if user.MACHINE not in ["WCOSS2"] %}
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+{%- endif %}
+{%- if user.MACHINE not in ["GAEA", "NOAACLOUD"]  %}
+    memory: 2G
+{%- endif %}
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_HPSS %}&PARTITION_HPSS;{% else %}None{% endif %}'
+    queue: '&QUEUE_HPSS;'
+    walltime: 00:45:00
+
+{%- if workflow.DO_REAL_TIME %}
+    dependency:
+       and:
+         {%- for h in range(task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS, workflow.BOUNDARY_LONG_LEN_HRS+task_get_extrn_lbcs.EXTRN_MDL_LBCS_OFFSET_HRS+1, task_get_extrn_lbcs.LBC_SPEC_INTVL_HRS) %}
+         {%- if user.MACHINE in ["WCOSS2"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr>{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_LBCS }}/gfs.@Y@m@d/@H/atmos/gfs.t@Hz.pgrb2.0p25.f{{ "%03d" % h }}</cyclestr>'
+         {%- elif user.MACHINE in ["ORION"]  %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_LBCS }}/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf{{ "%03d" % h }}.nc</cyclestr>'
+         {%- else %}
+         {%- if task_get_extrn_lbcs.EXTRN_MDL_NAME_LBCS in ["GEFS"] %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_LBCS }}/#subdirGE#/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- else %}
+         dependency:
+           datadep:
+             attrs:
+               age: "00:00:00:05"
+             text: '<cyclestr offset="-{{ extrn_mdl_lbcs_offset_hrs }}:00:00">{{ task_get_extrn_ics.EXTRN_MDL_SYSBASEDIR_LBCS }}/@y@j@H000{{ "%03d" % h }}</cyclestr>'
+         {%- endif %}
+         {%- endif %}
+         {%- endfor %}
+{%- endif %}
+
+{%- endif %}
+#################################################################
+# make_ics
+#################################################################
+  task_make_ics_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: initial
+      maxtries: '1'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'
+    envars: &defaults_vars_cold
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr "@Y@m@d"
+      cyc: !cycstr "@H"
+      subcyc: !cycstr "@M"
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
     dependency:
       and: &make_ics_deps
         taskdep_get_extrn:
           attrs:
-            task: get_extrn_ics
+            task: get_extrn_ics_mem#mem#
         or_grid:
           datadep_grid:
             attrs:
@@ -114,31 +405,72 @@ metatask_run_ensemble:
           streq:
             left: staged_sfc_climo
             right: '{% if not rocoto.get("tasks", {}).get("task_make_sfc_climo") %}staged_sfc_climo{% endif %}'
-
-  task_make_lbcs_mem#mem#:
-    <<: *default_task_cold
-    command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
-    envars:
-      <<: *defaults_vars_cold
-      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: 4
-    ppn: 12
-    dependency:
-      and:
-        <<: *make_ics_deps
-        taskdep_get_extrn:
-          attrs:
-            task: get_extrn_lbcs
-
-  task_run_fcst_mem#mem#:
-    <<: *default_task_cold
+#################################################################
+# make_lbcs
+#################################################################
+  metatask_make_lbcs_mem#mem#:
+    var:
+      bcgrp: '{% for h in range(0, workflow.BOUNDARY_PROC_GROUP_NUM) %}{{ " %02d" % h  }}{% endfor %}'
+    task_make_lbcs_#bcgrp#_mem#mem#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: boundary,boundary_long
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "make_lbcs" "&JOBSdir;/JREGIONAL_MAKE_LBCS"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr "@Y@m@d"
+        cyc: !cycstr "@H"
+        subcyc: !cycstr "@M"
+        LOGDIR: !cycstr "&LOGDIR;"
+        ENSMEM_INDX: '#mem#'
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
+        bcgrp: '#bcgrp#'
+        bcgrpnum: '{{ workflow.BOUNDARY_PROC_GROUP_NUM }}'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+      nnodes: 4
+      ppn: 12
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:30:00
+      dependency:
+        and:
+          <<: *make_ics_deps
+          taskdep_get_extrn:
+            attrs:
+              task: get_extrn_lbcs_mem#mem#
+#################################################################
+# run_fcst prod
+#################################################################
+  task_run_fcst_prod_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc
+      maxtries: 1
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
     envars:
-      <<: *defaults_vars_cold
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr "@Y@m@d"
+      cyc: !cycstr "@H"
+      subcyc: !cycstr "@M"
+      LOGDIR: !cycstr "&LOGDIR;"
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      RESTART_HRS: '{{ workflow.RESTART_INTERVAL }}'
       nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
     nodesize: '&NCORES_PER_NODE;'
     nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
     partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
@@ -146,6 +478,78 @@ metatask_run_ensemble:
     queue: '&QUEUE_FCST;'
     walltime: 04:30:00
     dependency:
+      {%- if rrfs.DO_ENSFCST %}
+      taskdep:
+        attrs:
+          task: prep_cyc_prod_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN and rrfs.DO_NONVAR_CLDANAL%}
+      and:
+        taskdep:
+          attrs:
+            task: radar_refl2tten_prod
+        taskdep:
+          attrs:
+            task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_NONVAR_CLDANAL%}
+      taskdep:
+        attrs:
+          task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN%}
+      taskdep:
+        attrs:
+          task: radar_refl2tten_prod
+      {%- elif rrfs.DO_DACYCLE %}
+        {%- if rrfs.DO_ENVAR_RADAR_REF %}
+      taskdep:
+        attrs:
+          task: hybrid_radarref_prod_mem#mem#
+        {%- else  %}
+      taskdep:
+        attrs:
+          task: postanal_input_prod_mem#mem#
+        {%- endif %}
+      {%- elif rrfs.DO_ENKFUPDATE or rrfs.DO_ENKF_RADAR_REF %}
+      {%- if rrfs.DO_RECENTER %}
+      or:
+        and_one:
+          or:
+          {%- for h in workflow.CYCL_HRS_RECENTER %}
+            streq:
+              left: {{ h }}
+              right: '<cyclestr>@H</cyclestr>'
+          {%- endfor %}
+          datadep:
+            attrs:
+              age: "01:30"
+            text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr>'
+        and_two:
+          {%- for h in workflow.CYCL_HRS_RECENTER %}
+          strneq:
+            left: {{ h }}
+            right: '<cyclestr>@H</cyclestr>'
+          {%- endfor %}
+          taskdep:
+            attrs:
+              task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_NONVAR_CLDANAL%}
+        taskdep:
+          attrs:
+            task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_ENKF_RADAR_REF %}
+        taskdep:
+          attrs:
+            task: enkf_radarref
+      {%- else %}
+        taskdep:
+          attrs:
+            task: enkf_updt
+      {%- endif %}
+      {%- else %}
+      {%- if rrfs.DO_RRFS_DEV %}
+      taskdep:
+        attrs:
+          task: prep_cyc_prod_mem#mem#
+      {%- else %}
       and:
         taskdep_make_ics:
           attrs:
@@ -209,4 +613,109 @@ metatask_run_ensemble:
           taskdep:
             attrs:
               task: aqm_lbcs
+      {%- endif %}
 
+      {%- endif %}
+#################################################################
+# run_fcst prod long
+#################################################################
+{%- if rrfs.DO_RRFS_DEV %}
+  task_run_fcst_prod_long_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: prodcyc_long
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr "@Y@m@d"
+      cyc: !cycstr "@H"
+      subcyc: !cycstr "@M"
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: prod
+      CYCLE_SUBTYPE: ''
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      RESTART_HRS: '{{ workflow.RESTART_INTERVAL_LONG }}'
+      nprocs:
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: '&NCORES_PER_NODE;'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
+    partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+    queue: '&QUEUE_FCST;'
+    walltime: 04:30:00
+    dependency:
+      {%- if rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN and rrfs.DO_NONVAR_CLDANAL%}
+      and:
+        taskdep:
+          attrs:
+            task: radar_refl2tten_prod
+        taskdep:
+          attrs:
+            task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_NONVAR_CLDANAL%}
+      taskdep:
+        attrs:
+          task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN %}
+      taskdep:
+        attrs:
+          task: radar_refl2tten_prod
+      {%- elif rrfs.DO_DACYCLE %}
+        {%- if rrfs.DO_ENVAR_RADAR_REF %}
+      taskdep:
+        attrs:
+          task: hybrid_radarref_prod_mem#mem#
+        {%- else  %}
+      taskdep:
+        attrs:
+          task: postanal_input_prod_mem#mem#
+        {%- endif %}
+      {%- elif rrfs.DO_ENKFUPDATE or rrfs.DO_ENKF_RADAR_REF %}
+      {%- if rrfs.DO_RECENTER %}
+      or:
+        and_one:
+          or:
+          {%- for h in workflow.CYCL_HRS_RECENTER %}
+            streq:
+              left: {{ h }}
+              right: '<cyclestr>@H</cyclestr>'
+          {%- endfor %}
+          datadep:
+            attrs:
+              age: "01:30"
+            text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H/recenter/fcst_fv3lam/INPUT/recenter_complete.txt</cyclestr>'
+        and_two:
+          {%- for h in workflow.CYCL_HRS_RECENTER %}
+          strneq:
+            left: {{ h }}
+            right: '<cyclestr>@H</cyclestr>'
+          {%- endfor %}
+          taskdep:
+            attrs:
+              task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_NONVAR_CLDANAL%}
+        taskdep:
+          attrs:
+            task: cldanl_nonvar_prod_mem#mem#
+      {%- elif rrfs.DO_ENKF_RADAR_REF %}
+        taskdep:
+          attrs:
+            task: enkf_radarref
+      {%- else %}
+        taskdep:
+          attrs:
+            task: enkf_updt
+      {%- endif %}
+      {%- else %}
+      taskdep:
+        attrs:
+          task: prep_cyc_prod_mem#mem#
+      {%- endif %}
+
+      {%- endif %}

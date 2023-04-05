@@ -1,0 +1,734 @@
+{%- if not rrfs.DO_ENSFCST %}
+{%- if rrfs.DO_SPINUP %}
+#################################################################
+# metatask for spinup tasks
+#################################################################
+metatask_run_ensemble_spinup:
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+#################################################################
+# spinup prep cyc
+#################################################################
+  task_prep_cyc_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_prepstart" "&JOBSdir;/JREGIONAL_RUN_PREPSTART"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      FG_ROOT: '&FG_ROOT;'
+      LBCS_ROOT: '&FG_ROOT;'
+      CYCLE_TYPE: spinup
+{%- if rrfs.DO_ENSINIT %}
+      CYCLE_SUBTYPE: ensinit
+{%- else %}
+      CYCLE_SUBTYPE: ''
+{%- endif %}
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:10:00
+    dependency:
+       or:
+         and_one:
+           or_spin_start:
+             {%- for h in workflow.CYCL_HRS_SPINSTART %}
+             streq:
+                left: {{ h }}
+                right: !cycstr '@H'
+             {%- endfor %}
+           taskdep_make_ics:
+             attrs:
+               task: make_ics_mem#mem#
+           or_lbcs_search_hrs:
+             {%- for h in range(0,task_get_extrn_lbcs.LBCS_SEARCH_HRS) %} 
+             metataskdep_make_lbcs:
+               attrs:
+                 metatask: make_lbcs_mem#mem# 
+                 cycle_offset: "-{{ h }}:00:00"
+             {%- endfor %}
+{%- if not workflow.DO_REAL_TIME %}
+  {%- if not global.DO_ENSEMBLE %}
+           datadep:
+             attrs:
+               age: "00:00:10:00"
+             text: '<cyclestr offset="00:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam/INPUT/gfs_ctrl.nc</cyclestr>'
+  {%- endif %}
+{%- else %}
+           timedep: '<cyclestr offset="&START_TIME_SPINUP;">@Y@m@d@H@M00</cyclestr>'
+{%- endif %}
+         and_two:
+           {%- for h in workflow.CYCL_HRS_SPINSTART %}
+           strneq:
+             left: {{ h }}
+             right: !cycstr '@H'
+           {%- endfor %}
+{%- if not workflow.DO_REAL_TIME %}
+           datadep:
+             attrs:
+               age: "00:00:01:00"
+             text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_spinup/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+{%- else %}
+           timedep>: '<cyclestr offset="&START_TIME_CONVENTIONAL_SPINUP;">@Y@m@d@H@M00</cyclestr>'
+           datadep:
+             attrs:
+               age: "00:00:01:00"
+             text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&FG_ROOT;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_spinup/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+{%- endif %}
+#################################################################
+# Groups of tasks
+#################################################################
+{% if rrfs.DO_ENSINIT -%}
+#################################################################
+# spinup forecast ensinit
+#################################################################
+  task_run_fcst_ensinit_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ensinit
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      RESTART_HRS: !cycstr '0'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_ensinit_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_FCST %}&PARTITION_FCST;{% else %}None{% endif %}'
+    queue: '&QUEUE_FCST;'
+    walltime: 04:30:00
+    dependency:
+      and:
+        or:
+          {%- for h in workflow.CYCL_HRS_SPINSTART %}
+          streq:
+            left: {{ h }}
+            right: !cycstr '@H'
+          {%- endfor %}
+        taskdep:
+          attrs:
+            task: prep_cyc_spinup_mem#mem#
+#################################################################
+# spinup ensinit save restart
+#################################################################
+  task_save_restart_ensinit_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "save_restart" "&JOBSdir;/JREGIONAL_SAVE_RESTART"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ensinit
+      NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+      fhr: 0
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_ensinit_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_FCST;'
+    walltime: 00:15:00
+    dependency:
+      and:
+        timedep>: '<cyclestr offset="&START_TIME_CONVENTIONAL_SPINUP;">@Y@m@d@H@M00</cyclestr>'
+        datadep:
+          attrs:
+            age: "01:30"
+          text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_ensinit/RESTART/coupler.res</cyclestr>'
+#################################################################
+# spinup prep cyc ensinit
+#################################################################
+  task_prep_cyc_spinup_ensinit_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_prepstart" "&JOBSdir;/JREGIONAL_RUN_PREPSTART"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      FG_ROOT: '&FG_ROOT;'
+      LBCS_ROOT: '&FG_ROOT;'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: spinup
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:10:00
+    dependency:
+      taskdep:
+        attrs:
+          task: save_restart_ensinit_mem#mem#
+#################################################################
+# spinup recenter
+#################################################################
+  task_run_recenter_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_recenter" "&JOBSdir;/JREGIONAL_RUN_RECENTER"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      nens: '{{ global.NUM_ENS_MEMBERS }}'
+      ENSCTRL_COMIN_DIR: '<cyclestr>&ENSCTRL_COMIN_BASEDIR;/@Y@m@d@H</cyclestr>'
+      ENSCTRL_COMIN_ROOT: '<cyclestr>&ENSCTRL_COMIN_BASEDIR;</cyclestr>'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ''
+      NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 2
+    ppn: 20
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_ANALYSIS %}&PARTITION_ANALYSIS;{% else %}None{% endif %}'
+    queue: '&QUEUE_ANALYSIS;'
+    walltime: 01:00:00
+    dependency:
+      and:
+        {%- for m in range(1, global.NUM_ENS_MEMBERS+1) %}
+        taskdep:
+          attrs:
+            task: prep_cyc_spinup_ensinit_mem{{ "%04d" % m }}
+        {%- endfor %}
+        datadep:
+          attrs:
+            age: "00:00:00:05"
+          text: '<cyclestr>&ENSCTRL_COMIN_BASEDIR;/@Y@m@d@H/nonvar_cldanl_spinup/nonvarcldanl_complete.txt</cyclestr>'
+#################################################################
+# end group of tasks
+#################################################################
+{%- endif %}
+
+#################################################################
+# spinup da cycle
+#################################################################
+{%- if not global.DO_ENSEMBLE %}
+{%- if rrfs.DO_DACYCLE %}
+#################################################################
+# spinup GSI analysis 
+#################################################################
+  task_anal_gsi_input_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal_gsi" "&JOBSdir;/JREGIONAL_RUN_ANAL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      nens: '{{ global.NUM_ENS_MEMBERS }}'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ''
+      CYCLE_ROOT: '&COMIN_BASEDIR;'
+      RRFSE_FG_ROOT: '&RRFSE_FG_ROOT;'
+      SATBIAS_DIR: '&NWGES_BASEDIR;'
+      GSI_TYPE: 'ANALYSIS'
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 16
+    ppn: 24
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_ANALYSIS %}&PARTITION_ANALYSIS;{% else %}None{% endif %}'
+    queue: '&QUEUE_ANALYSIS;'
+    walltime: 00:30:00
+    dependency:
+      and:
+         timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+         taskdep:
+           attrs:
+             task: prep_cyc_spinup_mem#mem#
+         {%- if rrfs.USE_RRFSE_ENS %}
+         or:
+           and_one:
+             or_one:
+             {%- for h in workflow.CYCL_HRS_HYB_FV3LAM_ENS %}
+               streq:
+                 left: {{ h }}
+                 right: '<cyclestr>@H</cyclestr>'
+             {%- endfor %}
+             or_two:
+               and_one:
+                 or:
+                 {%- for h in workflow.CYCL_HRS_PRODSTART_ENS %}
+                   streq:
+                     left: {{ h }}
+                     right: '<cyclestr>@H</cyclestr>'
+                 {%- endfor %}
+                 {% for h in range(1, global.NUM_ENS_MEMBERS+1) %}
+                 datadep:
+                   attrs:
+                     age: "00:00:01:00"
+                   text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&RRFSE_FG_ROOT;/@Y@m@d@H/mem{{ "%04d" % h  }}/fcst_fv3lam_spinup/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                 {%- endfor %}
+               and_two:
+                 or:
+                 {%- for h in workflow.CYCL_HRS_PRODSTART_ENS %}
+                   strneq:
+                     left: {{ h }}
+                     right: '<cyclestr>@H</cyclestr>'
+                 {%- endfor %}
+                 {% for h in range(1, global.NUM_ENS_MEMBERS+1) %}
+                 datadep:
+                   attrs:
+                     age: "00:00:01:00"
+                   text: '<cyclestr offset="-{{ workflow.DA_CYCLE_INTERV }}:00:00">&RRFSE_FG_ROOT;/@Y@m@d@H/mem{{ "%04d" % h  }}/fcst_fv3lam/RESTART/</cyclestr><cyclestr>@Y@m@d.@H0000.coupler.res</cyclestr>'
+                 {%- endfor %}
+           and_two:
+           {%- for h in worfklow.CYCL_HRS_HYB_FV3LAM_ENS %}
+             strneq:
+               left: {{ h }}
+               right: '<cyclestr>@H</cyclestr>'
+           {%- endfor %}
+         {%- endif %}
+#################################################################
+# spinup postanal 
+#################################################################
+  task_postanal_input_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POSTANAL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      nens: '{{ global.NUM_ENS_MEMBERS }}'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ''
+      CYCLE_ROOT: '&COMIN_BASEDIR;'
+      RRFSE_FG_ROOT: '&RRFSE_FG_ROOT;'
+      SATBIAS_DIR: '&NWGES_BASEDIR;'
+      GSI_TYPE: 'ANALYSIS'
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      taskdep:
+        attrs:
+          task: anal_gsi_input_spinup_mem#mem#
+#################################################################
+# end da cyle
+#################################################################
+{%- endif %}
+#################################################################
+# spinup radar refl2tten
+#################################################################
+{%- if rrfs.DO_REFL2TTEN %}
+  task_radar_refl2tten_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal" "&JOBSdir;/JREGIONAL_RUN_REF2TTEN"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ''
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        or:
+          taskdep:
+            attrs:
+              task: process_radarref_spinup
+          taskdep:
+            attrs:
+              task: process_bufr_spinup
+        taskdep:
+          attrs:
+            task: anal_gsi_input_spinup_mem#mem#
+{%- endif %}
+#################################################################
+# spinup nonvar cldanal
+#################################################################
+{%- if rrfs.DO_NONVAR_CLDANAL %}
+  task_cldanl_nonvar_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_anal" "&JOBSdir;/JREGIONAL_RUN_NONVARCLDANL"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: ''
+      MEM_TYPE: 'MEMBER'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }}'
+    nnodes: 1
+    ppn: 1
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+    queue: '&QUEUE_DEFAULT;'
+    walltime: 00:30:00
+    dependency:
+      and:
+        taskdep:
+          attrs:
+            task: process_bufr_spinup
+        {%- if rrfs.DO_ENKFUPDATE %}
+        and:
+          {%- if rrfs.DO_ENKF_RADAR_REF %}
+          taskdep:
+            attrs:
+              task: enkf_radarref
+          {%- else %}
+          taskdep:
+            attrs:
+              task: run_enkfupdt
+          {%- endif %}
+        {%- elif rrfs.DO_ENVAR_RADAR_REF %}
+        or:
+          and_one:
+            taskdep:
+              attrs:
+                task: postanal_input_spinup_mem#mem#
+            {%- for h in workflow.CYCL_HRS_FV3LAM_ENS %}
+            strneq:
+              left: {{ h }}
+              right: '<cyclestr>@H</cyclestr>'
+            {%- endfor %}
+          and_two:
+            taskdep:
+              attrs:
+                task: enkf_radarref_spinup_mem#mem#
+            or:
+              {%- for h in workflow.CYCL_HRS_FV3LAM_ENS %}
+              strneq:
+                left: {{ h }}
+                right: '<cyclestr>@H</cyclestr>'
+              {%- endfor %}
+        {%- else %}
+        taskdep:
+          attrs:
+            task: postanal_input_spinup_mem#mem#
+        {%- endif %}
+{%- endif %}
+#################################################################
+# end da ensemble
+#################################################################
+{%- endif %}
+#################################################################
+# spinup forecast
+#################################################################
+  task_run_fcst_spinup_mem#mem#:
+    account: '&ACCOUNT;'
+    attrs:
+      cycledefs: spinupcyc
+      maxtries: 1
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_fcst" "&JOBSdir;/JREGIONAL_RUN_FCST"'
+    envars:
+      GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+      USHdir: '&USHdir;'
+      PDY: !cycstr '@Y@m@d'
+      cyc: !cycstr '@H'
+      subcyc: !cycstr '@M'
+      LOGDIR: !cycstr "&LOGDIR;"
+      SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      ENSMEM_INDX: '#mem#'
+      CYCLE_TYPE: spinup
+      CYCLE_SUBTYPE: spinup
+      NWGES_BASEDIR: '&NWGES_BASEDIR;'
+      RESTART_HRS: !cycstr '1'
+      nprocs: '{{ parent.nnodes * parent.ppn }}'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_spinup_@Y@m@d@H&LOGEXT;'
+    native: '{{ platform.SCHED_NATIVE_CMD }} &RRFS_RESERVE;'
+    nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
+    ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'
+    nodes: '{{ nnodes }}:ppn={{ ppn }}'
+    nodesize: "&NCORES_PER_NODE;"
+    partition: '{% if platform.PARTITION_FCST %}&PARTITION_FCST;{% else %}None{% endif %}'
+    queue: '&QUEUE_FCST;'
+    walltime: 04:30:00
+    dependency:
+      {%- if rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN and rrfs.DO_NONVAR_CLDANAL%}
+      and:
+        taskdep:
+          attrs:
+            task: radar_refl2tten_spinup
+        taskdep:
+          attrs:
+            task: cldanl_nonvar_spinup_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_NONVAR_CLDANAL%}
+      taskdep:
+        attrs:
+          task: cldanl_nonvar_spinup_mem#mem#
+      {%- elif rrfs.DO_DACYCLE and rrfs.DO_REFL2TTEN%}
+      taskdep:
+        attrs:
+          task: radar_refl2tten_spinup
+      {%- elif rrfs.DO_DACYCLE %}
+        {%- if  rrfs.DO_ENVAR_RADAR_REF %}
+      taskdep:
+        attrs:
+          task: hybrid_radarref_spinup_mem#mem#
+        {%- else  %}
+      taskdep:
+        attrs:
+          task: postanal_input_spinup_mem#mem#
+        {%- endif %}
+      {%- elif rrfs.DO_ENKFUPDATE or rrfs.DO_ENKF_RADAR_REF %}
+      and:
+        or_one:
+          {%- for h in rrfs.CYCL_HRS_SPINSTART %}
+          streq:
+            left: {{ h }}
+            right: '<cyclestr>@H</cyclestr>'
+          {%- endfor %}
+        or_two:
+          {%- if rrfs.DO_ENSINIT %}
+          taskdep:
+            attrs:
+              task: run_recenter_spinup_mem#mem#
+          {%- else  %}
+          taskdep:
+            attrs:
+              task: prep_cyc_spinup_mem#mem#
+          {%- endif %}
+      {%- else %}
+      taskdep:
+        attrs:
+          task: prep_cyc_spinup_mem#mem#
+      {%- endif %}
+#################################################################
+# spinup ensinit save restart
+#################################################################
+  metatask_save_restart_spinup:
+    var:
+      fhr: '{% for h in range(rrfs.DA_CYCLE_INTERV, workflow.FCST_LEN_HRS_SPINUP+rrfs.DA_CYCLE_INTERV, rrfs.DA_CYCLE_INTERV) %}{{ " %03d" % h  }}{% endfor %}'
+    task_save_restart_spinup_mem#mem#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: spinupcyc
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "save_restart" "&JOBSdir;/JREGIONAL_SAVE_RESTART"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        subcyc: !cycstr '@M'
+        LOGDIR: !cycstr "&LOGDIR;"
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        CYCLE_TYPE: spinup
+        CYCLE_SUBTYPE: ''
+        NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+        fhr: '#fhr#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_spinup_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nnodes: 1
+      ppn: 1
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.PARTITION_DEFAULT %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+      queue: '&QUEUE_FCST;'
+      walltime: 00:15:00
+      dependency:
+        and:
+          timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+          or:
+            datadep_one:
+              attrs:
+                age: "01:30"
+              text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_spinup/RESTART/coupler.res</cyclestr>'
+            #datadep_two:
+            #  attrs:
+            #    age: "01:30"
+            #  text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_spinup/RESTART/</cyclestr><cyclestr offset="#fhr#:00:00">@Y@m@d.@H0000.coupler.res</cyclestr>'
+#################################################################
+# spinup post
+#################################################################
+  metatask_run_post_spinup:
+    var:
+      fhr: '{% for h in range(0, workflow.FCST_LEN_HRS_SPINUP+1) %}{{ " %03d" % h  }}{% endfor %}'
+    task_run_post_spinup_mem#mem#_f#fhr#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: spinupcyc
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_post" "&JOBSdir;/JREGIONAL_RUN_POST"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        subcyc: !cycstr '@M'
+        LOGDIR: !cycstr "&LOGDIR;"
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        CYCLE_TYPE: spinup
+        CYCLE_SUBTYPE: ''
+        TMMARK: 'tm00'
+        NWGES_DIR: '<cyclestr>&NWGES_BASEDIR;/@Y@m@d@H</cyclestr>'
+        fhr: '#fhr#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_spinup_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nnodes: 2
+      ppn: 24
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.PARTITION_POST %}&PARTITION_POST;{% else %}None{% endif %}'
+      queue: '&QUEUE_POST;'
+      walltime: 00:15:00
+      dependency:
+        datadep:
+          attrs:
+            age: "02:30"
+          text: '<cyclestr>&COMIN_BASEDIR;/@Y@m@d@H&SLASH_ENSMEM_SUBDIR;/fcst_fv3lam_spinup/logf#fhr#</cyclestr>'
+#################################################################
+# spinup prdgen
+#################################################################
+    task_run_prdgen_spinup_mem#mem#_f#fhr#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: spinupcyc
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_prdgen" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        subcyc: !cycstr '@M'
+        LOGDIR: !cycstr "&LOGDIR;"
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        CYCLE_TYPE: spinup
+        CYCLE_SUBTYPE: ''
+        TMMARK: 'tm00'
+        fhr: '#fhr#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_spinup_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nnodes: 1
+      ppn: 1
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      partition: '{% if platform.PARTITION_PRDGEN %}&PARTITION_PRDGEN;{% else %}None{% endif %}'
+      queue: '&QUEUE_PRDGEN;'
+      walltime: 00:15:00
+      dependency:
+        taskdep:
+          attrs:
+            task: run_post_spinup_mem#mem#
+#################################################################
+# end spinup
+#################################################################
+{%- endif %}
+{%- endif %}
