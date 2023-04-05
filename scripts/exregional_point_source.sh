@@ -54,12 +54,8 @@ This is the ex-script for the task that runs PT_SOURCE.
 eval ${PRE_TASK_CMDS}
 
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"

@@ -60,18 +60,15 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
-
-if [ -z "${RUN_CMD_UTILS:-}" ] ; then
+if [ -z "${RUN_CMD_AQMLBC:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
-  Please set RUN_CMD_UTILS for your platform"
+  Please set RUN_CMD_AQM_LBC for your platform"
 else
   print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  All executables will be submitted with command \'${RUN_CMD_AQMLBC}\'."
 fi
 
 #
@@ -94,13 +91,10 @@ cd_vrfy $DATA
 yyyymmdd="${PDY}"
 mm="${PDY:4:2}"
 
+
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 LBC_SPEC_FCST_HRS=()
 for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} ); do

@@ -25,22 +25,17 @@ workflow:
   DO_REAL_TIME: false
 nco:
   NET: aqm
-workflow_switches:
-  RUN_TASK_MAKE_GRID: true
-  RUN_TASK_MAKE_OROG: true
-  RUN_TASK_MAKE_SFC_CLIMO: true
-  RUN_TASK_RUN_POST: true
-  RUN_TASK_AQM_ICS: true
-  RUN_TASK_AQM_LBCS: true
-  RUN_TASK_NEXUS_GFS_SFC: true
-  RUN_TASK_NEXUS_EMISSION: true
-  RUN_TASK_FIRE_EMISSION: true
-  RUN_TASK_POINT_SOURCE: true
-  RUN_TASK_PRE_POST_STAT: true
-  RUN_TASK_POST_STAT_O3: false
-  RUN_TASK_POST_STAT_PM25: false
-  RUN_TASK_BIAS_CORRECTION_O3: false
-  RUN_TASK_BIAS_CORRECTION_PM25: false
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_all.yaml"]|include }}'
+    task_aqm_ics_ext:
+    task_post_stat_o3:
+    task_post_stat_pm25:
+    task_bias_correction_o3:
+    task_bias_correction_pm25:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
@@ -56,11 +51,12 @@ task_run_fcst:
   LAYOUT_Y: 34
   BLOCKSIZE: 16
   RESTART_INTERVAL: 6
-  WTIME_RUN_FCST: 02:00:00
   QUILTING: true
   PRINT_ESMF: false
+  DO_FCST_RESTART: false
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
+  USE_CUSTOM_POST_CONFIG_FILE: false
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2

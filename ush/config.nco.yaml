@@ -16,12 +16,6 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
-workflow_switches:
-  RUN_TASK_MAKE_GRID: false
-  RUN_TASK_MAKE_OROG: false
-  RUN_TASK_MAKE_SFC_CLIMO: false
-  RUN_TASK_RUN_PRDGEN: false
-  RUN_TASK_PLOT_ALLVARS: false
 nco:
   NET: rrfs
   model_ver: v1.0
@@ -34,10 +28,15 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
-  WTIME_RUN_FCST: 01:00:00
   WRITE_DOPOST: true
   QUILTING: true
 task_plot_allvars:
   COMOUT_REF: ""
 task_run_post:
   POST_OUTPUT_DOMAIN_NAME: conus_25km
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00

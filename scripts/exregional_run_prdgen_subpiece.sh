@@ -13,8 +13,6 @@
 # 2022-11-29  Ben Blake
 #
 
-set -x
-
 fhr=$1
 cyc=$2
 subpiece=$3
