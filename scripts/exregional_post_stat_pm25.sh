@@ -47,16 +47,6 @@ This is the ex-script for the task that runs POST-STAT-PM25.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_POST_STAT_PM25}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_POST_STAT_PM25}
-export OMP_STACKSIZE=${OMP_STACKSIZE_POST_STAT_PM25}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------
@@ -83,9 +73,6 @@ fi
 DATA="${DATA}/tmp_POST_STAT_PM25"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-set -x
-
 #
 #-----------------------------------------------------------------------
 #

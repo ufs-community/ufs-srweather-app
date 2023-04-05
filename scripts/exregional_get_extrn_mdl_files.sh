@@ -54,7 +54,6 @@ or lateral boundary conditions for the FV3.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   if [ ${TIME_OFFSET_HRS} -eq 0 ] ; then
     file_set="anl"
