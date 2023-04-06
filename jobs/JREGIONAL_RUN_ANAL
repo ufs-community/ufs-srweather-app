@@ -6,6 +6,23 @@
 # This J-JOB script runs the GSI analysis 
 #      for the FV3-LAM model
 #
+# Description:
+#
+#  The script decides which ensemble members to use, if any, links all 
+#  necessary gridded files, links observation files, links fix files,
+#  runs gsi.x, and cleans up the output.
+#
+# Arguments needed in the corresponding ex-script:
+#
+#  NWGES_BASEDIR
+#  FIXgsi
+#  CYCLE_TYPE
+#  DA_CYCLE_INTERV
+#  CYCL_HRS_HYB_FV3LAM_ENS
+#  NUM_ENS_MEMBERS
+#  ENKF_FCST
+#  HYBENSMEM_NMIN
+#
 #-----------------------------------------------------------------------
 
 #

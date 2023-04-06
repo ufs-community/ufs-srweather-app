@@ -230,7 +230,7 @@ if  [[ ${regional_ensemble_option:-1} -eq 1 ]]; then #using GDAS
     fi
 
     ;;
-  "JET" | "HERA" | "ORION" )
+  * )
 
     for loop in $loops; do
       for timelist in $(ls ${ENKF_FCST}/*.gdas.t*z.atmf${loop}.mem080.${ftype}); do
