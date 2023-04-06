@@ -144,7 +144,6 @@ fi
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 	
-  PDY_MOD=${yyyymmdd}
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
@@ -157,9 +156,9 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 
   AQM_MOFILE_FN="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-    AQM_MOFILE_FP="${COMINgefs}/gefs.${PDY_MOD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
   # Check if GEFS aerosol files exist
