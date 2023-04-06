@@ -857,6 +857,7 @@ workflow:
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
     - '{{ FCST_LEN_HRS }}'
+  NUM_FCST_LEN_CYCL: 1
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
   #
