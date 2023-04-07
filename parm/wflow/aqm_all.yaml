@@ -154,22 +154,9 @@ task_pre_post_stat:
   command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
-    taskdep:
+    metataskdep:
       attrs:
-        task: run_fcst_mem000
-    #or_do_post:
-    #  and_inline_post: # If inline post ran, wait on the forecast task to complete
-    #    not:
-    #      taskvalid:
-    #        attrs:
-    #          task: run_post_mem000_f000
-    #  and_run_post: # If post was meant to run, wait on the whole post metatask
-    #    taskvalid:
-    #      attrs:
-    #        task: run_post_mem000_f000
-    #    metataskdep:
-    #      attrs:
-    #        metatask: run_post_mem000
+        metatask: run_post
 
 task_post_stat_o3:
   <<: *default_aqm
@@ -187,6 +174,7 @@ task_post_stat_pm25:
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
+    taskdep:
       attrs:
         task: pre_post_stat
 
@@ -196,6 +184,7 @@ task_bias_correction_o3:
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
+    taskdep:
       attrs:
         task: pre_post_stat
 
@@ -205,6 +194,7 @@ task_bias_correction_pm25:
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 120G
   dependency:
+    taskdep:
       attrs:
         task: pre_post_stat
 
