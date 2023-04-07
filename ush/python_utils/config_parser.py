@@ -764,6 +764,9 @@ def cfg_main():
     args = parser.parse_args()
     cfg = load_config_file(args.cfg, 2, args.context)
 
+    if args.keys:
+        cfg = filter_dict(cfg, args.keys)
+
     if args.validate:
         cfg_t = load_config_file(args.validate, 1)
         r = check_structure_dict(cfg, cfg_t)
@@ -778,9 +781,6 @@ def cfg_main():
             cfg = flatten_dict(cfg)
             cfg_t = load_config_file(args.template, 1)
             cfg = structure_dict(cfg, cfg_t)
-
-        if args.keys:
-            cfg = filter_dict(cfg, args.keys)
 
         if args.flatten:
             cfg = flatten_dict(cfg)
