@@ -8,6 +8,7 @@ import datetime
 import traceback
 import logging
 from textwrap import dedent
+from datetime import timedelta
 
 import yaml
 
@@ -33,6 +34,7 @@ from python_utils import (
     get_ini_value,
     str_to_list,
     extend_yaml,
+    date_to_str,
 )
 
 from set_cycle_dates import set_cycle_dates
@@ -43,7 +45,6 @@ from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
 from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
-
 
 def load_config_for_setup(ushdir, default_config, user_config):
     """Load in the default, machine, and user configuration files into
@@ -673,20 +674,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
-    # set varying forecast lengths only when fcst_len_hrs=-1
 
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
 
         # Check that the number of entries divides into a day
-        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
-        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-
-        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-
         if 24 / incr_cycl_freq != len(fcst_len_cycl):
-
             # Also allow for the possibility that the user is running
             # cycles for less than a day:
             num_cycles = len(set_cycle_dates(
@@ -712,7 +711,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # Reset the hours to the short forecast length
         workflow_config["FCST_LEN_HRS"] = min(fcst_len_cycl)
 
-        # Rest the number of the forecast length cycles
+        # Reset the number of the forecast length cycles
         workflow_config["NUM_FCST_LEN_CYCL"] = len(fcst_len_cycl)
 
         # Find the entries that match the long forecast, and map them to
@@ -730,6 +729,24 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             fcst_cdef.append(f'{first}00 {last}00 24:00:00')
 
         rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
+
+    # add cycledefs excluding the first cycle for AQM
+    cpl_aqm = expt_config['cpl_aqm_parm']['CPL_AQM']
+    if cpl_aqm:
+        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+        if date_first_cycl == date_last_cycl:
+            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H")
+        else:
+            cycl_next = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq), format="%Y%m%d%H")            
+
+        first = date_first_cycl.strftime("%Y%m%d%H")
+        last = date_last_cycl.strftime("%Y%m%d%H")
+
+        cycled_from_second = []
+        if cycl_next != first:
+            cycled_from_second.append(f'{cycl_next}00 {last}00 {incr_cycl_freq}:00:00')
+
+        rocoto_config['cycledefs']['cycled_from_second'] = cycled_from_second
 
     # check the availability of restart intervals for restart capability of forecast
     do_fcst_restart = fcst_config.get("DO_FCST_RESTART")

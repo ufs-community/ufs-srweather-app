@@ -117,7 +117,7 @@ task_aqm_ics_ext:
 task_aqm_ics:
   <<: *default_aqm
   attrs:
-    cycledefs: cycled
+    cycledefs: cycled_from_second
     maxtries: '2'
   command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
   envars:
