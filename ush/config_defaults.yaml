@@ -555,9 +555,6 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  ARCHIVEDIR: ""
-  NCARG_ROOT: ""
-  NCL_HOME: ""
   OBSPATH: ""
   OBSPATH_PM: ""
   OBSPATH_NSSLMOSIAC: ""
@@ -573,7 +570,6 @@ platform:
   AIRCRAFT_REJECT: ""
   SFCOBS_USELIST: ""
 
-  NCL_REGION: "conus"
   SST_update_hour: 99
   GVF_update_hour: 99
   SNOWICE_update_hour: 99
@@ -1541,10 +1537,6 @@ cycledefs:
   # PRODLONG_CYCLEDEF:
   # same as PROD_CYCLEDEF, but for long forecast 
   #
-  # ARCHIVE_CYCLEDEF:
-  # cycle definition for "archive" group
-  # This group runs: run_archive
-  #
   #-----------------------------------------------------------------------
   #
   AT_START_CYCLEDEF: "00 01 01 01 2100 *"
@@ -1555,7 +1547,6 @@ cycledefs:
   PROD_CYCLEDEF: "00 01 01 01 2100 *"
   PRODLONG_CYCLEDEF: "00 01 01 01 2100 *"
   RECENTER_CYCLEDEF: "00 01 01 01 2100 *"
-  ARCHIVE_CYCLEDEF: "00 01 01 01 2100 *"
   SAVEDA_CYCLEDEF: "00 01 01 01 2100 *"
 
 #----------------------------
