@@ -668,7 +668,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   fi
 
   mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
- 
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -730,16 +730,13 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fi
     done
 
+    if [ "${CPL_AQM}" = "TRUE" ]; then	
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   done
 
 fi
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-    mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-  done
-fi
-
 #
 #-----------------------------------------------------------------------
 #
