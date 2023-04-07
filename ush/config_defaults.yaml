@@ -1058,10 +1058,6 @@ workflow:
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
-    - 6
-    - 12
-    - 12
-    - 6
     - '{{ FCST_LEN_HRS }}'
   CYCL_HRS: []
   CYCL_HRS_SPINSTART: []
