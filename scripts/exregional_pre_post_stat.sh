@@ -69,7 +69,7 @@ if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 
-  post_complete_file=${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt
+  post_complete_file="${COMIN}/post_${PDY}${cyc}_task_complete.txt"
   if [ -f ${post_complete_file} ] ; then
     rm_vrfy -f ${post_complete_file}
   fi

@@ -36,7 +36,7 @@ task_nexus_gfs_sfc:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -122,7 +122,7 @@ task_aqm_ics:
   command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
   envars:
     <<: *default_vars
-    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMIN_DIR;</cyclestr>'
+    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMIN_DIR;</cyclestr>'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     and:
@@ -133,11 +133,11 @@ task_aqm_ics:
         datadep_date_tag_tracer:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
         datadep_tracer:
           attrs:
             age: 00:00:00:05
-          text: <cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc
+          text: <cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}:00:00">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc
 
 task_aqm_lbcs:
   <<: *default_aqm
@@ -154,9 +154,10 @@ task_pre_post_stat:
   command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
-    metataskdep:
+    datadep:
       attrs:
-        metatask: run_post
+        age: 00:00:00:05
+      text: !cycstr '&COMIN_DIR;/post_@Y@m@d@H_task_complete.txt'
 
 task_post_stat_o3:
   <<: *default_aqm

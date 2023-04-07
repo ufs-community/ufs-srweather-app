@@ -5,7 +5,7 @@ rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ nco.COMIN_BASEDIR }}/@Y@m@d@H{% endif %}'
+    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
@@ -31,7 +31,7 @@ rocoto:
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
   attrs:
-    cyclethrottle: "20"
+    cyclethrottle: "200"
     realtime: "F"
     scheduler: '{{ platform.SCHED }}'
     taskthrottle: "1000"
