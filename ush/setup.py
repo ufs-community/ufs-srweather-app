@@ -1129,8 +1129,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
-        # Set the rocoto string for the fcst output location
+        # Set the rocoto string for the fcst output location and comin directory
         rocoto_config["entities"]["FCST_DIR"] = "{{ nco.COMOUT_BASEDIR }}/@Y@m@d@H"
+        rocoto_config["entities"]["COMIN_DIR"] = "{{ nco.COMIN_BASEDIR }}/@Y@m@d@H"
 
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
