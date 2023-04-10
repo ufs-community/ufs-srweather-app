@@ -68,7 +68,6 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     # If an archive exists on disk, remove it
     if os.path.exists(local_archive):
         os.remove(local_archive)
-
     return unavailable
 
 
@@ -587,12 +586,14 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
             # additional files are reported as unavailable, then
             # something has gone wrong.
             unavailable = set.union(*unavailable.values())
-
+        
         # Report only the files that are truly unavailable
+        # Break loop if unexpected file was found and if files are found
+        # A successful file found returns 'set()' which != expected file path variable
         if not expected == unavailable:
             return unavailable - expected
-
-    return {}
+    
+    return unavailable
 
 
 def load_str(arg):
