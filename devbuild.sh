@@ -239,8 +239,8 @@ if [ -z "${COMPILER}" ] ; then
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
-    macos,singularity) COMPILER=gnu ;;
-    odin,noaacloud) COMPILER=intel ;;
+    macos|singularity) COMPILER=gnu ;;
+    odin|noaacloud) COMPILER=intel ;;
     *)
       COMPILER=intel
       printf "WARNING: Setting default COMPILER=intel for new platform ${PLATFORM}\n" >&2;
