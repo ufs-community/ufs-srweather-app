@@ -484,8 +484,10 @@ if __name__ == "__main__":
     if args.modulefile is None:
         args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
     if args.procs < 1:
-        raise ValueError('You can not have less than one parallel process; select a valid value '\
+        raise argparse.ArgumentTypeError('You can not have less than one parallel process; select a valid value '\
                          'for --procs')
+    if not args.tests:
+        raise argparse.ArgumentTypeError('The --tests argument can not be empty')
 
     # Print test details (if requested)
     if args.print_test_info:
