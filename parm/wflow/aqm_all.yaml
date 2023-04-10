@@ -154,10 +154,14 @@ task_pre_post_stat:
   command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
-    datadep:
-      attrs:
-        age: 00:00:00:05
-      text: !cycstr '&COMIN_DIR;/post_@Y@m@d@H_task_complete.txt'
+    or:
+      datadep:
+        attrs:
+          age: 00:00:00:05
+        text: !cycstr '&COMIN_DIR;/post_@Y@m@d@H_task_complete.txt'
+      metataskdep:
+        attrs:
+          metatask: run_ens_post
 
 task_post_stat_o3:
   <<: *default_aqm
