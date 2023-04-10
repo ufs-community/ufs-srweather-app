@@ -70,7 +70,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_AQMLBC}\'."
 fi
-set -x
 #
 #-----------------------------------------------------------------------
 #

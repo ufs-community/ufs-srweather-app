@@ -62,7 +62,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_POST}
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_POST:-}" ] ; then
