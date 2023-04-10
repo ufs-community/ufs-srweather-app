@@ -7,7 +7,7 @@ rocoto:
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
     COMIN_DIR: '{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
-    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
+    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
     JOBSdir: '{{ user.JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
