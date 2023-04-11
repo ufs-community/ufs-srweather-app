@@ -305,9 +305,11 @@ RAP_obs:
     archive_format: zip
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/prepbufr
     archive_internal_dir:
       - ""
     archive_file_names:
+      - "{yyyymmddhh}00.zip"
       - "{yyyymmddhh}00.zip"
     file_names:
       obs:

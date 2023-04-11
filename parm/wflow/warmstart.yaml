@@ -215,5 +215,5 @@ task_get_da_obs:
   nnodes: 1
   ppn: 1
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSDIR;/JREGIONAL_GET_DA_OBS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSdir;/JREGIONAL_GET_DA_OBS"'
   join: !cycstr '&LOGDIR;/{{ jobname }}.log'
