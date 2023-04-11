@@ -1,0 +1,14 @@
+metadata:
+  description: |-
+    Tests the data retrieval and data preprocessing tasks that are
+    precursors to running any data assimialtion components. Datasets
+    include bufr, lightning, and radar reflectivity.
+
+workflow:
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2019061500'
+  DATE_LAST_CYCL: '2019061500'
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/da_data_preproc.yaml"]|include }}'
