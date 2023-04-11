@@ -52,17 +52,6 @@ This is the ex-script for the task that runs NEXUS.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the NEXUS working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_NEXUS_POST_SPLIT"
-mkdir_vrfy -p "$DATA"
-
-cd_vrfy $DATA
 
 mm="${PDY:4:2}"
 dd="${PDY:6:2}"
@@ -88,12 +77,12 @@ end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hou
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
+cp ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
 
-cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  cp ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
   python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
 fi
@@ -125,7 +114,7 @@ python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py ${DATA}/NEXUS_Expt_pretty.nc $
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+mv ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
 #
 # Print message indicating successful completion of script.
 #

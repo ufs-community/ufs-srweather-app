@@ -49,17 +49,6 @@ data files.
 #
 #-----------------------------------------------------------------------
 #
-# Move to the FIRE EMISSION working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_FIRE_EMISSION"
-rm_vrfy -rf $DATA
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set up variables for call to retrieve_data.py
 #
 #-----------------------------------------------------------------------
@@ -85,20 +74,20 @@ aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUF
 
 # Check if the fire file exists in the designated directory
 if [ -e "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" ]; then
-  cp_vrfy "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+  cp "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Copy raw data 
   for ihr in {0..21}; do
     download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_mh3} ${hh_mh3} UTC - $ihr hours" "+%Y%m%d%H" )
     FILE_13km="Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
     if [ -e "${AQM_FIRE_DIR}/RAVE_raw_new/${FILE_13km}" ]; then
-      ln_vrfy -sf "${AQM_FIRE_DIR}/RAVE_raw_new/Hourly_Emissions_13km_${download_time}00_${download_time}00.nc" .
+      ln -sf "${AQM_FIRE_DIR}/RAVE_raw_new/Hourly_Emissions_13km_${download_time}00_${download_time}00.nc" .
     elif [ -d "${AQM_FIRE_DIR}/${CDATE_md1}" ]; then
       echo "${FILE_13km} does not exist. Replacing with the file of previous date ..."
       yyyymmdd_dn=${download_time:0:8}
       hh_dn=${download_time:8:2}
       missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
-      ln_vrfy -sf "${AQM_FIRE_DIR}/${CDATE_md1}/Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc" "Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
+      ln -sf "${AQM_FIRE_DIR}/${CDATE_md1}/Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc" "Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
     else
       print_err_msg_exit "RAVE raw data files do not exist."
     fi
@@ -107,11 +96,11 @@ else
   ncks -O -h --mk_rec_dmn time Hourly_Emissions_13km_${download_time}00_${download_time}00.nc temp.nc || print_err_msg_exit "\
 Call to NCKS returned with nonzero exit code." 
 
-  mv_vrfy temp.nc Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
+  mv temp.nc Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
 
   # Extra times
-  cp_vrfy Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh2}00_${CDATE_mh2}00.nc
-  cp_vrfy Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh1}00_${CDATE_mh1}00.nc
+  cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh2}00_${CDATE_mh2}00.nc
+  cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh1}00_${CDATE_mh1}00.nc
 
   ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc || print_err_msg_exit "\
 Call to NCRCAT returned with nonzero exit code."
@@ -128,12 +117,12 @@ Call to NCKS returned with nonzero exit code."
 Call to NCRCAT returned with nonzero exit code."
 
   # Copy the final fire emission file to STAGING_DIR 
-  cp_vrfy "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+  cp "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 
   # Archive the final fire emission file to disk and HPSS
   if [ "${DO_AQM_SAVE_FIRE}" = "TRUE" ]; then
     mkdir -p "${AQM_FIRE_DIR}/${yyyymmdd}"
-    cp_vrfy "${DATA}/${aqm_fire_file_fn}" "${AQM_FIRE_DIR}/${yyyymmdd}"
+    cp "${DATA}/${aqm_fire_file_fn}" "${AQM_FIRE_DIR}/${yyyymmdd}"
 
     hsi_log_fn="log.hsi_put.${yyyymmdd}_${hh}"
     hsi put ${aqm_fire_file_fn} : ${AQM_FIRE_ARCHV_DIR}/${aqm_fire_file_fn} >& ${hsi_log_fn} || \

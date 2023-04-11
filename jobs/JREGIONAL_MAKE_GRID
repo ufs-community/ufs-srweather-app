@@ -153,7 +153,7 @@ This is the J-job script for the task that generates grid files.
 #-----------------------------------------------------------------------
 #
 check_for_preexist_dir_file "${GRID_DIR}" "${PREEXISTING_DIR_METHOD}"
-mkdir_vrfy -p "${GRID_DIR}"
+mkdir -p "${GRID_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -162,7 +162,7 @@ mkdir_vrfy -p "${GRID_DIR}"
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${GRID_DIR}/tmp}"
-mkdir_vrfy -p "$DATA"
+mkdir -p "$DATA"
 #
 #-----------------------------------------------------------------------
 #

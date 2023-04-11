@@ -72,17 +72,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Move to working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_AQM_LBCS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -116,7 +105,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   chem_lbcs_fp=${AQM_LBCS_DIR}/${chem_lbcs_fn}
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
-    cp_vrfy ${chem_lbcs_fp} .
+    cp ${chem_lbcs_fp} .
   else
     print_err_msg_exit "\
 The chemical LBC files do not exist:

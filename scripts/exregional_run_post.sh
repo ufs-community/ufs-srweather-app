@@ -81,8 +81,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-rm_vrfy -f fort.*
-cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+rm -f fort.*
+cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -106,18 +106,18 @@ temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
-cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+cp ${post_config_fp} ./postxconfig-NT.txt
+cp ${PARMdir}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
+  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
+  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
+  cp ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
+  cp ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
+  cp ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
@@ -169,7 +169,7 @@ fi
 if [ "${RUN_ENVIR}" = "nco" ]; then
     DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
 else
-    DATAFCST=$DATA
+    DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
 dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
 phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
@@ -264,7 +264,7 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
-cd_vrfy "${COMOUT}"
+cd "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -276,7 +276,7 @@ for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+  mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   if [ $RUN_ENVIR != "nco" ]; then
     create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
@@ -290,11 +290,11 @@ done
 
 # Move phy and dyn files to COMIN only for AQM
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-  mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+  mv ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+  mv ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
 fi
 
-rm_vrfy -rf ${DATA_FHR}
+rm -rf ${DATA_FHR}
 
 # Delete the forecast directory
 if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then

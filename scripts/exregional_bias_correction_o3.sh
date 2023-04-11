@@ -73,18 +73,6 @@ else
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
 
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_BIAS_CORRECTION_O3"
-rm_vrfy -rf "$DATA"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}
 yyyy_m1=${PDYm1:0:4}
@@ -119,13 +107,13 @@ fi
 #-----------------------------------------------------------------------------
 
 # Link the historical airnow data
-mkdir_vrfy -p "${DATA}/data"
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
+mkdir -p "${DATA}/data"
+ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
 if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm_vrfy -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir_vrfy -p "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}" 
+  rm -rf "${DATA}/data/bcdata.${yyyymm}"
+  mkdir -p "${DATA}/data/bcdata.${yyyymm}"
+  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
+  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}" 
 fi
 
 # Retrieve real-time airnow data for the last three days
@@ -134,9 +122,9 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
   mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 
-  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp ${COMINairnow}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp ${COMINairnow}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp ${COMINairnow}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 fi
 
 #-----------------------------------------------------------------------------
@@ -161,71 +149,71 @@ fi
 # remove any pre-exit ${NET}.${cycle}.chem_sfc/met_sfc.nc for 2-stage post processing
 DATA_grid="${DATA}/data/bcdata.${yyyymm}/grid"
 if [ -d "${DATA_grid}/${cyc}z/${PDY}" ]; then
-  rm_vrfy -rf "${DATA_grid}/${cyc}z/${PDY}"
+  rm -rf "${DATA_grid}/${cyc}z/${PDY}"
 fi
 
-mkdir_vrfy -p "${DATA_grid}/${cyc}z/${PDY}"
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+mkdir -p "${DATA_grid}/${cyc}z/${PDY}"
+ln -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+ln -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
 
 #-----------------------------------------------------------------------------
 # STEP 3:  Intepolating CMAQ O3 into AIRNow sites
 #-----------------------------------------------------------------------------
 
-mkdir_vrfy -p ${DATA}/data/coords 
-mkdir_vrfy -p ${DATA}/data/site-lists.interp 
-mkdir_vrfy -p ${DATA}/out/ozone/${yyyy}
-mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
+mkdir -p ${DATA}/data/coords 
+mkdir -p ${DATA}/data/site-lists.interp 
+mkdir -p ${DATA}/out/ozone/${yyyy}
+mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
-cp_vrfy ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
-cp_vrfy ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-cp_vrfy ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
+cp ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
+cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
 POST_STEP
 
-cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
-  cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+  cp ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-  cp_vrfy ${COMINairnow}/${PDY}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  cp ${COMINairnow}/${PDY}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
+  cp ${COMINairnow}/${PDYm1}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
+  cp ${COMINairnow}/${PDYm2}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
+  cp ${COMINairnow}/${PDYm3}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 
-  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
-  cp_vrfy ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+  mkdir -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+  cp ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
 fi
 
 #-----------------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for Ozone
 #-----------------------------------------------------------------------------
 
-mkdir_vrfy -p ${DATA}/data/sites
-cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
+mkdir -p ${DATA}/data/sites
+cp ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
 POST_STEP
 
-cp_vrfy ${DATA}/out/ozone.corrected* ${COMIN}
+cp ${DATA}/out/ozone.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
+  cp ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #-----------------------------------------------------------------------------
 # STEP 5:  converting netcdf to grib format
 #-----------------------------------------------------------------------------
 
-ln_vrfy -sf ${COMIN}/ozone.corrected.${PDY}.${cyc}z.nc .
+ln -sf ${COMIN}/ozone.corrected.${PDY}.${cyc}z.nc .
 
 #
 cat >bias_cor.ini <<EOF1
@@ -243,14 +231,14 @@ eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRE
 Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
 POST_STEP
 
-cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
+cp ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 
 #-----------------------------------------------------------------------------
 # STEP 6: calculating 24-hr ave PM2.5
 #-----------------------------------------------------------------------------
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  ln_vrfy -sf ${COMOUT}/ozone.corrected.${PDY}.${cyc}z.nc a.nc 
+  ln -sf ${COMOUT}/ozone.corrected.${PDY}.${cyc}z.nc a.nc 
 
   chk=1 
   chk1=1 
@@ -268,9 +256,9 @@ EOF1
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc b.nc
+      ln -sf ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc b.nc
     elif [ -s ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
+      ln -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -280,9 +268,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
     if [ -s ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc b.nc
+      ln -sf ${COMIN_PDY}/00/ozone.corrected.${PDY}.00z.nc b.nc
     elif [ -s ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
+      ln -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -290,9 +278,9 @@ EOF1
 
     # 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN_PDY}/06/ozone.corrected.${PDY}.06z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/06/ozone.corrected.${PDY}.06z.nc c.nc
+      ln -sf ${COMIN_PDY}/06/ozone.corrected.${PDY}.06z.nc c.nc
     elif [ -s ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc c.nc
+      ln -sf ${COMIN_PDYm1}/12/ozone.corrected.${PDYm1}.12z.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -317,7 +305,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_8hr_o3_bc.227.grib2
     wgrib2 ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_1hr_o3_bc.227.grib2
 
-    cp_vrfy ${DATA}/${NET}.${cycle}.max_*hr_o3_bc.*.grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.max_*hr_o3_bc.*.grib2 ${COMOUT}
    
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3_bc.227.grib2
@@ -344,7 +332,7 @@ EOF1
     done
    
     # Post Files to COMOUT
-    cp_vrfy awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUT}
 
     # Distribute Data
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
@@ -355,13 +343,13 @@ EOF1
 fi
 
 #-------------------------------------
-rm_vrfy -rf tmpfile
+rm -rf tmpfile
 
 fhr=01
 while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
   fhr2d=$( printf "%02d" "${fhr}" )
   
-  cp_vrfy ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
+  cp ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
 
   # create GRIB file to convert to grid 227 then to GRIB2 for NDFD
   cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile
@@ -385,13 +373,13 @@ newgrib2file2=${NET}.${cycle}.ave_8hr_o3_bc.227.grib2
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 
 wgrib2 tmpfile.1hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file1} 
-cp_vrfy tmpfile.1hr ${COMOUT}/${NET}.${cycle}.ave_1hr_o3_bc.${id_domain}.grib2
-cp_vrfy ${NET}.${cycle}.ave_1hr_o3_bc.227.grib2 ${COMOUT}
+cp tmpfile.1hr ${COMOUT}/${NET}.${cycle}.ave_1hr_o3_bc.${id_domain}.grib2
+cp ${NET}.${cycle}.ave_1hr_o3_bc.227.grib2 ${COMOUT}
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   wgrib2 tmpfile.8hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file2} 
-  cp_vrfy tmpfile.8hr ${COMOUT}/${NET}.${cycle}.ave_8hr_o3_bc.${id_domain}.grib2
-  cp_vrfy ${NET}.${cycle}.ave_8hr_o3_bc.227.grib2 ${COMOUT}
+  cp tmpfile.8hr ${COMOUT}/${NET}.${cycle}.ave_8hr_o3_bc.${id_domain}.grib2
+  cp ${NET}.${cycle}.ave_8hr_o3_bc.227.grib2 ${COMOUT}
 fi
 
 if [ "${SENDDBN}" = "YES" ] ; then
@@ -442,8 +430,8 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
     # Post Files to COMOUT
-    cp_vrfy awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUT}
-    cp_vrfy awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUT}
 
     # Distribute Data
     if [ "${SENDDBN}" = "YES" ]; then

@@ -482,4 +482,11 @@ else
     fi
 fi
 
+# Remove temporary directories
+cd ${SRW_DIR}
+rm -rf build
+rm -rf include
+rm -rf lib
+rm -rf share
+
 exit 0

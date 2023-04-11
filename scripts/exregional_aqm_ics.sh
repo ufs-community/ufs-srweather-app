@@ -81,16 +81,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Move to work directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_AQM_ICS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Add air quality tracer variables from previous cycle's restart output
 # to atmosphere's initial condition file according to the steps below:
 #
@@ -110,15 +100,15 @@ print_info_msg "
     tracer file: \"${fv_tracer_file}\"
     FV3 IC file: \"${gfs_ic_file}\""
 
-cp_vrfy ${gfs_ic_file} ${wrk_ic_file}
+cp ${gfs_ic_file} ${wrk_ic_file}
 python3 ${HOMEdir}/sorc/AQM-utils/python_utils/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 
 ncatted -a checksum,,d,s, tmp1.nc  || print_err_msg_exit "\
 Call to NCATTED returned with nonzero exit code."
 
-mv_vrfy tmp1.nc ${gfs_ic_file}
+mv tmp1.nc ${gfs_ic_file}
 
-rm_vrfy gfs.nc
+rm gfs.nc
 
 unset fv_tracer_file
 unset wrk_ic_file

@@ -96,16 +96,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-#
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_ICS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set physics-suite-dependent variable mapping table needed in the FORTRAN
 # namelist file that the chgres_cube executable will read in.
 #
@@ -613,15 +603,15 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile${TILE_RGNL}.nc \
+mv out.atm.tile${TILE_RGNL}.nc \
         ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
 
-mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
+mv out.sfc.tile${TILE_RGNL}.nc \
         ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
 
-mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
 
-mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 #
 #-----------------------------------------------------------------------
 #
@@ -642,7 +632,7 @@ native grid does not exist:
   fvcom_exec_fp = \"${fvcom_exec_fp}\"
 Please ensure that you've built this executable."
   fi
-  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
+  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     print_err_msg_exit "\
@@ -653,8 +643,8 @@ Please check the following user defined variables:
   FVCOM_FILE= \"${FVCOM_FILE}\" "
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd_vrfy ${INPUT_DATA}
+  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd ${INPUT_DATA}
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
        ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \

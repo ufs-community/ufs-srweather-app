@@ -148,7 +148,7 @@ not exist or is not a file:
 #
 #-----------------------------------------------------------------------
 #
-  ln_vrfy -sf ${relative_flag} "$target" "$symlink"
+  ln -sf ${relative_flag} "$target" "$symlink"
 #
 #-----------------------------------------------------------------------
 #

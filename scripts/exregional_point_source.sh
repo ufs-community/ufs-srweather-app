@@ -67,16 +67,6 @@ yyyymmddhh="${PDY}${cyc}"
 #
 #-----------------------------------------------------------------------
 #
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PT_SOURCE"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set the base directory for point source files
 #
 #-----------------------------------------------------------------------
@@ -94,7 +84,7 @@ if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
 fi
 
 # Move to COMIN
-mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
+mv ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
 
 #
 #-----------------------------------------------------------------------

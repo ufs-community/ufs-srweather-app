@@ -62,7 +62,16 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+else
+  if [ -d "${DATA}" ]; then
+    cd ..
+    rm -rf "${DATA}"
+  fi
+  export DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}"
+  cd ${DATA}
+fi
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
@@ -91,19 +100,27 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" != "nco" ]; then
-  export COMOUT="${DATA}/postprd"
+  export COMOUT="${COMOUT}/postprd"
 fi
-mkdir_vrfy -p "${COMOUT}"
+mkdir -p "${COMOUT}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
+  else
+    export DATA_FHR="${COMOUT}/$fhr$fmn"
+  fi
 else
-  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    export DATA_FHR="${DATA:-$COMOUT}/$fhr"
+  else
+    export DATA_FHR="${COMOUT}/$fhr"
+  fi
 fi
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
-mkdir_vrfy -p "${DATA_FHR}"
+mkdir -p "${DATA_FHR}"
 
-cd_vrfy "${DATA_FHR}"
+cd "${DATA_FHR}"
 #
 #-----------------------------------------------------------------------
 #

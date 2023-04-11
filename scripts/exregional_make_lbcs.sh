@@ -98,10 +98,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_LBCS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
     if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
@@ -530,7 +526,7 @@ located in the following directory:
 # that of the external model since their start times may be offset).
 #
   fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
 done
 #

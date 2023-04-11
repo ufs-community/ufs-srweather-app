@@ -39,7 +39,11 @@ fi
 export DATA=
 if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
-    mkdir_vrfy -p $DATA
+    mkdir -p $DATA
+    cd $DATA
+else
+    export DATA="${COMIN_BASEDIR}/${PDY}${cyc}/tmp_${job}"
+    mkdir -p $DATA
     cd $DATA
 fi
 #
@@ -137,10 +141,10 @@ export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
     __EXPTLOG=${EXPTDIR}/log
-    mkdir_vrfy -p ${__EXPTLOG}
+    mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
         __LOGB=$(basename $i .${WORKFLOW_ID}.log)
-        ln_vrfy -sf $i ${__EXPTLOG}/${__LOGB}.log
+        ln -sf $i ${__EXPTLOG}/${__LOGB}.log
     done
 fi
 #

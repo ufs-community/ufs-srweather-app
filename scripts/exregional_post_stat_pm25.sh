@@ -72,17 +72,6 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
-
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_POST_STAT_PM25"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -99,7 +88,7 @@ fi
 # aqm_pm25_post
 #---------------------------------------------------------------
 
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc .
+ln -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc .
 
 cat >aqm_post.ini <<EOF1
 &control
@@ -128,7 +117,7 @@ for grid in 227 196 198; do
   wgrib2 ${NET}.${cycle}.1hpm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25.${grid}.grib2
 done
 
-cp_vrfy ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
+cp ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
   
 # Create AWIPS GRIB2 data for Bias-Corrected PM2.5
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
@@ -150,7 +139,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
     # Post Files to COMOUT
-    cp_vrfy awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUT}
 
     # Distribute Data
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
@@ -165,7 +154,7 @@ fi
 #---------------------------------------------------------------
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 
-  ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc a.nc
+  ln -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc a.nc
 
   export chk=1
   export chk1=1
@@ -184,9 +173,9 @@ EOF1
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -sf  ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
+      ln -sf  ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      ln -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -196,9 +185,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
     if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
+      ln -sf ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
+      ln -sf ${COMIN_PDYm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -206,9 +195,9 @@ EOF1
 
     # 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
+      ln -sf ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
     elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+      ln -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -234,7 +223,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25-max.${grid}.grib2
 
     # Add WMO header for daily 1h PM2.5 and 24hr_ave PM2.5
-    rm_vrfy -f filesize
+    rm -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.1hpm25-max.${grid}.grib2
@@ -251,7 +240,7 @@ EOF1
     export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
-    rm_vrfy -f filesize
+    rm -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2
@@ -268,10 +257,10 @@ EOF1
     export FORT51=awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
     
-    cp_vrfy ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
-    cp_vrfy ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
-    cp_vrfy awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUT}
-    cp_vrfy awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUT}
 
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2

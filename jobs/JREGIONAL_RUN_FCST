@@ -64,20 +64,19 @@ the specified cycle.
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${COMIN}"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+  export INPUT_DATA="${COMIN}"
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  if [ -d "${DATA}" ]; then
+    cd ..
+    rm_vrfy -rf ${DATA}
+  fi
+  export DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}"
+  cd ${DATA}
+  export INPUT_DATA="${DATA}/INPUT"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Create the INPUT and RESTART directories under the run directory.
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p ${DATA}/INPUT
-mkdir_vrfy -p ${DATA}/RESTART
+mkdir -p ${DATA}/INPUT
+mkdir -p ${DATA}/RESTART
 #
 #-----------------------------------------------------------------------
 #

@@ -52,17 +52,6 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PRE_POST_STAT"
-rm_vrfy -r $DATA
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
   for i_cdate in "${!ALL_CDATES[@]}"; do
@@ -72,7 +61,7 @@ if [ "${FCST_LEN_HRS}" = "-1" ]; then
     fi
   done
   if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
-    rm_vrfy -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
+    rm -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
   fi
 fi
 
@@ -80,9 +69,9 @@ ist=1
 while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   hst=$( printf "%03d" "${ist}" )
 
-  rm_vrfy -f ${DATA}/tmp*nc
-  rm_vrfy -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
-  rm_vrfy -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
+  rm -f ${DATA}/tmp*nc
+  rm -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
+  rm -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
 
   ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${COMIN}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
 
@@ -92,7 +81,7 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 
   ncrename -v o3_ave,o3 -v no_ave,no -v no2_ave,no2 -v pm25_ave,PM25_TOT ${DATA}/tmp2c.nc
 
-  mv_vrfy ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
+  mv ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
 
   ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
 
@@ -126,10 +115,10 @@ ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
 #
 #-----------------------------------------------------------------------
 #

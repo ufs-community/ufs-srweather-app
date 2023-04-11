@@ -48,12 +48,6 @@ data files from disk or HPSS.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_GFS_SFC"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set up variables for call to retrieve_data.py
 #
 #-----------------------------------------------------------------------
@@ -91,12 +85,12 @@ GFS_SFC_DATA_INTVL="3"
 # copy files from local directory
 if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
-  cp_vrfy "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+  cp "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
 
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
     gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
     if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
-      cp_vrfy "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+      cp "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
     else
     print_err_msg_exit "\
 sfc file does not exist in the directory:
@@ -157,7 +151,7 @@ else
     POST_STEP
   fi
   # Move retrieved files to staging directory
-  mv_vrfy ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}
+  mv ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}
 
 fi  
 #
