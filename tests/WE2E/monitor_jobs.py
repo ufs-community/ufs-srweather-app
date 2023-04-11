@@ -24,6 +24,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
                             one or more experiments. See example file monitor_jobs.yaml
         monitor_file (str): [optional]
         debug       (bool): [optional] Enable extra output for debugging
+
     Returns:
         str: The name of the file used for job monitoring (when script is finished, this 
              contains results/summary)

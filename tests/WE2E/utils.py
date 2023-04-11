@@ -31,9 +31,10 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
     """Function that creates a summary for the specified experiment
 
     Args:
-        expts_dict  (dict): A dictionary containing the information needed to run
-                            one or more experiments. See example file WE2E_tests.yaml
-        debug       (bool): [optional] Enable extra output for debugging
+        expts_dict (dict): A dictionary containing the information needed to run
+                           one or more experiments. See example file WE2E_tests.yaml
+        debug      (bool): [optional] Enable extra output for debugging
+
     Returns:
         None
     """
@@ -93,7 +94,8 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         print(line)
 
     # Print summary and details to file
-    summary_file = f'WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt'
+    summary_file = os.path.join(expts_dict[expt]["expt_dir"],
+                                f'WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt')
     print(f"\nDetailed summary written to {summary_file}\n")
 
     with open(summary_file, 'w', encoding="utf-8") as f:
@@ -109,9 +111,10 @@ def create_expts_dict(expt_dir: str) -> dict:
     experiments, and creates a skeleton dictionary that can be filled out by update_expt_status()
 
     Args:
-        expt_dir   (str) : Experiment directory
+        expt_dir (str): Experiment directory
+
     Returns:
-        dict : Experiment dictionary
+        dict: Experiment dictionary
     """
     contents = sorted(os.listdir(expt_dir))
 
@@ -142,10 +145,11 @@ def calculate_core_hours(expts_dict: dict) -> dict:
     and calculates the core hours used by each task, updating expts_dict with this info
 
     Args:
-        expts_dict  (dict): A dictionary containing the information needed to run
-                            one or more experiments. See example file WE2E_tests.yaml
+        expts_dict (dict): A dictionary containing the information needed to run
+                           one or more experiments. See example file WE2E_tests.yaml
+
     Returns:
-        dict : Experiments dictionary updated with core hours
+        dict: Experiments dictionary updated with core hours
     """
 
     for expt in expts_dict:
@@ -239,18 +243,19 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
              to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
 
     Args:
-        expt    (dict):    A dictionary containing the information for an individual experiment, as
-                           described in the main monitor_jobs() function.
-        name     (str):    Name of the experiment; used for logging only
-        refresh (bool):    If true, this flag will check an experiment status even if it is listed
-                           as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
-                           that may have been restarted.
-        debug   (bool):    Will capture all output from rocotorun. This will allow information such
-                           as job cards and job submit messages to appear in the log files, but can
-                           slow down the process drastically.
-        submit  (bool):    In addition to reading the rocoto database, script will advance the
-                           workflow by calling rocotorun. If simply generating a report, set this
-                           to False
+        expt    (dict): A dictionary containing the information for an individual experiment, as
+                        described in the main monitor_jobs() function.
+        name     (str): Name of the experiment; used for logging only
+        refresh (bool): If true, this flag will check an experiment status even if it is listed
+                        as DEAD, ERROR, or COMPLETE. Used for initial checks for experiments
+                        that may have been restarted.
+        debug   (bool): Will capture all output from rocotorun. This will allow information such
+                        as job cards and job submit messages to appear in the log files, but can
+                        slow down the process drastically.
+        submit  (bool): In addition to reading the rocoto database, script will advance the
+                        workflow by calling rocotorun. If simply generating a report, set this
+                        to False
+
     Returns:
         dict: The updated experiment dictionary.
     """

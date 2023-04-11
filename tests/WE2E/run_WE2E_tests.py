@@ -25,8 +25,9 @@ def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
 
     Args:
-        homedir  (str): The full path of the top-level app directory
-        args : The argparse.Namespace object containing command-line arguments
+        homedir (str): The full path of the top-level app directory
+        args    (obj): The argparse.Namespace object containing command-line arguments
+
     Returns:
         None
     """
@@ -240,9 +241,10 @@ def check_tests(tests: list) -> list:
     Function for checking that all tests in a provided list of tests are valid
 
     Args:
-        tests        : List of potentially valid test names
+        tests (list): List of potentially valid test names
+
     Returns:
-        tests_to_run : List of config files corresponding to test names
+        list: List of config files corresponding to test names
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -290,8 +292,9 @@ def check_test(test: str) -> str:
 
     Args:
         test (str) : String of potential test name
+
     Returns:
-        str        : File name of test config file (empty string if no test file found)
+        str: File name of test config file (empty string if no test file found)
     """
     # potential test files
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -311,13 +314,13 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
     task_get_extrn_lbcs section of test config yaml
 
     Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-        ics_or_lbcs: Perform checks for ICs task or LBCs task
+        cfg         (dict): Dictionary loaded from test config file
+        mach        (dict): Dictionary loaded from machine settings file
+        dflt        (dict): Dictionary loaded from default config file
+        ics_or_lbcs (bool): Perform checks for ICs task or LBCs task
 
     Returns:
-        cfg_bcs : Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
+        dict: Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
     """
 
     if ics_or_lbcs not in ["lbcs", "ics"]:
