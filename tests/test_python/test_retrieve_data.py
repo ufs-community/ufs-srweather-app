@@ -29,7 +29,13 @@ class FunctionalTesting(unittest.TestCase):
 
     def setUp(self):
         self.path = os.path.dirname(__file__)
-        self.config = f"{self.path}/../parm/data_locations.yml"
+        self.config = os.path.join(
+            self.path,
+            "..",
+            "..",
+            "parm",
+            "data_locations.yml"
+            )
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_fv3gfs_grib2_lbcs_from_hpss(self):
