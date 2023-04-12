@@ -2,16 +2,17 @@
 
 #pylint: disable=invalid-name
 import os
+import tempfile
 import unittest
 
-from python_utils import mkdir_vrfy, define_macos_utilities
+from python_utils import define_macos_utilities
 
 from link_fix import link_fix
 
 class Testing(unittest.TestCase):
     """ Define the tests. """
-    def test_link_fix(self):
 
+    def test_link_fix(self):
         """ Test that link_fix returns the expected value for the given
         input configuration """
         res = link_fix(
@@ -31,10 +32,20 @@ class Testing(unittest.TestCase):
     def setUp(self):
         define_macos_utilities()
         test_dir = os.path.dirname(os.path.abspath(__file__))
-        test_data_dir = os.path.join(os.path.dirname(test_dir), "test_data")
-        self.FIXlam = os.path.join(test_data_dir, "expt", "fix_lam")
+        ushdir = os.path.join(test_dir, "..", "..", "ush")
+        test_data_dir = os.path.join(ushdir, "test_data")
+
+        # This is the known data location
         self.task_dir = os.path.join(test_data_dir, "RRFS_CONUS_3km")
-        mkdir_vrfy("-p", self.FIXlam)
+
+        # Create a space to link that data into. It need not be in the
+        # same space.
+        self.tmp_dir = tempfile.TemporaryDirectory(
+            dir=os.path.abspath("."),
+            prefix="expt_fix_lam",
+            )
+        self.FIXlam = self.tmp_dir.name
+
 
         self.cfg = {
             "DOT_OR_USCORE": "_",
@@ -47,3 +58,5 @@ class Testing(unittest.TestCase):
                 "TILE_RGNL": 7,
             },
         }
+    def tearDown(self):
+        self.tmp_dir.cleanup()

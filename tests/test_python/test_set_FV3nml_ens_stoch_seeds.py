@@ -4,6 +4,7 @@
 
 from datetime import datetime
 import os
+import tempfile
 import unittest
 
 from python_utils import (
@@ -31,24 +32,26 @@ class Testing(unittest.TestCase):
         test_dir = os.path.dirname(os.path.abspath(__file__))
         USHdir = os.path.join(test_dir, "..", "..", "ush")
         PARMdir = os.path.join(USHdir, "..", "parm")
-        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
-        mkdir_vrfy("-p", EXPTDIR)
+
+        # Create an temporary experiment directory
+        self.tmp_dir = tempfile.TemporaryDirectory(
+            dir=os.path.abspath("."),
+            prefix="expt",
+            )
+        EXPTDIR = self.tmp_dir.name
+
         cp_vrfy(
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
         )
-        for i in range(2):
-            mkdir_vrfy(
-                "-p",
-                os.path.join(
-                    EXPTDIR,
-                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem{i+1}",
-                ),
-            )
 
-        cd_vrfy(
-            f"{EXPTDIR}{os.sep}{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem2"
-        )
+        # Put this in the tmp_dir structure so it gets cleaned up
+        mem_dir = os.path.join(
+                    EXPTDIR,
+                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}",
+                    f"mem2",
+                )
+        mkdir_vrfy("-p", mem_dir)
         set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
@@ -60,3 +63,6 @@ class Testing(unittest.TestCase):
         set_env_var("DO_LSM_SPP", True)
         ISEED_SPP = [4, 5, 6, 7, 8]
         set_env_var("ISEED_SPP", ISEED_SPP)
+
+    def tearDown(self):
+        self.tmp_dir.cleanup()

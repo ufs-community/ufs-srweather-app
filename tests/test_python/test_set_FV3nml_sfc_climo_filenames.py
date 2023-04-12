@@ -3,9 +3,15 @@
 #pylint: disable=invalid-name
 
 import os
+import tempfile
 import unittest
 
-from python_utils import set_env_var, mkdir_vrfy, cp_vrfy, define_macos_utilities
+from python_utils import (
+    cp_vrfy,
+    define_macos_utilities,
+    mkdir_vrfy,
+    set_env_var,
+    )
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 
 class Testing(unittest.TestCase):
@@ -21,10 +27,17 @@ class Testing(unittest.TestCase):
         test_dir = os.path.dirname(os.path.abspath(__file__))
         USHdir = os.path.join(test_dir, "..", "..", "ush")
         PARMdir = os.path.join(USHdir, "..", "parm")
-        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
+
+        # Create a temporary experiment directory structure
+        here = os.getcwd()
+        self.tmp_dir = tempfile.TemporaryDirectory(
+            dir=os.path.abspath(here),
+            prefix="expt",
+            )
+        EXPTDIR = self.tmp_dir.name
         FIXlam = os.path.join(EXPTDIR, "fix_lam")
+
         mkdir_vrfy("-p", FIXlam)
-        mkdir_vrfy("-p", EXPTDIR)
         cp_vrfy(
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml"),
@@ -36,3 +49,6 @@ class Testing(unittest.TestCase):
         set_env_var("CRES", "C3357")
         set_env_var("RUN_ENVIR", "nco")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
+
+    def tearDown(self):
+        self.tmp_dir.cleanup()
