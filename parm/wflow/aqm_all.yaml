@@ -12,7 +12,6 @@ default_aqm_task: &default_aqm
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-  memory: 2G
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
@@ -27,6 +26,7 @@ task_nexus_gfs_sfc:
   command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_gfs_sfc" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
   dependency:
     or:
       and:
@@ -72,6 +72,7 @@ task_fire_emission:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "fire_emission" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 2G
 
 task_point_source:
   <<: *default_aqm
@@ -146,7 +147,7 @@ task_aqm_lbcs:
   dependency:
     taskdep:
       attrs:
-        task: make_lbcs
+        task: make_lbcs_mem000
 
 task_pre_post_stat:
   <<: *default_aqm

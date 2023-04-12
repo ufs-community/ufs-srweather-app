@@ -861,7 +861,8 @@ workflow:
   # This pattern is recurred for all cycle dates.
   # Must have the same number of entries as cycles per day, or if less
   # than one day the entries must include the length of each cycle to be
-  # run.
+  # run. By default, set it to a 1-item list containing the standard
+  # fcst length.
   #
   #-----------------------------------------------------------------------
   #
@@ -870,11 +871,8 @@ workflow:
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
   FCST_LEN_CYCL:
-    - 6
-    - 12
-    - 12
-    - 6
-  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|min }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
+    - '{{ FCST_LEN_HRS }}'
+  LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
   #
   #-----------------------------------------------------------------------
@@ -1620,8 +1618,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
-  OMP_STACKSIZE_RUN_FCST: "1024m"
+  OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in nems.configure
+  OMP_STACKSIZE_RUN_FCST: "512m"
   #
   #-----------------------------------------------------------------------
   #
@@ -1632,6 +1630,9 @@ task_run_fcst:
   # forecast model documentation, "It corresponds to the frequency with 
   # which the top level routine in the dynamics is called as well as the 
   # frequency with which the physics is called."
+  #
+  # FHROT:
+  # Forecast hour at restart
   #
   # RESTART_INTERVAL:
   # frequency of the output restart files (unit:hour). 
@@ -1650,9 +1651,9 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
+  FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
-
   #
   #-----------------------------------------------------------------------
   #
@@ -1826,6 +1827,15 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   USE_MERRA_CLIMO: '{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'
+  #
+  #-----------------------------------------------------------------------
+  #
+  # DO_FCST_RESTART:
+  # Flag turning on/off restart capability of forecast task
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_FCST_RESTART: false
 
 #----------------------------
 # POST config parameters
@@ -1903,16 +1913,6 @@ task_run_post:
   TESTBED_FIELDS_FN: ""
 
 #----------------------------
-# NEXUS_EMISSION config parameters
-#-----------------------------
-task_nexus_emission:
-  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
-  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
-  OMP_NUM_THREADS_NEXUS_EMISSION: 2
-  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
-
-
-#----------------------------
 # RUN PRDGEN config parameters
 #-----------------------------
 task_run_prdgen:
@@ -1977,6 +1977,32 @@ task_plot_allvars:
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
 
+#----------------------------
+# NEXUS_EMISSION config parameters
+#-----------------------------
+task_nexus_emission:
+  PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  KMP_AFFINITY_NEXUS_EMISSION: "scatter"
+  OMP_NUM_THREADS_NEXUS_EMISSION: 2
+  OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+#----------------------------
+# BIAS_CORRECTION_O3 config parameters
+#-----------------------------
+task_bias_correction_o3:
+  KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
+  OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
+
+#----------------------------
+# BIAS_CORRECTION_PM25 config parameters
+#-----------------------------
+task_bias_correction_pm25:
+  KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
+  OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
+  OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
+
+#----------------------------
 # global config parameters
 #-----------------------------
 global:
@@ -2303,7 +2329,7 @@ cpl_aqm_parm:
   # Path to archive directory for gfs surface files on HPSS
   #
   # PT_SRC_BASEDIR:
-  # Parent directory containing point source files for CONUS/AK/HI
+  # Parent directory containing point source files
   #
   # AQM_AIRNOW_HIST_DIR:
   # Path to the directory where the historical AIRNOW data are located
@@ -2357,7 +2383,7 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
-  PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
+  PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
 
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
