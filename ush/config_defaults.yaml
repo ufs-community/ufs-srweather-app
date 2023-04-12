@@ -1948,6 +1948,19 @@ task_plot_allvars:
   PLOT_DOMAINS: ["conus"]
 
 #----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufr:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # observation file templates used in process_bufr
+  #
+  #-----------------------------------------------------------------------
+  #
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
+
+#-----------------------------
 # NEXUS_EMISSION config parameters
 #-----------------------------
 task_nexus_emission:

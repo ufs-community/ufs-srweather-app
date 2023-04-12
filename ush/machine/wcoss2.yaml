@@ -33,6 +33,8 @@ platform:
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
   COMINairnow: /lfs/h1/ops/prod/dcom
+task_process_bufr:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
