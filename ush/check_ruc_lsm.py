@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
 
 from python_utils import (
     set_env_var,
@@ -26,16 +25,3 @@ def check_ruc_lsm(ccpp_phys_suite_fp):
     tree = load_xml_file(ccpp_phys_suite_fp)
     has_ruc = has_tag_with_value(tree, "scheme", "lsm_ruc")
     return has_ruc
-
-
-class Testing(unittest.TestCase):
-    def test_check_ruc_lsm(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        self.assertTrue(
-            check_ruc_lsm(
-                ccpp_phys_suite_fp=f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml"
-            )
-        )
-
-    def setUp(self):
-        set_env_var("DEBUG", True)
