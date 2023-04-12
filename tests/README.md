@@ -21,9 +21,9 @@ The CMake build is done in the ``build_${compiler}`` directory.
 The executables for each build are installed under the ``bin_${compiler}`` directory.
 
 NOTE:  To run the regional workflow using these executables, the ``EXECDIR`` variable in the
-``${HOMEdir}/ush/setup.py`` file must be set to the
-appropiate directory, for example:  ``EXECDIR="${HOMEdir}/bin_intel/bin"``,
-where ``${HOMEdir}`` is the top-level directory of the cloned ufs-srweather-app repository.
+``${HOMEaqm}/ush/setup.py`` file must be set to the
+appropiate directory, for example:  ``EXECDIR="${HOMEaqm}/bin_intel/bin"``,
+where ``${HOMEaqm}`` is the top-level directory of the cloned ufs-srweather-app repository.
 
 ## Usage
 
@@ -36,4 +36,4 @@ cd tests
 ./build.sh cheyenne >& build.out &
 ```
 
-Check the ``${HOMEdir}/tests/build_test$PID.out`` file for PASS/FAIL.
+Check the ``${HOMEaqm}/tests/build_test$PID.out`` file for PASS/FAIL.

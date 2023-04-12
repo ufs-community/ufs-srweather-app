@@ -156,12 +156,12 @@ The full list of options for any of these scripts can be found by using the ``-h
 
       ./run_WE2E_tests.py --tests=my_tests.txt --machine=hera --account=rtrr
 
-   This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ufs-srweather-app repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the following two experiment directories will be created:
+   This will create the experiment subdirectories for the two sample WE2E tests in the directory ``${HOMEaqm}/../expt_dirs``, where ``HOMEaqm`` is the top-level directory for the ufs-srweather-app repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the following two experiment directories will be created:
 
    .. code-block::
 
-      ${HOMEdir}/../expt_dirs/custom_ESGgrid
-      ${HOMEdir}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEaqm}/../expt_dirs/custom_ESGgrid
+      ${HOMEaqm}/../expt_dirs/grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
 
    Once these experiment directories are created, the script will call the ``monitor_jobs()`` function. This function runs ``rocotorun`` in the background to monitor the status of jobs in each experiment directory, tracking the status of jobs as they run and complete, and submitting new jobs when they are ready. The progress of ``monitor_jobs()`` is tracked in a file ``WE2E_tests_{datetime}.yaml``, where {datetime} is the date and time (in ``yyyymmddhhmmss`` format) that the file was created.
 
@@ -175,15 +175,15 @@ The full list of options for any of these scripts can be found by using the ``-h
 
    .. code-block::
 
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v15p2
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
-      ${HOMEdir}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
-      ${HOMEdir}/../expt_dirs/test_set_01/nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v15p2
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+      ${HOMEaqm}/../expt_dirs/test_set_01/grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
+      ${HOMEaqm}/../expt_dirs/test_set_01/nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
 
    The ``--expt_basedir`` option is useful for grouping various sets of tests. It can also be given a full path as an argument, which will place experiments in the given location. 
 

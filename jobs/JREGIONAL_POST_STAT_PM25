@@ -62,7 +62,7 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 
-export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
+export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 #
 #-----------------------------------------------------------------------
 #

@@ -149,13 +149,13 @@ def load_config_for_setup(ushdir, default_config, user_config):
     update_dict(cfg_u, cfg_d)
 
     # Set "Home" directory, the top-level ufs-srweather-app directory
-    homedir = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
-    cfg_d["user"]["HOMEdir"] = homedir
+    homeaqm = os.path.abspath(os.path.dirname(__file__) + os.sep + os.pardir)
+    cfg_d["user"]["HOMEaqm"] = homeaqm
 
     # Special logic if EXPT_BASEDIR is a relative path; see config_defaults.yaml for explanation
     expt_basedir = cfg_d["workflow"]["EXPT_BASEDIR"]
     if (not expt_basedir) or (expt_basedir[0] != "/"):
-        expt_basedir = os.path.join(homedir, "..", "expt_dirs", expt_basedir)
+        expt_basedir = os.path.join(homeaqm, "..", "expt_dirs", expt_basedir)
     try:
         expt_basedir = os.path.realpath(expt_basedir)
     except:
@@ -230,11 +230,11 @@ def set_srw_paths(ushdir, expt_config):
        dictionary of config settings and system paths as keys/values
     """
 
-    # HOMEdir is the location of the SRW clone, one directory above ush/
-    homedir = expt_config.get("user", {}).get("HOMEdir")
+    # HOMEaqm is the location of the SRW clone, one directory above ush/
+    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
 
     # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(homeaqm, "Externals.cfg")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
@@ -256,7 +256,7 @@ def set_srw_paths(ushdir, expt_config):
         raise Exception(errmsg) from None
 
     # Check that the model code has been downloaded
-    ufs_wthr_mdl_dir = os.path.join(homedir, ufs_wthr_mdl_dir)
+    ufs_wthr_mdl_dir = os.path.join(homeaqm, ufs_wthr_mdl_dir)
     if not os.path.exists(ufs_wthr_mdl_dir):
         raise FileNotFoundError(
             dedent(

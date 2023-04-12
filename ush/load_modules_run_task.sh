@@ -101,14 +101,14 @@ set -u
 machine=$(echo_lowercase $MACHINE)
 
 # source version file (build) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
+VERSION_FILE="${HOMEaqm}/versions/${BUILD_VER_FN}"
 if [ -f ${VERSION_FILE} ]; then
   . ${VERSION_FILE}
 fi
 
-source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  module use "${HOMEdir}/modulefiles/extrn_comp_build"
+  module use "${HOMEaqm}/modulefiles/extrn_comp_build"
   if [ "${task_name}" = "make_grid" ] || [ "${task_name}" = "make_orog" ] || \
      [ "${task_name}" = "make_sfc_climo" ] || [ "${task_name}" = "make_ics" ] || \
      [ "${task_name}" = "make_lbcs" ]; then
@@ -127,7 +127,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     module load mod_nexus
   fi
 else
-  module use "${HOMEdir}/modulefiles"
+  module use "${HOMEaqm}/modulefiles"
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
@@ -152,17 +152,17 @@ fi
 #
 # The full path to a module file for a given task is
 #
-#   $HOMEdir/modulefiles/$machine/${task_name}.local
+#   $HOMEaqm/modulefiles/$machine/${task_name}.local
 #
-# where HOMEdir is the base directory of the workflow, machine is the
+# where HOMEaqm is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMEdir/modulefiles/tasks/$machine"
+modules_dir="$HOMEaqm/modulefiles/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$HOMEdir/modulefiles"
+default_modules_dir="$HOMEaqm/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -178,7 +178,7 @@ module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
 # source version file (run) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
 if [ -f ${VERSION_FILE} ]; then
   . ${VERSION_FILE}
 fi

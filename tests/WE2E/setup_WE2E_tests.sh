@@ -50,7 +50,7 @@ machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 2 ]] && usage
 
-homedir=$1
+homeaqm=$1
 machine=${2,,}
 account=$3
 compiler=${4:-intel}
@@ -77,7 +77,7 @@ fi
 # Run E2E Tests
 #-----------------------------------------------------------------------
 # Export HOME environment variable; needed for rocoto
-export HOME=$homedir
+export HOME=$homeaqm
 
 # Load Python Modules
 source ../../ush/load_modules_wflow.sh ${machine}

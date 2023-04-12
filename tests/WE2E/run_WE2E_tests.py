@@ -21,11 +21,11 @@ from check_python_version import check_python_version
 from monitor_jobs import monitor_jobs, write_monitor_file
 from utils import print_test_info
 
-def run_we2e_tests(homedir, args) -> None:
+def run_we2e_tests(homeaqm, args) -> None:
     """Function to run the WE2E tests selected by the user
 
     Args:
-        homedir  (str): The full path of the top-level app directory
+        homeaqm  (str): The full path of the top-level app directory
         args : The argparse.Namespace object containing command-line arguments
     Returns:
         None
@@ -35,7 +35,7 @@ def run_we2e_tests(homedir, args) -> None:
     setup_logging(debug=args.debug)
 
     # Set some important directories
-    ushdir=os.path.join(homedir,'ush')
+    ushdir=os.path.join(homeaqm,'ush')
 
     # Set some variables based on input arguments
     run_envir = args.run_envir
@@ -459,7 +459,7 @@ if __name__ == "__main__":
     check_python_version()
 
     #Get the "Home" directory, two levels above this one
-    homedir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    homeaqm=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     logfile='log.run_WE2E_tests'
 
     #Parse arguments
@@ -532,7 +532,7 @@ if __name__ == "__main__":
     #Call main function
 
     try:
-        run_we2e_tests(homedir,args)
+        run_we2e_tests(homeaqm,args)
     except:
         logging.exception(
             dedent(

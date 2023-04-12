@@ -55,15 +55,15 @@ user:
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
 
-  HOMEdir: '{{ user.HOMEdir }}'
+  HOMEaqm: '{{ user.HOMEaqm }}'
   USHdir: '{{ user.USHdir }}'
-  SCRIPTSdir: '{{ [HOMEdir, "scripts"]|path_join }}'
-  JOBSdir: '{{ [HOMEdir, "jobs"]|path_join }}'
-  SORCdir: '{{ [HOMEdir, "sorc"]|path_join }}'
-  PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
-  MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
-  EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
+  SCRIPTSdir: '{{ [HOMEaqm, "scripts"]|path_join }}'
+  JOBSdir: '{{ [HOMEaqm, "jobs"]|path_join }}'
+  SORCdir: '{{ [HOMEaqm, "sorc"]|path_join }}'
+  PARMdir: '{{ [HOMEaqm, "parm"]|path_join }}'
+  MODULESdir: '{{ [HOMEaqm, "modulefiles"]|path_join }}'
+  EXECdir: '{{ [HOMEaqm, workflow.EXEC_SUBDIR]|path_join }}'
+  VX_CONFIG_DIR: '{{ [HOMEaqm, "parm"]|path_join }}'
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
@@ -406,19 +406,11 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  # COMINgfs:
-  # Path to the real-time GFS data
-  #
-  # COMINgefs:
-  # Path to the real-time GEFS data
-  #
   # COMINairnow:
   # Path to the real-time AIRNOW observation data
   #
   #-----------------------------------------------------------------------
   #
-  COMINgfs: ""
-  COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
 
 #-----------------------------
@@ -472,8 +464,8 @@ workflow:
   # EXPT_BASEDIR:
   # The base directory in which the experiment directory will be created.  
   # If this is not specified or if it is set to an empty string, it will
-  # default to ${HOMEdir}/../expt_dirs. If set to a relative path, the
-  # path will be appended to the default value ${HOMEdir}/../expt_dirs 
+  # default to ${HOMEaqm}/../expt_dirs. If set to a relative path, the
+  # path will be appended to the default value ${HOMEaqm}/../expt_dirs 
   #
   # EXPT_SUBDIR:
   # The name that the experiment directory (without the full path) will
@@ -680,7 +672,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR if workflow_switches.RUN_TASK_MAKE_GRID else [user.HOMEaqm, "fix"]|path_join }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -785,7 +777,7 @@ workflow:
   # commonly used set of grid-dependent parameters.  The predefined grid 
   # parameters are specified in the script 
   #
-  #   $HOMEdir/ush/set_predef_grid_params.py
+  #   $HOMEaqm/ush/set_predef_grid_params.py
   #
   #-----------------------------------------------------------------------
   #
@@ -954,10 +946,10 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir: "para"
-  NET: "rrfs"
-  RUN: "rrfs"
-  model_ver: "v1.0.0"
+  envir: "prod"
+  NET: "aqm"
+  RUN: "aqm"
+  model_ver: "v7.0.0"
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'

@@ -66,6 +66,9 @@ yyyymmdd=${PDY}
 hh=${cyc}
 export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
 
+if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+  export COMINgfs=${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}
+fi
 #
 #-----------------------------------------------------------------------
 #

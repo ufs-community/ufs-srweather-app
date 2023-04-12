@@ -79,6 +79,10 @@ mkdir -p "${INPUT_DATA}"
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir -p "${DATA}"
+
+if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+  export COMINgefs=${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}
+fi
 #
 #-----------------------------------------------------------------------
 #

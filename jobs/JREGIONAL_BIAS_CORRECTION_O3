@@ -62,7 +62,7 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 
-export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
+export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 
 TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}

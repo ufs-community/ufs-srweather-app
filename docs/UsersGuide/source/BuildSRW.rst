@@ -123,7 +123,7 @@ The cloned repository contains the configuration files and sub-directories shown
    |                                | operations. The SRW App is a generic app that is the base |
    |                                | for models such as :term:`AQM` and :term:`RRFS`. When     |
    |                                | these models become operational, variables like           |
-   |                                | ``HOMEdir`` and ``PARMdir`` will be renamed to            |
+   |                                | ``HOMEaqm`` and ``PARMdir`` will be renamed to            |
    |                                | ``HOMEaqm``/``HOMErrfs``, ``PARMaqm``/``PARMrrfs``, etc.  |
    |                                | using this script.                                        |
    +--------------------------------+-----------------------------------------------------------+
