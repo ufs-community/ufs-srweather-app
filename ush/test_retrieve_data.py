@@ -51,6 +51,12 @@ class FunctionalTesting(unittest.TestCase):
                                       '2021032018']
         self.dates["FV3GFSnetcdf"] = ['2021032100',
                                       twodaysago.strftime('%Y%m%d') + '00']
+        self.dates["RAPhpss"]      = ['2018071118',
+                                      '2020022612',
+                                      '2020022618',
+                                      '2022062700',
+                                      '2022062706',
+                                      twodaysago.strftime('%Y%m%d') + '06']
 
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
@@ -333,6 +339,35 @@ class FunctionalTesting(unittest.TestCase):
             self.assertEqual(len(files_on_disk), 8)
 
     # RAP tests
+    def test_rap_ics_from_hpss(self):
+
+        """Get RAP ICS from aws offset by 3 hours"""
+
+        for date in self.dates["RAPhpss"]:
+            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+
+                # fmt: off
+                args = [
+                    '--file_set', 'anl',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'hpss',
+                    '--external_model', 'RAP',
+                    '--fcst_hrs', '3',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'ICS',
+                    '--debug',
+                ]
+                # fmt: on
+
+                retrieve_data.main(args)
+
+                # Verify files exist in temp dir
+
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 1)
+
     def test_rap_ics_from_aws(self):
 
         """Get RAP ICS from aws offset by 3 hours"""
@@ -366,7 +401,6 @@ class FunctionalTesting(unittest.TestCase):
         """Get RAP LBCS from aws for 6 hour boundary conditions offset
         by 3 hours. Use 09Z start time for longer LBCS."""
 
-        print('test')
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
 
             # fmt: off
