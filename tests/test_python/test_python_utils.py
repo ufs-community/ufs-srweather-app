@@ -72,18 +72,15 @@ class Testing(unittest.TestCase):
             )
 
         # Check cmd_vrfy works
-        existing_dir = os.path.join(tmp_dir, "dir")
+        existing_dir = os.path.join(tmp_dir.name, "dir")
         util.cmd_vrfy(f"mkdir -p {existing_dir}")
-        self.assertTrue(os.path.exists("{existing_dir}"))
+        self.assertTrue(os.path.exists(existing_dir))
 
         # Given a preexisting directory, move it and test that they both
         # exist.
         util.check_for_preexist_dir_file(existing_dir, "rename")
         dirs = glob.glob(f"{existing_dir}_*")
         self.assertEqual(len(dirs), 1)
-
-        dirs = glob.glob(f"{existing_dir}*")
-        self.assertEqual(len(dirs), 2)
 
         # Clean up the older version, and test rm_vrfy
         util.rm_vrfy(f"-rf {existing_dir}_*")
@@ -103,7 +100,7 @@ class Testing(unittest.TestCase):
             prefix="filesys_space",
             )
         testable_path = os.path.join(
-            tmp_dir,
+            tmp_dir.name,
             "dir",
             )
 
@@ -135,7 +132,7 @@ class Testing(unittest.TestCase):
             )
 
         symlink = os.path.join(
-            tmp_dir,
+            tmp_dir.name,
             "test_python_utils.py"
             )
         util.create_symlink_to_file(target, symlink)
@@ -205,7 +202,6 @@ class Testing(unittest.TestCase):
         shell_str = '( "1" "2" \n'
         v = util.str_to_list(shell_str)
         self.assertFalse(isinstance(v, list))
-        self.assertEqual(v, [1, 2])
 
     def test_config_parser(self):
         """ Test loading different config files """
