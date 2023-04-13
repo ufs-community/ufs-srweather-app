@@ -101,7 +101,7 @@ AIR_REJECT_FN=$(date +%Y%m%d -d "${START_DATE} -1 day")_rejects.txt
 
 cd_vrfy ${DATA}
 
-fixgriddir=$FIXgsi/${PREDEF_GRID_NAME}
+pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
 
 # set background path
 if [ "${RUN_ENVIR}" = "nco" ]; then
@@ -131,7 +131,7 @@ fi
 echo "regional_ensemble_option is ",${regional_ensemble_option:-1}
 
 print_info_msg "$VERBOSE" "FIXgsi is $FIXgsi"
-print_info_msg "$VERBOSE" "fixgriddir is $fixgriddir"
+print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 print_info_msg "$VERBOSE" "default bkpath is $bkpath"
 print_info_msg "$VERBOSE" "background type is is $BKTYPE"
 
@@ -321,11 +321,11 @@ fi
 n_iolayouty=$(($IO_LAYOUT_Y-1))
 list_iolayout=$(seq 0 $n_iolayouty)
 
-ln_vrfy -snf ${fixgriddir}/fv3_akbk                     fv3_akbk
-ln_vrfy -snf ${fixgriddir}/fv3_grid_spec                fv3_grid_spec
+ln_vrfy -snf ${pregen_grid_dir}/fv3_akbk                     fv3_akbk
+ln_vrfy -snf ${pregen_grid_dir}/fv3_grid_spec                fv3_grid_spec
 
 if [ ${BKTYPE} -eq 1 ]; then  # cold start uses background from INPUT
-  ln_vrfy -snf ${fixgriddir}/phis.nc               phis.nc
+  ln_vrfy -snf ${pregen_grid_dir}/phis.nc               phis.nc
   ncks -A -v  phis               phis.nc           ${bkpath}/gfs_data.tile7.halo0.nc 
 
   ln_vrfy -snf ${bkpath}/sfc_data.tile7.halo0.nc   fv3_sfcdata
@@ -354,7 +354,7 @@ else                          # cycle uses background from restart
 fi
 
 # update times in coupler.res to current cycle time
-cp_vrfy ${fixgriddir}/fv3_coupler.res          coupler.res
+cp_vrfy ${pregen_grid_dir}/fv3_coupler.res          coupler.res
 sed -i "s/yyyy/${YYYY}/" coupler.res
 sed -i "s/mm/${MM}/"     coupler.res
 sed -i "s/dd/${DD}/"     coupler.res
