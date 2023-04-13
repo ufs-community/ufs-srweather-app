@@ -1021,6 +1021,12 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  #   ${NWGES}/yyyymmddhh
+  # 
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -1031,6 +1037,7 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
+
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'
@@ -1041,6 +1048,21 @@ nco:
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
 
+  #
+  # New additions from RRFS_dev1
+  #
+  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES_BASEDIR: '{{ NWGES }}'
+  RRFSE_NWGES: '{{ OPSROOT }}/nwges'
+  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
+  ENSCTRL_NWGES: '{{ OPSROOT }}/nwges'
+  ENSCTRL_NWGES_BASEDIR: '{{ ENSCTRL_NWGES}}'
+
+  ENSCTRL_COMIN: '{{ COMIN_BASEDIR}}'
+  ENSCTRL_COMOUT: '{{ COMOUT_BASEDIR}}'
+  ENSCTRL_COMROOT: '{{ ENSCTRL_COMOUT }}'
+  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
+  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
   #
   #-----------------------------------------------------------------------
   #
