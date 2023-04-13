@@ -331,13 +331,13 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
     done
    
-    # Post Files to COMOUT
-    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUT}
+    # Post Files to COMOUTwmo
+    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUTwmo}
 
     # Distribute Data
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
     fi
   fi
 fi
@@ -429,14 +429,14 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
-    # Post Files to COMOUT
-    cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUT}
-    cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUT}
+    # Post Files to COMOUTwmo
+    cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUTwmo}
 
     # Distribute Data
     if [ "${SENDDBN}" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     fi
   done
 fi

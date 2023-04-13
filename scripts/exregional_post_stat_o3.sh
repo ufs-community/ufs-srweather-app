@@ -154,7 +154,7 @@ for grid in 227 196 198;do
     done
     for var in 1ho3 8ho3 awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUT}
+      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
     done
   else
     for var in 1ho3 awpozcon;do
@@ -262,10 +262,10 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
     if [ "${SENDDBN_NTC}" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi

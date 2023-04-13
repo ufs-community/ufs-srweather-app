@@ -23,3 +23,5 @@ export nco_ver=4.9.7
 export wgrib2_ver=2.0.8_wmo
 export libjpeg_ver=9c
 export grib_util_ver=1.2.4
+
+export maillist=""

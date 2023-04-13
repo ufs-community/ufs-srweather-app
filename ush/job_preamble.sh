@@ -130,7 +130,7 @@ else
 fi
 export COMIN_PDY="${COMIN_BASEDIR}/${RUN}.${PDY}"
 export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
-
+export COMOUTwmo="${COMOUT}/wmo"
 #
 #-----------------------------------------------------------------------
 #

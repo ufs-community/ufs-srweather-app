@@ -138,13 +138,13 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
-    # Post Files to COMOUT
-    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUT}
+    # Post Files to COMOUTwmo
+    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUTwmo}
 
     # Distribute Data
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
   done
 fi
@@ -259,12 +259,12 @@ EOF1
     
     cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
     cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
-    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUT}
-    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUT}
+    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUTwmo}
 
     if [ "$SENDDBN" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUTwmo}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUTwmo}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
     fi
   done
 fi

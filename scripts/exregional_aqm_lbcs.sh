@@ -156,6 +156,9 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
     fhr=$( printf "%03d" "${hr_mod}" )
     AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
     if [ ! -e "${AQM_MOFILE_FHR_FP}" ]; then
+      if [ "${RUN_ENVIR}" = "nco" ] && [ ! -z "${maillist}" ]; then
+        echo "${AQM_MOFILE_FHR_FP} GEFS output for ${cycle} run is missing. AQM RUN SOFT FAILED" | mail.py $maillist
+      fi
       print_err_msg_exit "The GEFS file (AQM_MOFILE_FHR_FP) for LBCs does not exist:
       AQM_MOFILE_FHR_FP = \"${AQM_MOFILE_FHR_FP}\""  
     fi
