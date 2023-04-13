@@ -2044,6 +2044,19 @@ task_run_anal:
   OMP_NUM_THREADS_RUN_ANAL: 1
   OMP_STACKSIZE_RUN_ANAL: "1024m"
 
+#----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufr:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # observation file templates used in process_bufr
+  #
+  #-----------------------------------------------------------------------
+  #
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
+
 #-----------------------------
 # NEXUS_EMISSION config parameters
 #-----------------------------
@@ -2396,7 +2409,7 @@ cpl_aqm_parm:
   # Path to archive directory for gfs surface files on HPSS
   #
   # PT_SRC_BASEDIR:
-  # Parent directory containing point source files for CONUS/AK/HI
+  # Parent directory containing point source files
   #
   # AQM_AIRNOW_HIST_DIR:
   # Path to the directory where the historical AIRNOW data are located
@@ -2450,7 +2463,7 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
-  PT_SRC_BASEDIR: "/path/to/point/source/base/directory/for/conus/hi/ak"
+  PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
 
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
