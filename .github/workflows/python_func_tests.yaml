@@ -35,4 +35,5 @@ jobs:
       # Run python functional tests
       - name: Run python functional tests
         run: |
+          export PYTHONPATH=${PWD}/ush
           python3 -m unittest -b tests/test_python/test_retrieve_data.py
