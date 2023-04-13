@@ -8,7 +8,6 @@ import tempfile
 import unittest
 
 from python_utils import (
-  cd_vrfy,
   cp_vrfy,
   date_to_str,
   define_macos_utilities,
@@ -49,7 +48,7 @@ class Testing(unittest.TestCase):
         mem_dir = os.path.join(
                     EXPTDIR,
                     f"{date_to_str(self.cdate,format='%Y%m%d%H')}",
-                    f"mem2",
+                    "mem2",
                 )
         mkdir_vrfy("-p", mem_dir)
         set_env_var("USHdir", USHdir)
