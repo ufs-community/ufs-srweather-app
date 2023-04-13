@@ -122,17 +122,26 @@ pipeline {
                         }
                     }
 
-                    // Run the unified build script; if successful create a tarball of the build and upload to S3
-                    stage('Build') {
-                        steps {
-                            echo "Building SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
-                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_build.sh"'
+                    parallel{
+                        // Run the unittest functional tests that require an HPC platform
+                        stage('Functional Tests) {
+                            steps {
+                                echo "Running unittest on retrieve_data.py"
+                                sh '${WORKSPACE}/.cicd/scripts/srw_unittest.sh"'
+                            }
                         }
+                        // Run the unified build script; if successful create a tarball of the build and upload to S3
+                        stage('Build') {
+                            steps {
+                                echo "Building SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
+                                sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_build.sh"'
+                            }
 
-                        post {
-                            success {
-                                sh 'cd "${WORKSPACE}/${INSTALL_NAME}" && tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" *'
-                                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build_${env.SRW_COMPILER}/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                            post {
+                                success {
+                                    sh 'cd "${WORKSPACE}/${INSTALL_NAME}" && tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" *'
+                                    s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build_${env.SRW_COMPILER}/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
+                                }
                             }
                         }
                     }
