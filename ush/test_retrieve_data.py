@@ -54,7 +54,7 @@ class FunctionalTesting(unittest.TestCase):
                                       '2020022618',
                                       twodaysago.strftime('%Y%m%d') + '06']
         self.dates["RAPaws"]       = ['2021022200',
-                                      twodaysago.strftime('%Y%m%d%HH')]
+                                      twodaysago.strftime('%Y%m%d%H')]
 
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
@@ -422,4 +422,4 @@ class FunctionalTesting(unittest.TestCase):
 
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 5)
+            self.assertEqual(len(files_on_disk), 8)
