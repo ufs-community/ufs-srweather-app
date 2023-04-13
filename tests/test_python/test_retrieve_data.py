@@ -23,6 +23,7 @@ import unittest
 import retrieve_data
 
 
+@unittest.skipIf(os.environ.get("UNIT_TEST") == "true", "Skipping functional tests")
 class FunctionalTesting(unittest.TestCase):
 
     """Test class for retrieve data"""
