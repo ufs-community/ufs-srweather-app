@@ -38,25 +38,23 @@ class FunctionalTesting(unittest.TestCase):
         # Set test dates to retrieve, based on important dates in HPSS history:
         # 2019061200 - First operational FV3GFS cycle
         # 2020022518, 2020022600 - Changes to operational FV3GFS files between these cycles
+        # 2020022612, 2020022618 - Changes to RAP hpss filenames between these cycles
         # 2021032018, 2021032100 - nemsio format replaced with netcdf between these cycles
-        # 2021032100 - First cycle wi
+        # 2022062700, 2022062706 - Changes to RAP hpss filenames between these cycles
         self.dates={}
         self.dates["FV3GFSgrib2"]  = ['2019061200',
-                                      '2020022518',
                                       '2020022600',
                                       twodaysago.strftime('%Y%m%d') + '12']
         self.dates["FV3GFSnemsio"] = ['2019061200',
                                       '2020022518',
-                                      '2020022600',
                                       '2021032018']
         self.dates["FV3GFSnetcdf"] = ['2021032100',
                                       twodaysago.strftime('%Y%m%d') + '00']
         self.dates["RAPhpss"]      = ['2018071118',
-                                      '2020022612',
                                       '2020022618',
-                                      '2022062700',
-                                      '2022062706',
                                       twodaysago.strftime('%Y%m%d') + '06']
+        self.dates["RAPaws"]       = ['2021022200',
+                                      twodaysago.strftime('%Y%m%d%HH')]
 
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
@@ -372,29 +370,30 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get RAP ICS from aws offset by 3 hours"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        for date in self.dates["RAPaws"]:
+            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
 
-            # fmt: off
-            args = [
-                '--file_set', 'anl',
-                '--config', self.config,
-                '--cycle_date', '2022062509',
-                '--data_stores', 'aws',
-                '--external_model', 'RAP',
-                '--fcst_hrs', '3',
-                '--output_path', tmp_dir,
-                '--ics_or_lbcs', 'ICS',
-                '--debug',
-            ]
-            # fmt: on
+                # fmt: off
+                args = [
+                    '--file_set', 'anl',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'aws',
+                    '--external_model', 'RAP',
+                    '--fcst_hrs', '3',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'ICS',
+                    '--debug',
+                ]
+                # fmt: on
 
-            retrieve_data.main(args)
+                retrieve_data.main(args)
 
-            # Verify files exist in temp dir
+                # Verify files exist in temp dir
 
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 1)
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 1)
 
     def test_rap_lbcs_from_aws(self):
 
@@ -410,7 +409,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--cycle_date', '2022062509',
                 '--data_stores', 'aws',
                 '--external_model', 'RAP',
-                '--fcst_hrs', '3', '30', '6',
+                '--fcst_hrs', '3', '45', '6',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
