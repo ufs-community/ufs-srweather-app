@@ -450,7 +450,7 @@ else
     module use ${SRW_DIR}/modulefiles
     module load ${MODULE_FILE}
     if [[ "${MODULE_FILE}" == "build_macos_gnu" ]]; then
-        export LDFLAGS="-L$MPI_ROOT/lib "
+        export LDFLAGS+=" -L$MPI_ROOT/lib "
     fi
 fi
 module list
