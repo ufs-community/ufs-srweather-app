@@ -445,10 +445,13 @@ platform:
   #
   # Setup default observation locations for data assimilation:
   #
-  #    LIGHTNING_ROOT: location of lightning observations
+  # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
+  #
+  # LIGHTNING_ROOT: location of lightning observations
   #
   #-----------------------------------------------------------------------
   #
+  OBSPATH_NSSLMOSIAC: ""
   LIGHTNING_ROOT: ""
     
 #-----------------------------
@@ -864,6 +867,13 @@ workflow:
   # run. By default, set it to a 1-item list containing the standard
   # fcst length.
   #
+  # CYCL_HRS_SPINSTART:
+  # An array containing the hours of the day at which the spin up cycle starts.
+  #
+  # CYCL_HRS_PRODSTART:
+  # An array containing the hours of the day at which the product cycle starts,
+  # from cold start input or from spin-up cycle forcast
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -874,6 +884,8 @@ workflow:
     - '{{ FCST_LEN_HRS }}'
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
+  CYCL_HRS_SPINSTART: []
+  CYCL_HRS_PRODSTART: []
   #
   #-----------------------------------------------------------------------
   #
@@ -1584,6 +1596,7 @@ task_run_fcst:
   NNODES_RUN_FCST: '{{ (PE_MEMBER01 + PPN_RUN_FCST - 1) // PPN_RUN_FCST }}'
   PPN_RUN_FCST: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_RUN_FCST }}'
   FV3_EXEC_FP: '{{ [user.EXECdir, workflow.FV3_EXEC_FN]|path_join }}'
+  IO_LAYOUT_Y: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1976,6 +1989,30 @@ task_plot_allvars:
   # Domains to plot. Currently supported are either "conus" or "regional" or both
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
+
+#----------------------------
+# PROCESS RADARREF config parameters
+#-----------------------------
+task_process_radarref:
+  RADAR_REF_THINNING: 1
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Parameters for observation preprocess.
+  # RADARREFL_MINS:
+  #   minute from the hour that the NSSL mosaic files will be searched for 
+  #      data preprocess
+  # RADARREFL_TIMELEVEL:
+  #   time level (minute) from the hour that the NSSL mosaic files will be generated 
+  #
+  # OBS_SUFFIX
+  #   machine specific grib2 file name extension (grib2 or grib2.gz)
+  #
+  #-----------------------------------------------------------------------
+  #
+  RADARREFL_MINS: [0, 1, 2, 3]
+  RADARREFL_TIMELEVEL: [0]
+  OBS_SUFFIX: grib2
 
 #----------------------------
 # PROCESS BUFR config parameters
