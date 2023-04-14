@@ -2043,6 +2043,14 @@ task_run_anal:
   KMP_AFFINITY_RUN_ANAL: "scatter"
   OMP_NUM_THREADS_RUN_ANAL: 1
   OMP_STACKSIZE_RUN_ANAL: "1024m"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # observation file templates used in run_anal
+  #
+  #-----------------------------------------------------------------------
+  #
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
 
 #----------------------------
 # PROCESS BUFR config parameters

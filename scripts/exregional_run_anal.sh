@@ -367,52 +367,26 @@ sed -i "s/hh/${HH}/"     coupler.res
 # copy observation files to working directory 
 #
 #-----------------------------------------------------------------------
-if [[ "${NET}" = "RTMA"* ]]; then
-  SUBH=$(date +%M -d "${START_DATE}")
-  obs_source="rtma_ru"
-  obsfileprefix=${obs_source}
-  obspath_tmp=${OBSPATH}/${obs_source}.${YYYYMMDD}
-
-else
-  SUBH=""
-  obs_source=rap
-  if [ ${HH} -eq '00' ] || [ ${HH} -eq '12' ]; then
-    obs_source=rap_e
-  fi
-
-  case $MACHINE in
-
-  "WCOSS2")
-     obsfileprefix=${obs_source}
-     obspath_tmp=${OBSPATH}/${obs_source}.${YYYYMMDD}
-    ;;
-  "JET" | "HERA")
-     obsfileprefix=${YYYYMMDDHH}.${obs_source}
-     obspath_tmp=${OBSPATH}
-    ;;
-  "ORION" )
-     obs_source=rap
-     obsfileprefix=${YYYYMMDDHH}.${obs_source}               # rap observation from JET.
-     #obsfileprefix=${obs_source}.${YYYYMMDD}/${obs_source}    # observation from operation.
-     obspath_tmp=${OBSPATH}
-    ;;
-  *)
-     obsfileprefix=${obs_source}
-     obspath_tmp=${OBSPATH}
-  esac
+#
+obs_source=rap
+if [ ${HH} -eq '00' ] || [ ${HH} -eq '12' ]; then
+  obs_source=rap_e
 fi
+
+# evaluate template path that uses `obs_source`
+eval OBSPATH_TEMPLATE=${OBSPATH_TEMPLATE}
 
 if [[ ${GSI_TYPE} == "OBSERVER" || ${OB_TYPE} == "conv" ]]; then
 
-  obs_files_source[0]=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.prepbufr.tm00
+  obs_files_source[0]=${OBSPATH_TEMPLATE}.t${HH}z.prepbufr.tm00
   obs_files_target[0]=prepbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.satwnd.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.satwnd.tm00.bufr_d
   obs_files_target[${obs_number}]=satwndbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}${SUBH}z.nexrad.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.nexrad.tm00.bufr_d
   obs_files_target[${obs_number}]=l2rwbufr
 
   if [ ${DO_ENKF_RADAR_REF} == "TRUE" ]; then
@@ -445,63 +419,63 @@ fi
 if [ ${DO_RADDA} == "TRUE" ]; then
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.1bamua.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.1bamua.tm00.bufr_d
   obs_files_target[${obs_number}]=amsuabufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.esamua.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.esamua.tm00.bufr_d
   obs_files_target[${obs_number}]=amsuabufrears
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.1bmhs.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.1bmhs.tm00.bufr_d
   obs_files_target[${obs_number}]=mhsbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.esmhs.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.esmhs.tm00.bufr_d
   obs_files_target[${obs_number}]=mhsbufrears
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.atms.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.atms.tm00.bufr_d
   obs_files_target[${obs_number}]=atmsbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.esatms.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.esatms.tm00.bufr_d
   obs_files_target[${obs_number}]=atmsbufrears
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.atmsdb.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.atmsdb.tm00.bufr_d
   obs_files_target[${obs_number}]=atmsbufr_db
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.crisf4.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.crisf4.tm00.bufr_d
   obs_files_target[${obs_number}]=crisfsbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.crsfdb.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.crsfdb.tm00.bufr_d
   obs_files_target[${obs_number}]=crisfsbufr_db
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.mtiasi.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.mtiasi.tm00.bufr_d
   obs_files_target[${obs_number}]=iasibufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.esiasi.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.esiasi.tm00.bufr_d
   obs_files_target[${obs_number}]=iasibufrears
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.iasidb.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.iasidb.tm00.bufr_d
   obs_files_target[${obs_number}]=iasibufr_db
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.gsrcsr.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.gsrcsr.tm00.bufr_d
   obs_files_target[${obs_number}]=abibufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.ssmisu.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.ssmisu.tm00.bufr_d
   obs_files_target[${obs_number}]=ssmisbufr
 
   obs_number=${#obs_files_source[@]}
-  obs_files_source[${obs_number}]=${obspath_tmp}/${obsfileprefix}.t${HH}z.sevcsr.tm00.bufr_d
+  obs_files_source[${obs_number}]=${OBSPATH_TEMPLATE}.t${HH}z.sevcsr.tm00.bufr_d
   obs_files_target[${obs_number}]=sevcsr
 
 fi
