@@ -172,8 +172,14 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 else
     DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
-dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc"
+  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc"
+else
+  dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+  phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+fi
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -288,12 +294,6 @@ for fid in "${fids[@]}"; do
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done
-
-# Move phy and dyn files to COMIN only for AQM
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  mv ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-  mv ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-fi
 
 rm -rf ${DATA_FHR}
 

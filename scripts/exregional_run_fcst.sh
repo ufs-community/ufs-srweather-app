@@ -647,35 +647,6 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-# Move RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode and when it is not empty.
-#
-# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
-# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  if [ "${RUN_ENVIR}" = "nco" ]; then
-    rm -rf "${COMIN}/RESTART"
-    if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      mv ${DATA}/RESTART ${COMIN}
-      ln -sf ${COMIN}/RESTART ${DATA}/RESTART
-    fi
-  fi
-
-  mv ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
- 
-  if [ "${RUN_TASK_RUN_POST}" = "FALSE" ] && [ "${WRITE_DOPOST}" = "FALSE" ]; then
-    for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-    done
-  fi
-fi
-#
-#-----------------------------------------------------------------------
-#
 # If doing inline post, create the directory in which the post-processing 
 # output will be stored (postprd_dir).
 #
@@ -732,13 +703,35 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done
-
-    if [ "${CPL_AQM}" = "TRUE" ]; then	
-      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-    fi
   done
 
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Move RESTART directory to COMIN and create symlink in DATA only for
+# NCO mode and when it is not empty.
+#
+# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
+# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
+#
+#-----------------------------------------------------------------------
+#
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    rm -rf "${COMIN}/RESTART"
+    if [ "$(ls -A ${DATA}/RESTART)" ]; then
+      mv ${DATA}/RESTART ${COMIN}
+      ln -sf ${COMIN}/RESTART ${DATA}/RESTART
+    fi
+  fi
+
+  mv ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+ 
+  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
+    mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+    mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+  done
 fi
 #
 #-----------------------------------------------------------------------
