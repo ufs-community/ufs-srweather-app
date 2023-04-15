@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -60,7 +60,13 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_O3}"
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir $DATA
+  cd $DATA
+fi
+
 COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 mkdir -p "${COMOUTwmo}"
 

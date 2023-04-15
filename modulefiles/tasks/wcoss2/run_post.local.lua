@@ -2,7 +2,7 @@ load("python_regional_workflow")
 
 unload("PrgEnv-intel")
 unload("netcdf")
-load(pathJoin("envvar", os.getenv("envvar_ver")))
+
 load(pathJoin("intel", os.getenv("intel_ver")))
 load(pathJoin("PrgEnv-intel", os.getenv("PrgEnv_intel_ver")))
 load(pathJoin("craype", os.getenv("craype_ver")))

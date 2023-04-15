@@ -41,10 +41,6 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     export DATA=${DATAROOT}/${jobid}
     mkdir -p $DATA
     cd $DATA
-else
-    export DATA="${COMIN_BASEDIR}/${PDY}${cyc}/tmp_${job}"
-    mkdir -p $DATA
-    cd $DATA
 fi
 #
 #-----------------------------------------------------------------------

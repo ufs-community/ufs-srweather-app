@@ -9,7 +9,7 @@
 #
 #-----------------------------------------------------------------------
 #
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -63,20 +63,15 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-  export INPUT_DATA="${COMIN}"
-else
-  if [ -d "${DATA}" ]; then
-    cd ..
-    rm_vrfy -rf ${DATA}
-  fi
-  export DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}"
-  cd ${DATA}
-  export INPUT_DATA="${DATA}/INPUT"
-fi
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir -p ${DATA}/INPUT
 mkdir -p ${DATA}/RESTART
+
+if [ $RUN_ENVIR = "nco" ]; then
+  export INPUT_DATA="${COMIN}"
+else
+  export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+fi
 #
 #-----------------------------------------------------------------------
 #

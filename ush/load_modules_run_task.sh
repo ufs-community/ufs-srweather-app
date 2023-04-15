@@ -99,34 +99,14 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-
-# source version file (build) only if it is specified in versions directory
-VERSION_FILE="${HOMEaqm}/versions/${BUILD_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
-fi
-
 source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  module use "${HOMEaqm}/modulefiles/extrn_comp_build"
-  if [ "${task_name}" = "make_grid" ] || [ "${task_name}" = "make_orog" ] || \
-     [ "${task_name}" = "make_sfc_climo" ] || [ "${task_name}" = "make_ics" ] || \
-     [ "${task_name}" = "make_lbcs" ]; then
-    module load mod_ufs-utils
-  elif [ "${task_name}" = "run_fcst" ]; then
-    module load mod_ufs-weather-model
-  elif [ "${task_name}" = "run_post" ] && [ "${machine}" != "wcoss2" ]; then
-    module load mod_upp
-  elif [ "${task_name}" = "aqm_lbcs" ] || \
-       [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \
-       [ "${task_name}" = "bias_correction_o3" ] || \
-       [ "${task_name}" = "bias_correction_pm25" ]; then
-    module load mod_aqm-utils
-  elif [ "${task_name}" = "nexus_emission" ] || ([ "${task_name}" = "nexus_post_split" ] && \
-       [ "${machine}" = "wcoss2" ] ); then
-    module load mod_nexus
+
+if [ "${machine}" != "wcoss2" ]; then
+  # source version file (build) only if it is specified in versions directory
+  VERSION_FILE="${HOMEaqm}/versions/${BUILD_VER_FN}"
+  if [ -f ${VERSION_FILE} ]; then
+    . ${VERSION_FILE}
   fi
-else
   module use "${HOMEaqm}/modulefiles"
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 

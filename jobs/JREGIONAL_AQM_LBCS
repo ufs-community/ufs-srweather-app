@@ -8,7 +8,7 @@
 #
 #-----------------------------------------------------------------------
 #
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -77,8 +77,12 @@ mkdir -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir -p "${DATA}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_AQM_LBCS}"
+if [ "${RUN_ENVIR}" != "nco" ]; then
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir $DATA
+  cd $DATA
+fi
 
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   export COMINgefs=${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}
