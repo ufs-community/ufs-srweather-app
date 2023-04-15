@@ -72,7 +72,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
             if running_expts[expt]["status"] in ['DEAD','ERROR','COMPLETE']:
                 # If start_time is in dictionary, compute total walltime
                 walltimestr = ''
-                if running_expts[expt].get("start_time",{}):
+                if running_expts[expt].get("start_time",{}) and not running_expts[expt].get("walltime",{}):
                     end = datetime.now()
                     start = datetime.strptime(running_expts[expt]["start_time"],'%Y%m%d%H%M%S')
                     walltime = end - start
