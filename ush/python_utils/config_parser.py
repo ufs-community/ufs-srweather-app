@@ -471,9 +471,9 @@ def xml_to_dict(root, return_string):
             if not isinstance(cfg[k], list):
                 cfg[k] = [ cfg[k] ]
         if len(child.attrib) == 0:
-            if k in cfg:
+            if (k in cfg) and (cfg[k] is not None):
                 cfg[k].append(value)
-            elif value is not None:
+            else:
                 cfg[k] = value
         else:
             cfg_l = {}
@@ -529,15 +529,24 @@ def load_xml_config(config_file_or_string, return_string=0):
     else:
         root = ET.fromstring(config_file_or_string)
 
-    cfg = xml_to_dict(root, return_string)
+    cfg = {}
+    cfg[root.tag] = {"attrib": root.attrib}
+    cfg[root.tag].update(xml_to_dict(root, return_string))
     return cfg
 
 
 def cfg_to_xml_str(cfg):
     """Get contents of config file as a xml string"""
 
-    root = ET.Element("root")
-    dict_to_xml(cfg, root)
+    if len(cfg) == 1:
+        rkey = list(cfg.keys())[0]
+        root = ET.Element(rkey)
+        if "attrib" in cfg[rkey]:
+            root.attrib = cfg[rkey]["attrib"]
+        dict_to_xml(cfg[rkey], root)
+    else:
+        root = ET.Element("root")
+        dict_to_xml(cfg, root)
     r = ET.tostring(root, encoding="unicode")
     r = minidom.parseString(r)
     r = r.toprettyxml(indent="  ")
