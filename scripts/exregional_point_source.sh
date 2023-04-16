@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -53,7 +54,7 @@ This is the ex-script for the task that runs PT_SOURCE.
 #
 eval ${PRE_TASK_CMDS}
 
-if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}

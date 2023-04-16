@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -100,7 +101,7 @@ DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
-if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}

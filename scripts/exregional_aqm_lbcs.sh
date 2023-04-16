@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -92,7 +93,7 @@ yyyymmdd=${CDATE_MOD:0:8}
 mm="${CDATE_MOD:4:2}"
 hh="${CDATE_MOD:8:2}"
 
-if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}

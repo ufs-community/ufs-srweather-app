@@ -711,9 +711,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # Reset the hours to the short forecast length
         workflow_config["FCST_LEN_HRS"] = min(fcst_len_cycl)
 
-        # Reset the number of the forecast length cycles
-        workflow_config["NUM_FCST_LEN_CYCL"] = len(fcst_len_cycl)
-
         # Find the entries that match the long forecast, and map them to
         # their time of day.
         long_fcst_len = max(fcst_len_cycl)

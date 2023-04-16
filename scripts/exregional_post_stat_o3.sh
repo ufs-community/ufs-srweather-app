@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -102,7 +103,7 @@ eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ER
 Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
 POST_STEP
 
-if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -70,7 +71,8 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   file_set="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
-  if [ "${NUM_FCST_LEN_CYCL}" -gt "1" ]; then
+
+  if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
     cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
     CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
     FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
