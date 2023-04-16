@@ -17,7 +17,7 @@ set -x
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -94,24 +94,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory where the RAVE fire emission files should be stored
-#
-#-----------------------------------------------------------------------
-#
-export GFS_SFC_STAGING_DIR="${COMINext}/GFS_SFC"
-mkdir -p "${GFS_SFC_STAGING_DIR}"
-#
-#-----------------------------------------------------------------------
-#
 # Set the run directory
 #
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
-if [ "${RUN_ENVIR}" != "nco" ]; then
-  check_for_preexist_dir_file "$DATA" "delete"
-  mkdir $DATA
-  cd $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Create the directory where the GFS SFC files should be stored
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  export GFS_SFC_STAGING_DIR="${DATA}"
+else
+  export GFS_SFC_STAGING_DIR="${COMIN}/GFS_SFC"
+  mkdir -p "${GFS_SFC_STAGING_DIR}"
+  cd "${GFS_SFC_STAGING_DIR}"
 fi
 #
 #-----------------------------------------------------------------------

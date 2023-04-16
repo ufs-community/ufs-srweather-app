@@ -956,7 +956,6 @@ nco:
   DATAROOT: '{{ OPSROOT }}/tmp'
   DCOMROOT: '{{ OPSROOT }}/dcom'
   LOGBASEDIR: '{{ OPSROOT }}/output'
-  EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
 

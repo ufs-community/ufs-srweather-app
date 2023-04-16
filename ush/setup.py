@@ -989,7 +989,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         "dcomroot",
         "comin_basedir",
         "comout_basedir",
-        "extroot",
     ]
 
     nco_config = expt_config["nco"]
@@ -1014,7 +1013,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
         mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
     if nco_config["DBNROOT"]:
         mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
 

@@ -30,7 +30,7 @@ set -x
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -218,9 +218,8 @@ esac
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export EXTRN_MDL_STAGING_DIR="${COMINext}"
-    mkdir -p "${EXTRN_MDL_STAGING_DIR}"
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    export EXTRN_MDL_STAGING_DIR="${DATA}"
 else
     export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
     mkdir -p "${EXTRN_MDL_STAGING_DIR}"

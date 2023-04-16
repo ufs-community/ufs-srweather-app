@@ -88,9 +88,16 @@ mkdir -p "$DATAinput"
 #-----------------------------------------------------------------------
 #
 USE_GFS_SFC="FALSE"
-if [ -d "${COMINext}/GFS_SFC" ]; then
-  if [ "$(ls -A ${COMINext}/GFS_SFC)" ]; then
-    ln -sf "${COMINext}/GFS_SFC" .
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+else
+  GFS_SFC_INPUT="${COMIN}/GFS_SFC"
+fi
+
+if [ -d "${GFS_SFC_INPUT}" ]; then
+  if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
+    ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
     USE_GFS_SFC="TRUE"
   fi
 fi
