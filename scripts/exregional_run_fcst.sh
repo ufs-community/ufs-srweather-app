@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -53,6 +52,7 @@ specified cycle.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 export KMP_AFFINITY=${KMP_AFFINITY_RUN_FCST}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_RUN_FCST}
 export OMP_STACKSIZE=${OMP_STACKSIZE_RUN_FCST}

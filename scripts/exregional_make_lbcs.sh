@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -54,6 +53,7 @@ hour zero).
 #
 #-----------------------------------------------------------------------
 #
+set -x
 export KMP_AFFINITY=${KMP_AFFINITY_MAKE_LBCS}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_MAKE_LBCS}
 export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}

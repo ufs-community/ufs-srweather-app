@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -51,6 +50,7 @@ This is the ex-script for the task that runs BIAS-CORRECTION-O3.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_O3}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_O3}
 export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_O3}
