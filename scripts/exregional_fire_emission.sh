@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -47,6 +46,7 @@ This is the ex-script for the task that fetches fire emission
 data files from disk or generates model-ready RAVE emission file from raw
 data files.
 ========================================================================"
+set -x
 #
 #-----------------------------------------------------------------------
 #

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -46,6 +45,7 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs the post-processor (UPP) on
 the output files corresponding to a specified forecast hour.
 ========================================================================"
+set -x
 #
 #-----------------------------------------------------------------------
 #
