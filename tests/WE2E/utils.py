@@ -94,7 +94,7 @@ def print_WE2E_summary(expts_dict: dict, debug: bool = False):
         print(line)
 
     # Print summary and details to file
-    summary_file = os.path.join(expts_dict[expt]["expt_dir"],
+    summary_file = os.path.join(os.path.dirname(expts_dict[expt]["expt_dir"]),
                                 f'WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt')
     print(f"\nDetailed summary written to {summary_file}\n")
 
