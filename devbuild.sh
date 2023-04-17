@@ -449,7 +449,7 @@ if [ $USE_SUB_MODULES = true ]; then
 else
     module use ${SRW_DIR}/modulefiles
     module load ${MODULE_FILE}
-    if [[ "${MODULE_FILE}" == "build_macos_gnu" ]]; then
+    if [[ "${PLATFORM}" == "macos" ]]; then
         export LDFLAGS+=" -L$MPI_ROOT/lib "
     fi
 fi
