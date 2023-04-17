@@ -337,6 +337,7 @@ class FunctionalTesting(unittest.TestCase):
             self.assertEqual(len(files_on_disk), 8)
 
     # RAP tests
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_rap_ics_from_hpss(self):
 
         """Get RAP ICS from aws offset by 3 hours"""
