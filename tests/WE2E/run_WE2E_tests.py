@@ -70,7 +70,7 @@ def run_we2e_tests(homedir, args) -> None:
                     # "config." prefix and ".yaml" extension
                     tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
-            elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
+            elif user_spec_tests[0] in ['fundamental', 'comprehensive', 'coverage']:
                 # I am writing this section of code under protest; we should use args.run_envir to
                 # check for run_envir-specific files!
                 prefix = f"machine_suites/{user_spec_tests[0]}"
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     required.add_argument('-t', '--tests', type=str, nargs="*",
                           help="""Can be one of three options (in order of priority):
     1. A test name or list of test names.
-    2. A test suite name ("fundamental", "comprehensive", or "all")
+    2. A test suite name ("fundamental", "comprehensive", "coverage", or "all")
     3. The name of a file (full or relative path) containing a list of test names.
     """, required=True)
 
