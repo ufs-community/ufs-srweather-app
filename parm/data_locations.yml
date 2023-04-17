@@ -272,6 +272,17 @@ NAM:
       fcst:
         - nam.t{hh}z.awphys{fcst_hr:02d}.tm00.grib2
 
+UFS-CASE-STUDY:
+  aws:
+    protocol: download
+    url: "https://ufs-case-studies.s3.amazonaws.com/"
+    file_names: &ufs_file_names
+      nemsio:
+        anl:
+          - "{yyyymmddhh}.gfs.nemsio.tar.gz"
+        fcst:
+          - "{yyyymmddhh}_bc.atmf{fcst_hr:03d}.nemsio.tar.gz"
+
 ##########################
 ##########################
 ###  Observation Data  ###
