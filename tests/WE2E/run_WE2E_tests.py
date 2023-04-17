@@ -265,6 +265,10 @@ def check_tests(tests: list) -> list:
         # Skip blank/empty testnames; this avoids failure if newlines or spaces are included
         if not test or test.isspace():
             continue
+        # Skip if string has an octothorpe
+        if '#' in test:
+            logging.debug(f"Assuming line is a comment due to presence of '#' character:\n{test}")
+            continue
         match = check_test(test)
         if not match:
             raise Exception(f"Could not find test {test}")
