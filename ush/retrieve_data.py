@@ -593,8 +593,8 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
         if not expected == unavailable:
             return unavailable - expected
     
-    # Returns unavailable files if the expected list equals the unavailable list
-    return unavailable
+    # If this loop has completed successfully without returning early, then all files have been found
+    return {}
 
 
 def load_str(arg):
