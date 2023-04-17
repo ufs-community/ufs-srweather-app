@@ -73,6 +73,7 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -153,9 +154,12 @@ for grid in 227 196 198;do
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
-    for var in 1ho3 8ho3 awpozcon;do
+    for var in 1ho3 8ho3;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
       cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
+    done
+    for var in awpozcon;do
+      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   else
     for var in 1ho3 awpozcon;do
@@ -188,10 +192,10 @@ EOF1
 
   ## 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -s  ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -s  ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -200,20 +204,20 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     ## 12z needs b.nc to find current day output from 04Z to 06Z 
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
     fi
 
     ## 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+    if [ -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc ]; then
+      ln -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc c.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no

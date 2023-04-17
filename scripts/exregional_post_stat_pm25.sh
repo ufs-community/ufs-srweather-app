@@ -173,10 +173,10 @@ EOF1
   flag_run_bicor_max=yes
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf  ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -sf  ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -185,20 +185,20 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMIN_PDYm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -sf ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -sf ${COMINm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
     fi
 
     # 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln -sf ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+    if [ -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc ]; then
+      ln -sf ${COMIN}/../06/${NET}.t06z.chem_sfc.nc c.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
