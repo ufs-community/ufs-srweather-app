@@ -719,7 +719,9 @@ fi
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
-    rm -rf "${COMIN}/RESTART"
+    if [ -d "${COMIN}/RESTART" ]; then
+      rm -rf "${COMIN}/RESTART"
+    fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
       mv ${DATA}/RESTART ${COMIN}
       ln -sf ${COMIN}/RESTART ${DATA}/RESTART
