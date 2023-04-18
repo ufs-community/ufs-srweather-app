@@ -410,32 +410,3 @@ To add a new test named, e.g., ``new_test01``, to one of the existing test categ
 #. Edit the contents of ``config.new_test01.yaml`` by modifying existing experiment variable values and/or adding new variables such that the test runs with the intended configuration.
 
 
-.. _CreateAltTestNames:
-
-Creating Alternate Names for a Test
---------------------------------------
-To prevent proliferation of WE2E tests, users might want to use the same test for multiple purposes. For example, consider the test 
-
-   ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
-
-in the ``grids_extrn_mdls_suites_community`` category. This checks for the successful
-completion of the Rocoto workflow running a combination of the ``RRFS_CONUScompact_25km`` grid, the ``FV3GFS`` model data for :term:`ICs` and :term:`LBCs`, and the ``FV3_GFS_v16`` physics suite. If this test also happens to use the inline post capability of the UFS :term:`Weather Model` (it currently doesn't; this is only a hypothetical example), then this test can also be used to ensure that the inline post feature of the SRW App/Weather Model (which is activated in the SRW App by setting ``WRITE_DOPOST: true``) is working properly. Since this test will serve two purposes, it should have two names --- one per purpose.
-
-To set the second (alternate) name to ``activate_inline_post``, the user needs to create a symlink named ``config.activate_inline_post.yaml`` in the ``wflow_features`` category directory that points to the original configuration file (``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml``) in the ``grids_extrn_mdls_suites_community`` category directory: 
-
-.. code-block:: console
-
-   ln -fs --relative </path/to/grids_extrn_mdls_suites_community/config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml> </path/to/wflow_features/config.activate_inline_post.yaml>
-
-In this situation, the primary name for the test is ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` 
-(because ``config.grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16.yaml`` is an actual file, not a symlink), and ``activate_inline_post`` is an alternate name. This approach of allowing multiple names for the same test makes it easier to identify the multiple purposes that a test may serve. 
-
-.. note::
-
-   * A primary test can have more than one alternate test name (by having more than one symlink pointing to the test's configuration file).
-   * The symlinks representing the alternate test names can be in the same or a different category directory.
-   * The ``--relative`` flag makes the symlink relative (i.e., within/below the ``tests`` directory) so that it stays valid when copied to other locations. (Note, however, that this flag is platform-dependent and may not exist on some platforms.)
-   * To determine whether a test has one or more alternate names, a user can view the file ``WE2E_test_info.txt`` as described in :numref:`Section %s <WE2ETestInfoFile>`
-   * With this primary/alternate test naming convention via symbolic links, if more than one name is listed for the same test (e.g., the primary name and and an alternate name, two alternate names, etc.), ``run_WE2E_tests.py`` will only run the test once 
-
-
