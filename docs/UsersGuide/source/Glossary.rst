@@ -89,6 +89,9 @@ Glossary
    ESMF
       `Earth System Modeling Framework <https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/>`__. The ESMF defines itself as “a suite of software tools for developing high-performance, multi-component Earth science modeling applications.” 
 
+   ex-scripts
+      Scripting layer (contained in ``ufs-srweather-app/scripts/``) that should be called by a :term:`J-job <J-jobs>` for each workflow componentto run a specific task or sub-task in the workflow. The different scripting layers are described in detail in the `NCO Implementation Standards document <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__
+
    FV3
       The Finite-Volume Cubed-Sphere :term:`dynamical core` (dycore). Developed at NOAA's `Geophysical 
       Fluid Dynamics Laboratory <https://www.gfdl.noaa.gov/>`__ (GFDL), it is a scalable and flexible dycore capable of both hydrostatic and non-hydrostatic atmospheric simulations. It is the dycore used in the UFS Weather Model.
@@ -128,6 +131,9 @@ Glossary
 
    ICs
       Initial conditions
+
+   J-jobs
+      Scripting layer (contained in ``ufs-srweather-app/jobs/``) that should be directly called for each workflow component (either on the command line or by the workflow manager) to run a specific task in the workflow. The different scripting layers are described in detail in the `NCO Implementation Standards document <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__
 
    LAM
       Limited Area Model (grid type), formerly known as the "Stand-Alone Regional Model," or SAR. LAM grids use a regional (rather than global) configuration of the :term:`FV3` :term:`dynamical core`. 
@@ -251,4 +257,4 @@ Glossary
       model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model>`__.
 
    Workflow
-      The sequence of steps required to run an experiment from start to finish. 
+      The sequence of steps required to run an experiment from start to finish.
