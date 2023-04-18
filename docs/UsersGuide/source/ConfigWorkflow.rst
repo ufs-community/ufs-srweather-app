@@ -459,18 +459,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
 
-   ``NNODES_MAKE_GRID``: (Default: 1)
-      Number of nodes to use for the job. 
-
-   ``PPN_MAKE_GRID``: (Default: 24)
-      Number of :term:`MPI` processes per node. 
-
-   ``WTIME_MAKE_GRID``: (Default: 00:20:00)
-      Maximum time for the task to complete. 
-
-   ``MAXTRIES_MAKE_GRID``: (Default: 2)
-      Maximum number of times to attempt the task.
-
    ``GRID_DIR``: (Default: "")
       The directory containing pre-generated grid files when ``RUN_TASK_MAKE_GRID`` is set to false.
 
@@ -576,18 +564,6 @@ MAKE_OROG Configuration Parameters
 
 Non-default parameters for the ``make_orog`` task are set in the ``task_make_orog:`` section of the ``config.yaml`` file. 
 
-``NNODES_MAKE_OROG``: (Default: 1)
-   Number of nodes to use for the job. 
-
-``PPN_MAKE_OROG``: (Default: 24)
-   Number of :term:`MPI` processes per node. 
-
-``WTIME_MAKE_OROG``: (Default: 00:20:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_OROG``: (Default: 2)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_MAKE_OROG``: (Default: "disabled")
    Intel Thread Affinity Interface for the ``make_orog`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity. Settings for the ``make_orog`` task is disabled because this task does not use parallelized code.
 
@@ -608,18 +584,6 @@ MAKE_SFC_CLIMO Configuration Parameters
 ===========================================
 
 Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_make_sfc_climo:`` section of the ``config.yaml`` file. 
-
-``NNODES_MAKE_SFC_CLIMO``: (Default: 2)
-   Number of nodes to use for the job. 
-
-``PPN_MAKE_SFC_CLIMO``: (Default: 24)
-   Number of :term:`MPI` processes per node. 
-
-``WTIME_MAKE_SFC_CLIMO``: (Default: 00:20:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_SFC_CLIMO``: (Default: 2)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_MAKE_SFC_CLIMO``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_sfc_climo`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
@@ -646,18 +610,6 @@ Basic Task Parameters
 ---------------------------------
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
-
-``NNODES_GET_EXTRN_ICS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_EXTRN_ICS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_EXTRN_ICS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_EXTRN_ICS``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 ``EXTRN_MDL_NAME_ICS``: (Default: "FV3GFS")
    The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
@@ -727,18 +679,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``NNODES_GET_EXTRN_LBCS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_EXTRN_LBCS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_EXTRN_LBCS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_EXTRN_LBCS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
    The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
@@ -795,18 +735,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``NNODES_MAKE_ICS``: (Default: 4)
-   Number of nodes to use for the job.
-
-``PPN_MAKE_ICS``: (Default: 12)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_MAKE_ICS``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_ICS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_MAKE_ICS``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_ics`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -836,18 +764,6 @@ MAKE_LBCS Configuration Parameters
 
 Non-default parameters for the ``make_lbcs`` task are set in the ``task_make_lbcs:`` section of the ``config.yaml`` file. 
 
-``NNODES_MAKE_LBCS``: (Default: 4)
-   Number of nodes to use for the job.
-
-``PPN_MAKE_LBCS``: (Default: 12)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_MAKE_LBCS``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_LBCS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_MAKE_LBCS``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_lbcs`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -868,18 +784,6 @@ Basic Task Parameters
 ---------------------------------
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
-
-``NNODES_RUN_FCST``: (Default: "")
-   Number of nodes to use for the job. This is calculated in the workflow generation scripts, so there is no need to set it in the configuration file.
-
-``PPN_RUN_FCST``: (Default: "")
-   Number of :term:`MPI` processes per node. It will be calculated from ``NCORES_PER_NODE`` and ``OMP_NUM_THREADS`` in ``setup.py``.
-
-``WTIME_RUN_FCST``: (Default: 04:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_FCST``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_RUN_FCST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_fcst`` task. 
@@ -1094,18 +998,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``NNODES_RUN_POST``: (Default: 2)
-   Number of nodes to use for the job. 
-
-``PPN_RUN_POST``: (Default: 24)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_RUN_POST``: (Default: 00:15:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_POST``: (Default: 2)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_RUN_POST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_post`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -1155,18 +1047,6 @@ Basic Task Parameters
 ---------------------------------
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task.
 
-``NNODES_RUN_PRDGEN``: (Default: 1) 
-   Number of nodes to use for the job.
-
-``PPN_RUN_PRDGEN``: (Default: 22)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_RUN_PRDGEN``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_PRDGEN``: (Default: 2)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_RUN_PRDGEN``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_prdgen`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -1185,467 +1065,6 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``TESTBED_FIELDS_FN``: (Default: "")
    The file which lists grib2 fields to be extracted for testbed files.  Empty string means no need to generate testbed files.
 
-
-.. _get-obs-ccpa:
-
-GET_OBS_CCPA Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_ccpa`` task are set in the ``task_get_obs_ccpa:`` section of the ``config.yaml`` file. 
-
-``NNODES_GET_OBS_CCPA``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_CCPA``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_CCPA``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_CCPA``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _get-obs-mrms:
-
-GET_OBS_MRMS Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_mrms`` task are set in the ``task_get_obs_mrms:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
-
-``NNODES_GET_OBS_MRMS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_MRMS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_MRMS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_MRMS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _get-obs-ndas:
-
-GET_OBS_NDAS Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_ndas`` task are set in the ``task_get_obs_ndas:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
-
-``NNODES_GET_OBS_NDAS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_NDAS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_NDAS``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_NDAS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-.. _VX-gridstat:
-
-VX_GRIDSTAT Configuration Parameters
-========================================
-
-Non-default parameters for the ``run_gridstatvx`` task are set in the ``task_run_vx_gridstat:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_REFC Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_refc`` task are set in the ``task_run_vx_gridstat_refc:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_REFC``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_RETOP Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_retop`` task are set in the ``task_run_vx_gridstat_retop:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_03h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_03h`` task are set in the ``task_run_vx_gridstat_03h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_06h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_06h`` task are set in the ``task_run_vx_gridstat_06h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_24h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_24h`` task are set in the ``task_run_vx_gridstat_24h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-pointstat:
-
-VX_POINTSTAT Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_pointstatvx`` task are set in the ``task_run_vx_pointstat:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_POINTSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_POINTSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_POINTSTAT``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_POINTSTAT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-ensgrid:
-
-VX_ENSGRID Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_*`` tasks are set in the ``task_run_vx_ensgrid:`` section of the ``config.yaml`` file. 
-
-``MAXTRIES_VX_ENSGRID_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``MAXTRIES_VX_ENSGRID_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``MAXTRIES_VX_ENSGRID_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``MAXTRIES_VX_ENSGRID_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``MAXTRIES_VX_ENSGRID_PROB_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``NNODES_VX_ENSGRID``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_REFC Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_refc`` task are set in the ``task_run_vx_ensgrid_refc:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_REFC``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_mean`` task are set in the ``task_run_vx_ensgrid_mean:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_03h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_03h`` task are set in the ``task_run_vx_ensgrid_mean_03h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_06h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_06h`` task are set in the ``task_run_vx_ensgrid_mean_06h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_24h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_24h`` task are set in the ``task_run_vx_ensgrid_mean_24h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB Configuration Parameters
-============================================
-
-Non-default parameters for the ``run_ensgridvx_prob`` task are set in the ``task_run_vx_ensgrid_prob:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_03h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_03h`` task are set in the ``task_run_vx_ensgrid_prob_03h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_06h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_06h`` task are set in the ``task_run_vx_ensgrid_prob_06h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_24h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_24h`` task are set in the ``task_run_vx_ensgrid_prob_24h:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-enspoint:
-
-VX_ENSPOINT Configuration Parameters
-========================================
-
-Non-default parameters for the ``run_enspointvx`` task are set in the ``task_run_vx_enspoint:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSPOINT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSPOINT_MEAN Configuration Parameters
-==============================================
-
-Non-default parameters for the ``run_enspointvx_mean`` task are set in the ``task_run_vx_enspoint_mean:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSPOINT_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT_MEAN``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSPOINT_PROB Configuration Parameters
-==============================================
-
-Non-default parameters for the ``run_enspointvx_prob`` task are set in the ``task_run_vx_enspoint_prob:`` section of the ``config.yaml`` file. 
-
-``NNODES_VX_ENSPOINT_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT_PROB``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _PlotVars:
-
-PLOT_ALLVARS Configuration Parameters
-========================================
-
-Non-default parameters for the ``plot_allvars`` task are set in the ``task_plot_allvars:`` section of the ``config.yaml`` file. 
-
-Basic Task Parameters
---------------------------
-
-For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
-
-``NNODES_PLOT_ALLVARS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_PLOT_ALLVARS``: (Default: 24)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_PLOT_ALLVARS``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_PLOT_ALLVARS``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 Additional Parameters
 ------------------------
