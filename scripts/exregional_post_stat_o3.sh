@@ -114,13 +114,13 @@ fi
 
 fhr=01
 while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
-  fhr9=$( printf "%02d" "${fhr}" )
+  fhr3d=$( printf "%03d" "${fhr}" )
 
-  if [ "${fhr9}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 >> ${NET}.${cycle}.1ho3.${id_domain}.grib2
+  if [ "${fhr3d}" -le "07" ]; then
+    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 >> ${NET}.${cycle}.1ho3.${id_domain}.grib2
   else
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.1ho3.${id_domain}.grib2
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.8ho3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.1ho3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.8ho3.${id_domain}.grib2
   fi
   (( fhr=fhr+1 ))
 done

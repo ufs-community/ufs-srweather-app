@@ -207,7 +207,7 @@ POST_STEP
 cp $DATA/out/pm2.5.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp ${DATA}/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
+  cp ${DATA}/data/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #------------------------------------------------------------------------
@@ -330,8 +330,8 @@ fi
 
 fhr=01
 while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
-  fhr2d=$( printf "%02d" "${fhr}" )
-  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile_pm25_bc
+  fhr3d=$( printf "%03d" "${fhr}" )
+  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr3d}.${id_domain}.grib2 >> tmpfile_pm25_bc
   (( fhr=fhr+1 ))
 done
 

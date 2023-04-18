@@ -207,7 +207,7 @@ POST_STEP
 cp ${DATA}/out/ozone.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp ${DATA}/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
+  cp ${DATA}/data/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #-----------------------------------------------------------------------------
@@ -348,17 +348,17 @@ rm -rf tmpfile
 
 fhr=01
 while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
-  fhr2d=$( printf "%02d" "${fhr}" )
+  fhr3d=$( printf "%03d" "${fhr}" )
   
-  cp ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 ${COMOUT}
+  cp ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr3d}.${id_domain}.grib2 ${COMOUT}
 
   # create GRIB file to convert to grid 227 then to GRIB2 for NDFD
-  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile
+  cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr3d}.${id_domain}.grib2 >> tmpfile
   if [ "${fhr}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile.1hr
+    cat ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr3d}.${id_domain}.grib2 >> tmpfile.1hr
   else
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr2d}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr3d}.${id_domain}.grib2 -d 1 -append -grib tmpfile.1hr
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon_bc.f${fhr3d}.${id_domain}.grib2 -d 2 -append -grib tmpfile.8hr
   fi
   (( fhr=fhr+1 ))
 done
