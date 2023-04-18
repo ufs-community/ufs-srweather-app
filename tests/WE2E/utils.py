@@ -432,6 +432,10 @@ def print_test_info(txtfile: str = "WE2E_test_info.txt") -> None:
         testname = filename[7:-5]
         dirname = os.path.basename(os.path.normpath(pathname))
         if os.path.islink(testfile):
+            if dirname == "default_configs":
+                # Don't document default configs since they are not traditional tests
+                # (and so don't follow the standard format)
+                continue
             targettestfile = os.readlink(testfile)
             targetfilename = os.path.basename(targettestfile)
             targettestname = targetfilename[7:-5]
