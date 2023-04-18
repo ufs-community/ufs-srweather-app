@@ -51,7 +51,6 @@ This is the ex-script for the task that runs PT_SOURCE.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then

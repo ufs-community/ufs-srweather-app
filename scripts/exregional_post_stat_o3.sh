@@ -51,7 +51,6 @@ This is the ex-script for the task that runs POST-STAT-O3.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
 if [ -z "${RUN_CMD_SERIAL:-}" ] ; then

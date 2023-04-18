@@ -51,7 +51,6 @@ This is the ex-script for the task that runs NEXUS.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 export KMP_AFFINITY=${KMP_AFFINITY_NEXUS_EMISSION}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_NEXUS_EMISSION}
 export OMP_STACKSIZE=${OMP_STACKSIZE_NEXUS_EMISSION}
