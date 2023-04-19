@@ -278,7 +278,7 @@ for fid in "${fids[@]}"; do
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
   mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
-  if [ $RUN_ENVIR != "nco" ]; then
+  if [ $RUN_ENVIR = "community" ]; then
     create_symlink_to_file target="${post_renamed_fn}" \
                          symlink="${FID}${symlink_suffix}" \
                          relative="TRUE"

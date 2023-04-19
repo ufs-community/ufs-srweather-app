@@ -61,7 +61,7 @@ This is the J-job script for the task that runs POST-STAT-O3.
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POST_STAT_O3}"
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir $DATA
   cd $DATA

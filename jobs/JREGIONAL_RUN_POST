@@ -90,7 +90,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" = "community" ]; then
   export COMOUT="${DATA}/postprd"
 fi
 mkdir -p "${COMOUT}"

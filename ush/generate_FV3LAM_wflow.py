@@ -586,7 +586,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             # is a relative path (relative to any cycle directory immediately under
             # the experiment directory).
             #
-            if RUN_ENVIR != "nco":
+            if RUN_ENVIR == "community":
                 fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant

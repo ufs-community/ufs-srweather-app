@@ -397,7 +397,7 @@ input files in the main experiment directory..."
 # be created.  Thus, in this case, there isn't really an advantage to 
 # using relative symlinks, so we use symlinks with absolute paths.
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" = "community" ]; then
   relative_link_flag="TRUE"
 else
   relative_link_flag="FALSE"
@@ -657,7 +657,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   hh=${cyc}
   fmn="00"
 
-  if [ "${RUN_ENVIR}" != "nco" ]; then
+  if [ "${RUN_ENVIR}" = "community" ]; then
     export COMOUT="${DATA}/postprd"
   fi
   mkdir -p "${COMOUT}"
@@ -690,7 +690,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
  
       mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
-      if [ $RUN_ENVIR != "nco" ]; then
+      if [ $RUN_ENVIR = "community" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
         create_symlink_to_file target="${post_renamed_fn}" \

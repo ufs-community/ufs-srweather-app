@@ -92,7 +92,7 @@ def set_gridparams_GFDLgrid(
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if run_envir != "nco":
+    if run_envir == "community":
         if num_left_margin_cells_on_t6g != num_right_margin_cells_on_t6g:
             print_err_msg_exit(
                 f"""
@@ -118,7 +118,7 @@ def set_gridparams_GFDLgrid(
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if run_envir != "nco":
+    if run_envir == "nco":
         if num_bot_margin_cells_on_t6g != num_top_margin_cells_on_t6g:
             print_err_msg_exit(
                 f"""

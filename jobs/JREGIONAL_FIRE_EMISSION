@@ -91,7 +91,7 @@ fi
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_FIRE_EMISSION}"
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir $DATA
   cd $DATA

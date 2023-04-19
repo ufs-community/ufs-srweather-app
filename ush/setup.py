@@ -992,7 +992,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     ]
 
     nco_config = expt_config["nco"]
-    if run_envir != "nco":
+    if run_envir == "community":
         # Put the variables in config dict.
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
