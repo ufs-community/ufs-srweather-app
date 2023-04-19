@@ -302,10 +302,14 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   ;;
 
 "GDAS")
+  if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    input_type="gaussian_nemsio"
+  elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
+    input_type="gaussian_netcdf"
+  fi 
+  external_model="GFS" 
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="GFS"
-  input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
 
