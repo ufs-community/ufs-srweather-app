@@ -111,8 +111,8 @@ Directories and files.
 <!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.<cyclestr>@Y@m@d@H</cyclestr>/dyn">
 <!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- else %}
-<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
-<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
+<!ENTITY DYN_DIR  "{{ dataroot }}/run_fcst.<cyclestr>@Y@m@d@H</cyclestr>/dyn">
+<!ENTITY PHY_DIR  "{{ dataroot }}/run_fcst.<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- endif %}
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run }}.@Y@m@d/@H">
 {%- else %}
