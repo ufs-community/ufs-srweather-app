@@ -102,11 +102,6 @@ machine=$(echo_lowercase $MACHINE)
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
   source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
   if [ "${machine}" != "wcoss2" ]; then
-    # source version file (build) only if it is specified in versions directory
-    VERSION_FILE="${HOMEaqm}/versions/${BUILD_VER_FN}"
-    if [ -f ${VERSION_FILE} ]; then
-      . ${VERSION_FILE}
-    fi
     module use "${HOMEaqm}/modulefiles"
     module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
     Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
