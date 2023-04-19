@@ -2521,6 +2521,7 @@ task_nexus_gfs_sfc:
   MEM_NEXUS_GFS_SFC: 2G
   WTIME_NEXUS_GFS_SFC: 00:30:00
   MAXTRIES_NEXUS_GFS_SFC: 2
+  NEXUS_GFS_SFC_OFFSET_HRS: 0
 
 #----------------------------
 # NEXUS_EMISSION config parameters
@@ -2555,6 +2556,7 @@ task_fire_emission:
   MEM_FIRE_EMISSION: 2G
   WTIME_FIRE_EMISSION: 00:30:00
   MAXTRIES_FIRE_EMISSION: 2
+  AQM_FIRE_FILE_OFFSET_HRS: 0
 
 #----------------------------
 # POINT_SOURCE config parameters
@@ -3033,7 +3035,6 @@ cpl_aqm_parm:
   AQM_FIRE_DIR: ""
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
-  AQM_FIRE_FILE_OFFSET_HRS: 0
   AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
 
   AQM_RC_FIRE_FREQUENCY: "static"
@@ -3051,11 +3052,8 @@ cpl_aqm_parm:
   NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
-  NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
   PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
-
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
-
