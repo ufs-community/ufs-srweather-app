@@ -59,12 +59,11 @@ class FunctionalTesting(unittest.TestCase):
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_fv3gfs_grib2_from_hpss(self):
-
         """Get FV3GFS grib2 files from HPSS for LBCS, offset by 6 hours"""
 
         for date in self.dates["FV3GFSgrib2"]:
-            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
-
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
                 # fmt: off
                 args = [
                     '--file_set', 'fcst',
@@ -94,7 +93,8 @@ class FunctionalTesting(unittest.TestCase):
         """Get FV3GFS nemsio files from HPSS for LBCS"""
 
         for date in self.dates["FV3GFSnemsio"]:
-            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
                 # fmt: off
                 args = [
@@ -127,7 +127,8 @@ class FunctionalTesting(unittest.TestCase):
         """
 
         for date in self.dates["FV3GFSgrib2"]:
-            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
                 # fmt: off
                 args = [
@@ -157,7 +158,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """In real time, GDAS is used for LBCS with a 6 hour offset."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
 
@@ -192,7 +194,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get GEFS grib2 a & b files for ICS offset by 6 hours."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
 
@@ -227,7 +230,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR ICS from hpss"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
@@ -256,7 +260,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR LBCS from hpss for 3 hour boundary conditions"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
@@ -284,7 +289,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR ICS from aws"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
@@ -312,7 +318,8 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR LBCS from aws for 3 hour boundary conditions"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
             
             # fmt: off
             args = [
@@ -343,7 +350,8 @@ class FunctionalTesting(unittest.TestCase):
         """Get RAP ICS from aws offset by 3 hours"""
 
         for date in self.dates["RAPhpss"]:
-            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
                 # fmt: off
                 args = [
@@ -372,7 +380,8 @@ class FunctionalTesting(unittest.TestCase):
         """Get RAP ICS from aws offset by 3 hours"""
 
         for date in self.dates["RAPaws"]:
-            with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
                 # fmt: off
                 args = [
@@ -401,7 +410,8 @@ class FunctionalTesting(unittest.TestCase):
         """Get RAP LBCS from aws for 6 hour boundary conditions offset
         by 3 hours. Use 09Z start time for longer LBCS."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
