@@ -45,7 +45,6 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that copies or fetches GFS surface
 data files from disk or HPSS.
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -86,12 +85,18 @@ GFS_SFC_DATA_INTVL="3"
 # copy files from local directory
 if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
-  cp "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+
+  relative_link_flag="FALSE"
+  gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
+  create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
+	                   relative="${relative_link_flag}"
 
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
     gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
     if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
-      cp "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ${GFS_SFC_STAGING_DIR}
+      gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
+      create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
+	                     relative="${relative_link_flag}"
     else
     print_err_msg_exit "\
 sfc file does not exist in the directory:

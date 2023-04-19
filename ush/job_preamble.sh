@@ -7,10 +7,10 @@
 #
 #-----------------------------------------------------------------------
 #
-export share_pid=${WORKFLOW_ID}_${PDY}${cyc}
+export share_pid="${PDY}${cyc}"
 if [ $# -ne 0 ]; then
     export pid=$share_pid
-    export jobid=${job}.${pid}
+    export jobid="${job}.${pid}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -132,7 +132,7 @@ export COMOUTwmo="${COMOUT}/wmo"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${DEBUG}" = "TRUE" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do

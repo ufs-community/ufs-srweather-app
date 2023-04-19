@@ -43,7 +43,6 @@ Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs BIAS-CORRECTION-PM25.
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #

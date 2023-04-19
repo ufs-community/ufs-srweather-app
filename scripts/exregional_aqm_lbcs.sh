@@ -45,7 +45,6 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that generates chemical and GEFS
 lateral boundary conditions.
 ========================================================================"
-set -x
 #
 # Set OpenMP variables.
 #

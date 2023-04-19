@@ -872,12 +872,10 @@ MODULES_RUN_TASK_FP script.
         <dependency>
           <or>
             <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
 	    <and>
               <datadep age="05:00">&DYN_DIR;f#fhr#.nc</datadep>
               <datadep age="05:00">&PHY_DIR;f#fhr#.nc</datadep>
 	    </and>
-      {%- endif %}
           </or>
         </dependency>
 
@@ -1156,15 +1154,7 @@ the <task> tag to be identical to the ones above for other output times.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
-{%- if run_task_run_post %}
-  {%- if fcst_len_hrs == -1 %}
-      <datadep age="00:00:00:05"><cyclestr>&COMIN_DIR;</cyclestr>/&TN_RUN_POST;<cyclestr>_@Y@m@d@H</cyclestr>&CMPEXT;</datadep>
-  {%- else %}
-      <metataskdep metatask="&TN_RUN_POST;{{ uscore_ensmem_name }}"/>
-  {%- endif %}
-{%- else %}
       <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-{%- endif %}
     </dependency>
   </task>
 {%- endif %}

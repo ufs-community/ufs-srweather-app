@@ -45,7 +45,6 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs the post-processor (UPP) on
 the output files corresponding to a specified forecast hour.
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -173,13 +172,8 @@ else
     DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
 
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc"
-  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc"
-else
-  dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
-  phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
-fi
+dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.

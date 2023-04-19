@@ -46,7 +46,6 @@ This is the ex-script for the task that generates initial condition
 (IC), surface, and zeroth hour lateral boundary condition (LBC0) files
 (in NetCDF format) for the FV3-LAM.
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #

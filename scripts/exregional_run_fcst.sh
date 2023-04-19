@@ -45,7 +45,6 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that runs a forecast with FV3 for the
 specified cycle.
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -731,8 +730,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   mv ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-    mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    cp ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+    cp ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
   done
 fi
 #

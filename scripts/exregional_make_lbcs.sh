@@ -46,7 +46,6 @@ This is the ex-script for the task that generates lateral boundary con-
 dition (LBC) files (in NetCDF format) for all LBC update hours (except
 hour zero).
 ========================================================================"
-set -x
 #
 #-----------------------------------------------------------------------
 #
