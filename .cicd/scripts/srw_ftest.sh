@@ -83,7 +83,7 @@ set -e -u
 
 cd ${workspace}/ush
         # Consistency check ...
-        ./config_utils.py -c $(pwd)/config.yaml -v $(pwd)/config_defaults.yaml
+        ./config_utils.py -c ./config.yaml -v ./config_defaults.yaml -k "(\!rocoto\b)"
         # Generate workflow files ...
         ./generate_FV3LAM_wflow.py
 cd ${workspace}
