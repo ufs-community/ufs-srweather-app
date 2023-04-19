@@ -99,7 +99,9 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+fi
 
 if [ "${machine}" != "wcoss2" ]; then
   # source version file (build) only if it is specified in versions directory

@@ -49,7 +49,9 @@ fi
 
 # Source modulefile for this machine
 WFLOW_MOD_FN="wflow_${machine}"
-source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+fi
 module use "${HOMEaqm}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || { echo "ERROR:
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
