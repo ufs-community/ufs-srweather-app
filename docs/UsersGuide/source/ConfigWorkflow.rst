@@ -7,8 +7,8 @@ To create the experiment directory and workflow when running the SRW Application
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
-.. note:: 
-   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception in the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>.
+.. note::
+   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception in the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
 
 The following is a list of the parameters in the ``config_defaults.yaml`` file. For each parameter, the default value and a brief description is provided. 
 
@@ -545,7 +545,7 @@ Non-default parameters for the ``make_orog`` task are set in the ``task_make_oro
 
 ``OROG_DIR``: (Default: "")
    The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
-f
+
 .. _make-sfc-climo:
 
 MAKE_SFC_CLIMO Configuration Parameters
@@ -1033,9 +1033,10 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``TESTBED_FIELDS_FN``: (Default: "")
    The file which lists grib2 fields to be extracted for testbed files.  Empty string means no need to generate testbed files.
 
+.. _PlotVars:
 
-Additional Parameters
-------------------------
+PLOT_ALLVARS Configuration Parameters
+========================================
 
 Typically, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
 

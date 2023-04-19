@@ -194,7 +194,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G, |
    |                             | GFDLgrid_USE_NUM_CELLS_IN_FILENAMES                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_orog              | KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG |
+   | task_make_orog              | KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG                     |
    |                             | OMP_STACKSIZE_MAKE_OROG, OROG_DIR                                     |
    +-----------------------------+-----------------------------------------------------------------------+
    | task_make_sfc_climo         | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
@@ -695,7 +695,7 @@ To turn on verification tasks in the workflow, include the ``parm/wflow/verify.y
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
 
-The ``verify.yaml`` file includes the definitions of several common verification tasks by default. They are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
+The ``verify.yaml`` file includes the definitions of several common verification tasks by default. They are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
 
 To turn off a task, simply include its entry from ``verify.yaml`` as an empty YAML entry. For example, to turn off PointStat tasks:
 
