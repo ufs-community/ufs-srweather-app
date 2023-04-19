@@ -728,6 +728,27 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
         rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
 
+    # check the availability of restart intervals for restart capability of forecast
+    do_fcst_restart = fcst_config.get("DO_FCST_RESTART")
+    if do_fcst_restart:
+        restart_interval = fcst_config.get("RESTART_INTERVAL")
+        restart_hrs = []
+        if " " in str(restart_interval):
+            restart_hrs = restart_interval.split()
+        else:
+            restart_hrs.append(str(restart_interval))
+
+        lbc_spec_intvl_hrs = expt_config["task_get_extrn_lbcs"]["LBC_SPEC_INTVL_HRS"]
+        for irst in restart_hrs:
+            rem_rst = int(irst) % lbc_spec_intvl_hrs
+            if rem_rst != 0:
+                raise Exception(
+                    f"""
+                The restart interval is not divided by LBC_SPEC_INTVL_HRS:
+                  RESTART_INTERVAL = {irst}
+                  LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}"""
+                )
+
     #
     # -----------------------------------------------------------------------
     #

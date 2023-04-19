@@ -48,7 +48,6 @@ data files from disk or HPSS.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 DATA="${DATA}/tmp_GFS_SFC"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA

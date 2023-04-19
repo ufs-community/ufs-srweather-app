@@ -1,5 +1,36 @@
 #!/bin/bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# This J-JOB script runs the radar reflectivity preprocess 
+#      for the FV3-LAM model
+#
+# Description:
+#
+#   RRFS runs a pre-processing task on MRMS radar reflectivity files.
+#   Specifically the process_radarref task executes process_NSSL_mosaic.exe
+#   from rrfs-utl on files 
+#       like MergedReflectivityQC_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.grib2.
+#
+# Arguments needed for the corresponding ex-script
+#
+#   FIXgsi
+#   OBSPATH_NSSLMOSIAC 
+#   DO_SPINUP
+#   CYCLE_TYPE 
+#   CYCL_HRS_SPINSTART
+#   CYCL_HRS_PRODSTART
+#   IO_LAYOUT_Y
+#   RADARREF_TIMELEVEL
+#   RADARREF_MINS
+#   RADAR_REF_THINNING
+#   OBS_SUFFIX
+#  
+#-----------------------------------------------------------------------
+#
+
 #
 #-----------------------------------------------------------------------
 #
@@ -8,7 +39,8 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_process_radarref" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -27,7 +59,7 @@ source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -41,71 +73,45 @@ print_info_msg "
 ========================================================================
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
-
-This is the ex-script for the task that runs PT_SOURCE.
+This is the J-job script for the task that runs a radar reflectivity 
+preprocess with FV3 for the specified cycle.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set run command.
+# Create the working directory under the cycle directory.
 #
 #-----------------------------------------------------------------------
 #
-eval ${PRE_TASK_CMDS}
-
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA:-${COMIN}/process_radarref_spinup}"
+else
+  DATA="${DATA:-${COMIN}/process_radarref}"
 fi
-nstep=$(( FCST_LEN_HRS+1 ))
-yyyymmddhh="${PDY}${cyc}"
-
+mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-# Move to the working directory
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_PT_SOURCE"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
+$SCRIPTSdir/exregional_process_radarref.sh || print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-# Set the directories for CONUS/HI/AK
+# Run job postamble.
 #
 #-----------------------------------------------------------------------
 #
-PT_SRC_PRECOMB="${PT_SRC_BASEDIR}"
+job_postamble
 #
 #-----------------------------------------------------------------------
 #
-# Run stack-pt-mergy.py if file does not exist.
-#
-#-----------------------------------------------------------------------
-#
-if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
-fi
-
-# Move to COMIN
-mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
-
-#
-#-----------------------------------------------------------------------
-#
-# Print message indicating successful completion of script.
-#
-#-----------------------------------------------------------------------
-#
-print_info_msg "
-========================================================================
-PT_SOURCE has successfully generated output files !!!!
-
-Exiting script:  \"${scrfunc_fn}\"
-In directory:    \"${scrfunc_dir}\"
-========================================================================"
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
 #
 #-----------------------------------------------------------------------
 #

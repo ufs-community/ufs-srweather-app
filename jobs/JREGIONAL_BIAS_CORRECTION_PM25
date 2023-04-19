@@ -65,10 +65,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
 
 TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
-# The earliest day of training data is August 1 2020
-if [ ${TMP_STDAY} -le 20220810 ]; then 
-  TMP_STDAY=20220810 
-fi
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}
 #
 #-----------------------------------------------------------------------
