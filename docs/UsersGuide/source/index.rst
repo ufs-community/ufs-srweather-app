@@ -22,6 +22,7 @@ UFS Short-Range Weather App Users Guide
    InputOutputFiles
    LAMGrids
    ConfigWorkflow
+   DefineWorkflow
    RocotoInfo
    WE2Etests
    TemplateVars
