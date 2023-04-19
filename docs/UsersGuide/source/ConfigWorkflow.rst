@@ -110,7 +110,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 
 Parameters for Running Without a Workflow Manager
 -----------------------------------------------------
-These settings set run commands for platforms without a workflow manager. Values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
+These settings define the run commands for the platform.
 
 ``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
    The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a different command for launching an MPI-enabled executable depending on their machine and MPI installation.
@@ -151,7 +151,7 @@ METplus Parameters
       * ``SS`` refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_CCPA`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA: true``). 
+   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_CCPA`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify.yaml``).
 
    METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
@@ -159,7 +159,7 @@ METplus Parameters
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_obs_ccpa.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_obs_ccpa.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_MRMS`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS: true``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_MRMS`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
    
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
@@ -167,7 +167,7 @@ METplus Parameters
    METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``scripts/exregional_get_obs_mrms.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``ush/mrms_pull_topofhour.py``.
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_NDAS`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS: true``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
+   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_NDAS`` task (activated in the workflow by automatically when using the taskgroup file ``parm/wflow/verify.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
    
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_obs_ndas.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
@@ -415,38 +415,6 @@ A standard set of environment variables has been established for *nco* mode to s
 ``OPSROOT``: (Default: "")
   The operations root directory in *nco* mode.
 
-Verification Tasks
---------------------
-
-``RUN_TASK_GET_OBS_CCPA``: (Default: false)
-   Flag that determines whether to run the ``GET_OBS_CCPA`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. See :numref:`Section %s <get-obs-ccpa>` for additional parameters related to this task.
-
-``RUN_TASK_GET_OBS_MRMS``: (Default: false)
-   Flag that determines whether to run the ``GET_OBS_MRMS`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-mrms>` for additional parameters related to this task.
-
-``RUN_TASK_GET_OBS_NDAS``: (Default: false)
-   Flag that determines whether to run the ``GET_OBS_NDAS`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-ndas>` for additional parameters related to this task.
-
-``RUN_TASK_VX_GRIDSTAT``: (Default: false)
-   Flag that determines whether to run the grid-stat verification task. The :ref:`MET Grid-Stat tool <grid-stat>` provides verification statistics for a matched forecast and observation grid. See :numref:`Section %s <VX-gridstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_POINTSTAT``: (Default: false)
-   Flag that determines whether to run the point-stat verification task. The :ref:`MET Point-Stat tool <point-stat>` provides verification statistics for forecasts at observation points (as opposed to over gridded analyses). See :numref:`Section %s <VX-pointstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_ENSGRID``: (Default: false)
-   Flag that determines whether to run the ensemble-stat verification for gridded data task. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Grid-Stat tool <grid-stat>`. See :numref:`Section %s <VX-ensgrid>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_ENSPOINT``: (Default: false)
-   Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-.. COMMENT: COMMENT: Define "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
-
-Plotting Task
-----------------
-
-``RUN_TASK_PLOT_ALLVARS:`` (Default: false)
-   Flag that determines whether to run python plotting scripts.
-
 .. _make-grid:
 
 MAKE_GRID Configuration Parameters
@@ -460,7 +428,7 @@ Basic Task Parameters
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
 
    ``GRID_DIR``: (Default: "")
-      The directory containing pre-generated grid files when ``RUN_TASK_MAKE_GRID`` is set to false.
+      The directory containing pre-generated grid files when the ``MAKE_GRID`` task is not meant to run.
 
 .. _ESGgrid:
 
@@ -820,7 +788,7 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: false)
-   Flag that determines whether to use the inline post option. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to false) in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
+   Flag that determines whether to use the inline post option. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
 Computational Parameters
 ----------------------------
@@ -983,7 +951,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
 ``SFC_CLIMO_INPUT_DIR``: (Default: "")
-   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if ``RUN_TASK_MAKE_SFC_CLIMO: true``.
+   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` is meant to run.
 
 ``SYMLINK_FIX_FILES``: (Default: true)
    Flag that indicates whether to symlink or copy fix files to the experiment directory. 
