@@ -126,7 +126,7 @@ class FunctionalTesting(unittest.TestCase):
         times > 40 hours, since they come from a different archive file.
         """
 
-        for date in self.dates["FV3GFSgrib2"]:
+        for date in self.dates["FV3GFSnetcdf"]:
             with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
                 os.chdir(tmp_dir)
 
@@ -134,7 +134,7 @@ class FunctionalTesting(unittest.TestCase):
                 args = [
                     '--file_set', 'fcst',
                     '--config', self.config,
-                    '--cycle_date', '2022060112',
+                    '--cycle_date', date,
                     '--data_stores', 'hpss',
                     '--external_model', 'FV3GFS',
                     '--fcst_hrs', '24', '48', '24',
@@ -161,7 +161,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -197,7 +197,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -320,7 +320,7 @@ class FunctionalTesting(unittest.TestCase):
 
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
-            
+
             # fmt: off
             args = [
                 '--file_set', 'fcst',
