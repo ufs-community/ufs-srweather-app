@@ -998,7 +998,7 @@ def parse_args(argv):
     parser.add_argument(
         "--file_templates",
         help="One or more file template strings defining the naming \
-        convention the be used for the files retrieved from disk. If \
+        convention to be used for the files retrieved from disk. If \
         not provided, the default names from hpss are used.",
         nargs="*",
     )

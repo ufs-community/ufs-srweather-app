@@ -16,7 +16,7 @@ workflow:
   USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: test_community
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  PREDEF_GRID_NAME: RRFS_NA_13km
   DATE_FIRST_CYCL: '2023042018'
   DATE_LAST_CYCL: '2023042018'
   FCST_LEN_HRS: 12
@@ -34,9 +34,6 @@ task_run_fcst:
   QUILTING: true
 task_plot_allvars:
   COMOUT_REF: ""
-task_get_da_obs:
-  RAP_OBS_BUFR: /scratch2/BMC/public/data/grids/rap/obs
-  RAP_OBS_NSSLMOSAIC: /scratch2/BMC/public/data/radar/nssl/mrms/conus
 task_process_bufr:
   CYCLE_TYPE: spinup
 global:
