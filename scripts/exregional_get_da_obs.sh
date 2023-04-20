@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_da_obs|task_run_anl|task_run_enkf" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_get_da_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -63,6 +63,14 @@ else
     EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 
+#
+#-----------------------------------------------------------------------
+#
+# retrieve RAP obs bufr files
+#
+#-----------------------------------------------------------------------
+#
+
 # Start array for templates for files we will retrieve
 template_arr=()
 
@@ -73,20 +81,13 @@ if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
 else
   RAP=rap
 fi
-# Lightning obs
+# Bufr lightning obs
 template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.lghtng.tm00.bufr_d")
 # NASA LaRC cloud bufr file
 template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.lgycld.tm00.bufr_d")
 # Prepbufr obs file
 template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.prepbufr.tm00")
 
-#
-#-----------------------------------------------------------------------
-#
-# Call script to retrieve RAP obs bufr files
-#
-#-----------------------------------------------------------------------
-#
 additional_flags=""
 if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   additional_flags="$additional_flags \
@@ -118,10 +119,52 @@ mv_vrfy "${DATA}/${template_arr[0]}" "${DATA}/lghtngbufr"
 mv_vrfy "${DATA}/${template_arr[1]}" "${DATA}/lgycld.bufr_d"
 mv_vrfy "${DATA}/${template_arr[2]}" "${DATA}/prepbufr"
 
+#
+#-----------------------------------------------------------------------
+#
+# retrieve NLDN NetCDF lightning obs
+#
+#-----------------------------------------------------------------------
+#
 
-# NASA LaRC cloud bufr obs
-#LARC_CLOUD_TEMPLATES="['${YYYYMMDDHH}.rap_e.t${HH}z.lgycld.tm00.bufr_d','${YYYYMMDDHH}.rap.t${HH}z.lgycld.tm00.bufr_d']"
+template_arr=()
+for incr in $(seq -25 5 5) ; do
+  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+  template_arr+=("${filedate}0005r")
+done
 
+cmd="
+python3 -u ${USHdir}/retrieve_data.py \
+  --debug \
+  --file_set obs \
+  --config ${PARMdir}/data_locations.yml \
+  --cycle_date ${PDY}${cyc} \
+  --data_stores disk hpss \
+  --data_type RAP_obs \
+  --output_path ${DATA} \
+  --summary_file ${EXTRN_DEFNS} \
+  --input_file_path ${NLDN_LIGHTNING} \
+  --file_templates ${template_arr[@]} \
+  $additional_flags"
+
+$cmd || print_err_msg_exit "\
+Call to retrieve_data.py failed with a non-zero exit status.
+
+The command was:
+${cmd}
+"
+# Link to GSI-expected filenames
+for i in "${template_arr[@]}"; do
+  mv_vrfy "${DATA}/${template_arr[0]}" "${DATA}/NLDN_lightning_${i}"
+done
+
+#
+#-----------------------------------------------------------------------
+#
+# retrieve NLDN NetCDF lightning obs
+#
+#-----------------------------------------------------------------------
+#
 
 
 #

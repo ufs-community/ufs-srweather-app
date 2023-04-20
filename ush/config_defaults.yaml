@@ -447,12 +447,9 @@ platform:
   #
   # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
   #
-  # LIGHTNING_ROOT: location of lightning observations
-  #
   #-----------------------------------------------------------------------
   #
   OBSPATH_NSSLMOSIAC: ""
-  LIGHTNING_ROOT: ""
     
 #-----------------------------
 # WORKFLOW config parameters

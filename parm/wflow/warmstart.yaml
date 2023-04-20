@@ -229,3 +229,13 @@ task_process_bufr:
       attrs:
         task: get_da_obs
 
+task_process_lightning:
+  <<: *default_task
+  nnodes: 1
+  ppn: 1
+  command: '&LOAD_MODULES_RUN_TASK_FP; "task_process_lightning" "&JOBSdir;/JREGIONAL_PROCESS_LIGHTNING"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}.log'
+  dependency:
+    taskdep:
+      attrs:
+        task: get_da_obs
