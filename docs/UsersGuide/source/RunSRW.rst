@@ -708,7 +708,7 @@ To turn off a task, simply include its entry from ``verify.yaml`` as an empty YA
        metatask_PointStat_mem#mem#:
 
 
-More information about configuring the ``rocoto:`` section can be found here.
+More information about configuring the ``rocoto:`` section can be found in :numref:`Section %s <DefineWorkflow>`.
 
 If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
