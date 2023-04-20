@@ -1,0 +1,52 @@
+metadata:
+  description: >-
+    Sample community config
+user:
+  RUN_ENVIR: community
+  MACHINE: hera
+  ACCOUNT: fv3lam
+platform:
+  MET_INSTALL_DIR: ""
+  METPLUS_PATH: ""
+  CCPA_OBS_DIR: ""
+  MRMS_OBS_DIR: ""
+  NDAS_OBS_DIR: ""
+  EXTRN_MDL_DATA_STORES: hpss
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  EXPT_SUBDIR: test_community
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2023042018'
+  DATE_LAST_CYCL: '2023042018'
+  FCST_LEN_HRS: 12
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 6
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  QUILTING: true
+task_plot_allvars:
+  COMOUT_REF: ""
+task_get_da_obs:
+  RAP_OBS_BUFR: /scratch2/BMC/public/data/grids/rap/obs
+  RAP_OBS_NSSLMOSAIC: /scratch2/BMC/public/data/radar/nssl/mrms/conus
+task_process_bufr:
+  CYCLE_TYPE: spinup
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/warmstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00

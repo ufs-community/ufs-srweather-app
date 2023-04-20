@@ -57,7 +57,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export DATA="${COMINext}"
     mkdir_vrfy -p "${DATA}"
 else
-    export DATA="${COMIN}/gsi"
+    export DATA="${COMIN}/obs"
     mkdir_vrfy -p "${DATA}"
 fi
 #

@@ -2026,6 +2026,7 @@ task_process_bufr:
   #-----------------------------------------------------------------------
   #
   OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
+  CYCLE_TYPE: spinup
 
 #-----------------------------
 # NEXUS_EMISSION config parameters
