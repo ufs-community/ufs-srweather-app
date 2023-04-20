@@ -1,0 +1,235 @@
+default_task_verify: &default_task
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr '@Y@m@d'
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+    ENSMEM_INDX: "#mem#"
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: '&NCORES_PER_NODE;'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_get_obs_ccpa:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"'
+  envars:
+    <<: *default_vars
+    ACCUM_HH: '01'
+    OBS_DIR: '&CCPA_OBS_DIR;'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
+
+task_get_obs_mrms:
+  <<: *default_task
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&MRMS_OBS_DIR;'
+    VAR: 'REFC RETOP'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
+
+task_get_obs_ndas:
+  <<: *default_task
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&NDAS_OBS_DIR;'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"'
+  queue: "&QUEUE_HPSS;"
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  walltime: 02:00:00
+
+task_run_MET_Pb2nc_obs:
+  <<: *default_task
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
+  envars:
+    <<: *default_vars
+    VAR: SFC
+    ACCUM_HH: '01'
+    obs_or_fcst: obs
+    OBTYPE: NDAS
+    OBS_DIR: '&NDAS_OBS_DIR;'
+  dependency:
+    and:
+      datadep:
+        text: "&NDAS_OBS_DIR;"
+      or:
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ndas
+        taskdep:
+          attrs:
+            task: get_obs_ndas
+
+metatask_vx_ens_member:
+  attrs:
+    mode: serial
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  metatask_GridStat_MRMS_mem#mem#:
+    var:
+      VAR: REFC RETOP
+    task_run_MET_GridStat_vx_#VAR#_mem#mem#:
+      <<: *default_task
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      envars:
+        <<: *default_vars
+        OBS_DIR: '&MRMS_OBS_DIR;'
+        VAR: '#VAR#'
+        ACCUM_HH: '01'
+      walltime: 02:00:00
+      dependency:
+        and:
+          or_get_obs: # Ensure get_obs task is complete if it's turned on
+            not:
+              taskvalid:
+                attrs:
+                  task: get_obs_mrms
+            and:
+              taskvalid:
+                attrs:
+                  task: get_obs_mrms
+              taskdep:
+                attrs:
+                  task: get_obs_mrms
+          or_do_post: &post_files_exist
+            and_run_post: # If post was meant to run, wait on the whole post metatask
+              taskvalid:
+                attrs:
+                  task: run_post_mem#mem#_f000
+              metataskdep:
+                attrs:
+                  metatask: run_ens_post
+            and_inline_post: # If inline post ran, wait on the forecast task to complete
+              not:
+                taskvalid:
+                  attrs:
+                    task: run_post_mem#mem#_f000
+              taskdep:
+                attrs:
+                  task: run_fcst_mem#mem#
+
+  metatask_PointStat_mem#mem#:
+    var:
+      VAR: SFC UPA
+    task_run_MET_PointStat_vx_#VAR#_mem#mem#:
+      <<: *default_task
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
+      envars:
+        <<: *default_vars
+        FHR: '#FCST_HR_LIST#'
+        OBS_DIR: '&NDAS_OBS_DIR;'
+        VAR: '#VAR#'
+      walltime: 01:00:00
+      dependency:
+        and:
+          or_do_post:
+            <<: *post_files_exist
+          or_get_obs: # Get obs complete if turned on
+            not:
+              taskvalid:
+                attrs:
+                  task: get_obs_ndas
+            and:
+              taskvalid:
+                attrs:
+                  task: get_obs_ndas
+              taskdep:
+                attrs:
+                  task: get_obs_ndas
+
+metatask_GridStat_APCP_acc:
+  attrs:
+    mode: serial
+  var:
+    ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
+
+
+  task_run_MET_PcpCombine_obs_APCP#ACCUM_HR#h:
+    <<: *default_task
+    attrs:
+      cycledefs: forecast
+      maxtries: '2'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+    envars:
+      <<: *default_vars
+      VAR: APCP
+      ACCUM_HH: '#ACCUM_HR#'
+      obs_or_fcst: obs
+      OBTYPE: CCPA
+      OBS_DIR: '&CCPA_OBS_DIR;'
+    dependency:
+      or:
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ccpa
+        and:
+          taskdep:
+            attrs:
+              task: get_obs_ccpa
+          datadep:
+            text: "&CCPA_OBS_DIR;"
+
+  metatask_vx_ens_member_acc:
+    var:
+      mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+
+    task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+      <<: *default_task
+      attrs:
+        cycledefs: forecast
+        maxtries: '2'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      envars:
+        <<: *default_vars
+        VAR: APCP
+        ACCUM_HH: '#ACCUM_HR#'
+        obs_or_fcst: fcst
+        OBTYPE: CCPA
+        OBS_DIR: '&CCPA_OBS_DIR;'
+      dependency:
+        or_do_post:
+          <<: *post_files_exist
+
+    task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
+      <<: *default_task
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      envars:
+        <<: *default_vars
+        FHR: '#FCST_HR_LIST#'
+        OBS_DIR: '&CCPA_OBS_DIR;'
+        VAR: APCP
+        ACCUM_HH: '#ACCUM_HR#'
+      walltime: 02:00:00
+      dependency:
+        and:
+          taskdep_obs:
+            attrs:
+              task: run_MET_PcpCombine_obs_APCP#ACCUM_HR#h
+          taskdep_fcst:
+            attrs:
+              task: run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#

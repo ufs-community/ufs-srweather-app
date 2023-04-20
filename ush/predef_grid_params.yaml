@@ -204,7 +204,7 @@
   DT_ATMOS: 36
   LAYOUT_X: 28
   LAYOUT_Y: 28
-  BLOCKSIZE: 29
+  BLOCKSIZE: 28
   QUILTING:
     WRTCMP_write_groups: 1
     WRTCMP_write_tasks_per_group: 28

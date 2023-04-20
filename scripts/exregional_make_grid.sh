@@ -394,11 +394,11 @@ mv_vrfy "${grid_fp_orig}" "${grid_fp}"
 #-----------------------------------------------------------------------
 #
 # If there are pre-existing orography or climatology files that we will
-# be using (i.e. if RUN_TASK_MAKE_OROG or RUN_TASK_MAKE_SURF_CLIMO is set
-# to "FALSE", in which case RES_IN_FIXLAM_FILENAMES will not be set to a
-# null string), check that the grid resolution contained in the variable
-# CRES set above matches the resolution appearing in the names of the
-# preexisting orography and/or surface climatology files.
+# be using (i.e. if task_make_grid or task_make_sfc_climo ran in the
+# experiment, RES_IN_FIXLAM_FILENAMES will not be set to a null string),
+# check that the grid resolution contained in the variable CRES set
+# above matches the resolution appearing in the names of the preexisting
+# orography and/or surface climatology files.
 #
 #-----------------------------------------------------------------------
 #

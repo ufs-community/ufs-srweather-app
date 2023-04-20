@@ -53,6 +53,7 @@ This is the ex-script for the task that runs BIAS-CORRECTION-PM25.
 export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_PM25}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_PM25}
 export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_PM25}
+export OMP_PLACES=cores
 #
 #-----------------------------------------------------------------------
 #
@@ -84,8 +85,6 @@ rm_vrfy -rf $DATA
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
-set -x
-
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}
 yyyy_m1=${PDYm1:0:4}
@@ -105,15 +104,11 @@ yyyymm_m3=${PDYm3:0:6}
 if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
-
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
+
 
 #-----------------------------------------------------------------------------
 # STEP 1: Retrieve AIRNOW observation data

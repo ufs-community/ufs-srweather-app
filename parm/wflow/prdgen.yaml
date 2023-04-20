@@ -1,0 +1,35 @@
+metatask_run_prdgen:
+  var:
+    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  metatask_run_prdgen_hrs_mem#mem#:
+    var:
+      fhr: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{{ " %03d" % h }}{% endfor %}'
+      cycledef: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h <= workflow.FCST_LEN_HRS %}forecast {% else %}long_forecast {% endif %}{% endfor %}'
+    task_run_prdgen_mem#mem#_f#fhr#:
+      account: '&ACCOUNT;'
+      attrs:
+        cycledefs: '#cycledef#'
+        maxtries: 1
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_prdgen" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"'
+      envars:
+        GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+        USHdir: '&USHdir;'
+        PDY: !cycstr '@Y@m@d'
+        cyc: !cycstr '@H'
+        fhr: '#fhr#'
+        SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+        ENSMEM_INDX: '#mem#'
+        nprocs: '{{ parent.nnodes * parent.ppn }}'
+      join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+      native: '{{ platform.SCHED_NATIVE_CMD }}'
+      nodes: '{{ nnodes }}:ppn={{ ppn }}'
+      nodesize: "&NCORES_PER_NODE;"
+      nnodes: 1
+      partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+      ppn: 22
+      queue: '&QUEUE_DEFAULT;'
+      walltime: 00:30:00
+      dependency:
+        taskdep:
+          attrs:
+            task: run_post_mem#mem#_f#fhr#

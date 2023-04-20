@@ -53,6 +53,7 @@ This is the ex-script for the task that runs BIAS-CORRECTION-O3.
 export KMP_AFFINITY=${KMP_AFFINITY_BIAS_CORRECTION_O3}
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_BIAS_CORRECTION_O3}
 export OMP_STACKSIZE=${OMP_STACKSIZE_BIAS_CORRECTION_O3}
+export OMP_PLACES=cores
 #
 #-----------------------------------------------------------------------
 #
@@ -84,8 +85,6 @@ rm_vrfy -rf "$DATA"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
-set -x
-
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}
 yyyy_m1=${PDYm1:0:4}
@@ -107,12 +106,8 @@ if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
 fi
 
 if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 
 #-----------------------------------------------------------------------------
@@ -211,7 +206,7 @@ fi
 
 mkdir_vrfy -p ${DATA}/data/sites
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
- 
+
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
 POST_STEP
