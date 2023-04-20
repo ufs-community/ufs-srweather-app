@@ -361,9 +361,9 @@ def cfg_to_shell_str(cfg, kname=None):
             shell_str_sub += cfg_to_shell_str(v, n_kname)
             continue
         elif isinstance(v, list):
-            for va in v:
+            for i,va in enumerate(v):
                 if isinstance(va, dict):
-                    shell_str_sub += cfg_to_shell_str(va, n_kname)
+                    shell_str_sub += cfg_to_shell_str(va, f"{n_kname}__{i}")
                 else:
                     v1 = list_to_str(v)
                     shell_str_sub += f"{k}={v1}\n"
@@ -386,6 +386,16 @@ def cfg_to_shell_str(cfg, kname=None):
 ##########
 # INI
 ##########
+def modify_type(cfg, return_string):
+    """ Recursively modify values of dictionary from string to type """
+
+    for k,v in cfg.items():
+        if isinstance(v, dict):
+            modify_type(v, return_string)
+        else:
+            cfg[k] = str_to_list(v, return_string)
+
+
 def load_ini_config(config_file_or_string, return_string=0):
     """Load a config file or string with a format similar to Microsoft's INI files"""
 
@@ -397,10 +407,34 @@ def load_ini_config(config_file_or_string, return_string=0):
         config.read_string(config_file_or_string)
 
     config_dict = {s: dict(config.items(s)) for s in config.sections()}
-    for _, vs in config_dict.items():
-        for k, v in vs.items():
-            vs[k] = str_to_list(v, return_string)
-    return config_dict
+    modify_type(config_dict, return_string)
+
+    final_dict = {}
+    for k,v in config_dict.items():
+        d = final_dict
+        if "." in k:
+            keys = k.split(".")
+            for kn in keys:
+                if "__" in kn:
+                    kids = kn.split("__")
+                    k0 = kids[0]
+                    idx = int(kids[1])
+                    if not (k0 in d):
+                        d[k0] = []
+                        d[k0].append({})
+                    else:
+                        if len(d[k0]) <= idx:
+                            d[k0].append({})
+                    d = d[k0][idx]
+                else:
+                    if not (kn in d):
+                        d[kn] = {}
+                    d = d[kn]
+            d.update(v)
+        else:
+            d[k] = v
+
+    return final_dict
 
 
 def get_ini_value(config, section, key):
@@ -428,9 +462,9 @@ def cfg_to_ini_str(cfg, kname=None):
             ini_str_sub += cfg_to_ini_str(v, n_kname)
             continue
         elif isinstance(v, list):
-            for va in v:
+            for i,va in enumerate(v):
                 if isinstance(va, dict):
-                    ini_str_sub += cfg_to_ini_str(va, n_kname)
+                    ini_str_sub += cfg_to_ini_str(va, f"{n_kname}__{i}")
                 else:
                     v1 = list_to_str(v, True)
                     ini_str_sub += f"{k}={v1}\n"
@@ -501,7 +535,7 @@ def dict_to_xml(d, elem):
         elif isinstance(v, dict):
             if k == "attrib":
                 for ka, va in v.items():
-                    elem.set(ka, va)
+                    elem.set(ka, str(va))
             else:
                 child = ET.Element(k)
                 dict_to_xml(v, child)
