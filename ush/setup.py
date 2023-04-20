@@ -672,7 +672,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
-
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
     date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
     date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
