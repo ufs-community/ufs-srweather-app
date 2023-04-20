@@ -53,13 +53,14 @@ This script retrieves observation data for RRFS data assimilation tasks.
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="${COMINext}"
-    mkdir_vrfy -p "${DATA}"
-else
-    export DATA="${COMIN}/obs"
-    mkdir_vrfy -p "${DATA}"
-fi
+export DATA="${COMIN}/obs"
+mkdir_vrfy -p "${DATA}"
+
+# Set needed date/time variables
+export START_DATE=$(echo "${PDY} ${cyc}")
+export YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
+export HH=${YYYYMMDDHH:8:2}
+
 #
 #-----------------------------------------------------------------------
 #

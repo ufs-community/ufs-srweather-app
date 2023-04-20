@@ -57,10 +57,6 @@ Entering working directory for observation files ..."
 
 cd_vrfy ${DATA}
 
-START_DATE=$(echo "${PDY} ${cyc}")
-YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-HH=${YYYYMMDDHH:8:2}
-
 if [ $RUN_ENVIR = "nco" ]; then
     EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
