@@ -154,8 +154,8 @@ else
       print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
     POST_STEP
   fi
-  # Move retrieved files to staging directory
-  mv_vrfy ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${GFS_SFC_STAGING_DIR}
+  # Link retrieved files to staging directory
+  ln_vrfy -sf ${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc .
 
 fi  
 #

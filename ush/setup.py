@@ -8,7 +8,6 @@ import datetime
 import traceback
 import logging
 from textwrap import dedent
-from datetime import timedelta
 
 import yaml
 
@@ -34,7 +33,6 @@ from python_utils import (
     get_ini_value,
     str_to_list,
     extend_yaml,
-    date_to_str,
 )
 
 from set_cycle_dates import set_cycle_dates
@@ -727,24 +725,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
         rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
 
-    # add cycledefs excluding the first cycle for AQM
-    cpl_aqm = expt_config['cpl_aqm_parm']['CPL_AQM']
-    if cpl_aqm:
-        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-        if date_first_cycl == date_last_cycl:
-            cycl_next = date_to_str(date_first_cycl, format="%Y%m%d%H")
-        else:
-            cycl_next = date_to_str(date_first_cycl + timedelta(hours=incr_cycl_freq), format="%Y%m%d%H")            
-
-        first = date_first_cycl.strftime("%Y%m%d%H")
-        last = date_last_cycl.strftime("%Y%m%d%H")
-
-        cycled_from_second = []
-        if cycl_next != first:
-            cycled_from_second.append(f'{cycl_next}00 {last}00 {incr_cycl_freq}:00:00')
-
-        rocoto_config['cycledefs']['cycled_from_second'] = cycled_from_second
-
     # check the availability of restart intervals for restart capability of forecast
     do_fcst_restart = fcst_config.get("DO_FCST_RESTART")
     if do_fcst_restart:
@@ -1125,10 +1105,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # Put the variables in config dict.
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
-
-        # Set the rocoto string for the fcst output location and comin directory
-        rocoto_config["entities"]["FCST_DIR"] = "{{ nco.COMOUT_BASEDIR }}/@Y@m@d@H"
-        rocoto_config["entities"]["COMIN_DIR"] = "{{ nco.COMIN_BASEDIR }}/@Y@m@d@H"
 
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
