@@ -140,6 +140,9 @@ else
     print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
   POST_STEP
 
+  # Link files in sub-directory
+  ln -sf ${GFS_SFC_TAR_SUB_DIR}/* .
+
   # Retireve data from B file when FCST_LEN_HRS>=40
   if [ "${FCST_LEN_HRS}" -ge "40" ]; then
     gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_B}"
@@ -155,6 +158,9 @@ else
     htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
       print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
     POST_STEP
+
+    # Link files in sub-directory 
+    ln -sf ${GFS_SFC_TAR_SUB_DIR}/* .    
   fi
 fi  
 #
