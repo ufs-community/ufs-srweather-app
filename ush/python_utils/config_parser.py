@@ -8,6 +8,7 @@ Supported formats include:
     c) SHELL
     d) INI
     e) XML
+    f) NML
 
 Typical usage involves first loading the config file, then using the dictionary
 returnded by load_config to make queries.
@@ -21,6 +22,8 @@ import json
 import os
 import pathlib
 import re
+import io
+from collections import OrderedDict
 from textwrap import dedent
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
@@ -33,6 +36,7 @@ import jinja2
 #
 try:
     import yaml
+    import f90nml
 except ModuleNotFoundError:
     pass
 
@@ -587,6 +591,58 @@ def cfg_to_xml_str(cfg):
     r = r.replace("&quot;", '"')
     return r
 
+##########
+# F90 NML
+##########
+def modify_dict_type(cfg):
+    """ f90nml uses OrderedDict instead of dict, and also addes a start_index dict
+    Fix both so that we can convert to/from the other supported formats
+    """
+
+    if isinstance(cfg,OrderedDict) or isinstance(cfg,dict):
+        if "_start_index" in cfg:
+            del cfg["_start_index"]
+        for k,v in cfg.items():
+            cfg[k] = modify_dict_type(v)
+        return dict(cfg)
+    elif isinstance(cfg,list):
+        for i,v in enumerate(cfg):
+            cfg[i] = modify_dict_type(v)
+        return cfg
+    else:
+        return cfg
+
+def load_nml_config(config_file_or_string, return_string=0):
+    """Load a F90 namelist config file or string"""
+
+    if os.path.isfile(config_file_or_string):
+        with open(config_file_or_string, "r") as f:
+            cfg = f90nml.read(f)
+    else:
+        cfg = f90nml.reads(config_file_or_string)
+
+    cfg = cfg.todict()
+    cfg = modify_dict_type(cfg)
+
+    return cfg
+
+def fix_case(cfg, res):
+    """ Fix for f90nml lowercaseing keys """
+
+    for k,v in cfg.items():
+        res = res.replace(k.lower(), k)
+        if isinstance(v,dict):
+            res = fix_case(v, res)
+    return res
+
+def cfg_to_nml_str(cfg, kname=None):
+    """Get contents of config file as namelist string"""
+
+    buf = io.StringIO()
+    f90nml.write(cfg, buf)
+    res = buf.getvalue()
+    res = fix_case(cfg,res)
+    return res
 
 ##################
 # CONFIG utils
@@ -744,6 +800,8 @@ def load_config_file(config_file_or_string, return_string=0, context=None, ext="
         return load_yaml_config(config_file_or_string)
     if ext == "xml":
         return load_xml_config(config_file_or_string, return_string)
+    if ext == "nml":
+        return load_nml_config(config_file_or_string, return_string)
     return None
 
 ##################
@@ -763,7 +821,7 @@ def cfg_main():
         "-o",
         dest="out_type",
         required=False,
-        help='Output format: can be any of ["shell", "yaml", "ini", "json", "xml"]',
+        help='Output format: can be any of ["shell", "yaml", "ini", "json", "xml", "nml"]',
     )
     parser.add_argument(
         "--flatten",
@@ -839,6 +897,8 @@ def cfg_main():
             print(cfg_to_yaml_str(cfg), end="")
         elif args.out_type == "xml":
             print(cfg_to_xml_str(cfg), end="")
+        elif args.out_type == "nml":
+            print(cfg_to_nml_str(cfg), end="")
         else:
             parser.print_help()
             parser.exit()
