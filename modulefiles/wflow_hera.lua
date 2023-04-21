@@ -7,11 +7,11 @@ whatis([===[Loads libraries needed for running the UFS SRW App on Hera ]===])
 
 load("rocoto")
 
-prepend_path("MODULEPATH","/scratch1/NCEPDEV/nems/role.epic/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
 
-if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
-]===])
-end
+load("stack-intel/2021.5.0")
+load("stack-intel-oneapi-mpi/2021.5.1")
+load("stack-python/3.9.12")
+
+load("ufs-pyenv")
