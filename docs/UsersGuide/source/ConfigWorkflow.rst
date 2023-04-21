@@ -563,7 +563,7 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
    Controls the size of the stack for threads created by the OpenMP implementation.
 
 ``SFC_CLIMO_DIR``: (Default: "")
-   The directory containing pre-generated surface climatology files to use when the ``MAKE_SFC_CLIMO`` is not meant to run.
+   The directory containing pre-generated surface climatology files to use when the ``MAKE_SFC_CLIMO`` task is not meant to run.
 
 .. _task_get_extrn_ics:
 
@@ -951,7 +951,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
 ``SFC_CLIMO_INPUT_DIR``: (Default: "")
-   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` is meant to run.
+   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
 
 ``SYMLINK_FIX_FILES``: (Default: true)
    Flag that indicates whether to symlink or copy fix files to the experiment directory. 
