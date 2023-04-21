@@ -1,25 +1,25 @@
 help([[
 This module loads libraries for building the UFS SRW App on
-the NOAA RDHPC machine Jet using Intel-2022.1.2
+the NOAA RDHPC machine Jet using Intel-2021.5.0
 ]])
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Jet ]===])
 
 
 prepend_path("MODULEPATH","/mnt/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/spack-stack/modulefiles")
+
 load("stack-intel/2021.5.0")
 load("stack-intel-oneapi-mpi/2021.5.1")
+load("stack-python/3.9.12")
 load("cmake/3.23.1")
 
-prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/spack-stack/modulefiles")
-load("stack-python/3.9.12")
-
 load("srw_common_spack")
-load("ufs-pyenv")
 
 load("prod-util/1.2.2")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
+load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
