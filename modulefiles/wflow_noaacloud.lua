@@ -8,16 +8,11 @@ whatis([===[Loads libraries needed for running the UFS SRW App on NOAA cloud ]==
 prepend_path("MODULEPATH","/apps/modules/modulefiles")
 load("rocoto")
 
-prepend_path("MODULEPATH","/contrib/EPIC/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+prepend_path("MODULEPATH", "/contrib/EPIC/spack-stack/spack-stack-1.3.0/envs/unified-dev/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/contrib/spack-stack/modulefiles/core")
 
-setenv("PROJ_LIB","/contrib/EPIC/miniconda3/4.12.0/envs/regional_workflow/share/proj")
-setenv("OPT","/contrib/EPIC/hpc-modules")
-append_path("PATH","/contrib/EPIC/miniconda3/4.12.0/envs/regional_workflow/bin")
-prepend_path("PATH","/contrib/EPIC/bin")
+load("stack-intel/2021.3.0")
+load("stack-intel-oneapi-mpi/2021.3.0")
+load("stack-python/3.9.12")
 
-if mode() == "load" then
-   LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
-]===])
-end
+load("ufs-pyenv")
