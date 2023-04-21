@@ -89,10 +89,17 @@ else
       missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
       ln -sf "${AQM_FIRE_DIR}/${CDATE_md1}/Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc" "Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
     else
-      if [ "${RUN_ENVIR}" = "nco" ] && [ ! -z "${maillist}" ]; then
-        echo "${AQM_FIRE_DIR}/${CDATE_md1} fire emission raw data for ${cycle} run is missing. AQM RUN SOFT FAILED" | mail.py $maillist
+      message_txt="Fire Emission RAW data for \"${CDATE_md1}\" does not exist:
+  AQM_FIRE_DIR = \"${AQM_FIRE_DIR}\""
+      if [ "${RUN_ENVIR}" = "community" ]; then
+        print_err_msg_exit "${message_txt}"
+      else
+        message_warning="WARNING: ${message_txt}"
+        print_info_msg "${message_warning}"
+        if [ ! -z "${maillist}" ]; then
+          echo "${message_warning}" | mail.py $maillist
+        fi
       fi
-      print_err_msg_exit "RAVE raw data files do not exist."
     fi
   done  
 

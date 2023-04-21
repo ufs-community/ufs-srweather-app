@@ -98,10 +98,18 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
       create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
 	                     relative="${relative_link_flag}"
     else
-    print_err_msg_exit "\
-sfc file does not exist in the directory:
+      message_txt="SFC file for nexus emission for \"${cycle}\" does not exist in the directory:
   GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
   gfs_sfc_fn = \"${gfs_sfc_fn}\""
+      if [ "${RUN_ENVIR}" = "community" ]; then
+        print_err_msg_exit "${message_txt}"
+      else
+        message_warning="WARNING: ${message_txt}"
+        print_info_msg "${message_warning}"
+        if [ ! -z "${maillist}" ]; then
+          echo "${message_warning}" | mail.py $maillist
+        fi
+      fi
     fi	    
   done
  
