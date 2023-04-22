@@ -391,7 +391,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         mem=mem,
                     )
                     logging.debug(f"Full file path: {input_loc}")
-
+                    logging.debug(f"Target path: {target_path}")
                     if method == "disk":
                         if cla.symlink:
                             retrieved = copy_file(input_loc, target_path, "ln -sf")
@@ -408,16 +408,14 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                     logging.debug(f"Retrieved status: {retrieved}")
                     if not retrieved:
                         unavailable.append(input_loc)
-                        # Go on to the next location if the first file
-                        # isn't found here.
-                        break
 
-                    # If retrieved, reset unavailable
-                    unavailable = []
                 if not unavailable:
                     # Start on the next fcst hour if all files were
                     # found from a loc/template combo
                     break
+                else:
+                    logging.debug(f"Some files were not retrieved: {unavailable}")
+                    logging.debug("Will check other locations for missing files")
 
     os.chdir(orig_path)
     return unavailable

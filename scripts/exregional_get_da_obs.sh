@@ -75,7 +75,7 @@ fi
 template_arr=()
 
 # Obs from different filenames depending on hour
-
+set -x
 if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
   RAP=rap_e
 else
@@ -154,8 +154,16 @@ The command was:
 ${cmd}
 "
 # Link to GSI-expected filenames
-for i in "${template_arr[@]}"; do
-  mv_vrfy "${DATA}/${template_arr[0]}" "${DATA}/NLDN_lightning_${i}"
+filenum=0
+for incr in $(seq -25 5 5) ; do
+  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+  filename="${filedate}0005r"
+  if [ -r ${filename} ]; then
+    ((filenum += 1 ))
+    mv_vrfy ${filename} ./NLDN_lightning_${filenum}
+  else
+    print_info_msg "WARNING: ${filename} does not exist"
+  fi
 done
 
 #

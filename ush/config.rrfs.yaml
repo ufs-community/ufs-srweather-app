@@ -1,10 +1,10 @@
 metadata:
   description: >-
-    Sample community config
+    Work-in-progress prototype for RRFS configuration file
 user:
   RUN_ENVIR: community
-  MACHINE: hera
-  ACCOUNT: fv3lam
+  MACHINE: jet
+  ACCOUNT: gsd-fv3-dev
 platform:
   MET_INSTALL_DIR: ""
   METPLUS_PATH: ""
@@ -15,10 +15,10 @@ platform:
 workflow:
   USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: test_community
-  CCPP_PHYS_SUITE: FV3_GFS_v16
+  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
   PREDEF_GRID_NAME: RRFS_NA_13km
-  DATE_FIRST_CYCL: '2023042018'
-  DATE_LAST_CYCL: '2023042018'
+  DATE_FIRST_CYCL: '2022072006'
+  DATE_LAST_CYCL: '2022072006'
   FCST_LEN_HRS: 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
@@ -36,11 +36,6 @@ task_plot_allvars:
   COMOUT_REF: ""
 task_process_bufr:
   CYCLE_TYPE: spinup
-global:
-  DO_ENSEMBLE: false
-  NUM_ENS_MEMBERS: 2
-verification:
-  VX_FCST_MODEL_NAME: FV3_GFS_v16_CONUS_25km
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/warmstart.yaml", "parm/wflow/post.yaml"]|include }}'

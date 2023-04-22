@@ -103,7 +103,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -139,7 +139,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -262,7 +262,7 @@ class FunctionalTesting(unittest.TestCase):
 
         with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
             os.chdir(tmp_dir)
-            
+
             # fmt: off
             args = [
                 '--file_set', 'fcst',
@@ -400,4 +400,3 @@ class FunctionalTesting(unittest.TestCase):
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 31)
-
