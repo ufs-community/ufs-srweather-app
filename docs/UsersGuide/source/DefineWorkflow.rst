@@ -1,8 +1,8 @@
 .. _DefineWorkflow:
 
-=======================
-Defining a SRW Workflow
-=======================
+=============================
+Defining an SRW App Workflow
+=============================
 
 
 Rocoto is the primary workflow manager software used by the UFS SRW App. Because the SRW App supports a variety of research and operational configurations, it is important to incorporate the ability to build a static Rocoto XML from scratch. This means a user will be able to specify exactly which tasks are included in the workflow definition from a YAML configuration file. While many predefined workflows will exist with optional variants in the SRW App, additional tasks may be added by individuals for their scientific exploration needs.
@@ -53,9 +53,9 @@ Under the Rocoto section, several subentries are required. They are described he
 
 ``attrs``: Any of the attributes to the ``workflow`` tag in Rocoto. This is meant to contain a nested dictionary defining any of the Rocoto-supported attributes, where the key is the name of the attribute, and the value is what Rocoto expects.
 
-``cycledefs``: A dictionary with each key defining a group name for a ``cycledef`` tag, where the key’s value is a list of ``cycledef`` accepted strings. The PyYAML constructor ``!startstopfreq`` has been included here to help with the automated construction of the tag of that nature. The preferred option for the SRW App is to use the “start, stop, step” method.
+``cycledefs``: A dictionary with each key defining a group name for a ``cycledef`` tag, where the key’s value is a list of acceptable ``cycledef`` formatted strings. The PyYAML constructor ``!startstopfreq`` has been included here to help with the automated construction of a tag of that nature. The preferred option for the SRW App is to use the “start, stop, step” method.
 
-``entities``: A dictionary with each key defining the name of a Rocoto entity, and its value. These variables are referenceable throughout the workflow with the ‘&foo;’ notation.
+``entities``: A dictionary with each key defining the name of a Rocoto entity and its value. These variables are referenceable throughout the workflow with the ‘&foo;’ notation.
 
 ``log``: The path to the log file. This corresponds to the ``<log>`` tag.
 
@@ -66,9 +66,9 @@ Under the Rocoto section, several subentries are required. They are described he
 The ``tasks`` Subsection
 ========================
 
-``taskgroups``: This entry is not a standard Rocoto entry. It defines a set of files that will be included to build a workflow from predefined groups of tasks. The supported groups are included under parm/wflow for the SRW App, but the paths can point to any location on your local disk. The resulting order of the tasks will be in the same order as defined in this list. The syntax for the “include” is included as a Jinja2 filter.
+``taskgroups``: This entry is not a standard Rocoto entry. It defines a set of files that will be included to build a workflow from predefined groups of tasks. The supported groups are included under ``parm/wflow`` for the SRW App, but the paths can point to any location on your local disk. The resulting order of the tasks will be in the same order as defined in this list. The syntax for the “include” is included as a Jinja2 filter.
 
-``task_*``: This is a section header to add a task. The task name will be whatever the section key has defined after the first underscore. For example “task_run_fcst” will be named “run_fcst” in the resulting workflow. More information about defining a task is included :ref:`below <defining_tasks>`.
+``task_*``: This is a section header to add a task. The task name will be whatever the section key has defined after the first underscore. For example, “task_run_fcst” will be named “run_fcst” in the resulting workflow. More information about defining a task is included :ref:`below <defining_tasks>`.
 
 ``metatask_*``: This is a section header to add a metatask. The metatask name will be whatever the section key has defined after the first underscore. For example “metatask_run_ensemble” will be named “run_ensemble” in the resulting workflow. More information about defining a metatask is included :ref:`below <defining_metatasks>`.
 
@@ -105,21 +105,21 @@ Each task supports any of the tags that are defined in the Rocoto documentation.
      dependency:
 
 
-The following sections are constructs of the interface, while all others are direct translations to tags available in Rocoto. Any tag that allows for attributes to the XML tag will take an attrs nested dictionary entry.
+The following sections are constructs of the interface, while all others are direct translations to tags available in Rocoto. Any tag that allows for attributes to the XML tag will take an ``attrs`` nested dictionary entry.
 
 ``attrs``: Any of the attributes to the task tag in Rocoto. This is meant to be a subdictionary defining any of the Rocoto-supported attributes, where the key is the name of the attribute, and the value is what Rocoto expects. This might include any combination of the following: cycledefs, maxtries, throttle, or final.
 
 ``envars``: A dictionary of keys that map to variable names that will be exported for the job. These will show up as the set of ``<envar>`` tags in the XML. The value will be the value of the defined variable when it is exported.
 
 
-If the command entry is not provided, the task won’t show up in the resulting workflow.
+If the ``command`` entry is not provided, the task won’t show up in the resulting workflow.
 
 Defining Dependencies
 =====================
 
 The dependency entry will be an arbitrarily deep nested dictionary of key, value pairs. Each level represents entries that must come below it in priority. This is especially relevant for logic files. If an “and” tag must apply to multiple dependencies, those dependencies are all included as a nested dictionary of dependencies.
 
-Because we are representing these entries as a dictionary, which requires hashable keys (no repeats at the same level), some tags may need to be differentiated where XML may not differentiate at all. In these instances, it’s best practice to name them something descriptive. For example, you might have multiple “or” dependencies at the same level that could be named “or_files_exist” and “or_task_ran”. This style can be adopted whether or not differentiation is needed. 
+Because we are representing these entries as a dictionary, which requires hashable keys (no repeats at the same level), some tags may need to be differentiated where XML may not differentiate at all. In these instances, it is best practice to name them something descriptive. For example, you might have multiple “or” dependencies at the same level that could be named “or_files_exist” and “or_task_ran”. This style can be adopted whether or not differentiation is needed. 
 
 The text entry on some dependencies is for those dependency tags that need the information to come between two flags, as in a data dependency.
 
@@ -177,7 +177,7 @@ The use of ``#mem#`` here is a Rocoto construct that identifies this task as a p
 Defining a Metatask
 ===================
 
-A metatask groups together similar tasks and allows for the definition over entries defined by ``var`` tags. To define a metatask, the ``var`` entry with a nested dictionary of keys representing the names of the metatask variables and values indicating the list of values for each iteration, is required. 
+A metatask groups together similar tasks and allows for the definition over entries defined by ``var`` tags. To define a metatask, the ``var`` entry with a nested dictionary of keys representing the names of the metatask variables and values indicating the list of values for each iteration is required. 
 
 Multiple var entries may be included, but each entry must have the same number of items.
 
@@ -192,11 +192,11 @@ Here’s an example of a metatask section (without the task definition):
        mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
      task_make_ics_mem#mem#:
 
-This metatask will be named “run_ensemble” and will loop over all ensemble members, or just the deterministic member (“000”) if no ensemble of forecasts is meant to run.
+This metatask will be named “run_ensemble” and will loop over all ensemble members or just the deterministic member (“000”) if no ensemble of forecasts is meant to run.
 
 The ``var`` section defines the metatask variables, here only “mem”. The name of the task represents that variable using ``#mem#`` to indicate that the resulting task name might be ``make_ics_mem000`` if only a deterministic forecast is configured to run.
 
-When the task or the metatask is referenced in a dependency later on, do not include the ``task_`` or ```metatask_`` portions of the name. The reference to ``#mem#`` can be included if the dependency is included in a metatask that defines the variable, e.g., ``make_ics_mem#mem#``. Otherwise, you can reference a task that includes the value of the metatask var, e.g., ``make_ics_mem000``. More on this distinction is included in the Rocoto documentation.
+When the task or the metatask is referenced in a dependency later on, do not include the ``task_`` or ``metatask_`` portions of the name. The reference to ``#mem#`` can be included if the dependency is included in a metatask that defines the variable, e.g., ``make_ics_mem#mem#``. Otherwise, you can reference a task that includes the value of the metatask var, e.g., ``make_ics_mem000``. More on this distinction is included in the Rocoto documentation.
 
 .. _J2filters:
 
@@ -218,21 +218,21 @@ Order of Precedence
 ===================
 There is a specific order of precedence imposed when the SRW App loads configuration files.
 
-#. Load config_defaults.yaml file.
-#. Load the user’s config.yaml file.
+#. Load ``config_defaults.yaml`` file.
+#. Load the user’s ``config.yaml`` file.
 #. Load the workflow defaults YAML file.
 #. At this point, all anchors and references will be resolved.
 #. All PyYAML constructors will also be called for the data provided in that entry.
-#. Call update_dict function to remove any null entries from default tasks using the PyYAML anchors.
-#. Load all files from the ``taskgroups:`` entry from the user’s config, or default if not overridden. This is achieved with a call to the ``extend_yaml()`` function.
+#. Call ``update_dict`` function to remove any null entries from default tasks using the PyYAML anchors.
+#. Load all files from the ``taskgroups:`` entry from the user’s config or from the default if not overridden. This is achieved with a call to the ``extend_yaml()`` function.
 #. Add the contents of the files to the ``task:`` section.
 #. Update the existing workflow configuration with any user-specified entries (removing the ones that are null entries).
 #. Add a ``jobname:`` entry to every task in the workflow definition section.
 
-#. Incorporate other default configuration settings from machine files, constants, etc into the default config dictionary in memory.
+#. Incorporate other default configuration settings from machine files, constants, etc. into the default config dictionary in memory.
 #. Apply all user settings last to take highest precedence.
 #. Call ``extend_yaml()`` to render templates that are available.
-   NOTE: This is the one that is likely to trip up any settings that setup.py will make. References to other defaults that get changed during the course of validation may be rendered here earlier than desired.
+   NOTE: This is the one that is likely to trip up any settings that ``setup.py`` will make. References to other defaults that get changed during the course of validation may be rendered here earlier than desired.
 
 At this point, validation and updates for many other configuration settings will be made for a variety of sections. Once complete, ``extend_yaml()`` is called repeatedly, stopping only when  all possible Jinja2-templated values have been rendered.
 
