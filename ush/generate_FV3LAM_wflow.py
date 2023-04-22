@@ -770,22 +770,19 @@ if __name__ == "__main__":
                 """
             )
         )
-        raise
-    
-    # Note workflow generation completion
-    log_info(
-        f"""
-        ========================================================================
-        ========================================================================
+    else:
+        # If no exception, note workflow generation completion
+        log_info(
+            f"""
+            ========================================================================
 
-        Experiment generation completed.  The experiment directory is:
+            Experiment generation completed.  The experiment directory is:
 
-          EXPTDIR='{EXPTDIR}'
+              EXPTDIR='{EXPTDIR}'
 
-        ========================================================================
-        ========================================================================
-        """
-    )
+            ========================================================================
+            """
+        )
 
 
 class Testing(unittest.TestCase):

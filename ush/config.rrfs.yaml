@@ -3,15 +3,15 @@ metadata:
     Work-in-progress prototype for RRFS configuration file
 user:
   RUN_ENVIR: community
-  MACHINE: jet
-  ACCOUNT: gsd-fv3-dev
+  MACHINE: hera
+  ACCOUNT: fv3lam
 platform:
   MET_INSTALL_DIR: ""
   METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
-  EXTRN_MDL_DATA_STORES: hpss
+  EXTRN_MDL_DATA_STORES: disk hpss
 workflow:
   USE_CRON_TO_RELAUNCH: false
   EXPT_SUBDIR: test_community
