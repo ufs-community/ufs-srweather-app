@@ -118,13 +118,41 @@ fi
 
 # Retrieve real-time airnow data for the last three days
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  for ipdym in {1..3}; do
+    case $ipdym in
+      1)
+        cvt_yyyy="${yyyy_m1}"
+        cvt_yyyymm="${yyyymm_m1}"
+        cvt_pdy="${PDYm1}"
+        ;;
+      2)
+        cvt_yyyy="${yyyy_m2}"
+        cvt_yyyymm="${yyyymm_m2}"
+        cvt_pdy="${PDYm2}"
+        ;;
+      3)
+        cvt_yyyy="${yyyy_m3}"
+        cvt_yyyymm="${yyyymm_m3}"
+        cvt_pdy="${PDYm3}"
+        ;;
+    esac
 
-  cp ${COMINairnow}/${PDYm1}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp ${COMINairnow}/${PDYm2}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp ${COMINairnow}/${PDYm3}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+    cvt_input_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/csv"
+    cvt_output_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf"
+    cvt_input_fn="HourlyAQObs_YYYYMMDDHH.dat"
+    cvt_output_fn="HourlyAQObs.YYYYMMDD.nc"
+    cvt_input_fp="${cvt_input_dir}/YYYY/YYYYMMDD/${cvt_input_fn}"
+    cvt_output_fp="${cvt_output_dir}/YYYY/YYYYMMDD/${cvt_output_fn}"
+
+    mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
+    cp ${COMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+
+    PREP_STEP
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
+    POST_STEP
+
+  done
 fi
 
 #-----------------------------------------------------------------------------
@@ -165,7 +193,7 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/pm25/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-cp ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
+cp ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/data/site-lists.interp
 cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
@@ -178,15 +206,6 @@ cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
   cp ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-  cp ${COMINairnow}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  cp ${COMINairnow}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp ${COMINairnow}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp ${COMINairnow}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
 fi
 
 #-----------------------------------------------------------------------

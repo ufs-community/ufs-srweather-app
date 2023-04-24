@@ -116,15 +116,43 @@ if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
   cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}" 
 fi
 
-# Retrieve real-time airnow data for the last three days
+# Retrieve real-time airnow data for the last three days and convert them into netcdf
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  for ipdym in {1..3}; do
+    case $ipdym in
+      1)
+        cvt_yyyy="${yyyy_m1}"
+        cvt_yyyymm="${yyyymm_m1}"
+        cvt_pdy="${PDYm1}"
+        ;;
+      2)
+        cvt_yyyy="${yyyy_m2}"
+        cvt_yyyymm="${yyyymm_m2}"
+        cvt_pdy="${PDYm2}"
+        ;;
+      3)
+        cvt_yyyy="${yyyy_m3}"
+        cvt_yyyymm="${yyyymm_m3}"
+        cvt_pdy="${PDYm3}"
+        ;;
+    esac
 
-  cp ${COMINairnow}/${PDYm1}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp ${COMINairnow}/${PDYm2}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp ${COMINairnow}/${PDYm3}/b008/xx021 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+    cvt_input_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/csv"
+    cvt_output_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf"
+    cvt_input_fn="HourlyAQObs_YYYYMMDDHH.dat"
+    cvt_output_fn="HourlyAQObs.YYYYMMDD.nc"
+    cvt_input_fp="${cvt_input_dir}/YYYY/YYYYMMDD/${cvt_input_fn}"
+    cvt_output_fp="${cvt_output_dir}/YYYY/YYYYMMDD/${cvt_output_fn}"
+
+    mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
+    cp ${COMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+
+    PREP_STEP
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
+    POST_STEP
+
+  done     
 fi
 
 #-----------------------------------------------------------------------------
@@ -165,7 +193,7 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/ozone/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
-cp ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20220724.12z.list ${DATA}/data/site-lists.interp
+cp ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20230331.12z.list ${DATA}/data/site-lists.interp
 cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
@@ -179,14 +207,21 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-  cp ${COMINairnow}/${PDY}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  cp ${COMINairnow}/${PDYm1}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp ${COMINairnow}/${PDYm2}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp ${COMINairnow}/${PDYm3}/b008/xx021 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  # CSV files
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
+  cp ${COMINairnow}/${PDYm1}/airnow/HourlyAQObs_${PDYm1}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}  
+  cp ${COMINairnow}/${PDYm2}/airnow/HourlyAQObs_${PDYm2}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}  
+  cp ${COMINairnow}/${PDYm3}/airnow/HourlyAQObs_${PDYm3}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
+
+  # NetCDF files
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
+  cp ${DATA}/data/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}/HourlyAQObs.${PDYm1}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}  
+  cp ${DATA}/data/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}/HourlyAQObs.${PDYm2}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}  
+  cp ${DATA}/data/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}/HourlyAQObs.${PDYm3}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
 
   mkdir -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
   cp ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
