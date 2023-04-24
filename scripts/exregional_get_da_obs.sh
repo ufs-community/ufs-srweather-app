@@ -76,17 +76,17 @@ template_arr=()
 
 # Obs from different filenames depending on hour
 set -x
-if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
+if [[ ${cyc} -eq '00' || ${cyc} -eq '12' ]]; then
   RAP=rap_e
 else
   RAP=rap
 fi
 # Bufr lightning obs
-template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.lghtng.tm00.bufr_d")
+template_arr+=("${YYYYMMDDHH}.${RAP}.t${cyc}z.lghtng.tm00.bufr_d")
 # NASA LaRC cloud bufr file
-template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.lgycld.tm00.bufr_d")
+template_arr+=("${YYYYMMDDHH}.${RAP}.t${cyc}z.lgycld.tm00.bufr_d")
 # Prepbufr obs file
-template_arr+=("${YYYYMMDDHH}.${RAP}.t${HH}z.prepbufr.tm00")
+template_arr+=("${YYYYMMDDHH}.${RAP}.t${cyc}z.prepbufr.tm00")
 
 additional_flags=""
 if [ $SYMLINK_FIX_FILES = "TRUE" ]; then

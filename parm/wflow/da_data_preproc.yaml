@@ -4,7 +4,7 @@
 default_data_preproc_task: &default_preproc
   account: '&ACCOUNT;'
   attrs:
-    cycledefs: #cycle_type#
+    cycledefs: #cycledefs_type#
     maxtries: '1'
   envars: &default_envars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'

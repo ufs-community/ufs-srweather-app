@@ -59,7 +59,6 @@ mkdir_vrfy -p "${DATA}"
 # Set needed date/time variables
 export START_DATE=$(echo "${PDY} ${cyc}")
 export YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
-export HH=${YYYYMMDDHH:8:2}
 
 #
 #-----------------------------------------------------------------------
