@@ -10,6 +10,10 @@ workflow:
   DATE_LAST_CYCL: '2019061500'
 
 rocoto:
+  entities:
+    START_TIME_NSSLMOSIAC: "00:45:00"
+    START_TIME_LIGHTNINGNC: "00:45:00"
+    START_TIME_CONVENTIONAL: "00:40:00"
   cycledefs:
     prod:
       - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
