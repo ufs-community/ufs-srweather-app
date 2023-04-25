@@ -874,6 +874,15 @@ workflow:
   # An array containing the hours of the day at which the product cycle starts,
   # from cold start input or from spin-up cycle forcast
   #
+  # BOUNDARY_LEN_HRS
+  # The length of boundary condition for normal forecast, in integer hours.
+  #
+  # BOUNDARY_LONG_LEN_HRS
+  # The length of boundary condition for long forecast, in integer hours.
+  #
+  # BOUNDARY_PROC_GROUP_NUM
+  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -886,6 +895,9 @@ workflow:
 
   CYCL_HRS_SPINSTART: []
   CYCL_HRS_PRODSTART: []
+  BOUNDARY_LEN_HRS: 0
+  BOUNDARY_LONG_LEN_HRS: 0
+  BOUNDARY_PROC_GROUP_NUM: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1053,16 +1065,7 @@ nco:
   #
   NWGES: '{{ OPSROOT }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
-  RRFSE_NWGES: '{{ OPSROOT }}/nwges'
-  RRFSE_NWGES_BASEDIR: '{{ RRFSE_NWGES }}'
-  ENSCTRL_NWGES: '{{ OPSROOT }}/nwges'
-  ENSCTRL_NWGES_BASEDIR: '{{ ENSCTRL_NWGES}}'
 
-  ENSCTRL_COMIN: '{{ COMIN_BASEDIR}}'
-  ENSCTRL_COMOUT: '{{ COMOUT_BASEDIR}}'
-  ENSCTRL_COMROOT: '{{ ENSCTRL_COMOUT }}'
-  ENSCTRL_COMIN_BASEDIR: '{{ ENSCTRL_COMIN }}'
-  ENSCTRL_COMOUT_BASEDIR: '{{ ENSCTRL_COMROOT}}/{{ envir}}'
   #
   #-----------------------------------------------------------------------
   #
