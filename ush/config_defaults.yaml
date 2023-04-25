@@ -1102,7 +1102,7 @@ rrfs:
   #
   #-----------------------------------------------------------------------
   #
-  DO_RRFS_DEV: false # Turn this on to teest RRFS dev workflow
+  DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
   DO_NLDN_LGHT: false
 
 #----------------------------

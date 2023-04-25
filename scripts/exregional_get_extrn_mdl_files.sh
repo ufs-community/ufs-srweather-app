@@ -84,7 +84,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   # hour lbcs. RRFS_dev downloads 0th hour lbcs while SRW does not.
   # I tried to make them the same but RRFS_dev workflow skips make_ics for
   # some cycles so it needs to download 0th hour lbcs.
-  if [ ${DO_RRFS_DEV} = "TRUE" ]; then
+  if [ ${NEED_ALL_LBCS} = "TRUE" ]; then
     first_time=$((TIME_OFFSET_HRS))
   else
     first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
