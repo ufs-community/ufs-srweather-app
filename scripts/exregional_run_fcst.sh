@@ -479,8 +479,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-flag_fcst_restart="FALSE"
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+if [ "${COLDSTART}" = "TRUE" ] || [ "${COLDSTART}" = "YES" ]; then
+  flag_fcst_restart="FALSE"
+elif [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   cp input.nml input.nml_orig
   cp model_configure model_configure_orig
   if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -532,6 +533,8 @@ current cycle's (cdate) run directory (DATA) failed:
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
   cd ${DATA}   
+else
+  flag_fcst_restart="FALSE"
 fi
 #
 #-----------------------------------------------------------------------

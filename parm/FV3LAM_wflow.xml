@@ -658,7 +658,7 @@ MODULES_RUN_TASK_FP script.
   </task>
 {%- endif %}
 {%- if run_task_aqm_ics %}
-  {%- if warmstart %}
+  {%- if warmstart_1st_cycl %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -807,7 +807,7 @@ MODULES_RUN_TASK_FP script.
 {%- if run_task_aqm_ics %}
         <or>
           <taskdep task="&TN_AQM_ICS;"/>
-{%- if warmstart %}
+{%- if warmstart_1st_cycl %}
           <and>
             <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
             <taskdep task="&TN_AQM_EXTRN_ICS;"/>
