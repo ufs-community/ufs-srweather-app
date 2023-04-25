@@ -895,16 +895,16 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # WARMSTART_1ST_CYCL:
+  # COLDSTART:
   # Flag turning on/off warm start of the first cycle
   #
-  # WARMSTART_1ST_CYCL_DIR:
+  # WARMSTART_CYCLE_DIR:
   # Path to the directory where RESTART dir is located for warm start
   #
   #-----------------------------------------------------------------------
   #
-  WARMSTART_1ST_CYCL: false
-  WARMSTART_1ST_CYCL_DIR: "/path/to/warm/start/cycle/dir"
+  COLDSTART: true
+  WARMSTART_CYCLE_DIR: "/path/to/warm/start/cycle/dir"
 
 #----------------------------
 # NCO specific variables

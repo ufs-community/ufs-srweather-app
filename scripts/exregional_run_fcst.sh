@@ -479,9 +479,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${COLDSTART}" = "TRUE" ] || [ "${COLDSTART}" = "YES" ]; then
-  flag_fcst_restart="FALSE"
-elif [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
+flag_fcst_restart="FALSE"
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   cp input.nml input.nml_orig
   cp model_configure model_configure_orig
   if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -533,8 +532,6 @@ current cycle's (cdate) run directory (DATA) failed:
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
   cd ${DATA}   
-else
-  flag_fcst_restart="FALSE"
 fi
 #
 #-----------------------------------------------------------------------
@@ -544,7 +541,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  if [ "${WARMSTART_1ST_CYCL}" = "FALSE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
     init_concentrations="true"
   else
     init_concentrations="false"
