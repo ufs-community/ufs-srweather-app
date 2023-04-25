@@ -950,6 +950,7 @@ def parse_args(argv):
             "RAP_obs",
             "HRRRx",
             "GSI-FIX",
+            "UFS-CASE-STUDY"
         ),
         help="External model label. This input is case-sensitive",
         required=True,
