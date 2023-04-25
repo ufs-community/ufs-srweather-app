@@ -5,9 +5,9 @@ rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{ nco.COMIN_BASEDIR }}/{{ nco.RUN }}.@Y@m@d/@H {% else %}{{ nco.COMIN_BASEDIR }}/@Y@m@d@H{% endif %}'
+    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/{}.@Y@m@d/@H".format(nco.COMIN_BASEDIR,nco.RUN)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
-    FCST_DIR: '{{ nco.DATAROOT }}/run_fcst.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H'
+    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/run_fcst_mem#mem#.{}_@Y@m@d@H".format(nco.DATAROOT,workflow.WORKFLOW_ID)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
     JOBSdir: '{{ user.JOBSdir }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
@@ -31,7 +31,7 @@ rocoto:
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
   attrs:
-    cyclethrottle: "20"
+    cyclethrottle: "200"
     realtime: "F"
     scheduler: '{{ platform.SCHED }}'
     taskthrottle: "1000"
@@ -40,6 +40,8 @@ rocoto:
       - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_FIRST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
     forecast:
       - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
+    cycled_from_second:
+      - !startstopfreq ['{%- if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL %}{{ [workflow.DATE_FIRST_CYCL[0:8], "{:02d}".format(workflow.INCR_CYCL_FREQ)]|join }}{%- else %}{{workflow.DATE_FIRST_CYCL}}{%- endif %}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
   log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'

@@ -44,7 +44,6 @@ from link_fix import link_fix
 from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
-
 def load_config_for_setup(ushdir, default_config, user_config):
     """Load in the default, machine, and user configuration files into
     Python dictionaries. Return the combined experiment dictionary.
@@ -673,20 +672,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
-    # set varying forecast lengths only when fcst_len_hrs=-1
-
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
 
         # Check that the number of entries divides into a day
-        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
-        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-
-        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-
         if 24 / incr_cycl_freq != len(fcst_len_cycl):
-
             # Also allow for the possibility that the user is running
             # cycles for less than a day:
             num_cycles = len(set_cycle_dates(
@@ -1108,9 +1104,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         # Put the variables in config dict.
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
-
-        # Set the rocoto string for the fcst output location
-        rocoto_config["entities"]["FCST_DIR"] = "{{ nco.COMOUT_BASEDIR }}/@Y@m@d@H"
 
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":

@@ -79,8 +79,9 @@ else
   All executables will be submitted with command \'${RUN_CMD_FCST}\'."
 fi
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 
@@ -667,7 +668,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   fi
 
   mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
- 
+
 fi
 #
 #-----------------------------------------------------------------------
@@ -729,16 +730,13 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       fi
     done
 
+    if [ "${CPL_AQM}" = "TRUE" ]; then	
+      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   done
 
 fi
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-    mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-  done
-fi
-
 #
 #-----------------------------------------------------------------------
 #
