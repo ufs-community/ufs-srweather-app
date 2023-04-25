@@ -100,8 +100,9 @@ DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 LBC_SPEC_FCST_HRS=()
@@ -302,10 +303,14 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   ;;
 
 "GDAS")
+  if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    input_type="gaussian_nemsio"
+  elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
+    input_type="gaussian_netcdf"
+  fi 
+  external_model="GFS" 
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="GFS"
-  input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
 

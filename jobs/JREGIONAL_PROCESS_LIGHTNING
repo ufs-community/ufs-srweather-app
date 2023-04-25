@@ -3,11 +3,11 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs PRE-POST-STAT.
+# This J-JOB script runs the NetCDF lightning observation preprocess 
+#      for the FV3-LAM model
 #
 #-----------------------------------------------------------------------
 #
-
 #
 #-----------------------------------------------------------------------
 #
@@ -15,9 +15,9 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
-source_config_for_task "task_pre_post_stat" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+. ${USHdir}/source_util_funcs.sh
+source_config_for_task "task_process_lightning" ${GLOBAL_VAR_DEFNS_FP}
+. ${USHdir}/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -51,16 +51,22 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs POST-UPP-STAT.
+This is the J-job script for the task that runs a lightning preprocess for 
+the specified cycle.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the run directory.
+# Create the working directory under the cycle directory.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+if [ "${CYCLE_TYPE}" == "spinup" ]; then
+  DATA="${DATA:-${COMIN}/process_lightning_spinup}"
+else
+  DATA="${DATA:-${COMIN}/process_lightning}"
+fi
+mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -69,8 +75,7 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_pre_post_stat.sh || \
-print_err_msg_exit "\
+$SCRIPTSdir/exregional_process_lightning.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
@@ -83,21 +88,9 @@ job_postamble
 #
 #-----------------------------------------------------------------------
 #
-# Remove post_complete flag file.
-#
-#-----------------------------------------------------------------------
-#
-post_complete_file="${COMIN}/post_${PDY}${cyc}_task_complete.txt"
-if [ -f ${post_complete_file} ] ; then
-  rm_vrfy -f ${post_complete_file}
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-

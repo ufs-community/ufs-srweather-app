@@ -37,8 +37,8 @@ platform:
   FIXsfc: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
-
-
+  
+  
 rocoto:
   tasks:
     metatask_run_ensemble:
@@ -49,7 +49,7 @@ rocoto:
         nnodes:
         nodesize:
         ppn:
-
+        
 data:
   obs:
     RAP_obs: /scratch2/BMC/public/data/grids/rap/obs

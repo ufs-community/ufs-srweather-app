@@ -8,16 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
-#
-#-----------------------------------------------------------------------
-#
-# Source files defining auxiliary functions for verification.
-#
-#-----------------------------------------------------------------------
-#
-. $USHdir/set_vx_params.sh
-. $USHdir/set_vx_fhr_list.sh
+source_config_for_task "task_process_lightning" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -30,13 +21,13 @@ source_config_for_task "task_run_vx_pointstat|task_run_post" ${GLOBAL_VAR_DEFNS_
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located
+# Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
 #-----------------------------------------------------------------------
 #
-scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
@@ -51,115 +42,132 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs METplus for point-stat on
-the UPP output files by initialization time for all forecast hours.
+This is the ex-script for the task that runs lightning preprocessing
+with FV3 for the specified cycle.
 ========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Extract from CDATE the starting year, month, day, and hour of the
+# forecast.  These are needed below for various operations.
+#
+#-----------------------------------------------------------------------
+#
+START_DATE=$(echo "${PDY} ${cyc}")
+YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
 
 #
 #-----------------------------------------------------------------------
 #
-# Get the cycle date and hour (in formats of yyyymmdd and hh, respect-
-# ively) from CDATE. Also read in FHR and create a comma-separated list
-# for METplus to run over.
+# Get into working directory
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${PDY}
-hh=${cyc}
-export CDATE
-export hh
-#
-#-----------------------------------------------------------------------
-#
-# Pick a directory structure for METplus output files
-#
-#-----------------------------------------------------------------------
-#
-if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_BASE=$COMIN
-    export OUTPUT_BASE=$COMOUT/metout
-    export MEM_BASE=$OUTPUT_BASE
-    export LOG_DIR=$LOGDIR
+print_info_msg "$VERBOSE" "
+Getting into working directory for lightning process ..."
 
-    export POSTPRD=
-    export MEM_STAR=
-    export MEM_CUSTOM=
-    export DOT_MEM_CUSTOM=".{custom?fmt=%s}"
-else
-    export INPUT_BASE=$( eval echo ${VX_FCST_INPUT_DIR} )
-    export OUTPUT_BASE=${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}
-    export MEM_BASE=$EXPTDIR/$CDATE
-    export LOG_DIR=${EXPTDIR}/log
+cd_vrfy ${DATA}
 
-    export POSTPRD="postprd/"
-    export MEM_STAR="mem*/"
-    export MEM_CUSTOM="{custom?fmt=%s}/"
-    export DOT_MEM_CUSTOM=
-fi
-export DOT_ENSMEM=${dot_ensmem}
+pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
+
+print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 
 #
 #-----------------------------------------------------------------------
 #
-# Create INPUT_BASE to read into METplus conf files.
+# link or copy background and grid files
 #
 #-----------------------------------------------------------------------
+
+cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
+
+#-----------------------------------------------------------------------
 #
-LOG_SUFFIX="PointStat"
+# Link to the NLDN data
+#
+#-----------------------------------------------------------------------
+run_lightning=false
+filenum=0
+
+for incr in $(seq -25 5 5) ; do 
+  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+  filename=${LIGHTNING_ROOT}/${filedate}0005r
+  if [ -r ${filename} ]; then
+  ((filenum += 1 ))
+    ln -sf ${filename} ./NLDN_lightning_${filenum}
+    run_lightning=true
+  else
+   echo " ${filename} does not exist"
+  fi
+done
+
+echo "found GLD360 files: ${filenum}"
+
+#-----------------------------------------------------------------------
+#
+# copy bufr table from fix directory
+#
+#-----------------------------------------------------------------------
+BUFR_TABLE=${FIXgsi}/prepobs_prep_RAP.bufrtable
+
+cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
+
+#-----------------------------------------------------------------------
+#
+# Build namelist and run executable
+#
+#   analysis_time : process obs used for this analysis date (YYYYMMDDHH)
+#   NLDN_filenum  : number of NLDN lighting observation files 
+#   IfAlaska      : logic to decide if to process Alaska lightning obs
+#   bkversion     : grid type (background will be used in the analysis)
+#                   = 0 for ARW  (default)
+#                   = 1 for FV3LAM
+#-----------------------------------------------------------------------
+
+cat << EOF > namelist.lightning
+ &setup
+  analysis_time = ${YYYYMMDDHH},
+  NLDN_filenum  = ${filenum},
+  grid_type = "${PREDEF_GRID_NAME}",
+  obs_type = "nldn_nc"
+ /
+EOF
 
 #
 #-----------------------------------------------------------------------
 #
-# Set the array of forecast hours for which to run the MET/METplus tool.
+# Copy the executable to the run directory.
 #
 #-----------------------------------------------------------------------
 #
-export OBS_INPUT_DIR="${VX_OUTPUT_BASEDIR}/metprd/Pb2nc_obs"
-OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+exec_fn="process_Lightning.exe"
+exec_fp="$EXECdir/${exec_fn}"
 
-set_vx_fhr_list \
-  cdate="${CDATE}" \
-  fcst_len_hrs="${FCST_LEN_HRS}" \
-  field="$VAR" \
-  accum_hh="${ACCUM_HH:-}" \
-  base_dir="${OBS_INPUT_DIR}" \
-  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_hourly_files="FALSE" \
-  outvarname_fhr_list="FHR_LIST"
-#
-#-----------------------------------------------------------------------
-#
-# Check for existence of top-level OBS_DIR 
-#
-#-----------------------------------------------------------------------
-#
-if [[ ! -d "$OBS_DIR" ]]; then
+if [ ! -f "${exec_fp}" ]; then
   print_err_msg_exit "\
-  Exiting: OBS_DIR does not exist."
+The executable specified in exec_fp does not exist:
+  exec_fp = \"${exec_fp}\"
+Build lightning process and rerun."
+fi
+#
+#
+#-----------------------------------------------------------------------
+#
+# Run the process
+#
+#-----------------------------------------------------------------------
+#
+
+if [[ "$run_lightning" == true ]]; then
+    PREP_STEP
+    eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
+    print_err_msg_exit "\
+    Call to executable (exec_fp) to run lightning (nc) process returned 
+    with nonzero exit code:
+      exec_fp = \"${exec_fp}\""
+    POST_STEP
 fi
 
-#
-#-----------------------------------------------------------------------
-#
-# Export some environment variables passed in by the XML and run METplus 
-#
-#-----------------------------------------------------------------------
-#
-export LOG_SUFFIX
-export MET_INSTALL_DIR
-export MET_BIN_EXEC
-export METPLUS_PATH
-export METPLUS_CONF
-export MET_CONFIG
-export VX_FCST_MODEL_NAME
-export NET
-export POST_OUTPUT_DOMAIN_NAME
-export OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
-export FHR_LIST
-
-${METPLUS_PATH}/ush/run_metplus.py \
-  -c ${METPLUS_CONF}/common.conf \
-  -c ${METPLUS_CONF}/PointStat_${VAR}.conf
 #
 #-----------------------------------------------------------------------
 #
@@ -169,7 +177,7 @@ ${METPLUS_PATH}/ush/run_metplus.py \
 #
 print_info_msg "
 ========================================================================
-METplus point-stat completed successfully.
+LIGHTNING PROCESS completed successfully!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

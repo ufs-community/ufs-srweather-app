@@ -33,6 +33,8 @@ platform:
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
   COMINairnow: /lfs/h1/ops/prod/dcom
+task_process_radarref:
+  OBS_SUFFIX: grib2.gz
 task_process_bufr:
   OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
 task_run_anal:
@@ -77,3 +79,7 @@ rocoto:
         nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
     task_fire_emission:
       native:
+    task_bias_correction_o3:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_o3.OMP_NUM_THREADS_BIAS_CORRECTION_O3 }}'
+    task_bias_correction_pm25:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_pm25.OMP_NUM_THREADS_BIAS_CORRECTION_PM25 }}'
