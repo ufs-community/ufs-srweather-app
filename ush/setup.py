@@ -1585,10 +1585,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         configuration file ('{user_config_fn}')."""
     )
 
-    # Final failsafe before writing rocoto yaml to ensure we don't have any invalid dicts
+    # Final failsafes before writing rocoto yaml to ensure we don't have any invalid dicts
     # (e.g. metatasks with no tasks, tasks with no associated commands)
+#    print(f'{expt_config["rocoto"]["tasks"]=}')
     clean_rocoto_dict(expt_config["rocoto"]["tasks"])
-
+#    print(f'{expt_config["rocoto"]["tasks"]=}')
+    valid_metatasks = list_metatasks(expt_config["rocoto"]["tasks"])
+#    print(f'{valid_metatasks=}')
+    replace_bad_metataskdep(expt_config["rocoto"]["tasks"],valid_metatasks)
+#    print(f'{expt_config["rocoto"]["tasks"]=}')
     rocoto_yaml_fp = workflow_config["ROCOTO_YAML_FP"]
     with open(rocoto_yaml_fp, 'w') as f:
         yaml.Dumper.ignore_aliases = lambda *args : True
@@ -1637,7 +1642,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     return expt_config
 
 def clean_rocoto_dict(rocotodict):
-    """Removes any invalid entries from rocoto_dict. Examples of invalid entries are:
+    """Removes any invalid entries from rocotodict. Examples of invalid entries are:
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries"""
@@ -1670,6 +1675,49 @@ def clean_rocoto_dict(rocotodict):
                 logging.debug(f"Removed entry:\n{popped}")
 
 
+def list_metatasks(rocotodict):
+    """Recursively searches rocotodict for keys starting with "metatask_", returns as a list"""
+    valid = []
+    for key in list(rocotodict.keys()):
+        ks = key.split("_", maxsplit=1)
+        # Metatask names are always "metatask_[name_of_metatask]"
+        if len(ks) > 1 and ks[0] == "metatask":
+            valid.append(ks[1])
+        if isinstance(rocotodict[key], dict):
+            retval = list_metatasks(rocotodict[key])
+            valid.extend(retval)
+    return valid
+        
+
+def replace_bad_metataskdep(rocotodict,valid):
+    """Replaces metatask dependencies referencing non-existent metatasks with a human-readable
+       string dependency that always evaluates to true."""
+    for key in list(rocotodict.keys()):
+        if key.split("_", maxsplit=1)[0] == "metatask":
+            replace_bad_metataskdep(rocotodict[key],valid)
+        elif key.split("_", maxsplit=1)[0] == "task":
+            if rocotodict[key].get("dependency"):
+                badmeta = replace_bad_dep(rocotodict[key]["dependency"],valid)
+
+def replace_bad_dep(rocotodep,valid):
+    """Given a rocoto task dependency dictionary and list of valid metatasks, replace any
+       non-existent metatask dependencies with a human-readable string dependency that always
+       evaluates to true. Return list of replaced metatask dependencies."""
+    badmetadep = []
+    for key in list(rocotodep.keys()):
+        if key == "metataskdep":
+            if rocotodep["metataskdep"]["attrs"]["metatask"] not in valid:
+                badmetadep.append(rocotodep["metataskdep"]["attrs"]["metatask"])
+                popped = rocotodep.pop(key)
+                logging.warning(f'Invalid metataskdep {badmetadep[-1]} removed')
+                logging.debug(f"Removed entry:\n{popped}")
+                # Add verbose placeholder dependency
+                rocotodep["streq"] = {'left': f'Invalid metataskdep {badmetadep[-1]} removed',
+                                      'right': f'Invalid metataskdep {badmetadep[-1]} removed'}
+        elif isinstance(rocotodep[key], dict):
+            retval = replace_bad_dep(rocotodep[key],valid)
+            badmetadep.extend(retval)
+    return badmetadep
 
 #
 # -----------------------------------------------------------------------
