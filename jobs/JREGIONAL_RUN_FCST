@@ -73,8 +73,6 @@ else
   export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
 
-# Cold start option of restart capability (NCO Standards, pp.14)
-export COLDSTART="${COLDSTART:-FALSE}"
 #
 #-----------------------------------------------------------------------
 #
