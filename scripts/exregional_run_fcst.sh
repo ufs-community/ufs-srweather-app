@@ -541,7 +541,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
+  if [ "${WARMSTART_1ST_CYCL}" = "FALSE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
     init_concentrations="true"
   else
     init_concentrations="false"

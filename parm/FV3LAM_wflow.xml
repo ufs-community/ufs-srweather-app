@@ -138,7 +138,7 @@ Directories and files.
 <!ENTITY MRMS_OBS_DIR "{{ mrms_obs_dir }}">
 <!ENTITY NDAS_OBS_DIR "{{ ndas_obs_dir }}">
 
-<!ENTITY WARMSTART_CYCLE_DIR  "{{ warmstart_cycle_dir }}">
+<!ENTITY WARMSTART_1ST_CYCL_DIR  "{{ warmstart_1st_cycl_dir }}">
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -658,7 +658,7 @@ MODULES_RUN_TASK_FP script.
   </task>
 {%- endif %}
 {%- if run_task_aqm_ics %}
-  {%- if not coldstart %}
+  {%- if warmstart %}
 <!--
 ************************************************************************
 ************************************************************************
@@ -679,15 +679,15 @@ MODULES_RUN_TASK_FP script.
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
     <envar><name>subcyc</name><value><cyclestr>@M</cyclestr></value></envar>
     <envar><name>LOGDIR</name><value>&LOGDIR;</value></envar>
-    <envar><name>PREV_CYCLE_DIR</name><value>&WARMSTART_CYCLE_DIR;</value></envar>
+    <envar><name>PREV_CYCLE_DIR</name><value>&WARMSTART_1ST_CYCL_DIR;</value></envar>
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
       <and>
         <taskdep task="&TN_MAKE_ICS;"/>
         <or>
-          <datadep age="00:00:00:05">&WARMSTART_CYCLE_DIR;/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr></datadep>
-          <datadep age="00:00:00:05">&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc</datadep>
+          <datadep age="00:00:00:05">&WARMSTART_1ST_CYCL_DIR;/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr></datadep>
+          <datadep age="00:00:00:05">&WARMSTART_1ST_CYCL_DIR;/RESTART/fv_tracer.res.tile1.nc</datadep>
         </or>
       </and>
     </dependency>
@@ -807,7 +807,7 @@ MODULES_RUN_TASK_FP script.
 {%- if run_task_aqm_ics %}
         <or>
           <taskdep task="&TN_AQM_ICS;"/>
-{%- if not coldstart %}
+{%- if warmstart %}
           <and>
             <not><cycleexistdep cycle_offset="-{{- cycl_freq -}}"/></not>
             <taskdep task="&TN_AQM_EXTRN_ICS;"/>
