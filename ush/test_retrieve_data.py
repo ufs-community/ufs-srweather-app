@@ -440,6 +440,7 @@ class FunctionalTesting(unittest.TestCase):
         """Get UFS-CASE-STUDY ICS from aws"""
 
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
@@ -469,6 +470,7 @@ class FunctionalTesting(unittest.TestCase):
         """Get UFS-CASE-STUDY LBCS from aws for 3 hour boundary conditions"""
 
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
 
             # fmt: off
             args = [
