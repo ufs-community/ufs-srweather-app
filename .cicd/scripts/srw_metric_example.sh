@@ -71,3 +71,16 @@ ${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config .cicd/scripts/STATAnaly
 
 # check skill-score.out
 cat skill-score.out
+
+ get skill-score (SS_INDEX) and check if it is significantly smaller than 1
+# A value greater than 1.0 indicates that the forecast model outperforms the reference, 
+# while a value less than 1.0 indicates that the reference outperforms the forecast.
+tmp_string=$( tail -2 skill-score.out | head -1 )
+SS_INDEX=${tmp_string:(-7)}
+echo "Skill Score: ${SS_INDEX}"
+if [[ ${SS_INDEX} < "0.700" ]]; then
+    echo "Your Skill Score is way smaller than 1.00, better check before merging"
+    exit 1
+else
+    echo "Congrats! You pass check!"
+fi
