@@ -68,7 +68,6 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     # If an archive exists on disk, remove it
     if os.path.exists(local_archive):
         os.remove(local_archive)
-
     return unavailable
 
 
@@ -588,11 +587,14 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
             # additional files are reported as unavailable, then
             # something has gone wrong.
             unavailable = set.union(*unavailable.values())
-
-        # Report only the files that are truly unavailable
+        
+        # Break loop if unexpected files were found or if files were found
+        # A successful file found does not equal the expected file list and 
+        # returns an empty set function.
         if not expected == unavailable:
             return unavailable - expected
-
+    
+    # If this loop has completed successfully without returning early, then all files have been found
     return {}
 
 
@@ -948,6 +950,7 @@ def parse_args(argv):
             "RAP_obs",
             "HRRRx",
             "GSI-FIX",
+            "UFS-CASE-STUDY"
         ),
         help="External model label. This input is case-sensitive",
         required=True,

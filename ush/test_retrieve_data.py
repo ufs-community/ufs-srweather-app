@@ -434,3 +434,61 @@ class FunctionalTesting(unittest.TestCase):
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 8)
+
+    def test_ufs_ics_from_aws(self):
+
+        """Get UFS-CASE-STUDY ICS from aws"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+
+            # fmt: off
+            args = [
+                '--file_set', 'anl',
+                '--config', self.config,
+                '--cycle_date', '2020072300',
+                '--data_stores', 'aws',
+                '--external_model', 'UFS-CASE-STUDY',
+                '--fcst_hrs', '0',
+                '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'ICS',
+                '--debug',
+                '--file_type', 'nemsio',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 1)
+
+    def test_ufs_lbcs_from_aws(self):
+
+        """Get UFS-CASE-STUDY LBCS from aws for 3 hour boundary conditions"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+
+            # fmt: off
+            args = [
+                '--file_set', 'fcst',
+                '--config', self.config,
+                '--cycle_date', '2020072300',
+                '--data_stores', 'aws',
+                '--external_model', 'UFS-CASE-STUDY',
+                '--fcst_hrs', '3', '6', '3',
+                '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
+                '--debug',
+                '--file_type', 'nemsio',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 2)
