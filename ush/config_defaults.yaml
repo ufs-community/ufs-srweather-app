@@ -2073,7 +2073,7 @@ task_plot_allvars:
 #----------------------------
 # ANAL config parameters
 #-----------------------------
-task_run_anal:
+task_analysis_gsi:
   TN_ANAL_GSI: "anal_gsi_input"
   TN_OBSERVER_GSI: "observer_gsi"
   TN_OBSERVER_GSI_ENSMEAN: "observer_gsi_ensmean"

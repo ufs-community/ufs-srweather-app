@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_anal|task_run_fcst|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_analysis_gsi|task_run_fcst|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -192,7 +192,6 @@ if  [[ ${regional_ensemble_option:-1} -eq 1 ]]; then #using GDAS
   loops="009"    # or 009s for GFSv15
   ftype="nc"  # or nemsio for GFSv15
   foundgdasens="false"
-  #cat "no ens found" >> filelist03
 
   case $MACHINE in
 
@@ -802,22 +801,6 @@ fi
 #-----------------------------------------------------------------------
 #
 touch gsi_complete.txt
-#
-#-----------------------------------------------------------------------
-#
-# Copy analysis results to INPUT for model forecast.
-#
-#-----------------------------------------------------------------------
-#
-#
-#if [ ${BKTYPE} -eq 1 ]; then  # cold start, put analysis back to current INPUT 
-#  cp_vrfy ${DATA}/fv3_dynvars                  ${bkpath}/gfs_data.tile7.halo0.nc
-#  cp_vrfy ${DATA}/fv3_sfcdata                  ${bkpath}/sfc_data.tile7.halo0.nc
-#else                          # cycling
-#  cp_vrfy ${DATA}/fv3_dynvars             ${bkpath}/fv_core.res.tile1.nc
-#  cp_vrfy ${DATA}/fv3_tracer              ${bkpath}/fv_tracer.res.tile1.nc
-#  cp_vrfy ${DATA}/fv3_sfcdata             ${bkpath}/sfc_data.nc
-#fi
 
 #-----------------------------------------------------------------------
 # Loop over first and last outer loops to generate innovation

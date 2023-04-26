@@ -36,5 +36,5 @@ platform:
   EXTRN_MDL_DATA_STORES: aws nomads
 task_process_bufr:
   OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
-task_run_anal:
+task_analysis_gsi:
   OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
