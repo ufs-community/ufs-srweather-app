@@ -80,10 +80,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
      end_hr=$BOUNDARY_LEN_HRS
   fi
-  # There is a difference between RRFS_dev & SRW regarding download of 0th
-  # hour lbcs. RRFS_dev downloads 0th hour lbcs while SRW does not.
-  # I tried to make them the same but RRFS_dev workflow skips make_ics for
-  # some cycles so it needs to download 0th hour lbcs.
+  # Download 0th hour lbcs if requested for it, mostly for DA
   if [ ${NEED_ALL_LBCS} = "TRUE" ]; then
     first_time=$((TIME_OFFSET_HRS))
   else
