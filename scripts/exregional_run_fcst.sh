@@ -526,7 +526,9 @@ current cycle's (cdate) run directory (DATA) failed:
   # Create soft-link of restart files in INPUT directory
   cd ${DATA}/INPUT
   for file_id in "${file_ids[@]}"; do
-    rm "${file_id}"
+    if [ -e "${file_id}" ]; then
+      rm "${file_id}"
+    fi
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
