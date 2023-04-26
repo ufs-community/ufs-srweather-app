@@ -233,7 +233,7 @@ def extend_yaml(yaml_dict, full_dict=None, parent=None):
                             convert_type = False
 
                     if convert_type:
-                        v_str = str_to_type(v_str)
+                        v_str = str_to_type(v_str, return_string=2)
 
                     if isinstance(v, ET.Element):
                         print('Replacing ET text with', v_str)

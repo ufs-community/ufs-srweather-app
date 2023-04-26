@@ -8,7 +8,6 @@ FAQ
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
 * :ref:`How do I change the grid? <ChangeGrid>`
 * :ref:`How do I turn on/off the cycle-independent workflow tasks? <CycleInd>`
-* :ref:`How do I know if I correctly modified config.yaml? <CorrectConfig>`
 * :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
@@ -88,25 +87,6 @@ specify the directories where pre-generated grid, orography, and surface climato
 three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
 flags are set to true in ``config_defaults.yaml``. This means that the workflow will
 run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
-
-.. _CorrectConfig:
-
-=========================================================
-How do I know if I correctly modified ``config.yaml``?
-=========================================================
-
-To determine whether ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory after loading the regional workflow:
-
-.. code-block:: console
-
-   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
-
-A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
-
-.. code-block:: console
-   
-   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-   FAILURE
 
 .. _RestartTask:
 

@@ -74,14 +74,6 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       Users will need to open the ``config.yaml`` file and adjust the experiment parameters in it to suit the needs of their experiment (e.g., date, grid, physics suite). At a minimum, users need to modify the ``MACHINE`` parameter. In most cases, users will need to specify the ``ACCOUNT`` parameter and the location of the experiment data (see :numref:`Section %s <Data>` for Level 1 system default locations). Additional changes may be required based on the system and experiment. More detailed guidance is available in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. 
 
-      To determine whether the ``config.yaml`` file adjustments are valid, users can run:
-
-      .. code-block:: console
-
-         ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
-      
-      A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. 
-
    #. Generate the experiment workflow. 
 
       .. code-block:: console
