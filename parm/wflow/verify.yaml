@@ -217,6 +217,8 @@ metatask_GridStat_APCP_acc:
 
     task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
       <<: *default_task
+      attrs:
+        maxtries: '2'
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
       envars:
         <<: *default_vars

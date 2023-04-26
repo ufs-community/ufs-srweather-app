@@ -33,13 +33,13 @@ function usage {
   echo
   echo "Usage: $0 machine account [compiler] [tests] [others] | -h"
   echo
-  echo "       machine   [required] is one of: ${machines[@]}"
-  echo "       account   [required] case sensitive name of the user-specific slurm account"
-  echo "       compiler  [optional] compiler used to build binaries (intel or gnu)"
-  echo "       tests     [optional] tests to run: can be a suite (all|comprehensive|fundamental)
-                            a filename, or a test name"
-  echo "       others    [optional] All other arguments are forwarded to run_WE2E_tests.py"
-  echo "       -h        display this help"
+  echo "   machine   [required] is one of: ${machines[@]}"
+  echo "   account   [required] case sensitive name of the user-specific slurm account"
+  echo "   compiler  [optional] compiler used to build binaries (intel or gnu)"
+  echo "   tests     [optional] tests to run: can be suite (all|comprehensive|fundamental|coverage)
+                        a filename, or a test name"
+  echo "   others    [optional] All other arguments are forwarded to run_WE2E_tests.py"
+  echo "   -h        display this help"
   echo
   exit 1
 
@@ -54,7 +54,7 @@ homedir=$1
 machine=${2,,}
 account=$3
 compiler=${4:-intel}
-tests=${5:-fundamental}
+tests=${5:-coverage}
 
 #----------------------------------------------------------------------
 # Set some default options, if user did not pass them
