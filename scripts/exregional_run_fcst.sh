@@ -527,7 +527,7 @@ current cycle's (cdate) run directory (DATA) failed:
   cd ${DATA}/INPUT
   for file_id in "${file_ids[@]}"; do
     if [ -e "${file_id}" ]; then
-      rm "${file_id}"
+      rm -f "${file_id}"
     fi
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
