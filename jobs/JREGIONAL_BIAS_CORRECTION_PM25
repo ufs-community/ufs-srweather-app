@@ -63,12 +63,12 @@ This is the J-job script for the task that runs BIAS-CORRECTION-PM25.
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_PM25}"
 if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir $DATA
+  mkdir -p $DATA
   cd $DATA
 fi
 
 COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
-mkdir -p "${COMOUTwmo}"
+mkdir -p ${COMOUTwmo}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 

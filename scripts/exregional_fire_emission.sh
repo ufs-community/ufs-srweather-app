@@ -56,13 +56,12 @@ data files.
 yyyymmdd=${FIRE_FILE_CDATE:0:8}
 hh=${FIRE_FILE_CDATE:8:2}
 
-CDATE_md1=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 24 hours" "+%Y%m%d%H" )
 CDATE_mh3=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 3 hours" "+%Y%m%d%H" )
-yyyymmdd_mh3=${CDATE_mh3:0:8}
-hh_mh3=${CDATE_mh3:8:2}
 CDATE_mh2=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 2 hours" "+%Y%m%d%H" )
 CDATE_mh1=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 1 hours" "+%Y%m%d%H" )
 
+yyyymmdd_mh3=${CDATE_mh3:0:8}
+hh_mh3=${CDATE_mh3:8:2}
 #
 #-----------------------------------------------------------------------
 #
@@ -73,28 +72,33 @@ CDATE_mh1=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 1 hours" "+%Y%m%d%
 aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUFFIX}"
 
 # Check if the fire file exists in the designated directory
-if [ -e "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" ]; then
-  cp "${AQM_FIRE_DIR}/${yyyymmdd}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
+  cp "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Copy raw data 
   for ihr in {0..21}; do
     download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_mh3} ${hh_mh3} UTC - $ihr hours" "+%Y%m%d%H" )
     FILE_13km="Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
-    if [ -e "${AQM_FIRE_DIR}/RAVE_raw_new/${FILE_13km}" ]; then
-      ln -sf "${AQM_FIRE_DIR}/RAVE_raw_new/Hourly_Emissions_13km_${download_time}00_${download_time}00.nc" .
-    elif [ -d "${AQM_FIRE_DIR}/${CDATE_md1}" ]; then
-      echo "${FILE_13km} does not exist. Replacing with the file of previous date ..."
-      yyyymmdd_dn=${download_time:0:8}
-      hh_dn=${download_time:8:2}
-      missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
-      ln -sf "${AQM_FIRE_DIR}/${CDATE_md1}/Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc" "Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
+    yyyymmdd_dn=${download_time:0:8}
+    hh_dn=${download_time:8:2}
+    missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
+    yyyymmdd_dn_md1=${missing_download_time:0:8}
+    FILE_13km_md1=Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc
+    if [ -e "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn}/${FILE_13km}" ]; then
+      ln -sf "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn}/${FILE_13km}" .
+    elif [ -e "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn_md1}/${FILE_13km_md1}" ]; then
+      echo "WARNING: ${FILE_13km} does not exist. Replacing with the file of previous date ..."
+      ln -sf "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn_md1}/${FILE_13km_md1}" "${FILE_13km}"
     else
-      message_txt="Fire Emission RAW data for \"${CDATE_md1}\" does not exist:
-  AQM_FIRE_DIR = \"${AQM_FIRE_DIR}\""
+      message_txt="Fire Emission RAW data does not exist:
+  FILE_13km_md1 = \"${FILE_13km_md1}\"
+  DCOMINfire = \"${DCOMINfire}\""
+
       if [ "${RUN_ENVIR}" = "community" ]; then
         print_err_msg_exit "${message_txt}"
       else
-        message_warning="WARNING: ${message_txt}"
+        ln -sf  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
+        message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
         if [ ! -z "${maillist}" ]; then
           echo "${message_warning}" | mail.py $maillist
@@ -131,8 +135,7 @@ Call to NCRCAT returned with nonzero exit code."
 
   # Archive the final fire emission file to disk and HPSS
   if [ "${DO_AQM_SAVE_FIRE}" = "TRUE" ]; then
-    mkdir -p "${AQM_FIRE_DIR}/${yyyymmdd}"
-    cp "${DATA}/${aqm_fire_file_fn}" "${AQM_FIRE_DIR}/${yyyymmdd}"
+    cp "${DATA}/${aqm_fire_file_fn}" ${DCOMINfire}
 
     hsi_log_fn="log.hsi_put.${yyyymmdd}_${hh}"
     hsi put ${aqm_fire_file_fn} : ${AQM_FIRE_ARCHV_DIR}/${aqm_fire_file_fn} >& ${hsi_log_fn} || \

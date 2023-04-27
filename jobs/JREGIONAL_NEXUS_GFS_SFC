@@ -110,8 +110,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   export GFS_SFC_STAGING_DIR="${DATA}"
 else
   export GFS_SFC_STAGING_DIR="${COMIN}/GFS_SFC"
-  mkdir -p "${GFS_SFC_STAGING_DIR}"
-  cd "${GFS_SFC_STAGING_DIR}"
+  mkdir -p ${GFS_SFC_STAGING_DIR}
+  cd ${GFS_SFC_STAGING_DIR}
 fi
 #
 #-----------------------------------------------------------------------

@@ -2919,13 +2919,13 @@ cpl_aqm_parm:
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
-  # AQM_BIO_DIR:
+  # DCOMINbio:
   # Path to the directory containing AQM bio files
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
   #
-  # AQM_DUST_DIR:
+  # DCOMINdust:
   # Path to the directory containing AQM dust file
   #
   # AQM_DUST_FILE_PREFIX:
@@ -2934,7 +2934,7 @@ cpl_aqm_parm:
   # AQM_DUST_FILE_SUFFIX:
   # Suffix and extension of AQM dust file
   #
-  # AQM_CANOPY_DIR:
+  # DCOMINcanopy:
   # Path to the directory containing AQM canopy files
   # 
   # AQM_CANOPY_FILE_PREFIX:
@@ -2943,8 +2943,8 @@ cpl_aqm_parm:
   # AQM_CANOPY_FILE_SUFFIX:
   # Suffix and extension of AQM CANOPY file
   # 
-  # AQM_FIRE_DIR:
-  # Path to the directory containing AQM fire files
+  # DCOMINfire:
+  # Path to the directory containing AQM fire emission files
   # 
   # AQM_FIRE_FILE_PREFIX:
   # Prefix of AQM FIRE file
@@ -2964,13 +2964,13 @@ cpl_aqm_parm:
   # AQM_RC_PRODUCT_FREQUENCY:
   # Frequency of AQM output products
   #
-  # AQM_LBCS_DIR:
+  # DCOMINchem_lbc:
   # Path to the directory containing chemical LBC files
   # 
   # AQM_LBCS_FILES:
   # File name of chemical LBCs
   #
-  # AQM_GEFS_DIR:
+  # DCOMINgefs:
   # Path to the directory containing GEFS aerosol LBC files
   #
   # AQM_GEFS_FILE_PREFIX:
@@ -3002,7 +3002,7 @@ cpl_aqm_parm:
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
   #
-  # PT_SRC_BASEDIR:
+  # DCOMINptsrc:
   # Parent directory containing point source files
   #
   # AQM_AIRNOW_HIST_DIR:
@@ -3021,18 +3021,18 @@ cpl_aqm_parm:
   DO_AQM_SAVE_FIRE: false
 
   AQM_CONFIG_DIR: ""
-  AQM_BIO_DIR: ""
+  DCOMINbio: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  AQM_DUST_DIR: "/path/to/dust/dir"
+  DCOMINdust: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  AQM_CANOPY_DIR: "/path/to/canopy/dir"
+  DCOMINcanopy: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
-  AQM_FIRE_DIR: ""
+  DCOMINfire: ""
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
@@ -3041,10 +3041,10 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  AQM_LBCS_DIR: ""
-  AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
+  DCOMINchem_lbcs: ""
+  AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
-  AQM_GEFS_DIR: ""
+  DCOMINgefs: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
@@ -3055,5 +3055,5 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
-  PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
+  DCOMINpt_src: "/path/to/point/source/base/directory"
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"

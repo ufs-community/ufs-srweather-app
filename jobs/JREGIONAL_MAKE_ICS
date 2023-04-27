@@ -60,7 +60,7 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
     export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
-mkdir -p "${INPUT_DATA}"
+mkdir -p ${INPUT_DATA}
 #
 #-----------------------------------------------------------------------
 #
@@ -71,7 +71,7 @@ mkdir -p "${INPUT_DATA}"
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_MAKE_ICS}"
 if [ $RUN_ENVIR = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir $DATA
+  mkdir -p $DATA
   cd $DATA
 fi
 #

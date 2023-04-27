@@ -40,14 +40,15 @@ data:
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
-  AQM_DUST_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
-  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-  AQM_FIRE_DIR: /lfs/h2/emc/aqmtemp/RAVE_NA
-  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+  DCOMINbio: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
+  DCOMINdust: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
+  DCOMINcanopy: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
+  DCOMINfire: /lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
+  DCOMINchem_lbcs: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  DCOMINgefs: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+  DCOMINpt_src: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
   AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
-  PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
+

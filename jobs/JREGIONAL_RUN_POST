@@ -93,7 +93,7 @@ fi
 if [ "${RUN_ENVIR}" = "community" ]; then
   export COMOUT="${DATA}/postprd"
 fi
-mkdir -p "${COMOUT}"
+mkdir -p ${COMOUT}
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
@@ -101,9 +101,8 @@ else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 fi
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
-mkdir -p "${DATA_FHR}"
-
-cd "${DATA_FHR}"
+mkdir -p ${DATA_FHR}
+cd ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
 #

@@ -5,7 +5,7 @@ user:
   MACHINE: [hera or wcoss2]
   ACCOUNT: [account name]
 workflow:
-  USE_CRON_TO_RELAUNCH: true
+  USE_CRON_TO_RELAUNCH: false
   CRON_RELAUNCH_INTVL_MNTS: 3
   EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
@@ -89,4 +89,4 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_PREFIX: geaer
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 3
-
+  DCOMINfire: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/RAVE_fire 

@@ -102,7 +102,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   ext_lbcs_file=${AQM_LBCS_FILES}
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
 
-  chem_lbcs_fp=${AQM_LBCS_DIR}/${chem_lbcs_fn}
+  chem_lbcs_fp=${DCOMINchem_lbcs}/${chem_lbcs_fn}
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
     cp ${chem_lbcs_fp} .
@@ -147,7 +147,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
   # Check if GEFS aerosol files exist

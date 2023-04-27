@@ -164,7 +164,7 @@ mkdir -p "${GRID_DIR}"
 DATA="${DATA:-${GRID_DIR}/tmp}"
 if [ $RUN_ENVIR = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir $DATA
+  mkdir -p $DATA
   cd $DATA
 fi
 #
