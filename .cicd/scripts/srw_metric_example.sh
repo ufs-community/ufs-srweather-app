@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# The goal of this script is to provide an example to perform Indy-Severe-Weather run and compare with baseline using
-# skill-score metric.
+# The goal of this script is to provide an example of performing Indy-Severe-Weather test run and compare results to reference with
+# Skill score index that is calculated by MET Stat-Analysis Tools
 #
 # Required:
 #    WORKSPACE=</full/path/to/ufs-srweather-app>
@@ -60,12 +60,16 @@ cd ${WORKSPACE}/tests/WE2E
 ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${ACCOUNT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
 cd ${WORKSPACE}
 
-# run metplus skill-score check
+# run skill-score check
 # first load MET env variables
 source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 [[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
+# Skill score index is computed over several terms that are defined in .cicd/scripts/STATAnalysisConfig_skill_score. 
+# It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
+# In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
+# temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
 cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/mem000/metprd/PointStat/*.stat ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat/
 ${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config .cicd/scripts/STATAnalysisConfig_skill_score -lookin ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
