@@ -24,4 +24,4 @@ rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        walltime: 01:00:00
+        walltime: 02:00:00

@@ -27,7 +27,7 @@ def set_predef_grid_params(USHdir, grid_name, quilting):
     except KeyError:
         errmsg = dedent(
             f"""
-            PREDEF_GRID_NAME = {predef_grid_name} not found in predef_grid_params.yaml
+            PREDEF_GRID_NAME = {grid_name} not found in predef_grid_params.yaml
             Check your config file settings."""
         )
         raise Exception(errmsg) from None

@@ -6,7 +6,7 @@
 # Top level: A key corresponding to an external model file or
 # observation dataset accepted by the SRW App.
 #
-# 2nd level: A key corressponding to a named datastore for a given data
+# 2nd level: A key corresponding to a named datastore for a given data
 # set. This could be nomads, aws, hpss, etc.
 #
 # 3rd level required:
@@ -215,13 +215,16 @@ RAP:
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
       - ./
     archive_file_names:
       # RAP forecasts are binned into 6 hour tar files.
       - gpfs_hps_nco_ops_com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
       - com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
+      - com_rap_v5.1_rap.{yyyymmdd}{bin6}.wrf.tar
     file_names: &rap_file_names
       anl:
         - rap.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
