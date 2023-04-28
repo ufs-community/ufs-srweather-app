@@ -108,7 +108,6 @@ fi
 
 # Link the historical airnow data
 mkdir -p "${DATA}/data"
-ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
 if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
   rm -rf "${DATA}/data/bcdata.${yyyymm}"
   mkdir -p "${DATA}/data/bcdata.${yyyymm}"
@@ -208,6 +207,7 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   cp ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
   # CSV files
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/csv/${yyyy}/${PDY}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
@@ -216,6 +216,7 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   cp ${COMINairnow}/${PDYm3}/airnow/HourlyAQObs_${PDYm3}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
 
   # NetCDF files
+  mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/netcdf/${yyyy}/${PDY}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
@@ -230,6 +231,10 @@ fi
 #-----------------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for Ozone
 #-----------------------------------------------------------------------------
+
+rm -rf ${DATA}/data/bcdata*
+
+ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 cp ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}

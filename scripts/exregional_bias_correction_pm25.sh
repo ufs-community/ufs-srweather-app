@@ -108,7 +108,6 @@ fi
 
 # Link the historical airnow data
 mkdir -p "${DATA}/data"
-ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
 if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
   rm -rf "${DATA}/data/bcdata.${yyyymm}"
   mkdir -p "${DATA}/data/bcdata.${yyyymm}"
@@ -211,6 +210,10 @@ fi
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
 #-----------------------------------------------------------------------
+
+rm -rf ${DATA}/data/bcdata*
+
+ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 
