@@ -21,13 +21,7 @@ load("cmake/3.22.0")
 
 
 load("srw_common_spack")
-
---load(pathJoin("g2", os.getenv("g2_ver") or "3.4.5"))
---load(pathJoin("esmf", os.getenv("esmf_ver") or "8.3.0b09"))
---load(pathJoin("netcdf", os.getenv("netcdf_ver") or "4.7.4"))
---load(pathJoin("libpng", os.getenv("libpng_ver") or "1.6.37"))
---load(pathJoin("pio", os.getenv("pio_ver") or "2.5.7"))
---load(pathJoin("fms", os.getenv("fms_ver") or "2022.04"))
+load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpicc")
 setenv("CMAKE_CXX_COMPILER","mpic++")
