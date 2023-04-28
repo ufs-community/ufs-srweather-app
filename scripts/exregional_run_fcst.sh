@@ -606,7 +606,8 @@ Call to function to create a diag table file for the current cycle's
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlinks to forecast output in DATA
+# Pre-generate symlink to forecast RESTART in DATA for early start of 
+# the next cycle
 #
 #-----------------------------------------------------------------------
 #
@@ -710,26 +711,25 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Move RESTART directory to COMIN and create symlink in DATA only for
+# Copy RESTART directory to COMIN and create symlink in DATA only for
 # NCO mode and when it is not empty.
 #
-# Move AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
-# Move dyn and phy files to COMIN only if run_post and write_dopost are off. 
+# Copy AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
+# Copy dyn and phy files to COMIN. 
 #
 #-----------------------------------------------------------------------
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
-    if [ -d "${COMIN}/RESTART" ]; then
+    if [ -d "${COMIN}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
       rm -rf "${COMIN}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      mv ${DATA}/RESTART ${COMIN}
-      ln -sf ${COMIN}/RESTART ${DATA}/RESTART
+      cp -r ${DATA}/RESTART ${COMIN}
     fi
   fi
 
-  mv ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  cp ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
     cp ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
