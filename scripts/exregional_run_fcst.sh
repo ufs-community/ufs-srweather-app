@@ -732,8 +732,12 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   cp ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    cp ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-    cp ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    if [ -e "${DATA}/dynf${fhr}.nc" ]; then
+      cp ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+    fi
+    if [ -e "${DATA}/phyf${fhr}.nc" ]; then    
+      cp ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+    fi
   done
 fi
 #
