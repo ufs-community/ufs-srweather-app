@@ -94,17 +94,22 @@ if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
   --symlink"
 fi
 
+if [ -n "${RAP_OBS_BUFR:-}" ] ; then
+  data_stores="disk ${EXTRN_MDL_DATA_STORES}"
+  additional_flags="$additional_flags \
+  --input_file_path ${RAP_OBS_BUFR}"
+fi
+
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
   --debug \
   --file_set obs \
   --config ${PARMdir}/data_locations.yml \
   --cycle_date ${PDY}${cyc} \
-  --data_stores disk hpss \
+  --data_stores ${data_stores} \
   --data_type RAP_obs \
   --output_path ${DATA} \
   --summary_file ${EXTRN_DEFNS} \
-  --input_file_path ${RAP_OBS_BUFR} \
   --file_templates ${template_arr[@]} \
   $additional_flags"
 
@@ -133,17 +138,29 @@ for incr in $(seq -25 5 5) ; do
   template_arr+=("${filedate}0005r")
 done
 
+additional_flags=""
+if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+  additional_flags="$additional_flags \
+  --symlink"
+fi
+
+if [ -n "${NLDN_LIGHTNING:-}" ] ; then
+  data_stores="disk ${EXTRN_MDL_DATA_STORES}"
+  additional_flags="$additional_flags \
+  --input_file_path ${NLDN_LIGHTNING}"
+fi
+
+
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
   --debug \
   --file_set obs \
   --config ${PARMdir}/data_locations.yml \
   --cycle_date ${PDY}${cyc} \
-  --data_stores disk hpss \
+  --data_stores ${data_stores} \
   --data_type RAP_obs \
   --output_path ${DATA} \
   --summary_file ${EXTRN_DEFNS} \
-  --input_file_path ${NLDN_LIGHTNING} \
   --file_templates ${template_arr[@]} \
   $additional_flags"
 
@@ -169,18 +186,8 @@ done
 #
 #-----------------------------------------------------------------------
 #
-# retrieve NLDN NetCDF lightning obs
-#
-#-----------------------------------------------------------------------
-#
-
-
-#
-#-----------------------------------------------------------------------
-#
 # Restore the shell options saved at the beginning of this script/function.
 #
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
