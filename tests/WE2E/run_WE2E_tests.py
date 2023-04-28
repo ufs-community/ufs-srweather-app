@@ -144,6 +144,8 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
+        if test_cfg.get('user') is None:
+            test_cfg['user'] = {}
         test_cfg['user'].update({"MACHINE": machine})
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:

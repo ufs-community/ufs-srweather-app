@@ -23,6 +23,16 @@ default_data_preproc_task: &default_preproc
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:25:00
 
+
+task_get_da_obs:
+  <<: *default_preproc
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSdir;/JREGIONAL_GET_DA_OBS"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  partition: '&PARTITION_HPSS;'
+  queue: '&QUEUE_HPSS;'
+  dependency:
+    timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+
 metatask_process_obs_cycle_type:
   var:
     cycledefs_type: prodcyc,prodcyc_long
@@ -36,17 +46,16 @@ metatask_process_obs_cycle_type:
       or:
         taskdep:
           attrs:
-            task: get_da_obs_radar
+            task: get_da_obs
         and:
           not:
             taskvalid:
               attrs:
-                task: get_da_obs_radar
+                task: get_da_obs
           streq:
             left: do_real_time
             right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
           timedep: '<cyclestr offset="&START_TIME_NSSLMOSAIC;">@Y@m@d@H@M00</cyclestr>'
-
 
   task_process_lightning_#cycle_type#:
     <<: *default_preproc
@@ -55,12 +64,12 @@ metatask_process_obs_cycle_type:
       or:
         taskdep:
           attrs:
-            task: get_da_obs_lightning
+            task: get_da_obs
         and:
           not:
             taskvalid:
               attrs:
-                task: get_da_obs_lightning
+                task: get_da_obs
           streq:
             left: do_real_time
             right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
@@ -75,12 +84,12 @@ metatask_process_obs_cycle_type:
       or:
         taskdep:
           attrs:
-            task: get_da_obs_bufr
+            task: get_da_obs
         and:
           not:
             taskvalid:
               attrs:
-                task: get_da_obs_bufr
+                task: get_da_obs
           streq:
             left: do_real_time
             right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'

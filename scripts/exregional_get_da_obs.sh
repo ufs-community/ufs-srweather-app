@@ -132,56 +132,58 @@ mv_vrfy "${DATA}/${template_arr[2]}" "${DATA}/prepbufr"
 #-----------------------------------------------------------------------
 #
 
-template_arr=()
-for incr in $(seq -25 5 5) ; do
-  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
-  template_arr+=("${filedate}0005r")
-done
+if [ "${NLDN_NEEDED:-}" = "TRUE" ]; then
+  template_arr=()
+  for incr in $(seq -25 5 5) ; do
+    filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+    template_arr+=("${filedate}0005r")
+  done
 
-additional_flags=""
-if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
-  additional_flags="$additional_flags \
-  --symlink"
-fi
-
-if [ -n "${NLDN_LIGHTNING:-}" ] ; then
-  data_stores="disk ${EXTRN_MDL_DATA_STORES}"
-  additional_flags="$additional_flags \
-  --input_file_path ${NLDN_LIGHTNING}"
-fi
-
-
-cmd="
-python3 -u ${USHdir}/retrieve_data.py \
-  --debug \
-  --file_set obs \
-  --config ${PARMdir}/data_locations.yml \
-  --cycle_date ${PDY}${cyc} \
-  --data_stores ${data_stores} \
-  --data_type RAP_obs \
-  --output_path ${DATA} \
-  --summary_file ${EXTRN_DEFNS} \
-  --file_templates ${template_arr[@]} \
-  $additional_flags"
-
-$cmd || print_err_msg_exit "\
-Call to retrieve_data.py failed with a non-zero exit status.
-
-The command was:
-${cmd}
-"
-# Link to GSI-expected filenames
-filenum=0
-for incr in $(seq -25 5 5) ; do
-  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
-  filename="${filedate}0005r"
-  if [ -r ${filename} ]; then
-    ((filenum += 1 ))
-    mv_vrfy ${filename} ./NLDN_lightning_${filenum}
-  else
-    print_info_msg "WARNING: ${filename} does not exist"
+  additional_flags=""
+  if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+    additional_flags="$additional_flags \
+    --symlink"
   fi
-done
+
+  if [ -n "${NLDN_LIGHTNING:-}" ] ; then
+    data_stores="disk ${EXTRN_MDL_DATA_STORES}"
+    additional_flags="$additional_flags \
+    --input_file_path ${NLDN_LIGHTNING}"
+  fi
+
+  cmd="
+  python3 -u ${USHdir}/retrieve_data.py \
+    --debug \
+    --file_set obs \
+    --config ${PARMdir}/data_locations.yml \
+    --cycle_date ${PDY}${cyc} \
+    --data_stores ${data_stores} \
+    --data_type RAP_obs \
+    --output_path ${DATA} \
+    --summary_file ${EXTRN_DEFNS} \
+    --file_templates ${template_arr[@]} \
+    $additional_flags"
+
+  $cmd || print_err_msg_exit "\
+  Call to retrieve_data.py failed with a non-zero exit status.
+
+  The command was:
+  ${cmd}
+  "
+  # Link to GSI-expected filenames
+  filenum=0
+  for incr in $(seq -25 5 5) ; do
+    filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
+    filename="${filedate}0005r"
+    if [ -r ${filename} ]; then
+      ((filenum += 1 ))
+      mv_vrfy ${filename} ./NLDN_lightning_${filenum}
+    else
+      print_info_msg "WARNING: ${filename} does not exist"
+    fi
+  done
+
+fi
 
 #
 #-----------------------------------------------------------------------
