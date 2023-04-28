@@ -5,8 +5,7 @@
 #
 set -e -u -x
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1
-&& pwd)"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 
 # Get repository root from Jenkins WORKSPACE variable if set, otherwise,
 # set relative to script directory.
