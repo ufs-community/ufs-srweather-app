@@ -1,0 +1,58 @@
+metadata:
+  description: |-
+    This test checks the capability of the workflow to have the user
+    specify a new grid (as opposed to one of the predefined ones in the
+    workflow) of ESGgrid type.
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_GFS_v15_thompson_mynn_lam3km
+  GRID_GEN_METHOD: ESGgrid
+  DATE_FIRST_CYCL: '2019061518'
+  DATE_LAST_CYCL: '2019061518'
+  FCST_LEN_HRS: 12
+  PREEXISTING_DIR_METHOD: rename
+task_make_grid:
+  ESGgrid_LON_CTR: 76.0
+  ESGgrid_LAT_CTR: -37.0
+  ESGgrid_DELX: 6000.0
+  ESGgrid_DELY: 6000.0
+  ESGgrid_NX: 210
+  ESGgrid_NY: 150
+  ESGgrid_WIDE_HALO_WIDTH: 6
+  ESGgrid_PAZI: 0.0
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  FV3GFS_FILE_FMT_LBCS: grib2
+  LBC_SPEC_INTVL_HRS: 6
+  USE_USER_STAGED_EXTRN_FILES: true
+task_run_fcst:
+  DT_ATMOS: 60
+  LAYOUT_X: 8
+  LAYOUT_Y: 8
+  BLOCKSIZE: 32
+  QUILTING: true
+  WRTCMP_write_groups: 1
+  WRTCMP_write_tasks_per_group: '{{ LAYOUT_Y }}'
+  WRTCMP_output_grid: lambert_conformal
+  WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
+  WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_lon_lwr_left: -69.6
+  WRTCMP_lat_lwr_left: 33.0
+  WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
+  WRTCMP_nx: 199
+  WRTCMP_ny: 145
+  WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
+  WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Indian_Ocean
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 00:30:00
