@@ -16,9 +16,6 @@ rocoto:
     START_TIME_LIGHTNING: "00:45:00"
     START_TIME_CONVENTIONAL: "00:40:00"
   cycledefs:
-    prod:
-      - !startstopfreq ['{{workflow.DATE_FIRST_CYCL}}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
-    forecast:
     at_start:
   tasks:
     taskgroups: '{{ ["parm/wflow/da_data_preproc.yaml"]|include }}'

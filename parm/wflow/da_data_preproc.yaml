@@ -27,6 +27,9 @@ default_data_preproc_task: &default_preproc
 task_get_da_obs:
   <<: *default_preproc
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSdir;/JREGIONAL_GET_DA_OBS"'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   partition: '&PARTITION_HPSS;'
   queue: '&QUEUE_HPSS;'
@@ -35,13 +38,14 @@ task_get_da_obs:
 
 metatask_process_obs_cycle_type:
   var:
-    cycledefs_type: prodcyc,prodcyc_long
+    cycledefs_type: forecast,long_forecast
     cycle_type: prod
 
   task_process_radarref_#cycle_type#:
     <<: *default_preproc
     command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"'
     ppn: 24
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     dependency:
       or:
         taskdep:
@@ -60,6 +64,7 @@ metatask_process_obs_cycle_type:
   task_process_lightning_#cycle_type#:
     <<: *default_preproc
     command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_LIGHTNING"'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     dependency:
       or:
         taskdep:

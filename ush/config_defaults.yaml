@@ -2012,13 +2012,29 @@ task_process_radarref:
   OBS_SUFFIX: grib2
 
 #----------------------------
+# Parameters needed for retrieving DA obs
+#-----------------------------
+task_get_da_obs:
+
+  #
+  #-----------------------------------------------------------------------
+  #
+  # NLDN_NEEDED
+  #   whether to use NLDN observations in DA or not.
+  #
+  #-----------------------------------------------------------------------
+  #
+  NLDN_NEEDED: False
+
+#----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------
 task_process_bufrobs:
   #
   #-----------------------------------------------------------------------
   #
-  # observation file templates used in process_bufrobs
+  # OBSPATH_TEMPLATE
+  #   observation file templates used in process_bufrobs
   #
   #-----------------------------------------------------------------------
   #

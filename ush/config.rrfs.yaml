@@ -4,25 +4,26 @@ metadata:
 user:
   RUN_ENVIR: community
   MACHINE: hera
-  ACCOUNT: fv3lam
+  ACCOUNT: an_account
 platform:
   MET_INSTALL_DIR: ""
   METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
-  EXTRN_MDL_DATA_STORES: disk hpss
 workflow:
   USE_CRON_TO_RELAUNCH: false
-  EXPT_SUBDIR: test_community
+  EXPT_SUBDIR: test_rrfs_beta
   CCPP_PHYS_SUITE: FV3_RRFS_v1beta
-  PREDEF_GRID_NAME: RRFS_NA_13km
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2022072006'
   DATE_LAST_CYCL: '2022072006'
-  FCST_LEN_HRS: 12
+  FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   COMPILER: intel
+task_get_da_obs:
+  NLDN_NEEDED: true
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -34,11 +35,16 @@ task_run_fcst:
   QUILTING: true
 task_plot_allvars:
   COMOUT_REF: ""
-task_process_bufrobs:
-  CYCLE_TYPE: spinup
 rocoto:
+  entities:
+    START_TIME_NSSLMOSAIC: 00:45:00
+    START_TIME_LIGHTNING: 00:45:00
+    START_TIME_CONVENTIONAL: 00:40:00
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/da_data_preproc.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_process_obs_cycle_type:
+      task_process_radarref_#cycle_type#:
+      task_process_lightning_#cycle_type#:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 02:00:00
