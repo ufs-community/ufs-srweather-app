@@ -33,7 +33,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_anal" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_analysis_gsi" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
@@ -84,9 +84,9 @@ CYCLE_TYPE=${CYCLE_TYPE:-prod}
 export OBSERVER_NWGES_DIR=""
 
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  analworkname="_gsi_spinup"
+  analysis_workname="_gsi_spinup"
 else
-  analworkname="_gsi"
+  analysis_workname="_gsi"
 fi
 
 if [[ ! -v OB_TYPE ]]; then
@@ -94,16 +94,16 @@ if [[ ! -v OB_TYPE ]]; then
 fi
 if [ ${GSI_TYPE} == "OBSERVER" ]; then
   if [ ${MEM_TYPE} == "MEAN" ]; then
-    DATA="${DATA:-${COMIN}}/ensmean/observer${analworkname}"
+    DATA="${DATA:-${COMIN}}/ensmean/observer${analysis_workname}"
     SLASH_ENSMEM_SUBDIR=""
-    export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analworkname}"
+    export OBSERVER_NWGES_DIR="${NWGES_DIR}/ensmean/observer${analysis_workname}"
   else
-    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/observer${analworkname}"
-    export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analworkname}"
+    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}/observer${analysis_workname}"
+    export OBSERVER_NWGES_DIR="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/observer${analysis_workname}"
   fi
   mkdir_vrfy -p ${OBSERVER_NWGES_DIR}
 else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analworkname}}"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analysis_workname}}"
 fi
 
 mkdir_vrfy -p ${DATA}
@@ -134,7 +134,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_anal.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_analysis_gsi.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
