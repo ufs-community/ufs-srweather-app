@@ -55,7 +55,6 @@ the UPP output files by initialization time for all forecast hours.
 #
 #-----------------------------------------------------------------------
 #
-set -x
 yyyymmdd=${PDY}
 hh=${cyc}
 export CDATE

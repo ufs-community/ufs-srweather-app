@@ -7,6 +7,7 @@ whatis([===[Loads libraries needed for running SRW on Orion ]===])
 
 load("contrib")
 load("rocoto")
+load("wget")
 
 unload("python")
 append_path("MODULEPATH","/work/noaa/epic-ps/role-epic-ps/miniconda3/modulefiles")

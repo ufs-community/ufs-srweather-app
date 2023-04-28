@@ -14,7 +14,11 @@ To run the full test suite:
 To run a single test:
 
     python -m unittest -b test_retrieve_data.FunctionalTesting.test_rap_lbcs_from_aws
+
+To ensure all output is printed for debugging or to monitor test progress,
+omit the "-b" flag.
 """
+import datetime
 import glob
 import os
 import tempfile
@@ -30,37 +34,90 @@ class FunctionalTesting(unittest.TestCase):
     def setUp(self):
         self.path = os.path.dirname(__file__)
         self.config = f"{self.path}/../parm/data_locations.yml"
+        twodaysago = datetime.datetime.today() - datetime.timedelta(days=2)
+        # Set test dates to retrieve, based on important dates in HPSS history:
+        # 2019061200 - First operational FV3GFS cycle
+        # 2020022518, 2020022600 - Changes to operational FV3GFS files between these cycles
+        # 2020022612, 2020022618 - Changes to RAP hpss filenames between these cycles
+        # 2021032018, 2021032100 - nemsio format replaced with netcdf between these cycles
+        # 2022062700, 2022062706 - Changes to RAP hpss filenames between these cycles
+        self.dates={}
+        self.dates["FV3GFSgrib2"]  = ['2019061200',
+                                      '2020022600',
+                                      twodaysago.strftime('%Y%m%d') + '12']
+        self.dates["FV3GFSnemsio"] = ['2019061200',
+                                      '2020022518',
+                                      '2021032018']
+        self.dates["FV3GFSnetcdf"] = ['2021032100',
+                                      twodaysago.strftime('%Y%m%d') + '00']
+        self.dates["RAPhpss"]      = ['2018071118',
+                                      '2020022618',
+                                      twodaysago.strftime('%Y%m%d') + '06']
+        self.dates["RAPaws"]       = ['2021022200',
+                                      twodaysago.strftime('%Y%m%d%H')]
+
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
-    def test_fv3gfs_grib2_lbcs_from_hpss(self):
-
+    def test_fv3gfs_grib2_from_hpss(self):
         """Get FV3GFS grib2 files from HPSS for LBCS, offset by 6 hours"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
-            os.chdir(tmp_dir)
+        for date in self.dates["FV3GFSgrib2"]:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
+                # fmt: off
+                args = [
+                    '--file_set', 'fcst',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'hpss',
+                    '--external_model', 'FV3GFS',
+                    '--fcst_hrs', '6', '12', '3',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'LBCS',
+                    '--debug',
+                    '--file_type', 'grib2',
+                ]
+                # fmt: on
 
-            # fmt: off
-            args = [
-                '--file_set', 'fcst',
-                '--config', self.config,
-                '--cycle_date', '2022062512',
-                '--data_stores', 'hpss',
-                '--external_model', 'FV3GFS',
-                '--fcst_hrs', '6', '12', '3',
-                '--output_path', tmp_dir,
-                '--ics_or_lbcs', 'LBCS',
-                '--debug',
-                '--file_type', 'grib2',
-            ]
-            # fmt: on
+                retrieve_data.main(args)
 
-            retrieve_data.main(args)
+                # Verify files exist in temp dir
 
-            # Verify files exist in temp dir
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 3)
 
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 3)
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
+    def test_fv3gfs_nemsio_lbcs_from_hpss(self):
+
+        """Get FV3GFS nemsio files from HPSS for LBCS"""
+
+        for date in self.dates["FV3GFSnemsio"]:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
+
+                # fmt: off
+                args = [
+                    '--file_set', 'fcst',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'hpss',
+                    '--external_model', 'FV3GFS',
+                    '--fcst_hrs', '24',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'LBCS',
+                    '--debug',
+                    '--file_type', 'nemsio',
+                ]
+                # fmt: on
+
+                retrieve_data.main(args)
+
+                # Verify files exist in temp dir
+
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 1)
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_fv3gfs_netcdf_lbcs_from_hpss(self):
@@ -69,41 +126,42 @@ class FunctionalTesting(unittest.TestCase):
         times > 40 hours, since they come from a different archive file.
         """
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
-            os.chdir(tmp_dir)
+        for date in self.dates["FV3GFSnetcdf"]:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
-            # fmt: off
-            args = [
-                '--file_set', 'fcst',
-                '--config', self.config,
-                '--cycle_date', '2022060112',
-                '--data_stores', 'hpss',
-                '--external_model', 'FV3GFS',
-                '--fcst_hrs', '24', '48', '24',
-                '--output_path', tmp_dir,
-                '--ics_or_lbcs', 'LBCS',
-                '--debug',
-                '--file_type', 'netcdf',
-            ]
-            # fmt: on
+                # fmt: off
+                args = [
+                    '--file_set', 'fcst',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'hpss',
+                    '--external_model', 'FV3GFS',
+                    '--fcst_hrs', '24', '48', '24',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'LBCS',
+                    '--debug',
+                    '--file_type', 'netcdf',
+                ]
+                # fmt: on
 
-            retrieve_data.main(args)
+                retrieve_data.main(args)
 
-            # Verify files exist in temp dir
+                # Verify files exist in temp dir
 
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 2)
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 2)
 
     # GDAS Tests
     def test_gdas_ics_from_aws(self):
 
         """In real time, GDAS is used for LBCS with a 6 hour offset."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -136,10 +194,10 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get GEFS grib2 a & b files for ICS offset by 6 hours."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, f"mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
 
             # fmt: off
             args = [
@@ -172,7 +230,7 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR ICS from hpss"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
@@ -202,7 +260,7 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR LBCS from hpss for 3 hour boundary conditions"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
@@ -231,7 +289,7 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR ICS from aws"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
@@ -260,9 +318,9 @@ class FunctionalTesting(unittest.TestCase):
 
         """Get HRRR LBCS from aws for 3 hour boundary conditions"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
-            
+
             # fmt: off
             args = [
                 '--file_set', 'fcst',
@@ -286,41 +344,73 @@ class FunctionalTesting(unittest.TestCase):
             self.assertEqual(len(files_on_disk), 8)
 
     # RAP tests
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
+    def test_rap_ics_from_hpss(self):
+
+        """Get RAP ICS from aws offset by 3 hours"""
+
+        for date in self.dates["RAPhpss"]:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
+
+                # fmt: off
+                args = [
+                    '--file_set', 'anl',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'hpss',
+                    '--external_model', 'RAP',
+                    '--fcst_hrs', '3',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'ICS',
+                    '--debug',
+                ]
+                # fmt: on
+
+                retrieve_data.main(args)
+
+                # Verify files exist in temp dir
+
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 1)
+
     def test_rap_ics_from_aws(self):
 
         """Get RAP ICS from aws offset by 3 hours"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
-            os.chdir(tmp_dir)
+        for date in self.dates["RAPaws"]:
+            with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+                os.chdir(tmp_dir)
 
-            # fmt: off
-            args = [
-                '--file_set', 'anl',
-                '--config', self.config,
-                '--cycle_date', '2022062509',
-                '--data_stores', 'aws',
-                '--external_model', 'RAP',
-                '--fcst_hrs', '3',
-                '--output_path', tmp_dir,
-                '--ics_or_lbcs', 'ICS',
-                '--debug',
-            ]
-            # fmt: on
+                # fmt: off
+                args = [
+                    '--file_set', 'anl',
+                    '--config', self.config,
+                    '--cycle_date', date,
+                    '--data_stores', 'aws',
+                    '--external_model', 'RAP',
+                    '--fcst_hrs', '3',
+                    '--output_path', tmp_dir,
+                    '--ics_or_lbcs', 'ICS',
+                    '--debug',
+                ]
+                # fmt: on
 
-            retrieve_data.main(args)
+                retrieve_data.main(args)
 
-            # Verify files exist in temp dir
+                # Verify files exist in temp dir
 
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 1)
+                path = os.path.join(tmp_dir, "*")
+                files_on_disk = glob.glob(path)
+                self.assertEqual(len(files_on_disk), 1)
 
     def test_rap_lbcs_from_aws(self):
 
         """Get RAP LBCS from aws for 6 hour boundary conditions offset
         by 3 hours. Use 09Z start time for longer LBCS."""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
@@ -330,7 +420,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--cycle_date', '2022062509',
                 '--data_stores', 'aws',
                 '--external_model', 'RAP',
-                '--fcst_hrs', '3', '30', '6',
+                '--fcst_hrs', '3', '45', '6',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
@@ -343,4 +433,64 @@ class FunctionalTesting(unittest.TestCase):
 
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 5)
+            self.assertEqual(len(files_on_disk), 8)
+
+    def test_ufs_ics_from_aws(self):
+
+        """Get UFS-CASE-STUDY ICS from aws"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'anl',
+                '--config', self.config,
+                '--cycle_date', '2020072300',
+                '--data_stores', 'aws',
+                '--external_model', 'UFS-CASE-STUDY',
+                '--fcst_hrs', '0',
+                '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'ICS',
+                '--debug',
+                '--file_type', 'nemsio',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 1)
+
+    def test_ufs_lbcs_from_aws(self):
+
+        """Get UFS-CASE-STUDY LBCS from aws for 3 hour boundary conditions"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'fcst',
+                '--config', self.config,
+                '--cycle_date', '2020072300',
+                '--data_stores', 'aws',
+                '--external_model', 'UFS-CASE-STUDY',
+                '--fcst_hrs', '3', '6', '3',
+                '--output_path', tmp_dir,
+                '--ics_or_lbcs', 'LBCS',
+                '--debug',
+                '--file_type', 'nemsio',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 2)

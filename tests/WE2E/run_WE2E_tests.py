@@ -25,8 +25,9 @@ def run_we2e_tests(homedir, args) -> None:
     """Function to run the WE2E tests selected by the user
 
     Args:
-        homedir  (str): The full path of the top-level app directory
-        args : The argparse.Namespace object containing command-line arguments
+        homedir (str): The full path of the top-level app directory
+        args    (obj): The argparse.Namespace object containing command-line arguments
+
     Returns:
         None
     """
@@ -69,7 +70,7 @@ def run_we2e_tests(homedir, args) -> None:
                     # "config." prefix and ".yaml" extension
                     tests_to_check.append(filename[7:-5])
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
-            elif user_spec_tests[0] in ['fundamental', 'comprehensive']:
+            elif user_spec_tests[0] in ['fundamental', 'comprehensive', 'coverage']:
                 # I am writing this section of code under protest; we should use args.run_envir to
                 # check for run_envir-specific files!
                 prefix = f"machine_suites/{user_spec_tests[0]}"
@@ -240,9 +241,10 @@ def check_tests(tests: list) -> list:
     Function for checking that all tests in a provided list of tests are valid
 
     Args:
-        tests        : List of potentially valid test names
+        tests (list): List of potentially valid test names
+
     Returns:
-        tests_to_run : List of config files corresponding to test names
+        list: List of config files corresponding to test names
     """
 
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -262,6 +264,10 @@ def check_tests(tests: list) -> list:
     for test in tests:
         # Skip blank/empty testnames; this avoids failure if newlines or spaces are included
         if not test or test.isspace():
+            continue
+        # Skip if string has an octothorpe
+        if '#' in test:
+            logging.debug(f"Assuming line is a comment due to presence of '#' character:\n{test}")
             continue
         match = check_test(test)
         if not match:
@@ -290,8 +296,9 @@ def check_test(test: str) -> str:
 
     Args:
         test (str) : String of potential test name
+
     Returns:
-        str        : File name of test config file (empty string if no test file found)
+        str: File name of test config file (empty string if no test file found)
     """
     # potential test files
     testfiles = glob.glob('test_configs/**/config*.yaml', recursive=True)
@@ -311,13 +318,13 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
     task_get_extrn_lbcs section of test config yaml
 
     Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-        ics_or_lbcs: Perform checks for ICs task or LBCs task
+        cfg         (dict): Dictionary loaded from test config file
+        mach        (dict): Dictionary loaded from machine settings file
+        dflt        (dict): Dictionary loaded from default config file
+        ics_or_lbcs (bool): Perform checks for ICs task or LBCs task
 
     Returns:
-        cfg_bcs : Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
+        dict: Updated dictionary for task_get_extrn_[ics|lbcs] section of test config
     """
 
     if ics_or_lbcs not in ["lbcs", "ics"]:
@@ -437,7 +444,7 @@ if __name__ == "__main__":
     required.add_argument('-t', '--tests', type=str, nargs="*",
                           help="""Can be one of three options (in order of priority):
     1. A test name or list of test names.
-    2. A test suite name ("fundamental", "comprehensive", or "all")
+    2. A test suite name ("fundamental", "comprehensive", "coverage", or "all")
     3. The name of a file (full or relative path) containing a list of test names.
     """, required=True)
 

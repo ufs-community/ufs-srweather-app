@@ -50,5 +50,5 @@ rocoto:
       metatask_run_post:
         task_run_post_mem#mem#_f#fhr#:
           ppn: 12
-          nnodes: 8
+          nnodes: 12
 
