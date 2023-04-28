@@ -83,10 +83,6 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   mkdir -p $DATA
   cd $DATA
 fi
-
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  export COMINgefs=${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}
-fi
 #
 #-----------------------------------------------------------------------
 #
