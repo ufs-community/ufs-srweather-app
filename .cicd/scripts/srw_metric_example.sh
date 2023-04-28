@@ -9,7 +9,7 @@
 #    SRW_COMPILER=<intel|gnu>
 #
 # Optional:
-[[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
+[[ -n ${SRW_PROJECT} ]] || SRW_PROJECT="no_account"
 [[ -n ${FORGIVE_CONDA} ]] || FORGIVE_CONDA=true
 set -e -u -x
 
@@ -57,7 +57,7 @@ cd ${WORKSPACE}
 # run test
 [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
 cd ${WORKSPACE}/tests/WE2E
-./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${ACCOUNT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
+./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${SRW_PROJECT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
 cd ${WORKSPACE}
 
 # run skill-score check
@@ -71,12 +71,12 @@ source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 # In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
 # temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
 cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/mem000/metprd/PointStat/*.stat ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat/
-${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config .cicd/scripts/STATAnalysisConfig_skill_score -lookin ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
+${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
 # check skill-score.out
 cat skill-score.out
 
- get skill-score (SS_INDEX) and check if it is significantly smaller than 1
+# get skill-score (SS_INDEX) and check if it is significantly smaller than 1
 # A value greater than 1.0 indicates that the forecast model outperforms the reference, 
 # while a value less than 1.0 indicates that the reference outperforms the forecast.
 tmp_string=$( tail -2 skill-score.out | head -1 )
