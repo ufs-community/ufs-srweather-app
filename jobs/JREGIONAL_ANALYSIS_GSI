@@ -103,7 +103,7 @@ if [ ${GSI_TYPE} == "OBSERVER" ]; then
   fi
   mkdir_vrfy -p ${OBSERVER_NWGES_DIR}
 else
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/anal_${OB_TYPE}${analysis_workname}}"
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/analysis_${OB_TYPE}${analysis_workname}}"
 fi
 
 mkdir_vrfy -p ${DATA}

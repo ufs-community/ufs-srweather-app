@@ -2071,25 +2071,19 @@ task_plot_allvars:
   PLOT_DOMAINS: ["conus"]
 
 #----------------------------
-# ANAL config parameters
+# ANALYSIS config parameters
 #-----------------------------
 task_analysis_gsi:
-  TN_ANAL_GSI: "anal_gsi_input"
+  TN_ANALYSIS_GSI: "analysis_gsi_input"
   TN_OBSERVER_GSI: "observer_gsi"
   TN_OBSERVER_GSI_ENSMEAN: "observer_gsi_ensmean"
-  NNODES_RUN_ANAL: 16
-  PPN_RUN_ANAL: 24
-  NCORES_RUN_ANAL: 4
-  NCORES_RUN_OBSERVER: 4
-  WTIME_RUN_ANAL: 00:30:00
-  MAXTRIES_RUN_ANAL: 1
-  KMP_AFFINITY_RUN_ANAL: "scatter"
-  OMP_NUM_THREADS_RUN_ANAL: 1
-  OMP_STACKSIZE_RUN_ANAL: "1024m"
+  KMP_AFFINITY_ANALYSIS: "scatter"
+  OMP_NUM_THREADS_ANALYSIS: 1
+  OMP_STACKSIZE_ANALYSIS: "1024m"
   #
   #-----------------------------------------------------------------------
   #
-  # observation file templates used in run_anal
+  # observation file templates used in analalysis
   #
   #-----------------------------------------------------------------------
   #
