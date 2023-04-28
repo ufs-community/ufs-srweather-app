@@ -34,7 +34,7 @@ task_run_fcst:
   QUILTING: true
 task_plot_allvars:
   COMOUT_REF: ""
-task_process_bufr:
+task_process_bufrobs:
   CYCLE_TYPE: spinup
 rocoto:
   tasks:

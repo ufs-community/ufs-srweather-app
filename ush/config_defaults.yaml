@@ -2014,11 +2014,11 @@ task_process_radarref:
 #----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------
-task_process_bufr:
+task_process_bufrobs:
   #
   #-----------------------------------------------------------------------
   #
-  # observation file templates used in process_bufr
+  # observation file templates used in process_bufrobs
   #
   #-----------------------------------------------------------------------
   #
