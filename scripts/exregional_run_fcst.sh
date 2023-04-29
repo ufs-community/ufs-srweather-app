@@ -711,11 +711,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Copy RESTART directory to COMIN and create symlink in DATA only for
-# NCO mode and when it is not empty.
-#
-# Copy AQM output product file to COMOUT only for NCO mode in Online-CMAQ.
-# Copy dyn and phy files to COMIN. 
+# Copy RESTART directory to COMIN only for NCO mode and AQM.
+# Copy AQM output product file to COMOUT only for NCO mode.
+# Copy dyn and phy files to COMIN only for AQM.
 #
 #-----------------------------------------------------------------------
 #
@@ -725,18 +723,18 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
       rm -rf "${COMIN}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp -r ${DATA}/RESTART ${COMIN}
+      cp -rp ${DATA}/RESTART ${COMIN}
     fi
   fi
 
-  cp ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
  
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
     if [ -e "${DATA}/dynf${fhr}.nc" ]; then
-      cp ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      cp -p ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
     fi
     if [ -e "${DATA}/phyf${fhr}.nc" ]; then    
-      cp ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      cp -p ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi
   done
 fi
