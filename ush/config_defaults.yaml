@@ -403,15 +403,6 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # COMINairnow:
-  # Path to the real-time AIRNOW observation data
-  #
-  #-----------------------------------------------------------------------
-  #
-  COMINairnow: "/path/to/real/time/airnow/data"
 
 #-----------------------------
 # WORKFLOW config parameters
@@ -3003,7 +2994,10 @@ cpl_aqm_parm:
   # Path to archive directory for gfs surface files on HPSS
   #
   # DCOMINptsrc:
-  # Parent directory containing point source files
+  # Path to the directory containing point source files
+  #
+  # DCOMINairnow:
+  # Path to the directory containing AIRNOW observation data
   #
   # AQM_AIRNOW_HIST_DIR:
   # Path to the directory where the historical AIRNOW data are located
@@ -3056,4 +3050,6 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
   DCOMINpt_src: "/path/to/point/source/base/directory"
+
+  DCOMINairnow: "/path/to/airnow/obaservation/data"
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"

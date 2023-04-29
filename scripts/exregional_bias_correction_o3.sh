@@ -145,7 +145,7 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
 
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
-    cp ${COMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
 
     PREP_STEP
     eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
@@ -211,9 +211,9 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
-  cp ${COMINairnow}/${PDYm1}/airnow/HourlyAQObs_${PDYm1}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}  
-  cp ${COMINairnow}/${PDYm2}/airnow/HourlyAQObs_${PDYm2}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}  
-  cp ${COMINairnow}/${PDYm3}/airnow/HourlyAQObs_${PDYm3}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
+  cp ${DCOMINairnow}/${PDYm1}/airnow/HourlyAQObs_${PDYm1}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}  
+  cp ${DCOMINairnow}/${PDYm2}/airnow/HourlyAQObs_${PDYm2}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}  
+  cp ${DCOMINairnow}/${PDYm3}/airnow/HourlyAQObs_${PDYm3}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
 
   # NetCDF files
   mkdir -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/netcdf/${yyyy}/${PDY}
