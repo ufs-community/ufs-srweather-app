@@ -9,6 +9,7 @@ load("contrib")
 load("rocoto")
 
 prepend_path("MODULEPATH", "/work/noaa/epic-ps/role-epic-ps/spack-stack/spack-stack-1.3.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
 load("stack-intel/2022.0.2")
 load("stack-intel-oneapi-mpi/2021.5.1")
