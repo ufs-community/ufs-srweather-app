@@ -9,18 +9,19 @@ if mode() == "load" then
    execute{cmd="ulimit -S -s unlimited", modeA={"load"}}
 end
 
--- This path should point to your HPCstack installation directory
-local HPCstack="/Users/username/hpc-stack/install"
+-- This path should point to your spack-stack installation directory
+local spack_stack="/Users/username/spack-stack/envs/unified-env/install"
+-- This path should point to the modulefile directory of the Miniconda/Python used to build spack-stack
+local stack_python="/Users/username/spack-stack/modulefiles"
 
--- Load HPC stack 
-prepend_path("MODULEPATH", pathJoin(HPCstack, "modulefiles/stack"))
-load("hpc")
-load("hpc-python")
+-- Load spack-stack 
+prepend_path("MODULEPATH", pathJoin(spack_stack, "modulefiles/Core"))
+prepend_path("MODULEPATH", stack_python)
+load("stack-gcc")
+load("stack-openmpi")
+load("stack-python")
 
-load("hpc-gnu")
-load("hpc-openmpi")
-
-load("srw_common")
+load("srw_common_spack")
 
 -- MacOS with arm64 architecture: `uname -m` expands to arm64
 -- MacOS with Intel architecture: `uname -m` expands to x86_64
