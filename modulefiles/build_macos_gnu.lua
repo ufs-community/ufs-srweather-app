@@ -1,6 +1,6 @@
 help([[
 This module needs to be customized for the user's MacOS environment:
-specify compilers, path for HPC-stack, load the modules, set compiler and linker flags
+specify compilers, path for spack-stack, load the modules, set compiler and linker flags
 ]])
 
 whatis([===[Loads libraries needed for building the UFS SRW App on macos ]===])
