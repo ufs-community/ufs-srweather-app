@@ -723,20 +723,24 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
       rm -rf "${COMIN}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp -rp ${DATA}/RESTART ${COMIN}
+      cp -Rp ${DATA}/RESTART ${COMIN}
     fi
   fi
 
   cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
- 
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-    if [ -e "${DATA}/dynf${fhr}.nc" ]; then
-      cp -p ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-    fi
-    if [ -e "${DATA}/phyf${fhr}.nc" ]; then    
-      cp -p ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-    fi
-  done
+
+  fhr_ct=0
+  fhr=0
+  while [ $fhr -le ${FCST_LEN_HRS} ]; do
+    fhr_ct=$(printf "%03d" $fhr)
+    source_dyn="${DATA}/dynf${fhr_ct}.nc"
+    source_phy="${DATA}/phyf${fhr_ct}.nc"
+    target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+    target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
+    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
+    (( fhr=fhr+1 ))
+  done                 
 fi
 #
 #-----------------------------------------------------------------------
