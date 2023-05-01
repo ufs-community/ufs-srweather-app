@@ -83,6 +83,17 @@ job_postamble
 #
 #-----------------------------------------------------------------------
 #
+# Remove post_complete flag file.
+#
+#-----------------------------------------------------------------------
+#
+post_complete_file="${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+if [ -f ${post_complete_file} ] ; then
+  rm_vrfy -f ${post_complete_file}
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
 #

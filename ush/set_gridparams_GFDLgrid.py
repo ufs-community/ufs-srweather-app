@@ -2,12 +2,12 @@
 
 import os
 import unittest
+import logging
 
 from python_utils import (
     import_vars,
     set_env_var,
     print_input_args,
-    print_info_msg,
     print_err_msg_exit,
     load_config_file,
     flatten_dict,
@@ -327,26 +327,24 @@ def set_gridparams_GFDLgrid(
     #
     # -----------------------------------------------------------------------
     #
-    print_info_msg(
+    logging.debug(
         f"""
         Original values of the halo width on the tile 6 supergrid and on the
         tile 7 grid are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
-          halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=verbose,
+          halo_width_on_t7g  = {halo_width_on_t7g}"""
     )
 
     halo_width_on_t6sg = istart_of_t7_on_t6sg - istart_of_t7_with_halo_on_t6sg
     halo_width_on_t6g = halo_width_on_t6sg // 2
     halo_width_on_t7g = int(halo_width_on_t6g * refine_ratio_t6g_to_t7g)
 
-    print_info_msg(
+    logging.debug(
         f"""
         Values of the halo width on the tile 6 supergrid and on the tile 7 grid
         AFTER adjustments are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
-          halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=verbose,
+          halo_width_on_t7g  = {halo_width_on_t7g}"""
     )
     #
     # -----------------------------------------------------------------------
@@ -375,7 +373,7 @@ def set_gridparams_GFDLgrid(
     prime_factors_nx_of_t7_on_t7g = prime_factors(nx_of_t7_on_t7g)
     prime_factors_ny_of_t7_on_t7g = prime_factors(ny_of_t7_on_t7g)
 
-    print_info_msg(
+    logging.debug(
         f"""
         The number of cells in the two horizontal directions (x and y) on the
         parent tile's (tile 6) grid and supergrid are:
@@ -418,8 +416,7 @@ def set_gridparams_GFDLgrid(
         The prime factors of nx_of_t7_on_t7g and ny_of_t7_on_t7g are (useful for
         determining an MPI task layout):
           prime_factors_nx_of_t7_on_t7g: {prime_factors_nx_of_t7_on_t7g}
-          prime_factors_ny_of_t7_on_t7g: {prime_factors_ny_of_t7_on_t7g}""",
-        verbose=verbose,
+          prime_factors_ny_of_t7_on_t7g: {prime_factors_ny_of_t7_on_t7g}"""
     )
     #
     # -----------------------------------------------------------------------
@@ -443,20 +440,18 @@ def set_gridparams_GFDLgrid(
     ny_of_t7_with_halo_on_t6g = ny_of_t7_with_halo_on_t6sg / 2
     ny_of_t7_with_halo_on_t7g = ny_of_t7_with_halo_on_t6g * refine_ratio_t6g_to_t7g
 
-    print_info_msg(
+    logging.debug(
         f"""
         nx_of_t7_with_halo_on_t7g = {nx_of_t7_with_halo_on_t7g}
         (istart_of_t7_with_halo_on_t6sg = {istart_of_t7_with_halo_on_t6sg},
-        iend_of_t7_with_halo_on_t6sg = {iend_of_t7_with_halo_on_t6sg})""",
-        verbose=verbose,
+        iend_of_t7_with_halo_on_t6sg = {iend_of_t7_with_halo_on_t6sg})"""
     )
 
-    print_info_msg(
+    logging.debug(
         f"""
         ny_of_t7_with_halo_on_t7g = {ny_of_t7_with_halo_on_t7g}
         (jstart_of_t7_with_halo_on_t6sg = {jstart_of_t7_with_halo_on_t6sg},
-        jend_of_t7_with_halo_on_t6sg = {jend_of_t7_with_halo_on_t6sg})""",
-        verbose=verbose,
+        jend_of_t7_with_halo_on_t6sg = {jend_of_t7_with_halo_on_t6sg})"""
     )
     #
     # -----------------------------------------------------------------------

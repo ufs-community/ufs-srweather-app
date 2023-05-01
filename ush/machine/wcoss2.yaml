@@ -77,3 +77,7 @@ rocoto:
         nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
     task_fire_emission:
       native:
+    task_bias_correction_o3:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_o3.OMP_NUM_THREADS_BIAS_CORRECTION_O3 }}'
+    task_bias_correction_pm25:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_pm25.OMP_NUM_THREADS_BIAS_CORRECTION_PM25 }}'

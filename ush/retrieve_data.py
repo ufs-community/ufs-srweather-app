@@ -68,7 +68,6 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     # If an archive exists on disk, remove it
     if os.path.exists(local_archive):
         os.remove(local_archive)
-
     return unavailable
 
 
@@ -118,8 +117,8 @@ def download_file(url):
     # -c continue previous attempt
     # -T timeout seconds
     # -t number of tries
-    cmd = f"wget -q -c -T 30 -t 3 {url}"
-    logging.info(f"Running command: \n {cmd}")
+    cmd = f"wget -q -c -T 10 -t 2 {url}"
+    logging.debug(f"Running command: \n {cmd}")
     try:
         subprocess.run(
             cmd,
@@ -390,7 +389,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         fcst_hr=fcst_hr,
                         mem=mem,
                     )
-                    logging.debug(f"Full file path: {input_loc}")
+                    logging.info(f"Getting file: {input_loc}")
                     logging.debug(f"Target path: {target_path}")
                     if method == "disk":
                         if cla.symlink:
@@ -398,12 +397,13 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         else:
                             retrieved = copy_file(input_loc, target_path, "cp")
 
-                    if method == "download":
+                    elif method == "download":
+
                         retrieved = download_file(input_loc)
                         # Wait a bit before trying the next download.
                         # Seems to reduce the occurrence of timeouts
                         # when downloading from AWS
-                        time.sleep(15)
+                        time.sleep(5)
 
                     logging.debug(f"Retrieved status: {retrieved}")
                     if not retrieved:
@@ -595,11 +595,14 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
             # additional files are reported as unavailable, then
             # something has gone wrong.
             unavailable = set.union(*unavailable.values())
-
-        # Report only the files that are truly unavailable
+        
+        # Break loop if unexpected files were found or if files were found
+        # A successful file found does not equal the expected file list and 
+        # returns an empty set function.
         if not expected == unavailable:
             return unavailable - expected
-
+    
+    # If this loop has completed successfully without returning early, then all files have been found
     return {}
 
 
@@ -691,7 +694,6 @@ def setup_logging(debug=False):
     """Calls initialization functions for logging package, and sets the
     user-defined level for logging in the script."""
 
-    level = logging.WARNING
     level = logging.INFO
     if debug:
         level = logging.DEBUG
@@ -949,6 +951,7 @@ def parse_args(argv):
             "RAP_obs",
             "HRRRx",
             "GSI-FIX",
+            "UFS-CASE-STUDY"
         ),
         help="External model label. This input is case-sensitive",
         required=True,

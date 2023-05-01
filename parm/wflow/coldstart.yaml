@@ -41,7 +41,7 @@ task_get_extrn_ics:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -68,7 +68,7 @@ task_get_extrn_lbcs:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'

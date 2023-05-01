@@ -443,11 +443,13 @@ The default settings in this file include a predefined 25-km :term:`CONUS` grid 
 
 .. note::
 
-   Users who are accustomed to the former shell script workflow can reuse an old ``config.sh`` file by setting ``EXPT_CONFIG_FN: "config.sh"`` in ``config_defaults.yaml``. Alternatively, users can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
+   Users who have a previous configuration using the former shell-script-based can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
 
    .. code-block:: console
 
       ./config_utils.py -c $PWD/config.sh -t $PWD/config_defaults.yaml -o yaml >config.yaml
+
+   Use caution when upgrading your experiment in this way, as many intervening changes in the workflow have occurred since the python changeover.
 
 Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users must change the ``MACHINE`` and ``ACCOUNT`` variables. Then, they can choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``workflow:`` section of the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 

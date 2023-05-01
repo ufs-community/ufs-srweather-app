@@ -60,7 +60,7 @@ setenv("FFLAGS", " -DNO_QUAD_PRECISION -fallow-argument-mismatch ")
 if mode() == "load" then
   LmodMsgRaw([===[
    Please export env. variable LDFLAGS after the module is successfully loaded:
-       > export LDFLAGS=\"-L\$MPI_ROOT/lib \" "
+       > export LDFLAGS+=" -L$MPI_ROOT/lib " 
   ]===])
 end
 
