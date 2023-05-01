@@ -1276,17 +1276,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     def dict_find(user_dict, substring):
 
         if not isinstance(user_dict, dict):
-            return
+            return False
 
         for key, value in user_dict.items():
             if substring in key:
                 return True
             if isinstance(value, dict):
-                dict_find(value, substring)
+                if dict_find(value, substring):
+                    return True
+
         return False
 
     run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
-    run_make_lbcs = dict_find(rocoto_tasks, "task_make_ics")
+    run_make_lbcs = dict_find(rocoto_tasks, "task_make_lbcs")
     run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
     run_any_coldstart_task = run_make_ics or \
                              run_make_lbcs or \
