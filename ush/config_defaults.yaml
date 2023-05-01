@@ -645,10 +645,10 @@ workflow:
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
   
-  FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
+  FV3_NML_FN: "input.nml"
+  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
   FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
-  FV3_NML_FN: '{{ FV3_NML_BASE_SUITE_FN[:-4] }}'
+  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
   FV3_EXEC_FN: "ufs_model"
 
   DATA_TABLE_FN: "data_table"

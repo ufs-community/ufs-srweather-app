@@ -576,7 +576,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         settings = {}
         settings["gfs_physics_nml"] = {
             "lsoil": lsoil or None
-            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
         }
 
         settings_str = cfg_to_yaml_str(settings)
