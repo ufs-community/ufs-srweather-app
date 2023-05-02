@@ -299,6 +299,14 @@ GFS_obs:
         obs:
           - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
 
+NSSL_mrms:
+
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+
+
 RAP_obs:
   hpss:
     protocol: htar
