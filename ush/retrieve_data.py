@@ -1038,7 +1038,7 @@ def parse_args(argv):
     # convert range arguments if necessary 
     args.fcst_hrs = arg_list_to_range(args.fcst_hrs)
     if args.members:
-        args.members = arg_list_to_range(cla.members)
+        args.members = arg_list_to_range(args.members)
 
     # Check required arguments for various conditions
     if not args.ics_or_lbcs and args.file_set in ["anl", "fcst"]:

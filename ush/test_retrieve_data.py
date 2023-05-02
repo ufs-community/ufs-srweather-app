@@ -197,7 +197,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{mem:03d}")
 
             # fmt: off
             args = [
@@ -435,6 +435,7 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 8)
 
+    @unittest.skipIf(os.environ.get("skipUFSCASESTUDY") == "true", "Skipping large/slow UFS-CASE-STUDY tests")
     def test_ufs_ics_from_aws(self):
 
         """Get UFS-CASE-STUDY ICS from aws"""
@@ -465,6 +466,7 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 1)
 
+    @unittest.skipIf(os.environ.get("skipUFSCASESTUDY") == "true", "Skipping large/slow UFS-CASE-STUDY tests")
     def test_ufs_lbcs_from_aws(self):
 
         """Get UFS-CASE-STUDY LBCS from aws for 3 hour boundary conditions"""
@@ -497,16 +499,16 @@ class FunctionalTesting(unittest.TestCase):
 
     def test_rap_obs_from_hpss(self):
 
-        """Get RAP observations from hpss for a 09z time"""
+        """Get RAP observations from hpss for a 06z time"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
             args = [
                 '--file_set', 'obs',
                 '--config', self.config,
-                '--cycle_date', '2023032109',
+                '--cycle_date', '2023032106',
                 '--data_stores', 'hpss',
                 '--data_type', 'RAP_obs',
                 '--output_path', tmp_dir,
@@ -520,7 +522,7 @@ class FunctionalTesting(unittest.TestCase):
 
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 29)
+            self.assertEqual(len(files_on_disk), 30)
 
     def test_rap_e_obs_from_hpss(self):
 
@@ -528,7 +530,7 @@ class FunctionalTesting(unittest.TestCase):
            at 00z and 12z we expect to see additional files
            with the 'rap_e' naming convention"""
 
-        with tempfile.TemporaryDirectory(dir=".") as tmp_dir:
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
             # fmt: off
@@ -549,4 +551,4 @@ class FunctionalTesting(unittest.TestCase):
 
             path = os.path.join(tmp_dir, "*")
             files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 31)
+            self.assertEqual(len(files_on_disk), 37)
