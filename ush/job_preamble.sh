@@ -130,7 +130,7 @@ else
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
     export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 fi
-export COMOUTwmo="${COMOUT}/wmo"
+export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 #
 #-----------------------------------------------------------------------
 #
@@ -139,7 +139,7 @@ export COMOUTwmo="${COMOUT}/wmo"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${DEBUG}" = "TRUE" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
