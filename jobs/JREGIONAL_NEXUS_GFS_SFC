@@ -103,7 +103,7 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  export GFS_SFC_STAGING_DIR="${DATA}"
+  export GFS_SFC_STAGING_DIR="${GFS_SFC_STAGING_DIR:-${DATA}}"
 else
   export GFS_SFC_STAGING_DIR="${COMIN}/GFS_SFC"
   mkdir -p ${GFS_SFC_STAGING_DIR}

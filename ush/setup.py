@@ -581,41 +581,34 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
     # set varying forecast lengths only when fcst_len_hrs=-1
+
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
     if fcst_len_hrs == -1:
-        # Create a full list of cycle dates
+
+        # Check that the number of entries divides into a day
         fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
-        num_fcst_len_cycl = len(fcst_len_cycl)
+        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+
         date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
         date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-        incr_cycl_freq = workflow_config.get("INCR_CYCL_FREQ")
-        all_cdates = set_cycle_dates(date_first_cycl,date_last_cycl,incr_cycl_freq)
-        num_all_cdates = len(all_cdates)
-        # Create a full list of forecast hours
-        num_recur = num_all_cdates // num_fcst_len_cycl
-        rem_recur = num_all_cdates % num_fcst_len_cycl
-        if rem_recur == 0:
-            fcst_len_cycl = fcst_len_cycl * num_recur
-            num_fcst_len_cycl = len(fcst_len_cycl)
-            workflow_config.update({"FCST_LEN_CYCL_ALL": fcst_len_cycl})
-            workflow_config.update({"ALL_CDATES": all_cdates})
-        else:
-            raise Exception(
-                f"""
-                The number of the cycle dates is not evenly divisible by the
-                number of the forecast lengths:
-                  num_all_cdates = {num_all_cdates}
-                  num_fcst_len_cycl = {num_fcst_len_cycl}
-                  rem = num_all_cdates%%num_fcst_len_cycl = {rem_recur}"""
-            )
-        if num_fcst_len_cycl != num_all_cdates:
-            raise Exception(
-                f"""
-                The number of the cycle dates does not match with the number of
-                the forecast lengths:
-                  num_all_cdates = {num_all_cdates}
-                  num_fcst_len_cycl = {num_fcst_len_cycl}"""
-            )
+
+        if 24 / incr_cycl_freq != len(fcst_len_cycl):
+
+            # Also allow for the possibility that the user is running
+            # cycles for less than a day:
+            num_cycles = len(set_cycle_dates(
+                date_first_cycl,
+                date_last_cycl,
+                incr_cycl_freq))
+
+            if num_cycles != len(fcst_len_cycl):
+              logger.error(f""" The number of entries in FCST_LEN_CYCL does
+              not divide evenly into a 24 hour day or the number of cycles
+              in your experiment! 
+                FCST_LEN_CYCL = {fcst_len_cycl}
+              """
+              )
+              raise ValueError
 
     # check the availability of restart intervals for restart capability of forecast
     do_fcst_restart = fcst_config.get("DO_FCST_RESTART")

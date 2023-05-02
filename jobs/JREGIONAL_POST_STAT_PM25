@@ -67,7 +67,6 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   cd $DATA
 fi
 
-COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 mkdir -p ${COMOUTwmo}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
