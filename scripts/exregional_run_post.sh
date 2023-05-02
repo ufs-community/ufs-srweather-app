@@ -172,8 +172,13 @@ else
     DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
 
-dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
-phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+else
+  dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+  phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+fi
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
