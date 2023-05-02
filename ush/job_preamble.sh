@@ -155,9 +155,17 @@ fi
 function job_postamble() {
 
     # Remove temp directory
-    if [ "${RUN_ENVIR}" = "nco" ] && [ $# -eq 0 ]; then
-        cd ${DATAROOT}
-        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${KEEPDATA}" = "FALSE" ]; then
+	cd ${DATAROOT}
+	# Remove current data directory
+	if [ $# -eq 0 ]; then
+	    rm -rf $DATA
+	# Remove all current and shared data directories
+	elif [ "$1" = "TRUE" ]; then
+            rm -rf $DATA
+	    share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
+            rm -rf *${share_pid}
+	fi
     fi
 
     # Print exit message

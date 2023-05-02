@@ -156,7 +156,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
+if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+    job_postamble "TRUE"
+else
+    job_postamble
+fi
 #
 #-----------------------------------------------------------------------
 #
