@@ -111,7 +111,7 @@ export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-# Set COMIN / COMOUT
+# Set COMIN / COMOUT / other common variables
 #
 #-----------------------------------------------------------------------
 #
@@ -123,6 +123,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   
     export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
     export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
+
+    export KEEPDATA="${KEEPDATA:-$KEEPDATA}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
