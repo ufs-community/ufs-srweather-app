@@ -20,11 +20,8 @@ fi
 hpss_machines=( jet hera )
 if [ $hpss_machines =~ ${SRW_PLATFORM} ] ; then
 
+  source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
   module load hpss
-  module use ${workspace}/modulefiles
-  module load wflow_${SRW_PLATFORM}
-
-  conda activate regional_workflow
 
   export PYTHONPATH=${workspace}/ush
   python -m unittest $workspace/tests/test_python/test_retrieve_data.py
