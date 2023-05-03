@@ -35,7 +35,7 @@ from python_utils import (
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from fill_jinja_template import fill_jinja_template
+from templater import set_template
 from set_namelist import set_namelist
 from check_python_version import check_python_version
 
@@ -115,18 +115,19 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
         args = ["-o", wflow_xml_fp,
-                "-t", template_xml_fp,
-                "-c", rocoto_yaml_fp ]
+                "-i", template_xml_fp,
+                "-c", rocoto_yaml_fp,
+                "-d"]
         if not debug:
             args.append("-q")
 
         try:
-            fill_jinja_template(args)
+            set_template(args)
         except:
             raise Exception(
                 dedent(
                     f"""
-                    Call to fill_jinja_template failed.
+                    Call to uwtools set_template failed.
                     """
                 )
             )

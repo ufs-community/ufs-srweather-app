@@ -5,6 +5,7 @@ import sys
 import argparse
 import unittest
 from datetime import datetime
+import tempfile
 from textwrap import dedent
 
 from python_utils import (
@@ -20,7 +21,7 @@ from python_utils import (
     flatten_dict,
 )
 
-from fill_jinja_template import fill_jinja_template
+from templater import set_template
 
 def create_nems_configure_file(run_dir):
     """ Creates a nems configuration file in the specified
@@ -89,24 +90,29 @@ def create_nems_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    try:
-        fill_jinja_template(["-q", "-u", settings_str, "-t", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-            Call to python script fill_jinja_template.py to create the nems.configure
-            file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template nems.configure file:
-                NEMS_CONFIG_TMPL_FP = \"{NEMS_CONFIG_TMPL_FP}\"
-              Full path to output nems.configure file:
-                nems_config_fp = \"{nems_config_fp}\"
-              Namelist settings specified on command line:\n
-                settings =\n\n"""
+    # Store the settings in a temporary file
+    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="nems_config_settings") as tmpfile:
+        tmpfile.write(settings_str)
+
+        try:
+            set_templater(["-q", "-c", $tmpfile, "-i", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
+        except:
+            print_err_msg_exit(
+                dedent(
+                    f"""
+                Call to uwtools set_templater to create the nems.configure
+                file from a jinja2 template failed.  Parameters passed to this script are:
+                  Full path to template nems.configure file:
+                    NEMS_CONFIG_TMPL_FP = \"{NEMS_CONFIG_TMPL_FP}\"
+                  Full path to output nems.configure file:
+                    nems_config_fp = \"{nems_config_fp}\"
+                  Full path to configuration file:
+                    {tmpfile}
+
+                    """
+                )
             )
-            + settings_str
-        )
-        return False
+            return False
 
     return True
 

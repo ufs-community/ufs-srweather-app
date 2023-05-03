@@ -6,6 +6,7 @@ import argparse
 import unittest
 from datetime import datetime
 from textwrap import dedent
+import tempfile
 
 from python_utils import (
     import_vars,
@@ -20,7 +21,7 @@ from python_utils import (
     flatten_dict,
 )
 
-from fill_jinja_template import fill_jinja_template
+from templater import set_template
 
 
 def create_model_configure_file(
@@ -204,34 +205,36 @@ def create_model_configure_file(
     #
     model_config_fp = os.path.join(run_dir, MODEL_CONFIG_FN)
 
-    try:
-        fill_jinja_template(
-            [
-                "-q",
-                "-u",
-                settings_str,
-                "-t",
-                MODEL_CONFIG_TMPL_FP,
-                "-o",
-                model_config_fp,
-            ]
-        )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script fill_jinja_template.py to create a '{MODEL_CONFIG_FN}'
-                file from a jinja2 template failed.  Parameters passed to this script are:
-                  Full path to template model config file:
-                    MODEL_CONFIG_TMPL_FP = '{MODEL_CONFIG_TMPL_FP}'
-                  Full path to output model config file:
-                    model_config_fp = '{model_config_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
+    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="model_config_settings") as tmpfile:
+        tmpfile.write(settings_str)
+        try:
+            set_template(
+                [
+                    "-q",
+                    "-c",
+                    tmpfile,
+                    "-i",
+                    MODEL_CONFIG_TMPL_FP,
+                    "-o",
+                    model_config_fp,
+                ]
             )
-            + settings_str
-        )
-        return False
+        except:
+            print_err_msg_exit(
+                dedent(
+                    f"""
+                    Call to uwtools set_template to create a '{MODEL_CONFIG_FN}'
+                    file from a jinja2 template failed.  Parameters passed to this script are:
+                      Full path to template model config file:
+                        MODEL_CONFIG_TMPL_FP = '{MODEL_CONFIG_TMPL_FP}'
+                      Full path to output model config file:
+                        model_config_fp = '{model_config_fp}'
+                      Full path to configuration file:
+                        {tmpfile}
+                      """
+                )
+            )
+            return False
 
     return True
 

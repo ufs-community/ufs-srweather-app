@@ -6,6 +6,7 @@ import argparse
 import unittest
 from datetime import datetime
 from textwrap import dedent
+import tempfile
 
 from python_utils import (
     import_vars, 
@@ -20,7 +21,7 @@ from python_utils import (
     flatten_dict
 )
 
-from fill_jinja_template import fill_jinja_template
+from templater import set_template
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     """ Creates an aqm.rc file in the specified run directory
@@ -114,15 +115,17 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     #-----------------------------------------------------------------------
     #
+    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings") as tmpfile:
+        tmpfile.write(settings_str)
     try:
-        fill_jinja_template(
+        set_template(
             [
-                "-q", 
-                "-u", 
-                settings_str, 
-                "-t", 
-                AQM_RC_TMPL_FP, 
-                "-o", 
+                "-q",
+                "-c",
+                tmpfile,
+                "-i",
+                AQM_RC_TMPL_FP,
+                "-o",
                 aqm_rc_fp,
             ]
         )
@@ -130,16 +133,15 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script fill_jinja_template.py to create a \"{AQM_RC_FN}\"
+            Call to uwtools set_template to create a \"{AQM_RC_FN}\"
             file from a jinja2 template failed.  Parameters passed to this script are:
               Full path to template aqm.rc file:
                 AQM_RC_TMPL_FP = \"{AQM_RC_TMPL_FP}\"
               Full path to output aqm.rc file:
                 aqm_rc_fp = \"{aqm_rc_fp}\"
-              Namelist settings specified on command line:\n
-                settings =\n\n"""
-            )
-            + settings_str
+              Full path to configuration file:
+                {tmpfile}
+              """
         )
         return False
 
