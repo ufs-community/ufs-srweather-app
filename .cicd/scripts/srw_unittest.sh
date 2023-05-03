@@ -1,4 +1,4 @@
-#!/user/bin/env bash
+#!/usr/bin/env bash
 #
 # A test script for running the SRW application unittest tests that
 # should be tested on-prem.
