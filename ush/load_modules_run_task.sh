@@ -193,6 +193,8 @@ if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
     task_name = \"${task_name}\"
     modulefile_local = \"${modulefile_local}\"
     modules_dir = \"${modules_dir}\""    
+elif [ -f ${modules_dir}/python_srw.lua ] ; then
+  module load python_srw
 fi
 
 module list
