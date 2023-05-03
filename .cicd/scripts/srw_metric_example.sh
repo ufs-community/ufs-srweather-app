@@ -66,7 +66,7 @@ source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 [[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
-# Skill score index is computed over several terms that are defined in .cicd/scripts/STATAnalysisConfig_skill_score. 
+# Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
 # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
 # In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
 # temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
@@ -76,11 +76,11 @@ ${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalys
 # check skill-score.out
 cat skill-score.out
 
-# get skill-score (SS_INDEX) and check if it is significantly smaller than 1
+# get skill-score (SS_INDEX) and check if it is significantly smaller than 1.0
 # A value greater than 1.0 indicates that the forecast model outperforms the reference, 
 # while a value less than 1.0 indicates that the reference outperforms the forecast.
 tmp_string=$( tail -2 skill-score.out | head -1 )
-SS_INDEX=${tmp_string:(-7)}
+SS_INDEX=$(echo $tmp_string | awk -F " " '{print $NF}')
 echo "Skill Score: ${SS_INDEX}"
 if [[ ${SS_INDEX} < "0.700" ]]; then
     echo "Your Skill Score is way smaller than 1.00, better check before merging"
