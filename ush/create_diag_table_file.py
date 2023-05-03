@@ -18,7 +18,7 @@ from python_utils import (
     flatten_dict,
 )
 
-from templater import set_template
+from scripts.templater import set_template
 
 
 def create_diag_table_file(run_dir):

@@ -21,7 +21,7 @@ from python_utils import (
     flatten_dict,
 )
 
-from templater import set_template
+from scripts.templater import set_template
 
 
 def create_model_configure_file(

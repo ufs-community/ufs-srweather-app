@@ -21,7 +21,7 @@ from python_utils import (
     flatten_dict,
 )
 
-from templater import set_template
+from scripts.templater import set_template
 
 def create_nems_configure_file(run_dir):
     """ Creates a nems configuration file in the specified

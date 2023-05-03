@@ -35,7 +35,7 @@ from python_utils import (
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from templater import set_template
+from scripts.templater import set_template
 from set_namelist import set_namelist
 from check_python_version import check_python_version
 
@@ -117,7 +117,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         args = ["-o", wflow_xml_fp,
                 "-i", template_xml_fp,
                 "-c", rocoto_yaml_fp,
-                "-d"]
+                ]
         if not debug:
             args.append("-q")
 

@@ -21,7 +21,7 @@ from python_utils import (
     flatten_dict
 )
 
-from templater import set_template
+from scripts.templater import set_template
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     """ Creates an aqm.rc file in the specified run directory
