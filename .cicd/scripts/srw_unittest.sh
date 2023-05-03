@@ -25,6 +25,9 @@ if [[ ${hpss_machines[@]} =~ ${SRW_PLATFORM} ]] ; then
   module load hpss
 
   export PYTHONPATH=${workspace}/ush
-  python -m unittest $workspace/tests/test_python/test_retrieve_data.py
+
+  # Don't include an absolute path here because unittest get's confused
+  # on-prem where there may be a dot in the user path.
+  python -m unittest tests/test_python/test_retrieve_data.py
 
 fi
