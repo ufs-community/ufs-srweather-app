@@ -1,0 +1,209 @@
+default_aqm_task: &default_aqm
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+  memory: 2G
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_nexus_gfs_sfc:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_gfs_sfc" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    or:
+      and:
+        streq:
+          left: do_real_time
+          right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+        datadep_gfs:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+      streq:
+        left: retro
+        right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
+
+metatask_nexus_emission:
+  var:
+    nspt: '{% for h in range(0, cpl_aqm_parm.NUM_SPLIT_NEXUS) %}{{ " %02d" % h }}{% endfor %}'
+  task_nexus_emission_#nspt#:
+    <<: *default_aqm
+    command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    nnodes: 4
+    ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
+    walltime: 01:00:00
+    envars:
+      <<: *default_vars
+      nspt: "#nspt#"
+    dependency:
+      taskdep:
+        attrs:
+          task: nexus_gfs_sfc
+
+task_nexus_post_split:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_post_split" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    metataskdep:
+      attrs:
+        metatask: nexus_emission
+
+task_fire_emission:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "fire_emission" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+
+task_point_source:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "point_source" "&JOBSdir;/JREGIONAL_POINT_SOURCE"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  walltime: 01:00:00
+  dependency:
+    or_make_grid:
+      datadep_grid:
+        attrs:
+          age: 00:00:00:05
+        text: '{{ task_make_grid.GRID_DIR }}/make_grid_task_complete.txt'
+      streq:
+        left: staged_grid
+        right: '{% if not rocoto.get("tasks", {}).get("task_make_grid") %}staged_grid{% endif %}'
+
+task_aqm_ics_ext:
+  <<: *default_aqm
+  attrs:
+    cycledefs: at_start
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
+  envars:
+    <<: *default_vars
+    PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    and:
+      taskdep:
+        attrs:
+          task: make_ics_mem000
+      or:
+        datadep_date_tag_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+        datadep_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
+
+task_aqm_ics:
+  <<: *default_aqm
+  attrs:
+    cycledefs: cycled
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_ics" "&JOBSdir;/JREGIONAL_AQM_ICS"'
+  envars:
+    <<: *default_vars
+    PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMIN_DIR;</cyclestr>'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    and:
+      taskdep:
+        attrs:
+          task: make_ics_mem000
+      or:
+        datadep_date_tag_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: '<cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}">&COMIN_DIR;</cyclestr>/RESTART/<cyclestr>@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc</cyclestr>'
+        datadep_tracer:
+          attrs:
+            age: 00:00:00:05
+          text: <cyclestr offset="-{{- workflow.INCR_CYCL_FREQ -}}">&COMIN_DIR;</cyclestr>/RESTART/fv_tracer.res.tile1.nc
+
+task_aqm_lbcs:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "aqm_lbcs" "&JOBSdir;/JREGIONAL_AQM_LBCS"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  ppn: 24
+  dependency:
+    taskdep:
+      attrs:
+        task: make_lbcs
+
+task_pre_post_stat:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    taskdep:
+      attrs:
+        task: run_fcst_mem000
+    #or_do_post:
+    #  and_inline_post: # If inline post ran, wait on the forecast task to complete
+    #    not:
+    #      taskvalid:
+    #        attrs:
+    #          task: run_post_mem000_f000
+    #  and_run_post: # If post was meant to run, wait on the whole post metatask
+    #    taskvalid:
+    #      attrs:
+    #        task: run_post_mem000_f000
+    #    metataskdep:
+    #      attrs:
+    #        metatask: run_post_mem000
+
+task_post_stat_o3:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_o3" "&JOBSdir;/JREGIONAL_POST_STAT_O3"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
+task_post_stat_pm25:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_pm25" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_o3:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_o3" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_pm25:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_pm25" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+      attrs:
+        task: pre_post_stat
+

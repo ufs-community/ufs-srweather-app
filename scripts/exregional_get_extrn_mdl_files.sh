@@ -72,12 +72,8 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   file_set="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
   if [ "${FCST_LEN_HRS}" = "-1" ]; then
-    for i_cdate in "${!ALL_CDATES[@]}"; do
-      if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-        FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-        break
-      fi
-    done
+    CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+    FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
   fi
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"

@@ -246,7 +246,7 @@ def update_dict(dest, newdict, quiet=False):
         print("*" * 50)
 
 
-def fill_jinja_template(argv):
+def fill_jinja_template(argv, config_dict=None):
 
     """
     Loads a Jinja template, determines its necessary undefined variables,
@@ -259,7 +259,8 @@ def fill_jinja_template(argv):
         cla.config = config_exists(cla.config)
 
     # Create a Jinja Environment to load the template.
-    env = j2.Environment(loader=j2.FileSystemLoader(cla.template))
+    env = j2.Environment(loader=j2.FileSystemLoader(cla.template,
+        encoding='utf-8'))
     template_source = env.loader.get_source(env, "")
     template = env.get_template("")
     parsed_content = env.parse(template_source)
@@ -269,6 +270,9 @@ def fill_jinja_template(argv):
 
     # Read in the config options from the provided (optional) YAML file
     cfg = cla.config if cla.config is not None else {}
+
+    if config_dict is not None:
+        update_dict(cfg, config_dict, quiet=cla.quiet)
 
     # Update cfg with (optional) command-line entries, overriding those in YAML file
     if cla.user_config:

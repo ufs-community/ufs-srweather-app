@@ -15,9 +15,15 @@ workflow:
   DATE_LAST_CYCL: '2019061518'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_VX_GRIDSTAT: true
-  RUN_TASK_VX_POINTSTAT: true
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+    task_get_obs_ccpa:
+    task_get_obs_mrms:
+    task_get_obs_ndas:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -28,5 +34,4 @@ task_get_extrn_lbcs:
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   USE_USER_STAGED_EXTRN_FILES: true
 verification:
-  RUN_TASKS_METVX_DET: true
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km

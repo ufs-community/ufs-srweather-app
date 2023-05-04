@@ -334,7 +334,6 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'uscore_ensmem_name_or_null': '${USCORE_ENSMEM_NAME_OR_NULL:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.

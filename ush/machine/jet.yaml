@@ -47,3 +47,14 @@ data:
     GFS_obs:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:

@@ -160,7 +160,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
+vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_DIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_or_null=""
@@ -213,19 +213,16 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
   mem_indx_fmt=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "${mem_indx}")
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
-  SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
   if [ "${RUN_ENVIR}" = "nco" ]; then
     cdate_ensmem_subdir_or_null=""
-    DOT_ENSMEM_OR_NULL=".mem${mem_indx_fmt}"
   else
-    cdate_ensmem_subdir_or_null="${CDATE}${SLASH_ENSMEM_SUBDIR_OR_NULL}"
-    DOT_ENSMEM_OR_NULL=""
+    cdate_ensmem_subdir_or_null="${CDATE}/mem${mem_indx_fmt}"
   fi
 
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
+    template="${cdate_ensmem_subdir_or_null}/metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
   else
-    template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
+    template="${CDATE}/mem${mem_indx_fmt}/postprd/${FCST_FN_TEMPLATE}"
   fi
 
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
@@ -368,7 +365,6 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'uscore_ensmem_name_or_null': '${USCORE_ENSMEM_NAME_OR_NULL:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.

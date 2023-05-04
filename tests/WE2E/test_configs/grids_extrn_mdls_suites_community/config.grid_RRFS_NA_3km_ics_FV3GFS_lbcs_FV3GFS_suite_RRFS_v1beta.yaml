@@ -15,8 +15,6 @@ workflow:
   DATE_LAST_CYCL: '2019070100'
   FCST_LEN_HRS: 3
   PREEXISTING_DIR_METHOD: rename
-workflow_switches:
-  RUN_TASK_RUN_PRDGEN: true
 task_make_orog:
   OMP_NUM_THREADS_MAKE_OROG: 24
 task_get_extrn_ics:
@@ -27,20 +25,30 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
 task_make_ics:
-  NNODES_MAKE_ICS: 16
-  PPN_MAKE_ICS: 4
   OMP_STACKSIZE_MAKE_ICS: 2048m
-task_make_lbcs:
-  NNODES_MAKE_LBCS: 12
-  PPN_MAKE_LBCS: 4
-  WTIME_MAKE_LBCS: 01:00:00
 task_run_fcst:
   OMP_STACKSIZE_RUN_FCST: 2048m
   DT_ATMOS: 40
-  WTIME_RUN_FCST: 01:00:00
-task_run_post:
-  NNODES_RUN_POST: 8
-  PPN_RUN_POST: 12
 task_run_prdgen:
   DO_PARALLEL_PRDGEN: true
-  PPN_RUN_PRDGEN: 22
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/prdgen.yaml"]|include }}'
+    task_make_orog:
+      walltime: 01:00:00
+    metatask_run_ensemble:
+      task_make_ics_mem#mem#:
+        nnodes: 16
+        ppn: 4
+      task_make_lbcs_mem#mem#:
+        nnodes: 12
+        ppn: 4
+        walltime: 01:00:00
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+    metatask_run_ens_post:
+      metatask_run_post:
+        task_run_post_mem#mem#_f#fhr#:
+          ppn: 12
+          nnodes: 8
+

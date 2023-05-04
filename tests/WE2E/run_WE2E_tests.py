@@ -186,8 +186,7 @@ def run_we2e_tests(homedir, args) -> None:
                                                                        config_defaults,"lbcs")
 
         if 'verification' in test_cfg:
-            test_cfg['verification'] = check_task_verification(test_cfg,machine_defaults,
-                                                               config_defaults)
+            logging.debug(test_cfg['verification'])
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
@@ -324,14 +323,21 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
     if ics_or_lbcs not in ["lbcs", "ics"]:
         raise ValueError("ics_or_lbcs must be set to 'lbcs' or 'ics'")
 
-    I_OR_L = ics_or_lbcs.upper()
-
     #Make our lives easier by shortening some dictionary calls
     cfg_bcs = cfg[f'task_get_extrn_{ics_or_lbcs}']
 
-    # If RUN_TASK_GET_EXTRN_* is explicitly set to false, do nothing and return
-    if cfg.get('workflow_switches', {}).get(f'RUN_TASK_GET_EXTRN_{I_OR_L}', True) is False:
+    # If the task is turned off explicitly, do nothing and return
+    # To turn off that task, taskgroups is included without the
+    # coldstart group, or task_get_extrn_{ics_or_lbcs} is included
+    # without a value
+    taskgroups = cfg.get('rocoto', {}).get('taskgroups')
+    if taskgroups is not None and "coldstart.yaml" not in taskgroups:
         return cfg_bcs
+    rocoto_tasks = cfg.get('rocoto', {}).get('tasks',{})
+    if rocoto_tasks.get(f"task_get_extrn_{ics_or_lbcs}", "NA") is None:
+        return cfg_bcs
+
+    I_OR_L = ics_or_lbcs.upper()
 
     # If USE_USER_STAGED_EXTRN_FILES not specified or false, do nothing and return
     if not cfg_bcs.get('USE_USER_STAGED_EXTRN_FILES'):
@@ -382,58 +388,6 @@ def check_task_get_extrn_bcs(cfg: dict, mach: dict, dflt: dict, ics_or_lbcs: str
                 f"{cfg_bcs[f'EXTRN_MDL_NAME_{I_OR_L}']}/${{yyyymmddhh}}")
 
     return cfg_bcs
-
-def check_task_verification(cfg: dict, mach: dict, dflt: dict) -> dict:
-    """
-    Function for checking and updating various settings in verification section of test config yaml
-
-    Args:
-        cfg  : Dictionary loaded from test config file
-        mach : Dictionary loaded from machine settings file
-        dflt : Dictionary loaded from default config file
-    Returns:
-        cfg_vx : Updated dictionary for verification section of test config
-    """
-
-    # Make our lives easier by shortening some dictionary calls
-    if 'verification' in cfg:
-        cfg_vx = cfg['verification']
-    else:
-        cfg_vx = dict()
-
-    # If VX_FCST_INPUT_BASEDIR is already explicitly set in the test configuration
-    # dictionary, keep that value and just return.
-    if 'VX_FCST_INPUT_BASEDIR' in cfg_vx:
-        return cfg_vx
-
-    # Attempt to obtain the values of RUN_TASK_RUN_FCST, WRITE_DO_POST, and RUN_TASK_RUN_POST
-    # from the test configuration dictionary.  If not available there, get them from the default
-    # configuration dictionary.
-    flags = {'RUN_TASK_RUN_FCST': False, 'WRITE_DOPOST': False, 'RUN_TASK_RUN_POST': False}
-    for section in ['workflow_switches', 'task_run_fcst']:
-        for flag in flags:
-            if (section in cfg) and (flag in cfg[section]):
-                flags[flag] = cfg[section][flag]
-            elif flag in dflt[section]:
-                flags[flag] = dflt[section][flag]
-
-    # If UPP is going to be run (either in-line or as a separate set of tasks), set the
-    # VX_FCST_INPUT_BASEDIR to the default directory for the experiment.  Otherwise, set
-    # it to the value of TEST_VX_FCST_INPUT_BASEDIR in the machine file.
-    if (flags['RUN_TASK_RUN_FCST'] and flags['WRITE_DOPOST']) or flags['RUN_TASK_RUN_POST']:
-        # In NCO mode, the UPP output files are placed in a different location than in 
-        # community mode.  Thus, set VX_FCST_INPUT_BASEDIR accordingly.
-        if cfg['user']['RUN_ENVIR'] == 'nco':
-            cfg_vx['VX_FCST_INPUT_BASEDIR'] = '$COMOUT/../..'
-        else:
-            cfg_vx['VX_FCST_INPUT_BASEDIR'] = dflt['workflow']['EXPTDIR']
-    else:
-        if 'TEST_VX_FCST_INPUT_BASEDIR' in mach['platform']:
-            cfg_vx['VX_FCST_INPUT_BASEDIR'] = mach['platform']['TEST_VX_FCST_INPUT_BASEDIR']
-        else:
-            cfg_vx['VX_FCST_INPUT_BASEDIR'] = ''
-
-    return cfg_vx
 
 
 def setup_logging(logfile: str = "log.run_WE2E_tests", debug: bool = False) -> None:

@@ -15,10 +15,19 @@ returnded by load_config to make queries.
 """
 
 import argparse
+import configparser
 import datetime
+import json
+import os
+import pathlib
+import re
+from textwrap import dedent
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
+import jinja2
 #
-# Note: Yaml maynot be available in which case we suppress
+# Note: yaml may not be available in which case we suppress
 # the exception, so that we can have other functionality
 # provided by this module.
 #
@@ -26,19 +35,8 @@ try:
     import yaml
 except ModuleNotFoundError:
     pass
-# The rest of the formats: JSON/SHELL/INI/XML do not need
-# external packages
-import json
-import os
-import re
-from textwrap import dedent
-import configparser
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
 
-import jinja2
-
-from .environment import list_to_str, str_to_list
+from .environment import list_to_str, str_to_list, str_to_type
 from .run_command import run_command
 
 ##########
@@ -76,27 +74,72 @@ def cfg_to_yaml_str(cfg):
     """Get contents of config file as a yaml string"""
 
     return yaml.dump(
-        cfg, Dumper=custom_dumper, sort_keys=False, default_flow_style=False
+        cfg, sort_keys=False, default_flow_style=False
     )
 
+def cycstr(loader, node):
+
+    ''' Returns a cyclestring Element whose content corresponds to the
+    input node argument '''
+
+    arg = loader.construct_scalar(node)
+    return f'<cyclestr>{arg}</cyclestr>'
+
+def include(filepaths):
+
+    ''' Returns a dictionary that includes the contents of the referenced
+    YAML file(s). '''
+
+    srw_path = pathlib.Path(__file__).resolve().parents[0].parents[0]
+
+    cfg = {}
+    for filepath in filepaths:
+        abs_path = filepath
+        if not os.path.isabs(filepath):
+            abs_path = os.path.join(os.path.dirname(srw_path), filepath)
+        with open(abs_path, 'r') as fp:
+            contents = yaml.load(fp, Loader=yaml.SafeLoader)
+        for key, value in contents.items():
+            cfg[key] = value
+    return yaml.dump(cfg, sort_keys=False)
 
 def join_str(loader, node):
     """Custom tag hangler to join strings"""
     seq = loader.construct_sequence(node)
     return "".join([str(i) for i in seq])
 
+def startstopfreq(loader, node):
+
+    ''' Returns a Rocoto-formatted string for the contents of a cycledef
+    tag. Assume that the items in the node are env variables, and return
+    a Rocoto-formatted string'''
+
+    args = loader.construct_sequence(node)
+
+    # Try to fill the values from environment values, default to the
+    # value provided in the entry.
+    start, stop, freq = (os.environ.get(arg, arg) for arg in args)
+
+    return f'{start}00 {stop}00 {freq}:00:00'
+
+def nowtimestamp(loader, node):
+    return "id_" + str(int(datetime.datetime.now().timestamp()))
 
 try:
+    yaml.add_constructor("!cycstr", cycstr, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!include", include, Loader=yaml.SafeLoader)
     yaml.add_constructor("!join_str", join_str, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!startstopfreq", startstopfreq, Loader=yaml.SafeLoader)
+    yaml.add_constructor("!nowtimestamp", nowtimestamp ,Loader=yaml.SafeLoader)
 except NameError:
     pass
+
 
 
 def path_join(arg):
     """A filter for jinja2 that joins paths"""
 
     return os.path.join(*arg)
-
 
 def days_ago(arg):
     """A filter for jinja2 that gives us a date string for x number of
@@ -105,9 +148,7 @@ def days_ago(arg):
     return (datetime.date.today() -
             datetime.timedelta(days=arg)).strftime("%Y%m%d00")
 
-
-def extend_yaml(yaml_dict, full_dict=None):
-
+def extend_yaml(yaml_dict, full_dict=None, parent=None):
     """
     Updates yaml_dict inplace by rendering any existing Jinja2 templates
     that exist in a value.
@@ -116,64 +157,93 @@ def extend_yaml(yaml_dict, full_dict=None):
     if full_dict is None:
         full_dict = yaml_dict
 
+    if parent is None:
+        full_dict = yaml_dict
+
     if not isinstance(yaml_dict, dict):
         return
 
-    for k, v in yaml_dict.items():
+    for k, val in yaml_dict.items():
 
-        if isinstance(v, dict):
-            extend_yaml(v, full_dict)
+        if isinstance(val, dict):
+            extend_yaml(val, full_dict, yaml_dict)
         else:
 
-            # Save a bit of compute and only do this part for strings that
-            # contain the jinja double brackets.
-            v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
-            is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
-            if is_a_template:
+            if not isinstance(val, list):
+                val = [val]
 
-                # Find expressions first, and process them as a single template
-                # if they exist
-                # Find individual double curly brace template in the string
-                # otherwise. We need one substitution template at a time so that
-                # we can opt to leave some un-filled when they are not yet set.
-                # For example, we can save cycle-dependent templates to fill in
-                # at run time.
-                if "{%" in v:
-                    templates = [v_str]
-                else:
-                    # Separates out all the double curly bracket pairs
-                    templates = re.findall(r"{{[^}]*}}|\S", v_str)
-                data = []
-                for template in templates:
-                    j2env = jinja2.Environment(
-                        loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
-                    )
-                    j2env.filters["path_join"] = path_join
-                    j2env.filters["days_ago"] = days_ago
-                    j2tmpl = j2env.from_string(template)
-                    try:
-                        # Fill in a template that has the appropriate variables
-                        # set.
-                        template = j2tmpl.render(**yaml_dict, **full_dict)
-                    except jinja2.exceptions.UndefinedError as e:
-                        # Leave a templated field as-is in the resulting dict
-                        pass
-                    except TypeError:
-                        pass
-                    except ZeroDivisionError:
-                        pass
-                    except:
-                        print(f"{k}: {template}")
-                        raise
-
-                    data.append(template)
-
+            for v_idx, v in enumerate(val):
+                # Save a bit of compute and only do this part for strings that
+                # contain the jinja double brackets.
+                v_str = str(v.text) if isinstance(v, ET.Element) else str(v)
                 if isinstance(v, ET.Element):
-                    v.text = "".join(data)
-                else:
-                    # Put the full template line back together as it was,
-                    # filled or not
-                    yaml_dict[k] = "".join(data)
+                    print('ELEMENT VSTR', v_str, v.text, yaml_dict)
+                is_a_template = any((ele for ele in ["{{", "{%"] if ele in v_str))
+                if is_a_template:
+                    # Find expressions first, and process them as a single template
+                    # if they exist
+                    # Find individual double curly brace template in the string
+                    # otherwise. We need one substitution template at a time so that
+                    # we can opt to leave some un-filled when they are not yet set.
+                    # For example, we can save cycle-dependent templates to fill in
+                    # at run time.
+                    if "{%" in v_str:
+                        templates = [v_str]
+                    else:
+                        # Separates out all the double curly bracket pairs
+                        templates = [m.group() for m in
+                                re.finditer(r"{{[^}]*}}|\S", v_str)  if '{{'
+                                in m.group()]
+                    data = []
+                    for template in templates:
+                        j2env = jinja2.Environment(
+                            loader=jinja2.BaseLoader, undefined=jinja2.StrictUndefined
+                        )
+                        j2env.filters["path_join"] = path_join
+                        j2env.filters["days_ago"] = days_ago
+                        j2env.filters["include"] = include
+                        try:
+                            j2tmpl = j2env.from_string(template)
+                        except:
+                            print(f"ERROR filling template: {template}, {v_str}")
+                            raise
+                        try:
+                            # Fill in a template that has the appropriate variables
+                            # set.
+                            template = j2tmpl.render(parent=parent, **yaml_dict, **full_dict)
+                        except jinja2.exceptions.UndefinedError as e:
+                            # Leave a templated field as-is in the resulting dict
+                            pass
+                        except ValueError:
+                            pass
+                        except TypeError:
+                            pass
+                        except ZeroDivisionError:
+                            pass
+                        except:
+                            print(f"{k}: {template}")
+                            raise
+
+                        data.append(template)
+
+                    convert_type = True
+                    for tmpl, rendered in zip(templates, data):
+                        v_str = v_str.replace(tmpl, rendered)
+                        if "string" in tmpl:
+                            convert_type = False
+
+                    if convert_type:
+                        v_str = str_to_type(v_str)
+
+                    if isinstance(v, ET.Element):
+                        print('Replacing ET text with', v_str)
+                        v.text = v_str
+                    elif isinstance(yaml_dict[k], list):
+                        yaml_dict[k][v_idx] = v_str
+                    else:
+                        # Put the full template line back together as it was,
+                        # filled or not
+                        yaml_dict[k] = v_str
 
 
 ##########
@@ -457,12 +527,15 @@ def update_dict(dict_o, dict_t, provide_default=False):
     Returns:
         None
     """
-    for k, v in dict_o.items():
+    for k, v in dict_o.copy().items():
         if isinstance(v, dict):
             if isinstance(dict_t.get(k), dict):
                 update_dict(v, dict_t[k], provide_default)
             else:
                 dict_t[k] = v
+        elif v is None and k in dict_t.keys():
+            # remove the key if the source dict has null entry
+            del dict_t[k]
         elif k in dict_t.keys():
             if (
                 (not provide_default)
@@ -471,11 +544,13 @@ def update_dict(dict_o, dict_t, provide_default=False):
                 or ("{{" in dict_t[k])
             ):
                 dict_t[k] = v
+        elif k not in dict_t.keys():
+            dict_t[k] = v
 
 
 def check_structure_dict(dict_o, dict_t):
     """Check if a dictionary's structure follows a template.
-    The invalid entries are returned as a list of lists.
+    The invalid entries are returned as a dictionary.
     If all entries are valid, returns an empty dictionary
 
     Args:

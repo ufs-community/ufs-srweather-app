@@ -79,6 +79,19 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
                     running_expts[expt]["walltime"] = str(walltime)
 
                 logging.info(f'Experiment {expt} is {running_expts[expt]["status"]}')
+
+                # If failures, check how many experiments were successful
+                if debug:
+                    if running_expts[expt]["status"] != "COMPLETE":
+                        i=j=0
+                        for task in running_expts[expt]:
+                            # Skip non-task entries
+                            if task in ["expt_dir","status","start_time","walltime"]:
+                                continue
+                            j+=1
+                            if running_expts[expt][task]["status"] == "SUCCEEDED":
+                                i+=1
+                        logging.debug(f'{i} of {j} tasks were successful')
                 logging.info(f'{walltimestr}will no longer monitor.')
                 running_expts.pop(expt)
                 continue

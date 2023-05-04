@@ -344,7 +344,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
         # are past the first initial iteration of job submissions
         if not refresh:
             logging.warning(dedent(
-                """WARNING:Tasks have not yet been submitted for experiment {name};
+                f"""WARNING:Tasks have not yet been submitted for experiment {name};
                 it could be that your jobs are being throttled at the system level.
 
                 If you continue to see this message, there may be an error with your
