@@ -39,5 +39,5 @@ rocoto:
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-  VX_FCST_INPUT_DIR: '{{ platform.get("TEST_VX_FCST_INPUT_DIR") }}'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
 

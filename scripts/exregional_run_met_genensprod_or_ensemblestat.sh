@@ -160,7 +160,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_DIR}" )
+vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_or_null=""

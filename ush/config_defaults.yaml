@@ -2114,14 +2114,15 @@ verification:
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
   #
-  # VX_FCST_INPUT_DIR:
-  # Directory template for the path containing forecast (but not obs) files
-  # that will be used as input into METplus for verification.
+  # VX_FCST_INPUT_BASEDIR:
+  # Template for top-level directory containing forecast (but not obs)
+  # files that will be used as input into METplus for verification.
   #
   # VX_OUTPUT_BASEDIR:
-  # Top-level directory in which METplus will place its output.
+  # Template for top-level directory in which METplus will place its
+  # output.
   #
-  VX_FCST_INPUT_DIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   #
   # File name and path templates used in the verification tasks.
