@@ -105,21 +105,21 @@ n_iolayouty=$(($IO_LAYOUT_Y-1))
 print_info_msg "$VERBOSE" "
 Getting into working directory for radar reflectivity process ..."
 
+pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
+print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
+
 for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
+  echo "timelevel = ${timelevel}"
   timelevel=$( printf %2.2i $timelevel )
   mkdir_vrfy ${DATA}/${timelevel}
   cd ${DATA}/${timelevel}
 
-  pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
-
-  print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
-
-#
-#-----------------------------------------------------------------------
-#
-# link or copy background files
-#
-#-----------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------
+  #
+  # copy background files
+  #
+  #-----------------------------------------------------------------------
 
   if [ ${BKTYPE} -eq 1 ]; then
     cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
@@ -134,43 +134,37 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
     fi
   fi
 
-#
-#-----------------------------------------------------------------------
-#
-# link/copy observation files to working directory 
-#
-#-----------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------
+  #
+  # copy observation files to working directory 
+  #
+  #-----------------------------------------------------------------------
 
   NSSL=${OBSPATH_NSSLMOSIAC}
-
   mrms="MergedReflectivityQC"
-
-# Link to the MRMS operational data
-  echo "timelevel = ${timelevel}"
+  # Copy the MRMS operational data
   echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
 
-# Link to the MRMS operational data
-# This loop finds files closest to the given "timelevel"
+  # Link to the MRMS operational data
+  # This loop finds files closest to the given "timelevel"
   for min in ${RADARREFL_MINS[@]}
   do
     min=$( printf %2.2i $((timelevel+min)) )
     echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
-    sec=0
-    while [[ $sec -le 59 ]]; do
-      ss=$(printf %2.2i ${sec})
-      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}${ss}.${OBS_SUFFIX}
+    nsslfiles=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}??.${OBS_SUFFIX}
+    for nsslfile in ${nsslfiles} ; do
       if [ -s $nsslfile ]; then
         echo 'Found '${nsslfile}
         nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
-        numgrib2=$(ls ${NSSL}/${nsslfile1} | wc -l)
+        numgrib2=${#nsslfiles1}
         echo 'Number of GRIB-2 files: '${numgrib2}
         if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
-          cp ${NSSL}/${nsslfile1} . 
-          ls ${nsslfile1} > filelist_mrms 
+          cp ${NSSL}/${nsslfile1} .
+          ls ${nsslfile1} > filelist_mrms
           echo 'Creating links for ${YYYY}${MM}${DD}-${cyc}${min}'
         fi
       fi
-      ((sec+=1))
     done
   done
 
@@ -179,7 +173,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
      if [ ${OBS_SUFFIX} == "grib2.gz" ]; then
         gzip -d *.gz
         mv filelist_mrms filelist_mrms_org
-        ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
+        ls ${mrms}_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
      fi
 
      numgrib2=$(more filelist_mrms | wc -l)

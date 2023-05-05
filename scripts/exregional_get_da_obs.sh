@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_da_obs" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_get_da_obs|task_process_radarref" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -120,9 +120,9 @@ The command was:
 ${cmd}
 "
 # Link to GSI-expected filenames
-mv_vrfy "${DATA}/${template_arr[0]}" "${DATA}/lghtngbufr"
-mv_vrfy "${DATA}/${template_arr[1]}" "${DATA}/lgycld.bufr_d"
-mv_vrfy "${DATA}/${template_arr[2]}" "${DATA}/prepbufr"
+ln_vrfy "${DATA}/${template_arr[0]}" "${DATA}/lghtngbufr"
+ln_vrfy "${DATA}/${template_arr[1]}" "${DATA}/lgycld.bufr_d"
+ln_vrfy "${DATA}/${template_arr[2]}" "${DATA}/prepbufr"
 
 #
 #-----------------------------------------------------------------------
@@ -192,6 +192,92 @@ fi
 #-----------------------------------------------------------------------
 #
 
+
+# If files are available on disk, copy them here in the code. This
+# approach is used here because of its efficiency compared to repeated
+# calls to retrieve_data.py for this observation file type.
+
+#
+#-----------------------------------------------------------------------
+#
+# Check for files on disk first
+#
+#-----------------------------------------------------------------------
+#
+mrms="MergedReflectivityQC"
+if [ -n "${OBSPATH_NSSLMOSIAC:-}" ] ; then
+
+  for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
+    echo "timelevel = ${timelevel}"
+    timelevel=$( printf %2.2i $timelevel )
+    radar_output_path=${RADAR_DATA}/${timelevel}
+    mkdir -p $radar_output_path
+
+    #-----------------------------------------------------------------------
+    # copy observation files to staging location
+    #-----------------------------------------------------------------------
+
+    NSSL=${OBSPATH_NSSLMOSIAC}
+    # Copy the MRMS operational data
+    echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
+
+    # Link to the MRMS operational data
+    # This loop finds files closest to the given "timelevel"
+    for min in ${RADARREFL_MINS[@]}
+    do
+      min=$( printf %2.2i $((timelevel+min)) )
+      echo "Looking for data valid:"${PDY}" "${cyc}":"${min}
+      nsslfiles=${NSSL}/*${mrms}_00.50_${PDY}-${cyc}${min}??.${OBS_SUFFIX}
+      for nsslfile in ${nsslfiles} ; do
+        if [ -s $nsslfile ]; then
+          echo 'Found '${nsslfile}
+          nsslfile1=*${mrms}_*_${PDY}-${cyc}${min}*.${OBS_SUFFIX}
+          numgrib2=${#nsslfiles1}
+          echo 'Number of GRIB-2 files: '${numgrib2}
+          if [ ${numgrib2} -ge 10 ] ; then
+            cp_vrfy ${NSSL}/${nsslfile1} $radar_output_path
+            echo 'Copying MRMS files for ${PDY}-${cyc}${min}'
+          fi
+        fi
+      done
+    done
+  done
+
+else
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Check to see if there are options to gather them from other sources
+  #
+  #-----------------------------------------------------------------------
+  #
+
+  for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
+    echo "timelevel = ${timelevel}"
+    timelevel=$( printf %2.2i $timelevel )
+    radar_output_path=${RADAR_DATA}/${timelevel}
+    mkdir -p $radar_output_path
+
+    cmd="
+    python3 -u ${USHdir}/retrieve_data.py \
+      --debug \
+      --file_set obs \
+      --config ${PARMdir}/data_locations.yml \
+      --cycle_date ${PDY}${cyc}${timelevel} \
+      --data_stores ${EXTRN_MDL_DATA_STORES} \
+      --data_type NSSL_mrms \
+      --output_path ${radar_output_path}
+    "
+
+    $cmd || print_err_msg_exit "\
+    Call to retrieve_data.py failed with a non-zero exit status.
+
+    The command was:
+    ${cmd}
+    "
+  done
+
+fi
 
 #
 #-----------------------------------------------------------------------

@@ -27,6 +27,7 @@ Also see the parse_args function below.
 
 import argparse
 import datetime as dt
+import glob
 import logging
 import os
 import shutil
@@ -47,12 +48,16 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     output location."""
 
     unavailable = {}
+    expand_source_paths = []
+    for p in source_paths:
+        expand_source_paths.extend(glob.glob(p))
+
     # Check to make sure the files exist on disk
-    for file_path in source_paths:
+    for file_path in expand_source_paths:
         local_file_path = os.path.join(os.getcwd(), file_path.lstrip("/"))
         if not os.path.exists(local_file_path):
             logging.info(f"File does not exist: {local_file_path}")
-            unavailable["hpss"] = source_paths
+            unavailable["hpss"] = expand_source_paths
         else:
             file_name = os.path.basename(file_path)
             expected_output_loc = os.path.join(output_path, file_name)
@@ -214,6 +219,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
         hh_even=hh_even,
         jjj=cycle_date.strftime("%j"),
         mem=mem,
+        min=cycle_date.strftime("%M"),
         mm=cycle_date.strftime("%m"),
         yy=cycle_date.strftime("%y"),
         yyyy=cycle_date.strftime("%Y"),
@@ -225,7 +231,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     if templates_only:
         return f'{",".join((format_values.keys()))}'
     return template_str.format(**format_values)
-    
+
 
 def create_target_path(target_path):
 
@@ -734,8 +740,17 @@ def write_summary_file(cla, data_store, file_templates):
 
 
 def to_datetime(arg):
-    """Return a datetime object give a string like YYYYMMDDHH."""
-    return dt.datetime.strptime(arg, "%Y%m%d%H")
+    """Return a datetime object give a string like YYYYMMDDHH or
+    YYYYMMDDHHmm."""
+    if len(arg) == 10:
+        fmt_str = "%Y%m%d%H"
+    elif len(arg) == 12:
+        fmt_str = "%Y%m%d%H%M"
+    else:
+        msg = f"""The length of the input argument is {len(arg)} and is
+        not a supported input format."""
+        raise argparse.ArgumentTypeError(msg)
+    return dt.datetime.strptime(arg, fmt_str)
 
 
 def to_lower(arg):
@@ -921,8 +936,8 @@ def parse_args(argv):
     parser.add_argument(
         "--cycle_date",
         help="Cycle date of the data to be retrieved in YYYYMMDDHH \
-        format.",
-        required=False,                    # relaxed this arg option, and set a benign value when not used
+        or YYYYMMDDHHmm format.",
+        required=False, # relaxed this arg option, and set a benign value when not used
         default="1999123100",
         type=to_datetime,
     )
@@ -944,6 +959,7 @@ def parse_args(argv):
             "GSMGFS",
             "HRRR",
             "NAM",
+            "NSSL_mrms",
             "RAP",
             "RAPx",
             "RAP_obs",

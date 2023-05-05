@@ -2022,10 +2022,26 @@ task_get_da_obs:
   # NLDN_NEEDED
   #   whether to use NLDN observations in DA or not.
   #
+  # NLDN_LIGHTNING
+  #   path to staged data on disk
+  #
   #-----------------------------------------------------------------------
   #
   NLDN_NEEDED: False
+  NLDN_LIGHTNING: ""
 
+  #
+  #-----------------------------------------------------------------------
+  #
+  #
+  # RAP_OBS_BUFR
+  # RAP_OBS_NSSLMOSAIC
+  #   paths to BUFR and NSSL Composite reflectivity obs staged on disk
+  #
+  #-----------------------------------------------------------------------
+  #
+  RAP_OBS_BUFR: ""
+  RAP_OBS_NSSLMOSAIC: ""
 #----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------
