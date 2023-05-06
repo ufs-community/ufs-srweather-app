@@ -37,6 +37,8 @@ task_process_radarref:
   OBS_SUFFIX: grib2.gz
 task_process_bufr:
   OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
+task_analysis_gsi:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
