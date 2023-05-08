@@ -122,6 +122,13 @@ pipeline {
                         }
                     }
 
+                    // Run the unittest functional tests that require an HPC platform
+                    stage('Functional Tests') {
+                        steps {
+                            echo "Running unittest on retrieve_data.py"
+                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_unittest.sh"'
+                        }
+                    }
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
                         steps {

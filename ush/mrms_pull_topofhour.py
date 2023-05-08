@@ -3,7 +3,6 @@ import datetime
 import re, csv, glob
 import bisect
 import numpy as np
-import unittest
 
 if __name__ == "__main__":
     # Copy and unzip MRMS files that are closest to top of hour
@@ -162,8 +161,3 @@ if __name__ == "__main__":
                 + filename2
             )
             os.system("gunzip " + VALID_DIR + "/" + filename2)
-
-# dummy unittest
-class Testing(unittest.TestCase):
-    def test_mrms_pull_topfhour(self):
-        pass
