@@ -182,6 +182,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 else
   DOT_ENSMEM_OR_NULL=""
 fi
+
 if [ "${grid_or_point}" = "grid" ]; then
 
   OBS_INPUT_FN_TEMPLATE=""
@@ -205,7 +206,7 @@ if [ "${grid_or_point}" = "grid" ]; then
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
     FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-    FCST_INPUT_FN_TEMPLATE=$( eval echo ${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd/${FCST_FN_TEMPLATE} )
+    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
   fi
 
 elif [ "${grid_or_point}" = "point" ]; then
@@ -213,7 +214,7 @@ elif [ "${grid_or_point}" = "point" ]; then
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd/${FCST_FN_TEMPLATE} )
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
 fi
 

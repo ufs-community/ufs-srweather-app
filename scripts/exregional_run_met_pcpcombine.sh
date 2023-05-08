@@ -164,10 +164,10 @@ if [ "${obs_or_fcst}" = "obs" ]; then
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
 
-  FCST_INPUT_DIR="$( eval echo ${vx_fcst_input_basedir})"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${CDATE}${SLASH_ENSMEM_SUBDIR}/postprd/${FCST_FN_TEMPLATE} )
+  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}"
+  OUTPUT_BASE="${vx_output_basedir}/${CDATE}/mem${ENSMEM_INDX}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_fcst"
   OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
@@ -252,11 +252,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+uscore_ensmem_name_or_null=""
+if [ "${obs_or_fcst}" = "fcst" ]; then
+  metplus_config_fn="_mem${ENSMEM_INDX}"
+fi
+#
 # First, set the base file names.
 #
 metplus_config_tmpl_fn="${metplus_tool_name}_${obs_or_fcst}"
-metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_fn="${metplus_config_fn}_mem${ENSMEM_INDX}_$CDATE"
+metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}${uscore_ensmem_name_or_null}"
+metplus_log_fn="${metplus_config_fn}_$CDATE"
 #
 # If operating on observation files, append the cycle date to the name
 # of the configuration file because in this case, the output files from
