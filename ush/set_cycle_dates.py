@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import unittest
 from datetime import datetime, timedelta, date
 
 from python_utils import print_input_args, print_err_msg_exit
@@ -33,23 +32,3 @@ def set_cycle_dates(date_start, date_end, incr_cycl_freq):
         all_cdates.append(cyc)
         cdate += freq_delta
     return all_cdates
-
-
-class Testing(unittest.TestCase):
-    def test_set_cycle_dates(self):
-        cdates = set_cycle_dates(
-            date_start=datetime(2022, 1, 1, 6),
-            date_end=datetime(2022, 1, 2, 12),
-            incr_cycl_freq=6,
-        )
-        self.assertEqual(
-            cdates,
-            [
-                "2022010106",
-                "2022010112",
-                "2022010118",
-                "2022010200",
-                "2022010206",
-                "2022010212",
-            ],
-        )
