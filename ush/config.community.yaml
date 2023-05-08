@@ -23,9 +23,11 @@ workflow:
   VERBOSE: true
   COMPILER: intel
 task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
 task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: grib2
