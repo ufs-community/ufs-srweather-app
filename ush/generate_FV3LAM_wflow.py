@@ -118,19 +118,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
                 "-i", template_xml_fp,
                 "-c", rocoto_yaml_fp,
                 ]
-        if not debug:
-            args.append("-q")
-
-        try:
-            set_template(args)
-        except:
-            raise Exception(
-                dedent(
-                    f"""
-                    Call to uwtools set_template failed.
-                    """
-                )
-            )
+        set_template(args)
     #
     # -----------------------------------------------------------------------
     #

@@ -257,7 +257,7 @@ settings="\
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 # Store the settings in a temporary file
-tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX)")
+tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
@@ -265,10 +265,10 @@ EOF
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-$USHdir/templater.py -q \
-                     -i ${metplus_config_tmpl_fp} \
-                     -c ${tmpfile} \
-                     -o ${metplus_config_fp} || \
+python3 $USHdir/python_utils/uwtools/scripts/templater.py \
+  -i ${metplus_config_tmpl_fp} \
+  -c ${tmpfile} \
+  -o ${metplus_config_fp} || \
 print_err_msg_exit "\
 Call to uwtools templater.py to generate a METplus
 configuration file from a jinja template failed.  Parameters passed

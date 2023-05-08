@@ -91,29 +91,14 @@ def create_nems_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     # Store the settings in a temporary file
-    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="nems_config_settings") as tmpfile:
+    with tempfile.NamedTemporaryFile(dir="./",
+                                     mode="w+t",
+                                     prefix="nems_config_settings",
+                                     suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
+        tmpfile.seek(0)
 
-        try:
-            set_templater(["-q", "-c", $tmpfile, "-i", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
-        except:
-            print_err_msg_exit(
-                dedent(
-                    f"""
-                Call to uwtools set_templater to create the nems.configure
-                file from a jinja2 template failed.  Parameters passed to this script are:
-                  Full path to template nems.configure file:
-                    NEMS_CONFIG_TMPL_FP = \"{NEMS_CONFIG_TMPL_FP}\"
-                  Full path to output nems.configure file:
-                    nems_config_fp = \"{nems_config_fp}\"
-                  Full path to configuration file:
-                    {tmpfile}
-
-                    """
-                )
-            )
-            return False
-
+        set_template(["-c", tmpfile.name, "-i", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
     return True
 
 def parse_args(argv):

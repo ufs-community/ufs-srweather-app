@@ -73,29 +73,13 @@ def create_diag_table_file(run_dir):
         verbose=VERBOSE,
     )
 
-    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings") as tmpfile:
+    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings", suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
-        try:
-            set_template(
-                ["-q", "-c", tmfile, "-i", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp]
-            )
-        except:
-            print_err_msg_exit(
-                dedent(
-                    f"""
-                    Call to uwtools set_template to create a '{DIAG_TABLE_FN}'
-                    file from a jinja2 template failed.  Parameters passed to this script are:
-                      Full path to template diag table file:
-                        DIAG_TABLE_TMPL_FP = '{DIAG_TABLE_TMPL_FP}'
-                      Full path to output diag table file:
-                        diag_table_fp = '{diag_table_fp}'
-                      Full path to configuration file:
-                        {tmpfile}
-                    """
-                )
-                + settings_str
-            )
-            return False
+        tmpfile.seek(0)
+        # set_template does its own error handling
+        set_template(
+            ["-c", tmpfile.name, "-i", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp]
+        )
     return True
 
 
