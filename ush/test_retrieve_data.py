@@ -435,7 +435,6 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 8)
 
-    @unittest.skipIf(os.environ.get("skipUFSCASESTUDY") == "true", "Skipping large/slow UFS-CASE-STUDY tests")
     def test_ufs_ics_from_aws(self):
 
         """Get UFS-CASE-STUDY ICS from aws"""
@@ -466,7 +465,6 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 1)
 
-    @unittest.skipIf(os.environ.get("skipUFSCASESTUDY") == "true", "Skipping large/slow UFS-CASE-STUDY tests")
     def test_ufs_lbcs_from_aws(self):
 
         """Get UFS-CASE-STUDY LBCS from aws for 3 hour boundary conditions"""
