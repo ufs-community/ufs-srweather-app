@@ -98,8 +98,15 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
@@ -221,8 +228,15 @@ EOF1
   fi
 
   PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-  Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+    fi
+  fi
   POST_STEP
 
   # split into max_1h and max_8h files and copy to grib227

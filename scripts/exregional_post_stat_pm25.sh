@@ -101,8 +101,15 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.1hpm25.${id_domain}.grib2
@@ -205,8 +212,15 @@ EOF1
   fi
 
   PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-  Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+    fi
+  fi
   POST_STEP
 
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PMTF" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2

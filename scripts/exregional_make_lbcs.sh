@@ -144,10 +144,14 @@ case "${CCPP_PHYS_SUITE}" in
     ;;
 #
   *)
-  print_err_msg_exit "\
-The variable \"varmap_file\" has not yet been specified for this physics
-suite (CCPP_PHYS_SUITE):
+  message_txt="The variable \"varmap_file\" has not yet been specified 
+for this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
   ;;
 #
 esac
@@ -330,10 +334,14 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   ;;
 
 *)
-  print_err_msg_exit "\
-External-model-dependent namelist variables have not yet been specified
-for this external LBC model (EXTRN_MDL_NAME_LBCS):
+  message_txt="External-model-dependent namelist variables have not yet been 
+specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
   ;;
 
 esac
@@ -347,11 +355,15 @@ esac
 exec_fn="chgres_cube"
 exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3-LAM
-native grid does not exist:
+  message_txt="The executable (exec_fp) for generating initial conditions 
+on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -403,10 +415,14 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-    print_err_msg_exit "\
-The external model output file name to use in the chgres_cube FORTRAN name-
-list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
+    message_txt="The external model output file name to use in the chgres_cube 
+FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
     ;;
   esac
 #
@@ -478,16 +494,23 @@ settings="
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
-    print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist
-file read in by the ${exec_fn} executable failed.  Parameters passed to
-this script are:
+  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script set_namelist.py to set the variables 
+in the namelist file read in by the ${exec_fn} executable failed. Parameters 
+passed to this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -504,8 +527,13 @@ $settings"
 # forecast task.
 #
   PREP_STEP
-  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
+  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "\
 Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)
 file for the FV3-LAM for forecast hour fhr failed:
   exec_fp = \"${exec_fp}\"
@@ -515,6 +543,8 @@ The external model from which the LBCs files are to be generated is:
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
   extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+    fi
+  fi
   POST_STEP
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs

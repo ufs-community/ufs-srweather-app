@@ -141,8 +141,16 @@ else
   # Retrieve data from A file up to FCST_LEN_HRS=39
   htar -tvf ${gfs_sfc_tar_fp}
   PREP_STEP
-  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
+  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="htar file reading operation (\"htar -xvf ...\") failed."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
   POST_STEP
 
   # Retireve data from B file when FCST_LEN_HRS>=40
@@ -157,8 +165,16 @@ else
     done
     htar -tvf ${gfs_sfc_tar_fp}
     PREP_STEP
-    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR} || \
-      print_err_msg_exit "htar file reading operation (\"htar -xvf ...\") failed."
+    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR}
+    export err=$?
+    if [ $err -ne 0 ]; then
+      message_txt="htar file reading operation (\"htar -xvf ...\") failed."
+      if [ "${RUN_ENVIR}" = "community" ]; then
+        print_err_msg_exit "${message_txt}"
+      else
+        err_exit "${message_txt}"
+      fi
+    fi
     POST_STEP
   fi
   # Link retrieved files to staging directory

@@ -104,15 +104,28 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     #Copy the boundary condition file to the current location
     cp ${chem_lbcs_fp} .
   else
-    print_err_msg_exit "\
-The chemical LBC files do not exist:
+    message_txt="The chemical LBC files do not exist:
   CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
 
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     fhr=$( printf "%03d" "${hr}" )
     if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
       ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      export err=$?
+      if [ $err -ne 0 ]; then
+        message_txt="Call to NCKS returned with nonzero exit code."
+        if [ "${RUN_ENVIR}" = "community" ]; then
+          print_err_msg_exit "${message_txt}"
+        else
+          err_exit "${message_txt}"
+        fi
+      fi
     fi
   done
 
@@ -215,11 +228,17 @@ Please ensure that you've built this executable."
 #----------------------------------------------------------------------
 #
   PREP_STEP
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
-Call to executable (exec_fp) to generate chemical and GEFS LBCs
-file for RRFS-CMAQ failed:
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to executable (exec_fp) to generate chemical and 
+GEFS LBCs file for RRFS-CMAQ failed:
   exec_fp = \"${exec_fp}\""
+    fi
+  fi
   POST_STEP
 
   print_info_msg "

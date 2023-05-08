@@ -78,6 +78,15 @@ PT_SRC_PRECOMB="${DCOMINpt_src}"
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
   python3 ${HOMEaqm}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"stack-pt-merge.py\" failed."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 fi
 
 # Move to COMIN

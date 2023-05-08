@@ -457,11 +457,19 @@ if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TR
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-      --cdate "$CDATE" || print_err_msg_exit "\
-Call to function to create the ensemble-based namelist for the current
-cycle's (cdate) run directory (DATA) failed:
+      --cdate "$CDATE"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to function to create the ensemble-based namelist
+for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 else
   cp "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
 fi
@@ -487,11 +495,19 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   python3 $USHdir/update_input_nml.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
-    --restart || print_err_msg_exit "\
-Call to function to update the FV3 input.nml file for restart for the 
-current cycle's (cdate) run directory (DATA) failed:
+    --restart
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to function to update the FV3 input.nml file for restart 
+for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
   # Check that restart files exist at restart_interval
   file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
@@ -554,14 +570,20 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
-    --init_concentrations "${init_concentrations}" \
-    || print_err_msg_exit "\
-Call to function to create an aqm.rc file for the current
+    --init_concentrations "${init_concentrations}"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to function to create an aqm.rc file for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -578,11 +600,19 @@ python3 $USHdir/create_model_configure_file.py \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
-  --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\
-Call to function to create a model configuration file for the current
-cycle's (cdate) run directory (DATA) failed:
+  --dt-atmos "${DT_ATMOS}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a model configuration file 
+for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -593,10 +623,18 @@ cycle's (cdate) run directory (DATA) failed:
 #
 python3 $USHdir/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --run-dir "${DATA}" || print_err_msg_exit "\
-Call to function to create a diag table file for the current cycle's 
-(cdate) run directory (DATA) failed:
+  --run-dir "${DATA}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a diag table file for the current 
+cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -619,11 +657,18 @@ fi
 #
 python3 $USHdir/create_nems_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --run-dir "${DATA}" \
-  || print_err_msg_exit "\
-Call to function to create a NEMS configuration file for the current
-cycle's (cdate) run directory (DATA) failed:
+  --run-dir "${DATA}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a NEMS configuration file for 
+the current cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -636,9 +681,15 @@ cycle's (cdate) run directory (DATA) failed:
 #-----------------------------------------------------------------------
 #
 PREP_STEP
-eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run FV3-LAM forecast returned with nonzero exit
-code."
+eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run FV3-LAM forecast returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 #
 #-----------------------------------------------------------------------

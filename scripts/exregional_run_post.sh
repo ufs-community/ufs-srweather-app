@@ -223,9 +223,16 @@ print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
 PREP_STEP
-eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run post for forecast hour $fhr returned with non-
-zero exit code."
+eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run post for forecast hour $fhr 
+returned with non-zero exit code."
+  fi
+fi
 POST_STEP
 #
 #-----------------------------------------------------------------------

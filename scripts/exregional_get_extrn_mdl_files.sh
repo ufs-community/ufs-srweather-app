@@ -177,12 +177,19 @@ python3 -u ${USHdir}/retrieve_data.py \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
-$cmd || print_err_msg_exit "\
-Call to retrieve_data.py failed with a non-zero exit status.
-
+$cmd
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #

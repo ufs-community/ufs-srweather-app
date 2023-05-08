@@ -76,7 +76,6 @@ else
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
 
-
 #
 #-----------------------------------------------------------------------
 #
@@ -130,10 +129,14 @@ case "${CCPP_PHYS_SUITE}" in
     ;;
 #
   *)
-    print_err_msg_exit "\
-The variable \"varmap_file\" has not yet been specified for this physics
-suite (CCPP_PHYS_SUITE):
+    message_txt="The variable \"varmap_file\" has not yet been specified for 
+this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
     ;;
 #
 esac
@@ -461,10 +464,14 @@ case "${EXTRN_MDL_NAME_ICS}" in
   ;;
 
 *)
-  print_err_msg_exit "\
-External-model-dependent namelist variables have not yet been specified
+  message_txt="External-model-dependent namelist variables have not yet been specified
 for this external IC model (EXTRN_MDL_NAME_ICS):
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
   ;;
 
 esac
@@ -488,11 +495,15 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 exec_fn="chgres_cube"
 exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3-LAM
-native grid does not exist:
+  message_txt="The executable (exec_fp) for generating initial conditions 
+on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -558,16 +569,23 @@ settings="
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
-  print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist
-file read in by the ${exec_fn} executable failed.  Parameters passed to
-this script are:
+${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script set_namelist.py to set the variables 
+in the namelist file read in by the ${exec_fn} executable failed. Parameters 
+passed to this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -626,21 +644,29 @@ if [ "${USE_FVCOM}" = "TRUE" ]; then
   fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
   if [ ! -f "${fvcom_exec_fp}" ]; then
-    print_err_msg_exit "\
-The executable (fvcom_exec_fp) for processing FVCOM data onto FV3-LAM
-native grid does not exist:
+    message_txt="The executable (fvcom_exec_fp) for processing FVCOM data 
+onto FV3-LAM native grid does not exist:
   fvcom_exec_fp = \"${fvcom_exec_fp}\"
 Please ensure that you've built this executable."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
   cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
-    print_err_msg_exit "\
-The file or path (fvcom_data_fp) does not exist:
+    message_txt="The file or path (fvcom_data_fp) does not exist:
   fvcom_data_fp = \"${fvcom_data_fp}\"
 Please check the following user defined variables:
   FVCOM_DIR = \"${FVCOM_DIR}\"
   FVCOM_FILE= \"${FVCOM_FILE}\" "
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
 
   cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc

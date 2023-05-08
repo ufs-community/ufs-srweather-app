@@ -107,8 +107,16 @@ else
     fi
   done  
 
-  ncks -O -h --mk_rec_dmn time Hourly_Emissions_13km_${download_time}00_${download_time}00.nc temp.nc || print_err_msg_exit "\
-Call to NCKS returned with nonzero exit code." 
+  ncks -O -h --mk_rec_dmn time Hourly_Emissions_13km_${download_time}00_${download_time}00.nc temp.nc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to NCKS returned with nonzero exit code."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
   mv temp.nc Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
 
@@ -116,19 +124,52 @@ Call to NCKS returned with nonzero exit code."
   cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh2}00_${CDATE_mh2}00.nc
   cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh1}00_${CDATE_mh1}00.nc
 
-  ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc || print_err_msg_exit "\
-Call to NCRCAT returned with nonzero exit code."
+  ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to NCRCAT returned with nonzero exit code."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
   input_fire="${DATA}/Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc"
   output_fire="${DATA}/Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc"
 
   python3 ${HOMEaqm}/sorc/AQM-utils/python_utils/RAVE_remake.allspecies.aqmna13km.g793.py --date "${yyyymmdd}" --cyc "${hh}" --input_fire "${input_fire}" --output_fire "${output_fire}"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
-  ncks --mk_rec_dmn Time Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc -o Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc || print_err_msg_exit "\
-Call to NCKS returned with nonzero exit code."
+  ncks --mk_rec_dmn Time Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc -o Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to NCKS returned with nonzero exit code."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
-  ncrcat Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc ${aqm_fire_file_fn} || print_err_msg_exit "\
-Call to NCRCAT returned with nonzero exit code."
+  ncrcat Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc ${aqm_fire_file_fn}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to NCRCAT returned with nonzero exit code."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
+  fi
 
   # Copy the final fire emission file to STAGING_DIR 
   cp "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
@@ -138,12 +179,19 @@ Call to NCRCAT returned with nonzero exit code."
     cp "${DATA}/${aqm_fire_file_fn}" ${DCOMINfire}
 
     hsi_log_fn="log.hsi_put.${yyyymmdd}_${hh}"
-    hsi put ${aqm_fire_file_fn} : ${AQM_FIRE_ARCHV_DIR}/${aqm_fire_file_fn} >& ${hsi_log_fn} || \
-  print_err_msg_exit "\
-htar file writing operation (\"hsi put ...\") failed.  Check the log 
+    hsi put ${aqm_fire_file_fn} : ${AQM_FIRE_ARCHV_DIR}/${aqm_fire_file_fn} >& ${hsi_log_fn}
+    export err=$?
+    if [ $err -ne 0 ]; then
+      message_txt="htar file writing operation (\"hsi put ...\") failed. Check the log 
 file hsi_log_fn in the DATA directory for details:
   DATA = \"${DATA}\"
   hsi_log_fn = \"${hsi_log_fn}\""
+      if [ "${RUN_ENVIR}" = "community" ]; then
+        print_err_msg_exit "${message_txt}"
+      else
+        err_exit "${message_txt}"
+      fi
+    fi
   fi
 fi
 #
