@@ -149,6 +149,9 @@ metatask_vx_ens_member:
       walltime: 01:00:00
       dependency:
         and:
+          taskdep_pb2nc:
+            attrs:
+              task: run_MET_Pb2nc_obs
           or_do_post:
             <<: *post_files_exist
           or_get_obs: # Get obs complete if turned on
