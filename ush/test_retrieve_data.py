@@ -497,6 +497,7 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 2)
 
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_rap_obs_from_hpss(self):
 
         """Get RAP observations from hpss for a 06z time"""
@@ -524,6 +525,7 @@ class FunctionalTesting(unittest.TestCase):
             files_on_disk = glob.glob(path)
             self.assertEqual(len(files_on_disk), 30)
 
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_rap_e_obs_from_hpss(self):
 
         """Get RAP observations from hpss for a 12z time;
