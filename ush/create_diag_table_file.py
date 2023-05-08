@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 
+"""
+Function to create a diag_table file for the FV3 model using a
+template.
+"""
 import os
 import sys
 import argparse
 from textwrap import dedent
 import tempfile
 
+
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
@@ -34,6 +37,7 @@ def create_diag_table_file(run_dir):
     # import all environment variables
     import_vars()
 
+    #pylint: disable=undefined-variable
     # create a diagnostic table file within the specified run directory
     print_info_msg(
         f"""
@@ -72,7 +76,10 @@ def create_diag_table_file(run_dir):
         verbose=VERBOSE,
     )
 
-    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings", suffix=".yaml") as tmpfile:
+    with tempfile.NamedTemporaryFile(dir="./",
+                                     mode="w+t",
+                                     prefix="aqm_rc_settings",
+                                     suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
         # set_template does its own error handling

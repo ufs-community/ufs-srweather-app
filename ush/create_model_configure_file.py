@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-
+"""
+Create a model_configure file for the FV3 forecast model from a
+template.
+"""
 import os
 import sys
 import argparse
-from datetime import datetime
 from textwrap import dedent
 import tempfile
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     str_to_type,
     print_info_msg,
-    print_err_msg_exit,
     lowercase,
     cfg_to_yaml_str,
     load_shell_config,
@@ -25,7 +25,7 @@ from scripts.templater import set_template
 
 def create_model_configure_file(
     cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
-):
+    ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified
     run directory
 
@@ -46,6 +46,8 @@ def create_model_configure_file(
     # import all environment variables
     import_vars()
 
+    # pylint: disable=undefined-variable
+
     #
     # -----------------------------------------------------------------------
     #
@@ -61,18 +63,6 @@ def create_model_configure_file(
         verbose=VERBOSE,
     )
     #
-    # Extract from cdate the starting year, month, day, and hour of the forecast.
-    #
-    yyyy = cdate.year
-    mm = cdate.month
-    dd = cdate.day
-    hh = cdate.hour
-    #
-    # Set parameters in the model configure file.
-    #
-    dot_quilting_dot=f".{lowercase(str(QUILTING))}."
-    dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
-    #
     # -----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -82,16 +72,16 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "start_year": yyyy,
-        "start_month": mm,
-        "start_day": dd,
-        "start_hour": hh,
+        "start_year": cdate.year,
+        "start_month": cdate.month,
+        "start_day": cdate.day,
+        "start_hour": cdate.hour,
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
         "restart_interval": RESTART_INTERVAL,
-        "write_dopost": dot_write_dopost,
-        "quilting": dot_quilting_dot,
+        "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
+        "quilting": f".{lowercase(str(WRITE_DOPOST))}.",
         "output_grid": WRTCMP_output_grid,
     }
     #
@@ -127,8 +117,7 @@ def create_model_configure_file(
                 }
             )
         elif (
-            WRTCMP_output_grid == "regional_latlon"
-            or WRTCMP_output_grid == "rotated_latlon"
+            WRTCMP_output_grid in ("regional_latlon", "rotated_latlon")
         ):
             settings.update(
                 {

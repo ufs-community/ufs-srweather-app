@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
+"""
+Function that creates the config file for running AQM.
+"""
 
 import os
 import sys
 import argparse
-from datetime import datetime
 from textwrap import dedent
 import tempfile
 
 from python_utils import (
-    import_vars, 
-    set_env_var, 
-    print_input_args, 
+    import_vars,
+    print_input_args,
     str_to_type,
-    print_info_msg, 
-    print_err_msg_exit, 
-    lowercase, 
+    print_info_msg,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict
@@ -37,7 +36,8 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
 
     #import all environment variables
     import_vars()
-    
+    #pylint: disable=undefined-variable
+
     #
     #-----------------------------------------------------------------------
     #
@@ -57,23 +57,37 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     # Extract from cdate the starting year, month, and day of the forecast.
     #
     yyyymmdd=cdate.strftime('%Y%m%d')
-    mm=f"{cdate.month:02d}"
-    hh=f"{cdate.hour:02d}"
+    mm=f"{cdate.month:02d}" # pylint: disable=invalid-name
+    hh=f"{cdate.hour:02d}" # pylint: disable=invalid-name
     #
     # Set parameters in the aqm.rc file.
     #
     aqm_rc_bio_file_fp=os.path.join(AQM_BIO_DIR, AQM_BIO_FILE)
-    aqm_fire_file_fn=AQM_FIRE_FILE_PREFIX+"_"+yyyymmdd+"_t"+hh+"z"+AQM_FIRE_FILE_SUFFIX
-    aqm_rc_fire_file_fp=os.path.join(COMINext, "FIRE_EMISSION", aqm_fire_file_fn)
-    aqm_dust_file_fn=AQM_DUST_FILE_PREFIX+"_"+PREDEF_GRID_NAME+AQM_DUST_FILE_SUFFIX
-    aqm_rc_dust_file_fp=os.path.join(AQM_DUST_DIR, aqm_dust_file_fn)
-    aqm_canopy_file_fn=AQM_CANOPY_FILE_PREFIX+"."+mm+AQM_CANOPY_FILE_SUFFIX
-    aqm_rc_canopy_file_fp=os.path.join(AQM_CANOPY_DIR, PREDEF_GRID_NAME, aqm_canopy_file_fn)
+
+    # Fire config
+    aqm_rc_fire_file_fp=os.path.join(
+        COMINext,
+        "FIRE_EMISSION",
+        f"{AQM_FIRE_FILE_PREFIX}_{yyyymmdd}_t{hh}z{AQM_FIRE_FILE_SUFFIX}"
+        )
+
+    # Dust config
+    aqm_rc_dust_file_fp=os.path.join(
+            AQM_DUST_DIR,
+            f"{AQM_DUST_FILE_PREFIX}_{PREDEF_GRID_NAME}{AQM_DUST_FILE_SUFFIX}",
+            )
+
+    # Canopy config
+    aqm_rc_canopy_file_fp=os.path.join(
+        AQM_CANOPY_DIR,
+        PREDEF_GRID_NAME,
+        f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
+        )
     #
     #-----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
-    # specifying the values that the jinja variables in the template 
+    # specifying the values that the jinja variables in the template
     # AQM_RC_TMPL_FN file should be set to.
     #
     #-----------------------------------------------------------------------
@@ -95,14 +109,14 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         "aqm_rc_product_frequency": AQM_RC_PRODUCT_FREQUENCY
     }
     settings_str = cfg_to_yaml_str(settings)
-    
+
     print_info_msg(
         dedent(
             f"""
             The variable \"settings\" specifying values to be used in the \"{AQM_RC_FN}\"
             file has been set as follows:\n
             settings =\n\n"""
-        ) 
+        )
         + settings_str,
         verbose=VERBOSE,
     )
@@ -116,7 +130,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings") as tmpfile:
         tmpfile.write(settings_str)
-    try:
+        tmpfile.seek(0)
         set_template(
             [
                 "-q",
@@ -128,22 +142,6 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
                 aqm_rc_fp,
             ]
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-            Call to uwtools set_template to create a \"{AQM_RC_FN}\"
-            file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template aqm.rc file:
-                AQM_RC_TMPL_FP = \"{AQM_RC_TMPL_FP}\"
-              Full path to output aqm.rc file:
-                aqm_rc_fp = \"{aqm_rc_fp}\"
-              Full path to configuration file:
-                {tmpfile}
-              """
-        )
-        return False
-
     return True
 
 def parse_args(argv):
@@ -180,6 +178,5 @@ if __name__ == "__main__":
     create_aqm_rc_file(
         run_dir=args.run_dir,
         cdate=str_to_type(args.cdate),
-        init_concentrations=str_to_type(args.init_concentrations), 
+        init_concentrations=str_to_type(args.init_concentrations),
     )
-

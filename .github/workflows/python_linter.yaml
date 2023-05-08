@@ -35,3 +35,4 @@ jobs:
         run: |
           export PYTHONPATH=${PWD}/ush
           pylint --ignore-imports=yes tests/test_python/
+          pylint --min-similarity-lines 15 ush/create_*.py

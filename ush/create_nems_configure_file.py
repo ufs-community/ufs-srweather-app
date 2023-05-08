@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 
+"""
+Function to create a NEMS configuration file for the FV3 forecast
+model(s) from a template.
+"""
+
 import os
 import sys
 import argparse
-from datetime import datetime
 import tempfile
 from textwrap import dedent
 
 from python_utils import (
-    import_vars, 
-    set_env_var, 
-    print_input_args, 
-    str_to_type,
-    print_info_msg, 
-    print_err_msg_exit, 
-    lowercase, 
+    import_vars,
+    print_input_args,
+    print_info_msg,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
@@ -36,7 +36,9 @@ def create_nems_configure_file(run_dir):
 
     #import all environment variables
     import_vars()
-    
+
+    # pylint: disable=undefined-variable
+
     #
     #-----------------------------------------------------------------------
     #
@@ -57,7 +59,7 @@ def create_nems_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
-    # specifying the values that the jinja variables in the template 
+    # specifying the values that the jinja variables in the template
     # model_configure file should be set to.
     #
     #-----------------------------------------------------------------------
@@ -70,15 +72,15 @@ def create_nems_configure_file(run_dir):
       "atm_omp_num_threads": OMP_NUM_THREADS_RUN_FCST,
     }
     settings_str = cfg_to_yaml_str(settings)
-    
+
     print_info_msg(
         dedent(
             f"""
             The variable \"settings\" specifying values to be used in the \"{NEMS_CONFIG_FN}\"
             file has been set as follows:\n
             settings =\n\n"""
-        ) 
-        + settings_str, 
+        )
+        + settings_str,
         verbose=VERBOSE,
     )
     #
@@ -124,7 +126,5 @@ if __name__ == "__main__":
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_nems_configure_file(
-        run_dir=args.run_dir, 
+        run_dir=args.run_dir,
     )
-
-
