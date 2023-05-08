@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
 from textwrap import dedent
 
 from python_utils import (
@@ -84,14 +83,3 @@ def set_thompson_mp_fix_files(
             mapping.append(f"{fix_file} | {fix_file}")
 
     return sdf_uses_thompson_mp, mapping, thompson_mp_fix_files
-
-
-class Testing(unittest.TestCase):
-    def test_set_thompson_mp_fix_files(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        uses_thompson, _, _ = set_thompson_mp_fix_files(
-            f"{USHdir}{os.sep}test_data{os.sep}suite_FV3_GSD_SAR.xml",
-            "Thompson_MP_MONTHLY_CLIMO.nc",
-            False,
-        )
-        self.assertEqual(True, uses_thompson)

@@ -27,13 +27,20 @@ import unittest
 import retrieve_data
 
 
+@unittest.skipIf(os.environ.get("UNIT_TEST") == "true", "Skipping functional tests")
 class FunctionalTesting(unittest.TestCase):
 
     """Test class for retrieve data"""
 
     def setUp(self):
         self.path = os.path.dirname(__file__)
-        self.config = f"{self.path}/../parm/data_locations.yml"
+        self.config = os.path.join(
+            self.path,
+            "..",
+            "..",
+            "parm",
+            "data_locations.yml"
+            )
         twodaysago = datetime.datetime.today() - datetime.timedelta(days=2)
         # Set test dates to retrieve, based on important dates in HPSS history:
         # 2019061200 - First operational FV3GFS cycle
