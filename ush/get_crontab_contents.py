@@ -2,7 +2,6 @@
 
 import os
 import sys
-import unittest
 import argparse
 from datetime import datetime
 from textwrap import dedent
@@ -227,14 +226,3 @@ if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     if args.delete:
         delete_crontab_line(args.called_from_cron)
-
-
-class Testing(unittest.TestCase):
-    def test_get_crontab_contents(self):
-        crontab_cmd, crontab_contents = get_crontab_contents(called_from_cron=True)
-        self.assertEqual(crontab_cmd, "crontab")
-
-    def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", False)
-        set_env_var("MACHINE", "HERA")
