@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
 import argparse
 
 from python_utils import (
@@ -98,11 +97,3 @@ if __name__ == "__main__":
 
     params = calculate_cost(args.cfg)
     print(" ".join(map(str, params)))
-
-
-class Testing(unittest.TestCase):
-    def test_calculate_cost(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        params = calculate_cost(os.path.join(USHdir, 'config.community.yaml'))
-        self.assertCountEqual(params, [180, 28689, 180, 28689])
-

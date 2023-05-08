@@ -1,4 +1,4 @@
-name: Python unittests
+name: Python linting
 on:
   push:
     branches:
@@ -10,15 +10,12 @@ on:
       - 'release/*'
   workflow_dispatch:
 
-env:
-  UNIT_TEST: True
-
 defaults:
   run:
     shell: bash
 jobs:
 
-  python_unittests:
+  python_linter:
     name: Python unittests
     runs-on: ubuntu-latest
 
@@ -31,14 +28,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install python3 python3-pip netcdf-bin
-          sudo pip3 install pyyaml jinja2==2.11 f90nml
-          sudo pip3 install numpy matplotlib basemap
+          sudo pip3 install pylint==2.6
 
       # Run python unittests
-      - name: Run python unittests
+      - name: Lint the test directory
         run: |
-          ./manage_externals/checkout_externals ufs-weather-model
-          # exclude test_retrieve_data that is tested in functional test
           export PYTHONPATH=${PWD}/ush
-          python3 -m unittest -b tests/test_python/*.py
-
+          pylint --ignore-imports=yes tests/test_python/

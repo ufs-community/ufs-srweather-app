@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from datetime import datetime
 import tempfile
 from textwrap import dedent
