@@ -217,7 +217,7 @@ metplus_config_tmpl_fn="${metplus_tool_name}_obs"
 # information, but we still include that info in the file name so that
 # the behavior in the two modes is as similar as possible.
 #
-metplus_config_fn="${metplus_config_tmpl_fn}_mem${ENSMEM_INDX}_${CDATE}"
+metplus_config_fn="${metplus_config_tmpl_fn}_${CDATE}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
