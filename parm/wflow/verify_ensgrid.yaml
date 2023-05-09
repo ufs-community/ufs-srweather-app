@@ -36,7 +36,6 @@ metatask_EnsembleStat:
       VAR: '#VAR#'
       MET_TOOL: 'ENSEMBLESTAT'
       OBTYPE: 'MRMS'
-      ENSMEM_INDX: '#mem#'
     dependency:
       metataskdep:
         attrs:

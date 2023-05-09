@@ -12,7 +12,6 @@ default_task_verify: &default_task
     LOGDIR: !cycstr "&LOGDIR;"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
-    ENSMEM_INDX: "#mem#"
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -99,6 +98,7 @@ metatask_vx_ens_member:
         ACCUM_HH: '01'
         MET_TOOL: 'GRIDSTAT'
         OBTYPE: 'MRMS'
+        ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
@@ -146,6 +146,7 @@ metatask_vx_ens_member:
         MET_TOOL: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ACCUM_HH: '01'
+        ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 01:00:00
       dependency:
@@ -219,6 +220,7 @@ metatask_GridStat_APCP_acc:
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
         MET_TOOL: 'PCPCOMBINE'
+        ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       dependency:
         or_do_post:
@@ -235,6 +237,7 @@ metatask_GridStat_APCP_acc:
         ACCUM_HH: '#ACCUM_HR#'
         MET_TOOL: 'GRIDSTAT'
         OBTYPE: 'CCPA'
+        ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
