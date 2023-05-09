@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from textwrap import dedent
 
 from python_utils import (
@@ -121,22 +120,3 @@ if __name__ == "__main__":
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_diag_table_file(args.run_dir)
-
-
-class Testing(unittest.TestCase):
-    def test_create_diag_table_file(self):
-        path = os.path.join(os.getenv("USHdir"), "test_data")
-        self.assertTrue(create_diag_table_file(run_dir=path))
-
-    def setUp(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        DIAG_TABLE_FN = "diag_table"
-        DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2")
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("USHdir", USHdir)
-        set_env_var("DIAG_TABLE_FN", DIAG_TABLE_FN)
-        set_env_var("DIAG_TABLE_TMPL_FP", DIAG_TABLE_TMPL_FP)
-        set_env_var("CRES", "C48")
-        set_env_var("CDATE", "2021010106")

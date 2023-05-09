@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from datetime import datetime
 from textwrap import dedent
 
@@ -52,6 +51,7 @@ def create_nems_configure_file(run_dir):
     # Set output file path
     #
     nems_config_fp = os.path.join(run_dir, NEMS_CONFIG_FN)
+    pe_member01_m1 = str(int(PE_MEMBER01)-1)
     #
     #-----------------------------------------------------------------------
     #
@@ -64,7 +64,9 @@ def create_nems_configure_file(run_dir):
     settings = {
       "dt_atmos": DT_ATMOS,
       "print_esmf": PRINT_ESMF,
-      "cpl_aqm": CPL_AQM
+      "cpl_aqm": CPL_AQM,
+      "pe_member01_m1": pe_member01_m1,
+      "atm_omp_num_threads": OMP_NUM_THREADS_RUN_FCST,
     }
     settings_str = cfg_to_yaml_str(settings)
     

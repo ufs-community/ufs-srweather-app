@@ -17,7 +17,7 @@ platform:
   RUN_CMD_PRDGEN: mpirun -np $nprocs
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun -np $nprocs
-  RUN_CMD_AQM: mpirun -np $nprocs
+  RUN_CMD_NEXUS: mpirun -np $nprocs
   RUN_CMD_AQMLBC: mpirun -np ${NUMTS}
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data

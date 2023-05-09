@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from datetime import datetime
 from textwrap import dedent
 
@@ -24,7 +23,7 @@ from fill_jinja_template import fill_jinja_template
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
+    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
 ):
     """Creates a model configuration file in the specified
     run directory
@@ -32,6 +31,7 @@ def create_model_configure_file(
     Args:
         cdate: cycle date
         fcst_len_hrs: forecast length in hours
+        fhrot: forecast hour at restart
         run_dir: run directory
         sub_hourly_post
         dt_subhourly_post_mnts
@@ -81,14 +81,13 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "PE_MEMBER01": PE_MEMBER01,
         "start_year": yyyy,
         "start_month": mm,
         "start_day": dd,
         "start_hour": hh,
         "nhours_fcst": fcst_len_hrs,
+        "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
-        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
         "write_dopost": dot_write_dopost,
         "quilting": dot_quilting_dot,
@@ -261,6 +260,14 @@ def parse_args(argv):
     )
 
     parser.add_argument(
+        "-b",
+        "--fhrot",
+        dest="fhrot",
+        required=True,
+        help="Forecast hour at restart.",
+    )
+
+    parser.add_argument(
         "-s",
         "--sub-hourly-post",
         dest="sub_hourly_post",
@@ -304,55 +311,8 @@ if __name__ == "__main__":
         run_dir=args.run_dir,
         cdate=str_to_type(args.cdate),
         fcst_len_hrs=str_to_type(args.fcst_len_hrs),
+        fhrot=str_to_type(args.fhrot),
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
     )
-
-
-class Testing(unittest.TestCase):
-    def test_create_model_configure_file(self):
-        path = os.path.join(os.getenv("USHdir"), "test_data")
-        self.assertTrue(
-            create_model_configure_file(
-                run_dir=path,
-                cdate=datetime(2021, 1, 1),
-                fcst_len_hrs=72,
-                sub_hourly_post=True,
-                dt_subhourly_post_mnts=4,
-                dt_atmos=1,
-            )
-        )
-
-    def setUp(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        MODEL_CONFIG_FN = "model_configure"
-        MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_FN)
-
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("QUILTING", True)
-        set_env_var("WRITE_DOPOST", True)
-        set_env_var("USHdir", USHdir)
-        set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)
-        set_env_var("MODEL_CONFIG_TMPL_FP", MODEL_CONFIG_TMPL_FP)
-        set_env_var("PE_MEMBER01", 24)
-        set_env_var("FCST_LEN_HRS", 72)
-        set_env_var("DT_ATMOS", 1)
-        set_env_var("OMP_NUM_THREADS_RUN_FCST", 1)
-        set_env_var("RESTART_INTERVAL", 4)
-
-        set_env_var("WRTCMP_write_groups", 1)
-        set_env_var("WRTCMP_write_tasks_per_group", 2)
-        set_env_var("WRTCMP_output_grid", "lambert_conformal")
-        set_env_var("WRTCMP_cen_lon", -97.5)
-        set_env_var("WRTCMP_cen_lat", 35.0)
-        set_env_var("WRTCMP_stdlat1", 35.0)
-        set_env_var("WRTCMP_stdlat2", 35.0)
-        set_env_var("WRTCMP_nx", 199)
-        set_env_var("WRTCMP_ny", 111)
-        set_env_var("WRTCMP_lon_lwr_left", -121.23349066)
-        set_env_var("WRTCMP_lat_lwr_left", 23.41731593)
-        set_env_var("WRTCMP_dx", 3000.0)
-        set_env_var("WRTCMP_dy", 3000.0)

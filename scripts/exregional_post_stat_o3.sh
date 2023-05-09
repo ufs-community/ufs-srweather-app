@@ -47,16 +47,6 @@ This is the ex-script for the task that runs POST-STAT-O3.
 #
 #-----------------------------------------------------------------------
 #
-# Set OpenMP variables.
-#
-#-----------------------------------------------------------------------
-#
-export KMP_AFFINITY=${KMP_AFFINITY_POST_STAT_O3}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS_POST_STAT_O3}
-export OMP_STACKSIZE=${OMP_STACKSIZE_POST_STAT_O3}
-#
-#-----------------------------------------------------------------------
-#
 # Set run command.
 #
 #-----------------------------------------------------------------------
@@ -83,8 +73,6 @@ fi
 DATA="${DATA}/tmp_POST_STAT_O3"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -114,8 +102,9 @@ eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ER
 Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
 POST_STEP
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 

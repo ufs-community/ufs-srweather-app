@@ -3,7 +3,6 @@
 import os
 import sys
 import subprocess
-import unittest
 import logging
 from multiprocessing import Process
 from textwrap import dedent
@@ -258,12 +257,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
-    log_info(
-        f"""
-        Copying the template NEMS configuration file to the experiment directory...""",
-        verbose=verbose,
-    )
-    cp_vrfy(NEMS_CONFIG_TMPL_FP, NEMS_CONFIG_FP)
     #
     # Copy the CCPP physics suite definition file from its location in the
     # clone of the FV3 code repository to the experiment directory (EXPT-
@@ -335,6 +328,8 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         SDF_USES_RUC_LSM
     ):
         lsoil = 9
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
+        lsoil = ""
     #
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the namelist variables that are physics-
@@ -792,52 +787,3 @@ if __name__ == "__main__":
     )
 
 
-class Testing(unittest.TestCase):
-    def test_generate_FV3LAM_wflow(self):
-
-        # run workflows in separate process to avoid conflict between community and nco settings
-        def run_workflow(USHdir, logfile):
-            p = Process(target=generate_FV3LAM_wflow, args=(USHdir, logfile))
-            p.start()
-            p.join()
-            exit_code = p.exitcode
-            if exit_code != 0:
-                sys.exit(exit_code)
-
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        logfile = "log.generate_FV3LAM_wflow"
-        SED = get_env_var("SED")
-
-        # community test case
-        cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
-        run_command(
-            f"""{SED} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
-        )
-        run_workflow(USHdir, logfile)
-
-        # nco test case
-        nco_test_config = load_config_file(f"{USHdir}/config.nco.yaml")
-        # Since we don't have a pre-gen grid dir on a generic linux
-        # platform, turn the make_* tasks on for this test.
-        cfg_updates = {
-            "user": {
-                "MACHINE": "linux",
-            },
-            "rocoto": {
-                "tasks": {
-                    "taskgroups": \
-                        '\'{{ ["parm/wflow/prep.yaml","parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}\''
-                },
-            },
-        }
-        update_dict(cfg_updates, nco_test_config)
-
-        with open(f"{USHdir}/config.yaml", "w") as cfg_file:
-            cfg_file.write(cfg_to_yaml_str(nco_test_config))
-
-        run_workflow(USHdir, logfile)
-
-    def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", False)
-        set_env_var("VERBOSE", False)

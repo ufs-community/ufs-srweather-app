@@ -60,20 +60,16 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 #-----------------------------------------------------------------------
 #
-set -x
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_AQM_LBCS*PPN_AQM_LBCS ))
-
-if [ -z "${RUN_CMD_UTILS:-}" ] ; then
+if [ -z "${RUN_CMD_AQMLBC:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
-  Please set RUN_CMD_UTILS for your platform"
+  Please set RUN_CMD_AQM_LBC for your platform"
 else
   print_info_msg "$VERBOSE" "
-  All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
+  All executables will be submitted with command \'${RUN_CMD_AQMLBC}\'."
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -91,12 +87,14 @@ cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd="${PDY}"
-mm="${PDY:4:2}"
+CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
+yyyymmdd=${CDATE_MOD:0:8}
+mm="${CDATE_MOD:4:2}"
+hh="${CDATE_MOD:8:2}"
 
-
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 LBC_SPEC_FCST_HRS=()
@@ -122,7 +120,7 @@ The chemical LBC files do not exist:
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     fhr=$( printf "%03d" "${hr}" )
     if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
-        ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
     fi
   done
 
@@ -139,23 +137,28 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
-
-  RUN_CYC="${cyc}"
-  CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
-  PDY_MOD=${CDATE_MOD:0:8}
-  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${CDATE_MOD:8:2}"}
+	
+  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
-  AQM_MOFILE_FN="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
-  if [ ${DO_REAL_TIME} = "TRUE" ]; then
-    AQM_MOFILE_FP="${COMINgefs}/gefs.${PDY_MOD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
+  GEFS_CYC_DIFF=$(( cyc - AQM_GEFS_FILE_CYC ))
+  if [ "${GEFS_CYC_DIFF}" -lt "0" ]; then
+    TSTEPDIFF=$( printf "%02d" $(( 24 + ${GEFS_CYC_DIFF} )) )
   else
-    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${PDY}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    TSTEPDIFF=$( printf "%02d" ${GEFS_CYC_DIFF} )
+  fi
+
+  AQM_MOFILE_FN="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
+  if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+    AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
+  else
+    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
   # Check if GEFS aerosol files exist
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
-    fhr=$( printf "%03d" "${hr}" )
+    hr_mod=$(( hr + EXTRN_MDL_LBCS_OFFSET_HRS ))
+    fhr=$( printf "%03d" "${hr_mod}" )
     AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
     if [ ! -e "${AQM_MOFILE_FHR_FP}" ]; then
       print_err_msg_exit "The GEFS file (AQM_MOFILE_FHR_FP) for LBCs does not exist:
@@ -163,12 +166,11 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
     fi
   done
 
-  GEFS_CYC_DIFF=$( printf "%02d" "$(( RUN_CYC - AQM_GEFS_FILE_CYC ))" )
   NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
 cat > gefs2lbc-nemsio.ini <<EOF
 &control
- tstepdiff=${GEFS_CYC_DIFF}
+ tstepdiff=${TSTEPDIFF}
  dtstep=${LBC_SPEC_INTVL_HRS}
  bndname='aothrj','aecj','aorgcj','asoil','numacc','numcor'
  mofile='${AQM_MOFILE_FP}','.nemsio'

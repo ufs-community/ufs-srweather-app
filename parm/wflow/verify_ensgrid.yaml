@@ -2,7 +2,7 @@ default_task_verify_ens: &default_task_verify_ens
   account: '&ACCOUNT;'
   attrs:
     cycledefs: forecast
-    maxtries: '1'
+    maxtries: '2'
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     USHdir: '&USHdir;'

@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from datetime import datetime
 from textwrap import dedent
 
@@ -159,7 +158,7 @@ def parse_args(argv):
                         required=True,
                         help="Date string in YYYYMMDD format.")
 
-    parser.add_argument("-i", "--init-concentrations",
+    parser.add_argument("-i", "--init_concentrations",
                         dest="init_concentrations",
                         required=True,
                         help="Flag for initial concentrations.")

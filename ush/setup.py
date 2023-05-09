@@ -44,7 +44,6 @@ from link_fix import link_fix
 from check_ruc_lsm import check_ruc_lsm
 from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
-
 def load_config_for_setup(ushdir, default_config, user_config):
     """Load in the default, machine, and user configuration files into
     Python dictionaries. Return the combined experiment dictionary.
@@ -673,20 +672,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     run_envir = expt_config["user"].get("RUN_ENVIR", "")
 
-    # set varying forecast lengths only when fcst_len_hrs=-1
-
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
+    date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
+    date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
+    incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
+
+    # set varying forecast lengths only when fcst_len_hrs=-1
     if fcst_len_hrs == -1:
+        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
 
         # Check that the number of entries divides into a day
-        fcst_len_cycl = workflow_config.get("FCST_LEN_CYCL")
-        incr_cycl_freq = int(workflow_config.get("INCR_CYCL_FREQ"))
-
-        date_first_cycl = workflow_config.get("DATE_FIRST_CYCL")
-        date_last_cycl = workflow_config.get("DATE_LAST_CYCL")
-
         if 24 / incr_cycl_freq != len(fcst_len_cycl):
-
             # Also allow for the possibility that the user is running
             # cycles for less than a day:
             num_cycles = len(set_cycle_dates(
@@ -727,6 +723,27 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             fcst_cdef.append(f'{first}00 {last}00 24:00:00')
 
         rocoto_config['cycledefs']['long_forecast'] = fcst_cdef
+
+    # check the availability of restart intervals for restart capability of forecast
+    do_fcst_restart = fcst_config.get("DO_FCST_RESTART")
+    if do_fcst_restart:
+        restart_interval = fcst_config.get("RESTART_INTERVAL")
+        restart_hrs = []
+        if " " in str(restart_interval):
+            restart_hrs = restart_interval.split()
+        else:
+            restart_hrs.append(str(restart_interval))
+
+        lbc_spec_intvl_hrs = expt_config["task_get_extrn_lbcs"]["LBC_SPEC_INTVL_HRS"]
+        for irst in restart_hrs:
+            rem_rst = int(irst) % lbc_spec_intvl_hrs
+            if rem_rst != 0:
+                raise Exception(
+                    f"""
+                The restart interval is not divided by LBC_SPEC_INTVL_HRS:
+                  RESTART_INTERVAL = {irst}
+                  LBC_SPEC_INTVL_HRS = {lbc_spec_intvl_hrs}"""
+                )
 
     #
     # -----------------------------------------------------------------------
@@ -1088,9 +1105,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
-        # Set the rocoto string for the fcst output location
-        rocoto_config["entities"]["FCST_DIR"] = "{{ nco.COMOUT_BASEDIR }}/@Y@m@d@H"
-
     # Use env variables for NCO variables and create NCO directories
     if run_envir == "nco":
 
@@ -1262,17 +1276,19 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     def dict_find(user_dict, substring):
 
         if not isinstance(user_dict, dict):
-            return
+            return False
 
         for key, value in user_dict.items():
             if substring in key:
                 return True
             if isinstance(value, dict):
-                dict_find(value, substring)
+                if dict_find(value, substring):
+                    return True
+
         return False
 
     run_make_ics = dict_find(rocoto_tasks, "task_make_ics")
-    run_make_lbcs = dict_find(rocoto_tasks, "task_make_ics")
+    run_make_lbcs = dict_find(rocoto_tasks, "task_make_lbcs")
     run_run_fcst = dict_find(rocoto_tasks, "task_run_fcst")
     run_any_coldstart_task = run_make_ics or \
                              run_make_lbcs or \

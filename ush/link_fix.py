@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
 import sys
 import argparse
@@ -208,7 +207,7 @@ def link_fix(
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh0}.nc",
             f"C*{dot_or_uscore}oro_data.tile{tile_rgnl}.halo{nh4}.nc",
         ]
-        if ccpp_phys_suite == "FV3_HRRR" or ccpp_phys_suite == "FV3_GFS_v17_p8":
+        if ccpp_phys_suite == "FV3_HRRR" or ccpp_phys_suite == "FV3_GFS_v15_thompson_mynn_lam3km" or ccpp_phys_suite == "FV3_GFS_v17_p8":
             fns += [
                 f"C*{dot_or_uscore}oro_data_ss.tile{tile_rgnl}.halo{nh0}.nc",
                 f"C*{dot_or_uscore}oro_data_ls.tile{tile_rgnl}.halo{nh0}.nc",
@@ -419,39 +418,3 @@ if __name__ == "__main__":
         run_task=True,
         sfc_climo_fields=cfg["fixed_files"]["SFC_CLIMO_FIELDS"],
     )
-
-
-class Testing(unittest.TestCase):
-    def test_link_fix(self):
-        res = link_fix(
-            verbose=True,
-            file_group="grid",
-            source_dir=self.task_dir,
-            target_dir=self.FIXlam,
-            ccpp_phys_suite=self.cfg["CCPP_PHYS_SUITE"],
-            constants=self.cfg["constants"],
-            dot_or_uscore=self.cfg["DOT_OR_USCORE"],
-            nhw=self.cfg["NHW"],
-            run_task=False,
-            sfc_climo_fields=["foo", "bar"],
-        )
-        self.assertTrue(res == "3357")
-
-    def setUp(self):
-        define_macos_utilities()
-        TEST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        self.FIXlam = os.path.join(TEST_DIR, "expt", "fix_lam")
-        self.task_dir = os.path.join(TEST_DIR, "RRFS_CONUS_3km")
-        mkdir_vrfy("-p", self.FIXlam)
-
-        self.cfg = {
-            "DOT_OR_USCORE": "_",
-            "NHW": 6,
-            "CCPP_PHYS_SUITE": "FV3_GSD_SAR",
-            "constants": {
-                "NH0": 0,
-                "NH4": 4,
-                "NH3": 3,
-                "TILE_RGNL": 7,
-            },
-        }

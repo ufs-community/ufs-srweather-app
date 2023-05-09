@@ -118,7 +118,7 @@ CONTINUE=false
 VERBOSE=false
 
 # Turn off all apps to build and choose default later
-DEFAULT_BUILD=true 
+DEFAULT_BUILD=true
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
@@ -239,8 +239,8 @@ if [ -z "${COMPILER}" ] ; then
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
-    macos,singularity) COMPILER=gnu ;;
-    odin,noaacloud) COMPILER=intel ;;
+    macos|singularity) COMPILER=gnu ;;
+    odin|noaacloud) COMPILER=intel ;;
     *)
       COMPILER=intel
       printf "WARNING: Setting default COMPILER=intel for new platform ${PLATFORM}\n" >&2;
@@ -263,7 +263,7 @@ fi
 RUN_VERSION_FILE="${SRW_DIR}/versions/run.ver.${PLATFORM}"
 if [ -f ${RUN_VERSION_FILE} ]; then
   . ${RUN_VERSION_FILE}
-fi 
+fi
 
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
@@ -352,7 +352,7 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
     cp "${SRW_DIR}/sorc/UFS_UTILS/modulefiles/build.${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-utils.lua"
   fi
   if [ "${BUILD_UPP}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/UPP/modulefiles/${PLATFORM}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_upp.lua" 
+    cp "${SRW_DIR}/sorc/UPP/modulefiles/${PLATFORM}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_upp.lua"
   fi
   if [ "${BUILD_NEXUS}" = "on" ]; then
     cp "${SRW_DIR}/sorc/AQM-utils/parm/nexus_modulefiles/${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_nexus.lua"
@@ -449,6 +449,9 @@ if [ $USE_SUB_MODULES = true ]; then
 else
     module use ${SRW_DIR}/modulefiles
     module load ${MODULE_FILE}
+    if [[ "${PLATFORM}" == "macos" ]]; then
+        export LDFLAGS+=" -L$MPI_ROOT/lib "
+    fi
 fi
 module list
 

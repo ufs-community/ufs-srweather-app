@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
 import sys
 import argparse
@@ -145,30 +144,3 @@ if __name__ == "__main__":
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     set_FV3nml_sfc_climo_filenames()
-
-
-class Testing(unittest.TestCase):
-    def test_set_FV3nml_sfc_climo_filenames(self):
-        set_FV3nml_sfc_climo_filenames()
-
-    def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
-        FIXlam = os.path.join(EXPTDIR, "fix_lam")
-        mkdir_vrfy("-p", FIXlam)
-        mkdir_vrfy("-p", EXPTDIR)
-        cp_vrfy(
-            os.path.join(PARMdir, "input.nml.FV3"),
-            os.path.join(EXPTDIR, "input.nml"),
-        )
-        set_env_var("PARMdir", PARMdir)
-        set_env_var("EXPTDIR", EXPTDIR)
-        set_env_var("FIXlam", FIXlam)
-        set_env_var("DO_ENSEMBLE", False)
-        set_env_var("CRES", "C3357")
-        set_env_var("RUN_ENVIR", "nco")
-        set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
