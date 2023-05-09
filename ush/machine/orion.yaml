@@ -34,3 +34,7 @@ platform:
   FIXsfc: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads
+task_process_bufr:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
+task_analysis_gsi:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'

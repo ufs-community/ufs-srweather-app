@@ -192,7 +192,13 @@ if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
   ules_dir) for the specified task (task_name) failed:
     task_name = \"${task_name}\"
     modulefile_local = \"${modulefile_local}\"
-    modules_dir = \"${modules_dir}\""    
+    modules_dir = \"${modules_dir}\""
+elif [ -f ${modules_dir}/python_srw.lua ] ; then
+  module load python_srw || print_err_msg_exit "\
+    Loading SRW common python module failed. Expected python_srw.lua
+    in the modules directory here:
+
+    modules_dir = \"${modules_dir}\""
 fi
 
 module list

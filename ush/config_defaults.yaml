@@ -401,6 +401,12 @@ platform:
   # FIXgsi:
   # System directory where GSI fixed files are located
   # 
+  # FIXcrtm:
+  # System directory where CRTM fixed files are located
+  #
+  # FIXcrtmupp:
+  # System directory where CRTM fixed files specifically for UPP are located
+  #
   #-----------------------------------------------------------------------
   #
   FIXgsm: ""
@@ -410,6 +416,8 @@ platform:
   FIXsfc: ""
   FIXshp: ""
   FIXgsi: ""
+  FIXcrtm: ""
+  FIXcrtmupp: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -1061,6 +1069,78 @@ nco:
   KEEPDATA: true
   MAILTO: ""
   MAILCC: ""
+
+#----------------------------------
+# GSI namelist parameters
+#----------------------------------
+gsi:
+  #
+  #-------------------------------------------------------------------------------------
+  #      GSI Namelist parameters configurable across differnt applications
+  # if we need to tune one GSI namelist parameter, we can elevate it to a shell variable
+  # and assign value in config.sh and give it a default value in config_default.sh
+  # In realtime testing, don't need to regenerate the whole workflow, you can tweak 
+  # $EXPTDIR/var_defns.sh and $FIX_GSI/gsiparm.anl.sh to make sure the change is
+  # expected and then put it back into config.sh and config_default.sh
+  #       (need to follow FORTRAN namelist convetion)
+  #-------------------------------------------------------------------------------------
+  # &SETUP  and &BKGERR
+  niter1: 50
+  niter2: 50
+  l_obsprvdiag: .false.
+  diag_radardbz: .false.
+  write_diag_2: .false.
+  bkgerr_vs: 1.0
+  bkgerr_hzscl: 0.7,1.4,2.80     #no trailing ,
+  usenewgfsberror: .true.
+  netcdf_diag: .false.
+  binary_diag: .true.
+  
+  # &HYBRID_ENSEMBLE
+  readin_localization: .true.     #if true, it overwrites the "beta1_inv/ens_h/ens_v" setting
+  beta1_inv: 0.15                 #beata_inv is 1-ensemble_wgt
+  ens_h: 110
+  ens_v: 3
+  regional_ensemble_option: 1     #1 for GDAS ; 5 for FV3LAM ensemble
+  grid_ratio_fv3: 2.0             #fv3 resolution 3km, so analysis: 3*2: 6km
+  grid_ratio_ens: 3               #if analysis is 3km, then ensemble: 3*3: 9km. GDAS ensemble is 20km
+  i_en_perts_io: 1                #0 or 1: original file   3: pre-processed ensembles
+  q_hyb_ens: .false.
+  ens_fast_read: .false.
+  
+  # &RAPIDREFRESH_CLDSURF
+  l_PBL_pseudo_SurfobsT: .false.
+  l_PBL_pseudo_SurfobsQ: .false.
+  i_use_2mQ4B: 0
+  i_use_2mT4B: 0
+  i_T_Q_adjust: 1
+  l_rtma3d: .false.
+  i_precip_vertical_check: 0
+  #-----------------------------------------------------------------------
+  # HYBENSMEM_NMIN:
+  #    Minimum number of ensemble members required a hybrid GSI analysis 
+  #-----------------------------------------------------------------------
+  HYBENSMEM_NMIN: 80
+  ANAVINFO_FN: "anavinfo.rrfs"
+  ANAVINFO_DBZ_FN: "anavinfo.rrfs_dbz"
+  ENKF_ANAVINFO_FN: "anavinfo.rrfs"
+  ENKF_ANAVINFO_DBZ_FN: "anavinfo.enkf.rrfs_dbz"
+  CONVINFO_FN: "convinfo.rrfs"
+  BERROR_FN: "rap_berror_stats_global_RAP_tune" #under $FIX_GSI
+  OBERROR_FN: "errtable.rrfs"
+  HYBENSINFO_FN: "hybens_info.rrfs"
+  #
+  #-----------------------------------------------------------------------
+  # default namelist for nonvar cloud analysis
+  #-----------------------------------------------------------------------
+  cld_bld_hgt: 1200.0
+  l_precip_clear_only: .false.
+  l_qnr_from_qr: .false.
+  #
+  #-----------------------------------------------------------------------
+  # default weighting for control analysis in ensemble recentering
+  #-----------------------------------------------------------------------
+  beta_recenter: 1.0
 
 #----------------------------
 # DO_ parameters. These look like workflow switches since some
@@ -2019,6 +2099,25 @@ task_plot_allvars:
   # Domains to plot. Currently supported are either "conus" or "regional" or both
   #-------------------------------------------------------------------------------
   PLOT_DOMAINS: ["conus"]
+
+#----------------------------
+# ANALYSIS config parameters
+#-----------------------------
+task_analysis_gsi:
+  TN_ANALYSIS_GSI: "analysis_gsi_input"
+  TN_OBSERVER_GSI: "observer_gsi"
+  TN_OBSERVER_GSI_ENSMEAN: "observer_gsi_ensmean"
+  KMP_AFFINITY_ANALYSIS: "scatter"
+  OMP_NUM_THREADS_ANALYSIS: 1
+  OMP_STACKSIZE_ANALYSIS: "1024m"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # observation file templates used in analalysis
+  #
+  #-----------------------------------------------------------------------
+  #
+  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDDHH}.${obs_source}'
 
 #----------------------------
 # PROCESS RADARREF config parameters

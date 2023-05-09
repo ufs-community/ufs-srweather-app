@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
+import logging
 
 from python_utils import (
     import_vars,
     set_env_var,
     print_input_args,
-    print_info_msg,
     print_err_msg_exit,
     load_config_file,
     flatten_dict,
@@ -327,26 +326,24 @@ def set_gridparams_GFDLgrid(
     #
     # -----------------------------------------------------------------------
     #
-    print_info_msg(
+    logging.debug(
         f"""
         Original values of the halo width on the tile 6 supergrid and on the
         tile 7 grid are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
-          halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=verbose,
+          halo_width_on_t7g  = {halo_width_on_t7g}"""
     )
 
     halo_width_on_t6sg = istart_of_t7_on_t6sg - istart_of_t7_with_halo_on_t6sg
     halo_width_on_t6g = halo_width_on_t6sg // 2
     halo_width_on_t7g = int(halo_width_on_t6g * refine_ratio_t6g_to_t7g)
 
-    print_info_msg(
+    logging.debug(
         f"""
         Values of the halo width on the tile 6 supergrid and on the tile 7 grid
         AFTER adjustments are:
           halo_width_on_t6sg = {halo_width_on_t6sg}
-          halo_width_on_t7g  = {halo_width_on_t7g}""",
-        verbose=verbose,
+          halo_width_on_t7g  = {halo_width_on_t7g}"""
     )
     #
     # -----------------------------------------------------------------------
@@ -375,7 +372,7 @@ def set_gridparams_GFDLgrid(
     prime_factors_nx_of_t7_on_t7g = prime_factors(nx_of_t7_on_t7g)
     prime_factors_ny_of_t7_on_t7g = prime_factors(ny_of_t7_on_t7g)
 
-    print_info_msg(
+    logging.debug(
         f"""
         The number of cells in the two horizontal directions (x and y) on the
         parent tile's (tile 6) grid and supergrid are:
@@ -418,8 +415,7 @@ def set_gridparams_GFDLgrid(
         The prime factors of nx_of_t7_on_t7g and ny_of_t7_on_t7g are (useful for
         determining an MPI task layout):
           prime_factors_nx_of_t7_on_t7g: {prime_factors_nx_of_t7_on_t7g}
-          prime_factors_ny_of_t7_on_t7g: {prime_factors_ny_of_t7_on_t7g}""",
-        verbose=verbose,
+          prime_factors_ny_of_t7_on_t7g: {prime_factors_ny_of_t7_on_t7g}"""
     )
     #
     # -----------------------------------------------------------------------
@@ -443,20 +439,18 @@ def set_gridparams_GFDLgrid(
     ny_of_t7_with_halo_on_t6g = ny_of_t7_with_halo_on_t6sg / 2
     ny_of_t7_with_halo_on_t7g = ny_of_t7_with_halo_on_t6g * refine_ratio_t6g_to_t7g
 
-    print_info_msg(
+    logging.debug(
         f"""
         nx_of_t7_with_halo_on_t7g = {nx_of_t7_with_halo_on_t7g}
         (istart_of_t7_with_halo_on_t6sg = {istart_of_t7_with_halo_on_t6sg},
-        iend_of_t7_with_halo_on_t6sg = {iend_of_t7_with_halo_on_t6sg})""",
-        verbose=verbose,
+        iend_of_t7_with_halo_on_t6sg = {iend_of_t7_with_halo_on_t6sg})"""
     )
 
-    print_info_msg(
+    logging.debug(
         f"""
         ny_of_t7_with_halo_on_t7g = {ny_of_t7_with_halo_on_t7g}
         (jstart_of_t7_with_halo_on_t6sg = {jstart_of_t7_with_halo_on_t6sg},
-        jend_of_t7_with_halo_on_t6sg = {jend_of_t7_with_halo_on_t6sg})""",
-        verbose=verbose,
+        jend_of_t7_with_halo_on_t6sg = {jend_of_t7_with_halo_on_t6sg})"""
     )
     #
     # -----------------------------------------------------------------------
@@ -478,28 +472,3 @@ def set_gridparams_GFDLgrid(
         "JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG": jend_of_t7_with_halo_on_t6sg,
     }
 
-
-class Testing(unittest.TestCase):
-    def test_set_gridparams_GFDLgrid(self):
-        grid_params = set_gridparams_GFDLgrid(
-            lon_of_t6_ctr=-97.5,
-            lat_of_t6_ctr=38.5,
-            res_of_t6g=96,
-            stretch_factor=1.4,
-            refine_ratio_t6g_to_t7g=3,
-            istart_of_t7_on_t6g=13,
-            iend_of_t7_on_t6g=84,
-            jstart_of_t7_on_t6g=17,
-            jend_of_t7_on_t6g=80,
-            run_envir="community",
-            verbose=True,
-            nh4=4,
-        )
-
-        self.assertEqual(
-            list(grid_params.values()),
-            [-97.5, 38.5, 216, 192, 6, 1.4, 21, 172, 29, 164],
-        )
-
-    def setUp(self):
-        pass
