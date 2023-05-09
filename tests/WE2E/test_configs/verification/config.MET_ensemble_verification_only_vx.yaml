@@ -28,6 +28,10 @@ rocoto:
       metatask_PointStat_mem#mem#:
         task_run_MET_PointStat_vx_#VAR#_mem#mem#:
           dependency:
+            and:
+              or_do_post:
+              or_get_obs:
+
     metatask_GridStat_APCP_acc:
       metatask_vx_ens_member_acc:
         task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
@@ -52,7 +56,6 @@ rocoto:
             taskdep:
               attrs:
                 task: run_MET_Pb2nc_obs
-
 
 global:
   DO_ENSEMBLE: true
