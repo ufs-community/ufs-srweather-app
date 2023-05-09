@@ -72,6 +72,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     export pgmerr="${DATA}/errfile"
     export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
     export pgmout_lines=1
+    export pgmerr_lines=1
 
     function PREP_STEP() {
         export pgm="$(basename ${0})"
@@ -93,6 +94,11 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
             tail -n +${pgmout_lines} $pgmout
             pgmout_line=$( wc -l $pgmout )
             pgmout_lines=$((pgmout_lines + 1))
+        fi
+        if [ -f $pgmerr ]; then
+            tail -n +${pgmerr_lines} $pgmerr
+            pgmerr_line=$( wc -l $pgmerr )
+            pgmerr_lines=$((pgmerr_lines + 1))
         fi
     }
 else
