@@ -11,7 +11,6 @@ default_task_verify_ens: &default_task_verify_ens
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
-    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
     nprocs: '{{ parent.nnodes * parent.ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'

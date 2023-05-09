@@ -227,6 +227,7 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi
 
+  SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
     FCST_INPUT_FN_TEMPLATE="  $(eval echo ${template})"
   else
