@@ -254,7 +254,7 @@ fi
 #
 uscore_ensmem_name_or_null=""
 if [ "${obs_or_fcst}" = "fcst" ]; then
-  metplus_config_fn="_mem${ENSMEM_INDX}"
+  uscore_ensmem_name_or_null="_mem${ENSMEM_INDX}"
 fi
 #
 # First, set the base file names.
