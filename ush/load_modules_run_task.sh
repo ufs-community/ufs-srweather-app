@@ -100,9 +100,9 @@ set -u
 #
 machine=$(echo_lowercase $MACHINE)
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
-  source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+  source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
   if [ "${machine}" != "wcoss2" ]; then
-    module use "${HOMEaqm}/modulefiles"
+    module use "${HOMEdir}/modulefiles"
     module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
     Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
@@ -127,17 +127,17 @@ for the workflow task specified by task_name failed:
 #
 # The full path to a module file for a given task is
 #
-#   $HOMEaqm/modulefiles/$machine/${task_name}.local
+#   $HOMEdir/modulefiles/$machine/${task_name}.local
 #
-# where HOMEaqm is the base directory of the workflow, machine is the
+# where HOMEdir is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-  modules_dir="$HOMEaqm/modulefiles/tasks/$machine"
+  modules_dir="$HOMEdir/modulefiles/tasks/$machine"
   modulefile_name="${task_name}"
-  default_modules_dir="$HOMEaqm/modulefiles"
+  default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -152,7 +152,7 @@ for the workflow task specified by task_name failed:
 Call to \"module use\" command failed."
 
   # source version file (run) only if it is specified in versions directory
-  VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
+  VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
   if [ -f ${VERSION_FILE} ]; then
     . ${VERSION_FILE}
   fi
