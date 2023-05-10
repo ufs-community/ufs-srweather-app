@@ -41,7 +41,7 @@ class FunctionalTesting(unittest.TestCase):
             "parm",
             "data_locations.yml"
             )
-        twodaysago = datetime.datetime.today() - datetime.timedelta(days=2)
+        threedaysago = datetime.datetime.today() - datetime.timedelta(days=3)
         # Set test dates to retrieve, based on important dates in HPSS history:
         # 2019061200 - First operational FV3GFS cycle
         # 2020022518, 2020022600 - Changes to operational FV3GFS files between these cycles
@@ -51,17 +51,17 @@ class FunctionalTesting(unittest.TestCase):
         self.dates={}
         self.dates["FV3GFSgrib2"]  = ['2019061200',
                                       '2020022600',
-                                      twodaysago.strftime('%Y%m%d') + '12']
+                                      threedaysago.strftime('%Y%m%d') + '12']
         self.dates["FV3GFSnemsio"] = ['2019061200',
                                       '2020022518',
                                       '2021032018']
         self.dates["FV3GFSnetcdf"] = ['2021032100',
-                                      twodaysago.strftime('%Y%m%d') + '00']
+                                      threedaysago.strftime('%Y%m%d') + '00']
         self.dates["RAPhpss"]      = ['2018071118',
                                       '2020022618',
-                                      twodaysago.strftime('%Y%m%d') + '06']
+                                      threedaysago.strftime('%Y%m%d') + '06']
         self.dates["RAPaws"]       = ['2021022200',
-                                      twodaysago.strftime('%Y%m%d%H')]
+                                      threedaysago.strftime('%Y%m%d%H')]
 
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
