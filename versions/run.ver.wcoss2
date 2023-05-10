@@ -40,6 +40,10 @@ export envvar_ver=1.0
 
 export gfs_ver=v16.3
 export gefs_ver=v12.3
+export nam_ver=v4.2
+export rap_ver=v5.1
+export gsmgfs_ver=v16.2 
+export hrrr_ver=v3
 
 export udunits_ver=2.2.28
 export gsl_ver=2.7
