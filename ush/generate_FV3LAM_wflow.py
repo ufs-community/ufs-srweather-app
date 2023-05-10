@@ -392,7 +392,7 @@ def generate_FV3LAM_wflow(
                 "dnats": 0
             })
 
-    settings["fv_core_nml"] = fv_core_nml_dic
+    settings["fv_core_nml"] = fv_core_nml_dict
 
     gfs_physics_nml_dict = {}
     gfs_physics_nml_dict.update({
@@ -430,11 +430,11 @@ def generate_FV3LAM_wflow(
                 "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
-    settings["gfs_physics_nml"] = gfs_physics_nml_dic
+    settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
     #
     # Add to "settings" the values of those namelist variables that specify
-    # the paths to fixed files in the FIXam directory.  As above, these namelis
+    # the paths to fixed files in the FIXam directory.  As above, these namelist
     # variables are physcs-suite-independent.
     #
     # Note that the array FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
@@ -460,14 +460,14 @@ def generate_FV3LAM_wflow(
         if FIXam_fn:
             fp = os.path.join(FIXam, FIXam_fn)
             #
-            # If not in NCO mode, for portability and brevity, change fp so that i
+            # If not in NCO mode, for portability and brevity, change fp so that it
             # is a relative path (relative to any cycle directory immediately under
             # the experiment directory).
             #
             if RUN_ENVIR != "nco":
                 fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
-        # Add a line to the variable "settings" that specifies (in a yaml-complian
+        # Add a line to the variable "settings" that specifies (in a yaml-compliant
         # format) the name of the current namelist variable and the value it should
         # be set to.
         #
@@ -475,7 +475,7 @@ def generate_FV3LAM_wflow(
     #
     # Add namsfc_dict to settings
     #
-    settings["namsfc"] = namsfc_dic
+    settings["namsfc"] = namsfc_dict
     #
     # Use netCDF4 when running the North American 3-km domain due to file size.
     #
@@ -532,7 +532,7 @@ def generate_FV3LAM_wflow(
     if DO_SPP or DO_LSM_SPP:
         nam_stochy_dict.update({"new_lscale": NEW_LSCALE})
 
-    settings["nam_stochy"] = nam_stochy_dic
+    settings["nam_stochy"] = nam_stochy_dict
     #
     # Add the relevant SPP namelist variables to "settings" when running with
     # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
@@ -583,7 +583,7 @@ def generate_FV3LAM_wflow(
     #
     # Call the set_namelist.py script to create a new FV3 namelist file (full
     # path specified by FV3_NML_FP) using the file FV3_NML_BASE_SUITE_FP as
-    # the base (i.e. starting) namelist file, with physics-suite-dependen
+    # the base (i.e. starting) namelist file, with physics-suite-dependent
     # modifications to the base file specified in the yaml configuration file
     # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
     # and with additional physics-suite-independent modifications specified
@@ -631,7 +631,7 @@ def generate_FV3LAM_wflow(
     # the paths to surface climatology files.  These files are located in
     # (or have symlinks that point to them) in the FIXlam directory.
     #
-    # Note that if running the TN_MAKE_GRID task, this action usually canno
+    # Note that if running the TN_MAKE_GRID task, this action usually cannot
     # be performed here but must be performed in that task because the names
     # of the surface climatology files depend on the CRES parameter (which is
     # the C-resolution of the grid), and this parameter is in most workflow
@@ -684,7 +684,7 @@ def generate_FV3LAM_wflow(
             Note that:
 
             1) The rocotorun command must be issued after the completion of each
-               task in the workflow in order for the workflow to submit the nex
+               task in the workflow in order for the workflow to submit the next
                task(s) to the queue.
 
             2) In order for the output of the rocotostat command to be up-to-date,
