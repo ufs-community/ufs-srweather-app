@@ -1,7 +1,7 @@
 """ Defines an integration test for generate_FV3LAM_wflow script in the
 ush directory """
 
-#pylint: disable=invalid-name, no-self-use
+#pylint: disable=invalid-name
 import os
 import sys
 import unittest
@@ -68,7 +68,7 @@ class Testing(unittest.TestCase):
         }
         update_dict(cfg_updates, nco_test_config)
 
-        with open(f"{USHdir}/config.yaml", "w") as cfg_file:
+        with open(f"{USHdir}/config.yaml", "w", encoding="utf-8") as cfg_file:
             cfg_file.write(cfg_to_yaml_str(nco_test_config))
 
         run_workflow(USHdir, logfile)

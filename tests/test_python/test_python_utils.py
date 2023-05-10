@@ -45,7 +45,7 @@ class Testing(unittest.TestCase):
         self.assertEqual(("lsm_ruc",), match)
 
         # Test given a string
-        with open(test_file) as file_:
+        with open(test_file, encoding='utf-8') as file_:
             content = file_.read()
 
         util.find_pattern_in_str(pattern, content)
@@ -66,27 +66,26 @@ class Testing(unittest.TestCase):
         """ Test that when an existing directory should be renamed, it
         still exists and that a new directory is made"""
 
-        tmp_dir = tempfile.TemporaryDirectory(
+        with tempfile.TemporaryDirectory(
             dir=os.path.abspath("."),
             prefix="preexist_space",
-            )
+            ) as tmp_dir:
 
-        # Check cmd_vrfy works
-        existing_dir = os.path.join(tmp_dir.name, "dir")
-        util.cmd_vrfy(f"mkdir -p {existing_dir}")
-        self.assertTrue(os.path.exists(existing_dir))
+            # Check cmd_vrfy works
+            existing_dir = os.path.join(tmp_dir.name, "dir")
+            util.cmd_vrfy(f"mkdir -p {existing_dir}")
+            self.assertTrue(os.path.exists(existing_dir))
 
-        # Given a preexisting directory, move it and test that they both
-        # exist.
-        util.check_for_preexist_dir_file(existing_dir, "rename")
-        dirs = glob.glob(f"{existing_dir}_*")
-        self.assertEqual(len(dirs), 1)
+            # Given a preexisting directory, move it and test that they both
+            # exist.
+            util.check_for_preexist_dir_file(existing_dir, "rename")
+            dirs = glob.glob(f"{existing_dir}_*")
+            self.assertEqual(len(dirs), 1)
 
-        # Clean up the older version, and test rm_vrfy
-        util.rm_vrfy(f"-rf {existing_dir}_*")
-        dirs = glob.glob(f"{existing_dir}_*")
-        self.assertEqual(len(dirs), 0)
-        tmp_dir.cleanup()
+            # Clean up the older version, and test rm_vrfy
+            util.rm_vrfy(f"-rf {existing_dir}_*")
+            dirs = glob.glob(f"{existing_dir}_*")
+            self.assertEqual(len(dirs), 0)
 
     def test_check_var_valid_value(self):
         """ Test that a string is available in a given list. """
@@ -95,28 +94,28 @@ class Testing(unittest.TestCase):
     def test_filesys_cmds(self):
         """ Test the functions that perform filesystem commands"""
 
-        tmp_dir = tempfile.TemporaryDirectory(
+        with tempfile.TemporaryDirectory(
             dir=os.path.abspath("."),
             prefix="filesys_space",
-            )
-        testable_path = os.path.join(
-            tmp_dir.name,
-            "dir",
-            )
+            ) as tmp_dir:
 
-        # Make sure a desired path is created
-        util.mkdir_vrfy(testable_path)
-        self.assertTrue(os.path.exists(testable_path))
+            testable_path = os.path.join(
+                tmp_dir.name,
+                "dir",
+                )
 
-        # Make sure a file is copied
-        util.cp_vrfy(f"{self.ushdir}/python_utils/misc.py", f"{testable_path}/miscs.py")
-        self.assertTrue(os.path.exists(f"{testable_path}/miscs.py"))
+            # Make sure a desired path is created
+            util.mkdir_vrfy(testable_path)
+            self.assertTrue(os.path.exists(testable_path))
 
-        # Run a platform native command
-        util.cmd_vrfy(f"rm -rf {testable_path}")
+            # Make sure a file is copied
+            util.cp_vrfy(f"{self.ushdir}/python_utils/misc.py", f"{testable_path}/miscs.py")
+            self.assertTrue(os.path.exists(f"{testable_path}/miscs.py"))
 
-        self.assertFalse(os.path.exists(testable_path))
-        tmp_dir.cleanup()
+            # Run a platform native command
+            util.cmd_vrfy(f"rm -rf {testable_path}")
+
+            self.assertFalse(os.path.exists(testable_path))
 
     def test_run_command(self):
         """ Test the return of the run_command task is as expected."""
@@ -126,17 +125,16 @@ class Testing(unittest.TestCase):
         """ Test that a simlink is created as expected."""
 
         target = f"{self.test_dir}/test_python_utils.py"
-        tmp_dir = tempfile.TemporaryDirectory(
+        with tempfile.TemporaryDirectory(
             dir=os.path.abspath("."),
             prefix="simlink_space",
-            )
+            ) as tmp_dir:
 
-        symlink = os.path.join(
-            tmp_dir.name,
-            "test_python_utils.py"
-            )
-        util.create_symlink_to_file(target, symlink)
-        tmp_dir.cleanup()
+            symlink = os.path.join(
+                tmp_dir.name,
+                "test_python_utils.py"
+                )
+            util.create_symlink_to_file(target, symlink)
 
     def test_define_macos_utilities(self):
         """ Test that environment setting and getting utils work. Also,
