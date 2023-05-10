@@ -99,41 +99,16 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-
-# source version file (build) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
-fi
-
-source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  module use "${HOMEdir}/modulefiles/extrn_comp_build"
-  if [ "${task_name}" = "make_grid" ] || [ "${task_name}" = "make_orog" ] || \
-     [ "${task_name}" = "make_sfc_climo" ] || [ "${task_name}" = "make_ics" ] || \
-     [ "${task_name}" = "make_lbcs" ]; then
-    module load mod_ufs-utils
-  elif [ "${task_name}" = "run_fcst" ]; then
-    module load mod_ufs-weather-model
-  elif [ "${task_name}" = "run_post" ] && [ "${machine}" != "wcoss2" ]; then
-    module load mod_upp
-  elif [ "${task_name}" = "aqm_lbcs" ] || \
-       [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \
-       [ "${task_name}" = "bias_correction_o3" ] || \
-       [ "${task_name}" = "bias_correction_pm25" ]; then
-    module load mod_aqm-utils
-  elif [ "${task_name}" = "nexus_emission" ] || ([ "${task_name}" = "nexus_post_split" ] && \
-       [ "${machine}" = "wcoss2" ] ); then
-    module load mod_nexus
-  fi
-else
-  module use "${HOMEdir}/modulefiles"
-  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
-  Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+  if [ "${machine}" != "wcoss2" ]; then
+    module use "${HOMEaqm}/modulefiles"
+    module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+    Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
-fi
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -152,17 +127,17 @@ fi
 #
 # The full path to a module file for a given task is
 #
-#   $HOMEdir/modulefiles/$machine/${task_name}.local
+#   $HOMEaqm/modulefiles/$machine/${task_name}.local
 #
-# where HOMEdir is the base directory of the workflow, machine is the
+# where HOMEaqm is the base directory of the workflow, machine is the
 # name of the machine that we're running on (in lowercase), and task_-
 # name is the name of the current task (an input to this script).
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMEdir/modulefiles/tasks/$machine"
-modulefile_name="${task_name}"
-default_modules_dir="$HOMEdir/modulefiles"
+  modules_dir="$HOMEaqm/modulefiles/tasks/$machine"
+  modulefile_name="${task_name}"
+  default_modules_dir="$HOMEaqm/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -170,39 +145,37 @@ default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
+  print_info_msg "$VERBOSE" "
+  Loading modules for task \"${task_name}\" ..."
 
-print_info_msg "$VERBOSE" "
-Loading modules for task \"${task_name}\" ..."
-
-module use "${modules_dir}" || print_err_msg_exit "\
+  module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
-# source version file (run) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
-fi
-#
-# Load the .local module file if available for the given task
-#
-modulefile_local="${task_name}.local"
-if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
-  module load "${modulefile_local}" || print_err_msg_exit "\
-  Loading .local module file (in directory specified by mod-
-  ules_dir) for the specified task (task_name) failed:
+  # source version file (run) only if it is specified in versions directory
+  VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
+  if [ -f ${VERSION_FILE} ]; then
+    . ${VERSION_FILE}
+  fi
+  #
+  # Load the .local module file if available for the given task
+  #
+  modulefile_local="${task_name}.local"
+  if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
+    module load "${modulefile_local}" || print_err_msg_exit "\
+Loading .local module file (in directory specified by modules_dir) for the 
+specified task (task_name) failed:
     task_name = \"${task_name}\"
     modulefile_local = \"${modulefile_local}\"
     modules_dir = \"${modules_dir}\""
-elif [ -f ${modules_dir}/python_srw.lua ] ; then
-  module load python_srw || print_err_msg_exit "\
+  elif [ -f ${modules_dir}/python_srw.lua ] ; then
+    module load python_srw || print_err_msg_exit "\
     Loading SRW common python module failed. Expected python_srw.lua
     in the modules directory here:
-
     modules_dir = \"${modules_dir}\""
+  fi
+
+  module list
 fi
-
-module list
-
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
