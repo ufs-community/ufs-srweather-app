@@ -34,7 +34,7 @@ class Testing(unittest.TestCase):
 
         # Create an temporary experiment directory
         self.tmp_dir = tempfile.TemporaryDirectory(
-            dir=os.path.abspath("."),
+            dir=os.path.dirname(__file__),
             prefix="expt",
             )
         EXPTDIR = self.tmp_dir.name
