@@ -72,7 +72,7 @@ class Testing(unittest.TestCase):
             ) as tmp_dir:
 
             # Check cmd_vrfy works
-            existing_dir = os.path.join(tmp_dir.name, "dir")
+            existing_dir = os.path.join(tmp_dir, "dir")
             util.cmd_vrfy(f"mkdir -p {existing_dir}")
             self.assertTrue(os.path.exists(existing_dir))
 
@@ -100,7 +100,7 @@ class Testing(unittest.TestCase):
             ) as tmp_dir:
 
             testable_path = os.path.join(
-                tmp_dir.name,
+                tmp_dir,
                 "dir",
                 )
 
@@ -131,7 +131,7 @@ class Testing(unittest.TestCase):
             ) as tmp_dir:
 
             symlink = os.path.join(
-                tmp_dir.name,
+                tmp_dir,
                 "test_python_utils.py"
                 )
             util.create_symlink_to_file(target, symlink)
