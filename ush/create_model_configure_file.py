@@ -81,7 +81,7 @@ def create_model_configure_file(
         "dt_atmos": DT_ATMOS,
         "restart_interval": RESTART_INTERVAL,
         "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
-        "quilting": f".{lowercase(str(WRITE_DOPOST))}.",
+        "quilting": f".{lowercase(str(QUILTING))}.",
         "output_grid": WRTCMP_output_grid,
     }
     #
