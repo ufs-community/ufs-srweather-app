@@ -61,6 +61,7 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
+fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
 #
 #-----------------------------------------------------------------------
 #
@@ -88,7 +89,7 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
 	                   relative="${relative_link_flag}"
 
-  for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
+  for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
     gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
     if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
       gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
@@ -128,8 +129,8 @@ else
   gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
   gfs_sfc_fns=("gfs.t${hh}z.sfcanl.nc")
   gfs_sfc_fps="./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcanl.nc"
-  if [ "${FCST_LEN_HRS}" -lt "40" ]; then
-    ARCHV_LEN_HRS="${FCST_LEN_HRS}"
+  if [ "${fcst_len_hrs_offset}" -lt "40" ]; then
+    ARCHV_LEN_HRS="${fcst_len_hrs_offset}"
   else
     ARCHV_LEN_HRS="39"
   fi
@@ -138,7 +139,7 @@ else
     gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"
   done
 
-  # Retrieve data from A file up to FCST_LEN_HRS=39
+  # Retrieve data from A file up to fcst_len_hrs_offset=39
   htar -tvf ${gfs_sfc_tar_fp}
   PREP_STEP
   htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR}
@@ -153,13 +154,13 @@ else
   fi
   POST_STEP
 
-  # Retireve data from B file when FCST_LEN_HRS>=40
-  if [ "${FCST_LEN_HRS}" -ge "40" ]; then
+  # Retireve data from B file when fcst_len_hrs_offset>=40
+  if [ "${fcst_len_hrs_offset}" -ge "40" ]; then
     gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_B}"
     gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
     gfs_sfc_fns=()
     gfs_sfc_fps=""
-    for fhr in $(seq -f "%03g" 42 ${GFS_SFC_DATA_INTVL} ${FCST_LEN_HRS}); do
+    for fhr in $(seq -f "%03g" 42 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
       gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
       gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"  
     done
