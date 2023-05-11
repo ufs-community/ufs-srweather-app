@@ -39,6 +39,6 @@ jobs:
         run: |
           ./manage_externals/checkout_externals ufs-weather-model
           # exclude test_retrieve_data that is tested in functional test
-          export PYTHONPATH=${PWD}/ush
+          export PYTHONPATH=${PWD}/ush:${PWD}/ush/python_utils/uwtools:${PWD}/ush/python_utils/uwtools/src
           python3 -m unittest -b tests/test_python/*.py
 
