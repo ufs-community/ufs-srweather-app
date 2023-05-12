@@ -148,24 +148,18 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
 For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
-In the ``workflow_switches:`` section, turn on the plotting task by setting ``RUN_TASK_PLOT_ALLVARS`` to true. All other variables should remain as they are. 
+To turn on the plotting for the experiment, the YAML configuration file
+should be included in the ``rocoto:taskgroups:`` section, like this:
 
 .. code-block:: console
 
-   workflow_switches:
-     RUN_TASK_MAKE_GRID: true
-     RUN_TASK_MAKE_OROG: true
-     RUN_TASK_MAKE_SFC_CLIMO: true
-     RUN_TASK_GET_OBS_CCPA: false
-     RUN_TASK_GET_OBS_MRMS: false
-     RUN_TASK_GET_OBS_NDAS: false
-     RUN_TASK_VX_GRIDSTAT: false
-     RUN_TASK_VX_POINTSTAT: false
-     RUN_TASK_VX_ENSGRID: false
-     RUN_TASK_VX_ENSPOINT: false
-     RUN_TASK_PLOT_ALLVARS: true
+  rocoto:
+    tasks:
+      taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
-For a detailed description of the ``workflow-switches:`` variables, see :numref:`Section %s <workflow-switches>`.
+
+For more information on how to turn on/off tasks in the worklfow, please
+see :numref:`Section %s <DefineWorkflow>`
 
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
