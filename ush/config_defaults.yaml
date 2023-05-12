@@ -332,7 +332,6 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  MODEL: ""
   MET_INSTALL_DIR: ""
   MET_BIN_EXEC: ""
   METPLUS_PATH: ""
@@ -2318,10 +2317,12 @@ global:
 #-----------------------------
 verification:
   #
-  # Templates for CCPA observation files.
+  # Templates for CCPA, MRMS, and NDAS observation files.
   #
   OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
   OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
+  OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_NDAS_SFCorUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
   OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: '${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'
   #
@@ -2332,20 +2333,22 @@ verification:
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
   #
-  # VX_FCST_INPUT_DIR:
-  # Directory template for the path containing forecast (but not obs) files
-  # that will be used as input into METplus for verification.
+  # VX_FCST_INPUT_BASEDIR:
+  # Template for top-level directory containing forecast (but not obs)
+  # files that will be used as input into METplus for verification.
   #
   # VX_OUTPUT_BASEDIR:
-  # Top-level directory in which METplus will place its output.
+  # Template for top-level directory in which METplus will place its
+  # output.
   #
-  VX_FCST_INPUT_DIR: '{{ workflow.EXPTDIR }}/${CDATE}{% if global.DO_ENSEMBLE %}"/mem${ENSMEM_INDX}"{% endif %}/postprd'
-  VX_OUTPUT_BASEDIR: '{{ workflow.EXPTDIR }}'
+  VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
+  VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   #
-  # File name and path templates are used in the verification tasks.
+  # File name and path templates used in the verification tasks.
   #
-  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd{% endif %}'
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
