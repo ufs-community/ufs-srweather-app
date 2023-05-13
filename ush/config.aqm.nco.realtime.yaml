@@ -10,8 +10,8 @@ workflow:
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023050900'
-  DATE_LAST_CYCL: '2023050918'
+  DATE_FIRST_CYCL: '2023051100'
+  DATE_LAST_CYCL: '2023051118'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: -1
   FCST_LEN_CYCL:
@@ -43,6 +43,7 @@ rocoto:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 04:00:00
+#    task_aqm_ics_ext:
     task_aqm_lbcs:
       walltime: 01:00:00
 task_make_grid:
@@ -60,9 +61,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 6
-task_make_lbcs:
-  NNODES_MAKE_LBCS: 1
-  PPN_MAKE_LBCS: 128  
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
