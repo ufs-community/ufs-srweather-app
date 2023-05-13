@@ -99,16 +99,15 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
-  source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
-  if [ "${machine}" != "wcoss2" ]; then
-    module use "${HOMEdir}/modulefiles"
-    module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
-    Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
+source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+if [ "${machine}" != "wcoss2" ]; then
+  module use "${HOMEdir}/modulefiles"
+  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+  Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
-  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -135,9 +134,9 @@ for the workflow task specified by task_name failed:
 #
 #-----------------------------------------------------------------------
 #
-  modules_dir="$HOMEdir/modulefiles/tasks/$machine"
-  modulefile_name="${task_name}"
-  default_modules_dir="$HOMEdir/modulefiles"
+modules_dir="$HOMEdir/modulefiles/tasks/$machine"
+modulefile_name="${task_name}"
+default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -145,37 +144,37 @@ for the workflow task specified by task_name failed:
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "$VERBOSE" "
-  Loading modules for task \"${task_name}\" ..."
+print_info_msg "$VERBOSE" "
+Loading modules for task \"${task_name}\" ..."
 
-  module use "${modules_dir}" || print_err_msg_exit "\
+module use "${modules_dir}" || print_err_msg_exit "\
 Call to \"module use\" command failed."
 
-  # source version file (run) only if it is specified in versions directory
-  VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
-  if [ -f ${VERSION_FILE} ]; then
-    . ${VERSION_FILE}
-  fi
-  #
-  # Load the .local module file if available for the given task
-  #
-  modulefile_local="${task_name}.local"
-  if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
-    module load "${modulefile_local}" || print_err_msg_exit "\
+# source version file (run) only if it is specified in versions directory
+VERSION_FILE="${HOMEdir}/versions/${RUN_VER_FN}"
+if [ -f ${VERSION_FILE} ]; then
+  . ${VERSION_FILE}
+fi
+#
+# Load the .local module file if available for the given task
+#
+modulefile_local="${task_name}.local"
+if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
+  module load "${modulefile_local}" || print_err_msg_exit "\
 Loading .local module file (in directory specified by modules_dir) for the 
 specified task (task_name) failed:
-    task_name = \"${task_name}\"
-    modulefile_local = \"${modulefile_local}\"
-    modules_dir = \"${modules_dir}\""
-  elif [ -f ${modules_dir}/python_srw.lua ] ; then
-    module load python_srw || print_err_msg_exit "\
-    Loading SRW common python module failed. Expected python_srw.lua
-    in the modules directory here:
-    modules_dir = \"${modules_dir}\""
-  fi
-
-  module list
+  task_name = \"${task_name}\"
+  modulefile_local = \"${modulefile_local}\"
+  modules_dir = \"${modules_dir}\""
+elif [ -f ${modules_dir}/python_srw.lua ] ; then
+  module load python_srw || print_err_msg_exit "\
+  Loading SRW common python module failed. Expected python_srw.lua
+  in the modules directory here:
+  modules_dir = \"${modules_dir}\""
 fi
+
+module list
+
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
