@@ -342,9 +342,8 @@ EOF
 # the jinja template.
 #
 python3 $USHdir/python_utils/uwtools/scripts/templater.py \
-  -q \
-  -i ${metplus_config_tmpl_fp} \
   -c ${tmpfile} \
+  -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} || \
 print_err_msg_exit "\
 Call to uwtools templater.py to generate a METplus

@@ -313,21 +313,22 @@ settings="\
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-$USHdir/fill_jinja_template.py -q \
-                               -u "${settings}" \
-                               -t ${metplus_config_tmpl_fp} \
-                               -o ${metplus_config_fp} || \
+python3 $USHdir/python_utils/uwtools/scripts/templater.py \
+  -c "${tmpfile}" \
+  -i ${metplus_config_tmpl_fp} \
+  -o ${metplus_config_fp} || \
 print_err_msg_exit "\
-Call to python script fill_jinja_template.py to generate a METplus
+Call to uwtools templater to generate a METplus
 configuration file from a jinja template failed.  Parameters passed
 to this script are:
   Full path to template METplus configuration file:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Jinja settings specified on command line:
-    settings =
-$settings"
+  Full path to configuration file:
+    ${tmpfile}
+"
+rm $tmpfile
 #
 #-----------------------------------------------------------------------
 #
