@@ -34,7 +34,7 @@ jobs:
       - name: Lint the test directory
         run: |
           ./manage_externals/checkout_externals uwtools
-          export PYTHONPATH=${PWD}/ush
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/uwtools:$(pwd)/ush/python_utils/uwtools/src
           pylint --ignore-imports=yes tests/test_python/
           pylint ush/create_*.py
           pylint ush/generate_FV3LAM_wflow.py
