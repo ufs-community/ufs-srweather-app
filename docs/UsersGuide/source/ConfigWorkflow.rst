@@ -7,8 +7,8 @@ To create the experiment directory and workflow when running the SRW Application
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
-.. note:: 
-   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``.
+.. note::
+   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception in the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
 
 The following is a list of the parameters in the ``config_defaults.yaml`` file. For each parameter, the default value and a brief description is provided. 
 
@@ -110,7 +110,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 
 Parameters for Running Without a Workflow Manager
 -----------------------------------------------------
-These settings set run commands for platforms without a workflow manager. Values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
+These settings define the run commands for the platform.
 
 ``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
    The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a different command for launching an MPI-enabled executable depending on their machine and MPI installation.
@@ -151,7 +151,7 @@ METplus Parameters
       * ``SS`` refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``TN_GET_OBS_CCPA`` task. (This task is activated in the workflow by setting ``RUN_TASK_GET_OBS_CCPA: true``). 
+   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_CCPA`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify.yaml``).
 
    METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
 
@@ -159,7 +159,7 @@ METplus Parameters
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_obs_ccpa.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_obs_ccpa.sh`` script.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``TN_GET_OBS_MRMS`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_MRMS: true``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_MRMS`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
    
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
@@ -167,7 +167,7 @@ METplus Parameters
    METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``scripts/exregional_get_obs_mrms.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``ush/mrms_pull_topofhour.py``.
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``TN_GET_OBS_NDAS`` task (activated in the workflow by setting ``RUN_TASK_GET_OBS_NDAS: true``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
+   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``GET_OBS_NDAS`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
    
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_obs_ndas.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
@@ -285,7 +285,7 @@ Set File Name Parameters
    Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
 
 ``EXTRN_MDL_VAR_DEFNS_FN``: (Default: "extrn_mdl_var_defns")
-   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``TN_GET_EXTRN_*`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``TN_MAKE_ICS`` and ``TN_MAKE_LBCS`` tasks.
+   Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_*`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS`` and ``MAKE_LBCS`` tasks.
 
 ``WFLOW_LAUNCH_SCRIPT_FN``: (Default: "launch_FV3LAM_wflow.sh")
    Name of the script that can be used to (re)launch the experiment's Rocoto workflow.
@@ -386,18 +386,6 @@ Verification Parameters
 ``GET_OBS``: (Default: "get_obs")
    Set the name of the Rocoto workflow task used to load proper module files for ``GET_OBS_*`` tasks. Users typically do not need to change this value. 
 
-``TN_VX``: (Default: "run_vx")
-   Set the name of the Rocoto workflow task used to load proper module files for ``VX_*`` tasks. Users typically do not need to change this value. 
-
-``TN_VX_ENSGRID``: (Default: "run_ensgridvx")
-   Set the name of the Rocoto workflow task that runs METplus grid-to-grid ensemble verification for 1-h accumulated precipitation. Users typically do not need to change this value. 
-
-``TN_VX_ENSGRID_PROB_REFC``: (Default: "run_ensgridvx_prob_refc")
-   Set the name of the Rocoto workflow task that runs METplus grid-to-grid verification for ensemble probabilities for composite reflectivity. Users typically do not need to change this value. 
-
-``MAXTRIES_VX_ENSGRID_PROB_REFC``: (Default: 1)
-   Maximum number of times to attempt ``TN_VX_ENSGRID_PROB_REFC``.
-
 
 .. _NCOModeParms:
 
@@ -427,80 +415,6 @@ A standard set of environment variables has been established for *nco* mode to s
 ``OPSROOT``: (Default: "")
   The operations root directory in *nco* mode.
 
-.. _workflow-switches:
-
-WORKFLOW SWITCHES Configuration Parameters
-=============================================
-
-These parameters set flags that determine whether various workflow tasks should be run. When non-default parameters are selected for the variables in this section, they should be added to the ``workflow_switches:`` section of the ``config.yaml`` file. Note that the ``TN_MAKE_GRID``, ``TN_MAKE_OROG``, and ``TN_MAKE_SFC_CLIMO`` are all :term:`cycle-independent` tasks, i.e., if they are run, they only run once at the beginning of the workflow before any cycles are run. 
-
-Baseline Workflow Tasks
---------------------------
-
-``RUN_TASK_MAKE_GRID``: (Default: true)
-   Flag that determines whether to run the grid file generation task (``TN_MAKE_GRID``). If this is set to true, the grid generation task is run and new grid files are generated. If it is set to false, then the scripts look for pre-generated grid files in the directory specified by ``GRID_DIR`` (see :numref:`Section %s <make-grid>` below). Valid values: ``True`` | ``False``
-
-``RUN_TASK_MAKE_OROG``: (Default: true)
-   Same as ``RUN_TASK_MAKE_GRID`` but for the orography generation task (``TN_MAKE_OROG``). Flag that determines whether to run the orography file generation task (``TN_MAKE_OROG``). If this is set to true, the orography generation task is run and new orography files are generated. If it is set to false, then the scripts look for pre-generated orography files in the directory specified by ``OROG_DIR`` (see :numref:`Section %s <make-orog>` below). Valid values: ``True`` | ``False``
-
-``RUN_TASK_MAKE_SFC_CLIMO``: (Default: true)
-   Same as ``RUN_TASK_MAKE_GRID`` but for the surface climatology generation task (``TN_MAKE_SFC_CLIMO``). Flag that determines whether to run the surface climatology file generation task (``TN_MAKE_SFC_CLIMO``). If this is set to true, the surface climatology generation task is run and new surface climatology files are generated. If it is set to false, then the scripts look for pre-generated surface climatology files in the directory specified by ``SFC_CLIMO_DIR`` (see :numref:`Section %s <make-sfc-climo>` below). Valid values: ``True`` | ``False``
-
-``RUN_TASK_GET_EXTRN_ICS``: (Default: true)
-   Flag that determines whether to run the ``TN_GET_EXTRN_ICS`` task.
-
-``RUN_TASK_GET_EXTRN_LBCS``: (Default: true)
-   Flag that determines whether to run the ``TN_GET_EXTRN_LBCS`` task.
-
-``RUN_TASK_MAKE_ICS``: (Default: true)
-   Flag that determines whether to run the ``TN_MAKE_ICS`` task.
-
-``RUN_TASK_MAKE_LBCS``: (Default: true)
-   Flag that determines whether to run the ``TN_MAKE_LBCS`` task.
-
-``RUN_TASK_RUN_FCST``: (Default: true)
-   Flag that determines whether to run the ``TN_RUN_FCST`` task.
-
-``RUN_TASK_RUN_POST``: (Default: true)
-   Flag that determines whether to run the ``TN_RUN_POST`` task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_RUN_PRDGEN``: (Default: false)
-   Flag that determines whether to run the ``TN_RUN_PRDGEN`` task. Valid values: ``True`` | ``False``
-
-.. _VXTasks:
-
-Verification Tasks
---------------------
-
-``RUN_TASK_GET_OBS_CCPA``: (Default: false)
-   Flag that determines whether to run the ``TN_GET_OBS_CCPA`` task, which retrieves the :term:`CCPA` hourly precipitation files used by METplus from NOAA :term:`HPSS`. See :numref:`Section %s <get-obs-ccpa>` for additional parameters related to this task.
-
-``RUN_TASK_GET_OBS_MRMS``: (Default: false)
-   Flag that determines whether to run the ``TN_GET_OBS_MRMS`` task, which retrieves the :term:`MRMS` composite reflectivity files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-mrms>` for additional parameters related to this task.
-
-``RUN_TASK_GET_OBS_NDAS``: (Default: false)
-   Flag that determines whether to run the ``TN_GET_OBS_NDAS`` task, which retrieves the :term:`NDAS` PrepBufr files used by METplus from NOAA HPSS. See :numref:`Section %s <get-obs-ndas>` for additional parameters related to this task.
-
-``RUN_TASK_VX_GRIDSTAT``: (Default: false)
-   Flag that determines whether to run the grid-stat verification task. The :ref:`MET Grid-Stat tool <grid-stat>` provides verification statistics for a matched forecast and observation grid. See :numref:`Section %s <VX-gridstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_POINTSTAT``: (Default: false)
-   Flag that determines whether to run the point-stat verification task. The :ref:`MET Point-Stat tool <point-stat>` provides verification statistics for forecasts at observation points (as opposed to over gridded analyses). See :numref:`Section %s <VX-pointstat>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_ENSGRID``: (Default: false)
-   Flag that determines whether to run the ensemble-stat verification for gridded data task. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Grid-Stat tool <grid-stat>`. See :numref:`Section %s <VX-ensgrid>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-``RUN_TASK_VX_ENSPOINT``: (Default: false)
-   Flag that determines whether to run the ensemble point verification task. If this flag is set, both ensemble-stat point verification and point verification of ensemble-stat output is computed. The :ref:`MET Ensemble-Stat tool <ensemble-stat>` provides verification statistics for ensemble forecasts and can be used in conjunction with the :ref:`MET Point-Stat tool <point-stat>`. See :numref:`Section %s <VX-enspoint>` for additional parameters related to this task. Valid values: ``True`` | ``False``
-
-.. COMMENT: COMMENT: Define "ensemble-stat verification for gridded data," "ensemble point verification," "ensemble-stat point verification," and "point verification of ensemble-stat output"?
-
-Plotting Task
-----------------
-
-``RUN_TASK_PLOT_ALLVARS:`` (Default: false)
-   Flag that determines whether to run python plotting scripts.
-
 .. _make-grid:
 
 MAKE_GRID Configuration Parameters
@@ -513,23 +427,8 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
 
-   ``TN_MAKE_GRID``: (Default: "make_grid")
-      Set the name of this :term:`cycle-independent` Rocoto workflow task. Users typically do not need to change this value. 
-
-   ``NNODES_MAKE_GRID``: (Default: 1)
-      Number of nodes to use for the job. 
-
-   ``PPN_MAKE_GRID``: (Default: 24)
-      Number of :term:`MPI` processes per node. 
-
-   ``WTIME_MAKE_GRID``: (Default: 00:20:00)
-      Maximum time for the task to complete. 
-
-   ``MAXTRIES_MAKE_GRID``: (Default: 2)
-      Maximum number of times to attempt the task.
-
    ``GRID_DIR``: (Default: "")
-      The directory containing pre-generated grid files when ``RUN_TASK_MAKE_GRID`` is set to false.
+      The directory containing pre-generated grid files when the ``MAKE_GRID`` task is not meant to run.
 
 .. _ESGgrid:
 
@@ -633,32 +532,19 @@ MAKE_OROG Configuration Parameters
 
 Non-default parameters for the ``make_orog`` task are set in the ``task_make_orog:`` section of the ``config.yaml`` file. 
 
-``TN_MAKE_OROG``: (Default: "make_orog")
-   Set the name of this :term:`cycle-independent` Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_MAKE_OROG``: (Default: 1)
-   Number of nodes to use for the job. 
-
-``PPN_MAKE_OROG``: (Default: 24)
-   Number of :term:`MPI` processes per node. 
-
-``WTIME_MAKE_OROG``: (Default: 00:20:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_OROG``: (Default: 2)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_MAKE_OROG``: (Default: "disabled")
    Intel Thread Affinity Interface for the ``make_orog`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity. Settings for the ``make_orog`` task is disabled because this task does not use parallelized code.
 
 ``OMP_NUM_THREADS_MAKE_OROG``: (Default: 6)
    The number of OpenMP threads to use for parallel regions.
 
+
+
 ``OMP_STACKSIZE_MAKE_OROG``: (Default: "2048m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
 ``OROG_DIR``: (Default: "")
-   The directory containing pre-generated orography files to use when ``TN_MAKE_OROG`` is set to false.
+   The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
 
 .. _make-sfc-climo:
 
@@ -666,21 +552,6 @@ MAKE_SFC_CLIMO Configuration Parameters
 ===========================================
 
 Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_make_sfc_climo:`` section of the ``config.yaml`` file. 
-
-``TN_MAKE_SFC_CLIMO``: "make_sfc_climo"
-   Set the name of this :term:`cycle-independent` Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_MAKE_SFC_CLIMO``: (Default: 2)
-   Number of nodes to use for the job. 
-
-``PPN_MAKE_SFC_CLIMO``: (Default: 24)
-   Number of :term:`MPI` processes per node. 
-
-``WTIME_MAKE_SFC_CLIMO``: (Default: 00:20:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_SFC_CLIMO``: (Default: 2)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_MAKE_SFC_CLIMO``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_sfc_climo`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
@@ -692,7 +563,7 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
    Controls the size of the stack for threads created by the OpenMP implementation.
 
 ``SFC_CLIMO_DIR``: (Default: "")
-   The directory containing pre-generated surface climatology files to use when ``TN_MAKE_SFC_CLIMO`` is set to false.
+   The directory containing pre-generated surface climatology files to use when the ``MAKE_SFC_CLIMO`` task is not meant to run.
 
 .. _task_get_extrn_ics:
 
@@ -707,21 +578,6 @@ Basic Task Parameters
 ---------------------------------
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
-
-``TN_GET_EXTRN_ICS``: (Default: "get_extrn_ics")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_GET_EXTRN_ICS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_EXTRN_ICS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_EXTRN_ICS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_EXTRN_ICS``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 ``EXTRN_MDL_NAME_ICS``: (Default: "FV3GFS")
    The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
@@ -791,21 +647,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``TN_GET_EXTRN_LBCS``: (Default: "get_extrn_lbcs")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_GET_EXTRN_LBCS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_EXTRN_LBCS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_EXTRN_LBCS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_EXTRN_LBCS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
    The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
@@ -862,21 +703,6 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
-``TN_MAKE_ICS``: (Default: "make_ics")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_MAKE_ICS``: (Default: 4)
-   Number of nodes to use for the job.
-
-``PPN_MAKE_ICS``: (Default: 12)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_MAKE_ICS``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_ICS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_MAKE_ICS``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_ics`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -889,7 +715,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 FVCOM Parameter
 -------------------
 ``USE_FVCOM``: (Default: false)
-   Flag that specifies whether to update surface conditions in FV3-:term:`LAM` with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to true, lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to true causes the executable ``process_FVCOM.exe`` in the ``TN_MAKE_ICS`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube`` during the ``make_ics`` task. Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. Valid values: ``True`` | ``False``
+   Flag that specifies whether to update surface conditions in FV3-:term:`LAM` with fields generated from the Finite Volume Community Ocean Model (:term:`FVCOM`). If set to true, lake/sea surface temperatures, ice surface temperatures, and ice placement will be overwritten using data provided by FVCOM. Setting ``USE_FVCOM`` to true causes the executable ``process_FVCOM.exe`` in the ``MAKE_ICS`` task to run. This, in turn, modifies the file ``sfc_data.nc`` generated by ``chgres_cube`` during the ``make_ics`` task. Note that the FVCOM data must already be interpolated to the desired FV3-LAM grid. Valid values: ``True`` | ``False``
 
 ``FVCOM_WCSTART``: (Default: "cold")
    Define if this is a "warm" start or a "cold" start. Setting this to "warm" will read in ``sfc_data.nc`` generated in a RESTART directory. Setting this to "cold" will read in the ``sfc_data.nc`` generated from ``chgres_cube`` in the ``make_ics`` portion of the workflow. Valid values: ``"cold"`` | ``"COLD"`` | ``"warm"`` | ``"WARM"``
@@ -905,21 +731,6 @@ MAKE_LBCS Configuration Parameters
 ======================================
 
 Non-default parameters for the ``make_lbcs`` task are set in the ``task_make_lbcs:`` section of the ``config.yaml`` file. 
-
-``TN_MAKE_LBCS``: (Default: "make_lbcs")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_MAKE_LBCS``: (Default: 4)
-   Number of nodes to use for the job.
-
-``PPN_MAKE_LBCS``: (Default: 12)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_MAKE_LBCS``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_MAKE_LBCS``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_MAKE_LBCS``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``make_lbcs`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
@@ -941,21 +752,6 @@ Basic Task Parameters
 ---------------------------------
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
-
-``TN_RUN_FCST``: (Default: "run_fcst")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_RUN_FCST``: (Default: "")
-   Number of nodes to use for the job. This is calculated in the workflow generation scripts, so there is no need to set it in the configuration file.
-
-``PPN_RUN_FCST``: (Default: "")
-   Number of :term:`MPI` processes per node. It will be calculated from ``NCORES_PER_NODE`` and ``OMP_NUM_THREADS`` in ``setup.py``.
-
-``WTIME_RUN_FCST``: (Default: 04:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_FCST``: (Default: 1)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_RUN_FCST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_fcst`` task. 
@@ -992,7 +788,7 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 .. _InlinePost:
 
 ``WRITE_DOPOST``: (Default: false)
-   Flag that determines whether to use the inline post option. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task (i.e., ``RUN_TASK_RUN_POST`` is set to false) in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
+   Flag that determines whether to use the inline post option. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
 Computational Parameters
 ----------------------------
@@ -1016,14 +812,14 @@ Write-Component (Quilting) Parameters
 -----------------------------------------
 
 .. note::
-   The :term:`UPP` (called by the ``TN_RUN_POST`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
+   The :term:`UPP` (called by the ``RUN_POST`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: true)
 
    .. attention::
       The regional grid requires the use of the write component, so users generally should not need to change the default value for ``QUILTING``. 
 
-   Flag that determines whether to use the write component for writing forecast output files to disk. If set to true, the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where ``HHH`` is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to false, then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to true when running the SRW App. If ``QUILTING`` is set to false, the ``TN_RUN_POST`` (meta)task cannot run because the :term:`UPP` code called by this task cannot process fields on the native grid. In that case, the ``TN_RUN_POST`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to true in the SRW App. Valid values: ``True`` | ``False``
+   Flag that determines whether to use the write component for writing forecast output files to disk. If set to true, the forecast model will output files named ``dynf$HHH.nc`` and ``phyf$HHH.nc`` (where ``HHH`` is the 3-digit forecast hour) containing dynamics and physics fields, respectively, on the write-component grid. For example, the output files for the 3rd hour of the forecast would be ``dynf$003.nc`` and ``phyf$003.nc``. (The regridding from the native FV3-LAM grid to the write-component grid is done by the forecast model.) If ``QUILTING`` is set to false, then the output file names are ``fv3_history.nc`` and ``fv3_history2d.nc``, and they contain fields on the native grid. Although the UFS Weather Model can run without quilting, the regional grid requires the use of the write component. Therefore, QUILTING should be set to true when running the SRW App. If ``QUILTING`` is set to false, the ``RUN_POST`` (meta)task cannot run because the :term:`UPP` code called by this task cannot process fields on the native grid. In that case, the ``RUN_POST`` (meta)task will be automatically removed from the Rocoto workflow XML. The :ref:`INLINE POST <InlinePost>` option also requires ``QUILTING`` to be set to true in the SRW App. Valid values: ``True`` | ``False``
 
 ``PRINT_ESMF``: (Default: false)
    Flag that determines whether to output extra (debugging) information from :term:`ESMF` routines. Note that the write component uses ESMF library routines to interpolate from the native forecast model grid to the user-specified output grid (which is defined in the model configuration file ``model_configure`` in the forecast run directory). Valid values: ``True`` | ``False``
@@ -1155,7 +951,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
 ``SFC_CLIMO_INPUT_DIR``: (Default: "")
-   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if ``RUN_TASK_MAKE_SFC_CLIMO: true``.
+   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
 
 ``SYMLINK_FIX_FILES``: (Default: true)
    Flag that indicates whether to symlink or copy fix files to the experiment directory. 
@@ -1169,21 +965,6 @@ Basic Task Parameters
 ---------------------------------
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
-
-``TN_RUN_POST``: (Default: "run_post")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_RUN_POST``: (Default: 2)
-   Number of nodes to use for the job. 
-
-``PPN_RUN_POST``: (Default: 24)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_RUN_POST``: (Default: 00:15:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_POST``: (Default: 2)
-   Maximum number of times to attempt the task.
 
 ``KMP_AFFINITY_RUN_POST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_post`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
@@ -1234,21 +1015,6 @@ Basic Task Parameters
 ---------------------------------
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task.
 
-``TN_RUN_PRDGEN``: (Default: "run_prdgen")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_RUN_PRDGEN``: (Default: 1) 
-   Number of nodes to use for the job.
-
-``PPN_RUN_PRDGEN``: (Default: 22)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_RUN_PRDGEN``: (Default: 00:30:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_RUN_PRDGEN``: (Default: 2)
-   Maximum number of times to attempt the task.
-
 ``KMP_AFFINITY_RUN_PRDGEN``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_prdgen`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -1267,554 +1033,10 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``TESTBED_FIELDS_FN``: (Default: "")
    The file which lists grib2 fields to be extracted for testbed files.  Empty string means no need to generate testbed files.
 
-
-.. _get-obs-ccpa:
-
-GET_OBS_CCPA Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_ccpa`` task are set in the ``task_get_obs_ccpa:`` section of the ``config.yaml`` file. 
-
-``TN_GET_OBS_CCPA``: (Default: "get_obs_ccpa")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
-
-``NNODES_GET_OBS_CCPA``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_CCPA``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_CCPA``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_CCPA``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _get-obs-mrms:
-
-GET_OBS_MRMS Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_mrms`` task are set in the ``task_get_obs_mrms:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
-
-``TN_GET_OBS_MRMS``: (Default: "get_obs_mrms")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_GET_OBS_MRMS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_MRMS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_MRMS``: (Default: 00:45:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_MRMS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _get-obs-ndas:
-
-GET_OBS_NDAS Configuration Parameters
-========================================
-
-Non-default parameters for the ``get_obs_ndas`` task are set in the ``task_get_obs_ndas:`` section of the ``config.yaml`` file. See :numref:`Section %s <VXTasks>` for more information about the verification tasks. 
-
-``TN_GET_OBS_NDAS``: (Default: "get_obs_ndas")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_GET_OBS_NDAS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_GET_OBS_NDAS``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_GET_OBS_NDAS``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_GET_OBS_NDAS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-.. _VX-gridstat:
-
-VX_GRIDSTAT Configuration Parameters
-========================================
-
-Non-default parameters for the ``run_gridstatvx`` task are set in the ``task_run_vx_gridstat:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT``: (Default: "run_gridstatvx")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_REFC Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_refc`` task are set in the ``task_run_vx_gridstat_refc:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT_REFC``: (Default: "run_gridstatvx_refc")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_REFC``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_RETOP Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_retop`` task are set in the ``task_run_vx_gridstat_retop:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT_RETOP``: (Default: "run_gridstatvx_retop")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_03h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_03h`` task are set in the ``task_run_vx_gridstat_03h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT_03h``: (Default: "run_gridstatvx_03h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_06h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_06h`` task are set in the ``task_run_vx_gridstat_06h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT_06h``: (Default: "run_gridstatvx_06h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_GRIDSTAT_24h Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_gridstatvx_24h`` task are set in the ``task_run_vx_gridstat_24h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_GRIDSTAT_24h``: (Default: "run_gridstatvx_24h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_GRIDSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_GRIDSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_GRIDSTAT``: (Default: 02:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_GRIDSTAT_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-pointstat:
-
-VX_POINTSTAT Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_pointstatvx`` task are set in the ``task_run_vx_pointstat:`` section of the ``config.yaml`` file. 
-
-``TN_VX_POINTSTAT``: (Default: "run_pointstatvx")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_POINTSTAT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_POINTSTAT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_POINTSTAT``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_POINTSTAT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-ensgrid:
-
-VX_ENSGRID Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_*`` tasks are set in the ``task_run_vx_ensgrid:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_03h``: (Default: "run_ensgridvx_03h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``MAXTRIES_VX_ENSGRID_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``TN_VX_ENSGRID_06h``: (Default: "run_ensgridvx_06h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``MAXTRIES_VX_ENSGRID_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``TN_VX_ENSGRID_24h``: (Default: "run_ensgridvx_24h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``MAXTRIES_VX_ENSGRID_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``TN_VX_ENSGRID_RETOP``: (Default: "run_ensgridvx_retop")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``MAXTRIES_VX_ENSGRID_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``TN_VX_ENSGRID_PROB_RETOP``: (Default: "run_ensgridvx_prob_retop")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``MAXTRIES_VX_ENSGRID_PROB_RETOP``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-``NNODES_VX_ENSGRID``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_REFC Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_refc`` task are set in the ``task_run_vx_ensgrid_refc:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_REFC``: (Default: "run_ensgridvx_refc")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_REFC``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN Configuration Parameters
-=============================================
-
-Non-default parameters for the ``run_ensgridvx_mean`` task are set in the ``task_run_vx_ensgrid_mean:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_MEAN``: (Default: "run_ensgridvx_mean")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_03h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_03h`` task are set in the ``task_run_vx_ensgrid_mean_03h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_MEAN_03h``: (Default: "run_ensgridvx_mean_03h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_06h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_06h`` task are set in the ``task_run_vx_ensgrid_mean_06h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_MEAN_06h``: (Default: "run_ensgridvx_mean_06h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_MEAN_24h Configuration Parameters
-===============================================
-
-Non-default parameters for the ``run_ensgridvx_mean_24h`` task are set in the ``task_run_vx_ensgrid_mean_24h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_MEAN_24h``: (Default: "run_ensgridvx_mean_24h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_MEAN_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB Configuration Parameters
-============================================
-
-Non-default parameters for the ``run_ensgridvx_prob`` task are set in the ``task_run_vx_ensgrid_prob:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_PROB``: (Default: "run_ensgridvx_prob")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_03h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_03h`` task are set in the ``task_run_vx_ensgrid_prob_03h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_PROB_03h``: (Default: "run_ensgridvx_prob_03h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_03h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_06h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_06h`` task are set in the ``task_run_vx_ensgrid_prob_06h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_PROB_06h``: (Default: "run_ensgridvx_prob_06h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_06h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSGRID_PROB_24h Configuration Parameters
-================================================
-
-Non-default parameters for the ``run_ensgridvx_prob_24h`` task are set in the ``task_run_vx_ensgrid_prob_24h:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSGRID_PROB_24h``: (Default: "run_ensgridvx_prob_24h")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSGRID_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSGRID_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSGRID_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSGRID_PROB_24h``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-.. _VX-enspoint:
-
-VX_ENSPOINT Configuration Parameters
-========================================
-
-Non-default parameters for the ``run_enspointvx`` task are set in the ``task_run_vx_enspoint:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSPOINT``: (Default: "run_enspointvx")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSPOINT``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSPOINT_MEAN Configuration Parameters
-==============================================
-
-Non-default parameters for the ``run_enspointvx_mean`` task are set in the ``task_run_vx_enspoint_mean:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSPOINT_MEAN``: (Default: "run_enspointvx_mean")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSPOINT_MEAN``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT_MEAN``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT_MEAN``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT_MEAN``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-
-VX_ENSPOINT_PROB Configuration Parameters
-==============================================
-
-Non-default parameters for the ``run_enspointvx_prob`` task are set in the ``task_run_vx_enspoint_prob:`` section of the ``config.yaml`` file. 
-
-``TN_VX_ENSPOINT_PROB``: (Default: "run_enspointvx_prob")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_VX_ENSPOINT_PROB``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_VX_ENSPOINT_PROB``: (Default: 1)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_VX_ENSPOINT_PROB``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_VX_ENSPOINT_PROB``: (Default: 1)
-   Maximum number of times to attempt the task.
-
 .. _PlotVars:
 
 PLOT_ALLVARS Configuration Parameters
 ========================================
-
-Non-default parameters for the ``plot_allvars`` task are set in the ``task_plot_allvars:`` section of the ``config.yaml`` file. 
-
-Basic Task Parameters
---------------------------
-
-For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
-
-``TN_PLOT_ALLVARS``: (Default: "plot_allvars")
-   Set the name of this Rocoto workflow task. Users typically do not need to change this value.
-
-``NNODES_PLOT_ALLVARS``: (Default: 1)
-   Number of nodes to use for the job.
-
-``PPN_PLOT_ALLVARS``: (Default: 24)
-   Number of :term:`MPI` processes per node.
-
-``WTIME_PLOT_ALLVARS``: (Default: 01:00:00)
-   Maximum time for the task to complete.
-
-``MAXTRIES_PLOT_ALLVARS``: (Default: 1)
-   Maximum number of times to attempt the task.
-
-Additional Parameters
-------------------------
 
 Typically, the following parameters must be set explicitly by the user in the configuration file (``config.yaml``) when executing the plotting tasks. 
 

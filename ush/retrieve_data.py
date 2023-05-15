@@ -35,6 +35,7 @@ import sys
 import glob
 from textwrap import dedent
 import time
+import urllib.request
 from copy import deepcopy
 
 import yaml
@@ -99,6 +100,14 @@ def copy_file(source, destination, copy_cmd):
         return False
     return True
 
+def check_file(url):
+
+    """
+    Check that a file exists at the expected URL. Return boolean value
+    based on the response.
+    """
+    status_code = urllib.request.urlopen(url).getcode()
+    return status_code == 200
 
 def download_file(url):
 
@@ -399,7 +408,11 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
                     elif method == "download":
 
-                        retrieved = download_file(input_loc)
+                        if cla.check_file:
+                            retrieved = check_file(input_loc)
+
+                        else:
+                            retrieved = download_file(input_loc)
                         # Wait a bit before trying the next download.
                         # Seems to reduce the occurrence of timeouts
                         # when downloading from AWS
@@ -853,7 +866,7 @@ def main(argv):
         if not unavailable:
             # All files are found. Stop looking!
             # Write a variable definitions file for the data, if requested
-            if cla.summary_file:
+            if cla.summary_file and not cla.check_file:
                 write_summary_file(cla, data_store, file_templates)
             break
 
@@ -1028,6 +1041,13 @@ def parse_args(argv):
         "--summary_file",
         help="Name of the summary file to be written to the output \
         directory",
+    )
+    parser.add_argument(
+        "--check_file",
+        action="store_true",
+        help="Use this flag to check the existence of requested files, \
+         but don't try to download them. Works with download protocol \
+         only",
     )
     return parser.parse_args(argv)
 

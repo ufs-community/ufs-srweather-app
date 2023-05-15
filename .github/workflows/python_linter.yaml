@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install python3 python3-pip netcdf-bin
-          sudo pip3 install pylint==2.6
+          sudo pip3 install pylint==2.16
 
       # Run python unittests
       - name: Lint the test directory

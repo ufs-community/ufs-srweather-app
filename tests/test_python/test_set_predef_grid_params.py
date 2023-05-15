@@ -14,14 +14,14 @@ class Testing(unittest.TestCase):
         in the parameter dict."""
         test_dir = os.path.dirname(os.path.abspath(__file__))
         ushdir = os.path.join(test_dir, "..", "..", "ush")
-        fcst_config = dict(
-            PREDEF_GRID_NAME="RRFS_CONUS_3km",
-            QUILTING=False,
-            DT_ATMOS=36,
-            LAYOUT_X=18,
-            LAYOUT_Y=36,
-            BLOCKSIZE=28,
-        )
+        fcst_config = {
+            "PREDEF_GRID_NAME": "RRFS_CONUS_3km",
+            "QUILTING": False,
+            "DT_ATMOS": 36,
+            "LAYOUT_X": 18,
+            "LAYOUT_Y": 36,
+            "BLOCKSIZE": 28,
+        }
         params_dict = set_predef_grid_params(
             ushdir,
             fcst_config["PREDEF_GRID_NAME"],
@@ -29,14 +29,14 @@ class Testing(unittest.TestCase):
         )
         self.assertEqual(params_dict["GRID_GEN_METHOD"], "ESGgrid")
         self.assertEqual(params_dict["ESGgrid_LON_CTR"], -97.5)
-        fcst_config = dict(
-            PREDEF_GRID_NAME="RRFS_CONUS_3km",
-            QUILTING=True,
-            DT_ATMOS=36,
-            LAYOUT_X=18,
-            LAYOUT_Y=36,
-            BLOCKSIZE=28,
-        )
+        fcst_config = {
+            "PREDEF_GRID_NAME": "RRFS_CONUS_3km",
+            "QUILTING": True,
+            "DT_ATMOS": 36,
+            "LAYOUT_X": 18,
+            "LAYOUT_Y": 36,
+            "BLOCKSIZE": 28,
+        }
         params_dict = set_predef_grid_params(
             ushdir,
             fcst_config["PREDEF_GRID_NAME"],
