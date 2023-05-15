@@ -309,6 +309,11 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
+# Store the settings in a temporary file
+tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
 #
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
