@@ -24,10 +24,10 @@ class Testing(unittest.TestCase):
             halo_width=6,
             delx=3000.0,
             dely=3000.0,
-            constants=dict(
-                RADIUS_EARTH=6371200.0,
-                DEGS_PER_RADIAN=57.29577951308232087679,
-            ),
+            constants={
+                "RADIUS_EARTH": 6371200.0,
+                "DEGS_PER_RADIAN": 57.29577951308232087679,
+            },
         )
 
         self.assertEqual(
