@@ -40,6 +40,7 @@ class Testing(unittest.TestCase):
 
         # Create a space to link that data into. It need not be in the
         # same space.
+        # pylint: disable=consider-using-with
         self.tmp_dir = tempfile.TemporaryDirectory(
             dir=os.path.abspath("."),
             prefix="expt_fix_lam",

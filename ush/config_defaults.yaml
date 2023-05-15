@@ -881,6 +881,15 @@ workflow:
   # An array containing the hours of the day at which the product cycle starts,
   # from cold start input or from spin-up cycle forcast
   #
+  # BOUNDARY_LEN_HRS
+  # The length of boundary condition for normal forecast, in integer hours.
+  #
+  # BOUNDARY_LONG_LEN_HRS
+  # The length of boundary condition for long forecast, in integer hours.
+  #
+  # BOUNDARY_PROC_GROUP_NUM
+  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -893,6 +902,9 @@ workflow:
 
   CYCL_HRS_SPINSTART: []
   CYCL_HRS_PRODSTART: []
+  BOUNDARY_LEN_HRS: 0
+  BOUNDARY_LONG_LEN_HRS: 0
+  BOUNDARY_PROC_GROUP_NUM: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1028,6 +1040,12 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  #   ${NWGES}/yyyymmddhh
+  # 
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -1038,6 +1056,7 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
+
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'
@@ -1047,6 +1066,12 @@ nco:
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  # New additions from RRFS_dev1
+  #
+  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES_BASEDIR: '{{ NWGES }}'
 
   #
   #-----------------------------------------------------------------------
@@ -1145,11 +1170,18 @@ rrfs:
   #
   #-----------------------------------------------------------------------
   #
+  # Set parameters associated with running retrospective experiments.  Definitions:
+  #
+  # DO_RRFS_DEV:
+  # Flag to turn on RRFS dev workflow. Should be removed
+  # in the future once SRW and RRFS dev workflows are completely integrated
+  #
   # DO_NLDN_LGHT
   #     Flag turn on processing NLDN NetCDF lightning data  
   #
   #-----------------------------------------------------------------------
   #
+  DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
   DO_NLDN_LGHT: false
 
 #----------------------------
@@ -1587,6 +1619,26 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # LBCS_SEARCH_HRS:
+  #  When search boundary conditions tasks from previous cycles in prep_cyc step,
+  #  For example: 0 means search start for the same cycle lbcs task.
+  #               1 means search start for 1-h previous cycle lbcs task.
+  #               2 means search start for 2-h previous cycle lbcs task.
+  #
+  # EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS:
+  #  When search boundary conditions from previous cycles in prep_start step,
+  #  the search will start at cycle before (this parameter) of current cycle.
+  #  For example: 0 means search start at the same cycle lbcs directory.
+  #               1 means search start at 1-h previous cycle  lbcs directory.
+  #               2 means search start at 2-h previous cycle  lbcs directory.
+  #
+  #-----------------------------------------------------------------------
+  #
+  LBCS_SEARCH_HRS: 6
+  EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS: 0
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_SYSBASEDIR_LBCS:
