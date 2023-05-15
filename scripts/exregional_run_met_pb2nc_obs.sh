@@ -16,6 +16,7 @@ source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
+. $USHdir/get_met_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -30,7 +31,7 @@ source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -42,15 +43,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the MET/METplus tool this task will call.  (Note: "sc"
-# is for "snake case", i.e. using underscores as separators, and "pc" is
-# for "Pascal case", i.e. no separators but first letter of each word
-# capitalized.)
+# Get the name of the MET/METplus tool in different formats that may be
+# needed from the global variable MET_TOOL.
 #
 #-----------------------------------------------------------------------
 #
-met_tool_sc="pb2nc"
-met_tool_pc="Pb2nc"
+get_met_metplus_tool_name \
+  generic_tool_name="${MET_TOOL}" \
+  outvarname_met_tool_name="met_tool_name" \
+  outvarname_metplus_tool_name="metplus_tool_name"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,7 +64,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus tool ${met_tool_pc}
+This is the ex-script for the task that runs the METplus tool ${metplus_tool_name}
 to convert NDAS prep buffer observation files to NetCDF format.
 ========================================================================"
 #
@@ -106,13 +107,25 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+    DOT_ENSMEM_OR_NULL=".$ENSMEM"
+  else
+    DOT_ENSMEM_OR_NULL=""
+  fi
+else
+  DOT_ENSMEM_OR_NULL=""
+fi
+
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
 
-OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"
+OUTPUT_BASE="${vx_output_basedir}"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
 OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
-STAGING_DIR="${OUTPUT_BASE}/stage/${met_tool_pc}_obs"
+STAGING_DIR="${OUTPUT_BASE}/stage/${metplus_tool_name}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -186,16 +199,25 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${met_tool_pc}_obs"
+metplus_config_tmpl_fn="${metplus_tool_name}_obs"
 #
-# If operating on observation files, 
 # Note that we append the cycle date to the name of the configuration
 # file because we are considering only observations when using Pb2NC, so
 # the output files from METplus are not placed under cycle directories.
 # Thus, another method is necessary to associate the configuration file
 # with the cycle for which it is used.
 #
-metplus_config_fn="${metplus_config_tmpl_fn}_$CDATE"
+# Note also that if considering an ensemble forecast, we include the
+# ensemble member name to the config file name.  This is necessary in
+# NCO mode (i.e. when RUN_ENVIR = "nco") because in that mode, the
+# directory tree under which the configuration file is placed does not
+# contain member information, so the file names must include it.  It is
+# not necessary in community mode (i.e. when RUN_ENVIR = "community")
+# because in that case, the directory structure does contain the member
+# information, but we still include that info in the file name so that
+# the behavior in the two modes is as similar as possible.
+#
+metplus_config_fn="${metplus_config_tmpl_fn}_${CDATE}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -272,7 +294,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #
@@ -283,7 +305,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool on observations of type: ${OBTYPE}"
+Calling METplus to run MET's ${met_tool_name} tool on observations of type: ${OBTYPE}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -300,7 +322,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${met_tool_pc} tool completed successfully.
+METplus ${metplus_tool_name} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

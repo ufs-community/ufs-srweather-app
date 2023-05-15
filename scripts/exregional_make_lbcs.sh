@@ -99,16 +99,6 @@ fi
 DATA="${DATA}/tmp_LBCS"
 mkdir_vrfy -p "$DATA"
 cd_vrfy $DATA
-
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
-LBC_SPEC_FCST_HRS=()
-for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
-  LBC_SPEC_FCST_HRS+=("$i_lbc")
-done
 #
 #-----------------------------------------------------------------------
 #
@@ -132,7 +122,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP")
     if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
@@ -368,7 +359,12 @@ fi
 #-----------------------------------------------------------------------
 #
 num_fhrs="${#EXTRN_MDL_FHRS[@]}"
-for (( i=0; i<${num_fhrs}; i++ )); do
+bcgrp10=${bcgrp#0}
+bcgrpnum10=${bcgrpnum#0}
+for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
+  i=$(( ii + bcgrp10 ))
+  if [ ${i} -lt ${num_fhrs} ]; then
+    echo " group ${bcgrp10} processes member ${i}"
 #
 # Get the forecast hour of the external model.
 #
@@ -528,9 +524,22 @@ located in the following directory:
 # the forecast hour of the FV3-LAM (which is not necessarily the same as
 # that of the external model since their start times may be offset).
 #
-  fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
+  lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
+  fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
+  fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
   mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+  ln_vrfy -sf ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc \
+          ${INPUT_DATA_NWGES}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
+
+  fi
 done
 #
 #-----------------------------------------------------------------------

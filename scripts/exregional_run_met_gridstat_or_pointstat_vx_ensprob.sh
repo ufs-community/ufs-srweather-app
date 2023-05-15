@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_ensgrid_prob|task_run_vx_enspoint_prob|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -65,10 +65,8 @@ Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
 This is the ex-script for the task that runs the METplus ${metplus_tool_name}
-tool to combine hourly accumulated precipitation (APCP) data to generate
-files containing multi-hour accumulated precipitation (e.g. 3-hour, 6-
-hour, 24-hour).  The input files can come from either observations or
-a forecast.
+tool to perform verification of the specified field (VAR) on the ensemble
+frequencies/probabilities.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -105,74 +103,60 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
-# If performing forecast ensemble verification, get the time lag (if any)
-# of the current ensemble forecast member.  The time lag is the duration
-# (in units of seconds) by which the current forecast member was initialized
-# before the current cycle date and time (with the latter specified by
-# CDATE).  For example, a time lag of 3600 means that the current member
-# was initialized 1 hour before the current CDATE, while a time lag of 0
-# means the current member was initialized on CDATE.
-#
-# Note that if we're not running ensemble verification (i.e. if we're
-# running verification for a single deterministic forecast), the time
-# lag gets set to 0.
-#
-#-----------------------------------------------------------------------
-#
-time_lag="0"
-if [ "${obs_or_fcst}" = "fcst" ]; then
-  time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because
-# bash's $((...)) arithmetic operator can't handle floats well.
-  time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set paths and file templates for input to and output from the MET/
 # METplus tool to be run as well as other file/directory parameters.
 #
 #-----------------------------------------------------------------------
 #
-vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
-    DOT_ENSMEM_OR_NULL=".$ENSMEM"
-  else
-    DOT_ENSMEM_OR_NULL=""
-  fi
+  slash_cdate_or_null=""
 else
-  DOT_ENSMEM_OR_NULL=""
+  slash_cdate_or_null="/${CDATE}"
 fi
 
-OBS_INPUT_DIR=""
-OBS_INPUT_FN_TEMPLATE=""
-FCST_INPUT_DIR=""
-FCST_INPUT_FN_TEMPLATE=""
+if [ "${grid_or_point}" = "grid" ]; then
 
-if [ "${obs_or_fcst}" = "obs" ]; then
+  OBS_INPUT_FN_TEMPLATE=""
+  if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
+    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
+  else
+    OBS_INPUT_DIR="${OBS_DIR}"
+    case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
+      "APCP01h")
+        OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
+        ;;
+      "REFC")
+        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+        ;;
+      "RETOP")
+        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+        ;;
+    esac
+    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
+  fi
+# Keep for when splitting GenEnsProd from EnsembleStat.
+#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
+#  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
 
-  OBS_INPUT_DIR="${OBS_DIR}"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )
+elif [ "${grid_or_point}" = "point" ]; then
 
-  OUTPUT_BASE="${vx_output_basedir}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-
-elif [ "${obs_or_fcst}" = "fcst" ]; then
-
-  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
-
-  OUTPUT_BASE="${vx_output_basedir}/${CDATE}/mem${ENSMEM_INDX}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_fcst"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+  OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+# Keep for when splitting GenEnsProd from EnsembleStat.
+#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
+#  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
 
 fi
+
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_ensprob"
+STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensprob"
 #
 #-----------------------------------------------------------------------
 #
@@ -180,22 +164,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${obs_or_fcst}" = "obs" ]; then
-  base_dir="${OBS_INPUT_DIR}"
-  fn_template="${OBS_INPUT_FN_TEMPLATE}"
-elif [ "${obs_or_fcst}" = "fcst" ]; then
-  base_dir="${FCST_INPUT_DIR}"
-  fn_template="${FCST_INPUT_FN_TEMPLATE}"
-fi
-
 set_vx_fhr_list \
   cdate="${CDATE}" \
   fcst_len_hrs="${FCST_LEN_HRS}" \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
-  base_dir="${base_dir}" \
-  fn_template="${fn_template}" \
-  check_hourly_files="TRUE" \
+  base_dir="${OBS_INPUT_DIR}" \
+  fn_template="${OBS_INPUT_FN_TEMPLATE}" \
+  check_hourly_files="FALSE" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -217,6 +193,15 @@ if [ ! -d "${OBS_DIR}" ]; then
 OBS_DIR does not exist or is not a directory:
   OBS_DIR = \"${OBS_DIR}\""
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set variable containing accumulation period without leading zero
+# padding.  This may be needed in the METplus configuration files.
+#
+#-----------------------------------------------------------------------
+#
+ACCUM_NO_PAD=$( printf "%0d" "${ACCUM_HH}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -252,26 +237,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-uscore_ensmem_name_or_null=""
-if [ "${obs_or_fcst}" = "fcst" ]; then
-  uscore_ensmem_name_or_null="_mem${ENSMEM_INDX}"
-fi
-#
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${metplus_tool_name}_${obs_or_fcst}"
-metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}${uscore_ensmem_name_or_null}"
-metplus_log_fn="${metplus_config_fn}_$CDATE"
-#
-# If operating on observation files, append the cycle date to the name
-# of the configuration file because in this case, the output files from
-# METplus are not placed under cycle directories (so another method is
-# necessary to associate the configuration file with the cycle for which
-# it is used).
-#
-if [ "${obs_or_fcst}" = "obs" ]; then
-  metplus_config_fn="${metplus_log_fn}"
+if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
+# Haven't combined the METplus conf jinja template files for APCP > 01h
+# for probabilistic ensemble vx tasks yet...
+#  metplus_config_tmpl_fn="APCPgt01h"
+  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+else
+  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi
+metplus_config_tmpl_fn="${metplus_tool_name}_ensprob_${metplus_config_tmpl_fn}"
+metplus_config_fn="${metplus_tool_name}_ensprob_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #

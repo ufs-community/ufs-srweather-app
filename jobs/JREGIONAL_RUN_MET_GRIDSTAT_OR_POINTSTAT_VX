@@ -3,8 +3,8 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs METplus for grid-stat on the UPP output files by 
-# initialization time for all forecast hours for gridded analysis.
+# This script runs the METplus GridStat or PointStat tool for deterministic
+# verification.
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid_prob" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_gridstat" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -52,18 +52,19 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs METplus for grid-stat
-on gridded fields by initialization time for all forecast hours.
+This is the J-job script for the task that runs MET/METplus's GridStat
+or PointStat tool to perform deterministic verification on a specified
+field (or group of fields).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_met_gridstat_vx_ensprob.sh || \
+$SCRIPTSdir/exregional_run_met_gridstat_or_pointstat_vx.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

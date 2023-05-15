@@ -16,7 +16,7 @@ from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 
 class Testing(unittest.TestCase):
     """ Define the tests """
-    def test_set_FV3nml_sfc_climo_filenames(self): #pylint: disable=no-self-use
+    def test_set_FV3nml_sfc_climo_filenames(self):
         """ Call the function and don't raise an Exception. """
         set_FV3nml_sfc_climo_filenames()
 
@@ -29,6 +29,7 @@ class Testing(unittest.TestCase):
         PARMdir = os.path.join(USHdir, "..", "parm")
 
         # Create a temporary experiment directory structure
+        # pylint: disable=consider-using-with
         self.tmp_dir = tempfile.TemporaryDirectory(
             dir=os.path.dirname(__file__),
             prefix="expt",

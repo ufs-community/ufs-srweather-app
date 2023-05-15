@@ -3,8 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs METplus for ensemble-stat on the UPP output files by 
-# initialization time for all forecast hours for gridded analysis.
+#
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +16,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_vx_ensgrid_mean" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -52,18 +51,19 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs METplus for ensemble-stat
-on gridded fields by initialization time for all forecast hours.
+This is the J-job script for the task that runs MET/METplus's GridStat
+or PointStat tool to perform verification on the ensemble mean of a
+specified field (or group of fields).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
 # Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# bles.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_met_ensemblestat_vx_grid.sh || \
+$SCRIPTSdir/exregional_run_met_gridstat_or_pointstat_vx_ensmean.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

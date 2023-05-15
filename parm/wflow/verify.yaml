@@ -12,8 +12,6 @@ default_task_verify: &default_task
     LOGDIR: !cycstr "&LOGDIR;"
     nprocs: '{{ parent.nnodes * parent.ppn }}'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
-    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-    ENSMEM_INDX: "#mem#"
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
@@ -70,6 +68,7 @@ task_run_MET_Pb2nc_obs:
     obs_or_fcst: obs
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
+    MET_TOOL: 'PB2NC'
   dependency:
     and:
       datadep:
@@ -84,8 +83,6 @@ task_run_MET_Pb2nc_obs:
             task: get_obs_ndas
 
 metatask_vx_ens_member:
-  attrs:
-    mode: serial
   var:
     mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_GridStat_MRMS_mem#mem#:
@@ -93,12 +90,16 @@ metatask_vx_ens_member:
       VAR: REFC RETOP
     task_run_MET_GridStat_vx_#VAR#_mem#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
         ACCUM_HH: '01'
+        MET_TOOL: 'GRIDSTAT'
+        OBTYPE: 'MRMS'
+        ENSMEM_INDX: "#mem#"
+        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
         and:
@@ -136,15 +137,23 @@ metatask_vx_ens_member:
       VAR: SFC UPA
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_POINTSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&NDAS_OBS_DIR;'
         VAR: '#VAR#'
+        MET_TOOL: 'POINTSTAT'
+        OBTYPE: 'NDAS'
+        ACCUM_HH: '01'
+        ENSMEM_INDX: "#mem#"
+        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 01:00:00
       dependency:
         and:
+          taskdep_pb2nc:
+            attrs:
+              task: run_MET_Pb2nc_obs
           or_do_post:
             <<: *post_files_exist
           or_get_obs: # Get obs complete if turned on
@@ -161,8 +170,6 @@ metatask_vx_ens_member:
                   task: get_obs_ndas
 
 metatask_GridStat_APCP_acc:
-  attrs:
-    mode: serial
   var:
     ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
     FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
@@ -181,6 +188,7 @@ metatask_GridStat_APCP_acc:
       obs_or_fcst: obs
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
+      MET_TOOL: 'PCPCOMBINE'
     dependency:
       or:
         not:
@@ -211,6 +219,9 @@ metatask_GridStat_APCP_acc:
         obs_or_fcst: fcst
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
+        MET_TOOL: 'PCPCOMBINE'
+        ENSMEM_INDX: "#mem#"
+        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       dependency:
         or_do_post:
           <<: *post_files_exist
@@ -219,13 +230,17 @@ metatask_GridStat_APCP_acc:
       <<: *default_task
       attrs:
         maxtries: '2'
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_VX"'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
       envars:
         <<: *default_vars
         FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
         ACCUM_HH: '#ACCUM_HR#'
+        MET_TOOL: 'GRIDSTAT'
+        OBTYPE: 'CCPA'
+        ENSMEM_INDX: "#mem#"
+        SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
         and:

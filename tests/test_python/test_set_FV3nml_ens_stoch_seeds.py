@@ -33,6 +33,7 @@ class Testing(unittest.TestCase):
         PARMdir = os.path.join(USHdir, "..", "parm")
 
         # Create an temporary experiment directory
+        # pylint: disable=consider-using-with
         self.tmp_dir = tempfile.TemporaryDirectory(
             dir=os.path.dirname(__file__),
             prefix="expt",

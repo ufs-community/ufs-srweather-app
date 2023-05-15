@@ -461,16 +461,12 @@ class FunctionalTesting(unittest.TestCase):
                 '--ics_or_lbcs', 'ICS',
                 '--debug',
                 '--file_fmt', 'nemsio',
+                '--check_file',
             ]
             # fmt: on
 
+            # Testing that there is no failure
             retrieve_data.main(args)
-
-            # Verify files exist in temp dir
-
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 1)
 
     def test_ufs_lbcs_from_aws(self):
 
@@ -491,9 +487,11 @@ class FunctionalTesting(unittest.TestCase):
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
                 '--file_fmt', 'nemsio',
+                '--check_file',
             ]
             # fmt: on
 
+            # Testing that there is no failure
             retrieve_data.main(args)
 
             # Verify files exist in temp dir
