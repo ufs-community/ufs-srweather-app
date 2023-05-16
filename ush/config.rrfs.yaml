@@ -1,6 +1,6 @@
 metadata:
   description: >-
-    Work-in-progress prototype for RRFS configuration file
+    Work-in-progress prototype for DA cycling configuration file
 user:
   RUN_ENVIR: community
   MACHINE: hera
@@ -13,8 +13,8 @@ platform:
   NDAS_OBS_DIR: ""
 workflow:
   USE_CRON_TO_RELAUNCH: false
-  EXPT_SUBDIR: test_rrfs_beta
-  CCPP_PHYS_SUITE: FV3_RRFS_v1beta
+  EXPT_SUBDIR: test_da_cycling
+  CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2022072006'
   DATE_LAST_CYCL: '2022072006'
