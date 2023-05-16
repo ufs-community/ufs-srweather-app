@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 import logging
 from textwrap import dedent
 

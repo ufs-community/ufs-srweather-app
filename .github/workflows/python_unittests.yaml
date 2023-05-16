@@ -10,6 +10,9 @@ on:
       - 'release/*'
   workflow_dispatch:
 
+env:
+  UNIT_TEST: True
+
 defaults:
   run:
     shell: bash
@@ -35,10 +38,7 @@ jobs:
       - name: Run python unittests
         run: |
           ./manage_externals/checkout_externals ufs-weather-model
-          cd ush
-          python3 -m unittest -b python_utils/test_python_utils.py
           # exclude test_retrieve_data that is tested in functional test
-          files=$(find . -maxdepth 1 -name '*.py' -a ! -name 'test_retrieve_data.py' -exec basename {} \;)
-          files=$(echo $(echo "${files[@]}"))
-          python3 -m unittest -b ${files[@]}
+          export PYTHONPATH=${PWD}/ush
+          python3 -m unittest -b tests/test_python/*.py
 

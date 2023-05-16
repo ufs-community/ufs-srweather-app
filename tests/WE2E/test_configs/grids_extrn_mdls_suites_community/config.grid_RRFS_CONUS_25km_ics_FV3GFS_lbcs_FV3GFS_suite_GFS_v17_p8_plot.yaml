@@ -1,0 +1,27 @@
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    can produce graphics on the RRFS_CONUS_25km grid using the GFS_v17_p8
+    physics suite with ICs and LBCs derived from the FV3GFS.
+    Also tests the capability to write restart files.
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_GFS_v17_p8
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2019070100'
+  DATE_LAST_CYCL: '2019070100'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 3
+  USE_USER_STAGED_EXTRN_FILES: true
+task_run_fcst:
+  RESTART_INTERVAL: 1 2 5

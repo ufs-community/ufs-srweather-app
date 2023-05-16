@@ -70,11 +70,25 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   file_set="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
-  if [ "${FCST_LEN_HRS}" = "-1" ]; then
-    CYCLE_IDX=$(( ${cyc} / ${INCR_CYCL_FREQ} ))
+
+  if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+    cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+    CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
     FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
   fi
-  last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
+  end_hr=$FCST_LEN_HRS
+  if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
+     end_hr=$BOUNDARY_LEN_HRS
+  fi
+  # Download 0th hour lbcs if requested for it, mostly for DA
+  if [ ${NEED_ALL_LBCS} = "TRUE" ]; then
+    first_time=$((TIME_OFFSET_HRS))
+  else
+    first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
+  fi
+  last_time=$((TIME_OFFSET_HRS + end_hr))
+
+
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
   if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then

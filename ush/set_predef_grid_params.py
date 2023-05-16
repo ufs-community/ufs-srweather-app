@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
 from textwrap import dedent
 
@@ -27,7 +26,7 @@ def set_predef_grid_params(USHdir, grid_name, quilting):
     except KeyError:
         errmsg = dedent(
             f"""
-            PREDEF_GRID_NAME = {predef_grid_name} not found in predef_grid_params.yaml
+            PREDEF_GRID_NAME = {grid_name} not found in predef_grid_params.yaml
             Check your config file settings."""
         )
         raise Exception(errmsg) from None
@@ -39,37 +38,3 @@ def set_predef_grid_params(USHdir, grid_name, quilting):
         params_dict = flatten_dict(params_dict)
 
     return params_dict
-
-
-class Testing(unittest.TestCase):
-    def test_set_predef_grid_params(self):
-        ushdir = os.path.dirname(os.path.abspath(__file__))
-        fcst_config = dict(
-            PREDEF_GRID_NAME="RRFS_CONUS_3km",
-            QUILTING=False,
-            DT_ATMOS=36,
-            LAYOUT_X=18,
-            LAYOUT_Y=36,
-            BLOCKSIZE=28,
-        )
-        params_dict = set_predef_grid_params(
-            ushdir,
-            fcst_config["PREDEF_GRID_NAME"],
-            fcst_config["QUILTING"],
-        )
-        self.assertEqual(params_dict["GRID_GEN_METHOD"], "ESGgrid")
-        self.assertEqual(params_dict["ESGgrid_LON_CTR"], -97.5)
-        fcst_config = dict(
-            PREDEF_GRID_NAME="RRFS_CONUS_3km",
-            QUILTING=True,
-            DT_ATMOS=36,
-            LAYOUT_X=18,
-            LAYOUT_Y=36,
-            BLOCKSIZE=28,
-        )
-        params_dict = set_predef_grid_params(
-            ushdir,
-            fcst_config["PREDEF_GRID_NAME"],
-            fcst_config["QUILTING"],
-        )
-        self.assertEqual(params_dict["WRTCMP_nx"], 1799)

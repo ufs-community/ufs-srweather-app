@@ -1,0 +1,66 @@
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    can successfully run the MET ensemble verification tasks but using
+    staged observation and forecast files (i.e. with other tasks such as
+    pre-processing, forecast, and post-processing deactivated).
+
+user:
+  RUN_ENVIR: community
+
+workflow:
+  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  DATE_FIRST_CYCL: '2019061500'
+  DATE_LAST_CYCL: '2019061500'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify.yaml", "parm/wflow/verify_ensgrid.yaml"]|include }}'
+    task_get_obs_ccpa:
+    task_get_obs_mrms:
+    task_get_obs_ndas:
+    metatask_vx_ens_member:
+      metatask_GridStat_MRMS_mem#mem#:
+        task_run_MET_GridStat_vx_#VAR#_mem#mem#:
+          dependency:
+      metatask_PointStat_mem#mem#:
+        task_run_MET_PointStat_vx_#VAR#_mem#mem#:
+          dependency:
+            and:
+              or_do_post:
+              or_get_obs:
+
+    metatask_GridStat_APCP_acc:
+      metatask_vx_ens_member_acc:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+          dependency:
+    metatask_EnsembleStat_acc:
+      task_run_MET_GridStat_vx_ensprob_#VAR#:
+        dependency:
+      task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
+        dependency: 
+          and:
+          metataskdep:
+            attrs:
+              metatask: GridStat_APCP_acc
+    metatask_EnsembleStat:
+      task_run_MET_EnsembleStat_vx_#VAR#:
+        dependency:
+    metatask_EnsembleStat_point:
+      task_run_MET_EnsembleStat_vx_#VAR#:
+        dependency:
+          and:
+            metataskdep:
+            taskdep:
+              attrs:
+                task: run_MET_Pb2nc_obs
+
+global:
+  DO_ENSEMBLE: true
+  NUM_ENS_MEMBERS: 2
+
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
+  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'

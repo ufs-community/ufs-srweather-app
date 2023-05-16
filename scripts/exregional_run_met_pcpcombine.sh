@@ -16,6 +16,7 @@ source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFN
 #
 #-----------------------------------------------------------------------
 #
+. $USHdir/get_met_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -30,7 +31,7 @@ source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFN
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -42,15 +43,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set the name of the MET/METplus tool this task will call.  (Note: "sc"
-# is for "snake case", i.e. using underscores as separators, and "pc" is
-# for "Pascal case", i.e. no separators but first letter of each word
-# capitalized.)
+# Get the name of the MET/METplus tool in different formats that may be
+# needed from the global variable MET_TOOL.
 #
 #-----------------------------------------------------------------------
 #
-met_tool_sc="pcp_combine"
-met_tool_pc="PcpCombine"
+get_met_metplus_tool_name \
+  generic_tool_name="${MET_TOOL}" \
+  outvarname_met_tool_name="met_tool_name" \
+  outvarname_metplus_tool_name="metplus_tool_name"
 #
 #-----------------------------------------------------------------------
 #
@@ -63,8 +64,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus ${met_tool_pc}
-that combines hourly accumulated precipitation (APCP) data to generate
+This is the ex-script for the task that runs the METplus ${metplus_tool_name}
+tool to combine hourly accumulated precipitation (APCP) data to generate
 files containing multi-hour accumulated precipitation (e.g. 3-hour, 6-
 hour, 24-hour).  The input files can come from either observations or
 a forecast.
@@ -112,7 +113,7 @@ set_vx_params \
 # was initialized 1 hour before the current CDATE, while a time lag of 0
 # means the current member was initialized on CDATE.
 #
-# Note that if we're not running ensemble verification (i.e. if we're 
+# Note that if we're not running ensemble verification (i.e. if we're
 # running verification for a single deterministic forecast), the time
 # lag gets set to 0.
 #
@@ -121,7 +122,7 @@ set_vx_params \
 time_lag="0"
 if [ "${obs_or_fcst}" = "fcst" ]; then
   time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because 
+# Convert to seconds.  We do this as a separate step using bc because
 # bash's $((...)) arithmetic operator can't handle floats well.
   time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
 fi
@@ -133,6 +134,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
+vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
+    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
+    DOT_ENSMEM_OR_NULL=".$ENSMEM"
+  else
+    DOT_ENSMEM_OR_NULL=""
+  fi
+else
+  DOT_ENSMEM_OR_NULL=""
+fi
+
 OBS_INPUT_DIR=""
 OBS_INPUT_FN_TEMPLATE=""
 FCST_INPUT_DIR=""
@@ -140,21 +154,21 @@ FCST_INPUT_FN_TEMPLATE=""
 
 if [ "${obs_or_fcst}" = "obs" ]; then
 
-  OBS_INPUT_DIR="${OBS_DIR}"                                               
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )     
+  OBS_INPUT_DIR="${OBS_DIR}"
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}"                                       
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_obs"                    
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )      
-  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"     
+  OUTPUT_BASE="${vx_output_basedir}"
+  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
+  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
+  STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
 
-  FCST_INPUT_DIR="$( eval echo ${VX_FCST_INPUT_DIR} )"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE} )
+  FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
-  OUTPUT_BASE="${VX_OUTPUT_BASEDIR}/${CDATE}/mem${ENSMEM_INDX}"
-  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${met_tool_pc}_fcst"
+  OUTPUT_BASE="${vx_output_basedir}/${CDATE}/mem${ENSMEM_INDX}"
+  OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_fcst"
   OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
@@ -238,11 +252,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+uscore_ensmem_name_or_null=""
+if [ "${obs_or_fcst}" = "fcst" ]; then
+  uscore_ensmem_name_or_null="_mem${ENSMEM_INDX}"
+fi
+#
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${met_tool_pc}_${obs_or_fcst}"
-metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_fn="${metplus_config_fn}_mem${ENSMEM_INDX}_$CDATE"
+metplus_config_tmpl_fn="${metplus_tool_name}_${obs_or_fcst}"
+metplus_config_fn="${metplus_config_tmpl_fn}_${FIELDNAME_IN_MET_FILEDIR_NAMES}${uscore_ensmem_name_or_null}"
+metplus_log_fn="${metplus_config_fn}_$CDATE"
 #
 # If operating on observation files, append the cycle date to the name
 # of the configuration file because in this case, the output files from
@@ -328,7 +347,7 @@ to this script are:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Namelist settings specified on command line:
+  Jinja settings specified on command line:
     settings =
 $settings"
 #
@@ -339,7 +358,7 @@ $settings"
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_sc} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+Calling METplus to run MET's ${met_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -356,7 +375,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${met_tool_pc} tool completed successfully.
+METplus ${metplus_tool_name} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

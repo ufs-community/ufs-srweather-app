@@ -6,4 +6,4 @@ needs them because it's built using the intel compiler.  This line can
 be removed if/when there is a version of MET/METplus built using GNU.
 --]]
 load(pathJoin("intel", os.getenv("intel_ver") or "18.0.5.274"))
-load("miniconda_regional_workflow")
+load("python_srw")

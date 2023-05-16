@@ -1,2 +1,2 @@
 load("hpss")
-load("miniconda_regional_workflow")
+load("python_srw")

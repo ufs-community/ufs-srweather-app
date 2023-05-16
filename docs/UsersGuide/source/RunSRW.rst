@@ -181,21 +181,12 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | FCST_MODEL, WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,                        |
    |                             | EXTRN_MDL_VAR_DEFNS_FN, WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN,  |
    |                             | CCPP_PHYS_SUITE, GRID_GEN_METHOD, DATE_FIRST_CYCL, DATE_LAST_CYCL,    |
-   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, TN_VX, TN_VX_ENSGRID,          |
-   |                             | TN_VX_ENSGRID_PROB_REFC, MAXTRIES_VX_ENSGRID_PROB_REFC,               |
+   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, MAXTRIES_VX_ENSGRID_PROB_REFC, |
    |                             | PREEXISTING_DIR_METHOD, VERBOSE, DEBUG, COMPILER                      |
    +-----------------------------+-----------------------------------------------------------------------+
    | NCO                         | envir, NET, model_ver, RUN, OPSROOT                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | Workflow Switches           | RUN_TASK_MAKE_GRID, RUN_TASK_MAKE_OROG, RUN_TASK_MAKE_SFC_CLIMO,      |
-   |                             | RUN_TASK_GET_EXTRN_ICS, RUN_TASK_GET_EXTRN_LBCS, RUN_TASK_MAKE_ICS,   |
-   |                             | RUN_TASK_MAKE_LBCS, RUN_TASK_RUN_FCST, RUN_TASK_RUN_POST,             |
-   |                             | RUN_TASK_GET_OBS_CCPA, RUN_TASK_GET_OBS_MRMS, RUN_TASK_GET_OBS_NDAS,  |
-   |                             | RUN_TASK_VX_GRIDSTAT, RUN_TASK_VX_POINTSTAT, RUN_TASK_VX_ENSGRID,     |
-   |                             | RUN_TASK_VX_ENSPOINT                                                  |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_grid              | TN_MAKE_GRID, NNODES_MAKE_GRID, PPN_MAKE_GRID, WTIME_MAKE_GRID,       |
-   |                             | MAXTRIES_MAKE_GRID, GRID_DIR, ESGgrid_LON_CTR, ESGgrid_LAT_CTR,       |
+   | task_make_grid              | GRID_DIR, ESGgrid_LON_CTR, ESGgrid_LAT_CTR,                           |
    |                             | ESGgrid_DELX, ESGgrid_DELY, ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI,     |
    |                             | ESGgrid_WIDE_HALO_WIDTH, GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR,    |
    |                             | GFDLgrid_NUM_CELLS, GFDLgrid_STRETCH_FAC, GFDLgrid_REFINE_RATIO,      |
@@ -203,41 +194,32 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G, |
    |                             | GFDLgrid_USE_NUM_CELLS_IN_FILENAMES                                   |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_orog              | TN_MAKE_OROG, NNODES_MAKE_OROG, PPN_MAKE_OROG, WTIME_MAKE_OROG,       |
-   |                             | MAXTRIES_MAKE_OROG, KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG |
+   | task_make_orog              | KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG                     |
    |                             | OMP_STACKSIZE_MAKE_OROG, OROG_DIR                                     |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_sfc_climo         | TN_MAKE_SFC_CLIMO, NNODES_MAKE_SFC_CLIMO, PPN_MAKE_SFC_CLIMO,         |
-   |                             | WTIME_MAKE_SFC_CLIMO, MAXTRIES_MAKE_SFC_CLIMO,                        |
-   |                             | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
+   | task_make_sfc_climo         | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
    |                             | OMP_STACKSIZE_MAKE_SFC_CLIMO, SFC_CLIMO_DIR                           |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_ics          | TN_GET_EXTRN_ICS, NNODES_GET_EXTRN_ICS, PPN_GET_EXTRN_ICS,            |
-   |                             | WTIME_GET_EXTRN_ICS, MAXTRIES_GET_EXTRN_ICS, EXTRN_MDL_NAME_ICS,      |
-   |                             | EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,                        |
+   | task_get_extrn_ics          | EXTRN_MDL_NAME_ICS, EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,    |
    |                             | EXTRN_MDL_SYSBASEDIR_ICS, USE_USER_STAGED_EXTRN_FILES,                |
    |                             | EXTRN_MDL_SOURCE_BASEDIR_ICS, EXTRN_MDL_FILES_ICS,                    |
    |                             | EXTRN_MDL_FILES_ICS, EXTRN_MDL_FILES_ICS, EXTRN_MDL_DATA_STORES,      |
    |                             | NOMADS, NOMADS_file_type                                              |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_lbcs         | TN_GET_EXTRN_LBCS, NNODES_GET_EXTRN_LBCS, PPN_GET_EXTRN_LBCS,         |
-   |                             | WTIME_GET_EXTRN_LBCS, MAXTRIES_GET_EXTRN_LBCS, EXTRN_MDL_NAME_LBCS,   |
+   | task_get_extrn_lbcs         | EXTRN_MDL_NAME_LBCS,                                                  |
    |                             | LBC_SPEC_INTVL_HRS, EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_LBCS,  |
    |                             | EXTRN_MDL_SYSBASEDIR_LBCS, USE_USER_STAGED_EXTRN_FILES,               |
    |                             | EXTRN_MDL_SOURCE_BASEDIR_LBCS, EXTRN_MDL_FILES_LBCS,                  |
    |                             | EXTRN_MDL_DATA_STORE, NOMADS, NOMADS_file_type                        |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_ics               | TN_MAKE_ICS, NNODES_MAKE_ICS, PPN_MAKE_ICS, WTIME_MAKE_ICS,           |
-   |                             | MAXTRIES_MAKE_ICS, KMP_AFFINITY_MAKE_ICS, OMP_NUM_THREADS_MAKE_ICS,   |
+   | task_make_ics               | KMP_AFFINITY_MAKE_ICS, OMP_NUM_THREADS_MAKE_ICS,                      |
    |                             | OMP_STACKSIZE_MAKE_ICS, USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR,          |
    |                             | FVCOM_FILE                                                            |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_lbcs              | TN_MAKE_LBCS, NNODES_MAKE_LBCS, PPN_MAKE_LBCS, WTIME_MAKE_LBCS,       |
-   |                             | MAXTRIES_MAKE_LBCS, KMP_AFFINITY_MAKE_LBCS, OMP_NUM_THREADS_MAKE_LBCS,| 
+   | task_make_lbcs              | KMP_AFFINITY_MAKE_LBCS, OMP_NUM_THREADS_MAKE_LBCS,                    |
    |                             | OMP_STACKSIZE_MAKE_LBCS                                               |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_fcst               | TN_RUN_FCST, NNODES_RUN_FCST, PPN_RUN_FCST, WTIME_RUN_FCST,           |
-   |                             | MAXTRIES_RUN_FCST, KMP_AFFINITY_RUN_FCST, OMP_NUM_THREADS_RUN_FCST,   |
+   | task_run_fcst               | KMP_AFFINITY_RUN_FCST, OMP_NUM_THREADS_RUN_FCST,                      |
    |                             | OMP_STACKSIZE_RUN_FCST, DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST,     |
    |                             | LAYOUT_X, LAYOUT_Y, BLOCKSIZE, QUILTING, PRINT_ESMF,                  |
    |                             | WRTCMP_write_groups, WRTCMP_write_tasks_per_group,                    |
@@ -252,8 +234,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                           |
    |                             | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                                 |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_post               | TN_RUN_POST, NNODES_RUN_POST, PPN_RUN_POST, WTIME_RUN_POST,           | 
-   |                             | MAXTRIES_RUN_POST, KMP_AFFINITY_RUN_POST, OMP_NUM_THREADS_RUN_POST,   |
+   | task_run_post               | KMP_AFFINITY_RUN_POST, OMP_NUM_THREADS_RUN_POST,                      |
    |                             | OMP_STACKSIZE_RUN_POST, SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS,     |
    |                             | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,                   |
    |                             | POST_OUTPUT_DOMAIN_NAME                                               |
@@ -268,80 +249,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | LSM_SPP_TSCALE, LSM_SPP_LSCALE, ISEED_LSM_SPP, LSM_SPP_VAR_LIST,      |
    |                             | LSM_SPP_MAG_LIST, HALO_BLEND                                          |
    +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_ccpa           | TN_GET_OBS_CCPA, NNODES_GET_OBS_CCPA, PPN_GET_OBS_CCPA,               |
-   |                             | WTIME_GET_OBS_CCPA, MAXTRIES_GET_OBS_CCPA                             |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_mrms           | TN_GET_OBS_MRMS, NNODES_GET_OBS_MRMS, PPN_GET_OBS_MRMS,               |
-   |                             | WTIME_GET_OBS_MRMS, MAXTRIES_GET_OBS_MRMS                             |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_obs_ndas           | TN_GET_OBS_NDAS, NNODES_GET_OBS_NDAS, PPN_GET_OBS_NDAS,               |
-   |                             | WTIME_GET_OBS_NDAS, MAXTRIES_GET_OBS_NDAS                             |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat        | TN_VX_GRIDSTAT, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,                  |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT                               |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_refc   | TN_VX_GRIDSTAT_REFC, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,             |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_REFC                          |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_retop  | TN_VX_GRIDSTAT_RETOP, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,            |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_RETOP                         |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_03h    | TN_VX_GRIDSTAT_03h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_03h                           |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_06h    | TN_VX_GRIDSTAT_06h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_06h                           |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_gridstat_24h    | TN_VX_GRIDSTAT_24h, NNODES_VX_GRIDSTAT, PPN_VX_GRIDSTAT,              |
-   |                             | WTIME_VX_GRIDSTAT, MAXTRIES_VX_GRIDSTAT_24h                           |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_pointstat       | TN_VX_POINTSTAT, NNODES_VX_POINTSTAT, PPN_VX_POINTSTAT,               |
-   |                             | WTIME_VX_POINTSTAT, MAXTRIES_VX_POINTSTAT                             |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid         | TN_VX_ENSGRID_03h, MAXTRIES_VX_ENSGRID_03h, TN_VX_ENSGRID_06h,        |
-   |                             | MAXTRIES_VX_ENSGRID_06h, TN_VX_ENSGRID_24h, MAXTRIES_VX_ENSGRID_24h,  |
-   |                             | TN_VX_ENSGRID_RETOP, MAXTRIES_VX_ENSGRID_RETOP,                       |
-   |                             | TN_VX_ENSGRID_PROB_RETOP, MAXTRIES_VX_ENSGRID_PROB_RETOP,             |
-   |                             | NNODES_VX_ENSGRID, PPN_VX_ENSGRID, WTIME_VX_ENSGRID,                  |
-   |                             | MAXTRIES_VX_ENSGRID                                                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_refc    | TN_VX_ENSGRID_REFC, NNODES_VX_ENSGRID, PPN_VX_ENSGRID,                |
-   |                             | WTIME_VX_ENSGRID, MAXTRIES_VX_ENSGRID_REFC                            |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean    | TN_VX_ENSGRID_MEAN, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,      |
-   |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN                       |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_03h| TN_VX_ENSGRID_MEAN_03h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
-   |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_03h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_06h| TN_VX_ENSGRID_MEAN_06h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
-   |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_06h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_mean_24h| TN_VX_ENSGRID_MEAN_24h, NNODES_VX_ENSGRID_MEAN, PPN_VX_ENSGRID_MEAN,  |
-   |                             | WTIME_VX_ENSGRID_MEAN, MAXTRIES_VX_ENSGRID_MEAN_24h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob    | TN_VX_ENSGRID_PROB, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,      |
-   |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB                       |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_03h| TN_VX_ENSGRID_PROB_03h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
-   |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_03h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_06h| TN_VX_ENSGRID_PROB_06h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
-   |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_06h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_ensgrid_prob_24h| TN_VX_ENSGRID_PROB_24h, NNODES_VX_ENSGRID_PROB, PPN_VX_ENSGRID_PROB,  |
-   |                             | WTIME_VX_ENSGRID_PROB, MAXTRIES_VX_ENSGRID_PROB_24h                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint        | TN_VX_ENSPOINT, NNODES_VX_ENSPOINT, PPN_VX_ENSPOINT,                  |
-   |                             | WTIME_VX_ENSPOINT, MAXTRIES_VX_ENSPOINT                               |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint_mean   | TN_VX_ENSPOINT_MEAN, NNODES_VX_ENSPOINT_MEAN, PPN_VX_ENSPOINT_MEAN,   |
-   |                             | WTIME_VX_ENSPOINT_MEAN, MAXTRIES_VX_ENSPOINT_MEAN                     |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_vx_enspoint_prob   | TN_VX_ENSPOINT_PROB, NNODES_VX_ENSPOINT_PROB, PPN_VX_ENSPOINT_PROB,   |
-   |                             | WTIME_VX_ENSPOINT_PROB, MAXTRIES_VX_ENSPOINT_PROB                     |
-   +-----------------------------+-----------------------------------------------------------------------+
-   
+
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
@@ -390,26 +298,6 @@ The user must specify certain basic experiment configuration information in a ``
    +--------------------------------+-------------------+------------------------------------+
    | COMPILER                       | "intel"           | "intel"                            |
    +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_MAKE_GRID             | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_MAKE_OROG             | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_MAKE_SFC_CLIMO        | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_GET_OBS_CCPA          | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_GET_OBS_MRMS          | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_GET_OBS_NDAS          | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_VX_GRIDSTAT           | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_VX_POINTSTAT          | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_VX_ENSGRID            | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | RUN_TASK_VX_ENSPOINT           | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
    | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                           |
    +--------------------------------+-------------------+------------------------------------+
    | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                            |
@@ -443,11 +331,13 @@ The default settings in this file include a predefined 25-km :term:`CONUS` grid 
 
 .. note::
 
-   Users who are accustomed to the former shell script workflow can reuse an old ``config.sh`` file by setting ``EXPT_CONFIG_FN: "config.sh"`` in ``config_defaults.yaml``. Alternatively, users can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
+   Users who have a previous configuration using the former shell-script-based can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
 
    .. code-block:: console
 
       ./config_utils.py -c $PWD/config.sh -t $PWD/config_defaults.yaml -o yaml >config.yaml
+
+   Use caution when upgrading your experiment in this way, as many intervening changes in the workflow have occurred since the python changeover.
 
 Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users must change the ``MACHINE`` and ``ACCOUNT`` variables. Then, they can choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``workflow:`` section of the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
@@ -568,12 +458,13 @@ The Python plotting tasks require a path to the directory where the Cartopy Natu
 Task Configuration
 `````````````````````
 
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, users must set ``RUN_TASK_PLOT_ALLVARS`` to true in the ``workflow_switches:`` section:
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add it to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
 
 .. code-block:: console
 
-   workflow_switches:
-      RUN_TASK_PLOT_ALLVARS: true
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
 
@@ -798,7 +689,34 @@ To use METplus verification, the path to the MET and METplus directories must be
       METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
       MET_INSTALL_DIR: </path/to/met/10.1.0>
 
-Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and set the corresponding ``RUN_TASK_GET_OBS_*`` parameters to false in ``config.yaml``. 
+To turn on verification tasks in the workflow, include the ``parm/wflow/verify.yaml`` file in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+
+The ``verify.yaml`` file includes the definitions of several common verification tasks by default. They are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
+
+To turn off a task, simply include its entry from ``verify.yaml`` as an empty YAML entry. For example, to turn off PointStat tasks:
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+     metatask_vx_ens_member:
+       metatask_PointStat_mem#mem#:
+
+
+More information about configuring the ``rocoto:`` section can be found in :numref:`Section %s <DefineWorkflow>`.
+
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+
+Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
+
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and turn off the corresponding task by including them with no entry in ``config.yaml``. 
 
 .. code-block:: console
 
@@ -806,26 +724,14 @@ Users who have already staged the observation data needed for METplus (i.e., the
       CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
-   workflow_switches:
-      RUN_TASK_GET_OBS_CCPA: false
-      RUN_TASK_GET_OBS_MRMS: false
-      RUN_TASK_GET_OBS_NDAS: false
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+       task_get_obs_ccpa:
+       task_get_obs_mrms:
+       task_get_obs_ndas:
 
-If users have access to NOAA :term:`HPSS` but have not pre-staged the data, they can simply set the ``RUN_TASK_GET_OBS_*`` tasks to true, and the machine will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
-Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
-
-Next, the verification tasks must be turned on according to the user's needs. Users should add some or all of the following tasks to ``config.yaml``, depending on the verification procedure(s) they have in mind:
-
-.. code-block:: console
-
-   workflow_switches:
-      RUN_TASK_VX_GRIDSTAT: true
-      RUN_TASK_VX_POINTSTAT: true
-      RUN_TASK_VX_ENSGRID: true
-      RUN_TASK_VX_ENSPOINT: true
-
-These tasks are independent, so users may set some values to true and others to false depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. More details on all of the parameters in this section are available in :numref:`Section %s <VXTasks>`. 
 
 .. _GenerateWorkflow: 
 
@@ -861,15 +767,13 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by adding the following lines to the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
 
 .. code-block:: console
 
-   workflow_switches:
-      RUN_TASK_MAKE_GRID: false
-      RUN_TASK_MAKE_OROG: false
-      RUN_TASK_MAKE_SFC_CLIMO: false
-
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 
 .. _WorkflowTasksFig:
 
@@ -923,17 +827,20 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_CCPA: true``   |
-   |                       | *and* user has access to NOAA :term:`HPSS` data.           |
+   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
+   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
+   |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``RUN_TASK_GET_OBS_NDAS: true``   |
-   |                       | *and* user has access to NOAA HPSS data.                   |
+   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
+   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
+   |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
-   |                       | only be run if ``RUN_TASK_GET_OBS_MRMS: true`` *and* user  |
-   |                       | has access to NOAA HPSS data.                              |
+   |                       | only be run if ``verify.yaml`` is included in a            |
+   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
+   |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
    | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
    |                       | precipitation                                              |
@@ -951,65 +858,86 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                       | upper-air variables                                        |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
-   |                       | accumulated precipitation. Can only be run if              |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
+   |                       | accumulated precipitation.                                 |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
-   |                       | composite reflectivity. Can only be run if                 |
-   |                       | ``DO_ENSEMBLE: true`` and                                  |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
+   |                       | composite reflectivity.                                    |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
-   |                       | :term:`echo top`. Can only be run if ``DO_ENSEMBLE: true`` |
-   |                       | and ``RUN_TASK_VX_ENSGRID: true``.                         |
+   |                       | :term:`echo top`.                                          |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
    |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
    |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true`` and               |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | 1-h accumulated precipitation. Can only be run if          |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
+   |                       | 1-h accumulated precipitation.                             |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
-   |                       | precipitation probabilistic output. Can only be run if     |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   |
+   |                       | precipitation probabilistic output.                        |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
    |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
    |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true`` and               |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
    |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
    |                       | output. Valid values for ``##`` are ``03``, ``06``, and    |
-   |                       | ``24``. Can only be run if ``DO_ENSEMBLE: true`` and       |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
+   |                       | ``24``.                                                    |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for composite reflectivity. Can only be run  |
-   |                       | if ``DO_ENSEMBLE: true`` and                               |
-   |                       | ``RUN_TASK_VX_ENSGRID: true``.                             |
+   |                       | probabilities for composite reflectivity.                  |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for :term:`echo top`. Can only be run if     |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSGRID: true``.   | 
+   |                       | probabilities for :term:`echo top`.                        |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
-   |                       | surface and upper-air variables. Can only be run if        |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.  |
+   |                       | surface and upper-air variables.                           |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
-   |                       | surface and upper-air variables. Can only be run if        |
-   |                       | ``DO_ENSEMBLE: true`` and ``RUN_TASK_VX_ENSPOINT: true``.  |
+   |                       | surface and upper-air variables.                           |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
    | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
-   |                       | probabilities for surface and upper-air variables. Can     |
-   |                       | only be run if ``DO_ENSEMBLE: true`` and                   |
-   |                       | ``RUN_TASK_VX_ENSPOINT: true``.                            |
+   |                       | probabilities for surface and upper-air variables.         |
+   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
+   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
+   |                       | list.                                                      |
    +-----------------------+------------------------------------------------------------+
 
 

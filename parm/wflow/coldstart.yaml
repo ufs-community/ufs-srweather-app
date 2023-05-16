@@ -41,7 +41,7 @@ task_get_extrn_ics:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -68,7 +68,7 @@ task_get_extrn_lbcs:
         datadep_gfs:
           attrs:
             age: 00:00:00:05
-          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
+          text: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMINgfs;/gfs.@Y@m@d/@H/atmos</cyclestr>'
       streq:
         left: retro
         right: '{% if not workflow.DO_REAL_TIME %}retro{% endif %}'
@@ -82,6 +82,7 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
@@ -121,6 +122,9 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+      NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
+      bcgrp: '00'
+      bcgrpnum: '1'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12

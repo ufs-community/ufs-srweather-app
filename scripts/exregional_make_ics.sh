@@ -124,7 +124,8 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
@@ -391,10 +392,14 @@ case "${EXTRN_MDL_NAME_ICS}" in
   ;;
 
 "GDAS")
+  if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
+    input_type="gaussian_nemsio"
+  elif [ "${FV3GFS_FILE_FMT_ICS}" = "netcdf" ]; then
+    input_type="gaussian_netcdf"
+  fi
+  external_model="GFS"
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="GFS"
-  input_type="gaussian_netcdf"
   convert_nst=False
   fn_atm="${EXTRN_MDL_FNS[0]}"
   fn_sfc="${EXTRN_MDL_FNS[1]}"
@@ -669,6 +674,20 @@ The following variables were being used:
   fvcom_exe = \"${fvcom_exe}\""
   POST_STEP
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+for i in ${INPUT_DATA}/*.nc; do
+    file=$(basename $i)
+    prefix="${NET}.${cycle}${dot_ensmem}."
+    file=${file#"$prefix"}
+    file=${file/f000/000}
+    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file}
+done
 #
 #-----------------------------------------------------------------------
 #
