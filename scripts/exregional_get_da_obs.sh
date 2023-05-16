@@ -237,6 +237,7 @@ if [ -n "${OBSPATH_NSSLMOSIAC:-}" ] ; then
           if [ ${numgrib2} -ge 10 ] ; then
             cp_vrfy ${NSSL}/${nsslfile1} $radar_output_path
             echo 'Copying MRMS files for ${PDY}-${cyc}${min}'
+            ls $radar_output_path/$nsslfile1 > $radar_output_path/filelist_mrms
           fi
         fi
       done

@@ -112,7 +112,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   echo "timelevel = ${timelevel}"
   timelevel=$( printf %2.2i $timelevel )
   mkdir_vrfy ${DATA}/${timelevel}
-  cd ${DATA}/${timelevel}
+  cd_vrfy ${DATA}/${timelevel}
 
   #
   #-----------------------------------------------------------------------
@@ -137,36 +137,42 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   #
   #-----------------------------------------------------------------------
   #
-  # copy observation files to working directory 
+  # copy observation files to working directory, if running in real
+  # time. otherwise, the get_da_obs data task will do this for you.
   #
   #-----------------------------------------------------------------------
 
-  NSSL=${OBSPATH_NSSLMOSIAC}
-  mrms="MergedReflectivityQC"
-  # Copy the MRMS operational data
-  echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
+  if [ "${DO_REAL_TIME}" = true ] ; then
+    NSSL=${OBSPATH_NSSLMOSIAC}
+    mrms="MergedReflectivityQC"
+    # Copy the MRMS operational data
+    echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
 
-  # Link to the MRMS operational data
-  # This loop finds files closest to the given "timelevel"
-  for min in ${RADARREFL_MINS[@]}
-  do
-    min=$( printf %2.2i $((timelevel+min)) )
-    echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
-    nsslfiles=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}??.${OBS_SUFFIX}
-    for nsslfile in ${nsslfiles} ; do
-      if [ -s $nsslfile ]; then
-        echo 'Found '${nsslfile}
-        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
-        numgrib2=${#nsslfiles1}
-        echo 'Number of GRIB-2 files: '${numgrib2}
-        if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
-          cp ${NSSL}/${nsslfile1} .
-          ls ${nsslfile1} > filelist_mrms
-          echo 'Creating links for ${YYYY}${MM}${DD}-${cyc}${min}'
+    # Link to the MRMS operational data
+    # This loop finds files closest to the given "timelevel"
+    for min in ${RADARREFL_MINS[@]}
+    do
+      min=$( printf %2.2i $((timelevel+min)) )
+      echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
+      nsslfiles=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}??.${OBS_SUFFIX}
+      for nsslfile in ${nsslfiles} ; do
+        if [ -s $nsslfile ]; then
+          echo 'Found '${nsslfile}
+          nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
+          numgrib2=${#nsslfiles1}
+          echo 'Number of GRIB-2 files: '${numgrib2}
+          if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
+            cp ${NSSL}/${nsslfile1} .
+            ls ${nsslfile1} > filelist_mrms
+            echo 'Copying mrms files for ${YYYY}${MM}${DD}-${cyc}${min}'
+          fi
         fi
-      fi
+      done
     done
-  done
+  else
+    # The data was staged by the get_da_obs task, so link from COMIN.
+    ln_vrfy -sf ${COMIN}/radar/${timelevel}/* .
+  fi # DO_REAL_TIME
 
   if [ -s filelist_mrms ]; then
 
