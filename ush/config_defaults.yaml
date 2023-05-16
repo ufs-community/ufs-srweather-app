@@ -447,17 +447,7 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Setup default observation locations for data assimilation:
-  #
-  # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
-  #
-  #-----------------------------------------------------------------------
-  #
-  OBSPATH_NSSLMOSIAC: ""
-    
+
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -2173,25 +2163,18 @@ task_get_da_obs:
   #   whether to use NLDN observations in DA or not.
   #
   # NLDN_LIGHTNING
-  #   path to staged data on disk
+  # NSSLMOSAIC
+  # RAP_OBS_BUFR
+  #   paths to data on disk. Defaults for supported data streams on
+  #   certain platforms have defaults set in the respective machine
+  #   files.
   #
   #-----------------------------------------------------------------------
   #
   NLDN_NEEDED: False
   NLDN_LIGHTNING: ""
-
-  #
-  #-----------------------------------------------------------------------
-  #
-  #
-  # RAP_OBS_BUFR
-  # RAP_OBS_NSSLMOSAIC
-  #   paths to BUFR and NSSL Composite reflectivity obs staged on disk
-  #
-  #-----------------------------------------------------------------------
-  #
+  NSSLMOSAIC: ""
   RAP_OBS_BUFR: ""
-  RAP_OBS_NSSLMOSAIC: ""
 #----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------

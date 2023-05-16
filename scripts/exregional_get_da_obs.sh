@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
+. $USHdir/get_mrms_files.sh
 source_config_for_task "task_get_da_obs|task_process_radarref" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -205,7 +206,6 @@ fi
 #-----------------------------------------------------------------------
 #
 mrms="MergedReflectivityQC"
-if [ -n "${OBSPATH_NSSLMOSIAC:-}" ] ; then
 
   for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
     echo "timelevel = ${timelevel}"
@@ -216,70 +216,35 @@ if [ -n "${OBSPATH_NSSLMOSIAC:-}" ] ; then
     #-----------------------------------------------------------------------
     # copy observation files to staging location
     #-----------------------------------------------------------------------
+    if [ -n "${NSSLMOSAIC:-}" ] ; then
+        get_mrms_files $timelevel $radar_output_path $mrms
+    fi
 
-    NSSL=${OBSPATH_NSSLMOSIAC}
-    # Copy the MRMS operational data
-    echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
+    # Check to see if files were retrieved from disk
+    # Try other resources, if not
+    if [ ! -s ${radar_output_path}/filelist_mrms ]; then
 
-    # Link to the MRMS operational data
-    # This loop finds files closest to the given "timelevel"
-    for min in ${RADARREFL_MINS[@]}
-    do
-      min=$( printf %2.2i $((timelevel+min)) )
-      echo "Looking for data valid:"${PDY}" "${cyc}":"${min}
-      nsslfiles=${NSSL}/*${mrms}_00.50_${PDY}-${cyc}${min}??.${OBS_SUFFIX}
-      for nsslfile in ${nsslfiles} ; do
-        if [ -s $nsslfile ]; then
-          echo 'Found '${nsslfile}
-          nsslfile1=*${mrms}_*_${PDY}-${cyc}${min}*.${OBS_SUFFIX}
-          numgrib2=${#nsslfiles1}
-          echo 'Number of GRIB-2 files: '${numgrib2}
-          if [ ${numgrib2} -ge 10 ] ; then
-            cp_vrfy ${NSSL}/${nsslfile1} $radar_output_path
-            echo 'Copying MRMS files for ${PDY}-${cyc}${min}'
-            ls $radar_output_path/$nsslfile1 > $radar_output_path/filelist_mrms
-          fi
-        fi
-      done
-    done
+      cmd="
+      python3 -u ${USHdir}/retrieve_data.py \
+        --debug \
+        --file_set obs \
+        --config ${PARMdir}/data_locations.yml \
+        --cycle_date ${PDY}${cyc}${timelevel} \
+        --data_stores ${EXTRN_MDL_DATA_STORES} \
+        --data_type NSSL_mrms \
+        --output_path ${radar_output_path}
+      "
+
+      $cmd || print_err_msg_exit "\
+      Call to retrieve_data.py failed with a non-zero exit status.
+
+      The command was:
+      ${cmd}
+      "
+      ls $radar_output_path/*${mrms}* > $radar_output_path/filelist_mrms
+    fi
   done
 
-else
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Check to see if there are options to gather them from other sources
-  #
-  #-----------------------------------------------------------------------
-  #
-
-  for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
-    echo "timelevel = ${timelevel}"
-    timelevel=$( printf %2.2i $timelevel )
-    radar_output_path=${RADAR_DATA}/${timelevel}
-    mkdir -p $radar_output_path
-
-    cmd="
-    python3 -u ${USHdir}/retrieve_data.py \
-      --debug \
-      --file_set obs \
-      --config ${PARMdir}/data_locations.yml \
-      --cycle_date ${PDY}${cyc}${timelevel} \
-      --data_stores ${EXTRN_MDL_DATA_STORES} \
-      --data_type NSSL_mrms \
-      --output_path ${radar_output_path}
-    "
-
-    $cmd || print_err_msg_exit "\
-    Call to retrieve_data.py failed with a non-zero exit status.
-
-    The command was:
-    ${cmd}
-    "
-    ls $radar_output_path/*${mrms}* > $radar_output_path/filelist_mrms
-  done
-
-fi
 
 #
 #-----------------------------------------------------------------------

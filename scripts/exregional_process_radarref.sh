@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
+. $USHdir/get_mrms_files.sh
 source_config_for_task "task_process_radarref|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -131,31 +132,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
 
   mrms="MergedReflectivityQC"
   if [ "${DO_REAL_TIME}" = true ] ; then
-    # Copy the MRMS operational data
-    echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
-    NSSL=${OBSPATH_NSSLMOSIAC}
-
-    # Link to the MRMS operational data
-    # This loop finds files closest to the given "timelevel"
-    for min in ${RADARREFL_MINS[@]}
-    do
-      min=$( printf %2.2i $((timelevel+min)) )
-      echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
-      nsslfiles=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}??.${OBS_SUFFIX}
-      for nsslfile in ${nsslfiles} ; do
-        if [ -s $nsslfile ]; then
-          echo 'Found '${nsslfile}
-          nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
-          numgrib2=${#nsslfiles1}
-          echo 'Number of GRIB-2 files: '${numgrib2}
-          if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
-            cp ${NSSL}/${nsslfile1} .
-            ls ${nsslfile1} > filelist_mrms
-            echo 'Copying mrms files for ${YYYY}${MM}${DD}-${cyc}${min}'
-          fi
-        fi
-      done
-    done
+    get_mrms_files $timelevel "./" $mrms
   else
     # The data was staged by the get_da_obs task, so copy from COMIN.
     # Use copy here so that we can unzip if necessary.
