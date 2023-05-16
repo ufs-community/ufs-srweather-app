@@ -22,5 +22,4 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/da_data_preproc.yaml"]|include }}'
     metatask_process_obs_cycle_type:
-      task_process_radarref_#cycle_type#:
       task_process_lightning_#cycle_type#:

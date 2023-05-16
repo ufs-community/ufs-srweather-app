@@ -53,8 +53,6 @@ with FV3 for the specified cycle.
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
-
 #
 #-----------------------------------------------------------------------
 #
@@ -80,17 +78,6 @@ DD=${YYYYMMDDHH:6:2}
 #-----------------------------------------------------------------------
 #
 BKTYPE=0
-if [ ${DO_SPINUP} == "TRUE" ]; then
-  if [ ${CYCLE_TYPE} == "spinup" ]; then
-    if [[ ${CYCL_HRS_SPINSTART[@]} =~ "$cyc" ]] ; then
-      BKTYPE=1
-    fi
-  fi
-else
-  if [[ ${CYCL_HRS_PRODSTART[@]} =~ "$cyc" ]] ; then
-    BKTYPE=1
-  fi
-fi
 
 n_iolayouty=$(($IO_LAYOUT_Y-1))
 
@@ -103,7 +90,7 @@ n_iolayouty=$(($IO_LAYOUT_Y-1))
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Getting into working directory for radar reflectivity process ..."
+Getting into working directory for radar reflectivity process ... ${DATA}"
 
 pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
 print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
@@ -111,7 +98,7 @@ print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   echo "timelevel = ${timelevel}"
   timelevel=$( printf %2.2i $timelevel )
-  mkdir_vrfy ${DATA}/${timelevel}
+  mkdir_vrfy -p ${DATA}/${timelevel}
   cd_vrfy ${DATA}/${timelevel}
 
   #
@@ -122,14 +109,14 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   #-----------------------------------------------------------------------
 
   if [ ${BKTYPE} -eq 1 ]; then
-    cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
+    cp -f ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
   else
     if [ "${IO_LAYOUT_Y}" == "1" ]; then
-      cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
+      cp -f ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
     else
       for iii in $(seq -w 0 $(printf %4.4i $n_iolayouty))
       do
-        cp_vrfy ${pregen_grid_dir}/fv3_grid_spec.${iii} fv3sar_grid_spec.nc.${iii}
+        cp -f ${pregen_grid_dir}/fv3_grid_spec.${iii} fv3sar_grid_spec.nc.${iii}
       done
     fi
   fi
@@ -142,11 +129,11 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   #
   #-----------------------------------------------------------------------
 
+  mrms="MergedReflectivityQC"
   if [ "${DO_REAL_TIME}" = true ] ; then
-    NSSL=${OBSPATH_NSSLMOSIAC}
-    mrms="MergedReflectivityQC"
     # Copy the MRMS operational data
     echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
+    NSSL=${OBSPATH_NSSLMOSIAC}
 
     # Link to the MRMS operational data
     # This loop finds files closest to the given "timelevel"
@@ -170,17 +157,19 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
       done
     done
   else
-    # The data was staged by the get_da_obs task, so link from COMIN.
-    ln_vrfy -sf ${COMIN}/radar/${timelevel}/* .
+    # The data was staged by the get_da_obs task, so copy from COMIN.
+    # Use copy here so that we can unzip if necessary.
+    cp_vrfy ${COMIN}/radar/${timelevel}/* .
   fi # DO_REAL_TIME
 
   if [ -s filelist_mrms ]; then
 
-     if [ ${OBS_SUFFIX} == "grib2.gz" ]; then
-        gzip -d *.gz
-        mv filelist_mrms filelist_mrms_org
-        ls ${mrms}_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
-     fi
+    # Unzip files, if that's needed and update filelist_mrms
+    if [ $(ls *.gz 2> /dev/null | wc -l) -gt 0 ]; then
+       gzip -d *.gz
+       mv filelist_mrms filelist_mrms_org
+       ls ${mrms}_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
+    fi
 
      numgrib2=$(more filelist_mrms | wc -l)
      print_info_msg "$VERBOSE" "Using radar data from: `head -1 filelist_mrms | cut -c10-15`"
@@ -189,7 +178,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
      # remove filelist_mrms if zero bytes
      rm -f filelist_mrms
 
-     echo "WARNING: Not enough radar reflectivity files available for loop ${timelevel}."
+     echo "WARNING: Not enough radar reflectivity files available for timelevel ${timelevel}."
      continue
   fi
 

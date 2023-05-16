@@ -276,6 +276,7 @@ else
     The command was:
     ${cmd}
     "
+    ls $radar_output_path/*${mrms}* > $radar_output_path/filelist_mrms
   done
 
 fi

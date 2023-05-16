@@ -2159,7 +2159,7 @@ task_process_radarref:
   #
   RADARREFL_MINS: [0, 1, 2, 3]
   RADARREFL_TIMELEVEL: [0]
-  OBS_SUFFIX: grib2
+  OBS_SUFFIX: grib2.gz
 
 #----------------------------
 # Parameters needed for retrieving DA obs
