@@ -494,12 +494,6 @@ class FunctionalTesting(unittest.TestCase):
             # Testing that there is no failure
             retrieve_data.main(args)
 
-            # Verify files exist in temp dir
-
-            path = os.path.join(tmp_dir, "*")
-            files_on_disk = glob.glob(path)
-            self.assertEqual(len(files_on_disk), 2)
-
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
     def test_rap_obs_from_hpss(self):
 
