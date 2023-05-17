@@ -25,6 +25,8 @@ load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("ip", os.getenv("ip_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 load(pathJoin("w3emc", os.getenv("w3emc_ver")))
+load(pathJoin("pio", os.getenv("pio_ver")))
+load(pathJoin("esmf", os.getenv("esmf_ver")))
 
 load(pathJoin("w3nco", os.getenv("w3nco_ver")))
 load(pathJoin("libjpeg", os.getenv("libjpeg_ver")))
@@ -36,21 +38,6 @@ load(pathJoin("wrf_io", os.getenv("wrf_io_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 load(pathJoin("bufr", os.getenv("bufr_ver")))
 load(pathJoin("nemsiogfs", os.getenv("nemsiogfs_ver")))
-
-
-setenv("HPC_OPT","/apps/ops/para/libs")
-prepend_path("MODULEPATH", pathJoin("/apps/ops/para/libs/modulefiles/compiler/intel", os.getenv("intel_para_ver")))
-prepend_path("MODULEPATH", pathJoin("/apps/ops/para/libs/modulefiles/mpi/intel", os.getenv("intel_para_ver"), "cray-mpich", os.getenv("cray_mpich_para_ver")))
-
-load(pathJoin("pio", os.getenv("pio_ver")))
-
-prepend_path("MODULEPATH", pathJoin("/apps/dev/lmodules/intel", os.getenv("intel_dev_ver")))
-prepend_path("MODULEPATH", pathJoin("/apps/dev/modulefiles/mpi/intel", os.getenv("intel_dev_ver"), "cray-mpich", os.getenv("cray_mpich_dev_ver")))
-
-load(pathJoin("esmf", os.getenv("esmf_ver")))
-load(pathJoin("gftl_shared", os.getenv("gftl_shared_ver")))
-load(pathJoin("mapl", os.getenv("mapl_ver")))
-
 
 setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
