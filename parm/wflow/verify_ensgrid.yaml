@@ -10,7 +10,6 @@ default_task_verify_ens: &default_task_verify_ens
     cyc: !cycstr "@H"
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
-    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
     nprocs: '{{ parent.nnodes * parent.ppn }}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
@@ -23,56 +22,18 @@ default_task_verify_ens: &default_task_verify_ens
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-metatask_EnsembleStat:
-  var:
-    VAR: REFC RETOP
-  task_run_MET_EnsembleStat_vx_#VAR#:
-    <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
-    envars:
-      <<: *default_vars
-      ACCUM_HH: '01'
-      OBS_DIR: '&MRMS_OBS_DIR;'
-      VAR: '#VAR#'
-      MET_TOOL: 'ENSEMBLESTAT'
-      OBTYPE: 'MRMS'
-    dependency:
-      metataskdep:
-        attrs:
-          metatask: run_ens_post
-
-metatask_GridStat_ensprob:
-  var:
-    VAR: REFC RETOP
-  task_run_MET_GridStat_vx_ensprob_#VAR#:
-    <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"'
-    envars:
-      <<: *default_vars
-      ACCUM_HH: '01'
-      OBS_DIR: '&MRMS_OBS_DIR;'
-      VAR: '#VAR#'
-      MET_TOOL: 'GRIDSTAT'
-      OBTYPE: 'MRMS'
-    dependency:
-      taskdep:
-        attrs:
-          task: run_MET_EnsembleStat_vx_#VAR#
-
-metatask_EnsembleStat_acc:
+metatask_GEPES_CCPA:
   var:
     ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-    FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
-  task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
+  task_run_MET_GenEnsProd_vx_APCP#ACCUM_HR#h: &task_GenEnsProd_CCPA
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
-    envars:
+    envars: &envars_GenEnsProd_CCPA
       <<: *default_vars
       ACCUM_HH: '#ACCUM_HR#'
-      FHR: '#FCST_HR_LIST#'
       OBS_DIR: '&CCPA_OBS_DIR;'
       VAR: APCP
-      MET_TOOL: 'ENSEMBLESTAT'
+      MET_TOOL: 'GENENSPROD'
       OBTYPE: 'CCPA'
     dependency:
       and:
@@ -94,7 +55,70 @@ metatask_EnsembleStat_acc:
                 metatask: run_ensemble
         metataskdep:
           attrs:
-            metatask: GridStat_APCP_acc
+            metatask: PcpCombine_fcst
+  task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
+    <<: *task_GenEnsProd_CCPA
+    envars:
+      <<: *envars_GenEnsProd_CCPA
+      MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      and:
+        taskdep:
+          attrs:
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HR#h
+        taskdep:
+          attrs:
+            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HR#h
+
+metatask_GEPES_MRMS:
+  var:
+    VAR: REFC RETOP
+  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_MRMS
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_MRMS
+      <<: *default_vars
+      ACCUM_HH: '01'
+      OBS_DIR: '&MRMS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'MRMS'
+    dependency:
+      metataskdep:
+        attrs:
+          metatask: run_ens_post
+  task_run_MET_EnsembleStat_vx_#VAR#:
+    <<: *task_GenEnsProd_MRMS
+    envars:
+      <<: *envars_GenEnsProd_MRMS
+      MET_TOOL: 'ENSEMBLESTAT'
+
+metatask_GEPES_NDAS:
+  var:
+    VAR: SFC UPA
+  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_NDAS
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_NDAS
+      <<: *default_vars
+      OBS_DIR: '&NDAS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'NDAS'
+      ACCUM_HH: '01'
+    dependency:
+      and:
+        metataskdep:
+          attrs:
+            metatask: run_ens_post
+        taskdep:
+          attrs:
+            task: run_MET_Pb2nc_obs
+  task_run_MET_EnsembleStat_vx_#VAR#:
+    <<: *task_GenEnsProd_NDAS
+    envars:
+      <<: *envars_GenEnsProd_NDAS
+      MET_TOOL: 'ENSEMBLESTAT'
 
 metatask_ensemble_vx_stats:
   var:
@@ -103,18 +127,16 @@ metatask_ensemble_vx_stats:
   metatask_GridStat_ens_acc:
     var:
       ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-      FCST_HR_LIST: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{% for h in range(ah, workflow.FCST_LEN_HRS+1, ah) %}{{ "%02d," % h  }}{% endfor %}{% endif %} {% endfor %}'
     task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HR#h:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
       envars:
         <<: *default_vars
-        ACCUM_HH: '#ACCUM_HR#'
-        FHR: '#FCST_HR_LIST#'
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
         MET_TOOL: 'GRIDSTAT'
         OBTYPE: 'CCPA'
+        ACCUM_HH: '#ACCUM_HR#'
       dependency:
         taskdep:
           attrs:
@@ -137,24 +159,20 @@ metatask_ensemble_vx_stats:
           attrs:
             task: run_MET_EnsembleStat_vx_#VAR#
 
-metatask_EnsembleStat_point:
+metatask_GridStat_ensprob:
   var:
-    VAR: SFC UPA
-  task_run_MET_EnsembleStat_vx_#VAR#:
+    VAR: REFC RETOP
+  task_run_MET_GridStat_vx_ensprob_#VAR#:
     <<: *default_task_verify_ens
-    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"'
     envars:
       <<: *default_vars
-      OBS_DIR: '&NDAS_OBS_DIR;'
-      VAR: '#VAR#'
-      MET_TOOL: 'ENSEMBLESTAT'
-      OBTYPE: 'NDAS'
       ACCUM_HH: '01'
+      OBS_DIR: '&MRMS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GRIDSTAT'
+      OBTYPE: 'MRMS'
     dependency:
-      and:
-        metataskdep:
-          attrs:
-            metatask: run_ens_post
-        taskdep:
-          attrs:
-            task: run_MET_Pb2nc_obs
+      taskdep:
+        attrs:
+          task: run_MET_EnsembleStat_vx_#VAR#
