@@ -10,8 +10,8 @@ workflow:
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023040400'
-  DATE_LAST_CYCL: '2023040418'
+  DATE_FIRST_CYCL: '2023051100'
+  DATE_LAST_CYCL: '2023051118'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: -1
   FCST_LEN_CYCL:
@@ -21,6 +21,7 @@ workflow:
     - 6
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
+  DEBUG: true
   COMPILER: intel
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
@@ -33,6 +34,7 @@ nco:
   model_ver: v7.0
   RUN: aqm_nco_aqmna13km
   OPSROOT: /path/to/custom/opsroot
+  KEEPDATA: true
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/aqm_all.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
@@ -41,6 +43,7 @@ rocoto:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 04:00:00
+#    task_aqm_ics_ext:
     task_aqm_lbcs:
       walltime: 01:00:00
 task_make_grid:
@@ -92,5 +95,5 @@ cpl_aqm_parm:
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
   NEXUS_GRID_FN: grid_spec_793.nc
-  NUM_SPLIT_NEXUS: 3
+  NUM_SPLIT_NEXUS: 6
 
