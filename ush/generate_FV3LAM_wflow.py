@@ -480,7 +480,7 @@ def generate_FV3LAM_wflow(
     settings_str = cfg_to_yaml_str(settings)
 
     log_info(
-        f"""
+        """
         The variable 'settings' specifying values of the weather model's
         namelist variables has been set as follows:\n""",
         verbose=verbose,
@@ -499,40 +499,19 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    try:
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                FV3_NML_BASE_SUITE_FP,
-                "-c",
-                FV3_NML_YAML_CONFIG_FP,
-                CCPP_PHYS_SUITE,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_FP,
-            ]
-        )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_BASE_SUITE_FP = '{FV3_NML_BASE_SUITE_FP}'
-                  Full path to yaml configuration file for various physics suites:
-                    FV3_NML_YAML_CONFIG_FP = '{FV3_NML_YAML_CONFIG_FP}'
-                  Physics suite to extract from yaml configuration file:
-                    CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
-                  Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
+    set_namelist(
+        [
+            "-n",
+            FV3_NML_BASE_SUITE_FP,
+            "-c",
+            FV3_NML_YAML_CONFIG_FP,
+            CCPP_PHYS_SUITE,
+            "-u",
+            settings_str,
+            "-o",
+            FV3_NML_FP,
+        ]
+    )
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -569,34 +548,16 @@ def generate_FV3LAM_wflow(
         #
         # populate the namelist file
         #
-        try:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_CYCSFC_FP,
-                ]
-            )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_CYCSFC_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
-      
+        set_namelist(
+            [
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_CYCSFC_FP,
+            ]
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -612,7 +573,7 @@ def generate_FV3LAM_wflow(
         lupdatebc = False
         if DO_UPDATE_BC:
             lupdatebc = False   # not ready for setting this to true yet
-        
+
         settings = {}
         settings["fv_core_nml"] = {
             "external_ic": False,
@@ -632,33 +593,17 @@ def generate_FV3LAM_wflow(
         #
         # populate the namelist file
         #
-        try:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_RESTART_FP,
-                ]
-            )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_RESTART_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
+        set_namelist(
+            [
+                "-q",
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_RESTART_FP,
+            ]
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -770,65 +715,31 @@ def generate_FV3LAM_wflow(
     #
     #-----------------------------------------------------------------------
     #
-    if DO_ENSEMBLE and ( DO_SPP or DO_SPPT or DO_SHUM or DO_SKEB or DO_LSM_SPP):
+    if DO_ENSEMBLE and any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
 
-        try:
+        set_namelist(
+            [
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_STOCH_FP,
+            ]
+        )
+
+        if DO_DACYCLE or DO_ENKFUPDATE:
             set_namelist(
                 [
                     "-q",
                     "-n",
-                    FV3_NML_FP,
+                    FV3_NML_RESTART_FP,
                     "-u",
                     settings_str,
                     "-o",
-                    FV3_NML_STOCH_FP,
+                    FV3_NML_RESTART_STOCH_FP,
                 ]
             )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for stochastics:
-                        FV3_NML_STOCH_FP = '{FV3_NML_STOCH_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
-
-        if DO_DACYCLE or DO_ENKFUPDATE:
-            try:
-                set_namelist(
-                    [
-                        "-q",
-                        "-n",
-                        FV3_NML_RESTART_FP,
-                        "-u",
-                        settings_str,
-                        "-o",
-                        FV3_NML_RESTART_STOCH_FP,
-                    ]
-                )
-            except:
-                logging.exception(
-                    dedent(
-                        f"""
-                        Call to python script set_namelist.py to generate an FV3 namelist file
-                        failed.  Parameters passed to this script are:
-                          Full path to output namelist file:
-                            FV3_NML_FP = '{FV3_NML_FP}'
-                          Full path to output namelist file for stochastics:
-                            FV3_NML_RESTART_STOCH_FP = '{FV3_NML_RESTART_STOCH_FP}'
-                          Namelist settings specified on command line:\n
-                            settings =\n\n"""
-                    )
-                    + settings_str
-                )
-
     #
     # -----------------------------------------------------------------------
     #
