@@ -2,15 +2,15 @@
 
 if [[ $# -lt 2 ]] || [[ "$@" == "--help" ]] || [[ "$@" == "-h" ]]; then
     echo "Usage: $0 s_suffix t_suffix"
-    echo " Example: $0 rrfs aqm"
+    echo " Example: $0 dir aqm"
     exit 0
 fi
 
 # directories to look for model variables to rename
-mdirs=( "docs" "jobs" "parm" "scripts" "test" "tests" "ush" )
+mdirs=( "docs" "jobs" "parm" "scripts" "tests" "ush" )
 
 # model variables to rename
-mvars=( "home" "parm" "ush" "sorc" "modules" "exec" "scripts" "jobs" "fix" "tests" "we2e" )
+mvars=( "home" )
 
 function replace() {
     for i in ${mdirs[@]}; do
