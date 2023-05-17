@@ -26,14 +26,14 @@ rocoto:
     task_get_obs_mrms:
     task_get_obs_ndas:
     metatask_PcpCombine_obs:
-      task_run_MET_PcpCombine_obs_APCP#ACCUM_HR#h:
+      task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
         dependency:
           or:
           datadep:
             text: "&CCPA_OBS_DIR;"
     metatask_PcpCombine_fcst:
-      metatask_PcpCombine_fcst_APCP#ACCUM_HR#h_all_mems:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+      metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
     metatask_vx_ens_member:
       metatask_GridStat_MRMS_mem#mem#:
@@ -47,7 +47,7 @@ rocoto:
               or_get_obs:
     metatask_GridStat_APCP_acc:
       metatask_vx_ens_member_acc:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
 
 verification:

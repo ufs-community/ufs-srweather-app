@@ -2331,7 +2331,14 @@ verification:
   # This is used in forming the names of the verification output files as
   # well as in the contents of those files.
   #
+  # VX_APCP_ACCUMS_HH:
+  # The 2-digit accumulation periods (in units of hours) to consider for
+  # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
+  # VX_APCP_ACCUMS_HH must contain at least one element.  If not,
+  # VX_APCP_ACCUMS_HH will be ignored.
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_APCP_ACCUMS_HH: [ 1, 3, 6, 24 ]
   #
   # VX_FCST_INPUT_BASEDIR:
   # Template for top-level directory containing forecast (but not obs)

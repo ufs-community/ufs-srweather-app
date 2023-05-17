@@ -34,25 +34,25 @@ rocoto:
               or_get_obs:
 
     metatask_PcpCombine_fcst:
-      metatask_PcpCombine_fcst_APCP#ACCUM_HR#h_all_mems:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+      metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
 
     metatask_GridStat_APCP_acc:
       metatask_vx_ens_member_acc:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
 
     metatask_GEPES_CCPA:
       task_run_MET_GridStat_vx_ensprob_#VAR#:
         dependency:
-      task_run_MET_GenEnsProd_vx_APCP#ACCUM_HR#h:
+      task_run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h:
         dependency: 
           and:
           metataskdep:
             attrs:
               metatask: GridStat_APCP_acc
-      task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
+      task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
         dependency: 
           and:
           metataskdep:

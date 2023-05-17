@@ -83,8 +83,8 @@ task_run_MET_Pb2nc_obs:
 
 metatask_PcpCombine_obs:
   var:
-    ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  task_run_MET_PcpCombine_obs_APCP#ACCUM_HR#h:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
     <<: *default_task
     attrs:
       cycledefs: forecast
@@ -93,7 +93,7 @@ metatask_PcpCombine_obs:
     envars:
       <<: *default_vars
       VAR: APCP
-      ACCUM_HH: '#ACCUM_HR#'
+      ACCUM_HH: '#ACCUM_HH#'
       obs_or_fcst: obs
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
@@ -113,11 +113,11 @@ metatask_PcpCombine_obs:
 
 metatask_PcpCombine_fcst:
   var:
-    ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
-  metatask_PcpCombine_fcst_APCP#ACCUM_HR#h_all_mems:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
     var:
       mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-    task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
+    task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task
       attrs:
         cycledefs: forecast
@@ -126,7 +126,7 @@ metatask_PcpCombine_fcst:
       envars:
         <<: *default_vars
         VAR: APCP
-        ACCUM_HH: '#ACCUM_HR#'
+        ACCUM_HH: '#ACCUM_HH#'
         obs_or_fcst: fcst
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
@@ -225,12 +225,12 @@ metatask_vx_ens_member:
 
 metatask_GridStat_APCP_acc:
   var:
-    ACCUM_HR: '{% for ah in [1, 3, 6, 24] %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   metatask_vx_ens_member_acc:
     var:
       mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
 
-    task_run_MET_GridStat_vx_APCP#ACCUM_HR#h_mem#mem#:
+    task_run_MET_GridStat_vx_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task
       attrs:
         maxtries: '2'
@@ -239,7 +239,7 @@ metatask_GridStat_APCP_acc:
         <<: *default_vars
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
-        ACCUM_HH: '#ACCUM_HR#'
+        ACCUM_HH: '#ACCUM_HH#'
         MET_TOOL: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
@@ -249,7 +249,7 @@ metatask_GridStat_APCP_acc:
         and:
           taskdep_obs:
             attrs:
-              task: run_MET_PcpCombine_obs_APCP#ACCUM_HR#h
+              task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
           taskdep_fcst:
             attrs:
-              task: run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#
+              task: run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#
