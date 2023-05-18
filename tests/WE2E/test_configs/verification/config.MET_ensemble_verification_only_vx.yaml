@@ -68,3 +68,5 @@ global:
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
+  RUN_VX_DET: True
+  RUN_VX_ENS: True
