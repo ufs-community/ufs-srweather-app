@@ -156,7 +156,9 @@ metatask_vx_ens_member:
     mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_GridStat_MRMS_mem#mem#:
     var:
-      VAR: REFC RETOP
+      #VAR: REFC RETOP
+      #VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_GridStat_vx_#VAR#_mem#mem#:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
@@ -189,7 +191,7 @@ metatask_vx_ens_member:
 
   metatask_PointStat_NDAS_mem#mem#:
     var:
-      VAR: SFC UPA
+      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'

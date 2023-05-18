@@ -2331,6 +2331,9 @@ verification:
   # This is used in forming the names of the verification output files as
   # well as in the contents of those files.
   #
+  # VX_FIELDS:
+  # The fields or groups of fields on which to run verification.
+  #
   # VX_APCP_ACCUMS_HH:
   # The 2-digit accumulation periods (in units of hours) to consider for
   # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
@@ -2338,6 +2341,7 @@ verification:
   # VX_APCP_ACCUMS_HH will be ignored.
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
   VX_APCP_ACCUMS_HH: [ 1, 3, 6, 24 ]
   #
   # VX_FCST_INPUT_BASEDIR:
