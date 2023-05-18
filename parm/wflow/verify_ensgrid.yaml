@@ -120,11 +120,11 @@ metatask_GEPES_NDAS:
       <<: *envars_GenEnsProd_NDAS
       MET_TOOL: 'ENSEMBLESTAT'
 
-metatask_ensemble_vx_stats:
+metatask_GridStat_CCPA_ensmeanprob_all_accums:
   var:
     stat: MEAN PROB
     statlc: mean prob
-  metatask_GridStat_ens_acc:
+  metatask_GridStat_CCPA_ens#statlc#_all_accums:
     var:
       ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
     task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HH#h:
@@ -141,7 +141,12 @@ metatask_ensemble_vx_stats:
         taskdep:
           attrs:
             task: run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h
-  metatask_PointStat_ens:
+
+metatask_PointStat_NDAS_ensmeanprob:
+  var:
+    stat: MEAN PROB
+    statlc: mean prob
+  metatask_PointStat_NDAS_ens#statlc#:
     var:
       VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_PointStat_vx_ens#statlc#_#VAR#:
@@ -159,7 +164,7 @@ metatask_ensemble_vx_stats:
           attrs:
             task: run_MET_EnsembleStat_vx_#VAR#
 
-metatask_GridStat_ensprob:
+metatask_GridStat_CCPA_ensprob:
   var:
     VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
   task_run_MET_GridStat_vx_ensprob_#VAR#:

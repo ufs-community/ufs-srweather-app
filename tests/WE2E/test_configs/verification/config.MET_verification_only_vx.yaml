@@ -25,32 +25,37 @@ rocoto:
     task_get_obs_ccpa:
     task_get_obs_mrms:
     task_get_obs_ndas:
+
     metatask_PcpCombine_obs:
       task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
         dependency:
           or:
           datadep:
             text: "&CCPA_OBS_DIR;"
-    metatask_PcpCombine_fcst:
+
+    metatask_PcpCombine_fcst_all_accums_all_mems:
       metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
         task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
-    metatask_vx_ens_member:
+
+    metatask_GridStat_MRMS_all_mems:
       metatask_GridStat_MRMS_mem#mem#:
         task_run_MET_GridStat_vx_#VAR#_mem#mem#:
           dependency:
+
+    metatask_PointStat_NDAS_all_mems:
       metatask_PointStat_NDAS_mem#mem#:
         task_run_MET_PointStat_vx_#VAR#_mem#mem#:
           dependency:
             and:
               or_do_post:
               or_get_obs:
-    metatask_GridStat_APCP_acc:
-      metatask_vx_ens_member_acc:
+
+    metatask_GridStat_CCPA_all_accums_all_mems:
+      metatask_GridStat_CCPA_APCP#ACCUM_HH#h_all_mems:
         task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
           dependency:
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
-
