@@ -51,11 +51,6 @@ rocoto:
               or_do_post:
               or_get_obs:
 
-    metatask_GridStat_CCPA_all_accums_all_mems:
-      metatask_GridStat_CCPA_APCP#ACCUM_HH#h_all_mems:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
-          dependency:
-
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'

@@ -22,6 +22,18 @@ rocoto:
     task_get_obs_mrms:
     task_get_obs_ndas:
 
+    metatask_PcpCombine_obs:
+      task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
+        dependency:
+          or:
+          datadep:
+            text: "&CCPA_OBS_DIR;"
+
+    metatask_PcpCombine_fcst_all_accums_all_mems:
+      metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
+        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
+          dependency:
+
     metatask_GridStat_MRMS_all_mems:
       metatask_GridStat_MRMS_mem#mem#:
         task_run_MET_GridStat_vx_#VAR#_mem#mem#:
@@ -35,53 +47,19 @@ rocoto:
               or_do_post:
               or_get_obs:
 
-    metatask_PcpCombine_fcst_all_accums_all_mems:
-      metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
-          dependency:
-
-    metatask_GridStat_CCPA_all_accums_all_mems:
-      metatask_GridStat_CCPA_APCP#ACCUM_HH#h_all_mems:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
-          dependency:
-
     metatask_GEPES_CCPA:
-      task_run_MET_GridStat_vx_ensprob_#VAR#:
-        dependency:
       task_run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h:
         dependency: 
           and:
-          metataskdep:
-            attrs:
-              metatask: GridStat_CCPA_all_accums_all_mems
-      task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
-        dependency: 
-          and:
-          metataskdep:
-            attrs:
-              metatask: GridStat_CCPA_all_accums_all_mems
+            or_do_post:
 
     metatask_GEPES_MRMS:
       task_run_MET_GenEnsProd_vx_#VAR#:
-        dependency:
-      task_run_MET_EnsembleStat_vx_#VAR#:
         dependency:
 
     metatask_GEPES_NDAS:
       task_run_MET_GenEnsProd_vx_#VAR#:
         dependency:
-          and:
-            metataskdep:
-            taskdep:
-              attrs:
-                task: run_MET_Pb2nc_obs
-      task_run_MET_EnsembleStat_vx_#VAR#:
-        dependency:
-          and:
-            metataskdep:
-            taskdep:
-              attrs:
-                task: run_MET_Pb2nc_obs
 
 global:
   DO_ENSEMBLE: true

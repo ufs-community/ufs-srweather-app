@@ -55,7 +55,7 @@ metatask_GEPES_CCPA:
                 metatask: run_ensemble
         metataskdep:
           attrs:
-            metatask: PcpCombine_fcst
+            metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -63,10 +63,10 @@ metatask_GEPES_CCPA:
       MET_TOOL: 'ENSEMBLESTAT'
     dependency:
       and:
-        taskdep:
+        taskdep_pcpcombine_obs:
           attrs:
             task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
-        taskdep:
+        taskdep_genensprod:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
@@ -107,18 +107,22 @@ metatask_GEPES_NDAS:
       OBTYPE: 'NDAS'
       ACCUM_HH: '01'
     dependency:
-      and:
-        metataskdep:
-          attrs:
-            metatask: run_ens_post
-        taskdep:
-          attrs:
-            task: run_MET_Pb2nc_obs
+      metataskdep:
+        attrs:
+          metatask: run_ens_post
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
       <<: *envars_GenEnsProd_NDAS
       MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      and:
+        taskdep_pb2nc:
+          attrs:
+            task: run_MET_Pb2nc_obs
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GridStat_CCPA_ensmeanprob_all_accums:
   var:
