@@ -164,7 +164,7 @@ metatask_PointStat_NDAS_ensmeanprob:
           attrs:
             task: run_MET_EnsembleStat_vx_#VAR#
 
-metatask_GridStat_CCPA_ensprob:
+metatask_GridStat_MRMS_ensprob:
   var:
     VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
   task_run_MET_GridStat_vx_ensprob_#VAR#:
