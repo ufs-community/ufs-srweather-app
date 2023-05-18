@@ -56,6 +56,10 @@ rocoto:
     metatask_GEPES_MRMS:
       task_run_MET_GenEnsProd_vx_#VAR#:
         dependency:
+      task_run_MET_EnsembleStat_vx_#VAR#:
+        dependency:
+          and:
+            taskdep_getobsmrms:
 
     metatask_GEPES_NDAS:
       task_run_MET_GenEnsProd_vx_#VAR#:
