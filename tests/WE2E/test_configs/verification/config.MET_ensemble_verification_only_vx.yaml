@@ -64,6 +64,8 @@ rocoto:
     metatask_GEPES_NDAS:
       task_run_MET_GenEnsProd_vx_#VAR#:
         dependency:
+          and:
+            metataskdep:
 
 global:
   DO_ENSEMBLE: true

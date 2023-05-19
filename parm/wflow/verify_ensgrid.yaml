@@ -53,7 +53,13 @@ metatask_GEPES_CCPA:
             metataskdep:
               attrs:
                 metatask: run_ensemble
-        metataskdep:
+        # The PcpCombine task for obs must be complete because this GenEnsProd
+        # task checks to see the forecast hours for which obs are available before
+        # processing the forecast for those hours.
+        taskdep_pcpcombine_obs:
+          attrs:
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+        metataskdep_pcpcombine_fcst:
           attrs:
             metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
@@ -62,13 +68,9 @@ metatask_GEPES_CCPA:
       <<: *envars_GenEnsProd_CCPA
       MET_TOOL: 'ENSEMBLESTAT'
     dependency:
-      and:
-        taskdep_pcpcombine_obs:
-          attrs:
-            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
-        taskdep_genensprod:
-          attrs:
-            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+      taskdep_genensprod:
+        attrs:
+          task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
 metatask_GEPES_MRMS:
   var:
@@ -115,22 +117,25 @@ metatask_GEPES_NDAS:
       OBTYPE: 'NDAS'
       ACCUM_HH: '01'
     dependency:
-      metataskdep:
-        attrs:
-          metatask: run_ens_post
+      and:
+        # The Pb2nc task (which is run only for obs) must be complete because
+        # this GenEnsProd task checks to see the forecast hours for which obs
+        # are available before processing the forecast for those hours.
+        taskdep_pb2nc:
+          attrs:
+            task: run_MET_Pb2nc_obs
+        metataskdep:
+          attrs:
+            metatask: run_ens_post
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
       <<: *envars_GenEnsProd_NDAS
       MET_TOOL: 'ENSEMBLESTAT'
     dependency:
-      and:
-        taskdep_pb2nc:
-          attrs:
-            task: run_MET_Pb2nc_obs
-        taskdep_genensprod:
-          attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+      taskdep_genensprod:
+        attrs:
+          task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GridStat_CCPA_ensmeanprob_all_accums:
   var:
