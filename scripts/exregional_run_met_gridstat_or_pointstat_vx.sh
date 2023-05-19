@@ -348,6 +348,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
+  'ensmem_indx': '${ENSMEM_INDX:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.
