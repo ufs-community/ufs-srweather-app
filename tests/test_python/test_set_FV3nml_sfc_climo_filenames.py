@@ -29,10 +29,9 @@ class Testing(unittest.TestCase):
         PARMdir = os.path.join(USHdir, "..", "parm")
 
         # Create a temporary experiment directory structure
-        here = os.getcwd()
         # pylint: disable=consider-using-with
         self.tmp_dir = tempfile.TemporaryDirectory(
-            dir=os.path.abspath(here),
+            dir=os.path.dirname(__file__),
             prefix="expt",
             )
         EXPTDIR = self.tmp_dir.name
