@@ -29,7 +29,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_process_bufr" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_process_bufrobs" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
@@ -75,11 +75,16 @@ the specified cycle.
 #-----------------------------------------------------------------------
 #
 if [ ${CYCLE_TYPE} == "spinup" ]; then
-  DATA="${DATA:-${COMIN}/process_bufr_spinup}"
+  DATA="${DATA:-${COMIN}/process_bufrobs_spinup}"
 else
-  DATA="${DATA:-${COMIN}/process_bufr}"
+  DATA="${DATA:-${COMIN}/process_bufrobs}"
 fi
 mkdir_vrfy -p ${DATA}
+
+# Set needed date/time variables
+export START_DATE=$(echo "${PDY} ${cyc}")
+export YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
+
 #
 #-----------------------------------------------------------------------
 #
@@ -88,7 +93,7 @@ mkdir_vrfy -p ${DATA}
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_process_bufr.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_process_bufrobs.sh || print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------

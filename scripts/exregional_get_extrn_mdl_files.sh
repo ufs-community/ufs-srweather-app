@@ -63,7 +63,7 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
   if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
-    file_type=$FV3GFS_FILE_FMT_ICS
+    file_fmt=$FV3GFS_FILE_FMT_ICS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
 
@@ -92,7 +92,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
   if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
-    file_type=$FV3GFS_FILE_FMT_LBCS
+    file_fmt=$FV3GFS_FILE_FMT_LBCS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
 fi
@@ -137,9 +137,9 @@ fi
 additional_flags=""
 
 
-if [ -n "${file_type:-}" ] ; then 
+if [ -n "${file_fmt:-}" ] ; then
   additional_flags="$additional_flags \
-  --file_type ${file_type}"
+  --file_fmt ${file_fmt}"
 fi
 
 if [ -n "${file_names:-}" ] ; then
@@ -183,7 +183,7 @@ python3 -u ${USHdir}/retrieve_data.py \
   --config ${PARMdir}/data_locations.yml \
   --cycle_date ${EXTRN_MDL_CDATE} \
   --data_stores ${data_stores} \
-  --external_model ${EXTRN_MDL_NAME} \
+  --data_type ${EXTRN_MDL_NAME} \
   --fcst_hrs ${fcst_hrs[@]} \
   --ics_or_lbcs ${ICS_OR_LBCS} \
   --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \

@@ -454,12 +454,9 @@ platform:
   #
   # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
   #
-  # LIGHTNING_ROOT: location of lightning observations
-  #
   #-----------------------------------------------------------------------
   #
   OBSPATH_NSSLMOSIAC: ""
-  LIGHTNING_ROOT: ""
     
 #-----------------------------
 # WORKFLOW config parameters
@@ -2195,13 +2192,29 @@ task_process_radarref:
   OBS_SUFFIX: grib2
 
 #----------------------------
-# PROCESS BUFR config parameters
+# Parameters needed for retrieving DA obs
 #-----------------------------
-task_process_bufr:
+task_get_da_obs:
+
   #
   #-----------------------------------------------------------------------
   #
-  # observation file templates used in process_bufr
+  # NLDN_NEEDED
+  #   whether to use NLDN observations in DA or not.
+  #
+  #-----------------------------------------------------------------------
+  #
+  NLDN_NEEDED: False
+
+#----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufrobs:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # OBSPATH_TEMPLATE
+  #   observation file templates used in process_bufrobs
   #
   #-----------------------------------------------------------------------
   #

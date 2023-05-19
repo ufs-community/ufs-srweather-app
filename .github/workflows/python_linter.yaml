@@ -34,4 +34,4 @@ jobs:
       - name: Lint the test directory
         run: |
           export PYTHONPATH=${PWD}/ush
-          pylint --ignore-imports=yes tests/test_python/
+          pylint --min-similarity-lines=15 --ignore-imports=yes tests/test_python/

@@ -41,7 +41,7 @@ class FunctionalTesting(unittest.TestCase):
             "parm",
             "data_locations.yml"
             )
-        twodaysago = datetime.datetime.today() - datetime.timedelta(days=2)
+        threedaysago = datetime.datetime.today() - datetime.timedelta(days=3)
         # Set test dates to retrieve, based on important dates in HPSS history:
         # 2019061200 - First operational FV3GFS cycle
         # 2020022518, 2020022600 - Changes to operational FV3GFS files between these cycles
@@ -51,17 +51,17 @@ class FunctionalTesting(unittest.TestCase):
         self.dates={}
         self.dates["FV3GFSgrib2"]  = ['2019061200',
                                       '2020022600',
-                                      twodaysago.strftime('%Y%m%d') + '12']
+                                      threedaysago.strftime('%Y%m%d') + '12']
         self.dates["FV3GFSnemsio"] = ['2019061200',
                                       '2020022518',
                                       '2021032018']
         self.dates["FV3GFSnetcdf"] = ['2021032100',
-                                      twodaysago.strftime('%Y%m%d') + '00']
+                                      threedaysago.strftime('%Y%m%d') + '00']
         self.dates["RAPhpss"]      = ['2018071118',
                                       '2020022618',
-                                      twodaysago.strftime('%Y%m%d') + '06']
+                                      threedaysago.strftime('%Y%m%d') + '06']
         self.dates["RAPaws"]       = ['2021022200',
-                                      twodaysago.strftime('%Y%m%d%H')]
+                                      threedaysago.strftime('%Y%m%d%H')]
 
 
     @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
@@ -77,12 +77,12 @@ class FunctionalTesting(unittest.TestCase):
                     '--config', self.config,
                     '--cycle_date', date,
                     '--data_stores', 'hpss',
-                    '--external_model', 'FV3GFS',
+                    '--data_type', 'FV3GFS',
                     '--fcst_hrs', '6', '12', '3',
                     '--output_path', tmp_dir,
                     '--ics_or_lbcs', 'LBCS',
                     '--debug',
-                    '--file_type', 'grib2',
+                    '--file_fmt', 'grib2',
                 ]
                 # fmt: on
 
@@ -109,12 +109,12 @@ class FunctionalTesting(unittest.TestCase):
                     '--config', self.config,
                     '--cycle_date', date,
                     '--data_stores', 'hpss',
-                    '--external_model', 'FV3GFS',
+                    '--data_type', 'FV3GFS',
                     '--fcst_hrs', '24',
                     '--output_path', tmp_dir,
                     '--ics_or_lbcs', 'LBCS',
                     '--debug',
-                    '--file_type', 'nemsio',
+                    '--file_fmt', 'nemsio',
                 ]
                 # fmt: on
 
@@ -143,12 +143,12 @@ class FunctionalTesting(unittest.TestCase):
                     '--config', self.config,
                     '--cycle_date', date,
                     '--data_stores', 'hpss',
-                    '--external_model', 'FV3GFS',
+                    '--data_type', 'FV3GFS',
                     '--fcst_hrs', '24', '48', '24',
                     '--output_path', tmp_dir,
                     '--ics_or_lbcs', 'LBCS',
                     '--debug',
-                    '--file_type', 'netcdf',
+                    '--file_fmt', 'netcdf',
                 ]
                 # fmt: on
 
@@ -176,12 +176,12 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022052512',
                 '--data_stores', 'aws',
-                '--external_model', 'GDAS',
+                '--data_type', 'GDAS',
                 '--fcst_hrs', '6', '9', '3',
                 '--output_path', out_path_tmpl,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
-                '--file_type', 'netcdf',
+                '--file_fmt', 'netcdf',
                 '--members', '9', '10',
             ]
             # fmt: on
@@ -204,7 +204,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{mem:03d}")
 
             # fmt: off
             args = [
@@ -212,12 +212,12 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022052512',
                 '--data_stores', 'aws',
-                '--external_model', 'GEFS',
+                '--data_type', 'GEFS',
                 '--fcst_hrs', '6',
                 '--output_path', out_path_tmpl,
                 '--ics_or_lbcs', 'ICS',
                 '--debug',
-                '--file_type', 'netcdf',
+                '--file_fmt', 'netcdf',
                 '--members', '1', '2',
             ]
             # fmt: on
@@ -246,7 +246,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'hpss',
-                '--external_model', 'HRRR',
+                '--data_type', 'HRRR',
                 '--fcst_hrs', '0',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'ICS',
@@ -276,7 +276,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'hpss',
-                '--external_model', 'HRRR',
+                '--data_type', 'HRRR',
                 '--fcst_hrs', '3', '24', '3',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
@@ -305,7 +305,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'aws',
-                '--external_model', 'HRRR',
+                '--data_type', 'HRRR',
                 '--fcst_hrs', '0',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'ICS',
@@ -334,7 +334,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022062512',
                 '--data_stores', 'aws',
-                '--external_model', 'HRRR',
+                '--data_type', 'HRRR',
                 '--fcst_hrs', '3', '24', '3',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
@@ -366,7 +366,7 @@ class FunctionalTesting(unittest.TestCase):
                     '--config', self.config,
                     '--cycle_date', date,
                     '--data_stores', 'hpss',
-                    '--external_model', 'RAP',
+                    '--data_type', 'RAP',
                     '--fcst_hrs', '3',
                     '--output_path', tmp_dir,
                     '--ics_or_lbcs', 'ICS',
@@ -396,7 +396,7 @@ class FunctionalTesting(unittest.TestCase):
                     '--config', self.config,
                     '--cycle_date', date,
                     '--data_stores', 'aws',
-                    '--external_model', 'RAP',
+                    '--data_type', 'RAP',
                     '--fcst_hrs', '3',
                     '--output_path', tmp_dir,
                     '--ics_or_lbcs', 'ICS',
@@ -426,7 +426,7 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2022062509',
                 '--data_stores', 'aws',
-                '--external_model', 'RAP',
+                '--data_type', 'RAP',
                 '--fcst_hrs', '3', '45', '6',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
@@ -455,12 +455,12 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2020072300',
                 '--data_stores', 'aws',
-                '--external_model', 'UFS-CASE-STUDY',
+                '--data_type', 'UFS-CASE-STUDY',
                 '--fcst_hrs', '0',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'ICS',
                 '--debug',
-                '--file_type', 'nemsio',
+                '--file_fmt', 'nemsio',
                 '--check_file',
             ]
             # fmt: on
@@ -481,15 +481,73 @@ class FunctionalTesting(unittest.TestCase):
                 '--config', self.config,
                 '--cycle_date', '2020072300',
                 '--data_stores', 'aws',
-                '--external_model', 'UFS-CASE-STUDY',
+                '--data_type', 'UFS-CASE-STUDY',
                 '--fcst_hrs', '3', '6', '3',
                 '--output_path', tmp_dir,
                 '--ics_or_lbcs', 'LBCS',
                 '--debug',
-                '--file_type', 'nemsio',
+                '--file_fmt', 'nemsio',
                 '--check_file',
             ]
             # fmt: on
 
             # Testing that there is no failure
             retrieve_data.main(args)
+
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
+    def test_rap_obs_from_hpss(self):
+
+        """Get RAP observations from hpss for a 06z time"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'obs',
+                '--config', self.config,
+                '--cycle_date', '2023032106',
+                '--data_stores', 'hpss',
+                '--data_type', 'RAP_obs',
+                '--output_path', tmp_dir,
+                '--debug',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 30)
+
+    @unittest.skipIf(os.environ.get("CI") == "true", "Skipping HPSS tests")
+    def test_rap_e_obs_from_hpss(self):
+
+        """Get RAP observations from hpss for a 12z time;
+           at 00z and 12z we expect to see additional files
+           with the 'rap_e' naming convention"""
+
+        with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
+            os.chdir(tmp_dir)
+
+            # fmt: off
+            args = [
+                '--file_set', 'obs',
+                '--config', self.config,
+                '--cycle_date', '2023032112',
+                '--data_stores', 'hpss',
+                '--data_type', 'RAP_obs',
+                '--output_path', tmp_dir,
+                '--debug',
+            ]
+            # fmt: on
+
+            retrieve_data.main(args)
+
+            # Verify files exist in temp dir
+
+            path = os.path.join(tmp_dir, "*")
+            files_on_disk = glob.glob(path)
+            self.assertEqual(len(files_on_disk), 37)
