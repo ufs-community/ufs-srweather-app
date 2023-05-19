@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
+"""
+Set AQM-specific namelist settingSet AQM-specific namelist settingss
+"""
+
 import os
 import sys
 import argparse
-import logging
 from textwrap import dedent
 
 from python_utils import (
     import_vars,
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
@@ -31,7 +33,7 @@ def update_input_nml(run_dir):
     print_input_args(locals())
 
     # import all environment variables
-    import_vars()
+    import_vars(env_vars=('VERBOSE', 'FV3_NML_FN'))
 
     #
     # -----------------------------------------------------------------------
@@ -44,7 +46,7 @@ def update_input_nml(run_dir):
         f"""
         Updating the FV3 input.nml file in the specified run directory (run_dir):
           run_dir = '{run_dir}'""",
-        verbose=VERBOSE,
+          verbose=VERBOSE, # pylint: disable=undefined-variable
     )
     #
     # -----------------------------------------------------------------------
@@ -69,7 +71,7 @@ def update_input_nml(run_dir):
         settings["gfs_physics_nml"] = {
             "nstf_name": [2, 0, 0, 0, 0],
         }
-    
+
     # For AQM_NA_13km domain for air quality modeling
     if args.aqm_na_13km:
         settings["fv_core_nml"] = {
@@ -85,10 +87,13 @@ def update_input_nml(run_dir):
             f"""
             The variable 'settings' specifying values to be used in the FV3 'input.nml'
             file for restart has been set as follows:\n
-            settings =\n\n"""
-        )
-        + settings_str,
-        verbose=VERBOSE,
+            settings =
+
+            {settings_str}
+
+            """
+        ),
+        verbose=VERBOSE, # pylint: disable=undefined-variable
     )
     #
     # -----------------------------------------------------------------------
@@ -98,37 +103,19 @@ def update_input_nml(run_dir):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN)
+    fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN) # pylint: disable=undefined-variable
 
-    try:
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                fv3_input_nml_fp,
-                "-u",
-                settings_str,
-                "-o",
-                fv3_input_nml_fp,
-            ]
-        )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Full path to output namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-        return False
-
+    set_namelist(
+        [
+            "-q",
+            "-n",
+            fv3_input_nml_fp,
+            "-u",
+            settings_str,
+            "-o",
+            fv3_input_nml_fp,
+        ]
+    )
     return True
 
 
@@ -151,7 +138,7 @@ def parse_args(argv):
     )
 
     parser.add_argument(
-        "--restart", 
+        "--restart",
         action='store_true',
         help='Update for restart')
 

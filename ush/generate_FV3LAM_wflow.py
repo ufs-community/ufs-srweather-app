@@ -559,7 +559,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
-        set_FV3nml_sfc_climo_filenames()
+        set_fv3nml_sfc_climo_filenames()
 
     #
     # -----------------------------------------------------------------------

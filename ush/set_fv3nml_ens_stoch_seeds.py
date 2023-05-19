@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 
+"""
+Defines the function that sets the stochastic seed for each ensemble
+member in the namelist.
+"""
+
 import os
 import sys
 import argparse
 from textwrap import dedent
-from datetime import datetime
 
 from python_utils import (
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
-    date_to_str,
-    mkdir_vrfy,
-    cp_vrfy,
-    cd_vrfy,
     str_to_type,
     import_vars,
-    set_env_var,
-    define_macos_utilities,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
@@ -26,7 +23,7 @@ from python_utils import (
 from set_namelist import set_namelist
 
 
-def set_FV3nml_ens_stoch_seeds(cdate):
+def set_fv3nml_ens_stoch_seeds(cdate):
     """
     This function, for an ensemble-enabled experiment
     (i.e. for an experiment for which the workflow configuration variable
@@ -48,6 +45,8 @@ def set_FV3nml_ens_stoch_seeds(cdate):
 
     # import all environment variables
     import_vars()
+
+    # pylint: disable=undefined-variable
 
     #
     # -----------------------------------------------------------------------
@@ -109,27 +108,9 @@ def set_FV3nml_ens_stoch_seeds(cdate):
         verbose=VERBOSE,
     )
 
-    try:
-        set_namelist(
-            ["-q", "-n", FV3_NML_FP, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
-        )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to set the variables in the FV3
-                namelist file that specify the paths to the surface climatology files
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Full path to output namelist file:
-                    fv3_nml_ensmem_fp = '{fv3_nml_ensmem_fp}'
-                  Namelist settings specified on command line (these have highest precedence):\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-
+    set_namelist(
+        ["-q", "-n", FV3_NML_FP, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
+    )
 
 def parse_args(argv):
     """Parse command line arguments"""
@@ -155,4 +136,4 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    set_FV3nml_ens_stoch_seeds(str_to_type(args.cdate))
+    set_fv3nml_ens_stoch_seeds(str_to_type(args.cdate))
