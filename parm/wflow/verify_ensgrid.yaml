@@ -86,22 +86,22 @@ metatask_GEPES_MRMS:
       MET_TOOL: 'GENENSPROD'
       OBTYPE: 'MRMS'
     dependency:
-      metataskdep:
-        attrs:
-          metatask: run_ens_post
+      and:
+        taskdep:
+          attrs:
+            task: get_obs_mrms
+        metataskdep:
+          attrs:
+            metatask: run_ens_post
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_MRMS
     envars:
       <<: *envars_GenEnsProd_MRMS
       MET_TOOL: 'ENSEMBLESTAT'
     dependency:
-      and:
-        taskdep_getobsmrms:
-          attrs:
-            task: get_obs_mrms
-        taskdep_genensprod:
-          attrs:
-            task: run_MET_GenEnsProd_vx_#VAR#
+      taskdep:
+        attrs:
+          task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GEPES_NDAS:
   var:
