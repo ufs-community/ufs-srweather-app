@@ -21,7 +21,7 @@ workflow:
 # It also assumes staged observations, so turn off those tasks.
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/verify.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/verify_det.yaml"]|include }}'
     task_get_obs_ccpa:
     task_get_obs_mrms:
     task_get_obs_ndas:

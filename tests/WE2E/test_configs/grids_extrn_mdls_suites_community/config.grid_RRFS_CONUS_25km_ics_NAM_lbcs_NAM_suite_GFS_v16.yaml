@@ -16,13 +16,13 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml", "parm/wflow/verify_ensgrid.yaml"]|include }}'
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
+    task_get_obs_ccpa:
+    task_get_obs_mrms:
+    task_get_obs_ndas:
     metatask_GEPES_MRMS:
       task_run_MET_GenEnsProd_vx_#VAR#:
         dependency:
