@@ -447,7 +447,6 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -639,10 +638,10 @@ workflow:
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
   
-  FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
-  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
   FV3_NML_FN: "input.nml"
+  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
+  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
+  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
   FV3_EXEC_FN: "ufs_model"
 
   DATA_TABLE_FN: "data_table"
@@ -670,6 +669,10 @@ workflow:
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+  FV3_NML_CYCSFC_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}'
+  FV3_NML_RESTART_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}'
+  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
+  FV3_NML_RESTART_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -1170,6 +1173,32 @@ rrfs:
   #
   DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
   DO_NLDN_LGHT: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with ensembles.  Definitions:
+  #
+  # DO_ENKFUPDATE:
+  # Decide whether or not to run EnKF update for the ensemble members
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_ENKFUPDATE: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with running data assimilation.  Definitions:
+  #
+  # DO_DACYCLE:
+  # Flag that determines whether to run a data assimilation cycle.
+  #
+  # DO_SURFACE_CYCLE:
+  # Flag that determines whether to continue cycle surface fields.
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_DACYCLE: false
+  DO_SURFACE_CYCLE: false
 
 #----------------------------
 # MAKE GRID config parameters
@@ -2375,6 +2404,12 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+  # PRINT_DIFF_PGR:
+  # Option to turn on/off pressure tendency diagnostic
+  #
+  #-----------------------------------------------------------------------
+  #
+  PRINT_DIFF_PGR: false
 
 #----------------------------
 # verification (vx) parameters
