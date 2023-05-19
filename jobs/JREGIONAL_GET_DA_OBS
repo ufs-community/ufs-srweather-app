@@ -3,21 +3,13 @@
 #
 #-----------------------------------------------------------------------
 #
-# This J-JOB script runs the NetCDF lightning observation preprocess 
-#      for the FV3-LAM model
-#
-#-----------------------------------------------------------------------
-#
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. ${USHdir}/source_util_funcs.sh
-source_config_for_task "task_process_bufrobs" ${GLOBAL_VAR_DEFNS_FP}
-. ${USHdir}/job_preamble.sh "TRUE"
+. $USHdir/source_util_funcs.sh
+source_config_for_task "task_run_anl|task_run_enkf" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -51,31 +43,32 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs a lightning preprocess for 
-the specified cycle.
+This script retrieves observation data for RRFS data assimilation tasks.
 ========================================================================"
+
 #
 #-----------------------------------------------------------------------
 #
-# Create the working directory under the cycle directory.
+# Create the directory where the GSI obs files should be stored
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CYCLE_TYPE}" == "spinup" ]; then
-  DATA="${DATA:-${COMIN}/process_lightning_spinup}"
-else
-  DATA="${DATA:-${COMIN}/process_lightning}"
-fi
-mkdir_vrfy -p ${DATA}
+export DATA="${COMIN}/obs"
+mkdir_vrfy -p "${DATA}"
+
+# Set needed date/time variables
+export START_DATE=$(echo "${PDY} ${cyc}")
+export YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
+
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# Call the ex-script for this J-job
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_process_lightning.sh || print_err_msg_exit "\
+$SCRIPTSdir/exregional_get_da_obs.sh || \
+print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
@@ -88,9 +81,9 @@ job_postamble
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# Restore the shell options saved at the beginning of this script/function.
 #
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
+

@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_process_bufr" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_process_bufrobs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -88,19 +88,6 @@ cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
 BUFR_TABLE=${FIXgsi}/prepobs_prep_RAP.bufrtable
 cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 
-#-----------------------------------------------------------------------
-#
-#   set observation soruce 
-#
-#-----------------------------------------------------------------------
-obs_source=rap
-if [[ ${HH} -eq '00' || ${HH} -eq '12' ]]; then
-  obs_source=rap_e
-fi
-
-# evaluate template path that uses `obs_source`
-eval OBSPATH_TEMPLATE=${OBSPATH_TEMPLATE}
-
 #
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
@@ -109,7 +96,7 @@ eval OBSPATH_TEMPLATE=${OBSPATH_TEMPLATE}
 #
 #-----------------------------------------------------------------------
 
-obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lghtng.tm00.bufr_d
+obs_file="${COMIN}/obs/lghtngbufr"
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_lightning=false
 if [ -r "${obs_file}" ]; then
@@ -185,7 +172,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${OBSPATH_TEMPLATE}.t${HH}z.lgycld.tm00.bufr_d
+obs_file="${COMIN}/obs/lgycld.bufr_d"
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_cloud=false
 if [ -r "${obs_file}" ]; then
@@ -268,7 +255,7 @@ fi
 #
 #-----------------------------------------------------------------------
 
-obs_file=${OBSPATH_TEMPLATE}.t${HH}z.prepbufr.tm00 
+obs_file="${COMIN}/obs/prepbufr" 
 print_info_msg "$VERBOSE" "obsfile is $obs_file"
 run_metar=false
 if [ -r "${obs_file}" ]; then

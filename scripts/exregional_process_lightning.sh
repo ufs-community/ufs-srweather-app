@@ -89,28 +89,9 @@ cp_vrfy ${pregen_grid_dir}/fv3_grid_spec          fv3sar_grid_spec.nc
 run_lightning=false
 filenum=0
 
-for incr in $(seq -25 5 5) ; do 
-  filedate=$(date +"%y%j%H%M" -d "${START_DATE} ${incr} minutes ")
-  filename=${LIGHTNING_ROOT}/${filedate}0005r
-  if [ -r ${filename} ]; then
-  ((filenum += 1 ))
-    ln -sf ${filename} ./NLDN_lightning_${filenum}
-    run_lightning=true
-  else
-   echo " ${filename} does not exist"
-  fi
+for file in "${COMIN}/obs/NLDN_lightning_*"; do
+  ln_vrfy ${file} .
 done
-
-echo "found GLD360 files: ${filenum}"
-
-#-----------------------------------------------------------------------
-#
-# copy bufr table from fix directory
-#
-#-----------------------------------------------------------------------
-BUFR_TABLE=${FIXgsi}/prepobs_prep_RAP.bufrtable
-
-cp_vrfy $BUFR_TABLE prepobs_prep.bufrtable
 
 #-----------------------------------------------------------------------
 #

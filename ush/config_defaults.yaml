@@ -454,12 +454,9 @@ platform:
   #
   # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
   #
-  # LIGHTNING_ROOT: location of lightning observations
-  #
   #-----------------------------------------------------------------------
   #
   OBSPATH_NSSLMOSIAC: ""
-  LIGHTNING_ROOT: ""
     
 #-----------------------------
 # WORKFLOW config parameters
@@ -652,10 +649,10 @@ workflow:
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
   
-  FV3_NML_BASE_SUITE_FN: "input.nml.FV3"
-  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "input.nml.base_ens"
   FV3_NML_FN: "input.nml"
+  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
+  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
+  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
   FV3_EXEC_FN: "ufs_model"
 
   DATA_TABLE_FN: "data_table"
@@ -683,6 +680,10 @@ workflow:
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
+  FV3_NML_CYCSFC_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}'
+  FV3_NML_RESTART_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}'
+  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
+  FV3_NML_RESTART_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -881,6 +882,15 @@ workflow:
   # An array containing the hours of the day at which the product cycle starts,
   # from cold start input or from spin-up cycle forcast
   #
+  # BOUNDARY_LEN_HRS
+  # The length of boundary condition for normal forecast, in integer hours.
+  #
+  # BOUNDARY_LONG_LEN_HRS
+  # The length of boundary condition for long forecast, in integer hours.
+  #
+  # BOUNDARY_PROC_GROUP_NUM
+  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
+  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -893,6 +903,9 @@ workflow:
 
   CYCL_HRS_SPINSTART: []
   CYCL_HRS_PRODSTART: []
+  BOUNDARY_LEN_HRS: 0
+  BOUNDARY_LONG_LEN_HRS: 0
+  BOUNDARY_PROC_GROUP_NUM: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1028,6 +1041,12 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
+  # NWGES:
+  # The beginning portion of the directory that will contain the output 
+  # files from the forecast for a given cycle.  For a cycle 
+  # that starts on the date specified by yyyymmdd and hour specified by hh
+  #   ${NWGES}/yyyymmddhh
+  # 
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -1038,6 +1057,7 @@ nco:
   NET: "rrfs"
   RUN: "rrfs"
   model_ver: "v1.0.0"
+
   OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT: '{{ OPSROOT }}/com'
   PACKAGEROOT: '{{ OPSROOT }}/packages'
@@ -1047,6 +1067,12 @@ nco:
   EXTROOT: '{{ OPSROOT }}/ext'
   COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
   COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+
+  #
+  # New additions from RRFS_dev1
+  #
+  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES_BASEDIR: '{{ NWGES }}'
 
   #
   #-----------------------------------------------------------------------
@@ -1145,12 +1171,45 @@ rrfs:
   #
   #-----------------------------------------------------------------------
   #
+  # Set parameters associated with running retrospective experiments.  Definitions:
+  #
+  # DO_RRFS_DEV:
+  # Flag to turn on RRFS dev workflow. Should be removed
+  # in the future once SRW and RRFS dev workflows are completely integrated
+  #
   # DO_NLDN_LGHT
   #     Flag turn on processing NLDN NetCDF lightning data  
   #
   #-----------------------------------------------------------------------
   #
+  DO_RRFS_DEV: false # Turn this on to test RRFS dev workflow
   DO_NLDN_LGHT: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with ensembles.  Definitions:
+  #
+  # DO_ENKFUPDATE:
+  # Decide whether or not to run EnKF update for the ensemble members
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_ENKFUPDATE: false
+  #
+  #-----------------------------------------------------------------------
+  #
+  # Set switches associated with running data assimilation.  Definitions:
+  #
+  # DO_DACYCLE:
+  # Flag that determines whether to run a data assimilation cycle.
+  #
+  # DO_SURFACE_CYCLE:
+  # Flag that determines whether to continue cycle surface fields.
+  #
+  #-----------------------------------------------------------------------
+  #
+  DO_DACYCLE: false
+  DO_SURFACE_CYCLE: false
 
 #----------------------------
 # MAKE GRID config parameters
@@ -1587,6 +1646,26 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
+  #
+  #-----------------------------------------------------------------------
+  #
+  # LBCS_SEARCH_HRS:
+  #  When search boundary conditions tasks from previous cycles in prep_cyc step,
+  #  For example: 0 means search start for the same cycle lbcs task.
+  #               1 means search start for 1-h previous cycle lbcs task.
+  #               2 means search start for 2-h previous cycle lbcs task.
+  #
+  # EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS:
+  #  When search boundary conditions from previous cycles in prep_start step,
+  #  the search will start at cycle before (this parameter) of current cycle.
+  #  For example: 0 means search start at the same cycle lbcs directory.
+  #               1 means search start at 1-h previous cycle  lbcs directory.
+  #               2 means search start at 2-h previous cycle  lbcs directory.
+  #
+  #-----------------------------------------------------------------------
+  #
+  LBCS_SEARCH_HRS: 6
+  EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS: 0
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_SYSBASEDIR_LBCS:
@@ -2113,13 +2192,29 @@ task_process_radarref:
   OBS_SUFFIX: grib2
 
 #----------------------------
-# PROCESS BUFR config parameters
+# Parameters needed for retrieving DA obs
 #-----------------------------
-task_process_bufr:
+task_get_da_obs:
+
   #
   #-----------------------------------------------------------------------
   #
-  # observation file templates used in process_bufr
+  # NLDN_NEEDED
+  #   whether to use NLDN observations in DA or not.
+  #
+  #-----------------------------------------------------------------------
+  #
+  NLDN_NEEDED: False
+
+#----------------------------
+# PROCESS BUFR config parameters
+#-----------------------------
+task_process_bufrobs:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # OBSPATH_TEMPLATE
+  #   observation file templates used in process_bufrobs
   #
   #-----------------------------------------------------------------------
   #
@@ -2311,6 +2406,12 @@ global:
   #
   #-----------------------------------------------------------------------
   #
+  # PRINT_DIFF_PGR:
+  # Option to turn on/off pressure tendency diagnostic
+  #
+  #-----------------------------------------------------------------------
+  #
+  PRINT_DIFF_PGR: false
 
 #----------------------------
 # verification (vx) parameters

@@ -69,7 +69,6 @@ YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
 YYYY=${YYYYMMDDHH:0:4}
 MM=${YYYYMMDDHH:4:2}
 DD=${YYYYMMDDHH:6:2}
-HH=${YYYYMMDDHH:8:2}
 
 #
 #-----------------------------------------------------------------------
@@ -83,12 +82,12 @@ HH=${YYYYMMDDHH:8:2}
 BKTYPE=0
 if [ ${DO_SPINUP} == "TRUE" ]; then
   if [ ${CYCLE_TYPE} == "spinup" ]; then
-    if [[ ${CYCL_HRS_SPINSTART[@]} =~ "$HH" ]] ; then
+    if [[ ${CYCL_HRS_SPINSTART[@]} =~ "$cyc" ]] ; then
       BKTYPE=1
     fi
   fi
 else
-  if [[ ${CYCL_HRS_PRODSTART[@]} =~ "$HH" ]] ; then
+  if [[ ${CYCL_HRS_PRODSTART[@]} =~ "$cyc" ]] ; then
     BKTYPE=1
   fi
 fi
@@ -155,20 +154,20 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
   for min in ${RADARREFL_MINS[@]}
   do
     min=$( printf %2.2i $((timelevel+min)) )
-    echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${HH}":"${min}
+    echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
     sec=0
     while [[ $sec -le 59 ]]; do
       ss=$(printf %2.2i ${sec})
-      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${HH}${min}${ss}.${OBS_SUFFIX}
+      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}${ss}.${OBS_SUFFIX}
       if [ -s $nsslfile ]; then
         echo 'Found '${nsslfile}
-        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${HH}${min}*.${OBS_SUFFIX}
+        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
         numgrib2=$(ls ${NSSL}/${nsslfile1} | wc -l)
         echo 'Number of GRIB-2 files: '${numgrib2}
         if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
           cp ${NSSL}/${nsslfile1} . 
           ls ${nsslfile1} > filelist_mrms 
-          echo 'Creating links for ${YYYY}${MM}${DD}-${HH}${min}'
+          echo 'Creating links for ${YYYY}${MM}${DD}-${cyc}${min}'
         fi
       fi
       ((sec+=1))
@@ -180,7 +179,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
      if [ ${OBS_SUFFIX} == "grib2.gz" ]; then
         gzip -d *.gz
         mv filelist_mrms filelist_mrms_org
-        ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${HH}????.grib2 > filelist_mrms
+        ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
      fi
 
      numgrib2=$(more filelist_mrms | wc -l)
