@@ -4,6 +4,7 @@ a singularity container
 ]])
 
 whatis([===[Loads libraries needed for running the UFS SRW App in a singularity container]===])
+load("set_pythonpath")
 
 append_path("MODULEPATH","/opt/hpc-modules/modulefiles/core")
 load("miniconda3")
