@@ -282,7 +282,7 @@ def generate_FV3LAM_wflow(
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
-    # These need to be set in the FV3-LAM Fortran namelist file.  They represen
+    # These need to be set in the FV3-LAM Fortran namelist file. They represent
     # the number of cell vertices in the x and y directions on the regional
     # grid.
     #
@@ -290,7 +290,7 @@ def generate_FV3LAM_wflow(
     npy = NY + 1
     #
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
-    # Otherwise, leave it unspecified (which means it gets set to the defaul
+    # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
     #
     kice = None
@@ -302,7 +302,7 @@ def generate_FV3LAM_wflow(
     # nsoill_out in the namelist file for chgres_cube.  [On the other hand,
     # the parameter lsoil_lsm (not set here but set in input.nml.FV3 and/or
     # FV3.input.yml) is the number of soil levels that the LSM scheme in the
-    # forecast model will run with.]  Here, we use the same approach to se
+    # forecast model will run with.]  Here, we use the same approach to set
     # lsoil as the one used to set nsoill_out in exregional_make_ics.sh.
     # See that script for details.
     #
