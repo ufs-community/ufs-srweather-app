@@ -452,7 +452,7 @@ list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
 # to remove it from the namelist!  Which is better to use??
 #
 settings="
-'config': {
+'config':
  'fix_dir_target_grid': ${FIXlam},
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
@@ -474,22 +474,30 @@ settings="
  'tracers_input': ${tracers_input},
  'tracers': ${tracers},
  'thomp_mp_climo_file': ${thomp_mp_climo_file},
-}
 "
+
+tmpfile=$( $READLINK -f "$(mktemp ./make_lbcs_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
 #
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
+  ${USHdir}/python_utils/uwtools/scripts/set_config.py \
+    -i "$settings" \
+    --output_file_type F90 \
+    -o ${nml_fn} || \
     print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist
+Call to uwtools set_config to set the variables in the namelist
 file read in by the ${exec_fn} executable failed.  Parameters passed to
 this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
-$settings"
+  Full path to configuration file:
+    $tmpfile"
+
+rm $tmpfile
 #
 #-----------------------------------------------------------------------
 #

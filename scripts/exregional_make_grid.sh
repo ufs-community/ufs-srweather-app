@@ -275,19 +275,24 @@ generation executable (exec_fp):
     'pazi': ${PAZI},
  }
 "
+tmpfile=$( $READLINK -f "$(mktemp ./make_grid_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
 #
 # Call the python script to create the namelist file.
 #
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
+  ${USHdir}/python_utils/uwtools/scripts/set_config.py -i "$tmpfile" -o ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the
+Call to uwtools set_config to set the variables in the
 regional_esg_grid namelist file failed.  Parameters passed to this script
 are:
   Full path to output namelist file:
     rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
-$settings"
+  Full path to configuration file:
+    ${tmpfile}"
+
+rm $tmpfile
 #
 # Call the executable that generates the grid file.
 #
