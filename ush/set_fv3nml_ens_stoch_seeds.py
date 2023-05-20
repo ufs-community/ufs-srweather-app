@@ -20,7 +20,9 @@ from python_utils import (
     flatten_dict,
 )
 
-from set_namelist import set_namelist
+# These come from ush/python_utils/uwtools
+from scripts.set_config import create_config_obj
+from uwtools import exceptions
 
 
 def set_fv3nml_ens_stoch_seeds(cdate):
@@ -65,34 +67,25 @@ def set_fv3nml_ens_stoch_seeds(cdate):
     settings = {}
     nam_stochy_dict = {}
 
+
+    seed = lambda x: cdate_i * 1000 + ensmem_num * 10 + x
     if DO_SPPT:
-        iseed_sppt = cdate_i * 1000 + ensmem_num * 10 + 1
-        nam_stochy_dict.update({"iseed_sppt": iseed_sppt})
+        nam_stochy_dict.update({"iseed_sppt": seed(1)})
 
     if DO_SHUM:
-        iseed_shum = cdate_i * 1000 + ensmem_num * 10 + 2
-        nam_stochy_dict.update({"iseed_shum": iseed_shum})
+        nam_stochy_dict.update({"iseed_shum": seed(2)})
 
     if DO_SKEB:
-        iseed_skeb = cdate_i * 1000 + ensmem_num * 10 + 3
-        nam_stochy_dict.update({"iseed_skeb": iseed_skeb})
+        nam_stochy_dict.update({"iseed_skeb": seed(3)})
 
     settings["nam_stochy"] = nam_stochy_dict
 
     if DO_SPP:
-        num_iseed_spp = len(ISEED_SPP)
-        iseed_spp = [None] * num_iseed_spp
-        for i in range(num_iseed_spp):
-            iseed_spp[i] = cdate_i * 1000 + ensmem_num * 10 + ISEED_SPP[i]
-
-        settings["nam_sppperts"] = {"iseed_spp": iseed_spp}
-    else:
-        settings["nam_sppperts"] = {}
+        spp_seed_list = [seed(spp_seed) for spp_seed in ISEED_SPP]
+        settings["nam_sppperts"] = {"iseed_spp": spp_seed_list}
 
     if DO_LSM_SPP:
-        iseed_lsm_spp = cdate_i * 1000 + ensmem_num * 10 + 9
-
-        settings["nam_sppperts"] = {"iseed_lndp": [iseed_lsm_spp]}
+        settings["nam_sppperts"] = {"iseed_lndp": [seed(9)]}
 
     settings_str = cfg_to_yaml_str(settings)
 
@@ -108,9 +101,14 @@ def set_fv3nml_ens_stoch_seeds(cdate):
         verbose=VERBOSE,
     )
 
-    set_namelist(
-        ["-q", "-n", FV3_NML_FP, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
-    )
+    try:
+        create_config_obj(
+            ["-i", FV3_NML_FP,
+             "-o", fv3_nml_ensmem_fp],
+            config_dict=settings,
+        )
+    except exceptions.UWConfigError as e:
+        sys.exit(e)
 
 def parse_args(argv):
     """Parse command line arguments"""

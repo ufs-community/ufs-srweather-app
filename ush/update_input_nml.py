@@ -18,7 +18,9 @@ from python_utils import (
     flatten_dict,
 )
 
-from set_namelist import set_namelist
+# These come from ush/python_utils/uwtools
+from scripts.set_config import create_config_obj
+from uwtools import exceptions
 
 
 def update_input_nml(run_dir):
@@ -105,17 +107,19 @@ def update_input_nml(run_dir):
     #
     fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN) # pylint: disable=undefined-variable
 
-    set_namelist(
-        [
-            "-q",
-            "-n",
-            fv3_input_nml_fp,
-            "-u",
-            settings_str,
-            "-o",
-            fv3_input_nml_fp,
-        ]
-    )
+    try:
+        create_config_obj(
+            [
+                "-i",
+                fv3_input_nml_fp,
+                "-o",
+                fv3_input_nml_fp,
+            ],
+            config_dict=settings,
+        )
+    except exceptions.UWConfigError as e:
+         sys.exit(e)
+
     return True
 
 

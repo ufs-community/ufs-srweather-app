@@ -5,12 +5,9 @@ import os
 from textwrap import dedent
 
 from python_utils import (
-    log_info,
-    list_to_str,
     print_input_args,
     load_xml_file,
     has_tag_with_value,
-    find_pattern_in_str,
 )
 
 
@@ -23,7 +20,7 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
         FIXgsm system directory to copy to the experiment's FIXam directory.
 
     (3) Updates the symlink for the ozone file provided in link_mappings
-        list to include the name of global ozone production/loss file.
+        dict to include the name of global ozone production/loss file.
 
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
@@ -84,47 +81,8 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
             f"Unknown or no ozone parameterization specified in the "
             "CCPP physics suite file '{ccpp_phys_suite_fp}'"
         )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the element in the array CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING that
-    # specifies the mapping between the symlink for the ozone production/loss
-    # file that must be created in each cycle directory and its target in the
-    # FIXam directory.  The name of the symlink is already in the array, but
-    # the target is not because it depends on the ozone parameterization that
-    # the physics suite uses.  Since we determined the ozone parameterization
-    # above, we now set the target of the symlink accordingly.
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set the mapping between the symlink and the target file we just
-    # found. The link name is already in the list, but the target file
-    # is not.
-    #
-    # -----------------------------------------------------------------------
-    #
-
-    ozone_symlink = "global_o3prdlos.f77"
-    fixgsm_ozone_fn_is_set = False
-
-    ozone_link_mappings = copy.deepcopy(link_mappings)
-    for i, mapping in enumerate(ozone_link_mappings):
-        symlink = mapping.split("|")[0]
-        if symlink.strip() == ozone_symlink:
-            ozone_link_mappings[i] = f"{symlink}| {fixgsm_ozone_fn}"
-            fixgsm_ozone_fn_is_set = True
-            break
-
-    # Make sure the list has been updated
-    if not fixgsm_ozone_fn_is_set:
-
-        raise Exception(
-            f"""
-            Unable to set name of the ozone production/loss file in the FIXgsm directory
-            in the array that specifies the mapping between the symlinks that need to
-            be created in the cycle directories and the files in the FIXgsm directory:
-              fixgsm_ozone_fn_is_set = '{fixgsm_ozone_fn_is_set}'"""
-        )
+    # Set the target file we just found
+    link_mappings["global_o3prdlos.f77"] = fixgsm_ozone_fn
 
     return ozone_param, fixgsm_ozone_fn, ozone_link_mappings

@@ -35,9 +35,14 @@ from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from fill_jinja_template import fill_jinja_template
-from set_namelist import set_namelist
 from check_python_version import check_python_version
 
+# These come from ush/python_utils/uwtools
+from scripts.set_config import create_config_obj
+from uwtools import config as uw_config
+from uwtools import exceptions
+
+LOG_NAME = "generate_wflow"
 
 def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
@@ -347,14 +352,14 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # It turns out that setting the variable to an empty string also works
     # to remove it from the namelist!  Which is better to use??
     #
-    settings = {}
-    settings["atmos_model_nml"] = {
-        "blocksize": BLOCKSIZE,
-        "ccpp_suite": CCPP_PHYS_SUITE,
+    settings = {
+        "atmos_model_nml": {
+            "blocksize": BLOCKSIZE,
+            "ccpp_suite": CCPP_PHYS_SUITE,
+            },
     }
 
-    fv_core_nml_dict = {}
-    fv_core_nml_dict.update({
+    fv_core_nml_dict = {
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
@@ -373,18 +378,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-    })
+    }
     if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
          CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
          CCPP_PHYS_SUITE == "FV3_GFS_v15p2" ):
-        if CPL_AQM:
-            fv_core_nml_dict.update({
-                "dnats": 5
-            })
-        else:
-            fv_core_nml_dict.update({
-                "dnats": 1
-            })
+        fv_core_nml_dict["dnats"] = 5 if CPL_AQM else 1
     elif CCPP_PHYS_SUITE == "FV3_GFS_v16":   
         if CPL_AQM:
             fv_core_nml_dict.update({
@@ -408,12 +406,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
 
     settings["fv_core_nml"] = fv_core_nml_dict
 
-    gfs_physics_nml_dict = {}
-    gfs_physics_nml_dict.update({
+    gfs_physics_nml_dict = {
         "kice": kice or None,
         "lsoil": lsoil or None,
         "print_diff_pgr": PRINT_DIFF_PGR,
-    })
+    }
 
     if CPL_AQM:
         gfs_physics_nml_dict.update({
@@ -442,43 +439,36 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # Add to "settings" the values of those namelist variables that specify
     # the paths to fixed files in the FIXam directory.  As above, these namelist
-    # variables are physcs-suite-independent.
+    # variables are physics-suite-independent.
     #
-    # Note that the array FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
+    # Note that the dict FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
     # the mapping between the namelist variables and the names of the files
-    # in the FIXam directory.  Here, we loop through this array and process
-    # each element to construct each line of "settings".
+    # in the FIXam directory.
     #
     dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
     if DO_ENSEMBLE:
         dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
 
-    regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-    num_nml_vars = len(FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING)
-    namsfc_dict = {}
-    for i in range(num_nml_vars):
 
-        mapping = f"{FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING[i]}"
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        FIXam_fn = tup[1]
+    mapping_dict = FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING
+    for nml_var_name, FIXam_fn in mapping_dict.items():
 
         fp = '""'
         if FIXam_fn:
-            fp = os.path.join(FIXam, FIXam_fn)
+            fix_fp = os.path.join(FIXam, FIXam_fn)
             #
             # If not in NCO mode, for portability and brevity, change fp so that it
             # is a relative path (relative to any cycle directory immediately under
             # the experiment directory).
             #
             if RUN_ENVIR != "nco":
-                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
+                fix_fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
         # format) the name of the current namelist variable and the value it should
         # be set to.
         #
-        namsfc_dict[nml_var_name] = fp
+        namsfc_dict[nml_var_name] = fix_fp
     #
     # Add namsfc_dict to settings
     #
@@ -489,62 +479,42 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     if PREDEF_GRID_NAME == "RRFS_NA_3km":
         settings["fms2_io_nml"] = {"netcdf_default_format": "netcdf4"}
 
-    settings_str = cfg_to_yaml_str(settings)
 
-    log_info(
-        f"""
-        The variable 'settings' specifying values of the weather model's
-        namelist variables has been set as follows:\n""",
-        verbose=verbose,
-    )
-    log_info("\nsettings =\n\n" + settings_str, verbose=verbose)
+    # Load pre-defined settings for the physics suite
+    suite_config = uw_config.F90Config(
+        config_path=FV3_NML_YAML_CONFIG_FP,
+        )
+    # Update the config object to include only the chosen suite data
+    suite_config.data = suite_config.data.get(CCPP_PHYS_SUITE)
+
+    # Combine the information from the settings dict and the default
+    # suite, where items defined in settings take priority.
+    suite_config.update_values(settings)
+
     #
     # -----------------------------------------------------------------------
     #
-    # Call the set_namelist.py script to create a new FV3 namelist file (full
-    # path specified by FV3_NML_FP) using the file FV3_NML_BASE_SUITE_FP as
-    # the base (i.e. starting) namelist file, with physics-suite-dependent
-    # modifications to the base file specified in the yaml configuration file
-    # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
-    # and with additional physics-suite-independent modifications specified
-    # in the variable "settings" set above.
+    # Here, we create the FV3 namelist file at the output location
+    # FV3_NML_FP. The FV3_NML_BASE_SUITE_FP is used as the "base
+    # namelist" and all differences accumulated from the suite_config
+    # and settings dictionary (logic above) are applied to the base.
     #
     # -----------------------------------------------------------------------
     #
     try:
-        set_namelist(
+        create_config_obj(
             [
-                "-q",
-                "-n",
+                "-i",
                 FV3_NML_BASE_SUITE_FP,
-                "-c",
-                FV3_NML_YAML_CONFIG_FP,
-                CCPP_PHYS_SUITE,
-                "-u",
-                settings_str,
                 "-o",
                 FV3_NML_FP,
             ]
+            config_dict=suite_config,
+            log=LOG_NAME,
         )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_BASE_SUITE_FP = '{FV3_NML_BASE_SUITE_FP}'
-                  Full path to yaml configuration file for various physics suites:
-                    FV3_NML_YAML_CONFIG_FP = '{FV3_NML_YAML_CONFIG_FP}'
-                  Physics suite to extract from yaml configuration file:
-                    CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
-                  Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
+    except exceptions.UWConfigError as e:
+        sys.exit(e)
+
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -558,7 +528,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # configurations is not known until the grid is created.
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
-
         set_fv3nml_sfc_climo_filenames()
 
     #
@@ -572,43 +541,28 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     if DO_SURFACE_CYCLE:
         if SDF_USES_RUC_LSM:
             lsoil=9
-        settings = {}
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
+        settings = {
+            "gfs_physics_nml": {
+                "lsoil": lsoil or None
+             },
         }
 
-        settings_str = cfg_to_yaml_str(settings)
         #
         # populate the namelist file
         #
         try:
-            set_namelist(
+            create_config_obj(
                 [
-                    "-q",
-                    "-n",
+                    "-i",
                     FV3_NML_FP,
-                    "-u",
-                    settings_str,
                     "-o",
                     FV3_NML_CYCSFC_FP,
-                ]
+                ],
+                config_dict=settings,
+                log=LOG_NAME,
             )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_CYCSFC_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
-      
+        except exceptions.UWConfigError as e:
+            sys.exit(e)
     #
     # -----------------------------------------------------------------------
     #
@@ -616,7 +570,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # -----------------------------------------------------------------------
     #
-    if DO_DACYCLE or DO_ENKFUPDATE:
+    if DO_DACYCLE:
 
         if SDF_USES_RUC_LSM:
             lsoil = 9
@@ -624,53 +578,38 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         lupdatebc = False
         if DO_UPDATE_BC:
             lupdatebc = False   # not ready for setting this to true yet
-        
-        settings = {}
-        settings["fv_core_nml"] = {
-            "external_ic": False,
-            "make_nh": False,
-            "na_init": 0,
-            "nggps_ic": False,
-            "mountain": True,
-            "regional_bcs_from_gsi": lupdatebc,
-            "warm_start": True,
-        }
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
-            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
+
+        settings = {
+            "fv_core_nml": {
+                "external_ic": False,
+                "make_nh": False,
+                "na_init": 0,
+                "nggps_ic": False,
+                "mountain": True,
+                "regional_bcs_from_gsi": lupdatebc,
+                "warm_start": True,
+                },
+            "gfs_physics_nml": {
+                "lsoil": lsoil or None,
+                },
         }
 
-        settings_str = cfg_to_yaml_str(settings)
         #
         # populate the namelist file
         #
         try:
-            set_namelist(
+            create_config_obj(
                 [
-                    "-q",
-                    "-n",
+                    "-i",
                     FV3_NML_FP,
-                    "-u",
-                    settings_str,
                     "-o",
                     FV3_NML_RESTART_FP,
-                ]
+                ],
+                config_dict=settings,
+                log=LOG_NAME,
             )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_RESTART_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
+        except exceptions.UWConfigError as e:
+            sys.exit(e)
     #
     # -----------------------------------------------------------------------
     #
@@ -681,16 +620,17 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # -----------------------------------------------------------------------
     #
-    settings = {}
-    settings["gfs_physics_nml"] = {
-        "do_shum": DO_SHUM,
-        "do_sppt": DO_SPPT,
-        "do_skeb": DO_SKEB,
-        "do_spp": DO_SPP,
-        "n_var_spp": N_VAR_SPP,
-        "n_var_lndp": N_VAR_LNDP,
-        "lndp_type": LNDP_TYPE,
-        "fhcyc": FHCYC_LSM_SPP_OR_NOT,
+    settings = {
+        "gfs_physics_nml": {
+            "do_shum": DO_SHUM,
+            "do_sppt": DO_SPPT,
+            "do_skeb": DO_SKEB,
+            "do_spp": DO_SPP,
+            "n_var_spp": N_VAR_SPP,
+            "n_var_lndp": N_VAR_LNDP,
+            "lndp_type": LNDP_TYPE,
+            "fhcyc": FHCYC_LSM_SPP_OR_NOT,
+        },
     }
     nam_stochy_dict = {}
     if DO_SPPT:
@@ -742,39 +682,31 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # Add the relevant SPP namelist variables to "settings" when running with
     # SPP turned on.  Otherwise only include an empty "nam_sppperts" stanza.
     #
-    nam_sppperts_dict = {}
-    if DO_SPP:
-        nam_sppperts_dict = {
-            "iseed_spp": ISEED_SPP,
-            "spp_lscale": SPP_LSCALE,
-            "spp_prt_list": SPP_MAG_LIST,
-            "spp_sigtop1": SPP_SIGTOP1,
-            "spp_sigtop2": SPP_SIGTOP2,
-            "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
-            "spp_tau": SPP_TSCALE,
-            "spp_var_list": SPP_VAR_LIST,
-        }
+    settings["nam_sppperts"] = {
+        "iseed_spp": ISEED_SPP,
+        "spp_lscale": SPP_LSCALE,
+        "spp_prt_list": SPP_MAG_LIST,
+        "spp_sigtop1": SPP_SIGTOP1,
+        "spp_sigtop2": SPP_SIGTOP2,
+        "spp_stddev_cutoff": SPP_STDDEV_CUTOFF,
+        "spp_tau": SPP_TSCALE,
+        "spp_var_list": SPP_VAR_LIST,
+    } if DO_SPP else {}
 
-    settings["nam_sppperts"] = nam_sppperts_dict
     #
     # Add the relevant LSM SPP namelist variables to "settings" when running with
     # LSM SPP turned on.
     #
-    nam_sfcperts_dict = {}
-    if DO_LSM_SPP:
-        nam_sfcperts_dict = {
-            "lndp_type": LNDP_TYPE,
-            "lndp_model_type": LNDP_MODEL_TYPE,
-            "lndp_tau": LSM_SPP_TSCALE,
-            "lndp_lscale": LSM_SPP_LSCALE,
-            "iseed_lndp": ISEED_LSM_SPP,
-            "lndp_var_list": LSM_SPP_VAR_LIST,
-            "lndp_prt_list": LSM_SPP_MAG_LIST,
-        }
+    settings["nam_sfcperts"] = {
+        "lndp_type": LNDP_TYPE,
+        "lndp_model_type": LNDP_MODEL_TYPE,
+        "lndp_tau": LSM_SPP_TSCALE,
+        "lndp_lscale": LSM_SPP_LSCALE,
+        "iseed_lndp": ISEED_LSM_SPP,
+        "lndp_var_list": LSM_SPP_VAR_LIST,
+        "lndp_prt_list": LSM_SPP_MAG_LIST,
+    } if DO_LSM else {}
 
-    settings["nam_sfcperts"] = nam_sfcperts_dict
-
-    settings_str = cfg_to_yaml_str(settings)
     #
     #-----------------------------------------------------------------------
     #
@@ -783,63 +715,35 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #-----------------------------------------------------------------------
     #
     if DO_ENSEMBLE and ( DO_SPP or DO_SPPT or DO_SHUM or DO_SKEB or DO_LSM_SPP):
-        
+
         try:
-            set_namelist(
+            create_config_obj(
                 [
-                    "-q",
-                    "-n",
+                    "-i",
                     FV3_NML_FP,
-                    "-u",
-                    settings_str,
                     "-o",
                     FV3_NML_STOCH_FP,
-                ]
+                ],
+                config_dict=settings,
+                log=LOG_NAME,
             )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for stochastics:
-                        FV3_NML_STOCH_FP = '{FV3_NML_STOCH_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
+        except exceptions.UWConfigError as e:
+            sys.exit(e)
 
         if DO_DACYCLE or DO_ENKFUPDATE:
             try:
-                set_namelist(
+                create_config_obj(
                     [
-                        "-q",
-                        "-n",
+                        "-i",
                         FV3_NML_RESTART_FP,
-                        "-u",
-                        settings_str,
                         "-o",
                         FV3_NML_RESTART_STOCH_FP,
-                    ]
+                    ],
+                    config_dict=settings,
+                    log=LOG_NAME,
                 )
-            except:
-                logging.exception(
-                    dedent(
-                        f"""
-                        Call to python script set_namelist.py to generate an FV3 namelist file
-                        failed.  Parameters passed to this script are:
-                          Full path to output namelist file:
-                            FV3_NML_FP = '{FV3_NML_FP}'
-                          Full path to output namelist file for stochastics:
-                            FV3_NML_RESTART_STOCH_FP = '{FV3_NML_RESTART_STOCH_FP}'
-                          Namelist settings specified on command line:\n
-                            settings =\n\n"""
-                    )
-                    + settings_str
-                )
+            except exceptions.UWConfigError as e:
+                sys.exit(e)
 
     #
     # -----------------------------------------------------------------------
@@ -911,19 +815,21 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     
     If debug = True, print all messages to both screen and log file.
     """
-    logging.getLogger().setLevel(logging.DEBUG)
+
+    logger = logging.getLogger(LOG_NAME)
+    logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
 
     fh = logging.FileHandler(logfile, mode='w')
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
-    logging.getLogger().addHandler(fh)
+    logger.addHandler(fh)
     logging.debug(f"Finished setting up debug file logging in {logfile}")
 
     # If there are already multiple handlers, that means generate_FV3LAM_workflow was called from another function.
     # In that case, do not change the console (print-to-screen) logging.
-    if len(logging.getLogger().handlers) > 1:
+    if len(logger.handlers) > 1:
         return
 
     console = logging.StreamHandler()
@@ -931,7 +837,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
         console.setLevel(logging.DEBUG)
     else:
         console.setLevel(logging.INFO)
-    logging.getLogger().addHandler(console)
+    logger.addHandler(console)
     logging.debug("Logging set up successfully")
 
 

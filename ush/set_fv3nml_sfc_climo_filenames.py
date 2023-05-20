@@ -23,7 +23,9 @@ from python_utils import (
     cfg_to_yaml_str,
 )
 
-from set_namelist import set_namelist
+# These come from ush/python_utils/uwtools
+from scripts.set_config import create_config_obj
+from uwtools import exceptions
 
 
 def set_fv3nml_sfc_climo_filenames():
@@ -52,12 +54,6 @@ def set_fv3nml_sfc_climo_filenames():
     imports = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
     import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=imports)
 
-    # The regular expression regex_search set below will be used to extract
-    # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING
-    # the name of the namelist variable to set and the corresponding surface
-    # climatology field from which to form the name of the surface climatology file
-    regex_search = "^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
-
     # Set the suffix of the surface climatology files.
     suffix = "tileX.nc"
 
@@ -66,14 +62,11 @@ def set_fv3nml_sfc_climo_filenames():
 
     dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
     if DO_ENSEMBLE == "TRUE":
-        dummy_run_dir += os.sep + "any_ensmem"
+        os.path.join(dummy_run_dir, "any_ensmem")
 
     namsfc_dict = {}
-    for mapping in FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        sfc_climo_field_name = tup[1]
-
+    mapping_dict = fixed_cfg.get('FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING')
+    for nml_var_name, sfc_climo_field_name in mapping_dict.items():
         check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
 
         file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
@@ -98,13 +91,22 @@ def set_fv3nml_sfc_climo_filenames():
         verbose=VERBOSE,
     )
 
-    # Rename the FV3 namelist and call set_namelist
-    fv3_nml_base_fp = f"{FV3_NML_FP}.base"
+    # Rename the FV3 namelist and update namelist values
+    fv3_nml_base_fp = f"{FV3_NML_FP}.bk"
     mv_vrfy(f"{FV3_NML_FP} {fv3_nml_base_fp}")
 
-    set_namelist(
-        ["-q", "-n", fv3_nml_base_fp, "-u", settings_str, "-o", FV3_NML_FP]
-    )
+    try:
+        create_config_obj(
+            [
+                "-i", fv3_nml_base_fp,
+                "--input_file_type", "F90",
+                "-o", FV3_NML_FP,
+                "--output_file_type", "F90",
+            ],
+            config_dict=settings,
+        )
+    except exceptions.UWConfigError as e:
+        sys.exit(e)
 
     rm_vrfy(f"{fv3_nml_base_fp}")
 
