@@ -287,12 +287,12 @@ EOF
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-python3 $USHdir/python_utils/uwtools/scripts/templater.py \
+python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
   -c ${tmpfile} \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} || \
 print_err_msg_exit "\
-Call to uwtools templater.py to generate a METplus
+Call to workflow-tools templater.py to generate a METplus
 configuration file from a jinja template failed.  Parameters passed
 to this script are:
   Full path to template METplus configuration file:
