@@ -823,7 +823,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     logging.getLogger().addHandler(fh)
-    logging.debug("Finished setting up debug file logging in {logfile}")
+    logging.debug(f"Finished setting up debug file logging in {logfile}")
 
     # If there are already multiple handlers, that means
     # generate_FV3LAM_workflow was called from another function.
