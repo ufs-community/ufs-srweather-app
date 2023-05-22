@@ -614,12 +614,12 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
             # additional files are reported as unavailable, then
             # something has gone wrong.
             unavailable = set.union(*unavailable.values())
-        
-        # Break loop if unexpected files were found or if files were found
-        # A successful file found does not equal the expected file list and 
-        # returns an empty set function.
-        if not expected == unavailable:
-            return unavailable - expected
+
+    # Break loop if unexpected files were found or if files were found
+    # A successful file found does not equal the expected file list and 
+    # returns an empty set function.
+    if not expected == unavailable:
+        return unavailable - expected
     
     # If this loop has completed successfully without returning early, then all files have been found
     return {}
