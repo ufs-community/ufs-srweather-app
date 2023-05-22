@@ -850,7 +850,7 @@ if __name__ == "__main__":
     # experiment/workflow.
     try:
         expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile)
-    except:
+    except: # pylint: disable=bare-except
         logging.exception(
             dedent(
                 f"""
