@@ -10,6 +10,7 @@ user-defined config.yaml file.
 import os
 import logging
 from textwrap import dedent
+import sys
 
 from python_utils import (
     log_info,
@@ -862,7 +863,7 @@ if __name__ == "__main__":
                 """
             )
         )
-        raise
+        sys.exit(1)
 
     # pylint: disable=undefined-variable
     # Note workflow generation completion
