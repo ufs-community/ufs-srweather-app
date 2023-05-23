@@ -1619,13 +1619,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if v is None or v == "":
             continue
         vkey = "valid_vals_" + k
-        if (vkey in cfg_v) and not (v in cfg_v[vkey]):
-            raise Exception(
-                f"""
-                The variable {k}={v} in the user's configuration
-                does not have a valid value. Possible values are:
-                    {k} = {cfg_v[vkey]}"""
-            )
+        if (vkey in cfg_v):
+            if (type(v) == list):
+                if not(all(ele in cfg_v[vkey] for ele in v)):
+                    raise Exception(
+                        dedent(f"""
+                        The variable
+                            {k} = {v}
+                        in the user's configuration has at least one invalid value.  Possible values are:
+                            {k} = {cfg_v[vkey]}"""
+                    ))
+            else:
+                if not (v in cfg_v[vkey]):
+                    raise Exception(
+                        dedent(f"""
+                        The variable
+                            {k} = {v}
+                        in the user's configuration does not have a valid value.  Possible values are:
+                            {k} = {cfg_v[vkey]}"""
+                    ))
 
     return expt_config
 
