@@ -47,6 +47,8 @@ def run_we2e_tests(homedir, args) -> None:
         if run_envir not in ['nco', 'community']:
             raise KeyError(f"Invalid 'run_envir' provided: {run_envir}")
 
+    alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    testdirs = next(os.walk('test_configs'))[1]
     # If args.tests is a list of length more than one, we assume it is a list of test names
     if len(args.tests) > 1:
         tests_to_check=args.tests
@@ -62,7 +64,6 @@ def run_we2e_tests(homedir, args) -> None:
             # If not a valid test name, check if it is a test suite
             logging.debug(f'Checking if {user_spec_tests} is a valid test suite')
             if user_spec_tests[0] == 'all':
-                alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
@@ -99,6 +100,17 @@ def run_we2e_tests(homedir, args) -> None:
                 with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
+            elif user_spec_tests[0] in testdirs:
+                # If a subdirectory under test_configs/ is specified, run all tests in that directory
+                logging.debug(f"{user_spec_tests[0]} is one of the testing directories:\n{testdirs}")
+                logging.debug(f"Will run all tests in test_configs/{user_spec_tests[0]}")
+                tests_in_dir = glob.glob(f'test_configs/{user_spec_tests[0]}/config*.yaml', recursive=True)
+                tests_to_check = []
+                for f in tests_in_dir:
+                    filename = os.path.basename(f)
+                    # We just want the test name in this list, so cut out the
+                    # "config." prefix and ".yaml" extension
+                    tests_to_check.append(filename[7:-5])
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a
                 # file containing test names
