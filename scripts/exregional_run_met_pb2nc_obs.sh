@@ -108,16 +108,6 @@ set_vx_params \
 #-----------------------------------------------------------------------
 #
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
-    DOT_ENSMEM_OR_NULL=".$ENSMEM"
-  else
-    DOT_ENSMEM_OR_NULL=""
-  fi
-else
-  DOT_ENSMEM_OR_NULL=""
-fi
 
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
@@ -265,7 +255,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'ensmem_indx': '${ENSMEM_INDX:-}'
+  'ensmem_name': '${ensmem_name:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.

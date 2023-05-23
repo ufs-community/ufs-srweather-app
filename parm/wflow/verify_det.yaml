@@ -98,6 +98,7 @@ metatask_PcpCombine_obs:
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
       MET_TOOL: 'PCPCOMBINE'
+      ENSMEM_INDX: ''
     dependency:
       or:
         not:

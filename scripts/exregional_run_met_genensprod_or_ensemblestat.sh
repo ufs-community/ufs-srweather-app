@@ -211,14 +211,13 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   mem_indx=$(($i+1))
   mem_indx_fmt=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "${mem_indx}")
+  ensmem_name="mem${mem_indx_fmt}"
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
     cdate_ensmem_subdir_or_null=""
-    DOT_ENSMEM_OR_NULL=".mem${mem_indx_fmt}"
   else
     cdate_ensmem_subdir_or_null="${CDATE}/mem${mem_indx_fmt}"
-    DOT_ENSMEM_OR_NULL=""
   fi
 
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
@@ -227,7 +226,7 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi
 
-  SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
+  slash_ensmem_subdir_or_null="/${ensmem_name}"           
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
     FCST_INPUT_FN_TEMPLATE="  $(eval echo ${template})"
   else
