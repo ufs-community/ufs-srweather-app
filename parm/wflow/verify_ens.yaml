@@ -24,7 +24,7 @@ default_task_verify_ens: &default_task_verify_ens
 
 metatask_GEPES_CCPA:
   var:
-    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   task_run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h: &task_GenEnsProd_CCPA
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
@@ -143,7 +143,7 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
     statlc: mean prob
   metatask_GridStat_CCPA_ens#statlc#_all_accums:
     var:
-      ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HH %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
     task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HH#h:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
