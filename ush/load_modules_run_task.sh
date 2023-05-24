@@ -108,9 +108,9 @@ if [ "${machine}" != "wcoss2" ]; then
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
-  module load set_pythonpath || print_err_msg_exit "\
-    Loading the module to set PYTHONPATH for workflow-tools failed."
 fi
+module load set_pythonpath || print_err_msg_exit "\
+  Loading the module to set PYTHONPATH for workflow-tools failed."
 #
 #-----------------------------------------------------------------------
 #

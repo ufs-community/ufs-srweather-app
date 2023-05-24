@@ -136,7 +136,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
             [
                 "-q",
                 "-c",
-                tmpfile,
+                tmpfile.name,
                 "-i",
                 AQM_RC_TMPL_FP,
                 "-o",
