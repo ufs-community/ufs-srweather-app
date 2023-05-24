@@ -19,6 +19,10 @@
 source_config_for_task "cpl_aqm_parm|task_run_post|task_bias_correction_pm25" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
+export DCOMROOT=${DCOMROOT:-/lfs/h1/ops/prod/dcom}
+export DCOMINairnow=${DCOMINairnow:-/lfs/h1/ops/prod/dcom}
+export COMINbicor=${COMINbicor:-$(compath.py ${NET}/${aqm_ver})}
+export COMOUTbicor=${COMOUTbicor:-$(compath.py ${NET}/${aqm_ver})}
 #-----------------------------------------------------------------------
 #
 # Save current shell options (in a global array).  Then set new options
@@ -67,6 +71,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   cd $DATA
 fi
 
+COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 mkdir -p ${COMOUTwmo}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"

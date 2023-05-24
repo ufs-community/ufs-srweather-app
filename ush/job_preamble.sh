@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-export share_pid=${WORKFLOW_ID}_${PDY}${cyc}
+export share_pid=${share_pid:-${PDY}${cyc}}
 if [ $# -ne 0 ]; then
     export pid=$share_pid
     export jobid=${job}.${pid}
@@ -121,8 +121,8 @@ export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 #
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    export COMROOT=$COMROOT
     export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
@@ -130,7 +130,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
     export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
 
-    export KEEPDATA="${KEEPDATA:-$KEEPDATA}"
+#    export KEEPDATA="${KEEPDATA:-$KEEPDATA}"
 else
     export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
     export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
@@ -161,19 +161,11 @@ fi
 #-----------------------------------------------------------------------
 #
 function job_postamble() {
-
     # Remove temp directory
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${KEEPDATA}" = "FALSE" ]; then
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${KEEPDATA}" = "NO" ]; then
+        echo "DATA clean up for directory: ${DATA}"
 	cd ${DATAROOT}
-	# Remove current data directory
-	if [ $# -eq 0 ]; then
-	    rm -rf $DATA
-	# Remove all current and shared data directories
-	elif [ "$1" = "TRUE" ]; then
-            rm -rf $DATA
-	    share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
-            rm -rf *${share_pid}
-	fi
+        rm -rf $DATA
     fi
 
     # Print exit message

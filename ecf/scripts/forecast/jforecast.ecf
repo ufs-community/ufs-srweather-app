@@ -1,0 +1,47 @@
+#PBS -N aqm_forecast_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=04:00:00
+#PBS -l select=14:mpiprocs=128:ompthreads=1:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load envvar/${envvar_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load esmf/${esmf_ver}
+module load libjpeg/${libjpeg_ver}
+module load zlib/${zlib_ver}
+module load libpng/${libpng_ver}
+module load pio/${pio_ver}
+module load crtm/${crtm_ver}
+module load g2/${g2_ver}
+module load g2tmpl/${g2tmpl_ver}
+module load python/${python_ver}
+
+module list
+
+export subcyc=0
+. ${HOMEaqm}/parm/config/var_defns.sh
+. $USHdir/source_util_funcs.sh
+machine=$(echo_lowercase $MACHINE)
+export share_pid="${PDY}${cyc}"
+
+${HOMEaqm}/jobs/JREGIONAL_RUN_FCST
+
+%include <tail.h>
+
+%manual
+%end

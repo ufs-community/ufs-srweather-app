@@ -1,0 +1,28 @@
+The condition of the current AQM package production/AQM.v7 #cf184119b. 
+
+The package is currently under develop. Not ready for NCO code delivery.
+This document is subject to be changed every time the production/AQM.v7 package update. 
+
+Background:
+This is the code delivery instruction for NCO SPA team. It outlines the ecflow workflow and condition of using it on the current AQM package.
+
+The following condition have impact to the configuration of the ecflow workflow:
+- Forecast restart does not reproduce:
+    ECF_TRIES should be set to 1. 
+    The RESTART directory under the COM and the DATA directory of the failed forecast job need to be removed before a rerun can be started. 
+- The executable gefs2lbc_para used by job aqm_lbcs unstable. It unpredictably failed sometimes during execution:
+    ECF_TRIES should be set to 2.
+- There are four jobs that write output in its DATA location for other jobs to access. Therefore these four jobs can not remove the DATA when the job is completed. There are nexus_gfs_sfc, forecast, get_extrn_ics, and get_extrn_lbcs:
+    These four jobs will not use the NCO's KEEPDATA clean up procedure.
+    The AQM ecflow workflow has a dedicated job data_cleanup to do the DATA cleaning for these four jobs.
+
+NCO ECFLOW setup steps:
+(1) Configure ecflow include files to use AQM version identified in $HOMEaqm/versions/run.ver
+(2) Modify ecflow definition file with NCO production time based trigger as needed.
+(3) Add ecflow suite to NCO ECFLOW test suite.
+(4) Create AQM COM, AQM bias correction output location
+(5) Copy ICS from EMC AQM developer to AQM COM
+(6) Copy AQM bias data from EMC AQM developer to AQM bias correction output location.
+(7) Setup PDY
+(8) Start AQM ecflow workflow jobs
+

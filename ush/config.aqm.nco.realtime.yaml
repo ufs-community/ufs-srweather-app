@@ -34,7 +34,7 @@ nco:
   model_ver: v7.0
   RUN: aqm_nco_aqmna13km
   OPSROOT: /path/to/custom/opsroot
-  KEEPDATA: false
+  KEEPDATA: NO
 workflow_switches:
   RUN_TASK_MAKE_GRID: false
   RUN_TASK_MAKE_OROG: false

@@ -1,0 +1,41 @@
+#PBS -N aqm_post_%FHR%_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=2:mpiprocs=24:ncpus=24
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load envvar/${envvar_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load libjpeg/${libjpeg_ver}
+module load python/${python_ver}
+
+module list
+
+export subcyc=0
+. ${HOMEaqm}/parm/config/var_defns.sh
+. $USHdir/source_util_funcs.sh
+machine=$(echo_lowercase $MACHINE)
+export fhr="%FHR%"
+export DATAFCST=$DATAROOT/${model}_forecast_${cyc}.${PDY}${cyc}
+
+${HOMEaqm}/jobs/JREGIONAL_RUN_POST
+
+%include <tail.h>
+
+%manual
+%end

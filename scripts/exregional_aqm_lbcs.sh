@@ -84,11 +84,21 @@ yyyymmdd=${CDATE_MOD:0:8}
 mm="${CDATE_MOD:4:2}"
 hh="${CDATE_MOD:8:2}"
 
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+case $cyc in
+  00 )
+    FCST_LEN_HRS=6
+  ;;
+  06 )
+    FCST_LEN_HRS=72
+  ;;
+  12 )
+    FCST_LEN_HRS=72
+  ;;
+  18 )
+    FCST_LEN_HRS=6
+  ;;
+esac
+
 LBC_SPEC_FCST_HRS=()
 for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} ); do
   LBC_SPEC_FCST_HRS+=("$i_lbc")
@@ -157,7 +167,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${COMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
   # Check if GEFS aerosol files exist

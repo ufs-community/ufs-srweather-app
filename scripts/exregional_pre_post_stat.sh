@@ -53,10 +53,22 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #
 eval ${PRE_TASK_CMDS}
 
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+if [ "${FCST_LEN_HRS}" = "-1" ]; then
+  case $cyc in
+    00 )
+      FCST_LEN_HRS=6
+    ;;
+    06 )
+      FCST_LEN_HRS=72
+    ;;
+    12 )
+      FCST_LEN_HRS=72
+    ;;
+    18 )
+      FCST_LEN_HRS=6
+    ;;
+  esac
+
   if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
     rm -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
   fi

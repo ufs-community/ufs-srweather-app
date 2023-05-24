@@ -56,11 +56,22 @@ yyyymmdd=${GFS_SFC_CDATE:0:8}
 yyyymm=${GFS_SFC_CDATE:0:6}
 yyyy=${GFS_SFC_CDATE:0:4}
 hh=${GFS_SFC_CDATE:8:2}
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+
+case $cyc in
+  00 )
+    FCST_LEN_HRS=6
+  ;;
+  06 )
+    FCST_LEN_HRS=72
+  ;;
+  12 )
+    FCST_LEN_HRS=72
+  ;;
+  18 )
+    FCST_LEN_HRS=6
+  ;;
+esac
+
 fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
 #
 #-----------------------------------------------------------------------

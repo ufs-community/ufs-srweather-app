@@ -19,6 +19,8 @@
 source_config_for_task "cpl_aqm_parm|task_fire_emission" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
+export DCOMINfire=${DCOMINfire:-$(compath.py ${DCOMROOT}/${PDY}/rave)}
+
 #-----------------------------------------------------------------------
 #
 # Save current shell options (in a global array).  Then set new options
@@ -103,7 +105,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export FIRE_EMISSION_STAGING_DIR="${FIRE_EMISSION_STAGING_DIR:-${COMIN}/FIRE_EMISSION}"
+export FIRE_EMISSION_STAGING_DIR="${COMIN}/FIRE_EMISSION"
 mkdir -p ${FIRE_EMISSION_STAGING_DIR}
 #
 #-----------------------------------------------------------------------

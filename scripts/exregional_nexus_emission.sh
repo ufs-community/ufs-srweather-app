@@ -89,7 +89,7 @@ mkdir -p "$DATAinput"
 USE_GFS_SFC="FALSE"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+  GFS_SFC_INPUT=${GFS_SFC_INPUT:-${DATAROOT}/aqm_nexus_gfs_sfc_${cyc}.${share_pid}}
 else
   GFS_SFC_INPUT="${COMIN}/GFS_SFC"
 fi
@@ -130,11 +130,21 @@ hh="${cyc}"
 yyyymmdd="${PDY}"
 
 NUM_SPLIT_NEXUS=$( printf "%02d" ${NUM_SPLIT_NEXUS} )
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+
+case $cyc in
+  00 )
+    FCST_LEN_HRS=6
+  ;;
+  06 )
+    FCST_LEN_HRS=72
+  ;;
+  12 )
+    FCST_LEN_HRS=72
+  ;;
+  18 )
+    FCST_LEN_HRS=6
+  ;;
+esac
 
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )

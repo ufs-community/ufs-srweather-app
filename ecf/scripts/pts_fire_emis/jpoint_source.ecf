@@ -1,0 +1,34 @@
+#PBS -N aqm_point_source_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:00:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load envvar/${envvar_ver}
+module load python/${python_ver}
+
+module list
+
+export subcyc=0
+. ${HOMEaqm}/parm/config/var_defns.sh
+. $USHdir/source_util_funcs.sh
+machine=$(echo_lowercase $MACHINE)
+export DCOMINpt_src=/lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
+
+${HOMEaqm}/jobs/JREGIONAL_POINT_SOURCE
+
+%include <tail.h>
+
+%manual
+%end

@@ -85,7 +85,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_ics.${share_pid}"
+    extrn_mdl_staging_dir="${DATAROOT}/aqm_get_extrn_ics_${cyc}.${share_pid}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"

@@ -84,7 +84,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}"
+    extrn_mdl_staging_dir="${DATAROOT}/aqm_get_extrn_lbcs_${cyc}.${share_pid}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
@@ -98,11 +98,21 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+case $cyc in
+  00 )
+    FCST_LEN_HRS=6
+  ;;
+  06 )
+    FCST_LEN_HRS=72
+  ;;
+  12 )
+    FCST_LEN_HRS=72
+  ;;
+  18 )
+    FCST_LEN_HRS=6
+  ;;
+esac
+
 LBC_SPEC_FCST_HRS=()
 for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
   LBC_SPEC_FCST_HRS+=("$i_lbc")

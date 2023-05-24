@@ -87,8 +87,11 @@ fi
 #-----------------------------------------------------------------------
 #
 STRICT=${STRICT:-"TRUE"}
-TRACE=${DEBUG:-"FALSE"}
-
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  TRACE="TRUE"
+else
+  TRACE=${DEBUG:-"FALSE"}
+fi
 if [[ $STRICT == "TRUE" ]]; then
     # Exit on error and undefined variable
     set -euo pipefail

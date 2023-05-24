@@ -79,7 +79,10 @@ to generate initial or lateral boundary conditions for the FV3 model.
 #-----------------------------------------------------------------------
 #
 valid_vals_ICS_OR_LBCS=( "ICS" "LBCS" )
-check_var_valid_value "ICS_OR_LBCS" "valid_vals_ICS_OR_LBCS"
+ICS_OR_LBCS=${ICS_OR_LBCS:-""}
+if [ ! "${ICS_OR_LBCS}" = "" ]; then
+  check_var_valid_value "ICS_OR_LBCS" "valid_vals_ICS_OR_LBCS"
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -219,7 +222,12 @@ esac
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA}}"
+    if [ "${ICS_OR_LBCS}" = "ICS" ]; then
+      t_text=aqm_get_extrn_ics
+    else
+      t_text=aqm_get_extrn_lbcs
+    fi
+    export EXTRN_MDL_STAGING_DIR="${DATAROOT}/${t_text}_${cyc}.${share_pid}"
 else
     export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
     mkdir -p ${EXTRN_MDL_STAGING_DIR}
@@ -242,7 +250,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-job_postamble "FALSE"
+# job_postamble
 #
 #-----------------------------------------------------------------------
 #

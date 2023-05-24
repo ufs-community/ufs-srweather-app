@@ -63,12 +63,13 @@ the specified cycle.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+# DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATAROOT}/aqm_forecast_${cyc}.${share_pid}"
 mkdir -p ${DATA}/INPUT
 mkdir -p ${DATA}/RESTART
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export INPUT_DATA="${INPUT_DATA:-${COMIN}}"
+  export INPUT_DATA="${COMIN}"
 else
   export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
@@ -91,7 +92,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-job_postamble "FALSE"
+# job_postamble
 #
 #-----------------------------------------------------------------------
 #

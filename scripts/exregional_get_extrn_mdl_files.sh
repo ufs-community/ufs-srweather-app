@@ -70,11 +70,20 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
 elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   file_set="fcst"
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
-  if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-    cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-    CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-    FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-  fi
+  case $cyc in
+    00 )
+      FCST_LEN_HRS=6
+    ;;
+    06 )
+      FCST_LEN_HRS=72
+    ;;
+    12 )
+      FCST_LEN_HRS=72
+    ;;
+    18 )
+      FCST_LEN_HRS=6
+    ;;
+  esac
   last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}

@@ -167,7 +167,7 @@ fi
 # Set the names of the forecast model's write-component output files.
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
-    DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
+    DATAFCST=${DATAFCST:-${DATAROOT}/run_fcst${dot_ensmem/./_}.${share_pid}}
 else
     DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
@@ -304,9 +304,9 @@ done
 rm -rf ${DATA_FHR}
 
 # Delete the forecast directory
-if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
-   rm -rf $DATAFCST
-fi
+# if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
+#   rm -rf $DATAFCST
+# fi
 #
 #-----------------------------------------------------------------------
 #

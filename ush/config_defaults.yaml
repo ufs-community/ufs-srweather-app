@@ -963,7 +963,7 @@ nco:
   SENDDBN_NTC: false
   SENDCOM: false
   SENDWEB: false
-  KEEPDATA: true
+  KEEPDATA: YES
   MAILTO: ""
   MAILCC: ""
 
@@ -2961,7 +2961,7 @@ cpl_aqm_parm:
   # AQM_LBCS_FILES:
   # File name of chemical LBCs
   #
-  # DCOMINgefs:
+  # COMINgefs:
   # Path to the directory containing GEFS aerosol LBC files
   #
   # AQM_GEFS_FILE_PREFIX:
@@ -3038,7 +3038,7 @@ cpl_aqm_parm:
   DCOMINchem_lbcs: ""
   AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
-  DCOMINgefs: ""
+  COMINgefs: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
@@ -3052,4 +3052,6 @@ cpl_aqm_parm:
   DCOMINpt_src: "/path/to/point/source/base/directory"
 
   DCOMINairnow: "/path/to/airnow/obaservation/data"
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+    #AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"

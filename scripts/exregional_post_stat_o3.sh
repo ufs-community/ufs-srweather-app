@@ -109,11 +109,20 @@ else
 fi
 POST_STEP
 
-if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
-  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
-  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
-  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+case $cyc in
+  00 )
+    FCST_LEN_HRS=6
+  ;;
+  06 )
+    FCST_LEN_HRS=72
+  ;;
+  12 )
+    FCST_LEN_HRS=72
+  ;;
+  18 )
+    FCST_LEN_HRS=6
+  ;;
+esac
 
 fhr=01
 while [ ${fhr} -le ${FCST_LEN_HRS} ]; do

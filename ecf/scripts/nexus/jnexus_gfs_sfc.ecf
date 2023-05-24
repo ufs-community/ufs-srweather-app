@@ -1,0 +1,35 @@
+#PBS -N aqm_nexus_gfs_sfc_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load envvar/${envvar_ver}
+module load python/${python_ver}
+
+module list
+
+export subcyc=0
+. ${HOMEaqm}/parm/config/var_defns.sh
+. $USHdir/source_util_funcs.sh
+machine=$(echo_lowercase $MACHINE)
+export COMINgfs=$(compath.py ${envir}/gfs/${gfs_ver})
+export share_pid="${PDY}${cyc}"
+
+${HOMEaqm}/jobs/JREGIONAL_NEXUS_GFS_SFC
+
+%include <tail.h>
+
+%manual
+%end

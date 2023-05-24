@@ -63,7 +63,7 @@ using NEXUS which will output for FV3 (in NetCDF format).
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${INPUT_DATA:-${COMIN}/NEXUS}"
+    export INPUT_DATA="${COMIN}/NEXUS"
 else
     export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/NEXUS"
 fi
