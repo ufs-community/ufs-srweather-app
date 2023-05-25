@@ -605,6 +605,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                       {data_key} = \"{basedir}\"'''
                 )
 
+
+    # Make sure the vertical coordinate file for both make_lbcs and
+    # make_ics is the same.
+    if ics_vcoord := expt_config.get("task_make_ics", {}).get("VCOORD_FILE") != \
+            (lbcs_vcoord := expt_config.get("task_make_lbcs", {}).get("VCOORD_FILE")):
+         raise ValueError(
+             f"""
+             The VCOORD_FILE must be set to the same value for both the
+             make_ics task and the make_lbcs task. They are currently
+             set to:
+
+             make_ics:
+               VCOORD_FILE: {ics_vcoord}
+
+             make_lbcs:
+               VCOORD_FILE: {lbcs_vcoord}
+             """
+         )
+
     #
     # -----------------------------------------------------------------------
     #

@@ -1738,6 +1738,7 @@ task_make_ics:
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # MAKE LBCS config parameters
@@ -1746,6 +1747,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # FORECAST config parameters

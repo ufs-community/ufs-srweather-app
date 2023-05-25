@@ -9,6 +9,10 @@ workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2022072000'
   DATE_LAST_CYCL: '2022072000'
+task_make_ics:
+  VCOORD_FILE: "{{ user.PARMdir }}/global_hyblev_fcst_rrfsL65.txt"
+task_make_lbcs:
+  VCOORD_FILE: "{{ user.PARMdir }}/global_hyblev_fcst_rrfsL65.txt"
 
 rocoto:
   entities:
