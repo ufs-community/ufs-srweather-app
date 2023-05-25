@@ -117,7 +117,7 @@ metatask_PcpCombine_fcst_all_accums_all_mems:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
     var:
-      mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
     task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task
       attrs:
@@ -157,7 +157,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
   metatask_GridStat_CCPA_APCP#ACCUM_HH#h_all_mems:
     var:
-      mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
     task_run_MET_GridStat_vx_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task
       attrs:
@@ -184,7 +184,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
 
 metatask_GridStat_MRMS_all_mems:
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+    mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_GridStat_MRMS_mem#mem#:
     var:
       VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
@@ -220,7 +220,7 @@ metatask_GridStat_MRMS_all_mems:
 
 metatask_PointStat_NDAS_all_mems:
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+    mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_PointStat_NDAS_mem#mem#:
     var:
       VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
