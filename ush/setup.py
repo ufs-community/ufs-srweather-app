@@ -1287,25 +1287,35 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
+    # Get list of all top-level tasks and metatasks in the workflow.
     task_defs = rocoto_config.get('tasks')
+    all_tasks = [task for task in task_defs]
 
-    # Ensemble verification can only be run in ensemble mode
+    # Get list of all valid top-level tasks and metatasks pertaining to ensemble
+    # verification.
+    ens_vx_task_defns = load_config_file(
+      os.path.join(USHdir, os.pardir, "parm", "wflow", "verify_ens.yaml"))
+    ens_vx_valid_tasks = [task for task in ens_vx_task_defns]
+
+    # Get list of all valid top-level tasks and metatasks in the workflow that
+    # pertain to ensemble verification.
+    ens_vx_tasks = [task for task in ens_vx_valid_tasks if task in all_tasks]
+
+    # Get the value of the configuration flag for ensemble mode (DO_ENSEMBLE)
+    # and ensure that it is set to True if ensemble vx tasks are included in
+    # the workflow (or vice-versa).
     do_ensemble = global_sect["DO_ENSEMBLE"]
-
-
-    # Gather all the tasks/metatasks that are defined for verifying
-    # ensembles
-    ens_vx_tasks = [task for task in task_defs if "MET_GridStat_vx_ens" in task]
     if (not do_ensemble) and ens_vx_tasks:
-        task_str = "\n".join(ens_vx_tasks)
-        raise Exception(
-            f'''
-            Ensemble verification can not be run unless running in ensemble mode:
-                DO_ENSEMBLE = \"{do_ensemble}\"
-                Ensemble verification tasks: {task_str}
-            '''
-        )
+        task_str = "    " + "\n    ".join(ens_vx_tasks)
+        msg = dedent(f"""
+              Ensemble verification can not be run unless running in ensemble mode:
+                  DO_ENSEMBLE = \"{do_ensemble}\"
+              Ensemble verification tasks:
+              """)
+        msg = "".join([msg, task_str, dedent(f"""
+              Please set DO_ENSEMBLE to True or remove ensemble vx tasks from the
+              workflow.""")])
+        raise Exception(msg)
 
     #
     # -----------------------------------------------------------------------
