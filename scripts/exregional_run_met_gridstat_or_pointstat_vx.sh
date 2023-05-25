@@ -117,10 +117,11 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
-time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because
-# bash's $((...)) arithmetic operator can't handle floats well.
-time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
+i="0"
+if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  i=$( bc -l <<< "${ENSMEM_INDX}-1" )
+fi
+time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #

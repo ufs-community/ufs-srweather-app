@@ -2297,7 +2297,9 @@ global:
   # experiment directory
   #
   # ENS_TIME_LAG_HRS:
-  # Time lag (in hours) to use for each ensemble member.
+  # Time lag (in hours) to use for each ensemble member.  For a deterministic
+  # forecast, this is a one-element array.  Default values of array elements
+  # are zero.
   #
   #-----------------------------------------------------------------------
   #
@@ -2305,7 +2307,7 @@ global:
   NUM_ENS_MEMBERS: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  ENS_TIME_LAG_HRS: '[ {% for m in range(NUM_ENS_MEMBERS) %} 0, {% endfor %} ]'
+  ENS_TIME_LAG_HRS: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #

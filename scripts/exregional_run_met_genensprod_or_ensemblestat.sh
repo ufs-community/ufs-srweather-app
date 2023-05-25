@@ -209,16 +209,16 @@ NDIGITS_ENSMEM_NAMES=3
 FCST_INPUT_FN_TEMPLATE=""
 for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
-  mem_indx=$(($i+1))
-  mem_indx_fmt=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "${mem_indx}")
-  ensmem_name="mem${mem_indx_fmt}"
-  time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
+  ensmem_indx=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "$((i+1))")
+  ensmem_name="mem${ensmem_indx}"
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
     cdate_ensmem_subdir_or_null=""
   else
-    cdate_ensmem_subdir_or_null="${CDATE}/mem${mem_indx_fmt}"
+    cdate_ensmem_subdir_or_null="${CDATE}/${ensmem_name}"
   fi
+
+  time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
     template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
