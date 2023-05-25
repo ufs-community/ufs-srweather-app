@@ -582,53 +582,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                         are specified for verification."""
                     ))
                     rocoto_config['tasks'].pop(metatask, None)
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Remove deterministic and/or ensemble verification [meta]tasks depending
-    # on the values of the experiment configuration flags RUN_VX_DET and
-    # RUN_VX_ENS.
-    #
-    # -----------------------------------------------------------------------
-    #
-    run_vx_det = expt_config["verification"]["RUN_VX_DET"]
-    run_vx_ens = expt_config["verification"]["RUN_VX_ENS"]
-
-    vx_flags = {}
-    vx_metatasks = {}
-
-    vx_flags["det_or_ens"] = run_vx_det or run_vx_ens
-    vx_metatasks["det_or_ens"] = ["metatask_PcpCombine_obs", 
-                                  "metatask_PcpCombine_fcst_all_accums_all_mems", 
-                                  "task_run_MET_Pb2nc_obs"]
-
-    vx_flags["det"] = run_vx_det
-    vx_metatasks["det"] = ["metatask_GridStat_CCPA_all_accums_all_mems",
-                           "metatask_GridStat_MRMS_all_mems",
-                           "metatask_PointStat_NDAS_all_mems"]
-
-    vx_flags["ens"] = run_vx_ens
-    vx_metatasks["ens"] = ["metatask_GenEnsProd_EnsembleStat_CCPA",
-                           "metatask_GenEnsProd_EnsembleStat_MRMS",
-                           "metatask_GenEnsProd_EnsembleStat_NDAS",
-                           "metatask_GridStat_CCPA_ensmeanprob_all_accums",
-                           "metatask_GridStat_MRMS_ensprob",
-                           "metatask_PointStat_NDAS_ensmeanprob"]
-
-    run_vx_det = expt_config["verification"]["RUN_VX_DET"]
-    run_vx_ens = expt_config["verification"]["RUN_VX_ENS"]
-
-    for key,flag in vx_flags.items():
-        if not flag:
-            for metatask in vx_metatasks[key]:
-                if metatask in rocoto_config['tasks']:
-                    logging.info(dedent(
-                        f"""
-                        Removing verification [meta]task
-                          "{metatask}"
-                        from workflow since vx_flags["{key}"] is set to {flag}."""
-                    ))
-                    rocoto_config['tasks'].pop(metatask, None)
 
     #
     # -----------------------------------------------------------------------
