@@ -568,7 +568,17 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",
                                 "metatask_PointStat_NDAS_ensmeanprob"]
 
+    # Get the vx fields specified in the experiment configuration.
     vx_fields_config = expt_config["verification"]["VX_FIELDS"]
+
+    # If there are no vx fields specified, remove those tasks that are necessary
+    # for all observation types.
+    if not vx_fields_config:
+        metatask = "metatask_check_post_output_all_mems"
+        rocoto_config['tasks'].pop(metatask)
+
+    # If for a given obstype no fields are specified, remove all vx metatasks
+    # for that obstype.
     for obstype in vx_fields_all:
         vx_fields_obstype = [field for field in vx_fields_config if field in vx_fields_all[obstype]]
         if not vx_fields_obstype:
@@ -581,7 +591,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                         from workflow since no fields belonging to observation type "{obstype}"
                         are specified for verification."""
                     ))
-                    rocoto_config['tasks'].pop(metatask, None)
+                    rocoto_config['tasks'].pop(metatask)
 
     #
     # -----------------------------------------------------------------------
@@ -1292,8 +1302,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         raise Exception(
             f'''
             Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{do_ensemble}\"
-               Ensemble verification tasks: {task_str}
+                DO_ENSEMBLE = \"{do_ensemble}\"
+                Ensemble verification tasks: {task_str}
             '''
         )
 
