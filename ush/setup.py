@@ -554,18 +554,18 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs", 
                                 "metatask_PcpCombine_fcst_all_accums_all_mems", 
                                 "metatask_GridStat_CCPA_all_accums_all_mems",
-                                "metatask_GEPES_CCPA",
+                                "metatask_GenEnsProd_EnsembleStat_CCPA",
                                 "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
 
     vx_fields_all["MRMS"] = ["REFC", "RETOP"]
     vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
-                                "metatask_GEPES_MRMS",
+                                "metatask_GenEnsProd_EnsembleStat_MRMS",
                                 "metatask_GridStat_MRMS_ensprob"]
 
     vx_fields_all["NDAS"] = ["SFC", "UPA"]
     vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
                                 "metatask_PointStat_NDAS_all_mems",
-                                "metatask_GEPES_NDAS",
+                                "metatask_GenEnsProd_EnsembleStat_NDAS",
                                 "metatask_PointStat_NDAS_ensmeanprob"]
 
     vx_fields_config = expt_config["verification"]["VX_FIELDS"]
@@ -608,9 +608,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                            "metatask_PointStat_NDAS_all_mems"]
 
     vx_flags["ens"] = run_vx_ens
-    vx_metatasks["ens"] = ["metatask_GEPES_CCPA",
-                           "metatask_GEPES_MRMS",
-                           "metatask_GEPES_NDAS",
+    vx_metatasks["ens"] = ["metatask_GenEnsProd_EnsembleStat_CCPA",
+                           "metatask_GenEnsProd_EnsembleStat_MRMS",
+                           "metatask_GenEnsProd_EnsembleStat_NDAS",
                            "metatask_GridStat_CCPA_ensmeanprob_all_accums",
                            "metatask_GridStat_MRMS_ensprob",
                            "metatask_PointStat_NDAS_ensmeanprob"]
