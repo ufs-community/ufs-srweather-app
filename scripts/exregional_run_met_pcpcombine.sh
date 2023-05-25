@@ -197,9 +197,11 @@ fi
 if [ "${obs_or_fcst}" = "obs" ]; then
   base_dir="${OBS_INPUT_DIR}"
   fn_template="${OBS_INPUT_FN_TEMPLATE}"
+  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}"
 elif [ "${obs_or_fcst}" = "fcst" ]; then
   base_dir="${FCST_INPUT_DIR}"
   fn_template="${FCST_INPUT_FN_TEMPLATE}"
+  num_missing_files_max="${NUM_MISSING_FCST_FILES_MAX}"
 fi
 
 set_vx_fhr_list \
@@ -209,7 +211,8 @@ set_vx_fhr_list \
   accum_hh="${ACCUM_HH}" \
   base_dir="${base_dir}" \
   fn_template="${fn_template}" \
-  check_hourly_files="TRUE" \
+  check_accum_contrib_files="TRUE" \
+  num_missing_files_max="${num_missing_files_max}" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------

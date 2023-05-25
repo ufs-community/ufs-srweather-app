@@ -2491,6 +2491,13 @@ verification:
   # number missing divided by the number that are expected to exist).
   #
   NUM_MISSING_OBS_FILES_MAX: 2
+  #
+  # For verification tasks that need forecast data, this specifies the
+  # maximum number of post-processed forecast files that may be missing. 
+  # If more than this number are missing, the verification task will not
+  # be run.
+  #
+  NUM_MISSING_FCST_FILES_MAX: 0
 
 #----------------------------
 # CPL_AQM config parameters
