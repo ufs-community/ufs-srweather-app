@@ -205,11 +205,10 @@ fi
 # tasks).  This will be exported to the environment and read by the
 # METplus configuration files.
 #
-NDIGITS_ENSMEM_NAMES=3
 FCST_INPUT_FN_TEMPLATE=""
 for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
-  ensmem_indx=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "$((i+1))")
+  ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "$((i+1))")
   ensmem_name="mem${ensmem_indx}"
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
