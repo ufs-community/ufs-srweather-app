@@ -60,7 +60,7 @@ class FunctionalTesting(unittest.TestCase):
         self.dates["RAPhpss"]      = ['2018071118',
                                       '2020022618',
                                       threedaysago.strftime('%Y%m%d') + '06']
-        self.dates["RAPaws"]       = ['2021022200',
+        self.dates["RAPaws"]       = ['2023022200',
                                       threedaysago.strftime('%Y%m%d%H')]
 
 
