@@ -447,17 +447,6 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Setup default observation locations for data assimilation:
-  #
-  # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
-  #
-  #-----------------------------------------------------------------------
-  #
-  OBSPATH_NSSLMOSIAC: ""
-    
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -2189,7 +2178,7 @@ task_process_radarref:
   #
   RADARREFL_MINS: [0, 1, 2, 3]
   RADARREFL_TIMELEVEL: [0]
-  OBS_SUFFIX: grib2
+  OBS_SUFFIX: grib2.gz
 
 #----------------------------
 # Parameters needed for retrieving DA obs
@@ -2202,10 +2191,19 @@ task_get_da_obs:
   # NLDN_NEEDED
   #   whether to use NLDN observations in DA or not.
   #
+  # NLDN_LIGHTNING
+  # NSSLMOSAIC
+  # RAP_OBS_BUFR
+  #   paths to data on disk. Defaults for supported data streams on
+  #   certain platforms have defaults set in the respective machine
+  #   files.
+  #
   #-----------------------------------------------------------------------
   #
   NLDN_NEEDED: False
-
+  NLDN_LIGHTNING: ""
+  NSSLMOSAIC: ""
+  RAP_OBS_BUFR: ""
 #----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------
