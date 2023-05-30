@@ -1,0 +1,27 @@
+#PBS -N aqm_bias_correction_o3_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=1:ompthreads=32:ncpus=32:mem=120G
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+
+. {{ exptdir }}/var_denfs.sh
+
+export DCOMINairnow=/lfs/h1/ops/prod/dcom
+export COMOUTbicor=${COMaqm}
+
+. ${USHdir}/load_modules_run_task.sh bias_correction_o3 "${JOBSdir}/JREGIONAL_BIAS_CORRECTION_O3"
+
+%include <tail.h>
+
+%manual
+%end

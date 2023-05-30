@@ -1,0 +1,48 @@
+#PBS -N aqm_lbcs_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:20:00
+#PBS -l select=1:mpiprocs=24:ncpus=24
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load envvar/${envvar_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load libjpeg/${libjpeg_ver}
+module load zlib/${zlib_ver}
+module load libpng/${libpng_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load cray-pals/${cray_pals_ver}
+module load wgrib2/${wgrib2_ver}
+module load udunits/${udunits_ver}
+module load gsl/${gsl_ver}
+module load nco/${nco_ver}
+module load python/${python_ver}
+
+module list
+
+export subcyc=0
+. ${HOMEaqm}/parm/config/var_defns.sh
+. $USHdir/source_util_funcs.sh
+machine=$(echo_lowercase $MACHINE)
+export ICS_OR_LBCS=LBCS
+export DCOMINchem_lbcs=/lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+export DCOMINgefs=/lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+export COMINgefs=$(compath.py ${envir}/gefs/${gefs_ver})
+
+${HOMEaqm}/jobs/JREGIONAL_AQM_LBCS
+
+%include <tail.h>
+
+%manual
+%end
