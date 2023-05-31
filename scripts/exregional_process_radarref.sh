@@ -8,6 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
+. $USHdir/get_mrms_files.sh
 source_config_for_task "task_process_radarref|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -53,8 +54,6 @@ with FV3 for the specified cycle.
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_PROCESS_RADARREF*PPN_PROCESS_RADARREF))
-
 #
 #-----------------------------------------------------------------------
 #
@@ -80,17 +79,6 @@ DD=${YYYYMMDDHH:6:2}
 #-----------------------------------------------------------------------
 #
 BKTYPE=0
-if [ ${DO_SPINUP} == "TRUE" ]; then
-  if [ ${CYCLE_TYPE} == "spinup" ]; then
-    if [[ ${CYCL_HRS_SPINSTART[@]} =~ "$cyc" ]] ; then
-      BKTYPE=1
-    fi
-  fi
-else
-  if [[ ${CYCL_HRS_PRODSTART[@]} =~ "$cyc" ]] ; then
-    BKTYPE=1
-  fi
-fi
 
 n_iolayouty=$(($IO_LAYOUT_Y-1))
 
@@ -103,84 +91,62 @@ n_iolayouty=$(($IO_LAYOUT_Y-1))
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Getting into working directory for radar reflectivity process ..."
+Getting into working directory for radar reflectivity process ... ${DATA}"
+
+pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
+print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
 
 for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
+  echo "timelevel = ${timelevel}"
   timelevel=$( printf %2.2i $timelevel )
-  mkdir_vrfy ${DATA}/${timelevel}
-  cd ${DATA}/${timelevel}
+  mkdir_vrfy -p ${DATA}/${timelevel}
+  cd_vrfy ${DATA}/${timelevel}
 
-  pregen_grid_dir=$DOMAIN_PREGEN_BASEDIR/${PREDEF_GRID_NAME}
-
-  print_info_msg "$VERBOSE" "pregen_grid_dir is $pregen_grid_dir"
-
-#
-#-----------------------------------------------------------------------
-#
-# link or copy background files
-#
-#-----------------------------------------------------------------------
+  #
+  #-----------------------------------------------------------------------
+  #
+  # copy background files
+  #
+  #-----------------------------------------------------------------------
 
   if [ ${BKTYPE} -eq 1 ]; then
-    cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
+    cp -f ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
   else
     if [ "${IO_LAYOUT_Y}" == "1" ]; then
-      cp_vrfy ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
+      cp -f ${pregen_grid_dir}/fv3_grid_spec fv3sar_grid_spec.nc
     else
       for iii in $(seq -w 0 $(printf %4.4i $n_iolayouty))
       do
-        cp_vrfy ${pregen_grid_dir}/fv3_grid_spec.${iii} fv3sar_grid_spec.nc.${iii}
+        cp -f ${pregen_grid_dir}/fv3_grid_spec.${iii} fv3sar_grid_spec.nc.${iii}
       done
     fi
   fi
 
-#
-#-----------------------------------------------------------------------
-#
-# link/copy observation files to working directory 
-#
-#-----------------------------------------------------------------------
-
-  NSSL=${OBSPATH_NSSLMOSIAC}
+  #
+  #-----------------------------------------------------------------------
+  #
+  # copy observation files to working directory, if running in real
+  # time. otherwise, the get_da_obs data task will do this for you.
+  #
+  #-----------------------------------------------------------------------
 
   mrms="MergedReflectivityQC"
-
-# Link to the MRMS operational data
-  echo "timelevel = ${timelevel}"
-  echo "RADARREFL_MINS = ${RADARREFL_MINS[@]}"
-
-# Link to the MRMS operational data
-# This loop finds files closest to the given "timelevel"
-  for min in ${RADARREFL_MINS[@]}
-  do
-    min=$( printf %2.2i $((timelevel+min)) )
-    echo "Looking for data valid:"${YYYY}"-"${MM}"-"${DD}" "${cyc}":"${min}
-    sec=0
-    while [[ $sec -le 59 ]]; do
-      ss=$(printf %2.2i ${sec})
-      nsslfile=${NSSL}/*${mrms}_00.50_${YYYY}${MM}${DD}-${cyc}${min}${ss}.${OBS_SUFFIX}
-      if [ -s $nsslfile ]; then
-        echo 'Found '${nsslfile}
-        nsslfile1=*${mrms}_*_${YYYY}${MM}${DD}-${cyc}${min}*.${OBS_SUFFIX}
-        numgrib2=$(ls ${NSSL}/${nsslfile1} | wc -l)
-        echo 'Number of GRIB-2 files: '${numgrib2}
-        if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
-          cp ${NSSL}/${nsslfile1} . 
-          ls ${nsslfile1} > filelist_mrms 
-          echo 'Creating links for ${YYYY}${MM}${DD}-${cyc}${min}'
-        fi
-      fi
-      ((sec+=1))
-    done
-  done
+  if [ "${DO_REAL_TIME}" = true ] ; then
+    get_mrms_files $timelevel "./" $mrms
+  else
+    # The data was staged by the get_da_obs task, so copy from COMIN.
+    # Use copy here so that we can unzip if necessary.
+    cp_vrfy ${COMIN}/radar/${timelevel}/* .
+  fi # DO_REAL_TIME
 
   if [ -s filelist_mrms ]; then
 
-     if [ ${OBS_SUFFIX} == "grib2.gz" ]; then
-        gzip -d *.gz
-        mv filelist_mrms filelist_mrms_org
-        ls MergedReflectivityQC_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
-     fi
+    # Unzip files, if that's needed and update filelist_mrms
+    if [ $(ls *.gz 2> /dev/null | wc -l) -gt 0 ]; then
+       gzip -d *.gz
+       mv filelist_mrms filelist_mrms_org
+       ls ${mrms}_*_${YYYY}${MM}${DD}-${cyc}????.grib2 > filelist_mrms
+    fi
 
      numgrib2=$(more filelist_mrms | wc -l)
      print_info_msg "$VERBOSE" "Using radar data from: `head -1 filelist_mrms | cut -c10-15`"
@@ -189,7 +155,7 @@ for timelevel in ${RADARREFL_TIMELEVEL[@]}; do
      # remove filelist_mrms if zero bytes
      rm -f filelist_mrms
 
-     echo "WARNING: Not enough radar reflectivity files available for loop ${timelevel}."
+     echo "WARNING: Not enough radar reflectivity files available for timelevel ${timelevel}."
      continue
   fi
 

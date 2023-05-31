@@ -88,7 +88,7 @@ FV3GFS:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
-          - com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar            
+          - com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
         fcst:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
@@ -111,7 +111,7 @@ FV3GFS:
           - ['gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
           - ['com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
           - ['com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
-          - ['com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']            
+          - ['com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
     file_names:
       <<: *gfs_file_names
   aws:
@@ -316,6 +316,28 @@ GFS_obs:
         obs:
           - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
 
+NSSL_mrms:
+
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./upperair/mrms/conus/MergedReflectivityQC
+    archive_file_names:
+      - dcom_ldmdata_obs.tar
+      - dcom_prod_ldmdata_obs.tar
+      - ldmdata.tide.{yyyymmdd}.tar
+      - ldmdata.gyre.{yyyymmdd}.tar
+    file_names:
+      obs:
+        - "*MergedReflectivityQC_*_{yyyymmdd}-{hh}{min}*.grib2*"
+
+
 RAP_obs:
   hpss:
     protocol: htar
@@ -367,6 +389,7 @@ RAP_obs:
         - "{yyyymmddhh}.rap_e.t{hh}z.lgycld.tm00.bufr_d"
         - "{yyyymmddhh}.rap_e.t{hh}z.nexrad.tm00.bufr_d"
         - "{yyyymmddhh}.rap_e.t{hh}z.satwnd.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.lghtng.tm00.bufr_d"
   aws:
     protocol: download
     url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
