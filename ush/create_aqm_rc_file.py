@@ -129,7 +129,11 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     #-----------------------------------------------------------------------
     #
-    with tempfile.NamedTemporaryFile(dir="./", mode="w+t", prefix="aqm_rc_settings") as tmpfile:
+    with tempfile.NamedTemporaryFile(
+            dir="./",
+            mode="w+t",
+            prefix="aqm_rc_settings",
+            suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
         set_template(
