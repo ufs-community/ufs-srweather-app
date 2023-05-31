@@ -10,7 +10,7 @@ user:
   RUN_ENVIR: community
 
 workflow:
-  PREDEF_GRID_NAME: RRFS_CONUS_25km
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2021050500'
   DATE_LAST_CYCL: '2021050500'
   FCST_LEN_HRS: 6
@@ -38,6 +38,6 @@ platform:
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
-  VX_FCST_INPUT_BASEDIR: '/scratch1/BMC/hmtb/beck/ens_design_RRFS/time_lagging_data'
+  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
   VX_NDIGITS_ENSMEM_NAMES: 1
   FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.bgdawpf{lead?fmt=%HHH?shift=${time_lag}}.tm00.grib2'
