@@ -1,0 +1,5 @@
+export ECF_HOME="{{ ecf_home }}"
+export ECF_DATA_ROOT="{{ ecf_data_root }}"
+export ECF_OUTPUTDIR="{{ ecf_outputdir }}"
+export ECF_COMDIR="{{ ecf_comdir }}"
+export LFS_OUTPUTDIR="{{ lfs_outputdir }}"

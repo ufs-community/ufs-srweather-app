@@ -45,11 +45,11 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    # Copy definition directory into experiment directory.
+    # Copy include directory into experiment directory.
     #
     #-----------------------------------------------------------------------
     #
-    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/defs"), os.path.join(EXPTDIR, "ecf"))
+    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/include"), os.path.join(EXPTDIR, "ecf"))
 
     #
     #-----------------------------------------------------------------------
@@ -69,8 +69,6 @@ def create_ecflow_scripts(global_var_defns_fp):
     tsk_grp = {"aqm_manager": grp_aqm_manager, "forecast": grp_forecast, "nexus": grp_nexus, "post": grp_post, "prep": grp_prep, "product": grp_product, "pts_fire_emis": grp_pts_fire_emis}
 
     task_all = grp_aqm_manager + grp_forecast + grp_nexus + grp_post + grp_prep + grp_product + grp_pts_fire_emis
-
-    print(tsk_grp)
 
     for tsk in task_all:
         print('Creating ecFlow job card for', tsk)
@@ -115,7 +113,6 @@ def create_ecflow_scripts(global_var_defns_fp):
     #-----------------------------------------------------------------------
     #
     max_fcst_len = max(FCST_LEN_CYCL)+1
-    print(max_fcst_len)
     for itsk in range(0, max_fcst_len):
         ecf_script_orgi = os.path.join(EXPTDIR, "ecf/scripts/post", "jpost.ecf")
         ecf_script_link_fn = f"jpost_f{itsk:03d}.ecf"
@@ -128,11 +125,87 @@ def create_ecflow_scripts(global_var_defns_fp):
         ecf_script_link = os.path.join(EXPTDIR, "ecf/scripts/nexus", ecf_script_link_fn)
         ln_vrfy(f"""-fsn '{ecf_script_orgi}' '{ecf_script_link}'""")
 
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Create definition file
+    #
+    #-----------------------------------------------------------------------
+    #
+    ecflow_defn_fn = f"{NET}_cycled.def"
+    ecflow_defn_tmpl_fp = os.path.join(PARMdir, "ecflow/defs", "ecf_defn_template.def")
+    ecflow_defn_fp = os.path.join(EXPTDIR, "ecf/defs", ecflow_defn_fn)
+
+    settings = {
+        "model_ver": model_ver,
+        "exptdir": EXPTDIR,
+        "net": NET,
+        "run": RUN,
+        "envir": envir,
+        "opsroot": OPSROOT,
+    }
+    settings_str = cfg_to_yaml_str(settings)
+
+    # Call a python script to generate the ecFlow job card.
+    args = ["-q",
+            "-o", ecflow_defn_fp,
+            "-t", ecflow_defn_tmpl_fp,
+            "-u", settings_str ]
+
+    try:
+        fill_jinja_template(args)
+    except:
+        raise Exception(
+            dedent(
+            f"""Call to create the ecFlow definition file failed."""
+            )
+        )
+
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Create ecFlow enviroment file
+    #
+    #-----------------------------------------------------------------------
+    #
+    ecflow_env_fn = "ecf_env.def"
+    ecflow_env_tmpl_fp = os.path.join(PARMdir, "ecflow/env", "env_template.sh")
+    ecflow_env_fp = os.path.join(EXPTDIR, "ecf", ecflow_env_fn)
+ 
+    ecf_home = f"{OPSROOT}/ecflow"
+    ecf_data_root = f"{OPSROOT}/ecflow/data"
+    ecf_outputdir = f"{OPSROOT}/ecflow/output"
+    ecf_comdir = f"{OPSROOT}/ecflow/com"
+    lfs_outputdir = f"{OPSROOT}/ecflow/lsf"
+
+    settings = {
+        "ecf_home": ecf_home,
+        "ecf_data_root": ecf_data_root,
+        "ecf_outputdir": ecf_outputdir,
+        "ecf_comdir": ecf_comdir,
+        "lfs_outputdir": lfs_outputdir,
+    }
+    settings_str = cfg_to_yaml_str(settings)
+
+    # Call a python script to generate the ecFlow job card.
+    args = ["-q",
+            "-o", ecflow_env_fp,
+            "-t", ecflow_env_tmpl_fp,
+            "-u", settings_str ]
+
+    try:
+        fill_jinja_template(args)
+    except:
+        raise Exception(
+            dedent(
+            f"""Call to create the ecFlow job card for '{tsk}' failed."""
+            )
+        )
+
 
     return True
 
 
 if __name__ == "__main__":
     create_ecflow_scripts(global_var_defns_fp)
-
 

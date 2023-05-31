@@ -7,17 +7,17 @@ extern /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast
 suite emc_aqm
   inlimit /totality_limit:TOTALITY
   family primary
-    edit aqm_ver 'v7.0.46'
-    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
-    edit NET 'aqm'
-    edit RUN 'aqm'
-    edit PROJ 'AQM'
+    edit aqm_ver '{{ model_ver }}'
+    edit PACKAGEHOME '{{ exptdir }}'
+    edit NET '{{ net }}'
+    edit RUN '{{ run }}'
+    edit PROJ '{{ net | upper }}'
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development' 
-    edit ENVIR 'prod'
+    edit ENVIR '{{ envir }}'
     edit QUEUE 'dev'
     edit QUEUE_ARCH 'dev_transfer'
-    edit OUTPUTDIR '/lfs/h2/emc/ptmp/%EMC_USER%/ecflow_aqm/para/output/prod/today'
+    edit OUTPUTDIR '{{ opsroot }}/ecf_output'
     family 00
       edit CYC '00'
       family aqm

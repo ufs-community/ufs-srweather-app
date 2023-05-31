@@ -4,6 +4,8 @@ user:
   RUN_ENVIR: nco
   MACHINE: wcoss2
   ACCOUNT: [account name]
+platform:
+  WORKFLOW_MANAGER: rocoto
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
