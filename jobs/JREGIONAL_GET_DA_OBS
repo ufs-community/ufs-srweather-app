@@ -54,7 +54,9 @@ This script retrieves observation data for RRFS data assimilation tasks.
 #-----------------------------------------------------------------------
 #
 export DATA="${COMIN}/obs"
+export RADAR_DATA="${COMIN}/radar"
 mkdir_vrfy -p "${DATA}"
+mkdir_vrfy -p "${RADAR_DATA}"
 
 # Set needed date/time variables
 export START_DATE=$(echo "${PDY} ${cyc}")

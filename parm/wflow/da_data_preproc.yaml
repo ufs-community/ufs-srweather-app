@@ -14,6 +14,7 @@ default_data_preproc_task: &default_preproc
     subcyc: !cycstr "@M"
     LOGDIR: !cycstr "&LOGDIR;"
     CYCLE_TYPE: '#cycle_type#'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
@@ -44,6 +45,7 @@ metatask_process_obs_cycle_type:
   task_process_radarref_#cycle_type#:
     <<: *default_preproc
     command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"'
+    nnodes: 2
     ppn: 24
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     dependency:
