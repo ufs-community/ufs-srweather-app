@@ -106,19 +106,19 @@ function set_vx_fhr_list() {
       fhr_int="${accum_hh}"
       ;;
     "REFC")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "RETOP")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "SFC")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "UPA")
-      fhr_min="06"
+      fhr_min="00"
       fhr_int="06"
       ;;
     *)
