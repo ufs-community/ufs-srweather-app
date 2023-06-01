@@ -17,7 +17,8 @@ from python_utils import (
     flatten_dict,
     cp_vrfy,
     ln_vrfy,
-    mkdir_vrfy
+    mkdir_vrfy,
+    date_to_str
 )
 
 from fill_jinja_template import fill_jinja_template
@@ -178,12 +179,16 @@ def create_ecflow_scripts(global_var_defns_fp):
     ecf_comdir = f"{OPSROOT}/ecflow/com"
     lfs_outputdir = f"{OPSROOT}/ecflow/lsf"
 
+    date_first = date_to_str(DATE_FIRST_CYCL, format="%Y%m%d")
+
     settings = {
         "ecf_home": ecf_home,
         "ecf_data_root": ecf_data_root,
         "ecf_outputdir": ecf_outputdir,
         "ecf_comdir": ecf_comdir,
         "lfs_outputdir": lfs_outputdir,
+        "exptdir": EXPTDIR,
+        "pdy": date_first,
     }
     settings_str = cfg_to_yaml_str(settings)
 
