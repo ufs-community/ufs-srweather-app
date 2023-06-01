@@ -13,13 +13,14 @@ export cyc="%CYC%"
 %include <head.h>
 %include <envir-p1.h>
 
-module list
-
 export subcyc=0
 export fhr="%FHR%"
 #export DATAFCST=$DATAROOT/${model}_forecast_${cyc}.${PDY}${cyc}
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
 . ${USHdir}/load_modules_run_task.sh run_post "${JOBSdir}/JREGIONAL_RUN_POST"
 
 %include <tail.h>

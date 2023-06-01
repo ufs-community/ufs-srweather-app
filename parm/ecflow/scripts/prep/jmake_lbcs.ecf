@@ -15,7 +15,10 @@ export cyc="%CYC%"
 
 export subcyc=0
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
 . ${USHdir}/load_modules_run_task.sh make_lbcs "${JOBSdir}/JREGIONAL_MAKE_LBCS"
 
 %include <tail.h>

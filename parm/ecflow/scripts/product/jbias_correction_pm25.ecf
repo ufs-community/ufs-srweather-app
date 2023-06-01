@@ -12,28 +12,14 @@ export cyc="%CYC%"
 %include <head.h>
 %include <envir-p1.h>
 
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load craype/${craype_ver}
-module load intel/${intel_ver}
-module load envvar/${envvar_ver}
-module load cray-mpich/${cray_mpich_ver}
-module load cray-pals/${cray_pals_ver}
-module load hdf5/${hdf5_ver}
-module load netcdf/${netcdf_ver}
-module load libjpeg/${libjpeg_ver}
-module load zlib/${zlib_ver}
-module load libpng/${libpng_ver}
-module load grib_util/${grib_util_ver}
-module load wgrib2/${wgrib2_ver}
-module load python/${python_ver}
-
-module list
-
 export subcyc=0
-. {{ exptdir }}/var_denfs.sh
 
-export DCOMINairnow=/lfs/h1/ops/prod/dcom
-export COMOUTbicor=${COMaqm}
+#export DCOMINairnow=/lfs/h1/ops/prod/dcom
+#export COMOUTbicor=${COMaqm}
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
 
 . ${USHdir}/load_modules_run_task.sh bias_correction_pm25 "${JOBSdir}/JREGIONAL_BIAS_CORRECTION_PM25"
 

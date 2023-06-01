@@ -15,9 +15,12 @@ export cyc="%CYC%"
 
 export nspt="%NSPT%"
 export subcyc=0
-export DCOMINfire=/lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
+#export DCOMINfire=/lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
 . ${USHdir}/load_modules_run_task.sh nexus_emission "${JOBSdir}/JREGIONAL_NEXUS_EMISSION"
 
 %include <tail.h>

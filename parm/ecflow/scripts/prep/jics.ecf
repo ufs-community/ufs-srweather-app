@@ -17,7 +17,9 @@ SDATE=$($NDATE -6 ${PDY}${cyc})
 PDYS_P1=$(echo $SDATE | cut -c1-8)
 cycs_p1=$(echo $SDATE | cut -c9-10)
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
 
 export PREV_CYCLE_DIR=${COMaqm}/${model}.${PDYS_P1}/${cycs_p1}
 

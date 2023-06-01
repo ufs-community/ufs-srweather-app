@@ -99,8 +99,8 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
 if [ "${machine}" != "wcoss2" ]; then
+  source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
   module use "${HOMEaqm}/modulefiles"
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 

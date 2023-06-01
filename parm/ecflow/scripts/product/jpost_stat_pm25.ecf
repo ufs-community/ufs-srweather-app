@@ -14,7 +14,10 @@ export cyc="%CYC%"
 
 export subcyc=0
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
 . ${USHdir}/load_modules_run_task.sh post_stat_pm25 "${JOBSdir}/JREGIONAL_POST_STAT_PM25"
 
 %include <tail.h>

@@ -87,7 +87,9 @@ def create_ecflow_scripts(global_var_defns_fp):
         ecflow_script_fp = os.path.join(EXPTDIR, "ecf/scripts", ecflow_script_group, ecflow_script_fn)
 
         settings = {
-          "exptdir": EXPTDIR,
+          "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
+          "ushdir": USHdir,
+          "jobsdir": JOBSdir,
         }
         settings_str = cfg_to_yaml_str(settings)
 
@@ -143,7 +145,7 @@ def create_ecflow_scripts(global_var_defns_fp):
         "net": NET,
         "run": RUN,
         "envir": envir,
-        "opsroot": OPSROOT,
+        "logbasedir": LOGBASEDIR,
     }
     settings_str = cfg_to_yaml_str(settings)
 

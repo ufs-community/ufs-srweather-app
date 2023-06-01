@@ -17,7 +17,7 @@ suite emc_aqm
     edit ENVIR '{{ envir }}'
     edit QUEUE 'dev'
     edit QUEUE_ARCH 'dev_transfer'
-    edit OUTPUTDIR '{{ opsroot }}/ecf_output'
+    edit OUTPUTDIR '{{ logbasedir }}'
     family 00
       edit CYC '00'
       family aqm

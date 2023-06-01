@@ -15,7 +15,10 @@ export subcyc=0
 %include <head.h>
 %include <envir-p1.h>
 
-. {{ exptdir }}/var_denfs.sh
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
 . ${USHdir}/load_modules_run_task.sh run_fcst "${JOBSdir}/JREGIONAL_RUN_FCST"
 
 %include <tail.h>
