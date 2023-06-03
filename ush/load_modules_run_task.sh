@@ -99,8 +99,10 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-if [ "${machine}" != "wcoss2" ]; then
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
   source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
+fi
+if [ "${machine}" != "wcoss2" ]; then
   module use "${HOMEaqm}/modulefiles"
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
@@ -149,11 +151,13 @@ print_info_msg "$VERBOSE" "
 
 module use "${modules_dir}" || print_err_msg_exit "\
   Call to \"module use\" command failed."
-
+	
 # source version file (run) only if it is specified in versions directory
-VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
+  VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
+  if [ -f ${VERSION_FILE} ]; then
+    . ${VERSION_FILE}
+  fi
 fi
 #
 # Load the .local module file if available for the given task
@@ -199,6 +203,7 @@ print_info_msg "$VERBOSE" "
 Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
+
 exec "${jjob_fp}"
 #
 #-----------------------------------------------------------------------
@@ -209,5 +214,4 @@ exec "${jjob_fp}"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
 

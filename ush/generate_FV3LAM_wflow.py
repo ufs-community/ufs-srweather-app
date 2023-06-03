@@ -19,6 +19,7 @@ from python_utils import (
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
+    rm_vrfy,
     run_command,
     date_to_str,
     define_macos_utilities,
@@ -263,12 +264,11 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         )
 
     elif expt_config["platform"]["WORKFLOW_MANAGER"] == "ecflow":
-        # create directoies for ecflow in EXPTDIR
+
         global_var_defns_fp = expt_config["workflow"]["GLOBAL_VAR_DEFNS_FP"]
-        exptdir = expt_config["workflow"]["EXPTDIR"]
-        mkdir_vrfy("-p", os.path.join(exptdir, "ecf"))
-        mkdir_vrfy("-p", os.path.join(exptdir, "ecf/scripts"))
-        mkdir_vrfy("-p", os.path.join(exptdir, "ecf/defs"))
+        homeaqm = expt_config["user"]["HOMEaqm"]
+        home_ecf = f"{homeaqm}/ecf"
+        rm_vrfy("-rf",f"{home_ecf}")
 
         # create ecflow definition file and job cards
         create_ecflow_scripts(global_var_defns_fp)

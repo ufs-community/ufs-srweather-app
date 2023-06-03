@@ -4,11 +4,11 @@ extern /cycled_v16_3/primary/06/gfs/v16.3/gfs/jgfs_forecast
 extern /cycled_v16_3/primary/12/gfs/v16.3/gfs/jgfs_forecast
 extern /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast
 
-suite emc_aqm
+suite {{ ecf_suite_nm }}
   inlimit /totality_limit:TOTALITY
   family primary
     edit aqm_ver '{{ model_ver }}'
-    edit PACKAGEHOME '{{ exptdir }}'
+    edit PACKAGEHOME '{{ home_ecf }}'
     edit NET '{{ net }}'
     edit RUN '{{ run }}'
     edit PROJ '{{ net | upper }}'

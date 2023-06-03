@@ -31,18 +31,22 @@ def create_ecflow_scripts(global_var_defns_fp):
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
 
-    #
-    #-----------------------------------------------------------------------
-    #
-    # Create ecFlow job cards and definition script in the experiment directory.
-    #
-    #-----------------------------------------------------------------------
-    #
     print_info_msg(f"""
-        Creating ecFlow job cards and definition scripts in the specified 
-        experiment directory (EXPTDIR):
-          EXPTDIR = '{EXPTDIR}'""", verbose=VERBOSE)
+        Creating ecFlow job cards and definition scripts in the home directory (HOMEaqm):
+          HOMEaqm = '{HOMEaqm}'""", verbose=VERBOSE)
 
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Create ecFlow directories in the home directory.
+    #
+    #-----------------------------------------------------------------------
+    #
+    home_ecf = HOMEaqm
+    mkdir_vrfy("-p", os.path.join(home_ecf, "ecf"))
+    mkdir_vrfy("-p", os.path.join(home_ecf, "ecf/scripts"))
+    mkdir_vrfy("-p", os.path.join(home_ecf, "ecf/defs"))
+   
     #
     #-----------------------------------------------------------------------
     #
@@ -50,7 +54,7 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/include"), os.path.join(EXPTDIR, "ecf"))
+    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/include"), os.path.join(home_ecf, "ecf"))
 
     #
     #-----------------------------------------------------------------------
@@ -59,6 +63,7 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
+    ecf_suite_nm = f"prod_{NET}"
     grp_aqm_manager = ["aqm_manager", "data_cleanup"]
     grp_forecast = ["jforecast"]
     grp_nexus = ["jnexus_emission", "jnexus_gfs_sfc", "jnexus_post_split"]
@@ -81,15 +86,19 @@ def create_ecflow_scripts(global_var_defns_fp):
                 ecflow_script_group = grp_k
                 break
 
-        mkdir_vrfy("-p", os.path.join(EXPTDIR, "ecf/scripts", ecflow_script_group))
+        mkdir_vrfy("-p", os.path.join(home_ecf, "ecf/scripts", ecflow_script_group))
         ecflow_script_fn = f"{tsk}.ecf"
         ecflow_script_tmpl_fp = os.path.join(PARMdir, "ecflow/scripts", ecflow_script_group, ecflow_script_fn)
-        ecflow_script_fp = os.path.join(EXPTDIR, "ecf/scripts", ecflow_script_group, ecflow_script_fn)
+        ecflow_script_fp = os.path.join(home_ecf, "ecf/scripts", ecflow_script_group, ecflow_script_fn)
 
         settings = {
           "global_var_defns_fp": GLOBAL_VAR_DEFNS_FP,
           "ushdir": USHdir,
           "jobsdir": JOBSdir,
+          "tn_get_extrn_ics": TN_GET_EXTRN_ICS,
+          "tn_get_extrn_lbcs": TN_GET_EXTRN_LBCS,
+          "tn_nexus_gfs_sfc": TN_NEXUS_GFS_SFC,
+          "tn_run_fcst": TN_RUN_FCST,
         }
         settings_str = cfg_to_yaml_str(settings)
 
@@ -117,15 +126,15 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     max_fcst_len = max(FCST_LEN_CYCL)+1
     for itsk in range(0, max_fcst_len):
-        ecf_script_orgi = os.path.join(EXPTDIR, "ecf/scripts/post", "jpost.ecf")
+        ecf_script_orgi = os.path.join(home_ecf, "ecf/scripts/post", "jpost.ecf")
         ecf_script_link_fn = f"jpost_f{itsk:03d}.ecf"
-        ecf_script_link = os.path.join(EXPTDIR, "ecf/scripts/post", ecf_script_link_fn)
+        ecf_script_link = os.path.join(home_ecf, "ecf/scripts/post", ecf_script_link_fn)
         ln_vrfy(f"""-fsn '{ecf_script_orgi}' '{ecf_script_link}'""")
 
     for itsk in range(0, NUM_SPLIT_NEXUS):
-        ecf_script_orgi = os.path.join(EXPTDIR, "ecf/scripts/nexus", "jnexus_emission.ecf")
-        ecf_script_link_fn = f"jnexus_emission_f{itsk:02d}.ecf"
-        ecf_script_link = os.path.join(EXPTDIR, "ecf/scripts/nexus", ecf_script_link_fn)
+        ecf_script_orgi = os.path.join(home_ecf, "ecf/scripts/nexus", "jnexus_emission.ecf")
+        ecf_script_link_fn = f"jnexus_emission_{itsk:02d}.ecf"
+        ecf_script_link = os.path.join(home_ecf, "ecf/scripts/nexus", ecf_script_link_fn)
         ln_vrfy(f"""-fsn '{ecf_script_orgi}' '{ecf_script_link}'""")
 
     #
@@ -137,11 +146,12 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     ecflow_defn_fn = f"{NET}_cycled.def"
     ecflow_defn_tmpl_fp = os.path.join(PARMdir, "ecflow/defs", "ecf_defn_template.def")
-    ecflow_defn_fp = os.path.join(EXPTDIR, "ecf/defs", ecflow_defn_fn)
+    ecflow_defn_fp = os.path.join(home_ecf, "ecf/defs", ecflow_defn_fn)
 
     settings = {
         "model_ver": model_ver,
-        "exptdir": EXPTDIR,
+        "ecf_suite_nm": ecf_suite_nm,
+        "home_ecf": home_ecf,
         "net": NET,
         "run": RUN,
         "envir": envir,
@@ -171,15 +181,15 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    ecflow_env_fn = "ecf_env.def"
+    ecflow_env_fn = "ecf_env.sh"
     ecflow_env_tmpl_fp = os.path.join(PARMdir, "ecflow/env", "env_template.sh")
-    ecflow_env_fp = os.path.join(EXPTDIR, "ecf", ecflow_env_fn)
+    ecflow_env_fp = os.path.join(home_ecf, "ecf", ecflow_env_fn)
  
-    ecf_home = f"{OPSROOT}/ecflow"
-    ecf_data_root = f"{OPSROOT}/ecflow/data"
-    ecf_outputdir = f"{OPSROOT}/ecflow/output"
-    ecf_comdir = f"{OPSROOT}/ecflow/com"
-    lfs_outputdir = f"{OPSROOT}/ecflow/lsf"
+    ecf_home = f"{EXPTDIR}/ecflow"
+    ecf_data_root = f"{EXPTDIR}/ecflow/data"
+    ecf_outputdir = f"{EXPTDIR}/ecflow/output"
+    ecf_comdir = f"{EXPTDIR}/ecflow/com"
+    lfs_outputdir = f"{EXPTDIR}/ecflow/lsf"
 
     date_first = date_to_str(DATE_FIRST_CYCL, format="%Y%m%d")
 
@@ -189,7 +199,8 @@ def create_ecflow_scripts(global_var_defns_fp):
         "ecf_outputdir": ecf_outputdir,
         "ecf_comdir": ecf_comdir,
         "lfs_outputdir": lfs_outputdir,
-        "exptdir": EXPTDIR,
+        "ecf_suite_nm": ecf_suite_nm,
+        "home_ecf": home_ecf,
         "pdy": date_first,
     }
     settings_str = cfg_to_yaml_str(settings)
