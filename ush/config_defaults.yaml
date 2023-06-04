@@ -905,7 +905,10 @@ nco:
   #-----------------------------------------------------------------------
   #
   # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco").  Definitions:
+  # set to "nco"). All variables have the suffix _dfv meaning the default value.
+  # This is bacuase they are used as the default values for the production using ecFlow.
+  #
+  # Definitions:
   #
   # envir, NET, model_ver, RUN:
   # Standard environment variables defined in the NCEP Central Operations WCOSS
@@ -937,35 +940,35 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir: "prod"
-  NET: "aqm"
-  RUN: "aqm"
-  model_ver: "v7.0.0"
-  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT: '{{ OPSROOT }}/com'
-  PACKAGEROOT: '{{ OPSROOT }}/packages'
-  DATAROOT: '{{ OPSROOT }}/tmp'
-  DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{{ OPSROOT }}/output'
-  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
-  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  envir_dfv: "prod"
+  NET_dfv: "aqm"
+  RUN_dfv: "aqm"
+  model_ver_dfv: "v7.0.0"
+  OPSROOT_dfv: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT_dfv: '{{ OPSROOT_dfv }}/com'
+  COMIN_BASEDIR: '{{ COMROOT_dfv }}/{{ NET_dfv }}/{{ model_ver_dfv }}'
+  COMOUT_BASEDIR: '{{ COMROOT_dfv }}/{{ NET_dfv }}/{{ model_ver_dfv }}'
+
+  DATAROOT_dfv: '{{ OPSROOT_dfv }}/tmp'
+  DCOMROOT_dfv: '{{ OPSROOT_dfv }}/dcom'
+  LOGBASEDIR_dfv: '{{ OPSROOT_dfv }}/output'
 
   #
   #-----------------------------------------------------------------------
   #
-  # The following are also described in the NCO doc above
+  # The following are also described in the NCO doc above: default values
   #
   #-----------------------------------------------------------------------
   #
-  DBNROOT: ""
-  SENDECF: false
-  SENDDBN: false
-  SENDDBN_NTC: false
-  SENDCOM: false
-  SENDWEB: false
-  KEEPDATA: true
-  MAILTO: ""
-  MAILCC: ""
+  DBNROOT_dfv: ""
+  SENDECF_dfv: false
+  SENDDBN_dfv: false
+  SENDDBN_NTC_dfv: false
+  SENDCOM_dfv: false
+  SENDWEB_dfv: false
+  KEEPDATA_dfv: true
+  MAILTO_dfv: ""
+  MAILCC_dfv: ""
 
 
 #----------------------------
@@ -3015,18 +3018,18 @@ cpl_aqm_parm:
   DO_AQM_SAVE_FIRE: false
 
   AQM_CONFIG_DIR: ""
-  DCOMINbio: ""
+  DCOMINbio_dfv: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  DCOMINdust: "/path/to/dust/dir"
+  DCOMINdust_dfv: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  DCOMINcanopy: "/path/to/canopy/dir"
+  DCOMINcanopy_dfv: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
-  DCOMINfire: ""
+  DCOMINfire_dfv: ""
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
@@ -3035,10 +3038,10 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  DCOMINchem_lbcs: ""
+  DCOMINchem_lbcs_dfv: ""
   AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
-  DCOMINgefs: ""
+  DCOMINgefs_def: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
@@ -3049,7 +3052,7 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
-  DCOMINpt_src: "/path/to/point/source/base/directory"
+  DCOMINpt_src_dfv: "/path/to/point/source/base/directory"
 
-  DCOMINairnow: "/path/to/airnow/obaservation/data"
+  DCOMINairnow_dfv: "/path/to/airnow/obaservation/data"
   AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"

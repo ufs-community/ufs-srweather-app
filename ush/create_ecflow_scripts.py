@@ -144,18 +144,18 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    ecflow_defn_fn = f"{NET}_cycled.def"
+    ecflow_defn_fn = f"{NET_dfv}_cycled.def"
     ecflow_defn_tmpl_fp = os.path.join(PARMdir, "ecflow/defs", "ecf_defn_template.def")
     ecflow_defn_fp = os.path.join(home_ecf, "ecf/defs", ecflow_defn_fn)
 
     settings = {
-        "model_ver": model_ver,
+        "model_ver": model_ver_dfv,
         "ecf_suite_nm": ecf_suite_nm,
         "home_ecf": home_ecf,
-        "net": NET,
-        "run": RUN,
-        "envir": envir,
-        "logbasedir": LOGBASEDIR,
+        "net": NET_dfv,
+        "run": RUN_dfv,
+        "envir": envir_dfv,
+        "logbasedir": LOGBASEDIR_dfv,
     }
     settings_str = cfg_to_yaml_str(settings)
 
