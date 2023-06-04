@@ -63,7 +63,7 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    ecf_suite_nm = f"prod_{NET}"
+    ecf_suite_nm = f"prod_{NET_dfv}"
     grp_aqm_manager = ["aqm_manager", "data_cleanup"]
     grp_forecast = ["jforecast"]
     grp_nexus = ["jnexus_emission", "jnexus_gfs_sfc", "jnexus_post_split"]
