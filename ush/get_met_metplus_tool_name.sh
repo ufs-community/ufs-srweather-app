@@ -65,8 +65,8 @@ function get_met_metplus_tool_name() {
 #
   generic_tool_name=${generic_tool_name,,}
   valid_vals_generic_tool_name=( \
-    "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "ENSEMBLESTAT" \
-    "pb2nc" "pcpcombine" "gridstat" "pointstat" "ensemblestat" \
+    "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "GENENSPROD" "ENSEMBLESTAT" \
+    "pb2nc" "pcpcombine" "gridstat" "pointstat" "genensprod" "ensemblestat" \
     )
   check_var_valid_value "generic_tool_name" "valid_vals_generic_tool_name"
 
@@ -86,6 +86,10 @@ function get_met_metplus_tool_name() {
     "pointstat")
       _met_tool_name_="point_stat"
       _metplus_tool_name_="PointStat"
+      ;;
+    "genensprod")
+      _met_tool_name_="gen_ens_prod"
+      _metplus_tool_name_="GenEnsProd"
       ;;
     "ensemblestat")
       _met_tool_name_="ensemble_stat"

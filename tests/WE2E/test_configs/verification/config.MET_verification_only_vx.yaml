@@ -21,26 +21,11 @@ workflow:
 # It also assumes staged observations, so turn off those tasks.
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/verify.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
     task_get_obs_ccpa:
     task_get_obs_mrms:
     task_get_obs_ndas:
-    metatask_vx_ens_member:
-      metatask_GridStat_MRMS_mem#mem#:
-        task_run_MET_GridStat_vx_#VAR#_mem#mem#:
-          dependency:
-      metatask_PointStat_mem#mem#:
-        task_run_MET_PointStat_vx_#VAR#_mem#mem#:
-          dependency:
-            and:
-              or_do_post:
-              or_get_obs:
-    metatask_GridStat_APCP_acc:
-      metatask_vx_ens_member_acc:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
-          dependency:
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
-
