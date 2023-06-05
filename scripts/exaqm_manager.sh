@@ -135,4 +135,3 @@ In directory:    \"${scrfunc_dir}\"
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
-
