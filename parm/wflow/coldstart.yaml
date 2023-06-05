@@ -75,7 +75,7 @@ task_get_extrn_lbcs:
 
 metatask_run_ensemble:
   var:
-    mem: '{% if global.DO_ENSEMBLE  %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+    mem: '{% if global.DO_ENSEMBLE %}{%- for m in range(1, global.NUM_ENS_MEMBERS+1) -%}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   task_make_ics_mem#mem#:
     <<: *default_task
     command: '&LOAD_MODULES_RUN_TASK_FP; "make_ics" "&JOBSdir;/JREGIONAL_MAKE_ICS"'

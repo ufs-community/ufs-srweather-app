@@ -54,7 +54,8 @@ function set_vx_fhr_list() {
         "accum_hh" \
         "base_dir" \
         "fn_template" \
-        "check_hourly_files" \
+        "check_accum_contrib_files" \
+        "num_missing_files_max" \
         "outvarname_fhr_list" \
         )
   process_args valid_args "$@"
@@ -105,19 +106,19 @@ function set_vx_fhr_list() {
       fhr_int="${accum_hh}"
       ;;
     "REFC")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "RETOP")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "SFC")
-      fhr_min="01"
+      fhr_min="00"
       fhr_int="01"
       ;;
     "UPA")
-      fhr_min="06"
+      fhr_min="00"
       fhr_int="06"
       ;;
     *)
@@ -153,7 +154,7 @@ is:
 
     fhr_orig="${fhr_array[$i]}"
 
-    if [ "${check_hourly_files}" = "TRUE" ]; then
+    if [ "${check_accum_contrib_files}" = "TRUE" ]; then
       fhr=$(( ${fhr_orig} - ${accum_hh} + 1 ))
       num_back_hrs=${accum_hh}
     else
@@ -165,6 +166,9 @@ is:
     for (( j=0; j<${num_back_hrs}; j++ )); do
 #
 # Use the provided template to set the name of/relative path to the file 
+# Note that the while-loop below is over all METplus time string templates
+# of the form {...} in the template fn_template; it continues until all
+# such templates have been evaluated to actual time strings.
 #
       fn="${fn_template}"
       regex_search_tmpl="(.*)(\{.*\})(.*)"
@@ -247,18 +251,18 @@ Final (i.e. after filtering for missing files) set of foreast hours is
 #
 #-----------------------------------------------------------------------
 #
-# If the number of missing files is greater than the user-specified
-# variable NUM_MISSING_OBS_FILES_MAX, print out an error message and
+# If the number of missing files is greater than the maximum allowed
+# (specified by num_missing_files_max), print out an error message and
 # exit.
 #
 #-----------------------------------------------------------------------
 #
-  if [ "${num_missing_files}" -gt "${NUM_MISSING_OBS_FILES_MAX}" ]; then
+  if [ "${num_missing_files}" -gt "${num_missing_files_max}" ]; then
     print_err_msg_exit "\
 The number of missing files (num_missing_files) is greater than the
-maximum allowed number (NUM_MISSING_OBS_FILES_MAX):
+maximum allowed number (num_missing_files_max):
   num_missing_files = ${num_missing_files}
-  NUM_MISSING_OBS_FILES_MAX = ${NUM_MISSING_OBS_FILES_MAX}"
+  num_missing_files_max = ${num_missing_files_max}"
   fi
 #
 #-----------------------------------------------------------------------

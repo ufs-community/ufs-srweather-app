@@ -128,8 +128,8 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
 
     echo "TAR FILE:${TarFile}"
 
-    TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz\" | awk '{print $7}'\`"
-    htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz" | awk '{print $7}'`
+    TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz\" | awk '{print \$7}'\`"
+    htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz" | awk '{print \$7}'`
     Status=$?
 
     if [[ ${Status} != 0 ]]; then

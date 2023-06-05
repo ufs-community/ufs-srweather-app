@@ -1,0 +1,43 @@
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode can
+    successfully run both the MET deterministic and ensemble verification
+    tasks using staged observation and forecast files (i.e. with other tasks
+    such as pre-processing, forecast, and post-processing deactivated) AND 
+    assuming one of the ensemble members is time-lagged.
+
+user:
+  RUN_ENVIR: community
+
+workflow:
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
+  DATE_FIRST_CYCL: '2021050500'
+  DATE_LAST_CYCL: '2021050500'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
+    task_get_obs_ccpa:
+    task_get_obs_mrms:
+    task_get_obs_ndas:
+
+nco:
+  NET: 'RRFSE_CONUS'
+
+global:
+  DO_ENSEMBLE: true
+  NUM_ENS_MEMBERS: 2
+  ENS_TIME_LAG_HRS: '[ 0, 12 ]'
+
+platform:
+  CCPA_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ccpa/proc'
+  MRMS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/mrms/proc'
+  NDAS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ndas/proc'
+
+verification:
+  VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
+  VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'
+  VX_NDIGITS_ENSMEM_NAMES: 1
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.bgdawpf{lead?fmt=%HHH?shift=${time_lag}}.tm00.grib2'
