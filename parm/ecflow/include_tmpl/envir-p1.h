@@ -2,6 +2,8 @@
 
 export model_ver="v7.0"
 export RUN=%RUN%
+export NET=%NET%
+export envir=%ENVIR%
 
 if [ -n "%SENDCANNEDDBN:%" ]; then export SENDCANNEDDBN=${SENDCANNEDDBN:-%SENDCANNEDDBN:%}; fi
 export SENDCANNEDDBN=${SENDCANNEDDBN:-"NO"}

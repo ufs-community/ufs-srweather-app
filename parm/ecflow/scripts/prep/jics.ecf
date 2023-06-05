@@ -21,7 +21,7 @@ export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
 export USHdir="{{ ushdir }}"
 JOBSdir="{{ jobsdir }}"
 
-export PREV_CYCLE_DIR=${COMaqm}/${model}.${PDYS_P1}/${cycs_p1}
+export PREV_CYCLE_DIR=$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYS_P1}/${cycs_p1})
 
 . ${USHdir}/load_modules_run_task.sh aqm_ics "${JOBSdir}/JREGIONAL_AQM_ICS"
 
