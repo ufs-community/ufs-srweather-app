@@ -45,7 +45,7 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for AQM-MANAGER.
 ========================================================================"
 
-ecflow_sid=emc_aqm
+ecflow_sid=prod_aqm
 
 ##############################################
 # Set variables used in the script
