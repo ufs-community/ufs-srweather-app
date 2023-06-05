@@ -45,15 +45,10 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for DATA-CLEANUP.
 ========================================================================"
 
-
-##############################################
 # Clean up the DATA directory from previous cycle if found
-##############################################
-[[ $KEEPDATA = "FALSE" ]] && exit 0
+[[ $KEEPDATA = "TRUE" ]] && exit 0
 
-##############################################
 # Set variables used in the script
-##############################################
 CDATE=${PDY}${cyc}
 GDATE=$($NDATE -24 $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
