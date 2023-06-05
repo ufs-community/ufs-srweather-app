@@ -54,7 +54,7 @@ def create_ecflow_scripts(global_var_defns_fp):
     #
     #-----------------------------------------------------------------------
     #
-    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/include"), os.path.join(home_ecf, "ecf"))
+    cp_vrfy("-r", os.path.join(PARMdir,"ecflow/include_tmpl"), os.path.join(home_ecf, "ecf/include"))
 
     #
     #-----------------------------------------------------------------------
