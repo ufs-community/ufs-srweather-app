@@ -13,16 +13,12 @@ export cyc="%CYC%"
 %include <envir-p1.h>
 
 export subcyc=0
-#export ICS_OR_LBCS=LBCS
-#export DCOMINchem_lbcs=/lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-#export DCOMINgefs=/lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
-#export COMINgefs=$(compath.py ${envir}/gefs/${gefs_ver})
 
 export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
 export USHdir="{{ ushdir }}"
 JOBSdir="{{ jobsdir }}"
 
-. ${USHdir}/load_modules_run_task.sh aqm_ics "${JOBSdir}/JREGIONAL_AQM_ICS"
+. ${USHdir}/load_modules_run_task.sh aqm_lbcs "${JOBSdir}/JREGIONAL_AQM_LBCS"
 
 %include <tail.h>
 
