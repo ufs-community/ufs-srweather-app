@@ -204,7 +204,12 @@ Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
 
-exec "${jjob_fp}"
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  /bin/bash "${jjob_fp}"
+else
+  exec "${jjob_fp}"
+fi
+
 #
 #-----------------------------------------------------------------------
 #
