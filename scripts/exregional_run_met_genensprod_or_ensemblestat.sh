@@ -205,21 +205,19 @@ fi
 # tasks).  This will be exported to the environment and read by the
 # METplus configuration files.
 #
-NDIGITS_ENSMEM_NAMES=3
 FCST_INPUT_FN_TEMPLATE=""
 for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
-  mem_indx=$(($i+1))
-  mem_indx_fmt=$(printf "%0${NDIGITS_ENSMEM_NAMES}d" "${mem_indx}")
-  time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
+  ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "$((i+1))")
+  ensmem_name="mem${ensmem_indx}"
 
   if [ "${RUN_ENVIR}" = "nco" ]; then
     cdate_ensmem_subdir_or_null=""
-    DOT_ENSMEM_OR_NULL=".mem${mem_indx_fmt}"
   else
-    cdate_ensmem_subdir_or_null="${CDATE}/mem${mem_indx_fmt}"
-    DOT_ENSMEM_OR_NULL=""
+    cdate_ensmem_subdir_or_null="${CDATE}/${ensmem_name}"
   fi
+
+  time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
     template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
@@ -227,7 +225,7 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi
 
-  SLASH_ENSMEM_SUBDIR_OR_NULL="/mem${mem_indx_fmt}"
+  slash_ensmem_subdir_or_null="/${ensmem_name}"           
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
     FCST_INPUT_FN_TEMPLATE="  $(eval echo ${template})"
   else
@@ -255,7 +253,8 @@ set_vx_fhr_list \
   accum_hh="${ACCUM_HH}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_hourly_files="FALSE" \
+  check_accum_contrib_files="FALSE" \
+  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -368,6 +367,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
+  'ensmem_indx': '${ENSMEM_INDX:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.

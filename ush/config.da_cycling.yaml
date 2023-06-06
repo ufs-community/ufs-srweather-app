@@ -1,0 +1,47 @@
+metadata:
+  description: >-
+    Work-in-progress prototype for DA cycling configuration file
+user:
+  RUN_ENVIR: community
+  MACHINE: hera
+  ACCOUNT: an_account
+platform:
+  MET_INSTALL_DIR: ""
+  METPLUS_PATH: ""
+  CCPA_OBS_DIR: ""
+  MRMS_OBS_DIR: ""
+  NDAS_OBS_DIR: ""
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  EXPT_SUBDIR: test_da_cycling
+  CCPP_PHYS_SUITE: FV3_HRRR
+  PREDEF_GRID_NAME: RRFS_CONUS_3km
+  DATE_FIRST_CYCL: '2022072006'
+  DATE_LAST_CYCL: '2022072006'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 6
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  QUILTING: true
+task_plot_allvars:
+  COMOUT_REF: ""
+rocoto:
+  entities:
+    START_TIME_NSSLMOSAIC: 00:45:00
+    START_TIME_LIGHTNING: 00:45:00
+    START_TIME_CONVENTIONAL: 00:40:00
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/da_data_preproc.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_process_obs_cycle_type:
+      task_process_lightning_#cycle_type#:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00

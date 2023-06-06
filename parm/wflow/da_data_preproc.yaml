@@ -1,0 +1,104 @@
+# This group contains all the tasks needed for preprocessing tasks for
+# RRFS DA.
+
+default_data_preproc_task: &default_preproc
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: #cycledefs_type#
+    maxtries: '1'
+  envars: &default_envars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    CYCLE_TYPE: '#cycle_type#'
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nnodes: 1
+  nodesize: "&NCORES_PER_NODE;"
+  ppn: 1
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:25:00
+
+
+task_get_da_obs:
+  <<: *default_preproc
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_da_obs" "&JOBSdir;/JREGIONAL_GET_DA_OBS"'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  partition: '&PARTITION_HPSS;'
+  queue: '&QUEUE_HPSS;'
+  dependency:
+    timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+
+metatask_process_obs_cycle_type:
+  var:
+    cycledefs_type: forecast,long_forecast
+    cycle_type: prod
+
+  task_process_radarref_#cycle_type#:
+    <<: *default_preproc
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"'
+    nnodes: 2
+    ppn: 24
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    dependency:
+      or:
+        taskdep:
+          attrs:
+            task: get_da_obs
+        and:
+          not:
+            taskvalid:
+              attrs:
+                task: get_da_obs
+          streq:
+            left: do_real_time
+            right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+          timedep: '<cyclestr offset="&START_TIME_NSSLMOSAIC;">@Y@m@d@H@M00</cyclestr>'
+
+  task_process_lightning_#cycle_type#:
+    <<: *default_preproc
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_LIGHTNING"'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    dependency:
+      or:
+        taskdep:
+          attrs:
+            task: get_da_obs
+        and:
+          not:
+            taskvalid:
+              attrs:
+                task: get_da_obs
+          streq:
+            left: do_real_time
+            right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+          timedep: '<cyclestr offset="&START_TIME_LIGHTNING;">@Y@m@d@H@M00</cyclestr>'
+
+
+  task_process_bufrobs_#cycle_type#:
+    <<: *default_preproc
+    command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_BUFROBS"'
+    join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+    dependency:
+      or:
+        taskdep:
+          attrs:
+            task: get_da_obs
+        and:
+          not:
+            taskvalid:
+              attrs:
+                task: get_da_obs
+          streq:
+            left: do_real_time
+            right: '{% if workflow.DO_REAL_TIME %}do_real_time{% endif %}'
+          timedep: '<cyclestr offset="&START_TIME_CONVENTIONAL;">@Y@m@d@H@M00</cyclestr>'
+

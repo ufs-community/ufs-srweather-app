@@ -8,7 +8,7 @@ import logging
 from textwrap import dedent
 from datetime import datetime
 
-sys.path.append("../../ush")
+sys.path.insert(1, "../../ush")
 
 from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (
@@ -145,6 +145,8 @@ def run_we2e_tests(homedir, args) -> None:
         logging.debug(f"For test {test_name}, constructing config.yaml")
         test_cfg = load_config_file(test)
 
+        if test_cfg.get('user') is None:
+            test_cfg['user'] = {}
         test_cfg['user'].update({"MACHINE": machine})
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:
@@ -491,8 +493,10 @@ if __name__ == "__main__":
     if args.modulefile is None:
         args.modulefile = f'build_{args.machine.lower()}_{args.compiler}'
     if args.procs < 1:
-        raise ValueError('You can not have less than one parallel process; select a valid value '\
+        raise argparse.ArgumentTypeError('You can not have less than one parallel process; select a valid value '\
                          'for --procs')
+    if not args.tests:
+        raise argparse.ArgumentTypeError('The --tests argument can not be empty')
 
     # Print test details (if requested)
     if args.print_test_info:
