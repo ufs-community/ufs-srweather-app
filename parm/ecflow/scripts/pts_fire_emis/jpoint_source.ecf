@@ -18,8 +18,6 @@ export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
 export USHdir="{{ ushdir }}"
 JOBSdir="{{ jobsdir }}"
 
-#export DCOMINpt_src=/lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
-
 . ${USHdir}/load_modules_run_task.sh point_source "${JOBSdir}/JREGIONAL_POINT_SOURCE"
 
 %include <tail.h>

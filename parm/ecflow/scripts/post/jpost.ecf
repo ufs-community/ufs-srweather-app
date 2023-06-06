@@ -15,7 +15,6 @@ export cyc="%CYC%"
 
 export subcyc=0
 export fhr="%FHR%"
-#export DATAFCST=$DATAROOT/${model}_forecast_${cyc}.${PDY}${cyc}
 
 export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
 export USHdir="{{ ushdir }}"

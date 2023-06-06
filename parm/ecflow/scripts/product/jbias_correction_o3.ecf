@@ -14,9 +14,6 @@ export cyc="%CYC%"
 
 export subcyc=0
 
-#export DCOMINairnow=/lfs/h1/ops/prod/dcom
-#export COMOUTbicor=${COMaqm}
-
 export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
 export USHdir="{{ ushdir }}"
 JOBSdir="{{ jobsdir }}"
