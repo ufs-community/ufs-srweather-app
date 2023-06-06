@@ -22,16 +22,13 @@ export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
 
-# KEEPDATA is defined in head.h
-if [ "${KEEPDATA}" = "YES" ] || [ "${KEEPDATA}" = "TRUE" ]; then
-  export KEEPDATA="TRUE"
-elif [ "${KEEPDATA}" = "NO" ] || [ "${KEEPDATA}" = "FALSE" ]; then
-  export KEEPDATA="FALSE"
-fi
 
 # Developer configuration
 PTMP=/lfs/h2/emc/ptmp
 PSLOT=ecflow_aqm
+
+export SENDDBN="NO"
+export SENDDBN_NTC="NO"
 
 export OPSROOT="${PTMP}/${USER}/${PSLOT}/para"
 export COMROOT="${OPSROOT}/com"
@@ -49,5 +46,12 @@ export DCOMROOT="${OPSROOT}/dcom"
 if [ -n "%PDY:%" ]; then
   export PDY=${PDY:-%PDY:%}
   export CDATE=${PDY}%CYC:%
+fi
+
+# KEEPDATA is defined in head.h
+if [ "${KEEPDATA}" = "YES" ] || [ "${KEEPDATA}" = "TRUE" ]; then
+  export KEEPDATA="TRUE"
+elif [ "${KEEPDATA}" = "NO" ] || [ "${KEEPDATA}" = "FALSE" ]; then
+  export KEEPDATA="FALSE"
 fi
 
