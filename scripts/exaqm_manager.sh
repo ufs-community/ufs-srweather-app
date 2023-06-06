@@ -77,9 +77,8 @@ while [ $h_try -lt 70 ]; do
   # Set release_next_cycle event when 
   #   current cycle fcst restart file exist
   ####################################
-  if [ ${found_required_file_for_next_cycle} = "NO" ]; then
-    aqm_forecast_RESTART_file=$(ls ${COMIN}/RESTART/*coupler.res|wc -l)
-    if [[ ${aqm_forecast_RESTART_file} -ge 1 && -f ${gefs_check} && -f ${gfs_check} ]]; then
+  if [ ${found_required_file_for_next_cycle} = "NO" ] && [ -d "{COMIN}/RESTART" ]; then
+    if [ "$(ls -A ${COMIN}/RESTART )" ] && [-f ${gefs_check} ] && [ -f ${gfs_check} ]; then
       ecflow_client --event release_next_cycle
       found_required_file_for_next_cycle=YES
     fi
