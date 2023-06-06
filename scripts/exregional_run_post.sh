@@ -303,10 +303,6 @@ done
 
 rm -rf ${DATA_FHR}
 
-# Delete the forecast directory
-if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
-   rm -rf $DATAFCST
-fi
 #
 #-----------------------------------------------------------------------
 #
