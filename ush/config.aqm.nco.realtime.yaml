@@ -34,7 +34,7 @@ nco:
   envir_dfv: prod
   NET_dfv: aqm
   model_ver_dfv: v7.0
-  RUN_dfv: aqm_nco_aqmna13km
+  RUN_dfv: aqm
   OPSROOT_dfv: /path/to/custom/opsroot
   KEEPDATA_dfv: false
 workflow_switches:
