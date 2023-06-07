@@ -78,7 +78,7 @@ while [ $h_try -lt 70 ]; do
   #   current cycle fcst restart file exist
   ####################################
   if [ ${found_required_file_for_next_cycle} = "NO" ] && [ -d "${COMIN}/RESTART" ]; then
-    if [ "$(ls -A ${COMIN}/RESTART )" ] && [-f ${gefs_check} ] && [ -f ${gfs_check} ]; then
+    if [[ "$(ls -A ${COMIN}/RESTART )" && -f ${gefs_check} && -f ${gfs_check} ]]; then
       ecflow_client --event release_next_cycle
       found_required_file_for_next_cycle=YES
     fi
