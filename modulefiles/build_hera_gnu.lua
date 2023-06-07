@@ -23,7 +23,9 @@ load("srw_common")
 
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
+load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.23"))
 
+unsetenv("MKLROOT")
 setenv("CMAKE_C_COMPILER","mpicc")
 setenv("CMAKE_CXX_COMPILER","mpicxx")
 setenv("CMAKE_Fortran_COMPILER","mpif90")
