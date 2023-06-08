@@ -48,10 +48,3 @@ if [ -n "%PDY:%" ]; then
   export CDATE=${PDY}%CYC:%
 fi
 
-# KEEPDATA is defined in head.h
-if [ "${KEEPDATA}" = "YES" ] || [ "${KEEPDATA}" = "TRUE" ]; then
-  export KEEPDATA="TRUE"
-elif [ "${KEEPDATA}" = "NO" ] || [ "${KEEPDATA}" = "FALSE" ]; then
-  export KEEPDATA="FALSE"
-fi
-
