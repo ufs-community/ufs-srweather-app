@@ -71,6 +71,21 @@ export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
 #
 #-----------------------------------------------------------------------
 #
+# Change YES/NO (NCO standards; job card) to TRUE/FALSE (workflow standards)
+# for NCO environment variables
+#
+#-----------------------------------------------------------------------
+#
+export KEEPDATA=$(boolify "${KEEPDATA}")
+export SENDCOM=$(boolify "${SENDCOM}")
+export SENDDBN=$(boolify "${SENDDBN}")
+export SENDDBN_NTC=$(boolify "${SENDDBN_NTC}")
+export SENDECF=$(boolify "${SENDECF}")
+export SENDWEB=$(boolify "${SENDWEB}")
+
+#
+#-----------------------------------------------------------------------
+#
 # Set cycle and ensemble member names in file/diectory names
 #
 #-----------------------------------------------------------------------
@@ -179,7 +194,7 @@ export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do

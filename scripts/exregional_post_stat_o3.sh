@@ -254,7 +254,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
     cp ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
-    if [ "$SENDDBN" = "YES" ]; then
+    if [ "$SENDDBN" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     fi
@@ -278,7 +278,7 @@ EOF1
     done
 
     cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
-    if [ "${SENDDBN_NTC}" = "YES" ]; then
+    if [ "${SENDDBN_NTC}" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
