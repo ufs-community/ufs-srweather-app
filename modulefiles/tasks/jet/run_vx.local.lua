@@ -1,3 +1,6 @@
-append_path("MODULEPATH", "/contrib/anaconda/modulefiles")
-load(pathJoin("intel", os.getenv("intel_ver") or "18.0.5.274"))
-load(pathJoin("anaconda", os.getenv("anaconda_ver") or "5.3.1"))
+--[[
+Compiler-specific modules are used for met and metplus libraries
+--]]
+load(pathJoin("met", os.getenv("met_ver") or "10.1.2"))
+load(pathJoin("metplus", os.getenv("metplus_ver") or "4.1.3"))
+load("python_srw")
