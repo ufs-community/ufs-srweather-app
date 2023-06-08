@@ -117,10 +117,11 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
-time_lag=$(( (${MEM_INDX_OR_NULL:+${ENS_TIME_LAG_HRS[${MEM_INDX_OR_NULL}-1]}}+0) ))
-# Convert to seconds.  We do this as a separate step using bc because
-# bash's $((...)) arithmetic operator can't handle floats well.
-time_lag=$( bc -l <<< "${time_lag}*${SECS_PER_HOUR}" )
+i="0"
+if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+  i=$( bc -l <<< "${ENSMEM_INDX}-1" )
+fi
+time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #
@@ -172,15 +173,30 @@ fi
 #
 vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
+ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "${ENSMEM_INDX}")
+ensmem_name="mem${ensmem_indx}"
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
-    DOT_ENSMEM_OR_NULL=".$ENSMEM"
-  else
-    DOT_ENSMEM_OR_NULL=""
-  fi
+  slash_cdate_or_null=""
+  slash_ensmem_subdir_or_null=""
 else
-  DOT_ENSMEM_OR_NULL=""
+  slash_cdate_or_null="/${CDATE}"
+#
+# Since other aspects of a deterministic run use the "mem000" string (e.g.
+# in rocoto workflow task names, in log file names), it seems reasonable
+# that a deterministic run create a "mem000" subdirectory under the $CDATE
+# directory.  But since that is currently not the case in in the run_fcst
+# task, we need the following if-statement.  If and when such a modification
+# is made for the run_fcst task, we would remove this if-statement and
+# simply set 
+#   slash_ensmem_subdir_or_null="/${ensmem_name}"
+# or, better, just remove this variale and code "/${ensmem_name}" where
+# slash_ensmem_subdir_or_null currently appears below.
+#
+  if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+    slash_ensmem_subdir_or_null="/${ensmem_name}"
+  else
+    slash_ensmem_subdir_or_null=""
+  fi
 fi
 
 if [ "${grid_or_point}" = "grid" ]; then
@@ -189,7 +205,7 @@ if [ "${grid_or_point}" = "grid" ]; then
   if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
     OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${vx_output_basedir}/${CDATE}/mem${ENSMEM_INDX}/metprd/PcpCombine_fcst"
+    FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
     FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
   else
     OBS_INPUT_DIR="${OBS_DIR}"
@@ -218,7 +234,7 @@ elif [ "${grid_or_point}" = "point" ]; then
 
 fi
 
-OUTPUT_BASE="${vx_output_basedir}/${CDATE}/mem${ENSMEM_INDX}"
+OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #
@@ -235,7 +251,8 @@ set_vx_fhr_list \
   accum_hh="${ACCUM_HH}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_hourly_files="FALSE" \
+  check_accum_contrib_files="FALSE" \
+  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -300,7 +317,7 @@ else
   metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi
 metplus_config_tmpl_fn="${metplus_tool_name}_${metplus_config_tmpl_fn}"
-metplus_config_fn="${metplus_tool_name}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_mem${ENSMEM_INDX}"
+metplus_config_fn="${metplus_tool_name}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -348,6 +365,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
+  'ensmem_name': '${ensmem_name:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.

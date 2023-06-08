@@ -540,6 +540,58 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         post_meta = rocoto_tasks.get("metatask_run_ens_post", {})
         post_meta.pop("metatask_run_sub_hourly_post", None)
         post_meta.pop("metatask_sub_hourly_last_hour_post", None)
+    #
+    # -----------------------------------------------------------------------
+    #
+    # Remove all verification [meta]tasks for which no fields are specified.
+    #
+    # -----------------------------------------------------------------------
+    #
+    vx_fields_all = {}
+    vx_metatasks_all = {}
+
+    vx_fields_all["CCPA"] = ["APCP"]
+    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs", 
+                                "metatask_PcpCombine_fcst_all_accums_all_mems", 
+                                "metatask_GridStat_CCPA_all_accums_all_mems",
+                                "metatask_GenEnsProd_EnsembleStat_CCPA",
+                                "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
+
+    vx_fields_all["MRMS"] = ["REFC", "RETOP"]
+    vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
+                                "metatask_GenEnsProd_EnsembleStat_MRMS",
+                                "metatask_GridStat_MRMS_ensprob"]
+
+    vx_fields_all["NDAS"] = ["SFC", "UPA"]
+    vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
+                                "metatask_PointStat_NDAS_all_mems",
+                                "metatask_GenEnsProd_EnsembleStat_NDAS",
+                                "metatask_PointStat_NDAS_ensmeanprob"]
+
+    # Get the vx fields specified in the experiment configuration.
+    vx_fields_config = expt_config["verification"]["VX_FIELDS"]
+
+    # If there are no vx fields specified, remove those tasks that are necessary
+    # for all observation types.
+    if not vx_fields_config:
+        metatask = "metatask_check_post_output_all_mems"
+        rocoto_config['tasks'].pop(metatask)
+
+    # If for a given obstype no fields are specified, remove all vx metatasks
+    # for that obstype.
+    for obstype in vx_fields_all:
+        vx_fields_obstype = [field for field in vx_fields_config if field in vx_fields_all[obstype]]
+        if not vx_fields_obstype:
+            for metatask in vx_metatasks_all[obstype]:
+                if metatask in rocoto_config['tasks']:
+                    logging.info(dedent(
+                        f"""
+                        Removing verification [meta]task
+                          "{metatask}"
+                        from workflow since no fields belonging to observation type "{obstype}"
+                        are specified for verification."""
+                    ))
+                    rocoto_config['tasks'].pop(metatask)
 
     #
     # -----------------------------------------------------------------------
@@ -1235,25 +1287,35 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
+    # Get list of all top-level tasks and metatasks in the workflow.
     task_defs = rocoto_config.get('tasks')
+    all_tasks = [task for task in task_defs]
 
-    # Ensemble verification can only be run in ensemble mode
+    # Get list of all valid top-level tasks and metatasks pertaining to ensemble
+    # verification.
+    ens_vx_task_defns = load_config_file(
+      os.path.join(USHdir, os.pardir, "parm", "wflow", "verify_ens.yaml"))
+    ens_vx_valid_tasks = [task for task in ens_vx_task_defns]
+
+    # Get list of all valid top-level tasks and metatasks in the workflow that
+    # pertain to ensemble verification.
+    ens_vx_tasks = [task for task in ens_vx_valid_tasks if task in all_tasks]
+
+    # Get the value of the configuration flag for ensemble mode (DO_ENSEMBLE)
+    # and ensure that it is set to True if ensemble vx tasks are included in
+    # the workflow (or vice-versa).
     do_ensemble = global_sect["DO_ENSEMBLE"]
-
-
-    # Gather all the tasks/metatasks that are defined for verifying
-    # ensembles
-    ens_vx_tasks = [task for task in task_defs if "MET_GridStat_vx_ens" in task]
     if (not do_ensemble) and ens_vx_tasks:
-        task_str = "\n".join(ens_vx_tasks)
-        raise Exception(
-            f'''
-            Ensemble verification can not be run unless running in ensemble mode:
-               DO_ENSEMBLE = \"{do_ensemble}\"
-               Ensemble verification tasks: {task_str}
-            '''
-        )
+        task_str = "    " + "\n    ".join(ens_vx_tasks)
+        msg = dedent(f"""
+              Ensemble verification can not be run unless running in ensemble mode:
+                  DO_ENSEMBLE = \"{do_ensemble}\"
+              Ensemble verification tasks:
+              """)
+        msg = "".join([msg, task_str, dedent(f"""
+              Please set DO_ENSEMBLE to True or remove ensemble vx tasks from the
+              workflow.""")])
+        raise Exception(msg)
 
     #
     # -----------------------------------------------------------------------
@@ -1530,13 +1592,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if v is None or v == "":
             continue
         vkey = "valid_vals_" + k
-        if (vkey in cfg_v) and not (v in cfg_v[vkey]):
-            raise Exception(
-                f"""
-                The variable {k}={v} in the user's configuration
-                does not have a valid value. Possible values are:
-                    {k} = {cfg_v[vkey]}"""
-            )
+        if (vkey in cfg_v):
+            if (type(v) == list):
+                if not(all(ele in cfg_v[vkey] for ele in v)):
+                    raise Exception(
+                        dedent(f"""
+                        The variable
+                            {k} = {v}
+                        in the user's configuration has at least one invalid value.  Possible values are:
+                            {k} = {cfg_v[vkey]}"""
+                    ))
+            else:
+                if not (v in cfg_v[vkey]):
+                    raise Exception(
+                        dedent(f"""
+                        The variable
+                            {k} = {v}
+                        in the user's configuration does not have a valid value.  Possible values are:
+                            {k} = {cfg_v[vkey]}"""
+                    ))
 
     return expt_config
 

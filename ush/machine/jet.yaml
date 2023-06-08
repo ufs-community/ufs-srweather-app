@@ -35,9 +35,10 @@ platform:
   FIXshp: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 task_get_da_obs:
-  RAP_OBS_BUFR: /scratch2/BMC/public/data/grids/rap/obs
-  RAP_OBS_NSSLMOSAIC: /scratch2/BMC/public/data/radar/nssl/mrms/conus
+  NSSLMOSIAC: /mnt/lfs4/BMC/public/data/radar/nssl/mrms/conus
   NLDN_LIGHTNING: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/rrfs_retro_data/lightning/vaisala/netcdf
+  RAP_OBS_BUFR: /mnt/lfs4/BMC/public/data/grids/rap/obs
+  OBS_SUFFIX: grib2
 data:
   ics_lbcs:
     FV3GFS:

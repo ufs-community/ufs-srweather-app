@@ -447,17 +447,6 @@ platform:
   COMINgfs: ""
   COMINgefs: ""
   COMINairnow: "/path/to/real/time/airnow/data"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # Setup default observation locations for data assimilation:
-  #
-  # OBSPATH_NSSLMOSIAC: location of NSSL radar reflectivity 
-  #
-  #-----------------------------------------------------------------------
-  #
-  OBSPATH_NSSLMOSIAC: ""
-    
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -2189,7 +2178,7 @@ task_process_radarref:
   #
   RADARREFL_MINS: [0, 1, 2, 3]
   RADARREFL_TIMELEVEL: [0]
-  OBS_SUFFIX: grib2
+  OBS_SUFFIX: grib2.gz
 
 #----------------------------
 # Parameters needed for retrieving DA obs
@@ -2202,10 +2191,19 @@ task_get_da_obs:
   # NLDN_NEEDED
   #   whether to use NLDN observations in DA or not.
   #
+  # NLDN_LIGHTNING
+  # NSSLMOSAIC
+  # RAP_OBS_BUFR
+  #   paths to data on disk. Defaults for supported data streams on
+  #   certain platforms have defaults set in the respective machine
+  #   files.
+  #
   #-----------------------------------------------------------------------
   #
   NLDN_NEEDED: False
-
+  NLDN_LIGHTNING: ""
+  NSSLMOSAIC: ""
+  RAP_OBS_BUFR: ""
 #----------------------------
 # PROCESS BUFR config parameters
 #-----------------------------
@@ -2297,7 +2295,9 @@ global:
   # experiment directory
   #
   # ENS_TIME_LAG_HRS:
-  # Time lag (in hours) to use for each ensemble member.
+  # Time lag (in hours) to use for each ensemble member.  For a deterministic
+  # forecast, this is a one-element array.  Default values of array elements
+  # are zero.
   #
   #-----------------------------------------------------------------------
   #
@@ -2305,7 +2305,7 @@ global:
   NUM_ENS_MEMBERS: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  ENS_TIME_LAG_HRS: '[ {% for m in range(NUM_ENS_MEMBERS) %} 0, {% endfor %} ]'
+  ENS_TIME_LAG_HRS: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #
@@ -2432,7 +2432,18 @@ verification:
   # This is used in forming the names of the verification output files as
   # well as in the contents of those files.
   #
+  # VX_FIELDS:
+  # The fields or groups of fields on which to run verification.
+  #
+  # VX_APCP_ACCUMS_HRS:
+  # The 2-digit accumulation periods (in units of hours) to consider for
+  # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
+  # VX_APCP_ACCUMS_HRS must contain at least one element.  If not,
+  # VX_APCP_ACCUMS_HRS will be ignored.
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   #
   # VX_FCST_INPUT_BASEDIR:
   # Template for top-level directory containing forecast (but not obs)
@@ -2445,11 +2456,18 @@ verification:
   VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   #
+  # Number of digits in the ensember member names.  This is a configurable
+  # variable to allow users to change its value (e.g. to go from "mem004"
+  # to "mem02") when using staged forecast files that do not use the same
+  # number of digits as the SRW App.
+  #
+  VX_NDIGITS_ENSMEM_NAMES: 3
+  #
   # File name and path templates used in the verification tasks.
   #
-  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd{% endif %}'
-  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
@@ -2463,6 +2481,13 @@ verification:
   # number missing divided by the number that are expected to exist).
   #
   NUM_MISSING_OBS_FILES_MAX: 2
+  #
+  # For verification tasks that need forecast data, this specifies the
+  # maximum number of post-processed forecast files that may be missing. 
+  # If more than this number are missing, the verification task will not
+  # be run.
+  #
+  NUM_MISSING_FCST_FILES_MAX: 0
 
 #----------------------------
 # CPL_AQM config parameters
