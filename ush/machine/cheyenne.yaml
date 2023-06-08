@@ -5,9 +5,6 @@ platform:
   CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
   MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
   NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
-  METPLUS_PATH: /glade/p/ral/jntp/MET/METplus/METplus-4.1.1
-  MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /glade/p/ral/jntp/MET/MET_releases/10.1.1
   DOMAIN_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular
