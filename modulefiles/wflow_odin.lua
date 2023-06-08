@@ -30,6 +30,6 @@ if mode() == "load" then
 
   LmodMsgRaw([===[Please do the following to activate conda:
       > conda config --set changeps1 False
-      > conda activate regional_workflow
+      > conda activate workflow_tools
   ]===])
 end

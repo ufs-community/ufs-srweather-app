@@ -15,6 +15,6 @@ setenv("PROJ_LIB", "/lustre/f2/dev/role.epic/contrib/miniconda3/4.12.0/envs/regi
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate regional_workflow
+       > conda activate workflow_tools
 ]===])
 end
