@@ -8,7 +8,7 @@ import logging
 from textwrap import dedent
 from datetime import datetime
 
-sys.path.append("../../ush")
+sys.path.insert(1, "../../ush")
 
 from generate_FV3LAM_wflow import generate_FV3LAM_wflow
 from python_utils import (

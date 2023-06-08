@@ -1,0 +1,121 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// STAT-Analysis configuration file used to compute the GO Index.
+//
+// WARNING: This file should not be modified.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//
+// Filtering input STAT lines by the contents of each column
+//
+model = ["FV3_GFS_v16_SUBCONUS_3km_test_mem000", "FV3_GFS_v16_SUBCONUS_3km"];
+
+fcst_lead = [ "12", "24", "36", "48",
+              "12", "24", "36", "48",
+              "12", "24", "36", "48",
+              "12", "24", "36", "48"
+            ];
+obs_lead  = [];
+
+fcst_valid_beg  = "";
+fcst_valid_end  = "";
+fcst_valid_inc  = [];
+fcst_valid_exc  = [];
+fcst_valid_hour = [];
+
+obs_valid_beg   = "";
+obs_valid_end   = "";
+obs_valid_inc   = [];
+obs_valid_exc   = [];
+obs_valid_hour  = [];
+
+fcst_init_beg   = "";
+fcst_init_end   = "";
+fcst_init_inc   = [];
+fcst_init_exc   = [];
+fcst_init_hour  = [];
+
+obs_init_beg    = "";
+obs_init_end    = "";
+obs_init_inc    = [];
+obs_init_exc    = [];
+obs_init_hour   = [];
+
+fcst_var = [ "WIND",  "WIND",  "WIND",  "WIND",
+             "DPT",   "DPT",   "DPT",   "DPT",
+             "TMP",  "TMP",  "TMP",  "TMP",
+             "PRMSL", "PRMSL", "PRMSL", "PRMSL"
+           ];
+obs_var  = [];
+
+fcst_lev = [ "Z10",   "Z10",   "Z10",   "Z10",
+             "Z2",    "Z2",    "Z2",    "Z2",
+             "Z2",  "Z2",  "Z2",  "Z2",
+             "Z0",    "Z0",    "Z0",    "Z0"
+           ];
+obs_lev  = [];
+
+obtype = [];
+
+vx_mask = [];
+
+interp_mthd = [];
+
+interp_pnts = [];
+
+fcst_thresh = [];
+obs_thresh  = [];
+cov_thresh  = [];
+
+alpha = [];
+
+line_type = [ "SL1L2" ];
+
+column    = [ "RMSE" ];
+            
+weight    = [ 8.0, 6.0, 4.0, 2.0,
+              8.0, 6.0, 4.0, 2.0,
+              8.0, 6.0, 4.0, 2.0,
+              8.0, 6.0, 4.0, 2.0
+            ];
+
+////////////////////////////////////////////////////////////////////////////////
+
+//
+// Array of STAT-Analysis jobs to be performed on the filtered data
+//
+jobs = [ "-job ss_index" ];
+
+////////////////////////////////////////////////////////////////////////////////
+
+//
+// Confidence interval settings
+//
+out_alpha = 0.05;
+
+boot = {
+   interval = PCTILE;
+   rep_prop = 1.0;
+   n_rep    = 0;
+   rng      = "mt19937";
+   seed     = "";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//
+// Skill score index options
+//
+ss_index_name       = "GO_INDEX";
+ss_index_vld_thresh = 1.0;
+
+////////////////////////////////////////////////////////////////////////////////
+
+hss_ec_value   = NA;
+rank_corr_flag = FALSE;
+vif_flag       = FALSE;
+tmp_dir        = "/tmp";
+version        = "V10.1.1";
+
+////////////////////////////////////////////////////////////////////////////////

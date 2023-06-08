@@ -41,7 +41,6 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/da_data_preproc.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     metatask_process_obs_cycle_type:
-      task_process_radarref_#cycle_type#:
       task_process_lightning_#cycle_type#:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:

@@ -1,0 +1,222 @@
+default_task_verify_pre: &default_task_verify_pre
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '1'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr '@Y@m@d'
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: '{% if user.MACHINE not in ["NOAACLOUD"] %}{{ "2G" }}{% endif %}'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: '&NCORES_PER_NODE;'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_get_obs_ccpa:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"'
+  envars:
+    <<: *default_vars
+    ACCUM_HH: '01'
+    OBS_DIR: '&CCPA_OBS_DIR;'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
+
+task_get_obs_mrms:
+  <<: *default_task_verify_pre
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"'
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&MRMS_OBS_DIR;'
+    VAR: 'REFC RETOP'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  queue: "&QUEUE_HPSS;"
+  walltime: 00:45:00
+
+task_get_obs_ndas:
+  <<: *default_task_verify_pre
+  envars:
+    <<: *default_vars
+    OBS_DIR: '&NDAS_OBS_DIR;'
+    FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"'
+  queue: "&QUEUE_HPSS;"
+  partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
+  walltime: 02:00:00
+
+task_run_MET_Pb2nc_obs:
+  <<: *default_task_verify_pre
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
+  envars:
+    <<: *default_vars
+    VAR: SFC
+    ACCUM_HH: '01'
+    obs_or_fcst: obs
+    OBTYPE: NDAS
+    OBS_DIR: '&NDAS_OBS_DIR;'
+    MET_TOOL: 'PB2NC'
+  dependency:
+    and:
+      datadep:
+        text: "&NDAS_OBS_DIR;"
+      or:
+        not:
+          taskvalid:
+            attrs:
+              task: get_obs_ndas
+        taskdep:
+          attrs:
+            task: get_obs_ndas
+
+metatask_PcpCombine_obs:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  task_run_MET_PcpCombine_obs_APCP#ACCUM_HH#h:
+    <<: *default_task_verify_pre
+    attrs:
+      cycledefs: forecast
+      maxtries: '2'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+    envars:
+      <<: *default_vars
+      VAR: APCP
+      ACCUM_HH: '#ACCUM_HH#'
+      obs_or_fcst: obs
+      OBTYPE: CCPA
+      OBS_DIR: '&CCPA_OBS_DIR;'
+      MET_TOOL: 'PCPCOMBINE'
+      ENSMEM_INDX: ''
+    dependency:
+      and:
+        datadep:
+          text: "&CCPA_OBS_DIR;"
+        or:
+          not:
+            taskvalid:
+              attrs:
+                task: get_obs_ccpa
+          taskdep:
+            attrs:
+              task: get_obs_ccpa
+
+metatask_check_post_output_all_mems:
+  var:
+    mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+  task_check_post_output_mem#mem#:
+    <<: *default_task_verify_pre
+    attrs:
+      cycledefs: forecast
+      maxtries: '1'
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_CHECK_POST_OUTPUT"'
+    envars:
+      <<: *default_vars
+      VAR: APCP
+      ACCUM_HH: '01'
+      ENSMEM_INDX: '#mem#'
+    dependency:
+      # This "or" checks that the necessary stand-alone post tasks or forecast
+      # tasks with inline post have run to generate the post files that are 
+      # needed as forecast input to various verification tasks.
+      or_post_files_exist: &post_files_exist
+        # This "and" is to check whether post is being run stand-alone (i.e. outside
+        # the weather model in tasks separate from the forecast task(s)), and if
+        # so, to ensure that the stand-alone post metatask for the current member
+        # has completed for all forecast hours.
+        and_standalone_post:
+          # This "or" is to check whether a stand-alane post task exists [either for
+          # mem000 (if running a deterministic forecast) or for mem001 (if running
+          # an ensemble forecast)].  Checking for forecast hour 000 is sufficient.  
+          # If so, it implies post is being run stand-alone.
+          or_post_task_exists: &post_task_exists
+            taskvalid_mem000:
+              attrs:
+                task: run_post_mem000_f000
+            taskvalid_mem001:
+              attrs:
+                task: run_post_mem001_f000
+          # We would like a dependency here on the run_post_#mem#_all_fhrs metatask,
+          # but that is apparently not possible in rocoto with a metataskvalid/
+          # metataskdep combination (currently, metataskvalid is not a defined
+          # dependency type in ROCOTO); that approach only works for tasks.  Thus, 
+          # here we use jinja directives to explicitly list all the tasks in the
+          # run_post_#mem#_all_fhrs metatask.
+          #or_post_metatask:
+          #  not:
+          #    metataskvalid:
+          #      attrs:
+          #        metatask: run_post_mem#mem#_all_fhrs
+          #  metataskdep:
+          #    attrs:
+          #      metatask: run_post_mem#mem#_all_fhrs
+          taskdep: 
+            attrs:
+              task: '{% for h in range(0, workflow.LONG_FCST_LEN+1) %}{% if h > 0 %}{{"      <taskdep task="}}{% endif %}{{ "\"run_post_mem#mem#_f%03d\"" % h }}{% if h < workflow.LONG_FCST_LEN %}{{"/>\n"}}{% endif %}{%- endfor -%}'
+        # This "and" is to check whether post is being run inline (i.e. as part of
+        # the weather model), and if so, to ensure that the forecast task for the
+        # current member has completed.
+        and_inline_post:
+          # This "not" is to check whether a stand-alone post task DOESN'T exist
+          # [either for mem000 (if running a deterministic forecast) or for mem001
+          # (if running an ensemble forecast)].  If so, it implies that either
+          # post is being run inline (as part of the weather model) or is not being
+          # run at all.
+          not: 
+            or_post_task_exists:
+              <<: *post_task_exists
+          # This "or" is to verify that either the forecast task for the current
+          # member exists and has completed, or that it doesn't exist.
+          or_run_fcst:
+            and:
+              taskvalid: &fcst_task_exists
+                attrs:
+                  task: run_fcst_mem#mem#
+              taskdep:
+                attrs:
+                  task: run_fcst_mem#mem#
+            not:
+              taskvalid:
+                <<: *fcst_task_exists
+
+metatask_PcpCombine_fcst_all_accums_all_mems:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
+    var:
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
+    task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
+      <<: *default_task_verify_pre
+      attrs:
+        cycledefs: forecast
+        maxtries: '2'
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PCPCOMBINE"'
+      envars:
+        <<: *default_vars
+        VAR: APCP
+        ACCUM_HH: '#ACCUM_HH#'
+        obs_or_fcst: fcst
+        OBTYPE: CCPA
+        OBS_DIR: '&CCPA_OBS_DIR;'
+        MET_TOOL: 'PCPCOMBINE'
+        ENSMEM_INDX: "#mem#"
+      dependency:
+        datadep:
+          attrs:
+            age: 00:00:00:30
+          text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+      walltime: 00:05:00

@@ -91,24 +91,24 @@ echo "vhh_noZero=$vhh_noZero"
     # Name of NDAS tar file on HPSS is dependent on date. Logic accounts for files from 2019 until July 2020.
     if [[ ${vyyyymmdd} -ge 20190101 && ${vyyyymmdd} -le 20190820 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com2_nam_prod_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
-      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`" 
+      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print \$7}'\`" 
       echo "CALLING: ${TarCommand}"
-      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
+      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print \$7}'`
     elif [[ ${vyyyymmdd} -ge 20190821 && ${vyyyymmdd} -le 20200226 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/gpfs_dell1_nco_ops_com_nam_prod_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
-      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
+      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print \$7}'\`"
       echo "CALLING: ${TarCommand}"
-      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
+      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print \$7}'`
     elif [[ ${vyyyymmdd} -gt 20200226 && ${vyyyymmdd} -le 20220627 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_nam_prod_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
-      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
+      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print \$7}'\`"
       echo "CALLING: ${TarCommand}"
-      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
+      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print \$7}'`
     else
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_obsproc_v1.0_nam.${vyyyy}${vmm}${vdd}${vhh}.bufr.tar"
-      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print $7}'\`"
+      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"prepbufr.tm[0-9][0-9].nr\" | awk '{print \$7}'\`"
       echo "CALLING: ${TarCommand}"
-      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print $7}'`
+      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "prepbufr.tm[0-9][0-9].nr" | awk '{print \$7}'`
     fi
 
     if [[ ! -d "$ndas_proc" ]]; then
