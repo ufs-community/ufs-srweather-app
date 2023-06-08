@@ -1,0 +1,28 @@
+#PBS -N aqm_nexus_emission_%NSPT%_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:00:00
+#PBS -l select=4:mpiprocs=64:ompthreads=2:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export nspt="%NSPT%"
+export subcyc=0
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh nexus_emission "${JOBSdir}/JREGIONAL_NEXUS_EMISSION"
+
+%include <tail.h>
+
+%manual
+%end

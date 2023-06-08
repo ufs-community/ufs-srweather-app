@@ -99,16 +99,17 @@ set -u
 #-----------------------------------------------------------------------
 #
 machine=$(echo_lowercase $MACHINE)
-if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
   source "${HOMEaqm}/etc/lmod-setup.sh" ${machine}
-  if [ "${machine}" != "wcoss2" ]; then
-    module use "${HOMEaqm}/modulefiles"
-    module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
-    Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
+fi
+if [ "${machine}" != "wcoss2" ]; then
+  module use "${HOMEaqm}/modulefiles"
+  module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
+  Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
-  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -135,9 +136,9 @@ for the workflow task specified by task_name failed:
 #
 #-----------------------------------------------------------------------
 #
-  modules_dir="$HOMEaqm/modulefiles/tasks/$machine"
-  modulefile_name="${task_name}"
-  default_modules_dir="$HOMEaqm/modulefiles"
+modules_dir="$HOMEaqm/modulefiles/tasks/$machine"
+modulefile_name="${task_name}"
+default_modules_dir="$HOMEaqm/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -145,32 +146,34 @@ for the workflow task specified by task_name failed:
 #
 #-----------------------------------------------------------------------
 #
-  print_info_msg "$VERBOSE" "
+print_info_msg "$VERBOSE" "
   Loading modules for task \"${task_name}\" ..."
 
-  module use "${modules_dir}" || print_err_msg_exit "\
-Call to \"module use\" command failed."
-
-  # source version file (run) only if it is specified in versions directory
+module use "${modules_dir}" || print_err_msg_exit "\
+  Call to \"module use\" command failed."
+	
+# source version file (run) only if it is specified in versions directory
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
   VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
   if [ -f ${VERSION_FILE} ]; then
     . ${VERSION_FILE}
   fi
-  #
-  # Load the .local module file if available for the given task
-  #
-  modulefile_local="${task_name}.local"
-  if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
-    module load "${modulefile_local}" || print_err_msg_exit "\
+fi
+#
+# Load the .local module file if available for the given task
+#
+modulefile_local="${task_name}.local"
+if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
+  module load "${modulefile_local}" || print_err_msg_exit "\
 Loading .local module file (in directory specified by modules_dir) for the 
 specified task (task_name) failed:
   task_name = \"${task_name}\"
   modulefile_local = \"${modulefile_local}\"
   modules_dir = \"${modules_dir}\""    
-  fi
-
-  module list
 fi
+
+module list
+
 # Modules that use conda and need an environment activated will set the
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
@@ -200,7 +203,13 @@ print_info_msg "$VERBOSE" "
 Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
-exec "${jjob_fp}"
+
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  /bin/bash "${jjob_fp}"
+else
+  exec "${jjob_fp}"
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -210,5 +219,4 @@ exec "${jjob_fp}"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
 

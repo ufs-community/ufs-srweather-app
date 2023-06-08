@@ -7,11 +7,82 @@
 #
 #-----------------------------------------------------------------------
 #
-export share_pid=${WORKFLOW_ID}_${PDY}${cyc}
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+    export share_pid=${share_pid:-${PDY}${cyc}}
+else
+    export share_pid=${share_pid:-${WORKFLOW_ID}_${PDY}${cyc}}
+fi
+
 if [ $# -ne 0 ]; then
     export pid=$share_pid
     export jobid=${job}.${pid}
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Set NCO standard environment variables
+#
+#-----------------------------------------------------------------------
+#
+export envir="${envir:-${envir_dfv}}"
+export NET="${NET:-${NET_dfv}}"
+export RUN="${RUN:-${RUN_dfv}}"
+export model_ver="${model_ver:-${model_ver_dfv}}"
+export COMROOT="${COMROOT:-${COMROOT_dfv}}"
+export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
+export DCOMROOT="${DCOMROOT:-${DCOMROOT_dfv}}"
+export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_dfv}}"
+
+export DBNROOT="${DBNROOT:-${DBNROOT_dfv}}"
+export SENDECF="${SENDECF:-${SENDECF_dfv}}"
+export SENDDBN="${SENDDBN:-${SENDDBN_dfv}}"
+export SENDDBN_NTC="${SENDDBN_NTC:-${SENDDBN_NTC_dfv}}"
+export SENDCOM="${SENDCOM:-${SENDCOM_dfv}}"
+export SENDWEB="${SENDWEB:-${SENDWEB_dfv}}"
+export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
+export MAILTO="${MAILTO:-${MAILTO_dfv}}"
+export MAILCC="${MAILCC:-${MAILCC_dfv}}"
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+    [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+  
+    export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+    export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
+
+else
+    export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
+    export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
+    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+fi
+export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+
+export DCOMINbio="${DCOMINbio:-${DCOMINbio_dfv}}"
+export DCOMINdust="${DCOMINdust:-${DCOMINdust_dfv}}"
+export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_dfv}}"
+export DCOMINfire="${DCOMINfire:-${DCOMINfire_dfv}}"
+export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_dfv}}"
+export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_dfv}}"
+export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_dfv}}"
+export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
+
+#
+#-----------------------------------------------------------------------
+#
+# Change YES/NO (NCO standards; job card) to TRUE/FALSE (workflow standards)
+# for NCO environment variables
+#
+#-----------------------------------------------------------------------
+#
+export KEEPDATA=$(boolify "${KEEPDATA}")
+export SENDCOM=$(boolify "${SENDCOM}")
+export SENDDBN=$(boolify "${SENDDBN}")
+export SENDDBN_NTC=$(boolify "${SENDDBN_NTC}")
+export SENDECF=$(boolify "${SENDECF}")
+export SENDWEB=$(boolify "${SENDWEB}")
+
 #
 #-----------------------------------------------------------------------
 #
@@ -114,29 +185,7 @@ else
 fi
 export -f PREP_STEP
 export -f POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# Set COMIN / COMOUT / other common variables
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    export COMROOT=$COMROOT
-    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-    export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
-  
-    export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-    export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
 
-    export KEEPDATA="${KEEPDATA:-$KEEPDATA}"
-else
-    export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
-fi
-export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 #
 #-----------------------------------------------------------------------
 #
@@ -145,7 +194,7 @@ export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do

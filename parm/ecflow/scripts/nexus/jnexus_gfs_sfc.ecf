@@ -1,0 +1,26 @@
+#PBS -N {{ tn_nexus_gfs_sfc }}
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh nexus_gfs_sfc "${JOBSdir}/JREGIONAL_NEXUS_GFS_SFC"
+
+%include <tail.h>
+
+%manual
+%end

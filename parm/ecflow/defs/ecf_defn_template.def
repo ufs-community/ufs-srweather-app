@@ -1,0 +1,818 @@
+extern /totality_limit:TOTALITY
+extern /cycled_v16_3/primary/00/gfs/v16.3/gfs/jgfs_forecast
+extern /cycled_v16_3/primary/06/gfs/v16.3/gfs/jgfs_forecast
+extern /cycled_v16_3/primary/12/gfs/v16.3/gfs/jgfs_forecast
+extern /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast
+
+suite {{ ecf_suite_nm }}
+  inlimit /totality_limit:TOTALITY
+  family primary
+    edit aqm_ver '{{ model_ver }}'
+    edit PACKAGEHOME '{{ home_ecf }}'
+    edit NET '{{ net }}'
+    edit RUN '{{ run }}'
+    edit PROJ '{{ net | upper }}'
+    edit PROJENVIR 'DEV'
+    edit MACHINE_SITE 'development' 
+    edit ENVIR '{{ envir }}'
+    edit QUEUE 'dev'
+    edit QUEUE_ARCH 'dev_transfer'
+    edit OUTPUTDIR '{{ logbasedir }}'
+    family 00
+      edit CYC '00'
+      family aqm
+        family v1.0
+          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          family nexus
+            task jnexus_gfs_sfc
+              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../18/aqm/v1.0/aqm_manager/aqm_manager:release_next_cycle
+              # NCO replace with time based trigger
+            task jnexus_emission_00
+              edit NSPT '00'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_01
+              edit NSPT '01'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_02
+              edit NSPT '02'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_03
+              edit NSPT '03'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_04
+              edit NSPT '04'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_05
+              edit NSPT '05'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_post_split
+              trigger ./jnexus_emission_00==complete and ./jnexus_emission_01==complete and ./jnexus_emission_02==complete
+          endfamily
+          family prep
+            task jget_extrn_ics
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jget_extrn_lbcs
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jmake_ics
+              trigger ./jget_extrn_ics==complete
+            task jmake_lbcs
+              trigger ./jget_extrn_lbcs==complete
+            task jics
+              trigger ./jmake_ics==complete
+            task jlbcs
+              trigger ./jmake_lbcs==complete
+          endfamily
+          family pts_fire_emis
+            task jpoint_source
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jfire_emission
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+          endfamily
+          family forecast
+            task jforecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+          endfamily
+          family post
+            task jpost_f000
+              edit FHR '000'
+              trigger ../forecast==complete
+            task jpost_f001
+              edit FHR '001'
+              trigger ../forecast==complete
+            task jpost_f002
+              edit FHR '002'
+              trigger ../forecast==complete
+            task jpost_f003
+              edit FHR '003'
+              trigger ../forecast==complete
+            task jpost_f004
+              edit FHR '004'
+              trigger ../forecast==complete
+            task jpost_f005
+              edit FHR '005'
+              trigger ../forecast==complete
+            task jpost_f006
+              edit FHR '006'
+              trigger ../forecast==complete
+          endfamily
+          family product
+            task jpre_post_stat
+              trigger ../forecast==complete
+            task jpost_stat_o3
+              trigger ./jpre_post_stat==complete
+            task jpost_stat_pm25
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_o3
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_pm25
+              trigger ./jpre_post_stat==complete
+          endfamily
+          family aqm_manager
+            task aqm_manager
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+              event 1 release_next_cycle
+              event 2 requeue_cycle
+            task data_cleanup
+              trigger ../forecast==complete
+          endfamily
+        endfamily  # v1.0
+      endfamily    # aqm
+    endfamily      # 00
+    family 06
+      edit CYC '06'
+      family aqm
+        family v1.0
+          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          family nexus
+            task jnexus_gfs_sfc
+              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../00/aqm/v1.0/aqm_manager/aqm_manager:release_next_cycle
+              # NCO replace with time based trigger
+            task jnexus_emission_00
+              edit NSPT '00'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_01
+              edit NSPT '01'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_02
+              edit NSPT '02'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_03
+              edit NSPT '03'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_04
+              edit NSPT '04'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_05
+              edit NSPT '05'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_post_split
+              trigger ./jnexus_emission_00==complete and ./jnexus_emission_01==complete and ./jnexus_emission_02==complete
+          endfamily
+          family prep
+            task jget_extrn_ics
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jget_extrn_lbcs
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jmake_ics
+              trigger ./jget_extrn_ics==complete
+            task jmake_lbcs
+              trigger ./jget_extrn_lbcs==complete
+            task jics
+              trigger ./jmake_ics==complete
+            task jlbcs
+              trigger ./jmake_lbcs==complete
+          endfamily
+          family pts_fire_emis
+            task jpoint_source
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jfire_emission
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+          endfamily
+          family forecast
+            task jforecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+          endfamily
+          family post
+            task jpost_f000
+              edit FHR '000'
+              trigger ../forecast==complete
+            task jpost_f001
+              edit FHR '001'
+              trigger ../forecast==complete
+            task jpost_f002
+              edit FHR '002'
+              trigger ../forecast==complete
+            task jpost_f003
+              edit FHR '003'
+              trigger ../forecast==complete
+            task jpost_f004
+              edit FHR '004'
+              trigger ../forecast==complete
+            task jpost_f005
+              edit FHR '005'
+              trigger ../forecast==complete
+            task jpost_f006
+              edit FHR '006'
+              trigger ../forecast==complete
+            task jpost_f007
+              edit FHR '007'
+              trigger ../forecast==complete
+            task jpost_f008
+              edit FHR '008'
+              trigger ../forecast==complete
+            task jpost_f009
+              edit FHR '009'
+              trigger ../forecast==complete
+            task jpost_f010
+              edit FHR '010'
+              trigger ../forecast==complete
+            task jpost_f011
+              edit FHR '011'
+              trigger ../forecast==complete
+            task jpost_f012
+              edit FHR '012'
+              trigger ../forecast==complete
+            task jpost_f013
+              edit FHR '013'
+              trigger ../forecast==complete
+            task jpost_f014
+              edit FHR '014'
+              trigger ../forecast==complete
+            task jpost_f015
+              edit FHR '015'
+              trigger ../forecast==complete
+            task jpost_f016
+              edit FHR '016'
+              trigger ../forecast==complete
+            task jpost_f017
+              edit FHR '017'
+              trigger ../forecast==complete
+            task jpost_f018
+              edit FHR '018'
+              trigger ../forecast==complete
+            task jpost_f019
+              edit FHR '019'
+              trigger ../forecast==complete
+            task jpost_f020
+              edit FHR '020'
+              trigger ../forecast==complete
+            task jpost_f021
+              edit FHR '021'
+              trigger ../forecast==complete
+            task jpost_f022
+              edit FHR '022'
+              trigger ../forecast==complete
+            task jpost_f023
+              edit FHR '023'
+              trigger ../forecast==complete
+            task jpost_f024
+              edit FHR '024'
+              trigger ../forecast==complete
+            task jpost_f025
+              edit FHR '025'
+              trigger ../forecast==complete
+            task jpost_f026
+              edit FHR '026'
+              trigger ../forecast==complete
+            task jpost_f027
+              edit FHR '027'
+              trigger ../forecast==complete
+            task jpost_f028
+              edit FHR '028'
+              trigger ../forecast==complete
+            task jpost_f029
+              edit FHR '029'
+              trigger ../forecast==complete
+            task jpost_f030
+              edit FHR '030'
+              trigger ../forecast==complete
+            task jpost_f031
+              edit FHR '031'
+              trigger ../forecast==complete
+            task jpost_f032
+              edit FHR '032'
+              trigger ../forecast==complete
+            task jpost_f033
+              edit FHR '033'
+              trigger ../forecast==complete
+            task jpost_f034
+              edit FHR '034'
+              trigger ../forecast==complete
+            task jpost_f035
+              edit FHR '035'
+              trigger ../forecast==complete
+            task jpost_f036
+              edit FHR '036'
+              trigger ../forecast==complete
+            task jpost_f037
+              edit FHR '037'
+              trigger ../forecast==complete
+            task jpost_f038
+              edit FHR '038'
+              trigger ../forecast==complete
+            task jpost_f039
+              edit FHR '039'
+              trigger ../forecast==complete
+            task jpost_f040
+              edit FHR '040'
+              trigger ../forecast==complete
+            task jpost_f041
+              edit FHR '041'
+              trigger ../forecast==complete
+            task jpost_f042
+              edit FHR '042'
+              trigger ../forecast==complete
+            task jpost_f043
+              edit FHR '043'
+              trigger ../forecast==complete
+            task jpost_f044
+              edit FHR '044'
+              trigger ../forecast==complete
+            task jpost_f045
+              edit FHR '045'
+              trigger ../forecast==complete
+            task jpost_f046
+              edit FHR '046'
+              trigger ../forecast==complete
+            task jpost_f047
+              edit FHR '047'
+              trigger ../forecast==complete
+            task jpost_f048
+              edit FHR '048'
+              trigger ../forecast==complete
+            task jpost_f049
+              edit FHR '049'
+              trigger ../forecast==complete
+            task jpost_f050
+              edit FHR '050'
+              trigger ../forecast==complete
+            task jpost_f051
+              edit FHR '051'
+              trigger ../forecast==complete
+            task jpost_f052
+              edit FHR '052'
+              trigger ../forecast==complete
+            task jpost_f053
+              edit FHR '053'
+              trigger ../forecast==complete
+            task jpost_f054
+              edit FHR '054'
+              trigger ../forecast==complete
+            task jpost_f055
+              edit FHR '055'
+              trigger ../forecast==complete
+            task jpost_f056
+              edit FHR '056'
+              trigger ../forecast==complete
+            task jpost_f057
+              edit FHR '057'
+              trigger ../forecast==complete
+            task jpost_f058
+              edit FHR '058'
+              trigger ../forecast==complete
+            task jpost_f059
+              edit FHR '059'
+              trigger ../forecast==complete
+            task jpost_f060
+              edit FHR '060'
+              trigger ../forecast==complete
+            task jpost_f061
+              edit FHR '061'
+              trigger ../forecast==complete
+            task jpost_f062
+              edit FHR '062'
+              trigger ../forecast==complete
+            task jpost_f063
+              edit FHR '063'
+              trigger ../forecast==complete
+            task jpost_f064
+              edit FHR '064'
+              trigger ../forecast==complete
+            task jpost_f065
+              edit FHR '065'
+              trigger ../forecast==complete
+            task jpost_f066
+              edit FHR '066'
+              trigger ../forecast==complete
+            task jpost_f067
+              edit FHR '067'
+              trigger ../forecast==complete
+            task jpost_f068
+              edit FHR '068'
+              trigger ../forecast==complete
+            task jpost_f069
+              edit FHR '069'
+              trigger ../forecast==complete
+            task jpost_f070
+              edit FHR '070'
+              trigger ../forecast==complete
+            task jpost_f071
+              edit FHR '071'
+              trigger ../forecast==complete
+            task jpost_f072
+              edit FHR '072'
+              trigger ../forecast==complete
+          endfamily
+          family product
+            task jpre_post_stat
+              trigger ../forecast==complete
+            task jpost_stat_o3
+              trigger ./jpre_post_stat==complete
+            task jpost_stat_pm25
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_o3
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_pm25
+              trigger ./jpre_post_stat==complete
+          endfamily
+          family aqm_manager
+            task aqm_manager
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+              event 1 release_next_cycle
+              event 2 requeue_cycle
+            task data_cleanup
+              trigger ../forecast==complete
+          endfamily
+        endfamily  # v1.0
+      endfamily    # aqm
+    endfamily      # 06
+    family 12
+      edit CYC '12'
+      family aqm
+        family v1.0
+          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          family nexus
+            task jnexus_gfs_sfc
+              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../06/aqm/v1.0/aqm_manager/aqm_manager:release_next_cycle
+              # NCO replace with time based trigger
+            task jnexus_emission_00
+              edit NSPT '00'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_01
+              edit NSPT '01'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_02
+              edit NSPT '02'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_03
+              edit NSPT '03'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_04
+              edit NSPT '04'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_05
+              edit NSPT '05'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_post_split
+              trigger ./jnexus_emission_00==complete and ./jnexus_emission_01==complete and ./jnexus_emission_02==complete
+          endfamily
+          family prep
+            task jget_extrn_ics
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jget_extrn_lbcs
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jmake_ics
+              trigger ./jget_extrn_ics==complete
+            task jmake_lbcs
+              trigger ./jget_extrn_lbcs==complete
+            task jics
+              trigger ./jmake_ics==complete
+            task jlbcs
+              trigger ./jmake_lbcs==complete
+          endfamily
+          family pts_fire_emis
+            task jpoint_source
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jfire_emission
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+          endfamily
+          family forecast
+            task jforecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+          endfamily
+          family post
+            task jpost_f000
+              edit FHR '000'
+              trigger ../forecast==complete
+            task jpost_f001
+              edit FHR '001'
+              trigger ../forecast==complete
+            task jpost_f002
+              edit FHR '002'
+              trigger ../forecast==complete
+            task jpost_f003
+              edit FHR '003'
+              trigger ../forecast==complete
+            task jpost_f004
+              edit FHR '004'
+              trigger ../forecast==complete
+            task jpost_f005
+              edit FHR '005'
+              trigger ../forecast==complete
+            task jpost_f006
+              edit FHR '006'
+              trigger ../forecast==complete
+            task jpost_f007
+              edit FHR '007'
+              trigger ../forecast==complete
+            task jpost_f008
+              edit FHR '008'
+              trigger ../forecast==complete
+            task jpost_f009
+              edit FHR '009'
+              trigger ../forecast==complete
+            task jpost_f010
+              edit FHR '010'
+              trigger ../forecast==complete
+            task jpost_f011
+              edit FHR '011'
+              trigger ../forecast==complete
+            task jpost_f012
+              edit FHR '012'
+              trigger ../forecast==complete
+            task jpost_f013
+              edit FHR '013'
+              trigger ../forecast==complete
+            task jpost_f014
+              edit FHR '014'
+              trigger ../forecast==complete
+            task jpost_f015
+              edit FHR '015'
+              trigger ../forecast==complete
+            task jpost_f016
+              edit FHR '016'
+              trigger ../forecast==complete
+            task jpost_f017
+              edit FHR '017'
+              trigger ../forecast==complete
+            task jpost_f018
+              edit FHR '018'
+              trigger ../forecast==complete
+            task jpost_f019
+              edit FHR '019'
+              trigger ../forecast==complete
+            task jpost_f020
+              edit FHR '020'
+              trigger ../forecast==complete
+            task jpost_f021
+              edit FHR '021'
+              trigger ../forecast==complete
+            task jpost_f022
+              edit FHR '022'
+              trigger ../forecast==complete
+            task jpost_f023
+              edit FHR '023'
+              trigger ../forecast==complete
+            task jpost_f024
+              edit FHR '024'
+              trigger ../forecast==complete
+            task jpost_f025
+              edit FHR '025'
+              trigger ../forecast==complete
+            task jpost_f026
+              edit FHR '026'
+              trigger ../forecast==complete
+            task jpost_f027
+              edit FHR '027'
+              trigger ../forecast==complete
+            task jpost_f028
+              edit FHR '028'
+              trigger ../forecast==complete
+            task jpost_f029
+              edit FHR '029'
+              trigger ../forecast==complete
+            task jpost_f030
+              edit FHR '030'
+              trigger ../forecast==complete
+            task jpost_f031
+              edit FHR '031'
+              trigger ../forecast==complete
+            task jpost_f032
+              edit FHR '032'
+              trigger ../forecast==complete
+            task jpost_f033
+              edit FHR '033'
+              trigger ../forecast==complete
+            task jpost_f034
+              edit FHR '034'
+              trigger ../forecast==complete
+            task jpost_f035
+              edit FHR '035'
+              trigger ../forecast==complete
+            task jpost_f036
+              edit FHR '036'
+              trigger ../forecast==complete
+            task jpost_f037
+              edit FHR '037'
+              trigger ../forecast==complete
+            task jpost_f038
+              edit FHR '038'
+              trigger ../forecast==complete
+            task jpost_f039
+              edit FHR '039'
+              trigger ../forecast==complete
+            task jpost_f040
+              edit FHR '040'
+              trigger ../forecast==complete
+            task jpost_f041
+              edit FHR '041'
+              trigger ../forecast==complete
+            task jpost_f042
+              edit FHR '042'
+              trigger ../forecast==complete
+            task jpost_f043
+              edit FHR '043'
+              trigger ../forecast==complete
+            task jpost_f044
+              edit FHR '044'
+              trigger ../forecast==complete
+            task jpost_f045
+              edit FHR '045'
+              trigger ../forecast==complete
+            task jpost_f046
+              edit FHR '046'
+              trigger ../forecast==complete
+            task jpost_f047
+              edit FHR '047'
+              trigger ../forecast==complete
+            task jpost_f048
+              edit FHR '048'
+              trigger ../forecast==complete
+            task jpost_f049
+              edit FHR '049'
+              trigger ../forecast==complete
+            task jpost_f050
+              edit FHR '050'
+              trigger ../forecast==complete
+            task jpost_f051
+              edit FHR '051'
+              trigger ../forecast==complete
+            task jpost_f052
+              edit FHR '052'
+              trigger ../forecast==complete
+            task jpost_f053
+              edit FHR '053'
+              trigger ../forecast==complete
+            task jpost_f054
+              edit FHR '054'
+              trigger ../forecast==complete
+            task jpost_f055
+              edit FHR '055'
+              trigger ../forecast==complete
+            task jpost_f056
+              edit FHR '056'
+              trigger ../forecast==complete
+            task jpost_f057
+              edit FHR '057'
+              trigger ../forecast==complete
+            task jpost_f058
+              edit FHR '058'
+              trigger ../forecast==complete
+            task jpost_f059
+              edit FHR '059'
+              trigger ../forecast==complete
+            task jpost_f060
+              edit FHR '060'
+              trigger ../forecast==complete
+            task jpost_f061
+              edit FHR '061'
+              trigger ../forecast==complete
+            task jpost_f062
+              edit FHR '062'
+              trigger ../forecast==complete
+            task jpost_f063
+              edit FHR '063'
+              trigger ../forecast==complete
+            task jpost_f064
+              edit FHR '064'
+              trigger ../forecast==complete
+            task jpost_f065
+              edit FHR '065'
+              trigger ../forecast==complete
+            task jpost_f066
+              edit FHR '066'
+              trigger ../forecast==complete
+            task jpost_f067
+              edit FHR '067'
+              trigger ../forecast==complete
+            task jpost_f068
+              edit FHR '068'
+              trigger ../forecast==complete
+            task jpost_f069
+              edit FHR '069'
+              trigger ../forecast==complete
+            task jpost_f070
+              edit FHR '070'
+              trigger ../forecast==complete
+            task jpost_f071
+              edit FHR '071'
+              trigger ../forecast==complete
+            task jpost_f072
+              edit FHR '072'
+              trigger ../forecast==complete
+          endfamily
+          family product
+            task jpre_post_stat
+              trigger ../forecast==complete
+            task jpost_stat_o3
+              trigger ./jpre_post_stat==complete
+            task jpost_stat_pm25
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_o3
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_pm25
+              trigger ./jpre_post_stat==complete
+          endfamily
+          family aqm_manager
+            task aqm_manager
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+              event 1 release_next_cycle
+              event 2 requeue_cycle
+            task data_cleanup
+              trigger ../forecast==complete
+          endfamily
+        endfamily  # v1.0
+      endfamily    # aqm
+    endfamily      # 12
+    family 18
+      edit CYC '18'
+      family aqm
+        family v1.0
+          edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+          family nexus
+            task jnexus_gfs_sfc
+              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../12/aqm/v1.0/aqm_manager/aqm_manager:release_next_cycle
+              # NCO replace with time based trigger
+            task jnexus_emission_00
+              edit NSPT '00'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_01
+              edit NSPT '01'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_02
+              edit NSPT '02'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_03
+              edit NSPT '03'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_04
+              edit NSPT '04'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_emission_05
+              edit NSPT '05'
+              trigger ./jnexus_gfs_sfc==complete
+            task jnexus_post_split
+              trigger ./jnexus_emission_00==complete and ./jnexus_emission_01==complete and ./jnexus_emission_02==complete
+          endfamily
+          family prep
+            task jget_extrn_ics
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jget_extrn_lbcs
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jmake_ics
+              trigger ./jget_extrn_ics==complete
+            task jmake_lbcs
+              trigger ./jget_extrn_lbcs==complete
+            task jics
+              trigger ./jmake_ics==complete
+            task jlbcs
+              trigger ./jmake_lbcs==complete
+          endfamily
+          family pts_fire_emis
+            task jpoint_source
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+            task jfire_emission
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+          endfamily
+          family forecast
+            task jforecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+          endfamily
+          family post
+            task jpost_f000
+              edit FHR '000'
+              trigger ../forecast==complete
+            task jpost_f001
+              edit FHR '001'
+              trigger ../forecast==complete
+            task jpost_f002
+              edit FHR '002'
+              trigger ../forecast==complete
+            task jpost_f003
+              edit FHR '003'
+              trigger ../forecast==complete
+            task jpost_f004
+              edit FHR '004'
+              trigger ../forecast==complete
+            task jpost_f005
+              edit FHR '005'
+              trigger ../forecast==complete
+            task jpost_f006
+              edit FHR '006'
+              trigger ../forecast==complete
+          endfamily
+          family product
+            task jpre_post_stat
+              trigger ../forecast==complete
+            task jpost_stat_o3
+              trigger ./jpre_post_stat==complete
+            task jpost_stat_pm25
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_o3
+              trigger ./jpre_post_stat==complete
+            task jbias_correction_pm25
+              trigger ./jpre_post_stat==complete
+          endfamily
+          family aqm_manager
+            task aqm_manager
+              trigger ../nexus/jnexus_gfs_sfc==active or ../nexus/jnexus_gfs_sfc==complete
+              event 1 release_next_cycle
+              event 2 requeue_cycle
+            task data_cleanup
+              trigger ../forecast==complete
+          endfamily
+        endfamily  # v1.0
+      endfamily    # aqm
+    endfamily      # 18
+  endfamily        # primary
+endsuite

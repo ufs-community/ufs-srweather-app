@@ -1,0 +1,31 @@
+#PBS -N aqm_ics_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+SDATE=$($NDATE -6 ${PDY}${cyc})
+PDYS_P1=$(echo $SDATE | cut -c1-8)
+cycs_p1=$(echo $SDATE | cut -c9-10)
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+export PREV_CYCLE_DIR=$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYS_P1}/${cycs_p1})
+
+. ${USHdir}/load_modules_run_task.sh aqm_ics "${JOBSdir}/JREGIONAL_AQM_ICS"
+
+%include <tail.h>
+
+%manual
+%end

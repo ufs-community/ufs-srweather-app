@@ -1,11 +1,11 @@
 bin/
+ecf/
 exec/
 build/
 fix/
 include/
 lib/
 share/
-modulefiles/extrn_comp_build/
 sorc/*/
 tests/WE2E/WE2E_tests_*.yaml
 tests/WE2E/*.txt

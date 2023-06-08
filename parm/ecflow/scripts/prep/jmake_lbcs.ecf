@@ -1,0 +1,27 @@
+#PBS -N aqm_make_lbcs_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:mpiprocs=128:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh make_lbcs "${JOBSdir}/JREGIONAL_MAKE_LBCS"
+
+%include <tail.h>
+
+%manual
+%end

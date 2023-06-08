@@ -1,0 +1,26 @@
+#PBS -N %RUN%_data_cleanup_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter
+#PBS -l debug=true
+
+model=aqm
+%include <head.h>
+%include <envir-p1.h>
+
+export cyc=%CYC%
+export cycle=t${cyc}z
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh data_cleanup "${JOBSdir}/JDATA_CLEANUP"
+
+%include <tail.h>
+%manual
+
+%end

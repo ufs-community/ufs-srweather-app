@@ -1,0 +1,26 @@
+#PBS -N aqm_point_source_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:00:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh point_source "${JOBSdir}/JREGIONAL_POINT_SOURCE"
+
+%include <tail.h>
+
+%manual
+%end

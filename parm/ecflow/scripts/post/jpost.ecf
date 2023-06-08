@@ -1,0 +1,28 @@
+#PBS -N aqm_post_%FHR%_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:15:00
+#PBS -l select=2:mpiprocs=24:ncpus=24
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+export fhr="%FHR%"
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh run_post "${JOBSdir}/JREGIONAL_RUN_POST"
+
+%include <tail.h>
+
+%manual
+%end

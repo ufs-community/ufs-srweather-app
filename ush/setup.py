@@ -975,11 +975,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # running in community mode, we set these paths to the experiment
     # directory.
     nco_vars = [
-        "opsroot",
-        "comroot",
-        "packageroot",
-        "dataroot",
-        "dcomroot",
+        "opsroot_dfv",
+        "comroot_dfv",
+        "dataroot_dfv",
+        "dcomroot_dfv",
         "comin_basedir",
         "comout_basedir",
     ]
@@ -990,24 +989,23 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         for nco_var in nco_vars:
             nco_config[nco_var.upper()] = exptdir
 
-        nco_config["LOGBASEDIR"] = os.path.join(exptdir, "log")
+        nco_config["LOGBASEDIR_dfv"] = os.path.join(exptdir, "log")
 
     # Use env variables for NCO variables and create NCO directories
-    if run_envir == "nco":
-
+    workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
+    if run_envir == "nco" and workflow_manager == "rocoto":
         for nco_var in nco_vars:
             envar = os.environ.get(nco_var)
             if envar is not None:
                 nco_config[nco_var.upper()] = envar
 
-        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("COMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
-    if nco_config["DBNROOT"]:
-        mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
+        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_dfv")}"')
+    if nco_config["DBNROOT_dfv"] and workflow_manager == "rocoto":
+        mkdir_vrfy(f' -p "{nco_config["DBNROOT_dfv"]}"')
 
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')

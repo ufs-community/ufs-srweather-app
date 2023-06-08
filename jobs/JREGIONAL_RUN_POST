@@ -141,7 +141,9 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+fi
 
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then 
   fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" ) 
   if [ "${fhr}" = "${fcst_len_hrs}" ]; then
     touch "${COMIN}/post_${PDY}${cyc}_task_complete.txt"

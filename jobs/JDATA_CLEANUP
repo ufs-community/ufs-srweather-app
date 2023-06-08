@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This script copies files from various directories into the experiment
+# directory, creates links to some of them, and modifies others (e.g.
+# templates) to customize them for the current experiment setup.
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+. ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that runs a forecast with FV3 for
+the specified cycle.
+========================================================================"
+#
+export PS4='$SECONDS + '
+date
+
+##############################################
+# Set variables used in the script
+##############################################
+${HOMEaqm}/scripts/exdata_cleanup.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
+
+date
+exit 0

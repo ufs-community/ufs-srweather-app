@@ -19,6 +19,7 @@ from python_utils import (
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
+    rm_vrfy,
     run_command,
     date_to_str,
     define_macos_utilities,
@@ -38,7 +39,7 @@ from get_crontab_contents import add_crontab_line
 from fill_jinja_template import fill_jinja_template
 from set_namelist import set_namelist
 from check_python_version import check_python_version
-
+from create_ecflow_scripts import create_ecflow_scripts
 
 def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
@@ -246,21 +247,32 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # -----------------------------------------------------------------------
     #
-    exptdir = expt_config["workflow"]["EXPTDIR"]
-    wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
-    wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
-    log_info(
-        f"""
-        Creating symlink in the experiment directory (EXPTDIR) that points to the
+        exptdir = expt_config["workflow"]["EXPTDIR"]
+        wflow_launch_script_fp = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FP"]
+        wflow_launch_script_fn = expt_config["workflow"]["WFLOW_LAUNCH_SCRIPT_FN"]
+        log_info(
+            f"""
+            Creating symlink in the experiment directory (EXPTDIR) that points to the
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
           EXPTDIR = '{exptdir}'
           WFLOW_LAUNCH_SCRIPT_FP = '{wflow_launch_script_fp}'""",
         verbose=verbose,
-    )
+        )
 
-    create_symlink_to_file(
-        wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
-    )
+        create_symlink_to_file(
+            wflow_launch_script_fp, os.path.join(exptdir, wflow_launch_script_fn), False
+        )
+
+    elif expt_config["platform"]["WORKFLOW_MANAGER"] == "ecflow":
+
+        global_var_defns_fp = expt_config["workflow"]["GLOBAL_VAR_DEFNS_FP"]
+        homeaqm = expt_config["user"]["HOMEaqm"]
+        home_ecf = f"{homeaqm}/ecf"
+        rm_vrfy("-rf",f"{home_ecf}")
+
+        # create ecflow definition file and job cards
+        create_ecflow_scripts(global_var_defns_fp)
+
     #
     # -----------------------------------------------------------------------
     #
@@ -277,8 +289,9 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     import_vars(dictionary=flatten_dict(expt_config))
     export_vars(source_dict=flatten_dict(expt_config))
 
-    if USE_CRON_TO_RELAUNCH:
-        add_crontab_line()
+    if expt_config["platform"]["WORKFLOW_MANAGER"] == "rocoto":
+        if USE_CRON_TO_RELAUNCH:
+            add_crontab_line()
 
     #
     # Copy or symlink fix files

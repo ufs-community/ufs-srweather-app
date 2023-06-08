@@ -43,13 +43,13 @@ data:
     RAP_obs: /scratch2/BMC/public/data/grids/rap/obs
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
-  DCOMINbio: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
-  DCOMINdust: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
-  DCOMINcanopy: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  DCOMINfire: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
-  DCOMINchem_lbcs: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  DCOMINgefs: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
-  DCOMINpt_src: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
+  DCOMINbio_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
+  DCOMINdust_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
+  DCOMINcanopy_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
+  DCOMINfire_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
+  DCOMINchem_lbcs_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  DCOMINgefs_dfv: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
+  DCOMINpt_src_dfv: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
 

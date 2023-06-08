@@ -1,0 +1,27 @@
+#PBS -N {{ tn_run_fcst }}
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=04:00:00
+#PBS -l select=14:mpiprocs=128:ompthreads=1:ncpus=128
+#PBS -l place=vscatter:exclhost
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+export subcyc=0
+
+%include <head.h>
+%include <envir-p1.h>
+
+export GLOBAL_VAR_DEFNS_FP="{{ global_var_defns_fp }}"
+export USHdir="{{ ushdir }}"
+JOBSdir="{{ jobsdir }}"
+
+. ${USHdir}/load_modules_run_task.sh run_fcst "${JOBSdir}/JREGIONAL_RUN_FCST"
+
+%include <tail.h>
+
+%manual
+%end
