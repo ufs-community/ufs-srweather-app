@@ -62,7 +62,7 @@ task failed:
 $has_mu && set +u
 
 if [ ! -z $(command -v conda) ]; then
-    conda activate regional_workflow
+    conda activate workflow_tools
 fi
 
 $has_mu && set -u
