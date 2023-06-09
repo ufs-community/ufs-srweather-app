@@ -1,45 +1,46 @@
 #!/usr/bin/env python3
 
+"""
+User interface to create an experiment directory consistent with the
+user-defined config.yaml file.
+"""
+
+# pylint: disable=invalid-name
+
 import os
-import sys
-import subprocess
 import logging
-from multiprocessing import Process
 from textwrap import dedent
-from datetime import datetime, timedelta
+import sys
 
 from python_utils import (
     log_info,
     import_vars,
     export_vars,
-    load_config_file,
-    update_dict,
     cp_vrfy,
     ln_vrfy,
     mkdir_vrfy,
     mv_vrfy,
-    run_command,
-    date_to_str,
-    define_macos_utilities,
     create_symlink_to_file,
     check_for_preexist_dir_file,
     cfg_to_yaml_str,
     find_pattern_in_str,
-    set_env_var,
-    get_env_var,
-    lowercase,
     flatten_dict,
 )
 
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from fill_jinja_template import fill_jinja_template
 from set_namelist import set_namelist
 from check_python_version import check_python_version
 
+# These come from ush/python_utils/workflow-tools
+from scripts.templater import set_template
 
-def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", debug: bool = False) -> str:
+# pylint: disable=too-many-locals,too-many-branches, too-many-statements
+def generate_FV3LAM_wflow(
+        ushdir,
+        logfile: str = "log.generate_FV3LAM_wflow",
+        debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
     (according to the parameters specified in the config file)
 
@@ -101,7 +102,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             expt_config["user"]["PARMdir"],
             wflow_xml_fn,
         )
-        global_var_defns_fp = expt_config["workflow"]["GLOBAL_VAR_DEFNS_FP"]
 
         log_info(
             f"""
@@ -114,21 +114,10 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
         args = ["-o", wflow_xml_fp,
-                "-t", template_xml_fp,
-                "-c", rocoto_yaml_fp ]
-        if not debug:
-            args.append("-q")
-
-        try:
-            fill_jinja_template(args)
-        except:
-            raise Exception(
-                dedent(
-                    f"""
-                    Call to fill_jinja_template failed.
-                    """
-                )
-            )
+                "-i", template_xml_fp,
+                "-c", rocoto_yaml_fp,
+                ]
+        set_template(args)
     #
     # -----------------------------------------------------------------------
     #
@@ -168,6 +157,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     import_vars(dictionary=flatten_dict(expt_config))
     export_vars(source_dict=flatten_dict(expt_config))
 
+    # pylint: disable=undefined-variable
     if USE_CRON_TO_RELAUNCH:
         add_crontab_line()
 
@@ -237,20 +227,20 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # -----------------------------------------------------------------------
     #
     log_info(
-        f"""
+        """
         Copying templates of various input files to the experiment directory...""",
         verbose=verbose,
     )
 
     log_info(
-        f"""
+        """
         Copying the template data table file to the experiment directory...""",
         verbose=verbose,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
-        f"""
+        """
         Copying the template field table file to the experiment directory...""",
         verbose=verbose,
     )
@@ -262,7 +252,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # DIR).
     #
     log_info(
-        f"""
+        """
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory structure to the experiment directory...""",
         verbose=verbose,
@@ -274,9 +264,10 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # DIR).
     #
     log_info(
-        f"""
-        Copying the field dictionary file from its location in the forecast
-        model directory structure to the experiment directory...""",
+        """
+        Copying the field dictionary file from its location in the
+        forecast model directory structure to the experiment
+        directory...""",
         verbose=verbose,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
@@ -294,7 +285,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
-    # These need to be set in the FV3-LAM Fortran namelist file.  They represent
+    # These need to be set in the FV3-LAM Fortran namelist file. They represent
     # the number of cell vertices in the x and y directions on the regional
     # grid.
     #
@@ -323,9 +314,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     # Also, may want to set lsm here as well depending on SDF_USES_RUC_LSM.
     #
     lsoil = 4
-    if (EXTRN_MDL_NAME_ICS == "HRRR" or EXTRN_MDL_NAME_ICS == "RAP") and (
-        SDF_USES_RUC_LSM
-    ):
+    if EXTRN_MDL_NAME_ICS in ("HRRR", "RAP") and SDF_USES_RUC_LSM:
         lsoil = 9
     if CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km":
         lsoil = ""
@@ -374,9 +363,10 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
     })
-    if ( CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdl_mp" or
-         CCPP_PHYS_SUITE == "FV3_GFS_2017_gfdlmp_regional" or
-         CCPP_PHYS_SUITE == "FV3_GFS_v15p2" ):
+    if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
+                           "FV3_GFS_2017_gfdlmp_regional",
+                           "FV3_GFS_v15p2",
+                           ):
         if CPL_AQM:
             fv_core_nml_dict.update({
                 "dnats": 5
@@ -385,7 +375,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             fv_core_nml_dict.update({
                 "dnats": 1
             })
-    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":   
+    elif CCPP_PHYS_SUITE == "FV3_GFS_v16":
         if CPL_AQM:
             fv_core_nml_dict.update({
                 "hord_tr": 8,
@@ -417,25 +407,26 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
 
     if CPL_AQM:
         gfs_physics_nml_dict.update({
-            "cplaqm": True,    
+            "cplaqm": True,
             "cplocn2atm": False,
-            "fscav_aero": ["aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0", 
-                           "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0", 
-                           "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0", 
-                           "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0", 
-                           "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0", 
-                           "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0", 
-                           "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0", 
-                           "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0", 
-                           "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0", 
-                           "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0", 
-                           "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0", 
-                           "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0", 
-                           "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0", 
-                           "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0", 
-                           "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0", 
-                           "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0", 
-                           "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
+            "fscav_aero": [
+                "aacd:0.0", "acet:0.0", "acrolein:0.0", "acro_primary:0.0", "ald2:0.0",
+                "ald2_primary:0.0", "aldx:0.0", "benzene:0.0", "butadiene13:0.0", "cat1:0.0",
+                "cl2:0.0", "clno2:0.0", "co:0.0", "cres:0.0", "cron:0.0",
+                "ech4:0.0", "epox:0.0", "eth:0.0", "etha:0.0", "ethy:0.0",
+                "etoh:0.0", "facd:0.0", "fmcl:0.0", "form:0.0", "form_primary:0.0",
+                "gly:0.0", "glyd:0.0", "h2o2:0.0", "hcl:0.0", "hg:0.0",
+                "hgiigas:0.0", "hno3:0.0", "hocl:0.0", "hono:0.0", "hpld:0.0",
+                "intr:0.0", "iole:0.0", "isop:0.0", "ispd:0.0", "ispx:0.0",
+                "ket:0.0", "meoh:0.0", "mepx:0.0", "mgly:0.0", "n2o5:0.0",
+                "naph:0.0", "no:0.0", "no2:0.0", "no3:0.0", "ntr1:0.0",
+                "ntr2:0.0", "o3:0.0", "ole:0.0", "opan:0.0", "open:0.0",
+                "opo3:0.0", "pacd:0.0", "pan:0.0", "panx:0.0", "par:0.0",
+                "pcvoc:0.0", "pna:0.0", "prpa:0.0", "rooh:0.0", "sesq:0.0",
+                "so2:0.0", "soaalk:0.0", "sulf:0.0", "terp:0.0", "tol:0.0",
+                "tolu:0.0", "vivpo1:0.0", "vlvoo1:0.0", "vlvoo2:0.0", "vlvpo1:0.0",
+                "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
+                "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
@@ -492,7 +483,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     settings_str = cfg_to_yaml_str(settings)
 
     log_info(
-        f"""
+        """
         The variable 'settings' specifying values of the weather model's
         namelist variables has been set as follows:\n""",
         verbose=verbose,
@@ -511,40 +502,19 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # -----------------------------------------------------------------------
     #
-    try:
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                FV3_NML_BASE_SUITE_FP,
-                "-c",
-                FV3_NML_YAML_CONFIG_FP,
-                CCPP_PHYS_SUITE,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_FP,
-            ]
-        )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_BASE_SUITE_FP = '{FV3_NML_BASE_SUITE_FP}'
-                  Full path to yaml configuration file for various physics suites:
-                    FV3_NML_YAML_CONFIG_FP = '{FV3_NML_YAML_CONFIG_FP}'
-                  Physics suite to extract from yaml configuration file:
-                    CCPP_PHYS_SUITE = '{CCPP_PHYS_SUITE}'
-                  Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
+    set_namelist(
+        [
+            "-n",
+            FV3_NML_BASE_SUITE_FP,
+            "-c",
+            FV3_NML_YAML_CONFIG_FP,
+            CCPP_PHYS_SUITE,
+            "-u",
+            settings_str,
+            "-o",
+            FV3_NML_FP,
+        ]
+    )
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -581,34 +551,16 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         #
         # populate the namelist file
         #
-        try:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_CYCSFC_FP,
-                ]
-            )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_CYCSFC_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
-      
+        set_namelist(
+            [
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_CYCSFC_FP,
+            ]
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -624,7 +576,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         lupdatebc = False
         if DO_UPDATE_BC:
             lupdatebc = False   # not ready for setting this to true yet
-        
+
         settings = {}
         settings["fv_core_nml"] = {
             "external_ic": False,
@@ -644,33 +596,17 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         #
         # populate the namelist file
         #
-        try:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_RESTART_FP,
-                ]
-            )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for DA:
-                        FV3_NML_RESTART_FP = '{FV3_NML_RESTART_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
+        set_namelist(
+            [
+                "-q",
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_RESTART_FP,
+            ]
+        )
     #
     # -----------------------------------------------------------------------
     #
@@ -782,65 +718,31 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     #-----------------------------------------------------------------------
     #
-    if DO_ENSEMBLE and ( DO_SPP or DO_SPPT or DO_SHUM or DO_SKEB or DO_LSM_SPP):
-        
-        try:
+    if DO_ENSEMBLE and any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
+
+        set_namelist(
+            [
+                "-n",
+                FV3_NML_FP,
+                "-u",
+                settings_str,
+                "-o",
+                FV3_NML_STOCH_FP,
+            ]
+        )
+
+        if DO_DACYCLE or DO_ENKFUPDATE:
             set_namelist(
                 [
                     "-q",
                     "-n",
-                    FV3_NML_FP,
+                    FV3_NML_RESTART_FP,
                     "-u",
                     settings_str,
                     "-o",
-                    FV3_NML_STOCH_FP,
+                    FV3_NML_RESTART_STOCH_FP,
                 ]
             )
-        except:
-            logging.exception(
-                dedent(
-                    f"""
-                    Call to python script set_namelist.py to generate an FV3 namelist file
-                    failed.  Parameters passed to this script are:
-                      Full path to output namelist file:
-                        FV3_NML_FP = '{FV3_NML_FP}'
-                      Full path to output namelist file for stochastics:
-                        FV3_NML_STOCH_FP = '{FV3_NML_STOCH_FP}'
-                      Namelist settings specified on command line:\n
-                        settings =\n\n"""
-                )
-                + settings_str
-            )
-
-        if DO_DACYCLE or DO_ENKFUPDATE:
-            try:
-                set_namelist(
-                    [
-                        "-q",
-                        "-n",
-                        FV3_NML_RESTART_FP,
-                        "-u",
-                        settings_str,
-                        "-o",
-                        FV3_NML_RESTART_STOCH_FP,
-                    ]
-                )
-            except:
-                logging.exception(
-                    dedent(
-                        f"""
-                        Call to python script set_namelist.py to generate an FV3 namelist file
-                        failed.  Parameters passed to this script are:
-                          Full path to output namelist file:
-                            FV3_NML_FP = '{FV3_NML_FP}'
-                          Full path to output namelist file for stochastics:
-                            FV3_NML_RESTART_STOCH_FP = '{FV3_NML_RESTART_STOCH_FP}'
-                          Namelist settings specified on command line:\n
-                            settings =\n\n"""
-                    )
-                    + settings_str
-                )
-
     #
     # -----------------------------------------------------------------------
     #
@@ -867,6 +769,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         rocotorun_cmd = f"rocotorun -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
         rocotostat_cmd = f"rocotostat -w {WFLOW_XML_FN} -d {wflow_db_fn} -v 10"
 
+        # pylint: disable=line-too-long
         log_info(
             f"""
             To launch the workflow, change location to the experiment directory
@@ -897,8 +800,10 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
             */{CRON_RELAUNCH_INTVL_MNTS} * * * * cd {EXPTDIR} && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
             """
         )
+        # pylint: enable=line-too-long
 
-    # If we got to this point everything was successful: move the log file to the experiment directory.
+    # If we got to this point everything was successful: move the log
+    # file to the experiment directory.
     mv_vrfy(logfile, EXPTDIR)
 
     return EXPTDIR
@@ -908,7 +813,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     """
     Sets up logging, printing high-priority (INFO and higher) messages to screen, and printing all
     messages with detailed timing and routine info in the specified text file.
-    
+
     If debug = True, print all messages to both screen and log file.
     """
     logging.getLogger().setLevel(logging.DEBUG)
@@ -921,7 +826,8 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     logging.getLogger().addHandler(fh)
     logging.debug(f"Finished setting up debug file logging in {logfile}")
 
-    # If there are already multiple handlers, that means generate_FV3LAM_workflow was called from another function.
+    # If there are already multiple handlers, that means
+    # generate_FV3LAM_workflow was called from another function.
     # In that case, do not change the console (print-to-screen) logging.
     if len(logging.getLogger().handlers) > 1:
         return
@@ -944,7 +850,7 @@ if __name__ == "__main__":
     # experiment/workflow.
     try:
         expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile)
-    except:
+    except: # pylint: disable=bare-except
         logging.exception(
             dedent(
                 f"""
@@ -957,18 +863,18 @@ if __name__ == "__main__":
                 """
             )
         )
-    else:
-        # If no exception, note workflow generation completion
-        log_info(
-            f"""
-            ========================================================================
+        sys.exit(1)
+
+    # pylint: disable=undefined-variable
+    # Note workflow generation completion
+    log_info(
+        f"""
+        ========================================================================
 
             Experiment generation completed.  The experiment directory is:
 
               EXPTDIR='{EXPTDIR}'
 
-            ========================================================================
-            """
-        )
-
-
+        ========================================================================
+        """
+    )
