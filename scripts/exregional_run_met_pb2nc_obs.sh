@@ -108,16 +108,6 @@ set_vx_params \
 #-----------------------------------------------------------------------
 #
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  if [[ ${DO_ENSEMBLE} == "TRUE" ]]; then
-    ENSMEM=$( echo ${SLASH_ENSMEM_SUBDIR_OR_NULL} | cut -d"/" -f2 )
-    DOT_ENSMEM_OR_NULL=".$ENSMEM"
-  else
-    DOT_ENSMEM_OR_NULL=""
-  fi
-else
-  DOT_ENSMEM_OR_NULL=""
-fi
 
 OBS_INPUT_DIR="${OBS_DIR}"
 OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
@@ -140,7 +130,8 @@ set_vx_fhr_list \
   accum_hh="${ACCUM_HH}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_hourly_files="FALSE" \
+  check_accum_contrib_files="FALSE" \
+  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -265,6 +256,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
+  'ensmem_name': '${ensmem_name:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.
@@ -278,25 +270,31 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
+# Store the settings in a temporary file
+tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
 #
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-$USHdir/fill_jinja_template.py -q \
-                               -u "${settings}" \
-                               -t ${metplus_config_tmpl_fp} \
-                               -o ${metplus_config_fp} || \
+python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
+  -c ${tmpfile} \
+  -i ${metplus_config_tmpl_fp} \
+  -o ${metplus_config_fp} || \
 print_err_msg_exit "\
-Call to python script fill_jinja_template.py to generate a METplus
+Call to workflow-tools templater.py to generate a METplus
 configuration file from a jinja template failed.  Parameters passed
 to this script are:
   Full path to template METplus configuration file:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Jinja settings specified on command line:
-    settings =
-$settings"
+  Full path to configuration file:
+    ${tmpfile}
+"
+rm $tmpfile
 #
 #-----------------------------------------------------------------------
 #

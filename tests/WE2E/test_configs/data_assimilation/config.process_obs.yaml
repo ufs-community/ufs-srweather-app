@@ -9,7 +9,9 @@ workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_3km
   DATE_FIRST_CYCL: '2022072000'
   DATE_LAST_CYCL: '2022072000'
-
+  PREEXISTING_DIR_METHOD: rename
+task_process_radarref:
+  RADARREFL_TIMELEVEL: [0]
 rocoto:
   entities:
     START_TIME_NSSLMOSAIC: "00:45:00"
@@ -20,5 +22,4 @@ rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/da_data_preproc.yaml"]|include }}'
     metatask_process_obs_cycle_type:
-      task_process_radarref_#cycle_type#:
       task_process_lightning_#cycle_type#:

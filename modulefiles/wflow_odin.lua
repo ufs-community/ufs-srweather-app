@@ -5,6 +5,8 @@ the NSSL machine Odin
 
 whatis([===[Loads libraries needed for running the UFS SRW App on Odin ]===])
 
+load("set_pythonpath")
+
 if mode() == "load" then
   -- >>> conda initialize >>>
   -- !! Contents within this block are managed by 'conda init' !!
@@ -28,6 +30,6 @@ if mode() == "load" then
 
   LmodMsgRaw([===[Please do the following to activate conda:
       > conda config --set changeps1 False
-      > conda activate regional_workflow
+      > conda activate workflow_tools
   ]===])
 end

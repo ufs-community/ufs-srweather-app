@@ -98,16 +98,21 @@ set -u
 #
 #-----------------------------------------------------------------------
 #
+default_modules_dir="$HOMEdir/modulefiles"
 machine=$(echo_lowercase $MACHINE)
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+module use "${default_modules_dir}"
+
 if [ "${machine}" != "wcoss2" ]; then
-  module use "${HOMEdir}/modulefiles"
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
 fi
+
+module load set_pythonpath || print_err_msg_exit "\
+  Loading the module to set PYTHONPATH for workflow-tools failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -134,9 +139,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMEdir/modulefiles/tasks/$machine"
+modules_dir="$default_modules_dir/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -172,6 +176,8 @@ elif [ -f ${modules_dir}/python_srw.lua ] ; then
   in the modules directory here:
   modules_dir = \"${modules_dir}\""
 fi
+
+
 
 module list
 

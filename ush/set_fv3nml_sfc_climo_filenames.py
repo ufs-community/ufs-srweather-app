@@ -57,7 +57,7 @@ def set_fv3nml_sfc_climo_filenames():
     # Set the suffix of the surface climatology files.
     suffix = "tileX.nc"
 
-    # create yaml-complaint string
+    # create yaml-compliant string
     settings = {}
 
     dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
