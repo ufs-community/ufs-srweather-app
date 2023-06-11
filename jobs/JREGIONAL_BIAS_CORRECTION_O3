@@ -63,11 +63,11 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 if [ "${RUN_ENVIR}" = "community" ]; then
   DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_O3}"
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir -p $DATA
-  cd $DATA
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
 fi
 
-mkdir -p ${COMOUTwmo}
+mkdir_vrfy -p ${COMOUTwmo}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
 

@@ -81,7 +81,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_AQM_ICS}"
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir_vrfy -p $DATA
-  cd $DATA
+  cd_vrfy $DATA
 fi
 #
 #-----------------------------------------------------------------------

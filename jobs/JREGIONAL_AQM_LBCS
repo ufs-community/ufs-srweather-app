@@ -80,8 +80,8 @@ mkdir_vrfy -p "${INPUT_DATA}"
 if [ "${RUN_ENVIR}" = "community" ]; then
   DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_AQM_LBCS}"
   check_for_preexist_dir_file "$DATA" "delete"
-  mkdir -p $DATA
-  cd $DATA
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
 fi
 
 #
