@@ -453,27 +453,27 @@ list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
 #
 settings="
 'config':
- 'fix_dir_target_grid': ${FIXlam},
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXlam},
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
- 'data_dir_input_grid': ${extrn_mdl_staging_dir},
- 'atm_files_input_grid': ${fn_atm},
- 'grib2_file_input_grid': \"${fn_grib2}\",
- 'cycle_mon': $((10#${mm})),
- 'cycle_day': $((10#${dd})),
- 'cycle_hour': $((10#${hh})),
- 'convert_atm': True,
- 'regional': 2,
- 'halo_bndy': $((10#${NH4})),
- 'halo_blend': $((10#${HALO_BLEND})),
- 'input_type': ${input_type},
- 'external_model': ${external_model},
- 'tracers_input': ${tracers_input},
- 'tracers': ${tracers},
- 'thomp_mp_climo_file': ${thomp_mp_climo_file},
+ 'fix_dir_target_grid': ${FIXlam}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'atm_files_input_grid': ${fn_atm}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'cycle_mon': $((10#${mm}))
+ 'cycle_day': $((10#${dd}))
+ 'cycle_hour': $((10#${hh}))
+ 'convert_atm': True
+ 'regional': 2
+ 'halo_bndy': $((10#${NH4}))
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'input_type': ${input_type}
+ 'external_model': ${external_model}
+ 'tracers_input': ${tracers_input}
+ 'tracers': ${tracers}
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
 
 tmpfile=$( $READLINK -f "$(mktemp ./make_lbcs_settings.XXXXXX.yaml)")
@@ -484,8 +484,9 @@ EOF
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/python_utils/uwtools/scripts/set_config.py \
-    -i "$settings" \
+  ${USHdir}/python_utils/workflow-tools/scripts/set_config.py \
+    --input_file_type YAML \
+    -i "$tmpfile" \
     --output_file_type F90 \
     -o ${nml_fn} || \
     print_err_msg_exit "\

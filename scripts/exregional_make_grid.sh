@@ -282,7 +282,7 @@ EOF
 #
 # Call the python script to create the namelist file.
 #
-  ${USHdir}/python_utils/uwtools/scripts/set_config.py -i "$tmpfile" -o ${rgnl_grid_nml_fp} || \
+  ${USHdir}/python_utils/workflow-tools/scripts/set_config.py -i "$tmpfile" -o ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
 Call to uwtools set_config to set the variables in the
 regional_esg_grid namelist file failed.  Parameters passed to this script

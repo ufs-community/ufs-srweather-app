@@ -533,38 +533,38 @@ fi
 #
 settings="
 'config':
- 'fix_dir_target_grid': ${FIXlam},
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXlam},
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
- 'data_dir_input_grid': ${extrn_mdl_staging_dir},
- 'atm_files_input_grid': ${fn_atm},
- 'sfc_files_input_grid': ${fn_sfc},
- 'grib2_file_input_grid': \"${fn_grib2}\",
- 'cycle_mon': $((10#${mm})),
- 'cycle_day': $((10#${dd})),
- 'cycle_hour': $((10#${hh})),
- 'convert_atm': True,
- 'convert_sfc': True,
- 'convert_nst': ${convert_nst},
- 'regional': 1,
- 'halo_bndy': $((10#${NH4})),
- 'halo_blend': $((10#${HALO_BLEND})),
- 'input_type': ${input_type},
- 'external_model': ${external_model},
- 'tracers_input': ${tracers_input},
- 'tracers': ${tracers},
- 'nsoill_out': $((10#${nsoill_out})),
- 'geogrid_file_input_grid': ${geogrid_file_input_grid},
- 'vgtyp_from_climo': ${vgtyp_from_climo},
- 'sotyp_from_climo': ${sotyp_from_climo},
- 'vgfrc_from_climo': ${vgfrc_from_climo},
- 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo},
- 'lai_from_climo': ${lai_from_climo},
- 'tg3_from_soil': ${tg3_from_soil},
- 'thomp_mp_climo_file': ${thomp_mp_climo_file},
+ 'fix_dir_target_grid': ${FIXlam}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'atm_files_input_grid': ${fn_atm}
+ 'sfc_files_input_grid': ${fn_sfc}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'cycle_mon': $((10#${mm}))
+ 'cycle_day': $((10#${dd}))
+ 'cycle_hour': $((10#${hh}))
+ 'convert_atm': True
+ 'convert_sfc': True
+ 'convert_nst': ${convert_nst}
+ 'regional': 1
+ 'halo_bndy': $((10#${NH4}))
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'input_type': ${input_type}
+ 'external_model': ${external_model}
+ 'tracers_input': ${tracers_input}
+ 'tracers': ${tracers}
+ 'nsoill_out': $((10#${nsoill_out}))
+ 'geogrid_file_input_grid': ${geogrid_file_input_grid}
+ 'vgtyp_from_climo': ${vgtyp_from_climo}
+ 'sotyp_from_climo': ${sotyp_from_climo}
+ 'vgfrc_from_climo': ${vgfrc_from_climo}
+ 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
+ 'lai_from_climo': ${lai_from_climo}
+ 'tg3_from_soil': ${tg3_from_soil}
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
 
 tmpfile=$( $READLINK -f "$(mktemp ./make_ics_settings.XXXXXX.yaml)")
@@ -575,7 +575,8 @@ EOF
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHdir}/python_utils/uwtools/scripts/set_config.py \
+${USHdir}/python_utils/workflow-tools/scripts/set_config.py \
+  --input_file_type YAML \
   -i "$tmpfile" \
   --output_file_type F90 \
   -o ${nml_fn} || \
