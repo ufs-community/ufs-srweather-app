@@ -309,11 +309,14 @@ else
   relative_link_flag="FALSE"
 fi
 
-regex_search="^[ ]*([^| ]+)[ ]*[|][ ]*([^| ]+)[ ]*$"
+regex_search="^[ ]*([^: ]+)[ ]*[:][ ]*([^: ]+)[ ]*$"
 num_symlinks=${#CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[@]}
 for (( i=0; i<${num_symlinks}; i++ )); do
 
-  mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]}"
+  # Replace all the single quotes that come from processing the string
+  # in Python and converting it to bash. Bash native global replace is
+  # used here.
+  mapping="${CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING[$i]//\'/}"
   symlink=$( printf "%s\n" "$mapping" | \
              $SED -n -r -e "s/${regex_search}/\1/p" )
   target=$( printf "%s\n" "$mapping" | \
