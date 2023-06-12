@@ -2993,7 +2993,7 @@ cpl_aqm_parm:
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
   #
-  # DCOMINptsrc:
+  # DCOMINpt_src:
   # Path to the directory containing point source files
   #
   # DCOMINairnow:
@@ -3038,7 +3038,7 @@ cpl_aqm_parm:
   DCOMINchem_lbcs_dfv: ""
   AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
-  DCOMINgefs_def: ""
+  DCOMINgefs_dfv: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
