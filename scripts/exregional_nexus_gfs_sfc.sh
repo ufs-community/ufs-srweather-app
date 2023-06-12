@@ -66,7 +66,7 @@ fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
 #
 #-----------------------------------------------------------------------
 #
-# Retrieve GFS surface files to GFS_SFC_STAGING_DIR
+# Retrieve GFS surface files
 #
 #-----------------------------------------------------------------------
 #

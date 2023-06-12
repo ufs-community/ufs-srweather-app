@@ -138,7 +138,7 @@ else
   input_fire="${DATA}/Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc"
   output_fire="${DATA}/Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc"
 
-  python3 ${HOMEaqm}/sorc/AQM-utils/python_utils/RAVE_remake.allspecies.aqmna13km.g793.py --date "${yyyymmdd}" --cyc "${hh}" --input_fire "${input_fire}" --output_fire "${output_fire}"
+  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/RAVE_remake.allspecies.aqmna13km.g793.py --date "${yyyymmdd}" --cyc "${hh}" --input_fire "${input_fire}" --output_fire "${output_fire}"
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
