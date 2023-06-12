@@ -12,6 +12,77 @@ if [ $# -ne 0 ]; then
     export pid=$share_pid
     export jobid=${job}.${pid}
 fi
+
+#
+#-----------------------------------------------------------------------
+#
+# Set NCO standard environment variables
+#
+#-----------------------------------------------------------------------
+#
+export envir="${envir:-${envir_dfv}}"
+export NET="${NET:-${NET_dfv}}"
+export RUN="${RUN:-${RUN_dfv}}"
+export model_ver="${model_ver:-${model_ver_dfv}}"
+export COMROOT="${COMROOT:-${COMROOT_dfv}}"
+export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
+export DCOMROOT="${DCOMROOT:-${DCOMROOT_dfv}}"
+export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_dfv}}"
+
+export DBNROOT="${DBNROOT:-${DBNROOT_dfv}}"
+export SENDECF="${SENDECF:-${SENDECF_dfv}}"
+export SENDDBN="${SENDDBN:-${SENDDBN_dfv}}"
+export SENDDBN_NTC="${SENDDBN_NTC:-${SENDDBN_NTC_dfv}}"
+export SENDCOM="${SENDCOM:-${SENDCOM_dfv}}"
+export SENDWEB="${SENDWEB:-${SENDWEB_dfv}}"
+export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
+export MAILTO="${MAILTO:-${MAILTO_dfv}}"
+export MAILCC="${MAILCC:-${MAILCC_dfv}}"
+
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  if [ "${MACHINE}" = "WCOSS2" ]; then
+    [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+    export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+    export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
+  else
+    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
+    export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
+    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+  fi
+else
+  export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
+  export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
+  export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+fi
+export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+
+export DCOMINbio="${DCOMINbio:-${DCOMINbio_dfv}}"
+export DCOMINdust="${DCOMINdust:-${DCOMINdust_dfv}}"
+export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_dfv}}"
+export DCOMINfire="${DCOMINfire:-${DCOMINfire_dfv}}"
+export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_dfv}}"
+export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_dfv}}"
+export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_dfv}}"
+export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
+
+#
+#-----------------------------------------------------------------------
+#
+# Change YES/NO (NCO standards; job card) to TRUE/FALSE (workflow standards)
+# for NCO environment variables
+#
+#-----------------------------------------------------------------------
+#
+export KEEPDATA=$(boolify "${KEEPDATA}")
+export SENDCOM=$(boolify "${SENDCOM}")
+export SENDDBN=$(boolify "${SENDDBN}")
+export SENDDBN_NTC=$(boolify "${SENDDBN_NTC}")
+export SENDECF=$(boolify "${SENDECF}")
+export SENDWEB=$(boolify "${SENDWEB}")
+
 #
 #-----------------------------------------------------------------------
 #
@@ -72,6 +143,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     export pgmerr="${DATA}/errfile"
     export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
     export pgmout_lines=1
+    export pgmerr_lines=1
 
     function PREP_STEP() {
         export pgm="$(basename ${0})"
@@ -94,6 +166,11 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
             pgmout_line=$( wc -l $pgmout )
             pgmout_lines=$((pgmout_lines + 1))
         fi
+        if [ -f $pgmerr ]; then
+            tail -n +${pgmerr_lines} $pgmerr
+            pgmerr_line=$( wc -l $pgmerr )
+            pgmerr_lines=$((pgmerr_lines + 1))
+        fi
     }
 else
     export pgmout=
@@ -108,24 +185,6 @@ else
 fi
 export -f PREP_STEP
 export -f POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# Set COMIN / COMOUT
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMINext="${EXTROOT}/${RUN}.${PDY}/${cyc}"
-else
-    export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-    export COMINext="${EXTROOT}/${PDY}${cyc}"
-fi
-export COMIN_PDY="${COMIN_BASEDIR}/${RUN}.${PDY}"
-export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 
 #
 #-----------------------------------------------------------------------
@@ -135,7 +194,7 @@ export COMIN_PDYm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir_vrfy -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
@@ -153,9 +212,17 @@ fi
 function job_postamble() {
 
     # Remove temp directory
-    if [ "${RUN_ENVIR}" = "nco" ] && [ $# -eq 0 ]; then
-        cd ${DATAROOT}
-        [[ $KEEPDATA = "FALSE" ]] && rm -rf $DATA
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${KEEPDATA}" = "FALSE" ]; then
+	cd ${DATAROOT}
+	# Remove current data directory
+	if [ $# -eq 0 ]; then
+	    rm -rf $DATA
+	# Remove all current and shared data directories
+	elif [ "$1" = "TRUE" ]; then
+            rm -rf $DATA
+	    share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
+            rm -rf *${share_pid}
+	fi
     fi
 
     # Print exit message

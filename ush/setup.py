@@ -1141,14 +1141,12 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # running in community mode, we set these paths to the experiment
     # directory.
     nco_vars = [
-        "opsroot",
-        "comroot",
-        "packageroot",
-        "dataroot",
-        "dcomroot",
+        "opsroot_dfv",
+        "comroot_dfv",
+        "dataroot_dfv",
+        "dcomroot_dfv",
         "comin_basedir",
         "comout_basedir",
-        "extroot",
     ]
 
     nco_config = expt_config["nco"]
@@ -1158,30 +1156,28 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             nco_config[nco_var.upper()] = exptdir
 
     # Use env variables for NCO variables and create NCO directories
-    if run_envir == "nco":
-
+    workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
+    if run_envir == "nco" and workflow_manager == "rocoto":
         for nco_var in nco_vars:
             envar = os.environ.get(nco_var)
             if envar is not None:
                 nco_config[nco_var.upper()] = envar
 
-        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("COMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("PACKAGEROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("EXTROOT")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_dfv")}"')
 
         # Update the rocoto string for the fcst output location if
         # running an ensemble in nco mode
         if global_sect["DO_ENSEMBLE"]:
             rocoto_config["entities"]["FCST_DIR"] = \
-                "{{ nco.DATAROOT }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
+                "{{ nco.DATAROOT_dfv }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
 
-    if nco_config["DBNROOT"]:
-        mkdir_vrfy(f' -p "{nco_config["DBNROOT"]}"')
+    if nco_config["DBNROOT_dfv"] and workflow_manager == "rocoto":
+        mkdir_vrfy(f' -p "{nco_config["DBNROOT_dfv"]}"')
 
-    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR")}"')
+    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_dfv")}"')
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 

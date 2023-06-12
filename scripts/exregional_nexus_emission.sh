@@ -79,13 +79,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA}/tmp_NEXUS/${nspt}"
-mkdir_vrfy -p "$DATA"
-
 DATAinput="${DATA}/input"
 mkdir_vrfy -p "$DATAinput"
 
-cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -94,9 +90,15 @@ cd_vrfy $DATA
 #-----------------------------------------------------------------------
 #
 USE_GFS_SFC="FALSE"
-if [ -d "${COMINext}/GFS_SFC" ]; then
-  if [ "$(ls -A ${COMINext}/GFS_SFC)" ]; then
-    ln_vrfy -sf "${COMINext}/GFS_SFC" .
+if [ "${RUN_ENVIR}" = "nco" ]; then
+  GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+else
+  GFS_SFC_INPUT="${COMIN}/GFS_SFC"
+fi
+
+if [ -d "${GFS_SFC_INPUT}" ]; then
+  if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
+    ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
     USE_GFS_SFC="TRUE"
   fi
 fi
@@ -186,6 +188,15 @@ NEXUS_INPUT_BASE_DIR=${NEXUS_INPUT_DIR}
 # modify time configuration file
 #
 python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"nexus_time_parser.py\" failed."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
 #
 #---------------------------------------------------------------------
@@ -193,6 +204,15 @@ python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_T
 # set the root directory to the temporary directory
 #
 python3 ${ARL_NEXUS_DIR}/utils/python/nexus_root_parser.py -f ${DATA}/NEXUS_Config.rc -d ${DATAinput}
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"nexus_root_parser.py\" failed."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
 #
 #----------------------------------------------------------------------
@@ -203,7 +223,26 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
   mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07
   mkdir_vrfy -p ${DATAinput}/NEI2016v1/v2022-07/${mm}
   python3 ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"nexus_nei2016_linker.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
+
   python3 ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_control_tilefix.py -f ${DATA}/NEXUS_Config.rc -t ${DATA}/HEMCO_sa_Time.rc # -d ${yyyymmdd}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"nexus_nei2016_control_tilefix.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 if [ "${TIMEZONES}" = "TRUE" ]; then # TIME ZONES
@@ -265,6 +304,15 @@ fi
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   mkdir_vrfy -p ${DATAinput}/GFS_SFC
   python3 ${ARL_NEXUS_DIR}/utils/python/nexus_gfs_bio.py -i ${DATA}/GFS_SFC/gfs.t??z.sfcf???.nc -o ${DATA}/GFS_SFC_MEGAN_INPUT.nc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"nexus_gfs_bio.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 #
@@ -275,9 +323,15 @@ fi
 #-----------------------------------------------------------------------
 #
 PREP_STEP
-eval ${RUN_CMD_NEXUS} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} || \
-print_err_msg_exit "\
-Call to execute nexus standalone for the FV3LAM failed."
+eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to execute nexus standalone for the FV3LAM failed."
+  fi
+fi
 POST_STEP
 
 #
