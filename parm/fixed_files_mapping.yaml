@@ -1,3 +1,8 @@
+#
+# NOTE: Due to the way that YAML maps to bash configuration files the
+# 3rd tier of this data cannot be a dictionary. The lists of
+# dictionaries below are a result of that requirement.
+#
 fixed_files:
   #
   #-----------------------------------------------------------------------
@@ -14,16 +19,16 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-    FNALBC: snowfree_albedo
-    FNALBC2: facsf
-    FNTG3C: substrate_temperature
-    FNVEGC: vegetation_greenness
-    FNVETC: vegetation_type
-    FNSOTC: soil_type
-    FNVMNC: vegetation_greenness
-    FNVMXC: vegetation_greenness
-    FNSLPC: slope_type
-    FNABSC: maximum_snow_albedo
+    - FNALBC: snowfree_albedo
+    - FNALBC2: facsf
+    - FNTG3C: substrate_temperature
+    - FNVEGC: vegetation_greenness
+    - FNVETC: vegetation_type
+    - FNSOTC: soil_type
+    - FNVMNC: vegetation_greenness
+    - FNVMXC: vegetation_greenness
+    - FNSLPC: slope_type
+    - FNABSC: maximum_snow_albedo
   #
   #-----------------------------------------------------------------------
   #
@@ -45,26 +50,6 @@ fixed_files:
   #
   #-----------------------------------------------------------------------
   #
-  # FNGLAC, ..., FNMSKH:
-  # Names of (some of the) global data files that are assumed to exist in 
-  # a system directory specified (this directory is machine-dependent; 
-  # the experiment generation scripts will set it and store it in the 
-  # variable FIXgsm).  These file names also appear directly in the forecast 
-  # model's input namelist file.
-  #
-  #-----------------------------------------------------------------------
-  #
-  FNGLAC: &FNGLAC "global_glacier.2x2.grb"
-  FNMXIC: &FNMXIC "global_maxice.2x2.grb"
-  FNTSFC: &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
-  FNSNOC: &FNSNOC "global_snoclim.1.875.grb"
-  FNZORC: &FNZORC "igbp"
-  FNAISC: &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
-  FNSMCC: &FNSMCC "global_soilmgldas.t126.384.190.grb"
-  FNMSKH: &FNMSKH "seaice_newland.grb"
-  #
-  #-----------------------------------------------------------------------
-  #
   # FIXgsm_FILES_TO_COPY_TO_FIXam:
   # If not running in NCO mode, this array contains the names of the files
   # to copy from the FIXgsm system directory to the FIXam directory under
@@ -81,13 +66,13 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   FIXgsm_FILES_TO_COPY_TO_FIXam:
-    - *FNGLAC,
-    - *FNMXIC,
-    - *FNTSFC,
-    - *FNSNOC,
-    - *FNAISC,
-    - *FNSMCC,
-    - *FNMSKH,
+    - &FNGLAC "global_glacier.2x2.grb"
+    - &FNMXIC "global_maxice.2x2.grb"
+    - &FNTSFC "RTGSST.1982.2012.monthly.clim.grb"
+    - &FNSNOC "global_snoclim.1.875.grb"
+    - &FNAISC "CFSR.SEAICE.1982.2012.monthly.clim.grb"
+    - &FNSMCC "global_soilmgldas.t126.384.190.grb"
+    - &FNMSKH "seaice_newland.grb"
     - global_climaeropac_global.txt
     - fix_co2_proj/global_co2historicaldata_2010.txt
     - fix_co2_proj/global_co2historicaldata_2011.txt
@@ -127,13 +112,13 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING:
-    FNGLAC: *FNGLAC
-    FNMXIC: *FNMXIC
-    FNTSFC: *FNTSFC
-    FNSNOC: *FNSNOC
-    FNAISC: *FNAISC
-    FNSMCC: *FNSMCC
-    FNMSKH: *FNMSKH
+    - FNGLAC: *FNGLAC
+    - FNMXIC: *FNMXIC
+    - FNTSFC: *FNTSFC
+    - FNSNOC: *FNSNOC
+    - FNAISC: *FNAISC
+    - FNSMCC: *FNSMCC
+    - FNMSKH: *FNMSKH
   #
   #-----------------------------------------------------------------------
   #
@@ -149,16 +134,16 @@ fixed_files:
   #-----------------------------------------------------------------------
   #
   FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-    FNALBC: snowfree_albedo
-    FNALBC2: facsf
-    FNTG3C: substrate_temperature
-    FNVEGC: vegetation_greenness
-    FNVETC: vegetation_type
-    FNSOTC: soil_type
-    FNVMNC: vegetation_greenness
-    FNVMXC: vegetation_greenness
-    FNSLPC: slope_type
-    FNABSC: maximum_snow_albedo
+    - FNALBC: snowfree_albedo
+    - FNALBC2: facsf
+    - FNTG3C: substrate_temperature
+    - FNVEGC: vegetation_greenness
+    - FNVETC: vegetation_type
+    - FNSOTC: soil_type
+    - FNVMNC: vegetation_greenness
+    - FNVMXC: vegetation_greenness
+    - FNSLPC: slope_type
+    - FNABSC: maximum_snow_albedo
 
   #
   #-----------------------------------------------------------------------
@@ -171,28 +156,32 @@ fixed_files:
   # specifies its target file in FIXam (where columns are delineated by the
   # pipe symbol "|").
   #
+  # This section needs to remain a list because it is used directly in
+  # the bash scripts. The dictionary is a helpful way to deal with the
+  # mapping in the python scripts, and can be parsed by bash as a
+  # string.
   #-----------------------------------------------------------------------
   #
   CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING:
-    aerosol.dat: global_climaeropac_global.txt
-    co2historicaldata_2010.txt: fix_co2_proj/global_co2historicaldata_2010.txt
-    co2historicaldata_2011.txt: fix_co2_proj/global_co2historicaldata_2011.txt
-    co2historicaldata_2012.txt: fix_co2_proj/global_co2historicaldata_2012.txt
-    co2historicaldata_2013.txt: fix_co2_proj/global_co2historicaldata_2013.txt
-    co2historicaldata_2014.txt: fix_co2_proj/global_co2historicaldata_2014.txt
-    co2historicaldata_2015.txt: fix_co2_proj/global_co2historicaldata_2015.txt
-    co2historicaldata_2016.txt: fix_co2_proj/global_co2historicaldata_2016.txt
-    co2historicaldata_2017.txt: fix_co2_proj/global_co2historicaldata_2017.txt
-    co2historicaldata_2018.txt: fix_co2_proj/global_co2historicaldata_2018.txt
-    co2historicaldata_2019.txt: fix_co2_proj/global_co2historicaldata_2019.txt
-    co2historicaldata_2020.txt: fix_co2_proj/global_co2historicaldata_2020.txt
-    co2historicaldata_2021.txt: fix_co2_proj/global_co2historicaldata_2021.txt
-    co2historicaldata_glob.txt: global_co2historicaldata_glob.txt
-    co2monthlycyc.txt: co2monthlycyc.txt
-    global_h2oprdlos.f77: global_h2o_pltc.f77
-    global_albedo4.1x1.grb: global_albedo4.1x1.grb
-    global_zorclim.1x1.grb: global_zorclim.1x1.grb
-    global_tg3clim.2.6x1.5.grb: global_tg3clim.2.6x1.5.grb
-    sfc_emissivity_idx.txt: global_sfc_emissivity_idx.txt
-    solarconstant_noaa_an.txt: global_solarconstant_noaa_an.txt
-    global_o3prdlos.f77: ""
+    - aerosol.dat: global_climaeropac_global.txt
+    - co2historicaldata_2010.txt: fix_co2_proj/global_co2historicaldata_2010.txt
+    - co2historicaldata_2011.txt: fix_co2_proj/global_co2historicaldata_2011.txt
+    - co2historicaldata_2012.txt: fix_co2_proj/global_co2historicaldata_2012.txt
+    - co2historicaldata_2013.txt: fix_co2_proj/global_co2historicaldata_2013.txt
+    - co2historicaldata_2014.txt: fix_co2_proj/global_co2historicaldata_2014.txt
+    - co2historicaldata_2015.txt: fix_co2_proj/global_co2historicaldata_2015.txt
+    - co2historicaldata_2016.txt: fix_co2_proj/global_co2historicaldata_2016.txt
+    - co2historicaldata_2017.txt: fix_co2_proj/global_co2historicaldata_2017.txt
+    - co2historicaldata_2018.txt: fix_co2_proj/global_co2historicaldata_2018.txt
+    - co2historicaldata_2019.txt: fix_co2_proj/global_co2historicaldata_2019.txt
+    - co2historicaldata_2020.txt: fix_co2_proj/global_co2historicaldata_2020.txt
+    - co2historicaldata_2021.txt: fix_co2_proj/global_co2historicaldata_2021.txt
+    - co2historicaldata_glob.txt: global_co2historicaldata_glob.txt
+    - co2monthlycyc.txt: co2monthlycyc.txt
+    - global_h2oprdlos.f77: global_h2o_pltc.f77
+    - global_albedo4.1x1.grb: global_albedo4.1x1.grb
+    - global_zorclim.1x1.grb: global_zorclim.1x1.grb
+    - global_tg3clim.2.6x1.5.grb: global_tg3clim.2.6x1.5.grb
+    - sfc_emissivity_idx.txt: global_sfc_emissivity_idx.txt
+    - solarconstant_noaa_an.txt: global_solarconstant_noaa_an.txt
+    - global_o3prdlos.f77: ""
