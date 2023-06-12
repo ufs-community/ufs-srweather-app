@@ -99,6 +99,8 @@ def type_to_str(v):
         return "TRUE" if v else "FALSE"
     elif isinstance(v, (int, float)):
         pass
+    elif isinstance(v, dict):
+        return str(v).strip("{}")
     elif isinstance(v, date):
         return date_to_str(v)
     elif v is None:

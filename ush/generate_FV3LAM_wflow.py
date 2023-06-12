@@ -22,21 +22,19 @@ from python_utils import (
     mv_vrfy,
     create_symlink_to_file,
     check_for_preexist_dir_file,
-    cfg_to_yaml_str,
-    find_pattern_in_str,
     flatten_dict,
 )
 
 from setup import setup
-from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
+from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
 # These come from ush/python_utils/workflow-tools
-from scripts.set_config import create_config_obj
-from scripts.templater import set_template
 from uwtools import config as uw_config
 from uwtools import exceptions
+from scripts.set_config import create_config_file
+from scripts.templater import set_template
 
 LOG_NAME = "generate_wflow"
 
@@ -366,7 +364,7 @@ def generate_FV3LAM_wflow(
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-    })
+    }
     if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
                            "FV3_GFS_2017_gfdlmp_regional",
                            "FV3_GFS_v15p2",
@@ -438,17 +436,19 @@ def generate_FV3LAM_wflow(
     # the paths to fixed files in the FIXam directory.  As above, these namelist
     # variables are physics-suite-independent.
     #
-    # Note that the dict FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
-    # the mapping between the namelist variables and the names of the files
-    # in the FIXam directory.
+    # Note that the list FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING contains
+    # a list of dicts with the mapping between the namelist variables
+    # and the names of the files in the FIXam directory.
     #
     dummy_run_dir = os.path.join(EXPTDIR, "any_cyc")
     if DO_ENSEMBLE:
         dummy_run_dir = os.path.join(dummy_run_dir, "any_ensmem")
 
 
-    mapping_dict = FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING
-    for nml_var_name, FIXam_fn in mapping_dict.items():
+    mapping_list = expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]
+    namsfc_dict = {}
+    for mapping in mapping_list:
+        nml_var_name, FIXam_fn = list(mapping.items())[0]
 
         fp = '""'
         if FIXam_fn:
@@ -478,7 +478,7 @@ def generate_FV3LAM_wflow(
 
 
     # Load pre-defined settings for the physics suite
-    suite_config = uw_config.F90Config(
+    suite_config = uw_config.YAMLConfig(
         config_path=FV3_NML_YAML_CONFIG_FP,
         )
     # Update the config object to include only the chosen suite data
@@ -487,14 +487,6 @@ def generate_FV3LAM_wflow(
     # Combine the information from the settings dict and the default
     # suite, where items defined in settings take priority.
     suite_config.update_values(settings)
-
-    log_info(
-        """
-        The variable 'settings' specifying values of the weather model's
-        namelist variables has been set as follows:\n""",
-        verbose=verbose,
-    )
-    log_info("\nsettings =\n\n" + settings_str, verbose=verbose)
 
     #
     # -----------------------------------------------------------------------
@@ -507,15 +499,17 @@ def generate_FV3LAM_wflow(
     # -----------------------------------------------------------------------
     #
     try:
-        create_config_obj(
+        create_config_file(
             [
                 "-i",
                 FV3_NML_BASE_SUITE_FP,
+                "--input_file_type",
+                "F90",
                 "-o",
                 FV3_NML_FP,
-            ]
+            ],
             config_dict=suite_config,
-            log=LOG_NAME,
+            log_name=LOG_NAME,
         )
     except exceptions.UWConfigError as e:
         sys.exit(e)
@@ -556,7 +550,7 @@ def generate_FV3LAM_wflow(
         # populate the namelist file
         #
         try:
-            create_config_obj(
+            create_config_file(
                 [
                     "-i",
                     FV3_NML_FP,
@@ -564,7 +558,7 @@ def generate_FV3LAM_wflow(
                     FV3_NML_CYCSFC_FP,
                 ],
                 config_dict=settings,
-                log=LOG_NAME,
+                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
@@ -603,7 +597,7 @@ def generate_FV3LAM_wflow(
         # populate the namelist file
         #
         try:
-            create_config_obj(
+            create_config_file(
                 [
                     "-i",
                     FV3_NML_FP,
@@ -611,7 +605,7 @@ def generate_FV3LAM_wflow(
                     FV3_NML_RESTART_FP,
                 ],
                 config_dict=settings,
-                log=LOG_NAME,
+                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
@@ -710,7 +704,7 @@ def generate_FV3LAM_wflow(
         "iseed_lndp": ISEED_LSM_SPP,
         "lndp_var_list": LSM_SPP_VAR_LIST,
         "lndp_prt_list": LSM_SPP_MAG_LIST,
-    } if DO_LSM else {}
+    } if DO_LSM_SPP else {}
 
     #
     #-----------------------------------------------------------------------
@@ -722,7 +716,7 @@ def generate_FV3LAM_wflow(
     if DO_ENSEMBLE and any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
 
         try:
-            create_config_obj(
+            create_config_file(
                 [
                     "-i",
                     FV3_NML_FP,
@@ -730,14 +724,14 @@ def generate_FV3LAM_wflow(
                     FV3_NML_STOCH_FP,
                 ],
                 config_dict=settings,
-                log=LOG_NAME,
+                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
 
         if DO_DACYCLE or DO_ENKFUPDATE:
             try:
-                create_config_obj(
+                create_config_file(
                     [
                         "-i",
                         FV3_NML_RESTART_FP,
@@ -745,7 +739,7 @@ def generate_FV3LAM_wflow(
                         FV3_NML_RESTART_STOCH_FP,
                     ],
                     config_dict=settings,
-                    log=LOG_NAME,
+                    log_name=LOG_NAME,
                 )
             except exceptions.UWConfigError as e:
                 sys.exit(e)

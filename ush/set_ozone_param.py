@@ -25,13 +25,12 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
         link_mappings: list of mappings between symlinks and their
-                       target files for this experiment
+                       target files for this experiment. Each mapping is
+                       a dict.
     Returns:
         ozone_param: a string
         fixgsm_ozone_fn: a path to a fix file that should be used with
                         this experiment
-        ozone_link_mappings: a list of mappings for the files needed for
-                             this experiment
 
     """
 
@@ -83,6 +82,8 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
         )
 
     # Set the target file we just found
-    link_mappings["global_o3prdlos.f77"] = fixgsm_ozone_fn
+    for mapping in link_mappings:
+        if "global_o3prdlos.f77" in mapping:
+            mapping["global_o3prdlos.f77"] = fixgsm_ozone_fn
 
-    return ozone_param, fixgsm_ozone_fn, ozone_link_mappings
+    return ozone_param, fixgsm_ozone_fn

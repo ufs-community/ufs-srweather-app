@@ -24,7 +24,7 @@ from python_utils import (
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_obj
+from scripts.set_config import create_config_file
 from uwtools import exceptions
 
 
@@ -51,8 +51,7 @@ def set_fv3nml_sfc_climo_filenames():
 
     # fixed file mapping variables
     fixed_cfg = load_config_file(os.path.join(PARMdir, "fixed_files_mapping.yaml"))
-    imports = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
-    import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=imports)
+    fixed_cfg = fixed_cfg.get("fixed_files")
 
     # Set the suffix of the surface climatology files.
     suffix = "tileX.nc"
@@ -65,8 +64,11 @@ def set_fv3nml_sfc_climo_filenames():
         os.path.join(dummy_run_dir, "any_ensmem")
 
     namsfc_dict = {}
-    mapping_dict = fixed_cfg.get('FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING')
-    for nml_var_name, sfc_climo_field_name in mapping_dict.items():
+    # mapping_list is a list of single dictionaries
+    SFC_CLIMO_FIELDS = fixed_cfg.get('SFC_CLIMO_FIELDS')
+    mapping_list = fixed_cfg.get('FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING')
+    for mapping in mapping_list:
+        nml_var_name, sfc_climo_field_name = list(mapping.items())[0]
         check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
 
         file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
@@ -96,7 +98,7 @@ def set_fv3nml_sfc_climo_filenames():
     mv_vrfy(f"{FV3_NML_FP} {fv3_nml_base_fp}")
 
     try:
-        create_config_obj(
+        create_config_file(
             [
                 "-i", fv3_nml_base_fp,
                 "--input_file_type", "F90",

@@ -21,7 +21,7 @@ from python_utils import (
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_obj
+from scripts.set_config import create_config_file
 from uwtools import exceptions
 
 
@@ -102,7 +102,7 @@ def set_fv3nml_ens_stoch_seeds(cdate):
     )
 
     try:
-        create_config_obj(
+        create_config_file(
             ["-i", FV3_NML_FP,
              "-o", fv3_nml_ensmem_fp],
             config_dict=settings,

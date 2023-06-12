@@ -19,7 +19,7 @@ from python_utils import (
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_obj
+from scripts.set_config import create_config_file
 from uwtools import exceptions
 
 
@@ -108,7 +108,7 @@ def update_input_nml(run_dir):
     fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN) # pylint: disable=undefined-variable
 
     try:
-        create_config_obj(
+        create_config_file(
             [
                 "-i",
                 fv3_input_nml_fp,

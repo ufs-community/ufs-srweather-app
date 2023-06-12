@@ -53,7 +53,7 @@ def set_thompson_mp_fix_files(
     #
     # -----------------------------------------------------------------------
     #
-    mapping = []
+    mapping = {}
     thompson_mp_fix_files = []
     if sdf_uses_thompson_mp:
         #
@@ -79,7 +79,6 @@ def set_thompson_mp_fix_files(
         if link_thompson_climo:
             thompson_mp_fix_files.append(thompson_mp_climo_fn)
 
-        for fix_file in thompson_mp_fix_files:
-            mapping.append(f"{fix_file} | {fix_file}")
+        mapping = {fix_file: fix_file for fix_file in thompson_mp_fix_files}
 
     return sdf_uses_thompson_mp, mapping, thompson_mp_fix_files

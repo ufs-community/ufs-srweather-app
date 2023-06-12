@@ -1244,7 +1244,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     fixed_files = expt_config["fixed_files"]
     # Set the appropriate ozone production/loss file paths and symlinks
-    ozone_param, fixgsm_ozone_fn, ozone_link_mappings = set_ozone_param(
+    ozone_param, fixgsm_ozone_fn = set_ozone_param(
         ccpp_phys_suite_in_ccpp_fp,
         fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
     )
@@ -1252,9 +1252,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # Reset the dummy value saved in the last list item to the ozone
     # file name
     fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
-
-    # Reset the experiment config list with the update list
-    fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
 
     log_info(
         f"""
@@ -1273,7 +1270,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     log_info(
         f"""
-        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(ozone_link_mappings)}
+        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING =
+          {list_to_str(fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"])}
         """,
         verbose=verbose,
         dedent_=False,
@@ -1506,7 +1504,9 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
 
     if use_thompson:
-        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(mapping)
+        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(
+            [{k: v} for k,v in mapping.items()]
+            )
         fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fix_files)
 
         log_info(
