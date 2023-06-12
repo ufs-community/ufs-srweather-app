@@ -50,7 +50,7 @@ metatask_nexus_emission:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
-    walltime: 01:00:00
+    walltime: 01:30:00
     envars:
       <<: *default_vars
       nspt: "#nspt#"
