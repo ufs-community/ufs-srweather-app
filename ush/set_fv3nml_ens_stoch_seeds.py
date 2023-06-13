@@ -21,8 +21,8 @@ from python_utils import (
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_file
 from uwtools import exceptions
+from scripts.set_config import create_config_file
 
 
 def set_fv3nml_ens_stoch_seeds(cdate):
@@ -67,7 +67,6 @@ def set_fv3nml_ens_stoch_seeds(cdate):
     settings = {}
     nam_stochy_dict = {}
 
-
     seed = lambda x: cdate_i * 1000 + ensmem_num * 10 + x
     if DO_SPPT:
         nam_stochy_dict.update({"iseed_sppt": seed(1)})
@@ -107,8 +106,8 @@ def set_fv3nml_ens_stoch_seeds(cdate):
              "-o", fv3_nml_ensmem_fp],
             config_dict=settings,
         )
-    except exceptions.UWConfigError as e:
-        sys.exit(e)
+    except exceptions.UWConfigError as err:
+        sys.exit(err)
 
 def parse_args(argv):
     """Parse command line arguments"""

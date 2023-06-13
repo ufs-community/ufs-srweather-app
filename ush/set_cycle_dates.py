@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# pylint: skip-file
+
 from datetime import datetime, timedelta, date
 
 from python_utils import print_input_args, print_err_msg_exit

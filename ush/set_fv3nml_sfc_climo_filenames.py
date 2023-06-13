@@ -19,13 +19,12 @@ from python_utils import (
     load_config_file,
     load_shell_config,
     flatten_dict,
-    find_pattern_in_str,
     cfg_to_yaml_str,
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_file
 from uwtools import exceptions
+from scripts.set_config import create_config_file
 
 
 def set_fv3nml_sfc_climo_filenames():
@@ -65,11 +64,10 @@ def set_fv3nml_sfc_climo_filenames():
 
     namsfc_dict = {}
     # mapping_list is a list of single dictionaries
-    SFC_CLIMO_FIELDS = fixed_cfg.get('SFC_CLIMO_FIELDS')
     mapping_list = fixed_cfg.get('FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING')
     for mapping in mapping_list:
         nml_var_name, sfc_climo_field_name = list(mapping.items())[0]
-        check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
+        check_var_valid_value(sfc_climo_field_name, fixed_cfg.get('SFC_CLIMO_FIELDS'))
 
         file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
         if RUN_ENVIR != "nco":
@@ -107,8 +105,8 @@ def set_fv3nml_sfc_climo_filenames():
             ],
             config_dict=settings,
         )
-    except exceptions.UWConfigError as e:
-        sys.exit(e)
+    except exceptions.UWConfigError as err:
+        sys.exit(err)
 
     rm_vrfy(f"{fv3_nml_base_fp}")
 

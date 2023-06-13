@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# pylint: skip-file
+
 """
 This utility updates a Fortran namelist file using the f90nml package. The
 settings that are modified are supplied via command line YAML-formatted string

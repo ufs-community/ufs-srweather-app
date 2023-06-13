@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
-import copy
-import os
-from textwrap import dedent
+"""
+The definition of a functio that determines whether ozone
+parameterization is to be used with a given CCPP physics suite.
+
+Helps choose the settings for the forecast namelist and necessary fixed
+files to be linked when ozone parameterization is used.
+"""
 
 from python_utils import (
     print_input_args,
@@ -77,8 +81,8 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
         ozone_param = "ozphys"
     else:
         raise KeyError(
-            f"Unknown or no ozone parameterization specified in the "
-            "CCPP physics suite file '{ccpp_phys_suite_fp}'"
+            "Unknown or no ozone parameterization specified in the "
+            f"CCPP physics suite file '{ccpp_phys_suite_fp}'"
         )
 
     # Set the target file we just found

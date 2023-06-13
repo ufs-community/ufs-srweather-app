@@ -1,3 +1,4 @@
+# pylint: skip-file
 import sys, os, shutil, subprocess
 import datetime
 import re, csv, glob

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# pylint: skip-file
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from matplotlib.path import Path

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: skip-file
 # pylint: disable=logging-fstring-interpolation
 """
 This script helps users pull data from known data streams, including

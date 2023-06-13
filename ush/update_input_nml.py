@@ -19,8 +19,8 @@ from python_utils import (
 )
 
 # These come from ush/python_utils/uwtools
-from scripts.set_config import create_config_file
 from uwtools import exceptions
+from scripts.set_config import create_config_file
 
 
 def update_input_nml(run_dir):
@@ -117,8 +117,8 @@ def update_input_nml(run_dir):
             ],
             config_dict=settings,
         )
-    except exceptions.UWConfigError as e:
-         sys.exit(e)
+    except exceptions.UWConfigError as err:
+        sys.exit(err)
 
     return True
 
