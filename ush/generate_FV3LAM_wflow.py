@@ -445,11 +445,9 @@ def generate_FV3LAM_wflow(
 
 
     mapping_list = expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]
-    logging.info(f"CRH: mapping_list {mapping_list}")
     namsfc_dict = {}
     for mapping in mapping_list:
         nml_var_name, FIXam_fn = list(mapping.items())[0]
-        print(f"CRH: mapping {nml_var_name} {FIXam_fn}")
 
         fix_fp = '""'
         if FIXam_fn:
