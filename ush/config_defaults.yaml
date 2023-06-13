@@ -1721,12 +1721,17 @@ task_make_ics:
   # FV3-LAM grid. This file will be copied later to a new location and name
   # changed to fvcom.nc
   #
+  # VCOORD_FILE:
+  # Full path to the file used to set the vertical coordinate in FV3.
+  # This file should be the same in both make_ics and make_lbcs.
+  #
   #------------------------------------------------------------------------
   #
   USE_FVCOM: false
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # MAKE LBCS config parameters
@@ -1735,6 +1740,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # FORECAST config parameters
