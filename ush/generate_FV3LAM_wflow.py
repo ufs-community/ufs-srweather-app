@@ -36,7 +36,6 @@ from uwtools import exceptions
 from scripts.set_config import create_config_file
 from scripts.templater import set_template
 
-LOG_NAME = "generate_wflow"
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
@@ -446,11 +445,13 @@ def generate_FV3LAM_wflow(
 
 
     mapping_list = expt_config["fixed_files"]["FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING"]
+    logging.info(f"CRH: mapping_list {mapping_list}")
     namsfc_dict = {}
     for mapping in mapping_list:
         nml_var_name, FIXam_fn = list(mapping.items())[0]
+        print(f"CRH: mapping {nml_var_name} {FIXam_fn}")
 
-        fp = '""'
+        fix_fp = '""'
         if FIXam_fn:
             fix_fp = os.path.join(FIXam, FIXam_fn)
             #
@@ -459,7 +460,7 @@ def generate_FV3LAM_wflow(
             # the experiment directory).
             #
             if RUN_ENVIR != "nco":
-                fix_fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
+                fix_fp = os.path.relpath(os.path.realpath(fix_fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
         # format) the name of the current namelist variable and the value it should
@@ -509,7 +510,6 @@ def generate_FV3LAM_wflow(
                 FV3_NML_FP,
             ],
             config_dict=suite_config,
-            log_name=LOG_NAME,
         )
     except exceptions.UWConfigError as e:
         sys.exit(e)
@@ -558,7 +558,6 @@ def generate_FV3LAM_wflow(
                     FV3_NML_CYCSFC_FP,
                 ],
                 config_dict=settings,
-                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
@@ -605,7 +604,6 @@ def generate_FV3LAM_wflow(
                     FV3_NML_RESTART_FP,
                 ],
                 config_dict=settings,
-                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
@@ -724,7 +722,6 @@ def generate_FV3LAM_wflow(
                     FV3_NML_STOCH_FP,
                 ],
                 config_dict=settings,
-                log_name=LOG_NAME,
             )
         except exceptions.UWConfigError as e:
             sys.exit(e)
@@ -739,7 +736,6 @@ def generate_FV3LAM_wflow(
                         FV3_NML_RESTART_STOCH_FP,
                     ],
                     config_dict=settings,
-                    log_name=LOG_NAME,
                 )
             except exceptions.UWConfigError as e:
                 sys.exit(e)
@@ -818,7 +814,7 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
     If debug = True, print all messages to both screen and log file.
     """
 
-    logger = logging.getLogger(LOG_NAME)
+    logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(name)-22s %(levelname)-8s %(message)s")
