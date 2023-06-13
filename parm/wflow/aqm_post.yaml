@@ -1,0 +1,77 @@
+default_aqm_task: &default_aqm
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr "@Y@m@d"
+    cyc: !cycstr "@H"
+    nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: "&NCORES_PER_NODE;"
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 00:30:00
+
+task_pre_post_stat:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "pre_post_stat" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  dependency:
+    or:
+      datadep:
+        attrs:
+          age: 00:00:00:05
+        text: !cycstr '&COMIN_DIR;/post_@Y@m@d@H_task_complete.txt'
+      metataskdep:
+        attrs:
+          metatask: run_ens_post
+
+task_post_stat_o3:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_o3" "&JOBSdir;/JREGIONAL_POST_STAT_O3"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
+task_post_stat_pm25:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "post_stat_pm25" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_o3:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_o3" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
+task_bias_correction_pm25:
+  <<: *default_aqm
+  command: '&LOAD_MODULES_RUN_TASK_FP; "bias_correction_pm25" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 120G
+  dependency:
+    taskdep:
+      attrs:
+        task: pre_post_stat
+
