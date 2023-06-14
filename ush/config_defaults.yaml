@@ -988,7 +988,7 @@ nco:
   #
   # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
   # set to "nco"). All variables have the suffix [_dfv] meaning the default value.
-  # This is bacuase they are supposed to be defined in job cards for the 
+  # This is because they are supposed to be defined in job cards for the 
   # production using ecFlow.
   #
   # Definitions: 
