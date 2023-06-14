@@ -103,7 +103,9 @@ def set_fv3nml_ens_stoch_seeds(cdate):
     try:
         create_config_file(
             ["-i", FV3_NML_FP,
-             "-o", fv3_nml_ensmem_fp],
+             "--input_file_type", "F90",
+             "-o", fv3_nml_ensmem_fp,
+             "--output_file_type", "F90"],
             config_dict=settings,
         )
     except exceptions.UWConfigError as err:
