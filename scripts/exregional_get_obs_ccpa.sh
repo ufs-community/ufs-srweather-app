@@ -79,7 +79,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   vdd=`echo ${vdate} | cut -c7-8`    # day (DD) of valid time
   vhh=`echo ${vdate} | cut -c9-10`       # forecast hour (HH)
 
-  vhh_noZero=$( printf "%d" "${vhh#0}" )
+  vhh_noZero=$((10#${vhh}))
 
   # Calculate valid date - 1 day
   vdate_ut_m1=`expr ${vdate_ut} - 86400` 
