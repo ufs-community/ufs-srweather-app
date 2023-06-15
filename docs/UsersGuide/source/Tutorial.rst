@@ -484,7 +484,7 @@ Option 2: Compare output from additional physics suites.
 
 Users are encouraged to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. Compare them to each other or to the control! 
 
-Users may find the difference plots for :term:`updraft helicity` particularly informative. The FV3_GFS_v16 physics suite does not contain updraft helicity output in its ``diag_table`` files, so the difference plot generated in this tutorial is empty. However, high updraft helicity values increase the probability that a storm will become a supercell thunderstorm or a tornado. Comparing the results from two physics suites that measure this parameter can therefore prove insightful. 
+Users may find the difference plots for :term:`updraft helicity` particularly informative. The FV3_GFS_v16 physics suite does not contain updraft helicity output in its ``diag_table`` files, so the difference plot generated in this tutorial is empty. Observing high values for updraft helicity indicates the presence of a rotating updraft, often the result of a supercell thunderstorm capable of severe weather, including tornadoes. Comparing the results from two physics suites that measure this parameter can therefore prove insightful.
 
 .. _fcst2:
 
