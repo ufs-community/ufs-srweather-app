@@ -6,7 +6,7 @@ metadata:
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  CCPP_PHYS_SUITE: FV3_RAP
   PREDEF_GRID_NAME: RRFS_CONUS_13km
   DATE_FIRST_CYCL: '2019070100'
   DATE_LAST_CYCL: '2019070100'
@@ -19,3 +19,8 @@ task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
+global:
+  DO_SHUM: true
+  DO_SPPT: true
+  DO_SKEB: true
+  DO_SPP: true
