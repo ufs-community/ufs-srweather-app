@@ -127,9 +127,7 @@ if [ $err -ne 0 ]; then
   fi
 fi
 
-mv_vrfy tmp1.nc ${gfs_ic_file}
-
-rm_vrfy gfs.nc
+cp_vrfy tmp1.nc ${gfs_ic_file}
 
 unset fv_tracer_file
 unset wrk_ic_file
