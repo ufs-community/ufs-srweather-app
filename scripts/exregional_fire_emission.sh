@@ -56,12 +56,10 @@ data files.
 yyyymmdd=${FIRE_FILE_CDATE:0:8}
 hh=${FIRE_FILE_CDATE:8:2}
 
-CDATE_mh3=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 3 hours" "+%Y%m%d%H" )
-CDATE_mh2=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 2 hours" "+%Y%m%d%H" )
 CDATE_mh1=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - 1 hours" "+%Y%m%d%H" )
 
-yyyymmdd_mh3=${CDATE_mh3:0:8}
-hh_mh3=${CDATE_mh3:8:2}
+yyyymmdd_mh1=${CDATE_mh1:0:8}
+hh_mh1=${CDATE_mh1:8:2}
 #
 #-----------------------------------------------------------------------
 #
@@ -76,19 +74,19 @@ if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
   cp "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Copy raw data 
-  for ihr in {0..21}; do
-    download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_mh3} ${hh_mh3} UTC - $ihr hours" "+%Y%m%d%H" )
+  for ihr in {0..23}; do
+    download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_mh1} ${hh_mh1} UTC - $ihr hours" "+%Y%m%d%H" )
     FILE_13km="Hourly_Emissions_13km_${download_time}00_${download_time}00.nc"
     yyyymmdd_dn=${download_time:0:8}
     hh_dn=${download_time:8:2}
     missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
     yyyymmdd_dn_md1=${missing_download_time:0:8}
     FILE_13km_md1=Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc
-    if [ -e "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn}/${FILE_13km}" ]; then
-      ln -sf "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn}/${FILE_13km}" .
-    elif [ -e "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn_md1}/${FILE_13km_md1}" ]; then
+    if [ -e "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}" ]; then
+      cp -p "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}" .
+    elif [ -e "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}" ]; then
       echo "WARNING: ${FILE_13km} does not exist. Replacing with the file of previous date ..."
-      ln -sf "${DCOMINfire}/RAVE_raw_new/${yyyymmdd_dn_md1}/${FILE_13km_md1}" "${FILE_13km}"
+      cp -p "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}" "${FILE_13km}"
     else
       message_txt="Fire Emission RAW data does not exist:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
@@ -97,7 +95,7 @@ else
       if [ "${RUN_ENVIR}" = "community" ]; then
         print_err_msg_exit "${message_txt}"
       else
-        ln -sf  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
+        cp -p  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
         if [ ! -z "${maillist}" ]; then
@@ -119,10 +117,6 @@ else
   fi
 
   mv temp.nc Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
-
-  # Extra times
-  cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh2}00_${CDATE_mh2}00.nc
-  cp Hourly_Emissions_13km_${CDATE_mh3}00_${CDATE_mh3}00.nc Hourly_Emissions_13km_${CDATE_mh1}00_${CDATE_mh1}00.nc
 
   ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc
   export err=$?

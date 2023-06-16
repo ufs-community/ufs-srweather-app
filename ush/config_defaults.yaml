@@ -2901,8 +2901,10 @@ cpl_aqm_parm:
   # DO_AQM_GEFS_LBCS:
   # Add GEFS aerosol LBCs to chemical LBCs
   #
-  # DO_AQM_SAVE_AIRNOW_HIST:
-  # Save bias-correction airnow training data
+  # COMINbicor 
+  # Read bias-correction training data
+  # COMOUTbicor 
+  # Save bias-correction training data
   #
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
@@ -3052,4 +3054,5 @@ cpl_aqm_parm:
   DCOMINpt_src_dfv: "/path/to/point/source/base/directory"
 
   DCOMINairnow_dfv: "/path/to/airnow/obaservation/data"
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"

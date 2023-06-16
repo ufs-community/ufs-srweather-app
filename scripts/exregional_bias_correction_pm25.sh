@@ -97,7 +97,7 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi
+fi  
 
 #-----------------------------------------------------------------------------
 # STEP 1: Retrieve AIRNOW observation data
@@ -111,9 +111,9 @@ if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
   cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
   cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}"
 fi
-
+cd ${DATA}
 # Retrieve real-time airnow data for the last three days
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+#if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   for ipdym in {1..3}; do
     case $ipdym in
       1)
@@ -156,7 +156,7 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     fi
     POST_STEP
   done
-fi
+#fi
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -214,10 +214,10 @@ POST_STEP
 
 cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-  cp ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-fi
+#if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+  mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+#fi
 
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
@@ -225,7 +225,7 @@ fi
 
 rm -rf ${DATA}/data/bcdata*
 
-ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
+ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 
@@ -280,7 +280,7 @@ fi
 POST_STEP
 
 cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
-if [ "$SENDDBN" = "TRUE" ]; then
+if [ "$SENDDBN" = "YES" ]; then
   $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
 fi
 
@@ -377,7 +377,7 @@ EOF1
   cp ${NET}.${cycle}.max_1hr_pm25_bc.227.grib2   ${COMOUT}
   cp ${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2  ${COMOUT}
 
-  if [ "${SENDDBN}" = "TRUE" ]; then
+  if [ "${SENDDBN}" = "YES" ]; then
     ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
     ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
   fi
@@ -395,7 +395,7 @@ wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid
 
 cp tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cp ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
-if [ "${SENDDBN}" = "TRUE" ]; then
+if [ "${SENDDBN}" = "YES" ]; then
   ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
 fi
 
@@ -463,7 +463,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${COMOUTwmo}
 
   # Distribute Data
-  if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
+  if [ "${SENDDBN_NTC}" = "YES" ] ; then
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
