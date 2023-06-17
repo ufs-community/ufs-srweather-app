@@ -115,8 +115,8 @@ fi
 
 # Retrieve real-time airnow data for the last three days and convert them into netcdf
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  for ipdym in {1..3}; do
-    case $ipdym in
+  for i_pdym in {1..3}; do
+    case $i_pdym in
       1)
         cvt_yyyy="${yyyy_m1}"
         cvt_yyyymm="${yyyymm_m1}"
@@ -219,24 +219,37 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-  # CSV files
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/csv/${yyyy}/${PDY}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
-  cp_vrfy ${DCOMINairnow}/${PDYm1}/airnow/HourlyAQObs_${PDYm1}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/csv/${yyyy_m1}/${PDYm1}  
-  cp_vrfy ${DCOMINairnow}/${PDYm2}/airnow/HourlyAQObs_${PDYm2}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/csv/${yyyy_m2}/${PDYm2}  
-  cp_vrfy ${DCOMINairnow}/${PDYm3}/airnow/HourlyAQObs_${PDYm3}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/csv/${yyyy_m3}/${PDYm3}
-
-  # NetCDF files
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/netcdf/${yyyy}/${PDY}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
-  cp_vrfy ${DATA}/data/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}/HourlyAQObs.${PDYm1}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/netcdf/${yyyy_m1}/${PDYm1}  
-  cp_vrfy ${DATA}/data/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}/HourlyAQObs.${PDYm2}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/netcdf/${yyyy_m2}/${PDYm2}  
-  cp_vrfy ${DATA}/data/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}/HourlyAQObs.${PDYm3}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
-
+  for i_pdym in {0..3}; do
+    case $i_pdym in
+      0)
+        cvt_yyyy="${yyyy}"
+        cvt_yyyymm="${yyyymm}"
+        cvt_pdy="${PDY}"
+        ;;
+      1)
+        cvt_yyyy="${yyyy_m1}"
+        cvt_yyyymm="${yyyymm_m1}"
+        cvt_pdy="${PDYm1}"
+        ;;
+      2)
+        cvt_yyyy="${yyyy_m2}"
+        cvt_yyyymm="${yyyymm_m2}"
+        cvt_pdy="${PDYm2}"
+        ;;
+      3)
+        cvt_yyyy="${yyyy_m3}"
+        cvt_yyyymm="${yyyymm_m3}"
+        cvt_pdy="${PDYm3}"
+        ;;
+    esac
+    # CSV and NetCDF files
+    mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
+    mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}
+    if [ "${i_pdym}" != "0" ]; then
+      cp_vrfy ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
+      cp_vrfy ${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}/HourlyAQObs.${cvt_pdy}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}  
+    fi
+  done
   mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
   cp_vrfy ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
 fi

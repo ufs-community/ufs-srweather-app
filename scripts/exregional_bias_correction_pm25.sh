@@ -115,8 +115,8 @@ fi
 
 # Retrieve real-time airnow data for the last three days
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  for ipdym in {1..3}; do
-    case $ipdym in
+  for i_pdym in {1..3}; do
+    case $i_pdym in
       1)
         cvt_yyyy="${yyyy_m1}"
         cvt_yyyymm="${yyyymm_m1}"

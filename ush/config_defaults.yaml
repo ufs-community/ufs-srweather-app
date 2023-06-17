@@ -987,7 +987,7 @@ nco:
   #-----------------------------------------------------------------------
   #
   # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco"). All variables have the suffix [_dfv] meaning the default value.
+  # set to "nco"). All variables have the suffix [_default] meaning the default value.
   # This is because they are supposed to be defined in job cards for the 
   # production using ecFlow.
   #
@@ -1029,34 +1029,34 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir_dfv: "para"
-  NET_dfv: "rrfs"
-  RUN_dfv: "rrfs"
-  model_ver_dfv: "v1.0.0"
+  envir_default: "para"
+  NET_default: "rrfs"
+  RUN_default: "rrfs"
+  model_ver_default: "v1.0.0"
 
-  OPSROOT_dfv: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT_dfv: '{{ OPSROOT_dfv }}/com'
-  DATAROOT_dfv: '{{ OPSROOT_dfv }}/tmp'
-  DCOMROOT_dfv: '{{ OPSROOT_dfv }}/dcom'
-  LOGBASEDIR_dfv: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_dfv, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
-  COMIN_BASEDIR: '{{ COMROOT_dfv }}/{{ NET_dfv }}/{{ model_ver_dfv }}'
-  COMOUT_BASEDIR: '{{ COMROOT_dfv }}/{{ NET_dfv }}/{{ model_ver_dfv }}'
+  OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT_default: '{{ OPSROOT_default }}/com'
+  DATAROOT_default: '{{ OPSROOT_default }}/tmp'
+  DCOMROOT_default: '{{ OPSROOT_default }}/dcom'
+  LOGBASEDIR_default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
+  COMIN_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
+  COMOUT_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
 
   #
   # New additions from RRFS_dev1
   #
-  NWGES: '{{ OPSROOT_dfv }}/nwges'
+  NWGES: '{{ OPSROOT_default }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
 
-  DBNROOT_dfv: ""
-  SENDECF_dfv: false
-  SENDDBN_dfv: false
-  SENDDBN_NTC_dfv: false
-  SENDCOM_dfv: false
-  SENDWEB_dfv: false
-  KEEPDATA_dfv: true
-  MAILTO_dfv: ""
-  MAILCC_dfv: ""
+  DBNROOT_default: ""
+  SENDECF_default: false
+  SENDDBN_default: false
+  SENDDBN_NTC_default: false
+  SENDCOM_default: false
+  SENDWEB_default: false
+  KEEPDATA_default: true
+  MAILTO_default: ""
+  MAILCC_default: ""
 
 #----------------------------------
 # GSI namelist parameters
@@ -2605,14 +2605,14 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
-  DCOMINbio_dfv: ""
-  DCOMINdust_dfv: "/path/to/dust/dir"
-  DCOMINcanopy_dfv: "/path/to/canopy/dir"
-  DCOMINfire_dfv: ""
-  DCOMINchem_lbcs_dfv: ""
-  DCOMINgefs_dfv: ""
-  DCOMINpt_src_dfv: "/path/to/point/source/base/directory"
-  DCOMINairnow_dfv: "/path/to/airnow/obaservation/data"
+  DCOMINbio_default: ""
+  DCOMINdust_default: "/path/to/dust/dir"
+  DCOMINcanopy_default: "/path/to/canopy/dir"
+  DCOMINfire_default: ""
+  DCOMINchem_lbcs_default: ""
+  DCOMINgefs_default: ""
+  DCOMINpt_src_default: "/path/to/point/source/base/directory"
+  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"

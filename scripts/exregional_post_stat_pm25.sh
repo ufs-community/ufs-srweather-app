@@ -192,10 +192,10 @@ EOF1
     fi
 
     # 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+    if [ -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc ]; then
+      ln_vrfy -sf ${COMIN}/../06/${NET}.t06z.chem_sfc.nc c.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln_vrfy -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no

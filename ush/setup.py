@@ -1141,10 +1141,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     # running in community mode, we set these paths to the experiment
     # directory.
     nco_vars = [
-        "opsroot_dfv",
-        "comroot_dfv",
-        "dataroot_dfv",
-        "dcomroot_dfv",
+        "opsroot_default",
+        "comroot_default",
+        "dataroot_default",
+        "dcomroot_default",
         "comin_basedir",
         "comout_basedir",
     ]
@@ -1163,21 +1163,21 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             if envar is not None:
                 nco_config[nco_var.upper()] = envar
 
-        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_dfv")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_dfv")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_dfv")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_dfv")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_default")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_default")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_default")}"')
+        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_default")}"')
 
         # Update the rocoto string for the fcst output location if
         # running an ensemble in nco mode
         if global_sect["DO_ENSEMBLE"]:
             rocoto_config["entities"]["FCST_DIR"] = \
-                "{{ nco.DATAROOT_dfv }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
+                "{{ nco.DATAROOT_default }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
 
-    if nco_config["DBNROOT_dfv"] and workflow_manager == "rocoto":
-        mkdir_vrfy(f' -p "{nco_config["DBNROOT_dfv"]}"')
+    if nco_config["DBNROOT_default"] and workflow_manager == "rocoto":
+        mkdir_vrfy(f' -p "{nco_config["DBNROOT_default"]}"')
 
-    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_dfv")}"')
+    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_default")}"')
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 

@@ -4,6 +4,7 @@
 #-----------------------------------------------------------------------
 #
 # If requested to share data with next task, override jobid
+# When an argument exists with this script, a shared job id will be created.
 #
 #-----------------------------------------------------------------------
 #
@@ -20,24 +21,24 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export envir="${envir:-${envir_dfv}}"
-export NET="${NET:-${NET_dfv}}"
-export RUN="${RUN:-${RUN_dfv}}"
-export model_ver="${model_ver:-${model_ver_dfv}}"
-export COMROOT="${COMROOT:-${COMROOT_dfv}}"
-export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
-export DCOMROOT="${DCOMROOT:-${DCOMROOT_dfv}}"
-export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_dfv}}"
+export envir="${envir:-${envir_default}}"
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+export model_ver="${model_ver:-${model_ver_default}}"
+export COMROOT="${COMROOT:-${COMROOT_default}}"
+export DATAROOT="${DATAROOT:-${DATAROOT_default}}"
+export DCOMROOT="${DCOMROOT:-${DCOMROOT_default}}"
+export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_default}}"
 
-export DBNROOT="${DBNROOT:-${DBNROOT_dfv}}"
-export SENDECF="${SENDECF:-${SENDECF_dfv}}"
-export SENDDBN="${SENDDBN:-${SENDDBN_dfv}}"
-export SENDDBN_NTC="${SENDDBN_NTC:-${SENDDBN_NTC_dfv}}"
-export SENDCOM="${SENDCOM:-${SENDCOM_dfv}}"
-export SENDWEB="${SENDWEB:-${SENDWEB_dfv}}"
-export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
-export MAILTO="${MAILTO:-${MAILTO_dfv}}"
-export MAILCC="${MAILCC:-${MAILCC_dfv}}"
+export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
+export SENDECF="${SENDECF:-${SENDECF_default}}"
+export SENDDBN="${SENDDBN:-${SENDDBN_default}}"
+export SENDDBN_NTC="${SENDDBN_NTC:-${SENDDBN_NTC_default}}"
+export SENDCOM="${SENDCOM:-${SENDCOM_default}}"
+export SENDWEB="${SENDWEB:-${SENDWEB_default}}"
+export KEEPDATA="${KEEPDATA:-${KEEPDATA_default}}"
+export MAILTO="${MAILTO:-${MAILTO_default}}"
+export MAILCC="${MAILCC:-${MAILCC_default}}"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
   if [ "${MACHINE}" = "WCOSS2" ]; then
@@ -59,14 +60,14 @@ else
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 
-export DCOMINbio="${DCOMINbio:-${DCOMINbio_dfv}}"
-export DCOMINdust="${DCOMINdust:-${DCOMINdust_dfv}}"
-export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_dfv}}"
-export DCOMINfire="${DCOMINfire:-${DCOMINfire_dfv}}"
-export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_dfv}}"
-export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_dfv}}"
-export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_dfv}}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
+export DCOMINbio="${DCOMINbio:-${DCOMINbio_default}}"
+export DCOMINdust="${DCOMINdust:-${DCOMINdust_default}}"
+export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_default}}"
+export DCOMINfire="${DCOMINfire:-${DCOMINfire_default}}"
+export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_default}}"
+export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_default}}"
+export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_default}}"
+export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_default}}"
 
 #
 #-----------------------------------------------------------------------
@@ -206,6 +207,10 @@ fi
 #-----------------------------------------------------------------------
 #
 # Add a postamble function
+# When an argument exists, the working directory will not be removed
+# even with KEEPDATA: false.
+# Only when an argument is TRUE, the existing working directories in 
+# the tmp directory will be removed.
 #
 #-----------------------------------------------------------------------
 #
