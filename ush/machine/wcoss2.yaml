@@ -9,9 +9,9 @@ platform:
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /apps/ops/para/libs/intel/19.1.3.304/met/10.1.1
   DOMAIN_PREGEN_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/FV3LAM_pregen
-  QUEUE_DEFAULT: dev
-  QUEUE_FCST: dev
-  QUEUE_HPSS: dev_transfer
+  QUEUE_DEFAULT: devhigh
+  QUEUE_FCST: devhigh
+  QUEUE_HPSS: devhigh
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
   RUN_CMD_PRDGEN: mpiexec -n ${nprocs} --cpu-bind core cfp
@@ -47,6 +47,7 @@ cpl_aqm_parm:
   DCOMINgefs_dfv: /lfs/h1/ops/prod/com/gefs/v12.3 
   DCOMINpt_src_dfv: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
   DCOMINairnow_dfv: /lfs/h1/ops/prod/dcom
+  #DCOMINairnow_dfv: /lfs/h2/emc/physics/noscrub/jianping.huang/dcom 
   COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
   COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions

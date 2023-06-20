@@ -97,21 +97,14 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-fi  
+fi
 
 #-----------------------------------------------------------------------------
 # STEP 1: Retrieve AIRNOW observation data
 #-----------------------------------------------------------------------------
 
-# Link the historical airnow data
 mkdir -p "${DATA}/data"
-if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir -p "${DATA}/data/bcdata.${yyyymm}"
-  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}"
-fi
-cd ${DATA}
+
 # Retrieve real-time airnow data for the last three days
 #if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   for ipdym in {1..3}; do
