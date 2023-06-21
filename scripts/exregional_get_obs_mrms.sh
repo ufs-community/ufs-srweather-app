@@ -123,8 +123,12 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       fi
     fi 
 
-    if [[ ${vyyyymmdd} -ge 20200303 ]]; then
+    if [[ ${vyyyymmdd} -ge 20200303 && ${vyyyymmdd} -lt 20220628 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_prod_ldmdata_obs.tar"
+    fi
+
+    if [[ ${vyyyymmdd} -ge 20220628 ]]; then
+      TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_ldmdata_obs.tar"
     fi
 
     echo "TAR FILE:${TarFile}"
