@@ -26,6 +26,7 @@ source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
+set +e
 
 mrms_dir=${OBS_DIR}/..
 if [[ ! -d "$mrms_dir" ]]; then
@@ -112,7 +113,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       if [[ ${Status} == 0 ]]; then
         TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.gyre.${vyyyy}${vmm}${vdd}.tar"
       else
-        CheckFile=`hsi "ls -1 /NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.tide.${vyyyy}${vmm}${vdd}.tar"`   
+        CheckFile=`hsi "ls -1 /NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.tide.${vyyyy}${vmm}${vdd}.tar" >& /dev/null`   
         Status=$?
         if [[ ${Status} == 0 ]]; then
           TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.tide.${vyyyy}${vmm}${vdd}.tar" 
@@ -122,12 +123,8 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       fi
     fi 
 
-    if [[ ${vyyyymmdd} -ge 20200303 && ${vyyyymmdd} -lt 20220628 ]]; then
+    if [[ ${vyyyymmdd} -ge 20200303 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_prod_ldmdata_obs.tar"
-    fi
-
-    if [[ ${vyyyymmdd} -ge 20220628 ]]; then
-      TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_ldmdata_obs.tar"
     fi
 
     echo "TAR FILE:${TarFile}"
@@ -137,6 +134,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
     Status=$?
 
     if [[ ${Status} != 0 ]]; then
+      CurDate="${vyyyy}${vmm}${vdd}"
       print_err_msg_exit "Bad return status (${Status}) for date \"${CurDate}\".\
 Did you forget to run \"module load hpss\"?\
       COMMAND: ${TarCommand}"
@@ -144,7 +142,7 @@ Did you forget to run \"module load hpss\"?\
       if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
         mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
       fi
-	
+
       hour=0
       while [[ ${hour} -le 23 ]]; do
         echo "hour=${hour}"
@@ -154,7 +152,7 @@ Did you forget to run \"module load hpss\"?\
     fi
 
   else
-    echo "mrms_file exists: \"$mrms_proc/${vyyyymmdd}/${field_base_name}${level}${vyyyy}${vmm}${vdd}-${}0000.grib2\" No work to be done."
+    echo "mrms_file exists: \"$mrms_proc/${vyyyymmdd}/${field_base_name}${level}${vyyyy}${vmm}${vdd}-${vhh}0000.grib2\" No work to be done."
   fi
 
   # Increment
