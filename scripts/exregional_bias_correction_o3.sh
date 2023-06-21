@@ -113,7 +113,9 @@ if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
   cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}" 
 fi
 
-# Retrieve real-time airnow data for the last three days and convert them into netcdf
+# Retrieve real-time airnow data for the last three days and convert them into netcdf.
+# In the following for-loop, pdym stands for previous (m) day of the present day (PDY)
+# in the NCO standards, i.e. PDYm1: 1day ago, PDYm2: 2days ago, PDYm3: 3days ago
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   for i_pdym in {1..3}; do
     case $i_pdym in
