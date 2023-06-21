@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Set AQM-specific namelist settingSet AQM-specific namelist settingss
+Set AQM-specific namelist settings
 """
 
 import os
