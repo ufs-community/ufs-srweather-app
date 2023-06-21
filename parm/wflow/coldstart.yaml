@@ -28,6 +28,7 @@ task_get_extrn_ics:
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
   nnodes: 1
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   ppn: 1
   queue: '&QUEUE_HPSS;'
@@ -55,6 +56,7 @@ task_get_extrn_lbcs:
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G
   nnodes: 1
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   ppn: 1
   queue: '&QUEUE_HPSS;'

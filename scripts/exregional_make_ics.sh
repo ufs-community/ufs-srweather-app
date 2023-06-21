@@ -131,6 +131,7 @@ case "${CCPP_PHYS_SUITE}" in
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "UFS-CASE-STUDY" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GEFS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
@@ -389,6 +390,26 @@ case "${EXTRN_MDL_NAME_ICS}" in
   minmax_vgfrc_from_climo=True
   lai_from_climo=True
   tg3_from_soil=False
+  ;;
+
+"UFS-CASE-STUDY")
+  hh="${EXTRN_MDL_CDATE:8:2}"
+  if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
+    external_model="UFS-CASE-STUDY"
+    input_type="gaussian_nemsio"
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+    tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+    fn_atm="gfs.t${hh}z.atmanl.nemsio"
+    fn_sfc="gfs.t${hh}z.sfcanl.nemsio"
+    convert_nst=True
+  fi
+  vgtyp_from_climo=True
+  sotyp_from_climo=True
+  vgfrc_from_climo=True
+  minmax_vgfrc_from_climo=True
+  lai_from_climo=True
+  tg3_from_soil=False
+  unset hh
   ;;
 
 "GDAS")
