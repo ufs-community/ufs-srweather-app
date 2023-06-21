@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-The definition of a functio that determines whether ozone
+The definition of a function that determines whether ozone
 parameterization is to be used with a given CCPP physics suite.
 
 Helps choose the settings for the forecast namelist and necessary fixed
