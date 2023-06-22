@@ -79,7 +79,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   vdd=`echo ${vdate} | cut -c7-8`    # day (DD) of valid time
   vhh=`echo ${vdate} | cut -c9-10`       # forecast hour (HH)
 
-  vhh_noZero=$(expr ${vhh} + 0)
+  vhh_noZero=$((10#${vhh}))
 
   # Calculate valid date - 1 day
   vdate_ut_m1=`expr ${vdate_ut} - 86400` 
@@ -141,16 +141,28 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
   fi
 
-  if [[ ${vyyyymmdd} -gt 20200217 ]]; then
+  if [[ ${vyyyymmdd} -gt 20200217 && ${vyyyymmdd} -le 20220618 ]]; then
     TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
   fi
 
-  if [[ ${vyyyymmdd_m1} -gt 20200217 ]]; then
+  if [[ ${vyyyymmdd_m1} -gt 20200217 && ${vyyyymmdd_p1} -le 20220618 ]]; then
     TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/com_ccpa_prod_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
   fi
 
-  if [[ ${vyyyymmdd_p1} -gt 20200217 ]]; then
+  if [[ ${vyyyymmdd_p1} -gt 20200217 && ${vyyyymmdd_p1} -le 20220618 ]]; then
     TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
+  fi
+
+  if [[ ${vyyyymmdd} -ge 20220619 ]]; then
+    TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_v4.2_ccpa.${vyyyy}${vmm}${vdd}.tar"
+  fi
+
+  if [[ ${vyyyymmdd_m1} -ge 20220619 ]]; then
+    TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/com_ccpa_v4.2_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
+  fi
+
+  if [[ ${vyyyymmdd_p1} -ge 20220619 ]]; then
+    TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com_ccpa_v4.2_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
   fi
 
   # Check if file exists on disk; if not, pull it.
