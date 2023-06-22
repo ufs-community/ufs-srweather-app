@@ -99,27 +99,27 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"nexus_time_parser.py\" failed."
-  if [ "${RUN_ENVIR}" = "community" ]; then
-    print_err_msg_exit "${message_txt}"
-  else
-    err_exit "${message_txt}"
-  fi
-fi
+# python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
+# export err=$?
+# if [ $err -ne 0 ]; then
+#   message_txt="Call to python script \"nexus_time_parser.py\" failed."
+#   if [ "${RUN_ENVIR}" = "community" ]; then
+#     print_err_msg_exit "${message_txt}"
+#   else
+#     err_exit "${message_txt}"
+#   fi
+# fi
 
-python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
-  if [ "${RUN_ENVIR}" = "community" ]; then
-    print_err_msg_exit "${message_txt}"
-  else
-    err_exit "${message_txt}"
-  fi
-fi
+# python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
+# export err=$?
+# if [ $err -ne 0 ]; then
+#   message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
+#   if [ "${RUN_ENVIR}" = "community" ]; then
+#     print_err_msg_exit "${message_txt}"
+#   else
+#     err_exit "${message_txt}"
+#   fi
+# fi
 #
 #-----------------------------------------------------------------------
 #
@@ -127,7 +127,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py ${DATA}/NEXUS_Expt_pretty.nc ${DATA}/NEXUS_Expt.nc
+python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."

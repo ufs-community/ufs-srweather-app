@@ -147,10 +147,10 @@ else
   start_del_hr=$(( len_per_split * nspt ))
   start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${start_del_hr} hours " "+%Y%m%d%H" )
   if [ "${nsptp}" = "${NUM_SPLIT_NEXUS}" ];then
-    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + $(expr $FCST_LEN_HRS + 1) hours" "+%Y%m%d%H" )
   else
     end_del_hr=$(( len_per_split * nsptp ))
-    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${end_del_hr} hours" "+%Y%m%d%H" )
+    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + $(expr $end_del_hr + 1) hours" "+%Y%m%d%H" )
   fi
 fi
 #
@@ -327,6 +327,24 @@ else
   fi
 fi
 POST_STEP
+
+# 
+#-----------------------------------------------------------------------
+#
+# make nexus output pretty and move to INPUT_DATA directory
+#
+#-----------------------------------------------------------------------
+#
+python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
+  if [ "${RUN_ENVIR}" = "community" ]; then
+    print_err_msg_exit "${message_txt}"
+  else
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -334,7 +352,7 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-mv ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
+#mv ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
 
 #
 #-----------------------------------------------------------------------
