@@ -269,7 +269,7 @@ fi
 POST_STEP
 
 cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
-if [ "$SENDDBN" = "YES" ]; then
+if [ "$SENDDBN" = "TRUE" ]; then
   $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
 fi
 
@@ -366,7 +366,7 @@ EOF1
   cp ${NET}.${cycle}.max_1hr_pm25_bc.227.grib2   ${COMOUT}
   cp ${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2  ${COMOUT}
 
-  if [ "${SENDDBN}" = "YES" ]; then
+  if [ "${SENDDBN}" = "TRUE" ]; then
     ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
     ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
   fi
@@ -384,7 +384,7 @@ wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid
 
 cp tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cp ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
-if [ "${SENDDBN}" = "YES" ]; then
+if [ "${SENDDBN}" = "TRUE" ]; then
   ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
 fi
 
@@ -452,7 +452,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${COMOUTwmo}
 
   # Distribute Data
-  if [ "${SENDDBN_NTC}" = "YES" ] ; then
+  if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2

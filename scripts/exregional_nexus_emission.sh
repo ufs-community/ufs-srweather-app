@@ -348,15 +348,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Move NEXUS output to INPUT_DATA directory.
-#
-#-----------------------------------------------------------------------
-#
-#mv ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
-
-#
-#-----------------------------------------------------------------------
-#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
