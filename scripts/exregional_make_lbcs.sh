@@ -119,6 +119,7 @@ case "${CCPP_PHYS_SUITE}" in
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "UFS-CASE-STUDY" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GEFS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
@@ -287,6 +288,15 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   fi
   ;;
 
+"UFS-CASE-STUDY")
+  if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    external_model="UFS-CASE-STUDY"
+    input_type="gaussian_nemsio"     # For FV3GFS data on a Gaussian grid in nemsio format.
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+    tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+  fi
+  ;;
+
 "GDAS")
   if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
     input_type="gaussian_nemsio"
@@ -391,6 +401,14 @@ for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
       fn_atm="${EXTRN_MDL_FNS[$i]}"
     fi
     ;;
+  "UFS-CASE-STUDY")
+    if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+      hh="${EXTRN_MDL_CDATE:8:2}"
+      fhr_str=$(printf "%03d" ${fhr})
+      fn_atm="gfs.t${hh}z.atmf${fhr_str}.nemsio"
+      unset hh fhr_str
+    fi
+    ;;
   "GDAS")
     fn_atm="${EXTRN_MDL_FNS[0][$i]}"
     ;;
@@ -463,7 +481,7 @@ settings="
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'vcoord_file_target_grid': ${VCOORD_FILE},
  'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},

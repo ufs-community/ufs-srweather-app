@@ -54,6 +54,8 @@ cpl_aqm_parm:
   DCOMINpt_src_default: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
+  NEXUS_GFS_SFC_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA
+  PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
 
 rocoto:
   tasks:

@@ -19,6 +19,7 @@ platform:
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL --mpi=pmi2 -n $nprocs
   SCHED_NATIVE_CMD: -M c3 --export=NONE
+  SCHED_NATIVE_CMD_HPSS: -M es --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data
   TEST_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
