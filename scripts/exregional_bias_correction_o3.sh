@@ -106,7 +106,6 @@ fi
 mkdir -p "${DATA}/data"
 
 # Retrieve real-time airnow data for the last three days and convert them into netcdf
-#if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   for ipdym in {1..3}; do
     case $ipdym in
       1)
@@ -149,7 +148,6 @@ mkdir -p "${DATA}/data"
     fi
     POST_STEP
   done     
-#fi
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -207,7 +205,6 @@ POST_STEP
 
 cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-#if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
@@ -231,7 +228,6 @@ cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozon
 
   mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
   cp ${COMIN}/${NET}.${cycle}.*sfc*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
-#fi
 
 #-----------------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for Ozone
