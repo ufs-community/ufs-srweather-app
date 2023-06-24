@@ -186,6 +186,7 @@ def run_we2e_tests(homedir, args) -> None:
         if 'task_get_extrn_lbcs' in test_cfg:
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,
                                                                        config_defaults,"lbcs")
+
         if 'verification' in test_cfg:
             logging.debug(test_cfg['verification'])
 
@@ -486,7 +487,7 @@ if __name__ == "__main__":
                         help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true',
                         help='Explicitly set VERBOSE=TRUE for all experiments')
-  
+
     parser._action_groups.append(optional)
 
     args = parser.parse_args()
