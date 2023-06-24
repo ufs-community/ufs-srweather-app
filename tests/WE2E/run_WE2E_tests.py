@@ -178,7 +178,6 @@ def run_we2e_tests(homedir, args) -> None:
         if args.verbose_tests:
             test_cfg['workflow'].update({"VERBOSE": args.verbose_tests})
 
-
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
         if 'task_get_extrn_ics' in test_cfg:
@@ -187,9 +186,12 @@ def run_we2e_tests(homedir, args) -> None:
         if 'task_get_extrn_lbcs' in test_cfg:
             test_cfg['task_get_extrn_lbcs'] = check_task_get_extrn_bcs(test_cfg,machine_defaults,
                                                                        config_defaults,"lbcs")
-
         if 'verification' in test_cfg:
             logging.debug(test_cfg['verification'])
+
+        if 'cpl_aqm_parm' in test_cfg:
+            test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
+            test_cfg['cpl_aqm_parm']['AQM_FIRE_DIR'] = f"{test_aqm_input_basedir}/RAVE_fire"
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
@@ -484,7 +486,7 @@ if __name__ == "__main__":
                         help='Explicitly set DEBUG=TRUE for all experiments')
     parser.add_argument('--verbose_tests', action='store_true',
                         help='Explicitly set VERBOSE=TRUE for all experiments')
-
+  
     parser._action_groups.append(optional)
 
     args = parser.parse_args()
