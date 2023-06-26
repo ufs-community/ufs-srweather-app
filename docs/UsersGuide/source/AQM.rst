@@ -1,7 +1,7 @@
 .. _AQM:
 
 =====================================
-Air Quality Modeling (Online-CMAQ)
+Air Quality Modeling (SRW-AQM)
 =====================================
 
 The standard SRW App distribution uses the uncoupled version of the UFS Weather Model (atmosphere-only). However, users have the option to use a coupled version of the SRW App that includes the standard distribution (atmospheric model) plus the Air Quality Model (AQM).
@@ -16,7 +16,7 @@ The AQM is a UFS Application that dynamically couples the Community Multiscale A
 
    These instructions should work smoothly on Hera and WCOSS2, but users on other systems may need to make additional adjustments. 
 
-Quick Start Guide (AQM/Online-CMAQ)
+Quick Start Guide (SRW-AQM)
 =====================================
 
 Download the Code
@@ -28,40 +28,6 @@ Clone the ``develop`` branch of the authoritative SRW App repository:
 
    git clone -b develop https://github.com/ufs-community/ufs-srweather-app
    cd ufs-srweather-app
-
-Note that the latest hash of the ``develop`` branch might not be tested with the sample scripts of for AQM. To check out the stable (verified) version for AQM/online-CMAQ, users can check out hash ``#ff6f103``:
-
-.. code-block:: console
-
-   git checkout ff6f103
-
-This hash will then check out the following hashes (as of 03/08/2023) of the external components, which are specified in ``ufs-srweather-app/Externals.cfg``:
-
-.. _ExternalsAQM:
-
-.. table:: Externals for Online-CMAQ
-
-   +--------------------+--------------+
-   | Component          | Hash         |
-   +====================+==============+
-   | UFS_UTILS          | ca9bed8      |
-   +--------------------+--------------+
-   | ufs-weather-model	| e051e0e      |
-   +--------------------+--------------+
-   | UPP                | 2b2c84a      |
-   +--------------------+--------------+
-   | NEXUS              | 3842818      |
-   +--------------------+--------------+
-   | AQM-utils          | e078c70      |
-   +--------------------+--------------+
-
-Users may replace the hashes above with different ones if they prefer. For example, users can comment out the hash line and uncomment the branch line with a new ``repo_url`` address to use a different branch for development. In the example below, the ``ufs-weather-model`` repository URL has been changed to check out code from a user's personal fork rather than from the authoritative UFS repository. 
-
-.. code-block:: console
-
-   repo_url = https://github.com/chan-hoo/ufs-weather-model
-   branch = feature/for_example
-   #hash = ff6f103
 
 Checkout Externals
 ---------------------
@@ -169,4 +135,128 @@ Users may check experiment status from the experiment directory with either of t
 
    # Check the experiment status and relaunch the workflow (for manual jobs)
    ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
+
+
+WE2E Test for AQM
+=======================
+
+Build the app for AQM:
+
+.. code-clock:: console
+
+  ./devbuild.sh -p=hera -a=ATMAQ
+
+
+Add the WE2E test for AQM to the list file:
+
+.. code-block:: console
+
+   echo "custom_ESGgrid" > my_tests.txt
+   echo "aqm_grid_AQM_NA13km_suite_GFS_v16" >> my_tests.txt
+
+
+Run the WE2E test:
+
+.. code-block:: console
+
+   $ ./run_WE2E_tests.py -t my_tests.txt -m hera -a gsd-fv3 -q
+
+
+
+Additional Tasks for AQM
+===============================
+
+Structure of SRW-AQM
+-------------------------
+
+The flowchart of the non-DA (data assimilation) SRW-AQM (Air Quality Modeling) is illustrated in :numref: `Figure %s <FlowProcAQM>. Compared to the non-coupled (ATM stand-alone) FV3-LAM, SRW-AQM has additional tasks for pre- and post-processing. For pre-processing, multiple emission data such as NEXUS, fire, and point-source emission are retrieved or created for air quality modeling. Moreover, the chemical initial conditions (ICs) are extracted from the restart files of the previous cycle and added to the existing IC files. The chemical lateral boundary conditions (LBCs) and the GEFS aerosol data are also adeded to the existing LBC files. For post-processing, air quality forecast products for O3 and PM2.5 are generated and the bias-correction technique is applied to improve the accuracy of the results.
+
+.. _FlowProcAQM:
+
+.. figure:: _static/SRW-AQM_workflow.png
+      :alt: Flowchart describing the tasks of SRW-AQM.
+
+   *Workflow structure of SRW-AQM (non-DA)*
+
+
+
+Pre-processing Tasks of SRW-AQM
+------------------------------------
+
+The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPrepAQM>.
+
+.. _TasksPrepAQM:
+
+.. table:: Tasks for pre-processing of AQM
+
+   +-----------------------+--------------------------------------------------------------------+
+   | **Task name**         | **Description**                                                    |
+   +=======================+====================================================================+
+   | nexus_gfs_sfc         | This task retrieves the GFS surface files from the previous cycle  |
+   |                       | in NRT (Near-Real-Time) or current cycle in retrospective cases.   | 
+   |                       | The surface radiation, soil moisture and temperature fields are    |
+   |                       | needed for the MEGAN biogenics emissions within nexus_emission.    |
+   +-----------------------+--------------------------------------------------------------------+
+   | nexus_emission	   | This task prepares the run directory with gridded emission inputs, |
+   |                       | run nexus to create model ready emission for the given simulation  |
+   |                       | day, and post processes nexus output to make it more readable. The |
+   |                       | task will also split the task into multiple jobs set by the user.  |
+   +-----------------------+--------------------------------------------------------------------+
+   | nexus_post_split      | This task combines the nexus_emission outputs into a single job.   |
+   +-----------------------+--------------------------------------------------------------------+
+   | fire_emission         | This tasks is used to convert both satellite-retrieved gas and     |
+   |                       | aerosol species emissions (RAVE) from mass (kg) to emission rates  |
+   |                       | (kg/m2/s) and create 3-day hourly model-ready fire emission input  |
+   |                       | files.                                                             |
+   +-----------------------+--------------------------------------------------------------------+
+   | point_source          | This task aggregates the anthropogenic point source sectors of the |
+   |                       | National Emission Inventory(NEI) into a ready-to-input point-source|
+   |                       | emission file based on the weekday/weekend/holiday patterns of each|
+   |                       | sector and date/time of the simulation.                            |
+   +-----------------------+--------------------------------------------------------------------+
+   | aqm_ics               | This task creates a chemical initial condition file by using the   |
+   |                       | previous cycle restart files.                                      |
+   +-----------------------+--------------------------------------------------------------------+
+   | aqm_lbcs              | This task adds the chemical lateral boundary condition (LBC) upon  |
+   |                       | the meteorological lateral boundary condition to form the full-set |
+   |                       | ready-to-input LBC for the simulation. It includes two sub-tasks:  |
+   |                       | the gaseous species LBC and dynamic aerosol LBC. The former adds   |
+   |                       | static gaseous LBC using monthly mean global data. The latter is   |
+   |                       | the parallel job, which extracts the GEFS-Aerosol Model's output   |
+   |                       | along the regional domain, and performs the species conversion     |
+   |                       | from GOCART aerosols to CMAQ aerosols.                             |
+   +-----------------------+--------------------------------------------------------------------+
+
+
+Post-processing Tasks of SRW-AQM
+------------------------------------
+
+The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>. Since the module required to run these tasks is available on WCOSS2, these tasks should not defined in the configuration file ``config.yaml`` on other platforms.
+
+.. _TasksPostAQM:
+
+.. table:: Tasks for post-processing of AQM
+   +-----------------------+--------------------------------------------------------------------+
+   | **Task name**         | **Description**                                                    |   
+   +=======================+====================================================================+
+   | pre_post_stat         | This task creates surface (i.e., model 1st level) meteorological   |
+   |                       | and chemical files to support air quality product generation and   |
+   |                       | generate training data to support bias correction tasks.           |
+   +-----------------------+--------------------------------------------------------------------+
+   | post_stat_o3          | This task generates air quality forecast products including hourly |
+   |                       | -average and statistical products for O3 (e.g., daily 8-hour       |
+   |                       | average maximum O3).                                               |
+   +-----------------------+--------------------------------------------------------------------+
+   | post_stat_pm25        | This task generates air quality forecast products including hourly |
+   |                       | -average and statistical products for PM2.5 (e.g., 24-hour average |
+   |                       | PM2.5).                                                            | 
+   +-----------------------+--------------------------------------------------------------------+
+   | bias_correction_o3    | This task applies a bias-correction technique (e.g., analog        |
+   |                       | ensemble) to improve model raw forecast for O3 and generates the   |
+   |                       | bias-corrected O3 products.                                        |
+   +-----------------------+--------------------------------------------------------------------+
+   | bias_correction_pm25  | This task applies a bias-correction technique (e.g., analog        |
+   |                       | ensemble) to improve model raw forecast for PM2.5 and generates the|
+   |                       | bias-corrected PM2.5 products.                                     |
+   +-----------------------+--------------------------------------------------------------------+
 
