@@ -231,7 +231,7 @@ The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Ta
 Post-processing Tasks of SRW-AQM
 ------------------------------------
 
-The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>. Since the module required to run these tasks is available on WCOSS2, these tasks should not defined in the configuration file ``config.yaml`` on other platforms.
+The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>. Since the module required to run these tasks is available only on WCOSS2, these tasks should not be defined in the configuration file ``config.yaml`` on other platforms.
 
 .. _TasksPostAQM:
 
