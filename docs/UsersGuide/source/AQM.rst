@@ -236,6 +236,7 @@ The post-processing tasks for air quality modeling (AQM) are shown in :numref:`T
 .. _TasksPostAQM:
 
 .. table:: Tasks for post-processing of AQM
+
    +-----------------------+--------------------------------------------------------------------+
    | **Task name**         | **Description**                                                    |   
    +=======================+====================================================================+
