@@ -73,7 +73,7 @@ If the console outputs a message, the user should run the commands specified in 
    Please do the following to activate conda:
        > conda activate workflow_tools
 
-then the user should run ``conda activate regional_workflow``. Otherwise, the user can continue with configuring the workflow. 
+then the user should run ``conda activate workflow_tools``. Otherwise, the user can continue with configuring the workflow. 
 
 .. _AQMConfig:
 
