@@ -2596,8 +2596,13 @@ cpl_aqm_parm:
   # DCOMINairnow:
   # Path to the directory containing AIRNOW observation data
   #
-  # AQM_AIRNOW_HIST_DIR:
-  # Path to the directory where the historical AIRNOW data are located
+  # COMINbicor:
+  # Path of reading in historical training data for biascorrection 
+  #
+  # COMOUTbicor:
+  # Path to save the current cycle's model output and AirNow obs as 
+  # training data for future use $COMINbicor and $COMOUTbicor can be 
+  # distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   #-----------------------------------------------------------------------
   #
@@ -2619,6 +2624,8 @@ cpl_aqm_parm:
   DCOMINgefs_default: ""
   DCOMINpt_src_default: "/path/to/point/source/base/directory"
   DCOMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
@@ -2650,8 +2657,6 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
-
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
 rocoto:
   attrs: ""

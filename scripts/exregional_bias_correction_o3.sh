@@ -103,21 +103,12 @@ fi
 # STEP 1: Retrieve AIRNOW observation data
 #-----------------------------------------------------------------------------
 
-# Link the historical airnow data
 mkdir_vrfy -p "${DATA}/data"
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
-if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm_vrfy -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir_vrfy -p "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}" 
-fi
 
 # Retrieve real-time airnow data for the last three days and convert them into netcdf.
 # In the following for-loop, pdym stands for previous (m) day of the present day (PDY)
 # in the NCO standards, i.e. PDYm1: 1day ago, PDYm2: 2days ago, PDYm3: 3days ago
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  for i_pdym in {1..3}; do
+for i_pdym in {1..3}; do
     case $i_pdym in
       1)
         cvt_yyyy="${yyyy_m1}"
@@ -158,8 +149,7 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
       fi
     fi
     POST_STEP
-  done     
-fi
+done     
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -218,8 +208,8 @@ POST_STEP
 cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
-  cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+  mkdir_vrfy -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
+  cp_vrfy ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
   for i_pdym in {0..3}; do
     case $i_pdym in
@@ -245,15 +235,15 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
         ;;
     esac
     # CSV and NetCDF files
-    mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
-    mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}
+    mkdir_vrfy -p ${COMOUTbicor}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
+    mkdir_vrfy -p ${COMOUTbicor}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}
     if [ "${i_pdym}" != "0" ]; then
-      cp_vrfy ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
-      cp_vrfy ${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}/HourlyAQObs.${cvt_pdy}.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}  
+      cp_vrfy ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat ${COMOUTbicor}/bcdata.${cvt_yyyymm}/airnow/csv/${cvt_yyyy}/${cvt_pdy}
+      cp_vrfy ${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}/HourlyAQObs.${cvt_pdy}.nc ${COMOUTbicor}/bcdata.${cvt_yyyymm}/airnow/netcdf/${cvt_yyyy}/${cvt_pdy}  
     fi
   done
-  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
-  cp_vrfy ${COMIN}/${NET}.${cycle}.*sfc*.nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+  mkdir_vrfy -p  ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+  cp_vrfy ${COMIN}/${NET}.${cycle}.*sfc*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
 fi
 
 #-----------------------------------------------------------------------------
@@ -262,7 +252,7 @@ fi
 
 rm_vrfy -rf ${DATA}/data/bcdata*
 
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
+ln_vrfy -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir_vrfy -p ${DATA}/data/sites
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}

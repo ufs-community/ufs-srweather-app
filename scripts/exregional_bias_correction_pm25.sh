@@ -103,21 +103,12 @@ fi
 # STEP 1: Retrieve AIRNOW observation data
 #-----------------------------------------------------------------------------
 
-# Link the historical airnow data
 mkdir_vrfy -p "${DATA}/data"
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
-if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm_vrfy -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir_vrfy -p "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}"
-fi
 
 # Retrieve real-time airnow data for the last three days.
 # In the following for-loop, pdym stands for previous (m) day of the present day (PDY)
 # in the NCO standards, i.e. PDYm1: 1day ago, PDYm2: 2days ago, PDYm3: 3days ago
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  for i_pdym in {1..3}; do
+for i_pdym in {1..3}; do
     case $i_pdym in
       1)
         cvt_yyyy="${yyyy_m1}"
@@ -158,8 +149,7 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
       fi
     fi
     POST_STEP
-  done
-fi
+done
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -218,8 +208,8 @@ POST_STEP
 cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  mkdir_vrfy -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 fi
 
 #-----------------------------------------------------------------------
@@ -228,7 +218,7 @@ fi
 
 rm_vrfy -rf ${DATA}/data/bcdata*
 
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
+ln_vrfy -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir_vrfy -p ${DATA}/data/sites
 
