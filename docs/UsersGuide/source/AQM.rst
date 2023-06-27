@@ -51,7 +51,7 @@ where ``<machine>`` is ``hera``, or ``wcoss2``. The ``-a`` argument indicates th
 
 Building the SRW App with AQM on other machines, including other `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
 
-Load the ``regional_workflow`` Environment
+Load the ``workflow_tools`` Environment
 --------------------------------------------
 
 Load the python environment for the workflow:
