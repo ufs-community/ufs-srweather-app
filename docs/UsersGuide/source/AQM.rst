@@ -32,7 +32,7 @@ Clone the ``develop`` branch of the authoritative SRW App repository:
 Checkout Externals
 ---------------------
 
-Along with the components detailed in :numref:`Chapter %s <Components>`, the AQM version of the SRW App pulls in the externals listed in :numref:`Table %s <ExternalsAQM>`. Users must run the ``checkout_externals`` script to collect (or "check out") the individual components of the SRW App (AQM version) from their respective GitHub repositories. 
+Users must run the ``checkout_externals`` script to collect (or "check out") the individual components of the SRW App (AQM version) from their respective GitHub repositories. 
 
 .. code-block:: console
 
@@ -142,7 +142,7 @@ WE2E Test for AQM
 
 Build the app for AQM:
 
-.. code-clock:: console
+.. code-block:: console
 
   ./devbuild.sh -p=hera -a=ATMAQ
 
@@ -169,7 +169,7 @@ Additional Tasks for AQM
 Structure of SRW-AQM
 -------------------------
 
-The flowchart of the non-DA (data assimilation) SRW-AQM (Air Quality Modeling) is illustrated in :numref: `Figure %s <FlowProcAQM>. Compared to the non-coupled (ATM stand-alone) FV3-LAM, SRW-AQM has additional tasks for pre- and post-processing. For pre-processing, multiple emission data such as NEXUS, fire, and point-source emission are retrieved or created for air quality modeling. Moreover, the chemical initial conditions (ICs) are extracted from the restart files of the previous cycle and added to the existing IC files. The chemical lateral boundary conditions (LBCs) and the GEFS aerosol data are also adeded to the existing LBC files. For post-processing, air quality forecast products for O3 and PM2.5 are generated and the bias-correction technique is applied to improve the accuracy of the results.
+The flowchart of the non-DA (data assimilation) SRW-AQM (Air Quality Modeling) is illustrated in :numref:`Figure %s <FlowProcAQM>`. Compared to the non-coupled (ATM stand-alone) FV3-LAM, SRW-AQM has additional tasks for pre- and post-processing. For pre-processing, multiple emission data such as NEXUS, fire, and point-source emission are retrieved or created for air quality modeling. Moreover, the chemical initial conditions (ICs) are extracted from the restart files of the previous cycle and added to the existing IC files. The chemical lateral boundary conditions (LBCs) and the GEFS aerosol data are also adeded to the existing LBC files. For post-processing, air quality forecast products for O3 and PM2.5 are generated and the bias-correction technique is applied to improve the accuracy of the results.
 
 .. _FlowProcAQM:
 
@@ -183,7 +183,7 @@ The flowchart of the non-DA (data assimilation) SRW-AQM (Air Quality Modeling) i
 Pre-processing Tasks of SRW-AQM
 ------------------------------------
 
-The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPrepAQM>.
+The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPrepAQM>`.
 
 .. _TasksPrepAQM:
 
@@ -231,7 +231,7 @@ The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Ta
 Post-processing Tasks of SRW-AQM
 ------------------------------------
 
-The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>. Since the module required to run these tasks is available only on WCOSS2, these tasks should not be defined in the configuration file ``config.yaml`` on other platforms.
+The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>`. Since the module required to run these tasks is available only on WCOSS2, these tasks should not be defined in the configuration file ``config.yaml`` on other platforms.
 
 .. _TasksPostAQM:
 
