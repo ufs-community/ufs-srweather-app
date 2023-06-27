@@ -39,7 +39,6 @@ task_get_obs_nohrsc:
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NOHRSC"'
   envars:
     <<: *default_vars
-    ACCUM_HH: '06'
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -205,12 +204,12 @@ metatask_check_post_output_all_mems:
               taskvalid:
                 <<: *fcst_task_exists
 
-metatask_PcpCombine_fcst_all_accums_all_mems:
+metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
   var:
-    mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
-  metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  metatask_PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems:
     var:
-      ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
     task_run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_pre
       attrs:
@@ -232,9 +231,13 @@ metatask_PcpCombine_fcst_all_accums_all_mems:
             age: 00:00:00:30
           text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
       walltime: 00:05:00
-  metatask_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#:
+
+metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  metatask_PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems:
     var:
-      ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+      mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
     task_run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#:
       <<: *default_task_verify_pre
       attrs:

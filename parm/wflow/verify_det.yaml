@@ -74,10 +74,9 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
-        and:
           taskdep_pcpcombine_fcst:
             attrs:
-              task: run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#
+              task: run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#
 
 metatask_GridStat_MRMS_all_mems:
   var:

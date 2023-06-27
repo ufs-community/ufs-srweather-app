@@ -144,10 +144,7 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
       ;;
-    "ASNOW06h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "ASNOW24h")
+    "ASNOW")
       FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
       ;;
     "REFC")
@@ -218,20 +215,26 @@ if [ "${grid_or_point}" = "grid" ]; then
     case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
       "APCP01h")
         OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+        FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
         ;;
       "ASNOW")
         OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
+        FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
         ;;
       "REFC")
         OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+        FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
         ;;
       "RETOP")
         OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+        FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
         ;;
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-    FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
   fi
 
 elif [ "${grid_or_point}" = "point" ]; then
