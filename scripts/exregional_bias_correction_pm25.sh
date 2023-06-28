@@ -205,8 +205,10 @@ POST_STEP
 
 cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
+if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
 mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+fi
 
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
