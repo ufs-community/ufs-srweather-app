@@ -158,7 +158,7 @@ def run_we2e_tests(homedir, args) -> None:
         if args.opsroot:
             if 'nco' not in test_cfg:
                 test_cfg['nco'] = dict()
-            test_cfg['nco'].update({"OPSROOT": args.opsroot})
+            test_cfg['nco'].update({"OPSROOT_default": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
