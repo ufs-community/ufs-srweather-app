@@ -42,12 +42,13 @@ cpl_aqm_parm:
   DCOMINbio_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
   DCOMINdust_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
   DCOMINcanopy_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-  DCOMINfire_dfv: /lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
+  DCOMINfire_dfv: /lfs/h1/ops/dev/dcom 
   DCOMINchem_lbcs_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  DCOMINgefs_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+  DCOMINgefs_dfv: /lfs/h1/ops/prod/com/gefs/v12.3 
   DCOMINpt_src_dfv: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
   DCOMINairnow_dfv: /lfs/h1/ops/prod/dcom
-  AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
+  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA

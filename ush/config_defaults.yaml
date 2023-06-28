@@ -2999,9 +2999,12 @@ cpl_aqm_parm:
   # DCOMINairnow:
   # Path to the directory containing AIRNOW observation data
   #
-  # AQM_AIRNOW_HIST_DIR:
-  # Path to the directory where the historical AIRNOW data are located
+  # COMINbicor:
+  # Path of reading in historical training data for biascorrection 
   #
+  # COMOUTbicor:
+  # Path to save the current cycle's model output and AirNow obs as training data for future use
+  # $COMINbicor and $COMOUTbicor can be distuigshed by the ${yyyy}${mm}$dd under the same location
   #-----------------------------------------------------------------------
   #
   CPL_AQM: false
@@ -3052,4 +3055,5 @@ cpl_aqm_parm:
   DCOMINpt_src_dfv: "/path/to/point/source/base/directory"
 
   DCOMINairnow_dfv: "/path/to/airnow/obaservation/data"
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"

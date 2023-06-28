@@ -103,17 +103,9 @@ fi
 # STEP 1: Retrieve AIRNOW observation data
 #-----------------------------------------------------------------------------
 
-# Link the historical airnow data
 mkdir -p "${DATA}/data"
-if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir -p "${DATA}/data/bcdata.${yyyymm}"
-  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}"
-fi
 
 # Retrieve real-time airnow data for the last three days
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   for ipdym in {1..3}; do
     case $ipdym in
       1)
@@ -156,7 +148,6 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     fi
     POST_STEP
   done
-fi
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -215,8 +206,8 @@ POST_STEP
 cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-  cp ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 fi
 
 #-----------------------------------------------------------------------
@@ -225,7 +216,7 @@ fi
 
 rm -rf ${DATA}/data/bcdata*
 
-ln -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
+ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 
