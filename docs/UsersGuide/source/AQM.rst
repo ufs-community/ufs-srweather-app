@@ -89,10 +89,6 @@ Users will need to configure their experiment by setting parameters in the ``con
    
 Users may prefer to copy the ``config.aqm.nco.realtime.yaml`` for a default "nco" mode experiment instead. 
 
-.. note:: 
-   
-   Additional sample configuration files can be found in the ``online-cmaq`` branch of Chan-Hoo Jeon's (NOAA/NCEP/EMC) ``ufs-srweather-app`` repository fork on `GitHub <https://github.com/chan-hoo/ufs-srweather-app/tree/online-cmaq>`__.
-
 Users will need to change the ``MACHINE`` and ``ACCOUNT`` variables in ``config.yaml`` to match their system. They may also wish to adjust other experiment settings. For more information on each task and variable, see :numref:`Chapter %s <ConfigWorkflow>`. 
 
 Users may also wish to change :term:`cron`-related parameters in ``config.yaml``. In the ``config.aqm.community.yaml`` file, which was copied into ``config.yaml``, cron is used for automatic submission and resubmission of the workflow:
