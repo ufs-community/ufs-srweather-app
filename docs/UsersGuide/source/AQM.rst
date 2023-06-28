@@ -169,8 +169,8 @@ The flowchart of the non-DA (data assimilation) SRW-AQM (Air Quality Modeling) i
 
 .. _FlowProcAQM:
 
-.. figure:: _static/SRW-AQM_workflow.png
-      :alt: Flowchart describing the tasks of SRW-AQM.
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW-AQM_workflow.png
+      :alt: Flowchart of the SRW-AQM tasks.
 
    *Workflow structure of SRW-AQM (non-DA)*
 
