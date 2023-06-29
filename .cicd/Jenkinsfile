@@ -127,7 +127,7 @@ pipeline {
                     }
 
                     // Run the unittest functional tests that require an HPC platform
-                    stage('Functional Tests') {
+                    stage('Functional UnitTests') {
                         steps {
                             echo "Running unittest on retrieve_data.py"
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_unittest.sh"'
@@ -145,6 +145,14 @@ pipeline {
                                 sh 'cd "${WORKSPACE}/${INSTALL_NAME}" && tar --create --gzip --verbose --file "${WORKSPACE}/${BUILD_NAME}.tgz" *'
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.BUILD_NAME}.tgz", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false], [bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: true, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "build_${env.SRW_COMPILER}/srw_build-${env.SRW_PLATFORM}-${env.SRW_COMPILER}.txt", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
                             }
+                        }
+                    }
+
+                    // Try a few Workflow Task scripts to make sure E2E tests can be launched in a follow-on 'Test' stage
+                    stage('Functional WorkflowTaskTests') {
+                        steps {
+                            echo "Running simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
+                            sh 'bash --login "EXPTDIR=${WORKSPACE}/expt_dirs/test_community ${WORKSPACE}/.cicd/scripts/srw_ftest.sh"'
                         }
                     }
 
