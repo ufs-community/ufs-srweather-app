@@ -173,7 +173,7 @@ this observation type (obtype) and field (field) combination:
 
         "ASNOW")
           fieldname_in_obs_input="${field}"
-          fieldname_in_fcst_input="${field}_${accum_hh}"
+          fieldname_in_fcst_input="${field}"
           fieldname_in_MET_output="${field}_${accum_hh}"
           fieldname_in_MET_filedir_names="${field}"
           ;;
