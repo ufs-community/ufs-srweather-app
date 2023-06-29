@@ -52,17 +52,6 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PRE_POST_STAT"
-rm_vrfy -r $DATA
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))

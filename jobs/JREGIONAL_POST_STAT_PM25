@@ -60,7 +60,14 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POST_STAT_PM25}"
+if [ "${RUN_ENVIR}" = "community" ]; then
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
+fi
+
+mkdir_vrfy -p ${COMOUTwmo}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEdir}/sorc/AQM-utils/parm}"
 #

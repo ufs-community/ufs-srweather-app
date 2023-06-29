@@ -52,17 +52,6 @@ This is the ex-script for the task that runs NEXUS.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the NEXUS working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_NEXUS_POST_SPLIT"
-mkdir_vrfy -p "$DATA"
-
-cd_vrfy $DATA
 
 mm="${PDY:4:2}"
 dd="${PDY:6:2}"
@@ -94,18 +83,16 @@ if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
   python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
-    
-#
-#-----------------------------------------------------------------------
-#
-# make nexus output pretty
-#
-#-----------------------------------------------------------------------
-#
-python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
-
-python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
 
 #
 #-----------------------------------------------------------------------
@@ -114,7 +101,16 @@ python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py ${DATA}/NEXUS_Expt_pretty.nc ${DATA}/NEXUS_Expt.nc
+python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
 #
 #-----------------------------------------------------------------------

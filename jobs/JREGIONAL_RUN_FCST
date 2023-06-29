@@ -66,6 +66,7 @@ the specified cycle.
 if [ $RUN_ENVIR = "nco" ]; then
     export INPUT_DATA="${COMIN}"
 else
+    DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
     export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
 #
@@ -75,7 +76,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 mkdir_vrfy -p ${DATA}/INPUT
 mkdir_vrfy -p ${DATA}/RESTART
 #
@@ -96,7 +96,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+job_postamble "FALSE"
 #
 #-----------------------------------------------------------------------
 #
