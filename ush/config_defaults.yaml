@@ -2457,7 +2457,7 @@ verification:
   # VX_ASNOW_ACCUMS_HRS will be ignored.
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
   VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]
   #
