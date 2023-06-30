@@ -75,8 +75,8 @@ hpss_machines=( jet hera )
 
 # Use staged data for HPSS supported machines
 if [[ ${hpss_machines[@]} =~ ${platform,,} ]] ; then
-    sed 's|^task_get_extrn_ics:|task_get_extrn_ics:\n  USE_USER_STAGED_EXTRN_FILES: true|g' ush/config.yaml
-    sed 's|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  USE_USER_STAGED_EXTRN_FILES: true|g' ush/config.yaml
+    sed 's|^task_get_extrn_ics:|task_get_extrn_ics:\n  USE_USER_STAGED_EXTRN_FILES: true|g' -i ush/config.yaml
+    sed 's|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  USE_USER_STAGED_EXTRN_FILES: true|g' -i ush/config.yaml
 fi
 
 # Activate the workflow environment ...
