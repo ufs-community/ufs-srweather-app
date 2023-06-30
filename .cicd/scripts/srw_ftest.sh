@@ -93,7 +93,7 @@ if [[ ${hpss_machines[@]} =~ ${platform,,} ]] ; then
 fi
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate regional_workflow
+conda activate workflow_tools
 set -e -u
 
 cd ${workspace}/ush
