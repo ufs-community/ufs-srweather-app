@@ -71,8 +71,12 @@ mkdir_vrfy -p "${INPUT_DATA_NWGES}"
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
+if [ "${RUN_ENVIR}" = "community" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_MAKE_LBCS}"
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
+fi
 #
 #-----------------------------------------------------------------------
 #

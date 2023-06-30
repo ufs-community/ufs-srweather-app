@@ -172,7 +172,7 @@ bio_format: netcdf
 bio_file: {{ aqm_rc_bio_file_fp }}
 bio_frequency: static
 bio_period: summer
-bio_speciation_file: {{ aqm_bio_dir }}/gspro_biogenics_1mar2017.txt
+bio_speciation_file: {{ dcominbio }}/gspro_biogenics_1mar2017.txt
 bio_speciation_profile: B10C6
 bio_species::
     AVG_NOAG_GROW        1.00000  AVG_NOAG_GROW     gmN/hr

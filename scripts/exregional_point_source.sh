@@ -64,21 +64,11 @@ yyyymmddhh="${PDY}${cyc}"
 #
 #-----------------------------------------------------------------------
 #
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PT_SOURCE"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set the directories for CONUS/HI/AK
 #
 #-----------------------------------------------------------------------
 #
-PT_SRC_PRECOMB="${PT_SRC_BASEDIR}"
+PT_SRC_PRECOMB="${DCOMINpt_src}"
 #
 #-----------------------------------------------------------------------
 #
@@ -88,6 +78,15 @@ PT_SRC_PRECOMB="${PT_SRC_BASEDIR}"
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
   python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"stack-pt-merge.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 # Move to COMIN

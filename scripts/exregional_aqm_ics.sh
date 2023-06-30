@@ -72,22 +72,16 @@ if [ ! -r ${fv_tracer_file} ]; then
         print_info_msg "
   Tracer file found: \"${fv_tracer_file}\""
       else
-        print_err_msg_exit "\
-  No suitable tracer restart file found."
+        message_txt="No suitable tracer restart file found."
+        if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2"]; then
+          err_exit "${message_txt}"
+        else
+          print_err_msg_exit "${message_txt}"
+        fi
       fi
     fi
   fi
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Move to work directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_AQM_ICS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -112,13 +106,28 @@ print_info_msg "
 
 cp_vrfy ${gfs_ic_file} ${wrk_ic_file}
 python3 ${HOMEdir}/sorc/AQM-utils/python_utils/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"add_aqm_ics.py\" failed."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
-ncatted -a checksum,,d,s, tmp1.nc  || print_err_msg_exit "\
-Call to NCATTED returned with nonzero exit code."
+ncatted -a checksum,,d,s, tmp1.nc
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to NCATTED returned with nonzero exit code."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
-mv_vrfy tmp1.nc ${gfs_ic_file}
-
-rm_vrfy gfs.nc
+cp_vrfy tmp1.nc ${gfs_ic_file}
 
 unset fv_tracer_file
 unset wrk_ic_file
