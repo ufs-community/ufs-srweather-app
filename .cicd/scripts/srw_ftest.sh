@@ -77,6 +77,14 @@ module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
+# Load more modules on machines with hpss access
+hpss_machines=( jet hera )
+if [[ ${hpss_machines[@]} =~ ${platform,,} ]] ; then
+  source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
+  module load hpss
+  export PYTHONPATH=${workspace}/ush
+fi
+
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
 conda activate regional_workflow
 set -e -u
@@ -115,16 +123,22 @@ export OMP_NUM_THREADS=1
 )
 set +x
 
-echo "# Try the first few simple SRW tasks ..."
 results_file=${workspace}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt
 rm -f ${results_file}
+
 status=0
-for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
+
+# Limit to machines that are fully ready
+target_machines=( jet cheyenne noaacloud )
+if [[ ${target_machines[@]} =~ ${platform,,} ]] ; then
+    echo "# Try the first few simple SRW tasks ..."
+    for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
                 echo -n "./$task.sh ... "
                 ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
                 # stop at the first sign of trouble ...
                 [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
-done
+    done
+fi
 
 # Set exit code to number of failures
 set +e
