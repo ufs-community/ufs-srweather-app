@@ -133,6 +133,7 @@ pipeline {
                             sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_unittest.sh"'
                         }
                     }
+                    
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
                         steps {
@@ -152,7 +153,7 @@ pipeline {
                     stage('Functional WorkflowTaskTests') {
                         steps {
                             echo "Running simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
-                            sh 'bash --login "EXPTDIR=${WORKSPACE}/expt_dirs/test_community ${WORKSPACE}/.cicd/scripts/srw_ftest.sh"'
+                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_ftest.sh"'
                         }
                     }
 
