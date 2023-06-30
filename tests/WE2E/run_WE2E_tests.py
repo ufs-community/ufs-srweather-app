@@ -192,7 +192,7 @@ def run_we2e_tests(homedir, args) -> None:
 
         if 'cpl_aqm_parm' in test_cfg:
             test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
-            test_cfg['cpl_aqm_parm']['AQM_FIRE_DIR'] = f"{test_aqm_input_basedir}/RAVE_fire"
+            test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
