@@ -174,6 +174,7 @@ OLSON_MAP="TRUE"
 Yuan_XLAI="TRUE"
 GEOS="TRUE"
 AnnualScalar="TRUE"
+OFFLINE_SOILNOX="TRUE"
 
 NEXUS_INPUT_BASE_DIR=${NEXUS_INPUT_DIR}
 ########################################################################
@@ -295,6 +296,10 @@ if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
   ln -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
 fi
 
+if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
+  ln -sf ${NEXUS_INPUT_BASE_DIR}/OFFLINE_SOILNOX ${DATAinput}
+fi
+
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   mkdir -p ${DATAinput}/GFS_SFC
   python3 ${ARL_NEXUS_DIR}/utils/python/nexus_gfs_bio.py -i ${DATA}/GFS_SFC/gfs.t??z.sfcf???.nc -o ${DATA}/GFS_SFC_MEGAN_INPUT.nc
@@ -345,6 +350,15 @@ if [ $err -ne 0 ]; then
     err_exit "${message_txt}"
   fi
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Move NEXUS output to INPUT_DATA directory.
+#
+#-----------------------------------------------------------------------
+#
+#mv ${DATA}/NEXUS_Expt_split.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc
+
 #
 #-----------------------------------------------------------------------
 #
