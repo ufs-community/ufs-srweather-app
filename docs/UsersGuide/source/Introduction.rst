@@ -48,18 +48,18 @@ Building, Running, and Testing the SRW App
    * :numref:`Chapter %s: Building the SRW App <BuildSRW>` provides a *detailed* explanation of how to build the SRW App. 
    * :numref:`Chapter %s: Running the SRW App <RunSRW>` provides a *detailed* explanation of how to run the App after it has been built. It includes information on standard workflow tasks, additional optional tasks (e.g., METplus verification, plotting), and different techniques for running the workflow. 
    * :numref:`Chapter %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
-   * :numref:`Chapter %s <WE2E_tests>` explains how to run workflow end-to-end tests to ensure that new developments do not break the current workflow. 
-   * :numref:`Chapter %s <VXCases>` explains how to run METplus verification as part of the workflow. 
+   * :numref:`Chapter %s: <WE2E_tests>` explains how to run workflow end-to-end tests to ensure that new developments do not break the current workflow. 
+   * :numref:`Chapter %s: <VXCases>` explains how to run METplus verification as part of the workflow. 
    * :numref:`Chapter %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, so documentation may be behind the current state of development, which is progressing rapidly. However, this chapter is a starting point for those interested in AQM. 
 
 Technical Information for Users
 ---------------------------------
 
-   * :numref:`Chapter %s <ConfigWorkflow>` documents all of the user-configurable experiment parameters that can be set in ``config.yaml``.  
-   * :numref:`Chapter %s <InputOutputFiles>` provides information on application input and output files, as well as information on where to get publicly available data. 
-   * :numref:`Chapter %s <LAMGrids>` describes the SRW App predefined grids in detail and explains how to create a custom user-generated grid. 
-   * :numref:`Chapter %s <DefineWorkflow>` explains how to build or alter the SRW App workflow XML file. 
-   * :numref:`Chapter %s <TemplateVars>` explains how to use template variables. 
+   * :numref:`Chapter %s: <ConfigWorkflow>` documents all of the user-configurable experiment parameters that can be set in ``config.yaml``.  
+   * :numref:`Chapter %s: <InputOutputFiles>` provides information on application input and output files, as well as information on where to get publicly available data. 
+   * :numref:`Chapter %s: <LAMGrids>` describes the SRW App predefined grids in detail and explains how to create a custom user-generated grid. 
+   * :numref:`Chapter %s: <DefineWorkflow>` explains how to build or alter the SRW App workflow XML file. 
+   * :numref:`Chapter %s: <TemplateVars>` explains how to use template variables. 
 
 Reference Information
 -----------------------

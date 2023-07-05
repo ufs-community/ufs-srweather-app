@@ -245,8 +245,8 @@ Glossary
       Helicity measures the rotation in a storm's updraft (rising) air. Significant rotation increases the probability that the storm will produce severe weather, including tornadoes. See http://ww2010.atmos.uiuc.edu/(Gh)/guides/mtr/svr/modl/fcst/params/hel.rxml for more details on updraft helicity. 
 
    UPP
-      The `Unified Post Processor <https://dtcenter.org/community-code/unified-post-processor-upp>`__ is software developed at :term:`NCEP` and used operationally to 
-      post-process raw output from a variety of :term:`NCEP`'s :term:`NWP` models, including the :term:`FV3`.
+      The `Unified Post Processor <https://github.com/NOAA-EMC/UPP>`__ is software developed at :term:`NCEP` and used operationally to 
+      post-process raw output from a variety of :term:`NCEP`'s :term:`NWP` models, including the :term:`FV3`. See https://epic.noaa.gov/unified-post-processor/ for more information. 
 
    Weather Enterprise
       Individuals and organizations from public, private, and academic sectors that contribute to the research, development, and production of weather forecast products; primary consumers of these weather forecast products.
