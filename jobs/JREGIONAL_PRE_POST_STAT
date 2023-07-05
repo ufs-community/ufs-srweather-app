@@ -60,7 +60,12 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+if [ "${RUN_ENVIR}" = "community" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -80,6 +85,17 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #-----------------------------------------------------------------------
 #
 job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Remove post_complete flag file.
+#
+#-----------------------------------------------------------------------
+#
+post_complete_file="${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+if [ -f ${post_complete_file} ] ; then
+  rm_vrfy -f ${post_complete_file}
+fi
 #
 #-----------------------------------------------------------------------
 #

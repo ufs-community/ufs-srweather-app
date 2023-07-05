@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 
+"""
+Function to create a diag_table file for the FV3 model using a
+template.
+"""
 import os
 import sys
 import argparse
-import unittest
 from textwrap import dedent
+import tempfile
+
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
 )
 
-from fill_jinja_template import fill_jinja_template
+# These come from ush/python_utils/workflow-tools
+from scripts.templater import set_template
 
 
 def create_diag_table_file(run_dir):
@@ -34,6 +38,7 @@ def create_diag_table_file(run_dir):
     # import all environment variables
     import_vars()
 
+    #pylint: disable=undefined-variable
     # create a diagnostic table file within the specified run directory
     print_info_msg(
         f"""
@@ -72,27 +77,16 @@ def create_diag_table_file(run_dir):
         verbose=VERBOSE,
     )
 
-    # call fill jinja
-    try:
-        fill_jinja_template(
-            ["-q", "-u", settings_str, "-t", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp]
+    with tempfile.NamedTemporaryFile(dir="./",
+                                     mode="w+t",
+                                     prefix="aqm_rc_settings",
+                                     suffix=".yaml") as tmpfile:
+        tmpfile.write(settings_str)
+        tmpfile.seek(0)
+        # set_template does its own error handling
+        set_template(
+            ["-c", tmpfile.name, "-i", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp]
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script fill_jinja_template.py to create a '{DIAG_TABLE_FN}'
-                file from a jinja2 template failed.  Parameters passed to this script are:
-                  Full path to template diag table file:
-                    DIAG_TABLE_TMPL_FP = '{DIAG_TABLE_TMPL_FP}'
-                  Full path to output diag table file:
-                    diag_table_fp = '{diag_table_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-        return False
     return True
 
 
@@ -121,22 +115,3 @@ if __name__ == "__main__":
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     create_diag_table_file(args.run_dir)
-
-
-class Testing(unittest.TestCase):
-    def test_create_diag_table_file(self):
-        path = os.path.join(os.getenv("USHdir"), "test_data")
-        self.assertTrue(create_diag_table_file(run_dir=path))
-
-    def setUp(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        DIAG_TABLE_FN = "diag_table"
-        DIAG_TABLE_TMPL_FP = os.path.join(PARMdir, f"{DIAG_TABLE_FN}.FV3_GFS_v15p2")
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("USHdir", USHdir)
-        set_env_var("DIAG_TABLE_FN", DIAG_TABLE_FN)
-        set_env_var("DIAG_TABLE_TMPL_FP", DIAG_TABLE_TMPL_FP)
-        set_env_var("CRES", "C48")
-        set_env_var("CDATE", "2021010106")

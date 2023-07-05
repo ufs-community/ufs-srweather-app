@@ -65,8 +65,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_LBCS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_MAKE_LBCS*PPN_MAKE_LBCS ))
-
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
@@ -84,36 +82,13 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMINext}${SLASH_ENSMEM_SUBDIR}"
+    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
-#
-#-----------------------------------------------------------------------
-#
-#
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_LBCS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
-fi
-LBC_SPEC_FCST_HRS=()
-for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} $(( FCST_LEN_HRS+LBC_SPEC_INTVL_HRS )) ); do
-  LBC_SPEC_FCST_HRS+=("$i_lbc")
-done
 #
 #-----------------------------------------------------------------------
 #
@@ -137,12 +112,14 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP")
     if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_LBCS}" = "UFS-CASE-STUDY" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GEFS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
@@ -151,10 +128,14 @@ case "${CCPP_PHYS_SUITE}" in
     ;;
 #
   *)
-  print_err_msg_exit "\
-The variable \"varmap_file\" has not yet been specified for this physics
-suite (CCPP_PHYS_SUITE):
+  message_txt="The variable \"varmap_file\" has not yet been specified 
+for this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
   ;;
 #
 esac
@@ -307,11 +288,24 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   fi
   ;;
 
+"UFS-CASE-STUDY")
+  if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    external_model="UFS-CASE-STUDY"
+    input_type="gaussian_nemsio"     # For FV3GFS data on a Gaussian grid in nemsio format.
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+    tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+  fi
+  ;;
+
 "GDAS")
+  if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+    input_type="gaussian_nemsio"
+  elif [ "${FV3GFS_FILE_FMT_LBCS}" = "netcdf" ]; then
+    input_type="gaussian_netcdf"
+  fi 
+  external_model="GFS" 
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="GFS"
-  input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
 
@@ -337,10 +331,14 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   ;;
 
 *)
-  print_err_msg_exit "\
-External-model-dependent namelist variables have not yet been specified
-for this external LBC model (EXTRN_MDL_NAME_LBCS):
+  message_txt="External-model-dependent namelist variables have not yet been 
+specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
   ;;
 
 esac
@@ -354,11 +352,15 @@ esac
 exec_fn="chgres_cube"
 exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3-LAM
-native grid does not exist:
+  message_txt="The executable (exec_fp) for generating initial conditions 
+on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -369,7 +371,12 @@ fi
 #-----------------------------------------------------------------------
 #
 num_fhrs="${#EXTRN_MDL_FHRS[@]}"
-for (( i=0; i<${num_fhrs}; i++ )); do
+bcgrp10=${bcgrp#0}
+bcgrpnum10=${bcgrpnum#0}
+for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
+  i=$(( ii + bcgrp10 ))
+  if [ ${i} -lt ${num_fhrs} ]; then
+    echo " group ${bcgrp10} processes member ${i}"
 #
 # Get the forecast hour of the external model.
 #
@@ -394,6 +401,14 @@ for (( i=0; i<${num_fhrs}; i++ )); do
       fn_atm="${EXTRN_MDL_FNS[$i]}"
     fi
     ;;
+  "UFS-CASE-STUDY")
+    if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
+      hh="${EXTRN_MDL_CDATE:8:2}"
+      fhr_str=$(printf "%03d" ${fhr})
+      fn_atm="gfs.t${hh}z.atmf${fhr_str}.nemsio"
+      unset hh fhr_str
+    fi
+    ;;
   "GDAS")
     fn_atm="${EXTRN_MDL_FNS[0][$i]}"
     ;;
@@ -410,10 +425,14 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-    print_err_msg_exit "\
-The external model output file name to use in the chgres_cube FORTRAN name-
-list file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
+   message_txt="The external model output file name to use in the chgres_cube 
+FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
     ;;
   esac
 #
@@ -462,7 +481,7 @@ settings="
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'vcoord_file_target_grid': ${VCOORD_FILE},
  'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},
@@ -485,16 +504,23 @@ settings="
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
-    print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist
-file read in by the ${exec_fn} executable failed.  Parameters passed to
-this script are:
+  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script set_namelist.py to set the variables 
+in the namelist file read in by the ${exec_fn} executable failed. Parameters 
+passed to this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 #
 #-----------------------------------------------------------------------
 #
@@ -511,8 +537,13 @@ $settings"
 # forecast task.
 #
   PREP_STEP
-  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
+  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "\
 Call to executable (exec_fp) to generate lateral boundary conditions (LBCs)
 file for the FV3-LAM for forecast hour fhr failed:
   exec_fp = \"${exec_fp}\"
@@ -522,6 +553,8 @@ The external model from which the LBCs files are to be generated is:
 The external model files that are inputs to the executable (exec_fp) are
 located in the following directory:
   extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+    fi
+  fi
   POST_STEP
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
@@ -529,9 +562,22 @@ located in the following directory:
 # the forecast hour of the FV3-LAM (which is not necessarily the same as
 # that of the external model since their start times may be offset).
 #
-  fcst_hhh_FV3LAM=$( printf "%03d" "${LBC_SPEC_FCST_HRS[$i]}" )
+  lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
+  fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
+  fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
   mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+  ln_vrfy -sf ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc \
+          ${INPUT_DATA_NWGES}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
+
+  fi
 done
 #
 #-----------------------------------------------------------------------

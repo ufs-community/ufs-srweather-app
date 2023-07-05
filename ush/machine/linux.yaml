@@ -12,6 +12,7 @@ platform:
   DOMAIN_PREGEN_BASEDIR: /home/username/DATA/UFS/FV3LAM_pregen
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
   RUN_CMD_POST: mpirun
+  RUN_CMD_PRDGEN: mpirun
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun
   PRE_TASK_CMDS: '{ ulimit -a; ulimit -s unlimited; }'
@@ -29,3 +30,14 @@ platform:
 data:
   ics_lbcs:
     FV3GFS: /home/username/DATA/UFS/FV3GFS
+
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:

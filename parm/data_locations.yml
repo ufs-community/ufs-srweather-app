@@ -6,7 +6,7 @@
 # Top level: A key corresponding to an external model file or
 # observation dataset accepted by the SRW App.
 #
-# 2nd level: A key corressponding to a named datastore for a given data
+# 2nd level: A key corresponding to a named datastore for a given data
 # set. This could be nomads, aws, hpss, etc.
 #
 # 3rd level required:
@@ -88,7 +88,7 @@ FV3GFS:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
-          - com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar            
+          - com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
         fcst:
           - gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
           - com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_pgrb2.tar
@@ -111,7 +111,7 @@ FV3GFS:
           - ['gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'gpfs_dell1_nco_ops_com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
           - ['com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_prod_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
           - ['com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.2_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
-          - ['com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']            
+          - ['com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_nca.tar', 'com_gfs_v16.3_gfs.{yyyymmdd}_{hh}.gfs_ncb.tar']
     file_names:
       <<: *gfs_file_names
   aws:
@@ -128,6 +128,7 @@ GDAS:
       - /NCEPPROD/5year/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
       - ./enkfgdas.{yyyymmdd}/{hh}/atmos/mem{mem:03d}
+      - ./enkfgdas.{yyyymmdd}/{hh}/mem{mem:03d}
     archive_file_names:
       nemsio:
         anl:
@@ -147,8 +148,10 @@ GDAS:
       nemsio:
         anl:
           - gdas.t{hh}z.atmf{fcst_hr:03d}.nemsio
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nemsio
         fcst:
-          - gdas.t{hh}.sfcf{fcst_hr:03d}.nemsio
+          - gdas.t{hh}z.atmf{fcst_hr:03d}.nemsio
+          - gdas.t{hh}z.sfcf{fcst_hr:03d}.nemsio
       netcdf:
         anl:
           - gdas.t{hh}z.atmf{fcst_hr:03d}.nc
@@ -212,13 +215,16 @@ RAP:
     archive_path:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
+      - ./
       - ./
       - ./
     archive_file_names:
       # RAP forecasts are binned into 6 hour tar files.
       - gpfs_hps_nco_ops_com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
       - com_rap_prod_rap.{yyyymmdd}{bin6}.wrf.tar
+      - com_rap_v5.1_rap.{yyyymmdd}{bin6}.wrf.tar
     file_names: &rap_file_names
       anl:
         - rap.t{hh}z.wrfnatf{fcst_hr:02d}.grib2
@@ -272,6 +278,17 @@ NAM:
       fcst:
         - nam.t{hh}z.awphys{fcst_hr:02d}.tm00.grib2
 
+UFS-CASE-STUDY:
+  aws:
+    protocol: download
+    url: "https://ufs-case-studies.s3.amazonaws.com/"
+    file_names: &ufs_file_names
+      nemsio:
+        anl:
+          - "{yyyymmddhh}.gfs.nemsio.tar.gz"
+        fcst:
+          - "{yyyymmddhh}_bc.atmf{fcst_hr:03d}.nemsio.tar.gz"
+
 ##########################
 ##########################
 ###  Observation Data  ###
@@ -299,15 +316,39 @@ GFS_obs:
         obs:
           - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
 
+NSSL_mrms:
+
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+    archive_internal_dir:
+      - ./upperair/mrms/conus/MergedReflectivityQC
+    archive_file_names:
+      - dcom_ldmdata_obs.tar
+      - dcom_prod_ldmdata_obs.tar
+      - ldmdata.tide.{yyyymmdd}.tar
+      - ldmdata.gyre.{yyyymmdd}.tar
+    file_names:
+      obs:
+        - "*MergedReflectivityQC_*_{yyyymmdd}-{hh}{min}*.grib2*"
+
+
 RAP_obs:
   hpss:
     protocol: htar
     archive_format: zip
     archive_path:
       - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
+      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/prepbufr
     archive_internal_dir:
-      - ./
+      - ""
     archive_file_names:
+      - "{yyyymmddhh}00.zip"
       - "{yyyymmddhh}00.zip"
     file_names:
       obs:
@@ -341,6 +382,14 @@ RAP_obs:
         - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
         - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.prepbufr.tm00"
+        - "{yyyymmddhh}.rap_e.t{hh}z.1bamua.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.1bhrs4.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.1bmhs.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.lgycld.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.nexrad.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.satwnd.tm00.bufr_d"
+        - "{yyyymmddhh}.rap_e.t{hh}z.lghtng.tm00.bufr_d"
   aws:
     protocol: download
     url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}

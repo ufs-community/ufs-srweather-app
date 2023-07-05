@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_obs_mrms" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -26,6 +26,7 @@ source_config_for_task "task_get_obs_mrms" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
+set +e
 
 mrms_dir=${OBS_DIR}/..
 if [[ ! -d "$mrms_dir" ]]; then
@@ -61,12 +62,12 @@ s_dd=`echo ${start_valid} | cut -c7-8`    # day (DD) of start time
 s_hh=`echo ${start_valid} | cut -c9-10`   # hour (HH) of start time
 start_valid_ut=`$DATE_UTIL -ud ''${s_yyyy}-${s_mm}-${s_dd}' UTC '${s_hh}':00:00' +%s` # convert start time to universal time
 
-end_fcst_sec=`expr ${fcst_length} \* 3600` # convert last forecast lead hour to seconds
-end_valid_ut=`expr ${start_valid_ut} + ${end_fcst_sec}` # calculate current forecast time in universal time
+end_fcst_sec=$(( ${fcst_length} * 3600 )) # convert last forecast lead hour to seconds
+end_valid_ut=$(( ${start_valid_ut} + ${end_fcst_sec} )) # calculate current forecast time in universal time
 
 cur_ut=${start_valid_ut}
 current_fcst=0
-fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
+fcst_sec=$(( ${current_fcst} * 3600 )) # convert forecast lead hour to seconds
 
 while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
   cur_time=`$DATE_UTIL -ud '1970-01-01 UTC '${cur_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
@@ -107,7 +108,7 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
 
     # Name of MRMS tar file on HPSS is dependent on date. Logic accounts for files from 2019 until Sept. 2020.
     if [[ ${vyyyymmdd} -ge 20190101 && ${vyyyymmdd} -lt 20200303 ]]; then
-      CheckFile=`hsi "ls -1 /NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.gyre.${vyyyy}${vmm}${vdd}.tar" >& /dev/null`
+      CheckFile=`hsi "ls -1 /NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.gyre.${vyyyy}${vmm}${vdd}.tar"`
       Status=$?
       if [[ ${Status} == 0 ]]; then
         TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/ldmdata.gyre.${vyyyy}${vmm}${vdd}.tar"
@@ -122,17 +123,22 @@ while [[ ${cur_ut} -le ${end_valid_ut} ]]; do
       fi
     fi 
 
-    if [[ ${vyyyymmdd} -ge 20200303 ]]; then
+    if [[ ${vyyyymmdd} -ge 20200303 && ${vyyyymmdd} -lt 20220628 ]]; then
       TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_prod_ldmdata_obs.tar"
+    fi
+
+    if [[ ${vyyyymmdd} -ge 20220628 ]]; then
+      TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_ldmdata_obs.tar"
     fi
 
     echo "TAR FILE:${TarFile}"
 
-    TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz\" | awk '{print $7}'\`"
-    htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz" | awk '{print $7}'`
+    TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz\" | awk '{print \$7}'\`"
+    htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "${field_base_name}${level}${vyyyy}${vmm}${vdd}-[0-9][0-9][0-9][0-9][0-9][0-9].grib2.gz" | awk '{print \$7}'`
     Status=$?
 
     if [[ ${Status} != 0 ]]; then
+      CurDate="${vyyyy}${vmm}${vdd}"
       print_err_msg_exit "Bad return status (${Status}) for date \"${CurDate}\".\
 Did you forget to run \"module load hpss\"?\
       COMMAND: ${TarCommand}"
@@ -140,7 +146,7 @@ Did you forget to run \"module load hpss\"?\
       if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
         mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
       fi
-	
+
       hour=0
       while [[ ${hour} -le 23 ]]; do
         echo "hour=${hour}"
@@ -155,8 +161,8 @@ Did you forget to run \"module load hpss\"?\
 
   # Increment
   current_fcst=$((${current_fcst} + 1)) # hourly increment
-  fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
-  cur_ut=`expr ${start_valid_ut} + ${fcst_sec}`
+  fcst_sec=$(( ${current_fcst} * 3600 )) # convert forecast lead hour to seconds
+  cur_ut=$(( ${start_valid_ut} + ${fcst_sec} ))
   
 done
 #

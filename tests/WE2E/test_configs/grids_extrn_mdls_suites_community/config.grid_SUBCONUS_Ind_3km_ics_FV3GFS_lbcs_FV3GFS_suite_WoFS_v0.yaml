@@ -1,15 +1,15 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_SUBCONUS_3km grid using the WoFS_v0
+    completes successfully on the SUBCONUS_Ind_3km grid using the WoFS_v0
     physics suite with ICs and LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: community
 workflow:
   CCPP_PHYS_SUITE: FV3_WoFS_v0
   PREDEF_GRID_NAME: SUBCONUS_Ind_3km
-  DATE_FIRST_CYCL: '20190615'
-  DATE_LAST_CYCL: '20190615'
+  DATE_FIRST_CYCL: '2019061500'
+  DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:

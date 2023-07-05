@@ -1,37 +1,39 @@
 #!/usr/bin/env python3
-
+"""
+Create a model_configure file for the FV3 forecast model from a
+template.
+"""
 import os
 import sys
 import argparse
-import unittest
-from datetime import datetime
 from textwrap import dedent
+import tempfile
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     str_to_type,
     print_info_msg,
-    print_err_msg_exit,
     lowercase,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
 )
 
-from fill_jinja_template import fill_jinja_template
+# These come from ush/python_utils/workflow-tools
+from scripts.templater import set_template
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
-):
+    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
+    ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified
     run directory
 
     Args:
         cdate: cycle date
         fcst_len_hrs: forecast length in hours
+        fhrot: forecast hour at restart
         run_dir: run directory
         sub_hourly_post
         dt_subhourly_post_mnts
@@ -44,6 +46,8 @@ def create_model_configure_file(
 
     # import all environment variables
     import_vars()
+
+    # pylint: disable=undefined-variable
 
     #
     # -----------------------------------------------------------------------
@@ -60,18 +64,6 @@ def create_model_configure_file(
         verbose=VERBOSE,
     )
     #
-    # Extract from cdate the starting year, month, day, and hour of the forecast.
-    #
-    yyyy = cdate.year
-    mm = cdate.month
-    dd = cdate.day
-    hh = cdate.hour
-    #
-    # Set parameters in the model configure file.
-    #
-    dot_quilting_dot=f".{lowercase(str(QUILTING))}."
-    dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
-    #
     # -----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -81,17 +73,16 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "PE_MEMBER01": PE_MEMBER01,
-        "start_year": yyyy,
-        "start_month": mm,
-        "start_day": dd,
-        "start_hour": hh,
+        "start_year": cdate.year,
+        "start_month": cdate.month,
+        "start_day": cdate.day,
+        "start_hour": cdate.hour,
         "nhours_fcst": fcst_len_hrs,
+        "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
-        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
-        "write_dopost": dot_write_dopost,
-        "quilting": dot_quilting_dot,
+        "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
+        "quilting": f".{lowercase(str(QUILTING))}.",
         "output_grid": WRTCMP_output_grid,
     }
     #
@@ -127,8 +118,7 @@ def create_model_configure_file(
                 }
             )
         elif (
-            WRTCMP_output_grid == "regional_latlon"
-            or WRTCMP_output_grid == "rotated_latlon"
+            WRTCMP_output_grid in ("regional_latlon", "rotated_latlon")
         ):
             settings.update(
                 {
@@ -204,34 +194,23 @@ def create_model_configure_file(
     #
     model_config_fp = os.path.join(run_dir, MODEL_CONFIG_FN)
 
-    try:
-        fill_jinja_template(
+    with tempfile.NamedTemporaryFile(dir="./",
+                                     mode="w+t",
+                                     suffix=".yaml",
+                                     prefix="model_config_settings.") as tmpfile:
+        tmpfile.write(settings_str)
+        tmpfile.seek(0)
+        # set_template does its own error handling
+        set_template(
             [
-                "-q",
-                "-u",
-                settings_str,
-                "-t",
+                "-c",
+                tmpfile.name,
+                "-i",
                 MODEL_CONFIG_TMPL_FP,
                 "-o",
                 model_config_fp,
             ]
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script fill_jinja_template.py to create a '{MODEL_CONFIG_FN}'
-                file from a jinja2 template failed.  Parameters passed to this script are:
-                  Full path to template model config file:
-                    MODEL_CONFIG_TMPL_FP = '{MODEL_CONFIG_TMPL_FP}'
-                  Full path to output model config file:
-                    model_config_fp = '{model_config_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-        return False
 
     return True
 
@@ -258,6 +237,14 @@ def parse_args(argv):
         dest="fcst_len_hrs",
         required=True,
         help="Forecast length in hours.",
+    )
+
+    parser.add_argument(
+        "-b",
+        "--fhrot",
+        dest="fhrot",
+        required=True,
+        help="Forecast hour at restart.",
     )
 
     parser.add_argument(
@@ -304,55 +291,8 @@ if __name__ == "__main__":
         run_dir=args.run_dir,
         cdate=str_to_type(args.cdate),
         fcst_len_hrs=str_to_type(args.fcst_len_hrs),
+        fhrot=str_to_type(args.fhrot),
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
     )
-
-
-class Testing(unittest.TestCase):
-    def test_create_model_configure_file(self):
-        path = os.path.join(os.getenv("USHdir"), "test_data")
-        self.assertTrue(
-            create_model_configure_file(
-                run_dir=path,
-                cdate=datetime(2021, 1, 1),
-                fcst_len_hrs=72,
-                sub_hourly_post=True,
-                dt_subhourly_post_mnts=4,
-                dt_atmos=1,
-            )
-        )
-
-    def setUp(self):
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        MODEL_CONFIG_FN = "model_configure"
-        MODEL_CONFIG_TMPL_FP = os.path.join(PARMdir, MODEL_CONFIG_FN)
-
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        set_env_var("QUILTING", True)
-        set_env_var("WRITE_DOPOST", True)
-        set_env_var("USHdir", USHdir)
-        set_env_var("MODEL_CONFIG_FN", MODEL_CONFIG_FN)
-        set_env_var("MODEL_CONFIG_TMPL_FP", MODEL_CONFIG_TMPL_FP)
-        set_env_var("PE_MEMBER01", 24)
-        set_env_var("FCST_LEN_HRS", 72)
-        set_env_var("DT_ATMOS", 1)
-        set_env_var("OMP_NUM_THREADS_RUN_FCST", 1)
-        set_env_var("RESTART_INTERVAL", 4)
-
-        set_env_var("WRTCMP_write_groups", 1)
-        set_env_var("WRTCMP_write_tasks_per_group", 2)
-        set_env_var("WRTCMP_output_grid", "lambert_conformal")
-        set_env_var("WRTCMP_cen_lon", -97.5)
-        set_env_var("WRTCMP_cen_lat", 35.0)
-        set_env_var("WRTCMP_stdlat1", 35.0)
-        set_env_var("WRTCMP_stdlat2", 35.0)
-        set_env_var("WRTCMP_nx", 199)
-        set_env_var("WRTCMP_ny", 111)
-        set_env_var("WRTCMP_lon_lwr_left", -121.23349066)
-        set_env_var("WRTCMP_lat_lwr_left", 23.41731593)
-        set_env_var("WRTCMP_dx", 3000.0)
-        set_env_var("WRTCMP_dy", 3000.0)

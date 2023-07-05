@@ -8,7 +8,6 @@ FAQ
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
 * :ref:`How do I change the grid? <ChangeGrid>`
 * :ref:`How do I turn on/off the cycle-independent workflow tasks? <CycleInd>`
-* :ref:`How do I know if I correctly modified config.yaml? <CorrectConfig>`
 * :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
@@ -28,7 +27,7 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The four supported physics suites for the SRW Application as of the v2.1.0 release are:
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The five supported physics suites for the SRW Application as of the v2.1.0 release are:
 
 .. code-block:: console
    
@@ -36,6 +35,7 @@ The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using th
    FV3_RRFS_v1beta
    FV3_HRRR
    FV3_WoFS_v0
+   FV3_RAP
 
 When users run the ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``$EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
@@ -88,25 +88,6 @@ specify the directories where pre-generated grid, orography, and surface climato
 three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
 flags are set to true in ``config_defaults.yaml``. This means that the workflow will
 run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
-
-.. _CorrectConfig:
-
-=========================================================
-How do I know if I correctly modified ``config.yaml``?
-=========================================================
-
-To determine whether ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory after loading the regional workflow:
-
-.. code-block:: console
-
-   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
-
-A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
-
-.. code-block:: console
-   
-   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-   FAILURE
 
 .. _RestartTask:
 

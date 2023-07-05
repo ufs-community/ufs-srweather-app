@@ -29,6 +29,7 @@ Also see the parse_args function below.
 
 import argparse
 import datetime as dt
+import glob
 import logging
 import os
 import shutil
@@ -37,6 +38,7 @@ import sys
 import glob
 from textwrap import dedent
 import time
+import urllib.request
 from copy import deepcopy
 
 import yaml
@@ -49,12 +51,16 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     output location."""
 
     unavailable = {}
+    expand_source_paths = []
+    for p in source_paths:
+        expand_source_paths.extend(glob.glob(p))
+
     # Check to make sure the files exist on disk
-    for file_path in source_paths:
+    for file_path in expand_source_paths:
         local_file_path = os.path.join(os.getcwd(), file_path.lstrip("/"))
         if not os.path.exists(local_file_path):
             logging.info(f"File does not exist: {local_file_path}")
-            unavailable["hpss"] = source_paths
+            unavailable["hpss"] = expand_source_paths
         else:
             file_name = os.path.basename(file_path)
             expected_output_loc = os.path.join(output_path, file_name)
@@ -70,7 +76,6 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     # If an archive exists on disk, remove it
     if os.path.exists(local_archive):
         os.remove(local_archive)
-
     return unavailable
 
 
@@ -102,6 +107,14 @@ def copy_file(source, destination, copy_cmd):
         return False
     return True
 
+def check_file(url):
+
+    """
+    Check that a file exists at the expected URL. Return boolean value
+    based on the response.
+    """
+    status_code = urllib.request.urlopen(url).getcode()
+    return status_code == 200
 
 def download_file(url):
 
@@ -120,8 +133,8 @@ def download_file(url):
     # -c continue previous attempt
     # -T timeout seconds
     # -t number of tries
-    cmd = f"wget -q -c -T 30 -t 3 {url}"
-    logging.info(f"Running command: \n {cmd}")
+    cmd = f"wget -q -c -T 10 -t 2 {url}"
+    logging.debug(f"Running command: \n {cmd}")
     try:
         subprocess.run(
             cmd,
@@ -216,6 +229,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
         hh_even=hh_even,
         jjj=cycle_date.strftime("%j"),
         mem=mem,
+        min=cycle_date.strftime("%M"),
         mm=cycle_date.strftime("%m"),
         yy=cycle_date.strftime("%y"),
         yyyy=cycle_date.strftime("%Y"),
@@ -227,7 +241,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     if templates_only:
         return f'{",".join((format_values.keys()))}'
     return template_str.format(**format_values)
-    
+
 
 def create_target_path(target_path):
 
@@ -307,8 +321,8 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
         file_templates = cla.file_templates if cla.file_templates else file_templates
 
     if isinstance(file_templates, dict):
-        if cla.file_type is not None:
-            file_templates = file_templates[cla.file_type]
+        if cla.file_fmt is not None:
+            file_templates = file_templates[cla.file_fmt]
         file_templates = file_templates[cla.file_set]
     if not file_templates:
         msg = "No file naming convention found. They must be provided \
@@ -389,34 +403,37 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
                         fcst_hr=fcst_hr,
                         mem=mem,
                     )
-                    logging.debug(f"Full file path: {input_loc}")
-
+                    logging.info(f"Getting file: {input_loc}")
+                    logging.debug(f"Target path: {target_path}")
                     if method == "disk":
                         if cla.symlink:
                             retrieved = copy_file(input_loc, target_path, "ln -sf")
                         else:
                             retrieved = copy_file(input_loc, target_path, "cp")
 
-                    if method == "download":
-                        retrieved = download_file(input_loc)
+                    elif method == "download":
+
+                        if cla.check_file:
+                            retrieved = check_file(input_loc)
+
+                        else:
+                            retrieved = download_file(input_loc)
                         # Wait a bit before trying the next download.
                         # Seems to reduce the occurrence of timeouts
                         # when downloading from AWS
-                        time.sleep(15)
+                        time.sleep(5)
 
                     logging.debug(f"Retrieved status: {retrieved}")
                     if not retrieved:
                         unavailable.append(input_loc)
-                        # Go on to the next location if the first file
-                        # isn't found here.
-                        break
 
-                    # If retrieved, reset unavailable
-                    unavailable = []
                 if not unavailable:
                     # Start on the next fcst hour if all files were
                     # found from a loc/template combo
                     break
+                else:
+                    logging.debug(f"Some files were not retrieved: {unavailable}")
+                    logging.debug("Will check other locations for missing files")
 
     os.chdir(orig_path)
     return unavailable
@@ -474,8 +491,8 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
 
     # Could be a list of lists
     archive_file_names = store_specs.get("archive_file_names", {})
-    if cla.file_type is not None:
-        archive_file_names = archive_file_names[cla.file_type]
+    if cla.file_fmt is not None:
+        archive_file_names = archive_file_names[cla.file_fmt]
 
     if isinstance(archive_file_names, dict):
         archive_file_names = archive_file_names[cla.file_set]
@@ -561,11 +578,21 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
                     cmd = f'htar -xvf {existing_archive} {" ".join(source_paths)}'
 
                 logging.info(f"Running command \n {cmd}")
-                subprocess.run(
-                    cmd,
-                    check=True,
-                    shell=True,
-                )
+
+                try:
+                    r = subprocess.run(
+                        cmd,
+                        check=False,
+                        shell=True,
+                    )
+                except:
+                    if r.returncode == 11:
+                        # Continue if files missing from archive; we will check later if this is
+                        # an acceptable condition
+                        logging.warning("One or more files not found in zip archive")
+                        pass
+                    else:
+                        raise Exception("Error running archive extraction command")
 
                 # Check that files exist and Remove any data transfer artifacts.
                 # Returns {'hpss': []}, turn that into a new dict of
@@ -587,10 +614,13 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
             # something has gone wrong.
             unavailable = set.union(*unavailable.values())
 
-        # Report only the files that are truly unavailable
-        if not expected == unavailable:
-            return unavailable - expected
-
+    # Break loop if unexpected files were found or if files were found
+    # A successful file found does not equal the expected file list and 
+    # returns an empty set function.
+    if not expected == unavailable:
+        return unavailable - expected
+    
+    # If this loop has completed successfully without returning early, then all files have been found
     return {}
 
 
@@ -680,7 +710,6 @@ def setup_logging(debug=False):
     """Calls initialization functions for logging package, and sets the
     user-defined level for logging in the script."""
 
-    level = logging.WARNING
     level = logging.INFO
     if debug:
         level = logging.DEBUG
@@ -723,8 +752,17 @@ def write_summary_file(cla, data_store, file_templates):
 
 
 def to_datetime(arg):
-    """Return a datetime object give a string like YYYYMMDDHH."""
-    return dt.datetime.strptime(arg, "%Y%m%d%H")
+    """Return a datetime object give a string like YYYYMMDDHH or
+    YYYYMMDDHHmm."""
+    if len(arg) == 10:
+        fmt_str = "%Y%m%d%H"
+    elif len(arg) == 12:
+        fmt_str = "%Y%m%d%H%M"
+    else:
+        msg = f"""The length of the input argument is {len(arg)} and is
+        not a supported input format."""
+        raise argparse.ArgumentTypeError(msg)
+    return dt.datetime.strptime(arg, fmt_str)
 
 
 def to_lower(arg):
@@ -740,10 +778,6 @@ def main(argv):
     """
 
     cla = parse_args(argv)
-    cla.fcst_hrs = arg_list_to_range(cla.fcst_hrs)
-
-    if cla.members:
-        cla.members = arg_list_to_range(cla.members)
 
     setup_logging(cla.debug)
     print("Running script retrieve_data.py with args:", f"\n{('-' * 80)}\n{('-' * 80)}")
@@ -778,21 +812,18 @@ def main(argv):
             )
             sys.exit(1)
 
-    known_data_info = cla.config.get(cla.external_model, {})
+    known_data_info = cla.config.get(cla.data_type, {})
     if not known_data_info:
-        msg = dedent(
-            f"""No data stores have been defined for
-               {cla.external_model}! Only checking provided disk
-               location"""
-        )
+        msg = f"No data stores have been defined for {cla.data_type}!"
         if cla.input_file_path is None:
             cla.data_stores = ["disk"]
             raise KeyError(msg)
         logging.info(msg)
+        logging.info(f"Checking provided disk location {cla.input_file_path}")
 
     unavailable = {}
     for data_store in cla.data_stores:
-        logging.info(f"Checking {data_store} for {cla.external_model}")
+        logging.info(f"Checking {data_store} for {cla.data_type}")
         store_specs = known_data_info.get(data_store, {})
 
         if data_store == "disk":
@@ -848,7 +879,7 @@ def main(argv):
         if not unavailable:
             # All files are found. Stop looking!
             # Write a variable definitions file for the data, if requested
-            if cla.summary_file:
+            if cla.summary_file and not cla.check_file:
                 write_summary_file(cla, data_store, file_templates)
             break
 
@@ -910,15 +941,15 @@ def parse_args(argv):
         help="Full path to a configuration file containing paths and \
         naming conventions for known data streams. The default included \
         in this repository is in parm/data_locations.yml",
-        required=True,
+        required=False,
         type=config_exists,
         
     )
     parser.add_argument(
         "--cycle_date",
         help="Cycle date of the data to be retrieved in YYYYMMDDHH \
-        format.",
-        required=False,                    # relaxed this arg option, and set a benign value when not used
+        or YYYYMMDDHHmm format.",
+        required=False, # relaxed this arg option, and set a benign value when not used
         default="1999123100",
         type=to_datetime,
     )
@@ -931,7 +962,7 @@ def parse_args(argv):
         type=to_lower,
     )
     parser.add_argument(
-        "--external_model",
+        "--data_type",
         choices=(
             "FV3GFS",
             "GFS_obs",
@@ -940,11 +971,13 @@ def parse_args(argv):
             "GSMGFS",
             "HRRR",
             "NAM",
+            "NSSL_mrms",
             "RAP",
             "RAPx",
             "RAP_obs",
             "HRRRx",
             "GSI-FIX",
+            "UFS-CASE-STUDY"
         ),
         help="External model label. This input is case-sensitive",
         required=True,
@@ -957,7 +990,7 @@ def parse_args(argv):
         processed.  If more than 3 arguments, the list is processed \
         as-is. default=[0]",
         nargs="+",
-        required=False,                    # relaxed this arg option, and set a default value when not used
+        required=False,
         default=[0],
         type=int,
     )
@@ -971,7 +1004,7 @@ def parse_args(argv):
         "--ics_or_lbcs",
         choices=("ICS", "LBCS"),
         help="Flag for whether ICS or LBCS.",
-        required=True
+        required=False
     )
 
     # Optional
@@ -992,12 +1025,12 @@ def parse_args(argv):
     parser.add_argument(
         "--file_templates",
         help="One or more file template strings defining the naming \
-        convention the be used for the files retrieved from disk. If \
+        convention to be used for the files retrieved from disk. If \
         not provided, the default names from hpss are used.",
         nargs="*",
     )
     parser.add_argument(
-        "--file_type",
+        "--file_fmt",
         choices=("grib2", "nemsio", "netcdf", "prepbufr", "tcvitals"),
         help="External model file format",
     )
@@ -1023,7 +1056,36 @@ def parse_args(argv):
         help="Name of the summary file to be written to the output \
         directory",
     )
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--check_file",
+        action="store_true",
+        help="Use this flag to check the existence of requested files, \
+         but don't try to download them. Works with download protocol \
+         only",
+    )
+
+    # Make modifications/checks for given values
+
+    args = parser.parse_args(argv)
+
+    # convert range arguments if necessary 
+    args.fcst_hrs = arg_list_to_range(args.fcst_hrs)
+    if args.members:
+        args.members = arg_list_to_range(args.members)
+
+    # Check required arguments for various conditions
+    if not args.ics_or_lbcs and args.file_set in ["anl", "fcst"]:
+        raise argparse.ArgumentTypeError(f"--ics_or_lbcs is a required " \
+              f"argument when --file_set = {args.file_set}")
+
+    # Check valid arguments for various conditions
+    valid_data_stores = ["hpss", "nomads", "aws", "disk", "remote"]
+    for store in args.data_stores:
+        if store not in valid_data_stores:
+            raise argparse.ArgumentTypeError(f"Invalid value '{store}' provided " \
+                  f"for --data_stores; valid values are {valid_data_stores}")
+
+    return args
 
 
 if __name__ == "__main__":

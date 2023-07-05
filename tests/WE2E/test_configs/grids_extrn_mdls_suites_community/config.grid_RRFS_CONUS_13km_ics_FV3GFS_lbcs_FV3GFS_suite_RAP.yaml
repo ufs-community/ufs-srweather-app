@@ -1,0 +1,26 @@
+metadata:
+  description: |-
+    This test is to ensure that the workflow running in community mode
+    completes successfully on the RRFS_CONUS_13km grid using the GFS_v15p2
+    physics suite with ICs and LBCs derived from the FV3GFS.
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_RAP
+  PREDEF_GRID_NAME: RRFS_CONUS_13km
+  DATE_FIRST_CYCL: '2019070100'
+  DATE_LAST_CYCL: '2019070100'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 3
+  USE_USER_STAGED_EXTRN_FILES: true
+global:
+  DO_SHUM: true
+  DO_SPPT: true
+  DO_SKEB: true
+  DO_SPP: true

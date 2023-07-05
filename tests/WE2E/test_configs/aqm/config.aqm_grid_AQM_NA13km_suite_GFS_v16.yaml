@@ -1,0 +1,76 @@
+metadata:
+  description: config for SRW-AQM, AQM_NA_13km, community mode, FV3_GFS_v16 physics suite
+user:
+  RUN_ENVIR: community
+workflow:
+  PREDEF_GRID_NAME: AQM_NA_13km
+  CCPP_PHYS_SUITE: FV3_GFS_v16
+  DATE_FIRST_CYCL: '2023021700'
+  DATE_LAST_CYCL: '2023021706'
+  INCR_CYCL_FREQ: 6
+  FCST_LEN_HRS: -1
+  FCST_LEN_CYCL:
+    - 6
+    - 12
+  PREEXISTING_DIR_METHOD: rename
+  DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
+  FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
+  DO_REAL_TIME: false
+nco:
+  NET_default: aqm
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    task_aqm_ics_ext:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00
+task_get_extrn_ics:
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: netcdf
+  EXTRN_MDL_ICS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true
+task_get_extrn_lbcs:
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  LBC_SPEC_INTVL_HRS: 6
+  FV3GFS_FILE_FMT_LBCS: netcdf
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true    
+task_run_fcst:
+  DT_ATMOS: 180
+  LAYOUT_X: 50
+  LAYOUT_Y: 34
+  BLOCKSIZE: 16
+  RESTART_INTERVAL: 6
+  QUILTING: true
+  PRINT_ESMF: false
+  DO_FCST_RESTART: false
+task_run_post:
+  POST_OUTPUT_DOMAIN_NAME: 793
+  USE_CUSTOM_POST_CONFIG_FILE: false
+global:
+  DO_ENSEMBLE: false
+  NUM_ENS_MEMBERS: 2
+  HALO_BLEND: 0
+cpl_aqm_parm:
+  CPL_AQM: true
+  DO_AQM_CHEM_LBCS: true
+  DO_AQM_GEFS_LBCS: true
+  DO_AQM_DUST: true
+  DO_AQM_CANOPY: false
+  DO_AQM_PRODUCT: true
+  DO_AQM_SAVE_AIRNOW_HIST: false
+  DO_AQM_SAVE_FIRE: false
+  AQM_BIO_FILE: BEIS_RRFScmaq_C775.ncf
+  AQM_DUST_FILE_PREFIX: FENGSHA_p8_10km_inputs
+  AQM_DUST_FILE_SUFFIX: .nc  
+  AQM_CANOPY_FILE_PREFIX: gfs.t12z.geo
+  AQM_CANOPY_FILE_SUFFIX: .canopy_regrid.nc
+  AQM_FIRE_FILE_PREFIX: Hourly_Emissions_regrid_NA_13km
+  AQM_FIRE_FILE_SUFFIX: _h72.nc
+  AQM_RC_FIRE_FREQUENCY: hourly
+  AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
+  AQM_GEFS_FILE_PREFIX: geaer
+  NEXUS_GRID_FN: grid_spec_793.nc
+  NUM_SPLIT_NEXUS: 3
+

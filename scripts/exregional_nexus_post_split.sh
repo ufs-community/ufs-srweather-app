@@ -52,17 +52,6 @@ This is the ex-script for the task that runs NEXUS.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the NEXUS working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_NEXUS_POST_SPLIT"
-mkdir_vrfy -p "$DATA"
-
-cd_vrfy $DATA
 
 mm="${PDY:4:2}"
 dd="${PDY:6:2}"
@@ -70,13 +59,11 @@ hh="${cyc}"
 yyyymmdd="${PDY}"
 
 NUM_SPLIT_NEXUS=$( printf "%02d" ${NUM_SPLIT_NEXUS} )
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
 end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
@@ -96,18 +83,16 @@ if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
   python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
-    
-#
-#-----------------------------------------------------------------------
-#
-# make nexus output pretty
-#
-#-----------------------------------------------------------------------
-#
-python3 ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
-
-python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_combined.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/NEXUS_Expt_pretty.nc -t ${DATA}/HEMCO_sa_Time.rc
 
 #
 #-----------------------------------------------------------------------
@@ -116,7 +101,16 @@ python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py ${DATA}/NEXUS_Expt_pretty.nc ${DATA}/NEXUS_Expt.nc
+python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 
 #
 #-----------------------------------------------------------------------

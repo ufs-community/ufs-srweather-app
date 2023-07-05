@@ -118,7 +118,7 @@ CONTINUE=false
 VERBOSE=false
 
 # Turn off all apps to build and choose default later
-DEFAULT_BUILD=true 
+DEFAULT_BUILD=true
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
@@ -239,8 +239,8 @@ if [ -z "${COMPILER}" ] ; then
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;
-    macos,singularity) COMPILER=gnu ;;
-    odin,noaacloud) COMPILER=intel ;;
+    macos|singularity) COMPILER=gnu ;;
+    odin|noaacloud) COMPILER=intel ;;
     *)
       COMPILER=intel
       printf "WARNING: Setting default COMPILER=intel for new platform ${PLATFORM}\n" >&2;
@@ -263,7 +263,7 @@ fi
 RUN_VERSION_FILE="${SRW_DIR}/versions/run.ver.${PLATFORM}"
 if [ -f ${RUN_VERSION_FILE} ]; then
   . ${RUN_VERSION_FILE}
-fi 
+fi
 
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
@@ -322,6 +322,7 @@ CMAKE_SETTINGS="\
  -DBUILD_UFS_UTILS=${BUILD_UFS_UTILS}\
  -DBUILD_UPP=${BUILD_UPP}\
  -DBUILD_GSI=${BUILD_GSI}\
+ -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}\
  -DBUILD_NEXUS=${BUILD_NEXUS}\
  -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}"
 
@@ -339,26 +340,6 @@ if [ ! -z "${DISABLE_OPTIONS}" ]; then
 fi
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCPL_AQM=ON -DBUILD_POST_STAT=${BUILD_POST_STAT}"
-
-  # Copy module files to designated directory
-  EXTRN_BUILD_MOD_DIR="${SRW_DIR}/modulefiles/extrn_comp_build"
-  mkdir -p ${EXTRN_BUILD_MOD_DIR}
-  if [ "${BUILD_UFS}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-weather-model.lua"
-    cp "${SRW_DIR}/sorc/ufs-weather-model/modulefiles/ufs_common.lua" ${EXTRN_BUILD_MOD_DIR}
-  fi
-  if [ "${BUILD_UFS_UTILS}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/UFS_UTILS/modulefiles/build.${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_ufs-utils.lua"
-  fi
-  if [ "${BUILD_UPP}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/UPP/modulefiles/${PLATFORM}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_upp.lua" 
-  fi
-  if [ "${BUILD_NEXUS}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/AQM-utils/parm/nexus_modulefiles/${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_nexus.lua"
-  fi
-  if [ "${BUILD_AQM_UTILS}" = "on" ]; then
-    cp "${SRW_DIR}/sorc/AQM-utils/modulefiles/build_${PLATFORM}.${COMPILER}.lua" "${EXTRN_BUILD_MOD_DIR}/mod_aqm-utils.lua"
-  fi
 fi
 
 # make settings
@@ -448,6 +429,9 @@ if [ $USE_SUB_MODULES = true ]; then
 else
     module use ${SRW_DIR}/modulefiles
     module load ${MODULE_FILE}
+    if [[ "${PLATFORM}" == "macos" ]]; then
+        export LDFLAGS+=" -L$MPI_ROOT/lib "
+    fi
 fi
 module list
 

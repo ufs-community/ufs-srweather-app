@@ -65,8 +65,6 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_ICS}
 #
 eval ${PRE_TASK_CMDS}
 
-nprocs=$(( NNODES_MAKE_ICS*PPN_MAKE_ICS ))
-
 if [ -z "${RUN_CMD_UTILS:-}" ] ; then
   print_err_msg_exit "\
   Run command was not set in machine file. \
@@ -86,23 +84,13 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${COMINext}${SLASH_ENSMEM_SUBDIR}"
+    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_ics.${share_pid}${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
-#
-#-----------------------------------------------------------------------
-#
-#
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_ICS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -126,12 +114,14 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15_thompson_mynn_lam3km" | \
   "FV3_GFS_v17_p8" | \
   "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
+  "FV3_HRRR" | \
+  "FV3_RAP" )
     if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
        [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
       varmap_file="GSDphys_var_map.txt"
     elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
+         [ "${EXTRN_MDL_NAME_ICS}" = "UFS-CASE-STUDY" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GEFS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GDAS" ] || \
          [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
@@ -140,10 +130,14 @@ case "${CCPP_PHYS_SUITE}" in
     ;;
 #
   *)
-    print_err_msg_exit "\
-The variable \"varmap_file\" has not yet been specified for this physics
-suite (CCPP_PHYS_SUITE):
+    message_txt="The variable \"varmap_file\" has not yet been specified for 
+this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
     ;;
 #
 esac
@@ -392,11 +386,35 @@ case "${EXTRN_MDL_NAME_ICS}" in
   tg3_from_soil=False
   ;;
 
+"UFS-CASE-STUDY")
+  hh="${EXTRN_MDL_CDATE:8:2}"
+  if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
+    external_model="UFS-CASE-STUDY"
+    input_type="gaussian_nemsio"
+    tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
+    tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
+    fn_atm="gfs.t${hh}z.atmanl.nemsio"
+    fn_sfc="gfs.t${hh}z.sfcanl.nemsio"
+    convert_nst=True
+  fi
+  vgtyp_from_climo=True
+  sotyp_from_climo=True
+  vgfrc_from_climo=True
+  minmax_vgfrc_from_climo=True
+  lai_from_climo=True
+  tg3_from_soil=False
+  unset hh
+  ;;
+
 "GDAS")
+  if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
+    input_type="gaussian_nemsio"
+  elif [ "${FV3GFS_FILE_FMT_ICS}" = "netcdf" ]; then
+    input_type="gaussian_netcdf"
+  fi
+  external_model="GFS"
   tracers_input="[\"spfh\",\"clwmr\",\"o3mr\",\"icmr\",\"rwmr\",\"snmr\",\"grle\"]"
   tracers="[\"sphum\",\"liq_wat\",\"o3mr\",\"ice_wat\",\"rainwat\",\"snowwat\",\"graupel\"]"
-  external_model="GFS"
-  input_type="gaussian_netcdf"
   convert_nst=False
   fn_atm="${EXTRN_MDL_FNS[0]}"
   fn_sfc="${EXTRN_MDL_FNS[1]}"
@@ -471,10 +489,14 @@ case "${EXTRN_MDL_NAME_ICS}" in
   ;;
 
 *)
-  print_err_msg_exit "\
-External-model-dependent namelist variables have not yet been specified
+  message_txt="External-model-dependent namelist variables have not yet been specified
 for this external IC model (EXTRN_MDL_NAME_ICS):
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
   ;;
 
 esac
@@ -498,11 +520,15 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 exec_fn="chgres_cube"
 exec_fp="$EXECdir/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
-  print_err_msg_exit "\
-The executable (exec_fp) for generating initial conditions on the FV3-LAM
-native grid does not exist:
+  message_txt="The executable (exec_fp) for generating initial conditions 
+on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -534,7 +560,7 @@ settings="
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
  'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${FIXam}/global_hyblev.l65.txt,
+ 'vcoord_file_target_grid': ${VCOORD_FILE},
  'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
  'data_dir_input_grid': ${extrn_mdl_staging_dir},
  'atm_files_input_grid': ${fn_atm},
@@ -568,16 +594,23 @@ settings="
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn} || \
-  print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the namelist
-file read in by the ${exec_fn} executable failed.  Parameters passed to
-this script are:
+${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to python script set_namelist.py to set the variables 
+in the namelist file read in by the ${exec_fn} executable failed. Parameters 
+passed to this script are:
   Name of output namelist file:
     nml_fn = \"${nml_fn}\"
   Namelist settings specified on command line (these have highest precedence):
     settings =
 $settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -636,21 +669,29 @@ if [ "${USE_FVCOM}" = "TRUE" ]; then
   fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
   fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
   if [ ! -f "${fvcom_exec_fp}" ]; then
-    print_err_msg_exit "\
-The executable (fvcom_exec_fp) for processing FVCOM data onto FV3-LAM
-native grid does not exist:
+    message_txt="The executable (fvcom_exec_fp) for processing FVCOM data 
+onto FV3-LAM native grid does not exist:
   fvcom_exec_fp = \"${fvcom_exec_fp}\"
 Please ensure that you've built this executable."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"\
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
   fi
   cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
-    print_err_msg_exit "\
-The file or path (fvcom_data_fp) does not exist:
+    message_txt="The file or path (fvcom_data_fp) does not exist:
   fvcom_data_fp = \"${fvcom_data_fp}\"
 Please check the following user defined variables:
   FVCOM_DIR = \"${FVCOM_DIR}\"
   FVCOM_FILE= \"${FVCOM_FILE}\" "
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
   fi
 
   cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
@@ -671,6 +712,20 @@ The following variables were being used:
   fvcom_exe = \"${fvcom_exe}\""
   POST_STEP
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Symlink files to NWGES directory, dropping prefix
+#
+#-----------------------------------------------------------------------
+#
+for i in ${INPUT_DATA}/*.nc; do
+    file=$(basename $i)
+    prefix="${NET}.${cycle}${dot_ensmem}."
+    file=${file#"$prefix"}
+    file=${file/f000/000}
+    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file}
+done
 #
 #-----------------------------------------------------------------------
 #

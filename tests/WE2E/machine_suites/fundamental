@@ -1,9 +1,18 @@
-grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
-grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
-grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_RAP_suite_HRRR
-grid_RRFS_CONUS_25km_ics_GSMGFS_lbcs_GSMGFS_suite_GFS_v15p2
-grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR
-grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_RRFS_v1beta
-grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+# This is the fundamental test suite: this represents a minimal set of cheap tests 
+# to get as wide a test coverage as possible while minimizing core hours usage.
+# This is a good set of tests for a sanity check prior to opening a PR
+
+# Test RRFS_CONUScompact_25km grid, HRRR ics, RAP lbcs, RRFS_v1beta suite
 grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_RRFS_v1beta
-nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
+# Test grid_RRFS_CONUS_25km in NCO mode with FV3GFS bcs (6hr time offset), FV3_GFS_v16 suite
+nco_grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_timeoffset_suite_GFS_v16
+# Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, inline post, GFS_v15p2 suite
+grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v15p2
+# Test grid_RRFS_CONUS_25km grid, FV3GFS bcs, restart files, GFS_v17_p8 suite
+grid_RRFS_CONUS_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v17_p8_plot
+# Test RRFS_CONUScompact_25km grid, HRRR bcs, HRRR suite, user-specified layout and timestep
+grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_HRRR_suite_HRRR
+# Test SUBCONUS_Ind_3km grid, HRRR ics, RAP lbcs, WoFS_v0 suite
+grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0
+# Test RRFS_CONUS_25km grid ensemble, NAM bcs, GFS_v16 suite, MET verification
+grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_GFS_v16

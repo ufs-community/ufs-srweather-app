@@ -98,42 +98,23 @@ set -u
 #
 #-----------------------------------------------------------------------
 #
+default_modules_dir="$HOMEdir/modulefiles"
 machine=$(echo_lowercase $MACHINE)
-
-# source version file (build) only if it is specified in versions directory
-VERSION_FILE="${HOMEdir}/versions/${BUILD_VER_FN}"
-if [ -f ${VERSION_FILE} ]; then
-  . ${VERSION_FILE}
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
+  source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
 fi
+module use "${default_modules_dir}"
 
-source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  module use "${HOMEdir}/modulefiles/extrn_comp_build"
-  if [ "${task_name}" = "make_grid" ] || [ "${task_name}" = "make_orog" ] || \
-     [ "${task_name}" = "make_sfc_climo" ] || [ "${task_name}" = "make_ics" ] || \
-     [ "${task_name}" = "make_lbcs" ]; then
-    module load mod_ufs-utils
-  elif [ "${task_name}" = "run_fcst" ]; then
-    module load mod_ufs-weather-model
-  elif [ "${task_name}" = "run_post" ] && [ "${machine}" != "wcoss2" ]; then
-    module load mod_upp
-  elif [ "${task_name}" = "aqm_lbcs" ] || \
-       [ "${task_name}" = "post_stat_o3" ] || [ "${task_name}" = "post_stat_pm25" ] || \
-       [ "${task_name}" = "bias_correction_o3" ] || \
-       [ "${task_name}" = "bias_correction_pm25" ]; then
-    module load mod_aqm-utils
-  elif [ "${task_name}" = "nexus_emission" ] || ([ "${task_name}" = "nexus_post_split" ] && \
-       [ "${machine}" = "wcoss2" ] ); then
-    module load mod_nexus
-  fi
-else
-  module use "${HOMEdir}/modulefiles"
+if [ "${machine}" != "wcoss2" ]; then
   module load "${BUILD_MOD_FN}" || print_err_msg_exit "\
   Loading of platform- and compiler-specific module file (BUILD_MOD_FN) 
 for the workflow task specified by task_name failed:
   task_name = \"${task_name}\"
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
 fi
+
+module load set_pythonpath || print_err_msg_exit "\
+  Loading the module to set PYTHONPATH for workflow-tools failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -160,9 +141,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-modules_dir="$HOMEdir/modulefiles/tasks/$machine"
+modules_dir="$default_modules_dir/tasks/$machine"
 modulefile_name="${task_name}"
-default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
@@ -170,7 +150,6 @@ default_modules_dir="$HOMEdir/modulefiles"
 #
 #-----------------------------------------------------------------------
 #
-
 print_info_msg "$VERBOSE" "
 Loading modules for task \"${task_name}\" ..."
 
@@ -188,11 +167,16 @@ fi
 modulefile_local="${task_name}.local"
 if [ -f ${modules_dir}/${modulefile_local}.lua ]; then
   module load "${modulefile_local}" || print_err_msg_exit "\
-  Loading .local module file (in directory specified by mod-
-  ules_dir) for the specified task (task_name) failed:
-    task_name = \"${task_name}\"
-    modulefile_local = \"${modulefile_local}\"
-    modules_dir = \"${modules_dir}\""    
+Loading .local module file (in directory specified by modules_dir) for the 
+specified task (task_name) failed:
+  task_name = \"${task_name}\"
+  modulefile_local = \"${modulefile_local}\"
+  modules_dir = \"${modules_dir}\""
+elif [ -f ${modules_dir}/python_srw.lua ] ; then
+  module load python_srw || print_err_msg_exit "\
+  Loading SRW common python module failed. Expected python_srw.lua
+  in the modules directory here:
+  modules_dir = \"${modules_dir}\""
 fi
 
 module list
@@ -226,7 +210,13 @@ print_info_msg "$VERBOSE" "
 Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
-exec "${jjob_fp}"
+
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  /bin/bash "${jjob_fp}"
+else
+  exec "${jjob_fp}"
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -236,5 +226,4 @@ exec "${jjob_fp}"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
 

@@ -3,7 +3,6 @@
 import os
 import sys
 import argparse
-import unittest
 from textwrap import dedent
 from datetime import datetime
 
@@ -58,7 +57,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}_base"
 
     ensmem_num = ENSMEM_INDX
 
@@ -157,46 +156,3 @@ if __name__ == "__main__":
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
     set_FV3nml_ens_stoch_seeds(str_to_type(args.cdate))
-
-
-class Testing(unittest.TestCase):
-    def test_set_FV3nml_ens_stoch_seeds(self):
-        set_FV3nml_ens_stoch_seeds(cdate=self.cdate)
-
-    def setUp(self):
-        define_macos_utilities()
-        set_env_var("DEBUG", True)
-        set_env_var("VERBOSE", True)
-        self.cdate = datetime(2021, 1, 1)
-        USHdir = os.path.dirname(os.path.abspath(__file__))
-        PARMdir = os.path.join(USHdir, "..", "parm")
-        EXPTDIR = os.path.join(USHdir, "test_data", "expt")
-        mkdir_vrfy("-p", EXPTDIR)
-        cp_vrfy(
-            os.path.join(PARMdir, "input.nml.FV3"),
-            os.path.join(EXPTDIR, "input.nml"),
-        )
-        for i in range(2):
-            mkdir_vrfy(
-                "-p",
-                os.path.join(
-                    EXPTDIR,
-                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem{i+1}",
-                ),
-            )
-
-        cd_vrfy(
-            f"{EXPTDIR}{os.sep}{date_to_str(self.cdate,format='%Y%m%d%H')}{os.sep}mem2"
-        )
-
-        set_env_var("USHdir", USHdir)
-        set_env_var("ENSMEM_INDX", 2)
-        set_env_var("FV3_NML_FN", "input.nml")
-        set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))
-        set_env_var("DO_SHUM", True)
-        set_env_var("DO_SKEB", True)
-        set_env_var("DO_SPPT", True)
-        set_env_var("DO_SPP", True)
-        set_env_var("DO_LSM_SPP", True)
-        ISEED_SPP = [4, 5, 6, 7, 8]
-        set_env_var("ISEED_SPP", ISEED_SPP)

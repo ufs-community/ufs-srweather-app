@@ -53,13 +53,10 @@ This is the ex-script for the task that runs PT_SOURCE.
 #
 eval ${PRE_TASK_CMDS}
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 nstep=$(( FCST_LEN_HRS+1 ))
 yyyymmddhh="${PDY}${cyc}"
@@ -67,23 +64,11 @@ yyyymmddhh="${PDY}${cyc}"
 #
 #-----------------------------------------------------------------------
 #
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PT_SOURCE"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Set the directories for CONUS/HI/AK
 #
 #-----------------------------------------------------------------------
 #
-PT_SRC_CONUS="${PT_SRC_BASEDIR}/12US1"
-PT_SRC_HI="${PT_SRC_BASEDIR}/3HI1"
-PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
+PT_SRC_PRECOMB="${DCOMINpt_src}"
 #
 #-----------------------------------------------------------------------
 #
@@ -92,7 +77,16 @@ PT_SRC_AK="${PT_SRC_BASEDIR}/9AK1"
 #-----------------------------------------------------------------------
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -conus ${PT_SRC_CONUS} -hi ${PT_SRC_HI} -ak ${PT_SRC_AK}
+  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"stack-pt-merge.py\" failed."
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 # Move to COMIN

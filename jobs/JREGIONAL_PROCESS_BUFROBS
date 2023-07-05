@@ -1,0 +1,115 @@
+#!/bin/bash
+
+#
+#-----------------------------------------------------------------------
+#
+# This J-JOB script runs the preprocess of BUFR files
+#      for the FV3-LAM model
+#
+# Description:
+#
+#  RRFS runs several executables included with rrfs-utl as a preparation of 
+#  existing RAP bufr files. It does the following:
+#     - Run process_Lightning.exe on files like *lghtng.tm00.bufr_d
+#     - Run process_larccld.exe on files like *lgycld.tm00.bufr_d
+#     - Run process_metarcld.exe on files like *prepbufr.tm00 
+#
+# Arguments needed in the corresponding ex-script:
+#
+#  FIXgsi: Location of GSI fix files
+#  OBSPATH_TEMPLATE: A template path to the location of observation files
+#
+#-----------------------------------------------------------------------
+#
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "task_process_bufrobs" ${GLOBAL_VAR_DEFNS_FP}
+. $USHdir/job_preamble.sh "TRUE"
+#
+#-----------------------------------------------------------------------
+#
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+#
+#-----------------------------------------------------------------------
+#
+# Get the full path to the file in which this script/function is located 
+# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
+# which the file is located (scrfunc_dir).
+#
+#-----------------------------------------------------------------------
+#
+scrfunc_fp=$( readlink -f "${BASH_SOURCE[0]}" )
+scrfunc_fn=$( basename "${scrfunc_fp}" )
+scrfunc_dir=$( dirname "${scrfunc_fp}" )
+#
+#-----------------------------------------------------------------------
+#
+# Print message indicating entry into script.
+#
+#-----------------------------------------------------------------------
+#
+print_info_msg "
+========================================================================
+Entering script:  \"${scrfunc_fn}\"
+In directory:     \"${scrfunc_dir}\"
+
+This is the J-job script for the task that runs a BUFR preprocess for 
+the specified cycle.
+========================================================================"
+#
+#-----------------------------------------------------------------------
+#
+# Create the working directory under the cycle directory.
+#
+#-----------------------------------------------------------------------
+#
+if [ ${CYCLE_TYPE} == "spinup" ]; then
+  DATA="${DATA:-${COMIN}/process_bufrobs_spinup}"
+else
+  DATA="${DATA:-${COMIN}/process_bufrobs}"
+fi
+mkdir_vrfy -p ${DATA}
+
+# Set needed date/time variables
+export START_DATE=$(echo "${PDY} ${cyc}")
+export YYYYMMDDHH=$(date +%Y%m%d%H -d "${START_DATE}")
+
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
+#
+#-----------------------------------------------------------------------
+#
+$SCRIPTSdir/exregional_process_bufrobs.sh || print_err_msg_exit "\
+Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+#
+#-----------------------------------------------------------------------
+#
+# Run job postamble.
+#
+#-----------------------------------------------------------------------
+#
+job_postamble
+#
+#-----------------------------------------------------------------------
+#
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
+#
+#-----------------------------------------------------------------------
+#
+{ restore_shell_opts; } > /dev/null 2>&1
+

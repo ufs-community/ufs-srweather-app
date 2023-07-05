@@ -14,9 +14,10 @@ platform:
   QUEUE_HPSS: dev_transfer
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
-  RUN_CMD_SERIAL: mpiexec
+  RUN_CMD_PRDGEN: mpiexec -n ${nprocs} --cpu-bind core cfp
+  RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpiexec -n ${nprocs}
-  RUN_CMD_AQM: mpiexec -n ${nprocs} -ppn ${ppn_run_aqm} --cpu-bind core -depth ${omp_num_threads_run_aqm}
+  RUN_CMD_NEXUS: mpiexec -n ${nprocs} -ppn ${PPN_NEXUS_EMISSION} --cpu-bind core -depth ${OMP_NUM_THREADS_NEXUS_EMISSION}
   RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
@@ -31,7 +32,13 @@ platform:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
   COMINgfs: /lfs/h1/ops/prod/com/gfs/v16.3
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3
-  COMINairnow: /lfs/h2/emc/physics/noscrub/kai.wang/Bias_correction/airnow/bufr
+  COMINairnow: /lfs/h1/ops/prod/dcom
+task_process_radarref:
+  OBS_SUFFIX: grib2.gz
+task_process_bufr:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
+task_analysis_gsi:
+  OBSPATH_TEMPLATE: '${OBSPATH}/${obs_source}.${YYYYMMDD}/${obs_source}'
 data:
   ics_lbcs:
     GSMGFS: compath.py ${envir}/gsmgfs/${gsmgfs_ver}/gsmgfs.${PDYext}
@@ -41,15 +48,40 @@ data:
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
-  AQM_DUST_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
-  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-  AQM_FIRE_DIR: /lfs/h2/emc/aqmtemp/RAVE_NA
-  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
-  AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
+  DCOMINbio_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
+  DCOMINdust_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
+  DCOMINcanopy_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
+  DCOMINfire_default: /lfs/h1/ops/dev/dcom
+  DCOMINchem_lbcs_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  DCOMINgefs_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+  DCOMINpt_src_default: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
+  DCOMINairnow_default: /lfs/h1/ops/prod/dcom
+  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
-  PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt
 
+rocoto:
+  tasks:
+    task_get_extrn_ics:
+      native:
+    task_get_extrn_lbcs:
+      native:
+    task_plot_allvars:
+      native:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores:
+        native: '{{ platform.SCHED_NATIVE_CMD }}'
+        nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST }}'
+        nodesize: '{{ platform.NCORES_PER_NODE }}'
+    metatask_nexus_emission:
+      task_nexus_emission_#nspt#:
+        nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_nexus_emission.OMP_NUM_THREADS_NEXUS_EMISSION }}'
+    task_fire_emission:
+      native:
+    task_bias_correction_o3:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_o3.OMP_NUM_THREADS_BIAS_CORRECTION_O3 }}'
+    task_bias_correction_pm25:
+      nodes: '{{ nnodes }}:ppn={{ ppn }}:tpp={{ task_bias_correction_pm25.OMP_NUM_THREADS_BIAS_CORRECTION_PM25 }}'

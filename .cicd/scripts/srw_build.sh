@@ -27,7 +27,7 @@ fi
 # Build and install
 cd ${workspace}/tests
 set +e
-./build.sh ${platform} ${SRW_COMPILER}
+./build.sh ${platform} ${SRW_COMPILER} all
 build_exit=$?
 set -e
 cd -
@@ -35,6 +35,6 @@ cd -
 # Create combined log file for upload to s3
 build_dir="${workspace}/build_${SRW_COMPILER}"
 cat ${build_dir}/log.cmake ${build_dir}/log.make \
-    >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.log
+    >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.txt
 
 exit $build_exit

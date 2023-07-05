@@ -52,28 +52,11 @@ This is the ex-script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 eval ${PRE_TASK_CMDS}
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_PRE_POST_STAT"
-rm_vrfy -r $DATA
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
 
-if [ "${FCST_LEN_HRS}" = "-1" ]; then
-  for i_cdate in "${!ALL_CDATES[@]}"; do
-    if [ "${ALL_CDATES[$i_cdate]}" = "${PDY}${cyc}" ]; then
-      FCST_LEN_HRS="${FCST_LEN_CYCL_ALL[$i_cdate]}"
-      break
-    fi
-  done
-  if [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
-    rm_vrfy -f "${COMIN}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
-  fi
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 
 ist=1
@@ -95,6 +78,8 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   mv_vrfy ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
 
   ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
+
+  ncks -v aod ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
 
   (( ist=ist+1 ))
 done
@@ -127,6 +112,7 @@ ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.
 mv_vrfy ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
 mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
 mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
+mv_vrfy ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
 #
 #-----------------------------------------------------------------------
 #
