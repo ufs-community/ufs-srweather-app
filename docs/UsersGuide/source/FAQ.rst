@@ -11,6 +11,8 @@ FAQ
 * :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
+* :ref:`How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App? <AddPhys>`
+* :ref:`How can I troubleshoot issues related to ICS/LBCS generation for a predefined 3-km grid? <IC-LBC-gen-issue>`
 
 .. _DefineExptName:
 
@@ -171,3 +173,29 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
 Follow any instructions output by the console. 
 
 Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+
+.. _AddPhys:
+
+====================================================================
+How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
+====================================================================
+
+At this time, there are ten physics suites available in the SRW App, :ref:`five of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App.
+To enable an additional physics scheme, such as the YSU PBL scheme, users must modify ``ufs-srweather-app/parm/FV3.input.yml`` and set the variable corresponding to the desired physics scheme to True under the physics suite they would like to use (e.g., ``do_ysu = True``).
+
+It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to False in the ``FV3.input.yml`` file.
+Regardless, users will need to modify the suite definition file (SDF) and recompile the code. For example, to activate the YSU PBL scheme, users should replace the line ``<scheme>satmedmfvdifq</scheme>`` with ``<scheme>ysuvdif</scheme>`` and recompile the code.
+
+Users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
+
+.. _IC-LBC-gen-issue:
+
+==========================================================================================================
+How can I troubleshoot issues related to :term:`ICS`/:term:`LBCS` generation for a predefined 3-km grid?
+==========================================================================================================
+
+If you encounter issues while generating ICS and LBCS for a predefined 3-km grid using the UFS SRW App, there are a number of troubleshooting options. The first step is always to check the log file for a failed task. This file will provide information on what went wrong. A log file for each task appears in the ``log`` subdirectory of the experiment directory (e.g., ``$EXPTDIR/log/make_ics``).
+
+Additionally, users can try increasing the number of processors or the wallclock time requested for the jobs. Sometimes jobs may fail without errors because the process is cut short. These settings can be adusted in one of the ``ufs-srweather-app/parm/wflow`` files. For ICs/LBCs tasks, these parameters are set in the ``coldstart.yaml`` file. 
+
+Users can also update the hash of UFS_UTILS in the ``Externals.cfg`` file to the HEAD of that repository. There was a known memory issue with how ``chgres_cube`` was handling regridding of the 3-D wind field for large domains at high resolutions (see `UFS_UTILS PR #766 <https://github.com/ufs-community/UFS_UTILS/pull/766>`__ and the associated issue for more information). If changing the hash in ``Externals.cfg``, users will need to rerun ``manage_externals`` and rebuild the code (see :numref:`Chapter %s <BuildSRW>`). 
