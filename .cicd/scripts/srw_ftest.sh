@@ -137,6 +137,7 @@ status=0
 
 # Limit to machines that are fully ready
 target_machines=( jet cheyenne noaacloud )
+touch ${results_file}
 if [[ ${target_machines[@]} =~ ${platform,,} ]] ; then
     echo "# Try the first few simple SRW tasks ..."
     for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
