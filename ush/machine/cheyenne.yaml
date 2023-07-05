@@ -21,6 +21,7 @@ platform:
   RUN_CMD_AQMLBC: mpirun -np ${NUMTS}
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data
   TEST_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir

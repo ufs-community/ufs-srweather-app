@@ -192,12 +192,6 @@ if [ -n "${SRW_ENV:-}" ] ; then
   set -u
 fi
 
-if [ -n "${AQM_ENV:-}" ] ; then
-  set +u
-  source "${AQM_ENV_FP}/${AQM_ENV}/bin/activate"
-  set -u
-fi
-
 #
 #-----------------------------------------------------------------------
 #

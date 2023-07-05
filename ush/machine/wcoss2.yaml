@@ -22,6 +22,7 @@ platform:
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/aqm_data
   TEST_PREGEN_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/FV3LAM_pregen
   FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
