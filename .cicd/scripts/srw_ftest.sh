@@ -136,10 +136,11 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-target_machines=( jet cheyenne noaacloud )
-touch ${results_file}
-if [[ ${target_machines[@]} =~ ${platform,,} ]] ; then
-    echo "# Try the first few simple SRW tasks ..."
+deny_machines=( hera gaea orion )
+if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
+    echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
+else
+    echo "# Try ${platform} with the first few simple SRW tasks ..." | tee -a ${results_file}
     for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
                 echo -n "./$task.sh ... "
                 ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
