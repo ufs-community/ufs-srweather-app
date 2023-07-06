@@ -15,7 +15,8 @@ pipeline {
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // Use the line below to re-enable Gaea
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'hera', 'jet', 'orion'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'hera', 'jet'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Uncomment the following line to re-enable comprehensive tests
@@ -79,7 +80,8 @@ pipeline {
                     axis {
                         name 'SRW_PLATFORM'
                         // values 'cheyenne', 'gaea', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'cheyenne', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        // values 'cheyenne', 'hera', 'jet', 'orion' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'hera', 'jet' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -94,7 +96,8 @@ pipeline {
                             axis {
                             name 'SRW_PLATFORM'
                             // values 'gaea', 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                            values 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            // values 'jet', 'orion' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'jet' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
