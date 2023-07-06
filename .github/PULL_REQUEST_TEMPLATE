@@ -44,7 +44,6 @@
 
 ## DEPENDENCIES:
 <!-- Add any links to external PRs (e.g. regional_workflow and/or UFS PRs). For example:
-- ufs-community/regional_workflow/pull/<pr_number>
 - ufs-community/UFS_UTILS/pull/<pr_number>
 - ufs-community/ufs-weather-model/pull/<pr_number> -->
 
@@ -64,6 +63,9 @@
 - [ ] My changes generate no new warnings
 - [ ] New and existing tests pass with my changes
 - [ ] Any dependent changes have been merged and published
+
+## REQUEST SPECIFIC REVIEWERS (optional):
+<!-- If there are specific people that you would like to have review your PR, please tag them in this section. -->
 
 ## LABELS (optional): 
 <!-- If you do not have permissions to add labels to your own PR, request that labels be added here. 
