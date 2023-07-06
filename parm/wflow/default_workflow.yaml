@@ -5,11 +5,7 @@ rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
-<<<<<<< HEAD
     COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/{}.@Y@m@d/@H".format(nco.COMIN_BASEDIR,nco.RUN_default)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
-=======
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/{}.@Y@m@d/@H".format(nco.COMIN_BASEDIR,nco.RUN)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
->>>>>>> 1d80d7b2... documentation updates and code cleanup
     COMINgfs: '{{ platform.get("COMINgfs") }}'
     FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/run_fcst_mem#mem#.{}_@Y@m@d@H".format(nco.DATAROOT_default,workflow.WORKFLOW_ID)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
@@ -20,12 +16,9 @@ rocoto:
     MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
-<<<<<<< HEAD
     NET: '{{ nco.NET_default }}'
-=======
-    NET: '{{ nco.NET }}'
->>>>>>> 1d80d7b2... documentation updates and code cleanup
     NOHRSC_OBS_DIR: '{{ platform.NOHRSC_OBS_DIR }}'
+    PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
     PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
