@@ -79,8 +79,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   vmm=`echo ${vdate} | cut -c5-6`    # month (MM) of valid time
   vdd=`echo ${vdate} | cut -c7-8`    # day (DD) of valid time
   vhh=`echo ${vdate} | cut -c9-10`       # forecast hour (HH)
-  #vhh_noZero=$(( ${vhh} + 0)
-
 
   # Create necessary raw and prop directories
   if [[ ! -d "$nohrsc_raw/${vyyyymmdd}" ]]; then
@@ -91,15 +89,10 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     mkdir_vrfy -p $nohrsc_proc/${vyyyymmdd}
   fi
 
-  # Name of NOHRSC tar file on HPSS is dependent on date. Logic accounts for files from 2019 until Sept. 2020.
-
+  # Name of NOHRSC tar file on HPSS is for files after Mar. 2020.
   TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/dcom_prod_${vyyyy}${vmm}${vdd}.tar"
 
-  # Check if file exists on disk; if not, pull it.
-  #nohrsc_file="$nohrsc_proc/${vyyyymmdd}/nohrsc.t${vhh}z.${accum}h.hrap.conus.gb2"
-
-  #nohrsc_file="$nohrsc_proc/${vyyyymmdd}/./wgrbbul/nohrsc_snowfall/sfav2_CONUS_${accum}h_${vyyyymmdd}${vhh}_grid184.grb2"
-  accum_noZero=$(( 10#$accum + 0 ))
+  accum_noZero=$(( 10#$accum ))
   nohrsc_file="$nohrsc_proc/${vyyyymmdd}/sfav2_CONUS_06h_${vyyyymmdd}${vhh}_grid184.grb2"
   echo "NOHRSC FILE:${nohrsc_file}"
   if [[ ! -f "${nohrsc_file}" ]]; then 

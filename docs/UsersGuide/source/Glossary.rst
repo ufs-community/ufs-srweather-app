@@ -188,6 +188,9 @@ Glossary
    netCDF
       NetCDF (`Network Common Data Form <https://www.unidata.ucar.edu/software/netcdf/>`__) is a file format and community standard for storing multidimensional scientific data. It includes a set of software libraries and machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.
 
+   NOHRSC
+      The National Operational Hydrologic Remote Sensing Center provides The National Snowfall Analysis, an observation-based, gridded estimate of recent snowfall, is now an operational product. 
+
    NSSL
       The `National Severe Storms Laboratory <https://www.nssl.noaa.gov/>`__. 
 
