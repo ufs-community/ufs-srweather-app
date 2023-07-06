@@ -839,7 +839,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                       | NOAA HPSS. Can only be run if ``verify_pre.yaml`` is       |
    |                       | included in a ``tasksgroups`` list *and* user has access   |
    |                       | to NOAA :term:`HPSS` data. ``ASNOW`` should also be added  |
-   |                       | to the ``VX_FIELDS`` list.                                        |
+   |                       | to the ``VX_FIELDS`` list.                                 |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
    |                       | HPSS. Can only be run if ``verify_pre.yaml`` is included   |
