@@ -154,11 +154,11 @@ def run_we2e_tests(homedir, args) -> None:
             if run_envir == "nco":
                 if 'nco' not in test_cfg:
                     test_cfg['nco'] = dict()
-                test_cfg['nco'].update({"model_ver": "we2e"})
+                test_cfg['nco'].update({"model_ver_default": "we2e"})
         if args.opsroot:
             if 'nco' not in test_cfg:
                 test_cfg['nco'] = dict()
-            test_cfg['nco'].update({"OPSROOT": args.opsroot})
+            test_cfg['nco'].update({"OPSROOT_default": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -178,7 +178,6 @@ def run_we2e_tests(homedir, args) -> None:
         if args.verbose_tests:
             test_cfg['workflow'].update({"VERBOSE": args.verbose_tests})
 
-
         logging.debug(f"Overwriting WE2E-test-specific settings for test \n{test_name}\n")
 
         if 'task_get_extrn_ics' in test_cfg:
@@ -190,6 +189,10 @@ def run_we2e_tests(homedir, args) -> None:
 
         if 'verification' in test_cfg:
             logging.debug(test_cfg['verification'])
+
+        if 'cpl_aqm_parm' in test_cfg:
+            test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
+            test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")

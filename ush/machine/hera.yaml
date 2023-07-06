@@ -25,6 +25,7 @@ platform:
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/aqm_data
   TEST_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
@@ -45,14 +46,16 @@ task_get_da_obs:
 
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
-  AQM_DUST_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
-  AQM_CANOPY_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  AQM_FIRE_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
-  AQM_LBCS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  AQM_GEFS_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
+  DCOMINbio_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
+  DCOMINdust_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
+  DCOMINcanopy_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
+  DCOMINfire_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
+  DCOMINchem_lbcs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  DCOMINgefs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
+  DCOMINpt_src_default: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
   NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
   NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
+  NEXUS_GFS_SFC_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA
   PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
 
 rocoto:

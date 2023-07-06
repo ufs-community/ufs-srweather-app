@@ -1,13 +1,8 @@
 metadata:
-  description: config for Online-CMAQ, AQM_NA_13km, community mode
+  description: config for SRW-AQM, AQM_NA_13km, community mode, FV3_GFS_v16 physics suite
 user:
   RUN_ENVIR: community
-  MACHINE: [hera or wcoss2]
-  ACCOUNT: [account name]
 workflow:
-  USE_CRON_TO_RELAUNCH: true
-  CRON_RELAUNCH_INTVL_MNTS: 3
-  EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023021700'
@@ -18,9 +13,6 @@ workflow:
     - 6
     - 12
   PREEXISTING_DIR_METHOD: rename
-  VERBOSE: true
-  DEBUG: true
-  COMPILER: intel
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
@@ -37,11 +29,13 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
   EXTRN_MDL_ICS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
   LBC_SPEC_INTVL_HRS: 6
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  USE_USER_STAGED_EXTRN_FILES: true    
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50

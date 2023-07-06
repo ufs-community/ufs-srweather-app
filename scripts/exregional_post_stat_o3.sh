@@ -66,16 +66,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_POST_STAT_O3"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # POST-STAT: O3
 #
 #-----------------------------------------------------------------------
@@ -98,8 +88,15 @@ EOF1
 
 # convert from netcdf to grib2 format
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
@@ -110,13 +107,13 @@ fi
 
 fhr=01
 while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
-  fhr9=$( printf "%02d" "${fhr}" )
+  fhr3d=$( printf "%03d" "${fhr}" )
 
-  if [ "${fhr9}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 >> ${NET}.${cycle}.1ho3.${id_domain}.grib2
+  if [ "${fhr3d}" -le "07" ]; then
+    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 >> ${NET}.${cycle}.1ho3.${id_domain}.grib2
   else
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.1ho3.${id_domain}.grib2
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr9}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.8ho3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.1ho3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.8ho3.${id_domain}.grib2
   fi
   (( fhr=fhr+1 ))
 done
@@ -150,9 +147,12 @@ for grid in 227 196 198;do
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
-    for var in 1ho3 8ho3 awpozcon;do
+    for var in 1ho3 8ho3;do
       cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp_vrfy ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUT}
+      cp_vrfy ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
+    done
+    for var in awpozcon;do
+      cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   else
     for var in 1ho3 awpozcon;do
@@ -185,10 +185,10 @@ EOF1
 
   ## 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -s  ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln_vrfy -s  ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -197,20 +197,20 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     ## 12z needs b.nc to find current day output from 04Z to 06Z 
-    if [ -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN_PDY}/00/${NET}.t00z.chem_sfc.nc b.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
+      ln_vrfy -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
     fi
 
     ## 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN_PDY}/06/${NET}.t06z.chem_sfc.nc c.nc
-    elif [ -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN_PDYm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+    if [ -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc ]; then
+      ln_vrfy -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc c.nc
+    elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
+      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -218,8 +218,15 @@ EOF1
   fi
 
   PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-  Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
+    fi
+  fi
   POST_STEP
 
   # split into max_1h and max_8h files and copy to grib227
@@ -237,7 +244,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
     cp_vrfy ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
-    if [ "$SENDDBN" = "YES" ]; then
+    if [ "$SENDDBN" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     fi
@@ -260,10 +267,10 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp_vrfy awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUT}
-    if [ "${SENDDBN_NTC}" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
+    cp_vrfy awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
+    if [ "${SENDDBN_NTC}" = "TRUE" ]; then
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi
