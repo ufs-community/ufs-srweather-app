@@ -144,6 +144,12 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
       ;;
+    "ASNOW06h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
+    "ASNOW24h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
     "REFC")
       FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
       ;;
@@ -212,6 +218,9 @@ if [ "${grid_or_point}" = "grid" ]; then
     case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
       "APCP01h")
         OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
+        ;;
+      "ASNOW")
+        OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
         ;;
       "REFC")
         OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"

@@ -274,6 +274,28 @@ platform:
   # is provided, it will be accounted for in the
   # exregional_get_ccpa_files.sh script.
   #
+  # NOHRSC_OBS_DIR:
+  # User-specified location of top-level directory where NOHRSC 6- and 24-h hour
+  # snowfall accumulation files used by METplus are located. This parameter
+  # needs to be set for both user-provided observations and for
+  # observations that are retrieved from the NOAA HPSS (if the user has
+  # access) via the get_obs_nohrsc task (activated in workflow by
+  # including the parm/wflow/verify_pre.yaml task set in the wflow config).
+  # In the case of pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. Please note, this
+  # path must be defind as /full-path-to-obs/nohrsc/proc. METplus is
+  # configured to verify 06- and 24-h accumulated snowfall
+  # precipitation using 6- and 12-hourly NOHRSC files, respectively.
+  # METplus configuration files require the use of predetermined
+  # directory structure and file names. Therefore, if the NOHRSC files are
+  # user provided, they need to follow the anticipated naming structure:
+  #
+  # {YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
+  #
+  # where AA is the 2-digit accumulation duration, YYYY is the 4-digit
+  # valid year, MM the 2-digit valid month, DD the 2-digit valid day
+  # of the month, and HH the 2-digit valid hour of the day.
+  #
   # MRMS_OBS_DIR:
   # User-specified location of top-level directory where MRMS composite
   # reflectivity files used by METplus are located.  This parameter
@@ -336,6 +358,7 @@ platform:
   MET_BIN_EXEC: ""
   METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
+  NOHRSC_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
   #
@@ -2407,6 +2430,7 @@ verification:
   #
   OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
   OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_NOHRSC_ASNOW_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'
   OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_NDAS_SFCorUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
@@ -2426,9 +2450,16 @@ verification:
   # VX_APCP_ACCUMS_HRS must contain at least one element.  If not,
   # VX_APCP_ACCUMS_HRS will be ignored.
   #
+  # VX_ASNOW_ACCUMS_HRS:
+  # The 2-digit accumulation periods (in units of hours) to consider for
+  # ASNOW (accumulated snowfall).  If VX_FIELDS contains "ASNOW", then
+  # VX_ASNOW_ACCUMS_HRS must contain at least one element.  If not,
+  # VX_ASNOW_ACCUMS_HRS will be ignored.
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
   VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
+  VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]
   #
   # VX_FCST_INPUT_BASEDIR:
   # Template for top-level directory containing forecast (but not obs)
@@ -2452,7 +2483,7 @@ verification:
   #
   FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
   FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more

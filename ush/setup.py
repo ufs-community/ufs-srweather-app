@@ -557,6 +557,12 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                                 "metatask_GenEnsProd_EnsembleStat_CCPA",
                                 "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
 
+    vx_fields_all["NOHRSC"] = ["ASNOW"]
+    vx_metatasks_all["NOHRSC"] = ["metatask_PcpCombine_fcst_all_accums_all_mems", 
+                                "metatask_GridStat_NOHRSC_all_accums_all_mems",
+                                "metatask_GenEnsProd_EnsembleStat_NOHRSC",
+                                "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
+
     vx_fields_all["MRMS"] = ["REFC", "RETOP"]
     vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_MRMS",
