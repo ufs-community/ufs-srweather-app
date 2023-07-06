@@ -1,8 +1,8 @@
 .. _VXCases:
 
-============================
-Verification Sample Cases
-============================
+===================================
+METplus Verification Sample Cases
+===================================
 
 Introduction
 ===============
