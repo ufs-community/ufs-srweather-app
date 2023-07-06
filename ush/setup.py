@@ -551,15 +551,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_metatasks_all = {}
 
     vx_fields_all["CCPA"] = ["APCP"]
-    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs", 
-                                "metatask_PcpCombine_fcst_APCP_all_accums_all_mems", 
+    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs",
+                                "metatask_PcpCombine_fcst_APCP_all_accums_all_mems",
                                 "metatask_GridStat_CCPA_all_accums_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_CCPA",
                                 "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
 
     vx_fields_all["NOHRSC"] = ["ASNOW"]
     vx_metatasks_all["NOHRSC"] = ["task_get_obs_nohrsc",
-                                "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems", 
+                                "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
                                 "metatask_GridStat_NOHRSC_all_accums_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NOHRSC",
                                 "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
