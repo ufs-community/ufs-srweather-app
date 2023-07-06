@@ -2442,7 +2442,12 @@ verification:
   # well as in the contents of those files.
   #
   # VX_FIELDS:
-  # The fields or groups of fields on which to run verification.
+  # The fields or groups of fields on which to run verification. Because
+  # ASNOW is often not of interest in cases outside of winter, and 
+  # because observation files are not located for retrospective
+  # cases on NOAA HPSS before March 2020, ASNOW is not included by default.
+  # "ASNOW" may be added to this list in order to include
+  # the related verification tasks in the workflow. 
   #
   # VX_APCP_ACCUMS_HRS:
   # The 2-digit accumulation periods (in units of hours) to consider for

@@ -170,7 +170,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | PARTITION_HPSS, QUEUE_HPSS, PARTITION_FCST, QUEUE_FCST,               |
    |                             | RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST, SLURM_NATIVE_CMD,          |
    |                             | MODEL, MET_INSTALL_DIR, METPLUS_PATH, MET_BIN_EXEC, CCPA_OBS_DIR,     |
-   |                             | MRMS_OBS_DIR, NDAS_OBS_DIR                                            |
+   |                             | MRMS_OBS_DIR, NDAS_OBS_DIR, NOHRSC_OBS_DIR                            |
    +-----------------------------+-----------------------------------------------------------------------+
    | Workflow                    | WORKFLOW_ID, USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS,          |
    |                             | EXPT_BASEDIR, EXPT_SUBDIR, EXEC_SUBDIR, DOT_OR_USCORE,                |
@@ -277,6 +277,8 @@ The user must specify certain basic experiment configuration information in a ``
    | MET_INSTALL_DIR                | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
+   +--------------------------------+-------------------+------------------------------------+
+   | NOHRSC_OBS_DIR                 | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | MRMS_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
@@ -722,12 +724,14 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
    platform:
       CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
    rocoto:
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
        task_get_obs_ccpa:
+       task_get_obs_nohrsc:
        task_get_obs_mrms:
        task_get_obs_ndas:
 
@@ -827,18 +831,24 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    | **Workflow Task**     | **Task Description**                                       |
    +=======================+============================================================+
    | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
-   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
+   |                       | HPSS. Can only be run if ``verify_pre.yaml`` is included   |
+   |                       | in a ``tasksgroups`` list *and* user has access to NOAA    |
    |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
+   | GET_OBS_NOHRSC        | Retrieves and organizes hourly :term:`NOHRSC` data from    |
+   |                       | NOAA HPSS. Can only be run if ``verify_pre.yaml`` is       |
+   |                       | included in a ``tasksgroups`` list *and* user has access   |
+   |                       | to NOAA :term:`HPSS` data. ``ASNOW`` should also be added  |
+   |                       | to the ``VX_FIELDS`` list.                                        |
+   +-----------------------+------------------------------------------------------------+
    | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
-   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
+   |                       | HPSS. Can only be run if ``verify_pre.yaml`` is included   |
+   |                       | in a ``tasksgroups`` list *and* user has access to NOAA    |
    |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
    | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
    |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
-   |                       | only be run if ``verify.yaml`` is included in a            |
+   |                       | only be run if ``verify_pre.yaml`` is included in a        |
    |                       | ``tasksgroups`` list *and* user has access to NOAA         |
    |                       | :term:`HPSS` data.                                         |
    +-----------------------+------------------------------------------------------------+
