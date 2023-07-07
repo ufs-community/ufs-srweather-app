@@ -1,5 +1,5 @@
-Technical Details
-====================
+Tinkering with Workflow Details
+==================================
    
 .. toctree::
    :maxdepth: 3
