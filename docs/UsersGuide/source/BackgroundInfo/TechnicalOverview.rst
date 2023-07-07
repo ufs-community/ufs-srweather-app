@@ -30,6 +30,7 @@ Additional background knowledge in the following areas could be helpful:
 * Containerization
 * Workflow Managers/Rocoto
 
+.. _software-prereqs:
 
 Software/Operating System Requirements
 -----------------------------------------

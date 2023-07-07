@@ -92,56 +92,7 @@ In the future, GSI may be phased out in favor of :term:`JEDI`, and the UFS commu
 RRFS Utilities
 ================
 
-The Rapid Refresh Forecast System (RRFS) Utilities (rrfs_utl) are a set of tools that that perform tasks required for implementing RRFS capabilities in the SRW App. For example, rrfs_utl performs preprocessing for lightning data, METAR cloud observations, NASA LaRC cloud products, and the NSSL radar reflectivity mosaic. It also provides cloud analysis for the FV3 dycore and radar reflectivity to temperature tendency conversions. For more information on RRFS Utilities, visit the GitHub repository at https://github.com/NOAA-GSL/rrfs_utl or see :numref:`Table %s <rrfs-utl-executables>` for a detailed description of executables. 
-
-.. _rrfs-utl-executables:
-
-.. list-table:: *rrfs_utl Executables*
-   :widths: 20 50
-   :header-rows: 1
-
-   * - Executable
-     - Description
-   * - gsi.x*
-     - Runs the Gridpoint Statistical Interpolation (GSI).  
-   * - enkf.x*
-     - Runs the Ensemble Kalman Filter.
-   * - gen_annual_maxmin_GVF.exe*
-     - Generates maximum and minimum greenness vegetation fraction (GVF) files based on year-long GVF observations for update_GVF process.
-   * - update_GVF.exe*
-     - Updates the GVF in the surface file based on the real-time observation files.
-   * - ref2tten.exe*
-     - Calculates temperature tendency based on the radar reflectivity observation at each grid point. This temperature tendency can be used by the model during integration as latent heating initialization for ongoing precipitation systems, especially convection.
-   * - update_ice.exe*
-     - Replaces ice fields in warm-start surface files based on previous cold-start forecast results using the GFS as the initial file.
-   * - process_updatesst.exe*
-     - Updates sea surface temperature (SST) field based on the SST analysis from :term:`NCEP`.
-   * - check_imssnow_fv3lam.exe*
-     - This is a tool used to read snow and ice fields from surface files and check that field. 
-   * - gen_cs.exe*
-     - NCL scripts to perform cross section plotting
-   * - lakesurgery.exe*
-     - Replaces the existing lake depth with the GLOBathy bathymetry. It is designed to work with the HRRR model.
-   * - process_imssnow_fv3lam.exe*
-     - Uses :term:`FV3` :term:`LAM` snow and ice fields based on the snow and ice information from imssnow.
-   * - gen_ensmean_recenter.exe*
-     - Runs the ensemble mean/recentering calculation for FV3LAM ensemble files.
-   * - update_bc.exe*
-     - Adjusts 0-h boundary conditions based on the analysis results during data assimilation cycling.
-   * - adjust_soiltq.exe*
-     - Uses the lowest level temperature and moisture analysis increments to adjust the soil moisture and soil temperature after analysis.
-   * - process_NSSL_mosaic.exe*
-     - Processes NSSL MRMS radar reflectivity mosaic observations. Reads 33 level NSSL MRMS radar reflectivity grib2 files and then interpolates the reflectivity horizontally to the ESG grid.
-   * - use_raphrrr_sfc.exe*
-     - Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM. This is only used for starting the RRFS surface cycling.
-   * - process_Lightning.exe*
-     - Processes lightning data. Reads NLDN NetCDF observation files and maps the lightning observations into the FV3LAM ESG grid.
-   * - process_larccld.exe*
-     - Processes NASA Langley cloud top product. Reads the cloud top pressure, temperature, etc. and maps them to the ESG grid.
-   * - process_metarcld.exe*
-     - Processes METAR ceilometers cloud observations. Reads the cloud base and coverage observations from PrepBUFR and distributes the cloud observations/weather/visibility observations to the ESG grid.
-   * - fv3lam_nonvarcldana.exe*
-     - Runs the non-variational cloud and precipitable hydrometeor analysis based on the METAR cloud observations, satellite retrieved cloud top products, and radar reflectivity.
+The Rapid Refresh Forecast System (RRFS) Utilities (rrfs_utl) are a set of tools that that perform tasks required for implementing RRFS capabilities in the SRW App. For example, rrfs_utl performs preprocessing for lightning data, METAR cloud observations, NASA LaRC cloud products, and the NSSL radar reflectivity mosaic. It also provides cloud analysis for the FV3 dycore and radar reflectivity to temperature tendency conversions. For more information on RRFS Utilities, visit the GitHub repository at https://github.com/NOAA-GSL/rrfs_utl or see :numref:`Table %s <RRFSexec>` for a detailed description of executables. 
 
 Unified Workflow Tools
 ========================
