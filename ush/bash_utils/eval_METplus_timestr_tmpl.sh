@@ -185,8 +185,10 @@ METplus time string template passed to this function is:
   METplus_timestr_tmpl = \"${METplus_timestr_tmpl}\""
       ;;
   esac
-
-  time_shift_str=$(( ${METplus_time_shift} + 0 ))" seconds"
+#
+# Calculate the time shift as an integer in units of seconds.
+#
+  time_shift_str=$(( $(printf "%.0f" "${METplus_time_shift}") + 0 ))" seconds"
 #
 #-----------------------------------------------------------------------
 #

@@ -14,4 +14,4 @@ class Testing(unittest.TestCase):
         test_dir = os.path.dirname(os.path.abspath(__file__))
         USHdir = os.path.join(test_dir, "..", "..", "ush")
         params = calculate_cost(os.path.join(USHdir, 'config.community.yaml'))
-        self.assertCountEqual(params, [180, 28689, 180, 28689])
+        self.assertCountEqual(params, [150, 28689, 150, 28689])

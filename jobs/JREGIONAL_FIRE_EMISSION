@@ -90,8 +90,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
+if [ "${RUN_ENVIR}" = "community" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_FIRE_EMISSION}"
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -99,7 +103,7 @@ mkdir_vrfy -p "${DATA}"
 #
 #-----------------------------------------------------------------------
 #
-export FIRE_EMISSION_STAGING_DIR="${COMINext}/FIRE_EMISSION"
+export FIRE_EMISSION_STAGING_DIR="${FIRE_EMISSION_STAGING_DIR:-${COMIN}/FIRE_EMISSION}"
 mkdir_vrfy -p "${FIRE_EMISSION_STAGING_DIR}"
 #
 #-----------------------------------------------------------------------

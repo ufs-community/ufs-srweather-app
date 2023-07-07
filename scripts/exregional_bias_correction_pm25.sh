@@ -73,18 +73,6 @@ else
   All executables will be submitted with command \'${RUN_CMD_SERIAL}\'."
 fi
 
-#
-#-----------------------------------------------------------------------
-#
-# Move to the working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_BIAS_CORRECTION_PM25"
-rm_vrfy -rf $DATA
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-
 yyyy=${PDY:0:4}
 yyyymm=${PDY:0:6}
 yyyy_m1=${PDYm1:0:4}
@@ -115,26 +103,53 @@ fi
 # STEP 1: Retrieve AIRNOW observation data
 #-----------------------------------------------------------------------------
 
-# Link the historical airnow data
 mkdir_vrfy -p "${DATA}/data"
-ln_vrfy -sf ${AQM_AIRNOW_HIST_DIR}/bcdata* "${DATA}/data"
-if [ -d "${DATA}/data/bcdata.${yyyymm}" ]; then
-  rm_vrfy -rf "${DATA}/data/bcdata.${yyyymm}"
-  mkdir_vrfy -p "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow" "${DATA}/data/bcdata.${yyyymm}"
-  cp_vrfy -rL "${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated" "${DATA}/data/bcdata.${yyyymm}"
-fi
 
-# Retrieve real-time airnow data for the last three days
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir -p ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+# Retrieve real-time airnow data for the last three days.
+# In the following for-loop, pdym stands for previous (m) day of the present day (PDY)
+# in the NCO standards, i.e. PDYm1: 1day ago, PDYm2: 2days ago, PDYm3: 3days ago
+for i_pdym in {1..3}; do
+    case $i_pdym in
+      1)
+        cvt_yyyy="${yyyy_m1}"
+        cvt_yyyymm="${yyyymm_m1}"
+        cvt_pdy="${PDYm1}"
+        ;;
+      2)
+        cvt_yyyy="${yyyy_m2}"
+        cvt_yyyymm="${yyyymm_m2}"
+        cvt_pdy="${PDYm2}"
+        ;;
+      3)
+        cvt_yyyy="${yyyy_m3}"
+        cvt_yyyymm="${yyyymm_m3}"
+        cvt_pdy="${PDYm3}"
+        ;;
+    esac
 
-  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx031 ${DATA}/data/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-fi
+    cvt_input_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/csv"
+    cvt_output_dir="${DATA}/data/bcdata.${cvt_yyyymm}/airnow/netcdf"
+    cvt_input_fn="HourlyAQObs_YYYYMMDDHH.dat"
+    cvt_output_fn="HourlyAQObs.YYYYMMDD.nc"
+    cvt_input_fp="${cvt_input_dir}/YYYY/YYYYMMDD/${cvt_input_fn}"
+    cvt_output_fp="${cvt_output_dir}/YYYY/YYYYMMDD/${cvt_output_fn}"
+
+    mkdir_vrfy -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    mkdir_vrfy -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
+    cp_vrfy ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+      
+    PREP_STEP
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR}
+    export err=$?
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_chk
+    else
+      if [ $err -ne 0 ]; then  
+        print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
+      fi
+    fi
+    POST_STEP
+done
 
 #-----------------------------------------------------------------------------
 # STEP 2:  Extracting PM2.5, O3, and met variables from CMAQ input and outputs
@@ -174,33 +189,36 @@ mkdir_vrfy -p ${DATA}/data/site-lists.interp
 mkdir_vrfy -p ${DATA}/out/pm25/${yyyy}
 mkdir_vrfy -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-cp_vrfy ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20220724.12z.list ${DATA}/data/site-lists.interp
+cp_vrfy ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/data/site-lists.interp
 cp_vrfy ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp_vrfy ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_INTERPOLATE returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-  mkdir_vrfy -p  ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  mkdir_vrfy -p ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
-  cp_vrfy ${COMINairnow}/${PDY}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm}/airnow/${yyyy}/${PDY}/b008
-  cp_vrfy ${COMINairnow}/${PDYm1}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m1}/airnow/${yyyy_m1}/${PDYm1}/b008
-  cp_vrfy ${COMINairnow}/${PDYm2}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m2}/airnow/${yyyy_m2}/${PDYm2}/b008
-  cp_vrfy ${COMINairnow}/${PDYm3}/b008/xx031 ${AQM_AIRNOW_HIST_DIR}/bcdata.${yyyymm_m3}/airnow/${yyyy_m3}/${PDYm3}/b008
+  mkdir_vrfy -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+  cp_vrfy ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 fi
 
 #-----------------------------------------------------------------------
 # STEP 4:  Performing Bias Correction for PM2.5 
 #-----------------------------------------------------------------------
+
+rm_vrfy -rf ${DATA}/data/bcdata*
+
+ln_vrfy -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir_vrfy -p ${DATA}/data/sites
 
@@ -209,13 +227,21 @@ cp_vrfy ${PARMaqm_utils}/bias_correction/site_blocking.pm2.5.2021.0427.2-sites.t
 cp_vrfy ${PARMaqm_utils}/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} || print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run AQM_BIAS_CORRECT returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 cp_vrfy $DATA/out/pm2.5.corrected* ${COMIN}
 
 if [ "${cyc}" = "12" ]; then
-  cp_vrfy ${DATA}/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
+  cp_vrfy ${DATA}/data/sites/sites.valid.pm25.${PDY}.${cyc}z.list ${DATA}
 fi
 
 #------------------------------------------------------------------------
@@ -235,12 +261,19 @@ id_gribdomain=${id_domain}
 EOF1
 
 PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run AQM_POST_BIAS_COR_GRIB2 returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 
 cp_vrfy ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
-if [ "$SENDDBN" = "YES" ]; then
+if [ "$SENDDBN" = "TRUE" ]; then
   $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
 fi
 
@@ -266,10 +299,10 @@ EOF1
   flag_run_bicor_max=yes
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN_PDY}/00/pm2.5.corrected.${PDY}.00z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc 
-    elif [ -s ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
+    if [ -s ${COMIN}/../00/pm2.5.corrected.${PDY}.00z.nc ]; then
+      ln_vrfy -sf ${COMIN}/../00/pm2.5.corrected.${PDY}.00z.nc  b.nc 
+    elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
+      ln_vrfy -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else 
       flag_run_bicor_max=no
@@ -278,20 +311,20 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
-    if [ -s ${COMIN_PDY}/00/pm2.5.corrected.${PDY}.00z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc
-    elif [ -s ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
+    if [ -s ${COMIN}/../00/pm2.5.corrected.${PDY}.00z.nc ]; then
+      ln_vrfy -sf ${COMIN}/../00/pm2.5.corrected.${PDY}.00z.nc  b.nc
+    elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
+      ln_vrfy -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else
       flag_run_bicor_max=no
     fi
 
     # 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN_PDY}/06/pm2.5.corrected.${PDY}.06z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDY}/06/pm2.5.corrected.${PDY}.06z.nc c.nc
-    elif [ -s ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln_vrfy -sf ${COMIN_PDYm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  c.nc
+    if [ -s ${COMIN}/../06/pm2.5.corrected.${PDY}.06z.nc ]; then
+      ln_vrfy -sf ${COMIN}/../06/pm2.5.corrected.${PDY}.06z.nc c.nc
+    elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
+      ln_vrfy -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -302,8 +335,15 @@ EOF1
     # write out grib2 format 
     #-------------------------------------------------
     PREP_STEP
-    eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-    Call to executable to run AQM_POST_MAXI_BIAS_COR_GRIB2 returned with nonzero exit code."
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
+    export err=$?
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_chk
+    else
+      if [ $err -ne 0 ]; then
+        print_err_msg_exit "Call to executable to run AQM_POST_MAXI_BIAS_COR_GRIB2 returned with nonzero exit code."
+      fi
+    fi
     POST_STEP
 
     # split into two files: one for 24hr_ave and one for 1h_max
@@ -330,7 +370,7 @@ EOF1
   cp_vrfy ${NET}.${cycle}.max_1hr_pm25_bc.227.grib2   ${COMOUT}
   cp_vrfy ${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2  ${COMOUT}
 
-  if [ "${SENDDBN}" = "YES" ]; then
+  if [ "${SENDDBN}" = "TRUE" ]; then
     ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
     ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
   fi
@@ -338,8 +378,8 @@ fi
 
 fhr=01
 while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
-  fhr2d=$( printf "%02d" "${fhr}" )
-  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr2d}.${id_domain}.grib2 >> tmpfile_pm25_bc
+  fhr3d=$( printf "%03d" "${fhr}" )
+  cat ${DATA}/${NET}.${cycle}.pm25_bc.f${fhr3d}.${id_domain}.grib2 >> tmpfile_pm25_bc
   (( fhr=fhr+1 ))
 done
 
@@ -348,7 +388,7 @@ wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid
 
 cp_vrfy tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cp_vrfy ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
-if [ "${SENDDBN}" = "YES" ]; then
+if [ "${SENDDBN}" = "TRUE" ]; then
   ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
 fi
 
@@ -410,13 +450,13 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT51=awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
   tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
-  # Post Files to COMOUT
-  cp_vrfy awpaqm.${cycle}.1hpm25-bc.227.grib2             ${COMOUT}
-  cp_vrfy awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2 ${COMOUT}
-  cp_vrfy awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${COMOUT}
+  # Post Files to COMOUTwmo
+  cp_vrfy awpaqm.${cycle}.1hpm25-bc.227.grib2             ${COMOUTwmo}
+  cp_vrfy awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2 ${COMOUTwmo}
+  cp_vrfy awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${COMOUTwmo}
 
   # Distribute Data
-  if [ "${SENDDBN_NTC}" = "YES" ] ; then
+  if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.1hpm25-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
     ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUT}/awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2

@@ -177,21 +177,15 @@ if [ "${grid_or_point}" = "grid" ]; then
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
   fi
-# Keep for when splitting GenEnsProd from EnsembleStat.
-#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
-#  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
-# Keep for when splitting GenEnsProd from EnsembleStat.
-#  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/gen_ens_prod"
-#  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/EnsembleStat"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo 'ensemble_stat_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V_ens.nc' )
+  FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
+  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 
 fi
 
@@ -212,7 +206,8 @@ set_vx_fhr_list \
   accum_hh="${ACCUM_HH}" \
   base_dir="${OBS_INPUT_DIR}" \
   fn_template="${OBS_INPUT_FN_TEMPLATE}" \
-  check_hourly_files="FALSE" \
+  check_accum_contrib_files="FALSE" \
+  num_missing_files_max="${NUM_MISSING_OBS_FILES_MAX}" \
   outvarname_fhr_list="FHR_LIST"
 #
 #-----------------------------------------------------------------------
@@ -334,6 +329,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
+  'ensmem_name': '${ensmem_name:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.
@@ -347,25 +343,33 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
+
+# Store the settings in a temporary file
+tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
 #
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-$USHdir/fill_jinja_template.py -q \
-                               -u "${settings}" \
-                               -t ${metplus_config_tmpl_fp} \
-                               -o ${metplus_config_fp} || \
+
+python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
+  -c "${tmpfile}" \
+  -i ${metplus_config_tmpl_fp} \
+  -o ${metplus_config_fp} || \
 print_err_msg_exit "\
-Call to python script fill_jinja_template.py to generate a METplus
+Call to workflow-tools templater to generate a METplus
 configuration file from a jinja template failed.  Parameters passed
 to this script are:
   Full path to template METplus configuration file:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
     metplus_config_fp = \"${metplus_config_fp}\"
-  Jinja settings specified on command line:
-    settings =
-$settings"
+  Full path to configuration file:
+    ${tmpfile}
+"
+rm $tmpfile
 #
 #-----------------------------------------------------------------------
 #

@@ -33,5 +33,8 @@ jobs:
       # Run python unittests
       - name: Lint the test directory
         run: |
-          export PYTHONPATH=${PWD}/ush
-          pylint --min-similarity-lines=15 --ignore-imports=yes tests/test_python/
+          ./manage_externals/checkout_externals workflow-tools
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          pylint --ignore-imports=yes tests/test_python/
+          pylint ush/create_*.py
+          pylint ush/generate_FV3LAM_wflow.py

@@ -17,7 +17,7 @@ The SRW App v2.1.0 release includes four predefined limited area model (:term:`L
 * ``RRFS_CONUS_25km``
 * ``SUBCONUS_Ind_3km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the fourth supported physics suite: ``FV3_GFS_v16``. 
+These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the five supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suites: ``FV3_GFS_v16`` and ``FV3_RAP``. 
 
 .. _GridPhysicsCombos:
 
@@ -39,8 +39,12 @@ These four options are provided for flexibility related to compute resources and
    |                   | FV3_WoFS         |
    +-------------------+------------------+
    | RRFS_CONUS_13km   | FV3_GFS_v16      |
+   |                   |                  |
+   |                   | FV3_RAP          |
    +-------------------+------------------+
    | RRFS_CONUS_25km   | FV3_GFS_v16      |
+   |                   |                  |
+   |                   | FV3_RAP          |
    +-------------------+------------------+
 
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
@@ -50,7 +54,7 @@ The predefined :term:`CONUS` grids follow the naming convention (e.g., RRFS_CONU
 Predefined 3-km CONUS Grid
 -----------------------------
 
-The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` suite generally should *not* be used with the 3-km domain because the cumulus physics used in that physics suite is not configured to run at the 3-km resolution. 
+The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` and ``FV3_RAP`` suites generally should *not* be used with the 3-km domain because the cumulus physics used in those physics suites is not configured to run at the 3-km resolution. 
 
 .. _RRFS_CONUS_3km:
 
@@ -87,7 +91,7 @@ Predefined 13-km Grid
 
    *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write-component grid (blue).*
 
-The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` physics suite. The ``FV3_GFS_v16`` physics suite uses convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
+The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` or ``FV3_RAP`` physics suites. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
 
 Predefined 25-km Grid
 ------------------------

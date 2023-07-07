@@ -1,0 +1,189 @@
+default_task_verify_ens: &default_task_verify_ens
+  account: '&ACCOUNT;'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
+  envars: &default_vars
+    GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
+    USHdir: '&USHdir;'
+    PDY: !cycstr '@Y@m@d'
+    cyc: !cycstr "@H"
+    subcyc: !cycstr "@M"
+    LOGDIR: !cycstr "&LOGDIR;"
+    nprocs: '{{ parent.nnodes * parent.ppn }}'
+  join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: '{% if user.MACHINE not in ["WCOSS2", "NOAACLOUD"] %}{{ "2G" }}{% endif %}'
+  native: '{{ platform.SCHED_NATIVE_CMD }}'
+  nnodes: 1
+  nodes: '{{ nnodes }}:ppn={{ ppn }}'
+  nodesize: '&NCORES_PER_NODE;'
+  partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
+  ppn: 1
+  queue: '&QUEUE_DEFAULT;'
+  walltime: 01:00:00
+
+metatask_GenEnsProd_EnsembleStat_CCPA:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h: &task_GenEnsProd_CCPA
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_CCPA
+      <<: *default_vars
+      ACCUM_HH: '#ACCUM_HH#'
+      OBS_DIR: '&CCPA_OBS_DIR;'
+      VAR: APCP
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'CCPA'
+    dependency:
+      and:
+        # The PcpCombine task for obs must be complete because this GenEnsProd
+        # task checks to see the forecast hours for which obs are available before
+        # processing the forecast for those hours.
+        taskdep_pcpcombine_obs:
+          attrs:
+            task: run_MET_PcpCombine_obs_APCP#ACCUM_HH#h
+        metataskdep_pcpcombine_fcst:
+          attrs:
+            metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
+  task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
+    <<: *task_GenEnsProd_CCPA
+    envars:
+      <<: *envars_GenEnsProd_CCPA
+      MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      taskdep_genensprod:
+        attrs:
+          task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+
+metatask_GenEnsProd_EnsembleStat_MRMS:
+  var:
+    VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_MRMS
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_MRMS
+      <<: *default_vars
+      ACCUM_HH: '01'
+      OBS_DIR: '&MRMS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'MRMS'
+    dependency:
+      and:
+        or_get_obs: # Ensure get_obs task is complete if it's turned on
+          not:
+            taskvalid:
+              attrs:
+                task: get_obs_mrms
+          taskdep:
+            attrs:
+              task: get_obs_mrms
+        metataskdep_post_files_exist: &post_files_exist
+          attrs:
+            metatask: check_post_output_all_mems
+
+  task_run_MET_EnsembleStat_vx_#VAR#:
+    <<: *task_GenEnsProd_MRMS
+    envars:
+      <<: *envars_GenEnsProd_MRMS
+      MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      taskdep:
+        attrs:
+          task: run_MET_GenEnsProd_vx_#VAR#
+
+metatask_GenEnsProd_EnsembleStat_NDAS:
+  var:
+    VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_NDAS
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_NDAS
+      <<: *default_vars
+      OBS_DIR: '&NDAS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'NDAS'
+      ACCUM_HH: '01'
+    dependency:
+      and:
+        # The Pb2nc task (which is run only for obs) must be complete because
+        # this GenEnsProd task checks to see the forecast hours for which obs
+        # are available before processing the forecast for those hours.
+        taskdep_pb2nc:
+          attrs:
+            task: run_MET_Pb2nc_obs
+        metataskdep_post_files_exist:
+          <<: *post_files_exist
+  task_run_MET_EnsembleStat_vx_#VAR#:
+    <<: *task_GenEnsProd_NDAS
+    envars:
+      <<: *envars_GenEnsProd_NDAS
+      MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      taskdep_genensprod:
+        attrs:
+          task: run_MET_GenEnsProd_vx_#VAR#
+
+metatask_GridStat_CCPA_ensmeanprob_all_accums:
+  var:
+    stat: MEAN PROB
+    statlc: mean prob
+  metatask_GridStat_CCPA_ens#statlc#_all_accums:
+    var:
+      ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    task_run_MET_GridStat_vx_ens#statlc#_APCP#ACCUM_HH#h:
+      <<: *default_task_verify_ens
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
+      envars:
+        <<: *default_vars
+        OBS_DIR: '&CCPA_OBS_DIR;'
+        VAR: APCP
+        MET_TOOL: 'GRIDSTAT'
+        OBTYPE: 'CCPA'
+        ACCUM_HH: '#ACCUM_HH#'
+      dependency:
+        taskdep:
+          attrs:
+            task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+
+metatask_GridStat_MRMS_ensprob:
+  var:
+    VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+  task_run_MET_GridStat_vx_ensprob_#VAR#:
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENSPROB"'
+    envars:
+      <<: *default_vars
+      ACCUM_HH: '01'
+      OBS_DIR: '&MRMS_OBS_DIR;'
+      VAR: '#VAR#'
+      MET_TOOL: 'GRIDSTAT'
+      OBTYPE: 'MRMS'
+    dependency:
+      taskdep:
+        attrs:
+          task: run_MET_GenEnsProd_vx_#VAR#
+
+metatask_PointStat_NDAS_ensmeanprob:
+  var:
+    stat: MEAN PROB
+    statlc: mean prob
+  metatask_PointStat_NDAS_ens#statlc#:
+    var:
+      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+    task_run_MET_PointStat_vx_ens#statlc#_#VAR#:
+      <<: *default_task_verify_ens
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
+      envars:
+        <<: *default_vars
+        OBS_DIR: '&NDAS_OBS_DIR;'
+        VAR: '#VAR#'
+        MET_TOOL: 'POINTSTAT'
+        OBTYPE: 'NDAS'
+        ACCUM_HH: '01'
+      dependency:
+        taskdep:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#

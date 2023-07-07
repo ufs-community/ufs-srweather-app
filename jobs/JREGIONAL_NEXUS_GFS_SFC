@@ -17,7 +17,7 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -91,21 +91,16 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Create the directory where the RAVE fire emission files should be stored
-#
-#-----------------------------------------------------------------------
-#
-export GFS_SFC_STAGING_DIR="${COMINext}/GFS_SFC"
-mkdir_vrfy -p "${GFS_SFC_STAGING_DIR}"
-#
-#-----------------------------------------------------------------------
-#
 # Set the run directory
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-mkdir_vrfy -p "${DATA}"
+if [ "${RUN_ENVIR}" = "community" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
+  check_for_preexist_dir_file "$DATA" "delete"
+  mkdir_vrfy -p $DATA
+  cd_vrfy $DATA
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -123,7 +118,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+job_postamble "FALSE"
 #
 #-----------------------------------------------------------------------
 #

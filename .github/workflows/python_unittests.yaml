@@ -37,8 +37,8 @@ jobs:
       # Run python unittests
       - name: Run python unittests
         run: |
-          ./manage_externals/checkout_externals ufs-weather-model
+          ./manage_externals/checkout_externals ufs-weather-model workflow-tools
           # exclude test_retrieve_data that is tested in functional test
-          export PYTHONPATH=${PWD}/ush
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
           python3 -m unittest -b tests/test_python/*.py
 

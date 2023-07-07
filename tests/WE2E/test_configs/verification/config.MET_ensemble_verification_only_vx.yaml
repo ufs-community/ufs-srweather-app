@@ -17,45 +17,10 @@ workflow:
 
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/verify.yaml", "parm/wflow/verify_ensgrid.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
     task_get_obs_ccpa:
     task_get_obs_mrms:
     task_get_obs_ndas:
-    metatask_vx_ens_member:
-      metatask_GridStat_MRMS_mem#mem#:
-        task_run_MET_GridStat_vx_#VAR#_mem#mem#:
-          dependency:
-      metatask_PointStat_mem#mem#:
-        task_run_MET_PointStat_vx_#VAR#_mem#mem#:
-          dependency:
-            and:
-              or_do_post:
-              or_get_obs:
-
-    metatask_GridStat_APCP_acc:
-      metatask_vx_ens_member_acc:
-        task_run_MET_PcpCombine_fcst_APCP#ACCUM_HR#h_mem#mem#:
-          dependency:
-    metatask_EnsembleStat_acc:
-      task_run_MET_GridStat_vx_ensprob_#VAR#:
-        dependency:
-      task_run_MET_EnsembleStat_vx_APCP#ACCUM_HR#h:
-        dependency: 
-          and:
-          metataskdep:
-            attrs:
-              metatask: GridStat_APCP_acc
-    metatask_EnsembleStat:
-      task_run_MET_EnsembleStat_vx_#VAR#:
-        dependency:
-    metatask_EnsembleStat_point:
-      task_run_MET_EnsembleStat_vx_#VAR#:
-        dependency:
-          and:
-            metataskdep:
-            taskdep:
-              attrs:
-                task: run_MET_Pb2nc_obs
 
 global:
   DO_ENSEMBLE: true

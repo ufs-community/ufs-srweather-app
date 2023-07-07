@@ -1,30 +1,32 @@
 #!/usr/bin/env python3
-
+"""
+Create a model_configure file for the FV3 forecast model from a
+template.
+"""
 import os
 import sys
 import argparse
-from datetime import datetime
 from textwrap import dedent
+import tempfile
 
 from python_utils import (
     import_vars,
-    set_env_var,
     print_input_args,
     str_to_type,
     print_info_msg,
-    print_err_msg_exit,
     lowercase,
     cfg_to_yaml_str,
     load_shell_config,
     flatten_dict,
 )
 
-from fill_jinja_template import fill_jinja_template
+# These come from ush/python_utils/workflow-tools
+from scripts.templater import set_template
 
 
 def create_model_configure_file(
     cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
-):
+    ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified
     run directory
 
@@ -45,6 +47,8 @@ def create_model_configure_file(
     # import all environment variables
     import_vars()
 
+    # pylint: disable=undefined-variable
+
     #
     # -----------------------------------------------------------------------
     #
@@ -60,18 +64,6 @@ def create_model_configure_file(
         verbose=VERBOSE,
     )
     #
-    # Extract from cdate the starting year, month, day, and hour of the forecast.
-    #
-    yyyy = cdate.year
-    mm = cdate.month
-    dd = cdate.day
-    hh = cdate.hour
-    #
-    # Set parameters in the model configure file.
-    #
-    dot_quilting_dot=f".{lowercase(str(QUILTING))}."
-    dot_write_dopost=f".{lowercase(str(WRITE_DOPOST))}."
-    #
     # -----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
@@ -81,16 +73,16 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
-        "start_year": yyyy,
-        "start_month": mm,
-        "start_day": dd,
-        "start_hour": hh,
+        "start_year": cdate.year,
+        "start_month": cdate.month,
+        "start_day": cdate.day,
+        "start_hour": cdate.hour,
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
         "restart_interval": RESTART_INTERVAL,
-        "write_dopost": dot_write_dopost,
-        "quilting": dot_quilting_dot,
+        "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
+        "quilting": f".{lowercase(str(QUILTING))}.",
         "output_grid": WRTCMP_output_grid,
     }
     #
@@ -126,8 +118,7 @@ def create_model_configure_file(
                 }
             )
         elif (
-            WRTCMP_output_grid == "regional_latlon"
-            or WRTCMP_output_grid == "rotated_latlon"
+            WRTCMP_output_grid in ("regional_latlon", "rotated_latlon")
         ):
             settings.update(
                 {
@@ -203,34 +194,23 @@ def create_model_configure_file(
     #
     model_config_fp = os.path.join(run_dir, MODEL_CONFIG_FN)
 
-    try:
-        fill_jinja_template(
+    with tempfile.NamedTemporaryFile(dir="./",
+                                     mode="w+t",
+                                     suffix=".yaml",
+                                     prefix="model_config_settings.") as tmpfile:
+        tmpfile.write(settings_str)
+        tmpfile.seek(0)
+        # set_template does its own error handling
+        set_template(
             [
-                "-q",
-                "-u",
-                settings_str,
-                "-t",
+                "-c",
+                tmpfile.name,
+                "-i",
                 MODEL_CONFIG_TMPL_FP,
                 "-o",
                 model_config_fp,
             ]
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script fill_jinja_template.py to create a '{MODEL_CONFIG_FN}'
-                file from a jinja2 template failed.  Parameters passed to this script are:
-                  Full path to template model config file:
-                    MODEL_CONFIG_TMPL_FP = '{MODEL_CONFIG_TMPL_FP}'
-                  Full path to output model config file:
-                    model_config_fp = '{model_config_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-        return False
 
     return True
 
