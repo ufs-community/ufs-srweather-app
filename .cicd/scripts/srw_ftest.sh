@@ -71,13 +71,8 @@ echo "DATA_LOCATION=${DATA_LOCATION}"
 sed "s|^task_get_extrn_ics:|task_get_extrn_ics:\n  EXTRN_MDL_SOURCE_BASEDIR_ICS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 
-hpss_machines=( jet hera )
-
 # Use staged data for HPSS supported machines
-if [[ ${hpss_machines[@]} =~ ${platform,,} ]] ; then
-    sed 's|^task_get_extrn_ics:|task_get_extrn_ics:\n  USE_USER_STAGED_EXTRN_FILES: true|g' -i ush/config.yaml
-    sed 's|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  USE_USER_STAGED_EXTRN_FILES: true|g' -i ush/config.yaml
-fi
+sed 's|^platform:|platform:\n EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
 
 # Activate the workflow environment ...
 source etc/lmod-setup.sh ${platform,,}
@@ -85,16 +80,11 @@ module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
-# Load more modules on machines with hpss access
-if [[ ${hpss_machines[@]} =~ ${platform,,} ]] ; then
-  source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
-  module load hpss
-  export PYTHONPATH=${workspace}/ush
-fi
-
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
 conda activate workflow_tools
 set -e -u
+
+export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools
 
 cd ${workspace}/ush
         # Consistency check ...
@@ -136,7 +126,7 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( hera gaea )
+deny_machines=( gaea )
 if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
     echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
 else
