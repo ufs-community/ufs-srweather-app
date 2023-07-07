@@ -68,41 +68,35 @@ Among other techniques, MET provides the capability to compute standard verifica
 
 METplus is being actively developed by :term:`NCAR`/Research Applications Laboratory (RAL), NOAA/Earth Systems Research Laboratories (ESRL), and NOAA/Environmental Modeling Center (:term:`EMC`), and it is open to community contributions. More details about METplus can be found in :numref:`Chapter %s <MetplusComponent>` and on the `METplus website <https://dtcenter.org/community-code/metplus>`__.
 
-AQM Utilities
-===============
+Air Quality Modeling (AQM) Utilities
+=======================================
 
-https://github.com/NOAA-EMC/AQM-utils
+For more information on AQM Utilities (AQM-utils), visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
 
-NOAA Emission and Exchange Unified System (NEXUS)
+NOAA Emission and eXchange Unified System (NEXUS)
 ===================================================
 
-https://github.com/noaa-oar-arl/NEXUS
+The NOAA Emission and eXchange Unified System (NEXUS) is an emissions processing system developed at the NOAA Air Resources Laboratory (ARL) for use with regional and global UFS atmospheric composition models. NEXUS provides a streamlined process to include new emissions inventories quickly and can flexibly blend different emissions datasets. NEXUS incorporates the :term:`ESMF`-compliant Harmonized Emissions Component (`HEMCO <https://github.com/geoschem/HEMCO/tree/main>`__), which "comput[es] emissions from a user-selected ensemble of emission inventories and algorithms" and "allows users to re-grid, combine, overwrite, subset, and scale emissions from different inventories through a configuration file and with no change to the model source code" (:cite:t:`LinEtAl2021`). 
+
+For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS. 
 
 Gridpoint Statistical Interpolation (GSI)
 ============================================
 
-https://github.com/NOAA-EMC/GSI
+The Gridpoint Statistical Interpolation (GSI) system is a variational :term:`data assimilation` (DA) system that provides 3DVar DA capabilities for the SRW App. It takes a set of observations along with an initial 6-hour forecast from the SRW App and generates an "analysis," which combines the forecast results with observational data to generate a starting point for a new regional forecast. 
 
+GSI is also capable of providing 3D ensemble-variational (3DEnVar) DA, as well as 4D (hourly) variational (4DVar) and ensemble-variational (4DEnVar) DA, but these features have not yet been incorporated into the SRW App. 
 
-The Gridpoint Statistical Interpolation (GSI) system is a variational data assimilation (DA) system that provides , designed to be flexible, state-of-art, and run efficiently on various parallel computing platforms. The GSI system is in the public domain and is freely available for community use.
-
-GSI is an operational data assimilation system available for community use. Some of these GSI advanced features are:
-
-Combined with an ensemble system, GSI can be used as an 3D/4D ensemble-variational hybrid data assimilation system.
-GSI features capabilities for observation sensitivity calculation. GSI can be used as an observation operator to provide O-B for the EnKF system or other data analysis systems.
-For a complete list of capabilities, please see the GSI User's Guide. 
-
-In the future, GSI may be phased out in favor of :term:`JEDI`, and the UFS community welcomes contributions that will facilitate this shift! 
-
+In the future, GSI may be phased out in favor of :term:`JEDI`, and the UFS community welcomes contributions that will facilitate this shift! In the meantime, users can find more information about GSI on GitHub at https://github.com/NOAA-EMC/GSI.
 
 RRFS Utilities
 ================
 
-The Rapid Refresh Forecast System (RRFS) utilities (rrfs_utl) are a set of tools that that perform tasks required for implementing RRFS capabilities in the SRW App. For example, rrfs_utl performs preprocessing for lightning data, METAR cloud observations, NASA LaRC cloud products, and the NSSL radar reflectivity mosaic. It also provides cloud analysis for the FV3 dycore and radar reflectivity to temperature tendency conversions. For more information on RRFS Utilities, visit the GitHub repository at https://github.com/NOAA-GSL/rrfs_utl or see :numref:`Table %s <rrfs-utl-executables>` for a detailed description of exeutables. 
+The Rapid Refresh Forecast System (RRFS) Utilities (rrfs_utl) are a set of tools that that perform tasks required for implementing RRFS capabilities in the SRW App. For example, rrfs_utl performs preprocessing for lightning data, METAR cloud observations, NASA LaRC cloud products, and the NSSL radar reflectivity mosaic. It also provides cloud analysis for the FV3 dycore and radar reflectivity to temperature tendency conversions. For more information on RRFS Utilities, visit the GitHub repository at https://github.com/NOAA-GSL/rrfs_utl or see :numref:`Table %s <rrfs-utl-executables>` for a detailed description of executables. 
 
 .. _rrfs-utl-executables:
 
-.. list-table:: *rrfs_utl executables*
+.. list-table:: *rrfs_utl Executables*
    :widths: 20 50
    :header-rows: 1
 
@@ -113,39 +107,39 @@ The Rapid Refresh Forecast System (RRFS) utilities (rrfs_utl) are a set of tools
    * - enkf.x*
      - Runs the Ensemble Kalman Filter.
    * - gen_annual_maxmin_GVF.exe*
-     - Generate maximum and minimum GVF files based on yearly long GVF observations for update_GVF process.
+     - Generates maximum and minimum greenness vegetation fraction (GVF) files based on year-long GVF observations for update_GVF process.
    * - update_GVF.exe*
-     - Update the greenness vegetation fraction (GVF) in the surface file based on the real-time observations files.
+     - Updates the GVF in the surface file based on the real-time observation files.
    * - ref2tten.exe*
-     - Calculate temperature tendency based on the radar reflectivity observation at each grid point. This temperature tendency can be used by the model during integration as latent heating initialization for ongoing precipitation systems, especially convection.
+     - Calculates temperature tendency based on the radar reflectivity observation at each grid point. This temperature tendency can be used by the model during integration as latent heating initialization for ongoing precipitation systems, especially convection.
    * - update_ice.exe*
-     - Replace ice fields in warm start surface files based on the forecast from cold start forecast using the GFS as the initial file.
+     - Replaces ice fields in warm-start surface files based on previous cold-start forecast results using the GFS as the initial file.
    * - process_updatesst.exe*
-     - Update SST field based on the SST analysis from NCEP.
+     - Updates sea surface temperature (SST) field based on the SST analysis from :term:`NCEP`.
    * - check_imssnow_fv3lam.exe*
      - This is a tool used to read snow and ice fields from surface files and check that field. 
    * - gen_cs.exe*
-     - NCL scripts to do cross section plotting
+     - NCL scripts to perform cross section plotting
    * - lakesurgery.exe*
-     - Replace the existing lake depth with the GLOBathy bathymetry. It is designed to work with the HRRR model.
+     - Replaces the existing lake depth with the GLOBathy bathymetry. It is designed to work with the HRRR model.
    * - process_imssnow_fv3lam.exe*
-     - Use FV3LAM snow and ice fields based on the snow and ice information from imssnow.
+     - Uses :term:`FV3` :term:`LAM` snow and ice fields based on the snow and ice information from imssnow.
    * - gen_ensmean_recenter.exe*
      - Runs the ensemble mean/recentering calculation for FV3LAM ensemble files.
    * - update_bc.exe*
-     - Adjust 0-h boundary conditions based on the analysis results during data assimilation cycling.
+     - Adjusts 0-h boundary conditions based on the analysis results during data assimilation cycling.
    * - adjust_soiltq.exe*
-     - Use the lowest level temperature and moisture analysis increments to adjust the soil moisture and soil temperature after analysis.
+     - Uses the lowest level temperature and moisture analysis increments to adjust the soil moisture and soil temperature after analysis.
    * - process_NSSL_mosaic.exe*
-     - Process NSSL MRMS radar reflectivity mosaic observations: read 33 level NSSL MRMS radar reflectivity grib2 files and then interpolate the reflectivity horizontally to the ESG grid.
+     - Processes NSSL MRMS radar reflectivity mosaic observations. Reads 33 level NSSL MRMS radar reflectivity grib2 files and then interpolates the reflectivity horizontally to the ESG grid.
    * - use_raphrrr_sfc.exe*
-     - Use RAP and HRRR surface fields to replace the surface fields in FV3LAM. This is only used for starting the RRFS surface cycling.
+     - Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM. This is only used for starting the RRFS surface cycling.
    * - process_Lightning.exe*
-     - Processes lightning data: read NLDN NetCDF observation files and map the lightning observations into FV3LAM ESG grid.
+     - Processes lightning data. Reads NLDN NetCDF observation files and maps the lightning observations into the FV3LAM ESG grid.
    * - process_larccld.exe*
-     - Process NASA Langley cloud top product: reads the cloud top pressure, temperature, etc and maps them to the ESG grid.
+     - Processes NASA Langley cloud top product. Reads the cloud top pressure, temperature, etc. and maps them to the ESG grid.
    * - process_metarcld.exe*
-     - Process METAR ceilometers cloud observations: reads the cloud base and coverage observations from PrepBUFR and distributes the cloud observations/weather/visibility observations to the ESG grid.
+     - Processes METAR ceilometers cloud observations. Reads the cloud base and coverage observations from PrepBUFR and distributes the cloud observations/weather/visibility observations to the ESG grid.
    * - fv3lam_nonvarcldana.exe*
      - Runs the non-variational cloud and precipitable hydrometeor analysis based on the METAR cloud observations, satellite retrieved cloud top products, and radar reflectivity.
 
