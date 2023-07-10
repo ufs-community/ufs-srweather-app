@@ -72,7 +72,7 @@ sed "s|^task_get_extrn_ics:|task_get_extrn_ics:\n  EXTRN_MDL_SOURCE_BASEDIR_ICS:
 sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LBCS: ${DATA_LOCATION}/FV3GFS/grib2/2019061518|1" -i ush/config.yaml
 
 # Use staged data for HPSS supported machines
-sed 's|^platform:|platform:\n EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
+sed 's|^platform:|platform:\n  EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
 
 # Activate the workflow environment ...
 source etc/lmod-setup.sh ${platform,,}
