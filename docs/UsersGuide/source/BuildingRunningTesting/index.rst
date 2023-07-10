@@ -9,7 +9,7 @@ Building, Running, and Testing the SRW App
    ContainerQuickstart
    BuildSRW
    RunSRW
-   Tutorial
    WE2Etests
+   Tutorial
    VXCases
    AQM

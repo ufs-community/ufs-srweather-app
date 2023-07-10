@@ -1,8 +1,8 @@
 .. _WE2E_tests:
 
-==================================
-Workflow End-to-End (WE2E) Tests
-==================================
+=======================
+Testing the SRW App
+=======================
 The SRW App contains a set of end-to-end tests that exercise various workflow configurations of the SRW App. These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto workflow manager to run their individual workflows from start to finish. The purpose of these tests is to ensure that new changes to the App do not break existing functionality and capabilities. 
 
 Note that the WE2E tests are not regression tests---they do not check whether 
