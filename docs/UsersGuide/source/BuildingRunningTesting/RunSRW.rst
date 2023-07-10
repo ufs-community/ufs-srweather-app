@@ -17,14 +17,14 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
    #. :ref:`Download and stage data <Data>`
    #. :ref:`Optional: Configure a new grid <GridSpecificConfig>`
-   #. :ref:`Generate a regional workflow experiment <GenerateForecast>`
+   #. :ref:`Generate an SRW App experiment <GenerateForecast>`
 
-      * :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
+      * :ref:`Load the python environment for the SRW App workflow <SetUpPythonEnv>`
       * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
       * :ref:`Optional: Plot the output <PlotOutput>`
       * :ref:`Optional: Configure METplus Verification Suite <VXConfig>`
 
-   #. :ref:`Run the regional workflow <Run>`
+   #. :ref:`Run the SRW App workflow <Run>`
 
 .. _AppOverallProc:
 
@@ -94,7 +94,7 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-#. :ref:`Load the python environment required for the regional workflow <SetUpPythonEnv>`
+#. :ref:`Load the python environment required for the SRW App workflow <SetUpPythonEnv>`
 #. :ref:`Set experiment configuration parameters <ExptConfig>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
@@ -105,7 +105,7 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The regional workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. This conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. This conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
 
 .. code-block:: console
 
@@ -118,9 +118,9 @@ where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <us
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
 
-A brief recipe for building the regional workflow environment on a Linux or Mac system can be found in  :numref:`Section %s <LinuxMacVEnv>`. 
+A brief recipe for building the workflow environment on a Linux or Mac system can be found in  :numref:`Section %s <LinuxMacVEnv>`. 
 
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
+The ``wflow_<platform>`` modulefile will then output instructions to activate the SRW App workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
 
 .. code-block:: console
 
@@ -132,7 +132,7 @@ then the user should run ``conda activate workflow_tools``. This activates the `
 Preparing the Workflow Environment on Non-Level 1 Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``workflow_tools`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow.
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``workflow_tools`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the workflow environment.
 
 .. note::
    ``conda`` needs to be initialized before running ``conda activate workflow_tools`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
@@ -420,7 +420,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 .. note::
 
-   The regional workflow must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+   The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
 Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
@@ -736,8 +736,8 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
 .. _GenerateWorkflow: 
 
-Generate the Regional Workflow
--------------------------------------------
+Generate the SRW App Workflow
+--------------------------------
 
 Run the following command from the ``ufs-srweather-app/ush`` directory to generate the workflow:
 
@@ -1156,11 +1156,11 @@ If the experiment fails, the ``rocotostat`` command will indicate which task fai
 Run the Workflow Using Stand-Alone Scripts
 ---------------------------------------------
 
-The regional workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <UseRocoto>` to run the workflow using Rocoto. 
+The SRW App workflow can be run using standalone shell scripts in cases where the Rocoto software is not available on a given platform. If Rocoto *is* available, see :numref:`Section %s <UseRocoto>` to run the workflow using Rocoto. 
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the regional workflow (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<platform>_<compiler>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<platform>_<compiler>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
 
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
@@ -1219,7 +1219,7 @@ Check the batch script output file in your experiment directory for a “SUCCESS
 
 .. _RegionalWflowTasks:
 
-.. table::  List of tasks in the regional workflow in the order that they are executed.
+.. table::  List of tasks in the SRW App workflow in the order that they are executed.
             Scripts with the same stage number may be run simultaneously. The number of
             processors and wall clock time is a good starting point for Cheyenne or Hera 
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
