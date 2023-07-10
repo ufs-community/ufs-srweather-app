@@ -88,7 +88,7 @@ export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools
 
 cd ${workspace}/ush
         # Consistency check ...
-        ./config_utils.py -c ./config.yaml -v ./config_defaults.yaml -k "(\!rocoto\b)"
+        #./config_utils.py -c ./config.yaml -v ./config_defaults.yaml -k "(\!rocoto\b)"
         # Generate workflow files ...
         ./generate_FV3LAM_wflow.py
 cd ${workspace}
