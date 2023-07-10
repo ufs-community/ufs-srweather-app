@@ -243,7 +243,7 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    | chgres_cube            | Reads in raw external model (global or regional) and surface climatology data   |
    |                        | to create initial and lateral boundary conditions                               |
    +------------------------+---------------------------------------------------------------------------------+
-   | cpld_gridgen           |                                                                                 |
+   | cpld_gridgen           | Creates the *fix* and :term:`IC <ICs>` files required for the coupled model.    |
    +------------------------+---------------------------------------------------------------------------------+
    | emcsfc_ice_blend       | Blends National Ice Center sea ice cover and EMC sea ice concentration data to  |
    |                        | create a global sea ice analysis used to update the GFS once per day            |
@@ -296,7 +296,6 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    +------------------------+---------------------------------------------------------------------------------+
    
 .. COMMENT: Add "ufs_srweather_app.settings"? Is it an executable? 
-   Need definition of cpld_gridgen!!!
 
 .. _RRFSexec:
 
@@ -354,6 +353,8 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
      - Replaces ice fields in warm-start surface files based on previous cold-start forecast results using the GFS as the initial file.
    * - use_raphrrr_sfc.exe
      - Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM. This is only used for starting the RRFS surface cycling.
+
+.. COMMENT: Add definition of rrfs_*.exe and ens_mean_recenter_P2DIO.exe!!!
 
 .. _CMakeApproach:
 
