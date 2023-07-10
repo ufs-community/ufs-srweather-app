@@ -80,10 +80,10 @@ Record the path to this file output using the ``pwd`` command:
 
    Users can untar the fix files and Natural Earth files by substituting those file names in the commands above. 
 
-Load the Regional Workflow
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Load the Workflow
+^^^^^^^^^^^^^^^^^^^^
 
-First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regional workflow environment:
+First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workflow environment:
 
 .. code-block:: console
    
@@ -93,12 +93,12 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the regio
 
 Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate workflow_tools``. 
 
 Configure the Verification Sample Case
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the regional workflow is loaded, copy the out-of-the-box configuration:
+Once the workflow environment is loaded, copy the out-of-the-box configuration:
 
 .. code-block:: console
 
@@ -189,7 +189,7 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ^^^^^^^^^^^^^^^^^
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(workflow_tools)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
 
 .. code-block:: console
 

@@ -27,7 +27,7 @@ The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More inf
 
 Pre-processing (UFS_UTILS)
 ---------------------------
-When a user generates the regional workflow as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS `Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__ and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/index.html>`__.
+When a user generates the SRW App workflow as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS `Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/>`__ and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/index.html>`__.
 
 UFS Weather Model
 -----------------
@@ -53,7 +53,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
 
 .. _TemplateFiles:
 
-.. table:: Template Files for the Regional Workflow
+.. table:: Template Files for the SRW App Workflow
 
    +-----------------------------+--------------------------------------------------------------+
    | **File Name**               | **Description**                                              |
@@ -101,7 +101,7 @@ Additional information related to ``diag_table.[CCPP]``, ``field_table.[CCPP]``,
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/parm``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table.[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the regional workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``parm`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
+:numref:`Figure %s <MigratoryRoute>` shows how the input files in the template directory (``ufs-srweather-app/parm``) flow to the experiment directory. First, the CCPP physics suite is specified in the configuration file. The template input files corresponding to the selected physics suite, such as ``field_table.[CCPP]`` and ``nems.configure_[CCPP]``, are copied to the experiment directory (``$EXPTDIR``). Additionally, the namelist file of the Weather Model (``input.nml``) is created from the ``input.nml.FV3`` and ``FV3.input.yml`` files by running the workflow generation script. While running the ``RUN_FCST`` task in the SRW App workflow as shown in :numref:`Figure %s <WorkflowTasksFig>`, the ``field_table``, ``nems.configure``, and ``input.nml`` files, located in ``$EXPTDIR``, are linked to the cycle directory (``$CYCLE_DIR``). Additionally, ``diag_table`` and ``model_configure`` are copied from the ``parm`` directory. Finally, these files are updated with the variables specified in ``var_defn.sh``.
 
 .. _MigratoryRoute:
 

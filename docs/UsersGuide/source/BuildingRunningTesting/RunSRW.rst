@@ -61,14 +61,14 @@ The SRW App requires input files to run. These include static datasets, initial 
    | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/                |
    +--------------+------------------------------------------------------------------------------+ 
     
-For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
 Grid Configuration
 =======================
 
-The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Chapter %s <LAMGrids>`. Users who plan to utilize one of the four predefined domain (grid) options may continue to :numref:`Step %s <GenerateForecast>`. Users who plan to create a new custom predefined grid should refer to :numref:`Section %s <UserDefinedGrid>` for instructions. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
+The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the four predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
 
 .. _PredefinedGrids:
 
@@ -86,6 +86,7 @@ The SRW App officially supports the four predefined grids shown in :numref:`Tabl
    | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
 
+.. COMMENT: Revisit before SRW w/RRFS release
 
 .. _GenerateForecast:
 
@@ -93,18 +94,18 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-#. :ref:`Load the python environment for the regional workflow <SetUpPythonEnv>`
+#. :ref:`Load the python environment required for the regional workflow <SetUpPythonEnv>`
 #. :ref:`Set experiment configuration parameters <ExptConfig>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
 
 .. _SetUpPythonEnv:
 
-Load the Conda/Python Environment for the Regional Workflow
---------------------------------------------------------------
+Load the Conda/Python Environment
+------------------------------------
 
-The workflow requires Python3 installed using conda, with the additional packages built in a separate conda evironment named ``regional_workflow``. This environment has the following additional packages: ``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``. This conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The regional workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. This conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
 
 .. code-block:: console
 
@@ -124,17 +125,17 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 .. code-block:: console
 
    Please do the following to activate conda:
-       > conda activate regional_workflow
+       > conda activate workflow_tools
 
-then the user should run ``conda activate regional_workflow``. This activates the ``regional_workflow`` conda environment, and the user typically sees ``(regional_workflow)`` in front of the Terminal prompt at this point.
+then the user should run ``conda activate workflow_tools``. This activates the ``workflow_tools`` conda environment, and the user typically sees ``(workflow_tools)`` in front of the Terminal prompt at this point.
 
 Preparing the Workflow Environment on Non-Level 1 Systems
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``regional_workflow`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow.
+Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``workflow_tools`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the regional workflow.
 
 .. note::
-   ``conda`` needs to be initialized before running ``conda activate regional_workflow`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
+   ``conda`` needs to be initialized before running ``conda activate workflow_tools`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -525,12 +526,12 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating a *conda* Environment on Linux and Mac
 ``````````````````````````````````````````````````
 
-Users need to create a conda ``regional_workflow`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+Users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
 
 .. code-block:: console
 
-   conda create --name regional_workflow python=<python3-conda-version>
-   conda activate regional_workflow
+   conda create --name workflow_tools python=<python3-conda-version>
+   conda activate workflow_tools
    conda install -c conda-forge f90nml
    conda install jinja2
    conda install pyyaml

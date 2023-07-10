@@ -52,10 +52,10 @@ On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-P
       * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/HRRR/2019061518/
       * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/RAP/2019061518/
 
-Load the Regional Workflow
--------------------------------
+Load the Workflow
+--------------------
 
-To load the regional workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
    
@@ -65,14 +65,14 @@ To load the regional workflow environment, source the lmod-setup file. Then load
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate workflow_tools``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
    module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
    module load wflow_hera
-   conda activate regional_workflow
+   conda activate workflow_tools
 
 Configuration
 -------------------------

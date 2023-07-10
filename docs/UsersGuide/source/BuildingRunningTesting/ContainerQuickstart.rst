@@ -218,7 +218,7 @@ Generate the Forecast Experiment
 =================================
 To generate the forecast experiment, users must:
 
-#. :ref:`Activate the regional workflow <SetUpPythonEnvC>`
+#. :ref:`Activate the workflow <SetUpPythonEnvC>`
 #. :ref:`Set experiment parameters <SetUpConfigFileC>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
@@ -226,8 +226,8 @@ The first two steps depend on the platform being used and are described here for
 
 .. _SetUpPythonEnvC:
 
-Activate the Regional Workflow
--------------------------------------
+Activate the Workflow
+------------------------
 
 Copy the container's modulefiles to the local working directory so that the files can be accessed outside of the container:
 
@@ -237,7 +237,7 @@ Copy the container's modulefiles to the local working directory so that the file
 
 After this command runs, the local working directory should contain the ``modulefiles`` directory. 
 
-To activate the regional workflow, run the following commands: 
+To activate the workflow, run the following commands: 
 
 .. code-block:: console
 
@@ -249,14 +249,14 @@ where:
    * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
    * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
-The ``wflow_<platform>`` modulefile will then output instructions to activate the regional workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
+The ``wflow_<platform>`` modulefile will then output instructions to activate the workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
 
 .. code-block:: console
 
    Please do the following to activate conda:
-       > conda activate regional_workflow
+       > conda activate workflow_tools
 
-then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. The command(s) will vary from system to system, but the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point.
+then the user should run ``conda activate workflow_tools``. This will activate the ``workflow_tools`` conda environment. The command(s) will vary from system to system, but the user should see ``(workflow_tools)`` in front of the Terminal prompt at this point.
 
 .. _SetUpConfigFileC: 
 
@@ -387,4 +387,4 @@ where:
 New Experiment
 ===============
 
-To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the regional workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
+To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the workflow. Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.

@@ -193,11 +193,11 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
 
 SRW App SubDirectories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Table %s <Subdirectories>` describes the contents of the most important subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides an in-depth explanation of the ``ufs-srweather-app`` directories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. 
 
 .. _Subdirectories:
 
-.. table::  Subdirectories of the regional workflow
+.. table:: *Subdirectories of the ufs-srweather-app repository*
 
    +-------------------------+----------------------------------------------------+
    | **Directory Name**      | **Description**                                    |

@@ -45,7 +45,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
    #. Users on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system must download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
 
-   #. Load the python environment for the regional workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
+   #. Load the python environment for the workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
 
       .. code-block:: console
          
@@ -58,9 +58,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       .. code-block:: console
 
          Please do the following to activate conda:
-            > conda activate regional_workflow
+            > conda activate workflow_tools
       
-      then the user should run ``conda activate regional_workflow`` to activate the regional workflow environment. 
+      then the user should run ``conda activate workflow_tools`` to activate the workflow environment. 
 
       .. note::
          If users source the *lmod-setup* file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -80,7 +80,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          ./generate_FV3LAM_wflow.py
 
-   #. Run the regional workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the :ref:`Rocoto Workflow Manager <RocotoInfo>`. 
+   #. Run the workflow. There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the :ref:`Rocoto Workflow Manager <RocotoInfo>`. 
 
       .. code-block:: console
 
