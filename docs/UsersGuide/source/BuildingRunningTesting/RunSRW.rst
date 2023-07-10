@@ -238,112 +238,14 @@ Set Experiment Configuration Parameters
 
 Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.yaml`` and in the user-specified ``config.yaml`` file. When generating a new experiment, the SRW App first reads and assigns default values from ``config_defaults.yaml``. Then, it reads and (re)assigns variables from the user's custom ``config.yaml`` file. 
 
-For background info on ``config_defaults.yaml``, read :numref:`Section %s <DefaultConfigSection>`, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment.
+For background info on ``config_defaults.yaml``, read :numref:`Section %s <DefaultConfigSection>` below, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment if they prefer.
 
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note::
-   This section provides background information on available parameters and how the SRW App uses the ``config_defaults.yaml`` file. It is informative, but users do not need to modify ``config_defaults.yaml`` to run the out-of-the-box case for the SRW App. Therefore, users may skip to :numref:`Step %s <UserSpecificConfig>` to continue configuring their experiment. 
-
-Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:`Table %s <ConfigVarsDefault>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.yaml`` file. Any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the ``config_defaults.yaml`` file comments and in :numref:`Chapter %s <ConfigWorkflow>`.
-
-.. _ConfigVarsDefault:
-
-.. table::  Configuration variables specified in the config_defaults.yaml script
-
-   +-----------------------------+-----------------------------------------------------------------------+
-   | **Group Name**              | **Configuration variables**                                           |
-   +=============================+=======================================================================+
-   | User                        | RUN_ENVIR, MACHINE, MACHINE_FILE, ACCOUNT                             |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | Platform                    | WORKFLOW_MANAGER, NCORES_PER_NODE, BUILD_MOD_FN, WFLOW_MOD_FN,        |
-   |                             | BUILD_VER_FN, RUN_VER_FN, SCHED, DOMAIN_PREGEN_BASEDIR,               |
-   |                             | ENV_INIT_SCRIPTS_FPS, PRE_TASK_CMDS, PARTITION_DEFAULT, QUEUE_DEFAULT,|
-   |                             | PARTITION_HPSS, QUEUE_HPSS, PARTITION_FCST, QUEUE_FCST,               |
-   |                             | RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST, SLURM_NATIVE_CMD,          |
-   |                             | MODEL, MET_INSTALL_DIR, METPLUS_PATH, MET_BIN_EXEC, CCPA_OBS_DIR,     |
-   |                             | MRMS_OBS_DIR, NDAS_OBS_DIR                                            |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | Workflow                    | WORKFLOW_ID, USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS,          |
-   |                             | EXPT_BASEDIR, EXPT_SUBDIR, EXEC_SUBDIR, DOT_OR_USCORE,                |
-   |                             | EXPT_CONFIG_FN, CONSTANTS_FN, RGNL_GRID_NML_FN,                       |
-   |                             | FV3_NML_BASE_SUITE_FN, FV3_NML_YAML_CONFIG_FN, FV3_NML_BASE_ENS_FN,   |
-   |                             | FV3_EXEC_FN, DIAG_TABLE_TMPL_FN, FIELD_TABLE_TMPL_FN,                 |
-   |                             | DATA_TABLE_TMPL_FN, MODEL_CONFIG_TMPL_FN, NEMS_CONFIG_TMPL_FN,        |
-   |                             | FCST_MODEL, WFLOW_XML_FN, GLOBAL_VAR_DEFNS_FN,                        |
-   |                             | EXTRN_MDL_VAR_DEFNS_FN, WFLOW_LAUNCH_SCRIPT_FN, WFLOW_LAUNCH_LOG_FN,  |
-   |                             | CCPP_PHYS_SUITE, GRID_GEN_METHOD, DATE_FIRST_CYCL, DATE_LAST_CYCL,    |
-   |                             | INCR_CYCL_FREQ, FCST_LEN_HRS, GET_OBS, MAXTRIES_VX_ENSGRID_PROB_REFC, |
-   |                             | PREEXISTING_DIR_METHOD, VERBOSE, DEBUG, COMPILER                      |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | NCO                         | envir, NET, model_ver, RUN, OPSROOT                                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_grid              | GRID_DIR, ESGgrid_LON_CTR, ESGgrid_LAT_CTR,                           |
-   |                             | ESGgrid_DELX, ESGgrid_DELY, ESGgrid_NX, ESGgrid_NY, ESGgrid_PAZI,     |
-   |                             | ESGgrid_WIDE_HALO_WIDTH, GFDLgrid_LON_T6_CTR, GFDLgrid_LAT_T6_CTR,    |
-   |                             | GFDLgrid_NUM_CELLS, GFDLgrid_STRETCH_FAC, GFDLgrid_REFINE_RATIO,      |
-   |                             | GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G, |
-   |                             | GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G, GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G, |
-   |                             | GFDLgrid_USE_NUM_CELLS_IN_FILENAMES                                   |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_orog              | KMP_AFFINITY_MAKE_OROG, OMP_NUM_THREADS_MAKE_OROG                     |
-   |                             | OMP_STACKSIZE_MAKE_OROG, OROG_DIR                                     |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_sfc_climo         | KMP_AFFINITY_MAKE_SFC_CLIMO, OMP_NUM_THREADS_MAKE_SFC_CLIMO,          |
-   |                             | OMP_STACKSIZE_MAKE_SFC_CLIMO, SFC_CLIMO_DIR                           |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_ics          | EXTRN_MDL_NAME_ICS, EXTRN_MDL_ICS_OFFSET_HRS, FV3GFS_FILE_FMT_ICS,    |
-   |                             | EXTRN_MDL_SYSBASEDIR_ICS, USE_USER_STAGED_EXTRN_FILES,                |
-   |                             | EXTRN_MDL_SOURCE_BASEDIR_ICS, EXTRN_MDL_FILES_ICS,                    |
-   |                             | EXTRN_MDL_FILES_ICS, EXTRN_MDL_FILES_ICS, EXTRN_MDL_DATA_STORES,      |
-   |                             | NOMADS, NOMADS_file_type                                              |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_get_extrn_lbcs         | EXTRN_MDL_NAME_LBCS,                                                  |
-   |                             | LBC_SPEC_INTVL_HRS, EXTRN_MDL_LBCS_OFFSET_HRS, FV3GFS_FILE_FMT_LBCS,  |
-   |                             | EXTRN_MDL_SYSBASEDIR_LBCS, USE_USER_STAGED_EXTRN_FILES,               |
-   |                             | EXTRN_MDL_SOURCE_BASEDIR_LBCS, EXTRN_MDL_FILES_LBCS,                  |
-   |                             | EXTRN_MDL_DATA_STORE, NOMADS, NOMADS_file_type                        |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_ics               | KMP_AFFINITY_MAKE_ICS, OMP_NUM_THREADS_MAKE_ICS,                      |
-   |                             | OMP_STACKSIZE_MAKE_ICS, USE_FVCOM, FVCOM_WCSTART, FVCOM_DIR,          |
-   |                             | FVCOM_FILE                                                            |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_make_lbcs              | KMP_AFFINITY_MAKE_LBCS, OMP_NUM_THREADS_MAKE_LBCS,                    |
-   |                             | OMP_STACKSIZE_MAKE_LBCS                                               |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_fcst               | KMP_AFFINITY_RUN_FCST, OMP_NUM_THREADS_RUN_FCST,                      |
-   |                             | OMP_STACKSIZE_RUN_FCST, DT_ATMOS, RESTART_INTERVAL, WRITE_DOPOST,     |
-   |                             | LAYOUT_X, LAYOUT_Y, BLOCKSIZE, QUILTING, PRINT_ESMF,                  |
-   |                             | WRTCMP_write_groups, WRTCMP_write_tasks_per_group,                    |
-   |                             | WRTCMP_cen_lon, WRTCMP_cen_lat, WRTCMP_lon_lwr_left,                  |
-   |                             | WRTCMP_lat_lwr_left, WRTCMP_lon_upr_rght, WRTCMP_lat_upr_rght,        |
-   |                             | WRTCMP_dlon, WRTCMP_dlat, WRTCMP_stdlat1, WRTCMP_stdlat2, WRTCMP_nx,  |
-   |                             | WRTCMP_ny, WRTCMP_dx, WRTCMP_dy, PREDEF_GRID_NAME, USE_MERRA_CLIMO,   |
-   |                             | SFC_CLIMO_FIELDS, FIXgsm, FIXaer, FIXlut, TOPO_DIR,                   |
-   |                             | SFC_CLIMO_INPUT_DIR, SYMLINK_FIX_FILES, FNGLAC, FNMXIC, FNTSFC,       |
-   |                             | FNSNOC, FNZORC, FNAISC, FNSMCC, FNMSKH, FIXgsm_FILES_TO_COPY_TO_FIXam,|
-   |                             | FV3_NML_VARNAME_TO_FIXam_FILES_MAPPING,                               |
-   |                             | FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING,                           |
-   |                             | CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING                                 |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | task_run_post               | KMP_AFFINITY_RUN_POST, OMP_NUM_THREADS_RUN_POST,                      |
-   |                             | OMP_STACKSIZE_RUN_POST, SUB_HOURLY_POST, DT_SUB_HOURLY_POST_MNTS,     |
-   |                             | USE_CUSTOM_POST_CONFIG_FILE, CUSTOM_POST_CONFIG_FP,                   |
-   |                             | POST_OUTPUT_DOMAIN_NAME                                               |
-   +-----------------------------+-----------------------------------------------------------------------+
-   | Global                      | USE_CRTM, CRTM_DIR, DO_ENSEMBLE, NUM_ENS_MEMBERS,                     |
-   |                             | NEW_LSCALE, DO_SHUM, ISEED_SHUM, SHUM_MAG, SHUM_LSCALE, SHUM_TSCALE,  |
-   |                             | SHUM_INT, DO_SPPT, ISEED_SPPT, SPPT_MAG, SPPT_LOGIT, SPPT_LSCALE,     |
-   |                             | SPPT_TSCALE, SPPT_INT, SPPT_SFCLIMIT, USE_ZMTNBLCK, DO_SKEB,          |
-   |                             | ISEED_SKEB, SKEB_MAG, SKEB_LSCALE, SKEP_TSCALE, SKEB_INT, SKEBNORM,   |
-   |                             | SKEB_VDOF, DO_SPP, ISEED_SPP, SPP_VAR_LIST, SPP_MAG_LIST, SPP_LSCALE, |
-   |                             | SPP_TSCALE, SPP_SIGTOP1, SPP_SIGTOP2, SPP_STDDEV_CUTOFF, DO_LSM_SPP,  |
-   |                             | LSM_SPP_TSCALE, LSM_SPP_LSCALE, ISEED_LSM_SPP, LSM_SPP_VAR_LIST,      |
-   |                             | LSM_SPP_MAG_LIST, HALO_BLEND                                          |
-   +-----------------------------+-----------------------------------------------------------------------+
+Configuration parameters in the ``config_defaults.yaml`` file appear in :doc:`this table <DefaultVarsTable>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.yaml`` file. Any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the ``config_defaults.yaml`` file comments and in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>`.
 
 .. _UserSpecificConfig:
 
