@@ -37,8 +37,8 @@ Background Information
 -------------------------
 
    * This **Introduction** chapter explains how the SRW App documentation is organized, how to use this guide, and where to find user support/documentation. 
-   * :numref:`Chapter %s: Technical Overview <TechOverview>` provides a technical overview, including SRW App prerequisites, code overview/directory structure, and summary of components.
-   * :numref:`Chapter %s: Components <Components>` provides a more detailed description of the application components, including optional application components.
+   * :numref:`Chapter %s: Technical Overview <TechOverview>` provides a technical overview, including SRW App prerequisites and an overview of the code directory structure.
+   * :numref:`Chapter %s: Components <Components>` provides a detailed description of the application components, including optional application components.
 
 Building, Running, and Testing the SRW App
 --------------------------------------------
