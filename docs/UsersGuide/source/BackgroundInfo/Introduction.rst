@@ -47,12 +47,12 @@ Building, Running, and Testing the SRW App
    * :numref:`Chapter %s: Container-Based Quick Start Guide <QuickstartC>` explains how to run the SRW Application in a container. Containers come with SRW App prerequisites already installed and run on a broad range of systems. 
    * :numref:`Chapter %s: Building the SRW App <BuildSRW>` provides a *detailed* explanation of how to build the SRW App. 
    * :numref:`Chapter %s: Running the SRW App <RunSRW>` provides a *detailed* explanation of how to run the App after it has been built. It includes information on standard workflow tasks, additional optional tasks (e.g., METplus verification, plotting), and different techniques for running the workflow. 
+   * :numref:`Chapter %s: Testing the SRW App <WE2E_tests>` explains how to run workflow end-to-end tests to ensure that new developments do not break the current workflow. 
    * :numref:`Chapter %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
-   * :numref:`Chapter %s: Workflow End-to-End (WE2E) Tests <WE2E_tests>` explains how to run workflow end-to-end tests to ensure that new developments do not break the current workflow. 
    * :numref:`Chapter %s: METplus Verification Sample Cases <VXCases>` explains how to run METplus verification as part of the workflow. 
    * :numref:`Chapter %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, so documentation may be behind the current state of development, which is progressing rapidly. However, this chapter is a starting point for those interested in AQM. 
 
-Technical Information for Users
+Tinkering with Workflow Details
 ---------------------------------
 
    * :numref:`Chapter %s: Workflow Parameters <ConfigWorkflow>` documents all of the user-configurable experiment parameters that can be set in ``config.yaml``.  
