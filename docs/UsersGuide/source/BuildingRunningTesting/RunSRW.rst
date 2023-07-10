@@ -19,7 +19,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
    #. :ref:`Optional: Configure a new grid <GridSpecificConfig>`
    #. :ref:`Generate an SRW App experiment <GenerateForecast>`
 
-      * :ref:`Load the python environment for the SRW App workflow <SetUpPythonEnv>`
+      * :ref:`Load the workflow environment <SetUpPythonEnv>`
       * :ref:`Set the experiment configuration parameters <UserSpecificConfig>`
       * :ref:`Optional: Plot the output <PlotOutput>`
       * :ref:`Optional: Configure METplus Verification Suite <VXConfig>`
@@ -94,31 +94,40 @@ Generate the Forecast Experiment
 =================================
 Generating the forecast experiment requires three steps:
 
-#. :ref:`Load the python environment required for the SRW App workflow <SetUpPythonEnv>`
+#. :ref:`Load the workflow environment <SetUpPythonEnv>`
 #. :ref:`Set experiment configuration parameters <ExptConfig>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflow>`
 
-The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine configuration if they are working on a Level 2-4 platform. Information in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
+The first two steps depend on the platform being used and are described here for each Level 1 platform. Users will need to adjust the instructions to reflect their machine's configuration if they are working on a Level 2-4 platform. Information in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>` can help with this. 
 
 .. _SetUpPythonEnv:
 
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. This conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+
+.. _Load-WF-L1:
+
+Loading the Workflow Environment on Level 1 Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. attention:: 
+
+   Users on a Level 2-4 system should skip to the :ref:`next section <Load-WF-L234>` for instructions.
+
+The ``workflow_tools`` conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
 
 .. code-block:: console
 
-   source <path/to/etc/lmod-setup.sh/OR/lmod-setup.csh> <platform>
-   module use <path/to/modulefiles>
+   source </path/to/etc/lmod-setup.sh/OR/lmod-setup.csh> <platform>
+   module use </path/to/modulefiles>
    module load wflow_<platform>
 
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). 
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
-
-A brief recipe for building the workflow environment on a Linux or Mac system can be found in  :numref:`Section %s <LinuxMacVEnv>`. 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the SRW App workflow. The user should run the commands specified in the modulefile output. The command may vary from system to system. For example, if the output says: 
 
@@ -129,10 +138,95 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 
 then the user should run ``conda activate workflow_tools``. This activates the ``workflow_tools`` conda environment, and the user typically sees ``(workflow_tools)`` in front of the Terminal prompt at this point.
 
-Preparing the Workflow Environment on Non-Level 1 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
-Users on non-Level 1 systems can copy one of the provided ``wflow_<platform>`` files and use it as a template to create a ``wflow_<platform>`` file that works for their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided in the ``modulefiles`` directory. Modifications are required to provide paths for python, miniconda modules, module loads, conda initialization, and the path for user's ``workflow_tools`` conda environment. After making modifications to a ``wflow_<platform>`` file, users can run the commands from :numref:`Step %s <SetUpPythonEnv>` above to activate the workflow environment.
+.. _Load-WF-L234:
+
+Loading the Workflow Environment on Level 2-4 Systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Users on non-Level 1 systems will need to create a conda workflow environment, modify a ``wflow_*`` file to reflect the location of required modules, and load the workflow modules using the modified ``wflow_*`` file. 
+
+Create a *conda* Workflow Environment
+```````````````````````````````````````
+
+.. note::
+    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+
+.. _MacMorePackages:
+
+MacOS ONLY: Install/Upgrade Mac-Specific Packages
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+
+.. attention:: 
+
+   This subsection is for Mac OS users only. Users on Linux systems can skip to :ref:`Creating the workflow_tools Environment on Linux and Mac OS <LinuxMacVEnv>` for instructions.
+
+
+MacOS requires the installation of a few additional packages and, possibly, an upgrade to bash. Users running on MacOS should execute the following commands:
+
+.. code-block:: console
+
+   bash --version
+   brew install bash       # or: brew upgrade bash
+   brew install coreutils
+   brew gsed               # follow directions to update the PATH env variable
+
+
+.. _LinuxMacVEnv: 
+
+Creating the ``workflow_tools`` Environment on Linux and Mac OS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+
+.. code-block:: console
+
+   conda create --name workflow_tools python=<python3-conda-version>
+   conda activate workflow_tools
+   conda install -c conda-forge f90nml
+   conda install jinja2
+   conda install pyyaml
+   # install packages for graphics environment
+   conda install scipy
+   conda install matplotlib
+   conda install -c conda-forge pygrib
+   conda install cartopy
+   # verify the packages installed
+   conda list
+   conda deactivate
+
+where ``<python3-conda-version>`` is a numeric version (e.g., ``3.9.12``) in the conda base installation resulting from the query ``python3 --version``.
+
+Modify a ``wflow_<platform>`` File
+``````````````````````````````````````
+
+Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Users must modify the files to provide paths for python, miniconda modules, module loads, conda initialization, and the user's ``workflow_tools`` conda environment. 
+
+Load the Workflow Environment
+```````````````````````````````
+
+After creating a ``workflow_tools`` environment and making modifications to a ``wflow_<platform>`` file, users can run the commands below to activate the workflow environment:
+
+.. code-block:: console
+
+   source </path/to/etc/lmod-setup.sh> <platform>
+   module use </path/to/modulefiles>
+   module load wflow_<platform>
+
+where ``<platform>`` refers to a valid machine name (i.e., ``linux`` or ``macos``). 
+
+.. note::
+   If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
+
+The ``wflow_<platform>`` modulefile will then output the following instructions: 
+
+.. code-block:: console
+
+   Please do the following to activate conda:
+       > conda activate workflow_tools
+
+After running ``conda activate workflow_tools``, the user will typically see ``(workflow_tools)`` in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
 
 .. note::
    ``conda`` needs to be initialized before running ``conda activate workflow_tools`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
@@ -507,44 +601,6 @@ The configuration process for Linux and MacOS systems is similar to the process 
 
 .. note::
     Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
-
-.. _MacMorePackages:
-
-Install/Upgrade Mac-Specific Packages
-````````````````````````````````````````
-MacOS requires the installation of a few additional packages and, possibly, an upgrade to bash. Users running on MacOS should execute the following commands:
-
-.. code-block:: console
-
-   bash --version
-   brew install bash       # or: brew upgrade bash
-   brew install coreutils
-   brew gsed               # follow directions to update the PATH env variable
-
-.. _LinuxMacVEnv: 
-
-Creating a *conda* Environment on Linux and Mac
-``````````````````````````````````````````````````
-
-Users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g. ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) A brief recipe for creating a virtual conda environment on non-Level 1 platforms:
-
-.. code-block:: console
-
-   conda create --name workflow_tools python=<python3-conda-version>
-   conda activate workflow_tools
-   conda install -c conda-forge f90nml
-   conda install jinja2
-   conda install pyyaml
-   # install packages for graphics environment
-   conda install scipy
-   conda install matplotlib
-   conda install -c conda-forge pygrib
-   conda install cartopy
-   # verify the packages installed
-   conda list
-   conda deactivate
-
-where ``<python3-conda-version>`` is a numeric version (e.g. ``3.9.12``) in the conda base installation resulting from the query ``python3 --version``.
 
 .. _LinuxMacExptConfig:
 
