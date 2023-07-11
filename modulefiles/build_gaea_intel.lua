@@ -1,6 +1,6 @@
 help([[
 This module loads libraries for building the UFS SRW App on
-the NOAA RDHPC machine Gaea using Intel-2022.1.2
+the NOAA RDHPC machine Gaea using Intel-2022.0.2
 ]])
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Gaea ]===])
