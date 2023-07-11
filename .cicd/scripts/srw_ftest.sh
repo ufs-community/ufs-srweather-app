@@ -126,7 +126,7 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( gaea )
+deny_machines=( gaea hera )
 if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
     echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
 else
