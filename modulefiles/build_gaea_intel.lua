@@ -11,7 +11,7 @@ prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/hpc-stack/intel-clas
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-intel-classic", os.getenv("hpc_intel_classic_ver") or "2022.0.2"))
 load(pathJoin("hpc-cray-mpich", os.getenv("hpc_cray_mpich_ver") or "7.7.20"))
-load(pathJoin("libpng", os.getenv("libpng_ver") or "1.6.37"))
+load("alps")
 
 load("srw_common")
 
