@@ -62,7 +62,8 @@ if [ "${ICS_OR_LBCS}" = "ICS" ]; then
   fi
   fcst_hrs=${TIME_OFFSET_HRS}
   file_names=${EXTRN_MDL_FILES_ICS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] \
+     || [ ${EXTRN_MDL_NAME} == "UFS-CASE-STUDY" ] ; then
     file_fmt=$FV3GFS_FILE_FMT_ICS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
@@ -91,7 +92,8 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
 
   fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
   file_names=${EXTRN_MDL_FILES_LBCS[@]}
-  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] \
+     || [ ${EXTRN_MDL_NAME} == "UFS-CASE-STUDY" ] ; then
     file_fmt=$FV3GFS_FILE_FMT_LBCS
   fi
   input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
@@ -190,12 +192,20 @@ python3 -u ${USHdir}/retrieve_data.py \
   --summary_file ${EXTRN_DEFNS} \
   $additional_flags"
 
-$cmd || print_err_msg_exit "\
-Call to retrieve_data.py failed with a non-zero exit status.
-
+$cmd
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -267,6 +277,30 @@ if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
         echo "$(awk -F= -v val="${merged_fn_str}" '/EXTRN_MDL_FNS/ {$2=val} {print}' OFS== $base_path/${EXTRN_DEFNS})" > $base_path/${EXTRN_DEFNS}
         merged_fn=()
         mod_fn_list=()
+    done
+fi
+#
+#-----------------------------------------------------------------------
+#
+# unzip UFS-CASE-STUDY ICS/LBCS files
+#
+#-----------------------------------------------------------------------
+#
+if [ "${EXTRN_MDL_NAME}" = "UFS-CASE-STUDY" ]; then
+    # Look for filenames, if they exist, unzip them
+    base_path="${EXTRN_MDL_STAGING_DIR}${mem_dir}"
+    for filename in ${base_path}/*.tar.gz; do
+        printf "unzip file: ${filename}\n"
+        tar -zxvf ${filename} --directory ${base_path}
+    done
+    # check file naming issue
+    for filename in ${base_path}/*.nemsio; do
+        filename=$(basename -- "${filename}")
+        len=`echo $filename | wc -c`
+        if [ "${filename:4:4}" != "t${hh}z" ]; then
+            printf "rename ${filename} to ${filename:0:4}t${hh}z.${filename:4:${len}} \n"
+           mv ${base_path}/${filename} ${base_path}/${filename:0:4}t${hh}z.${filename:4:${len}}
+        fi
     done
 fi
 #

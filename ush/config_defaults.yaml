@@ -372,6 +372,7 @@ platform:
   #-----------------------------------------------------------------------
   #
   TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
+  TEST_AQM_INPUT_BASEDIR: ""
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
@@ -430,23 +431,6 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # COMINgfs:
-  # Path to the real-time GFS data
-  #
-  # COMINgefs:
-  # Path to the real-time GEFS data
-  #
-  # COMINairnow:
-  # Path to the real-time AIRNOW observation data
-  #
-  #-----------------------------------------------------------------------
-  #
-  COMINgfs: ""
-  COMINgefs: ""
-  COMINairnow: "/path/to/real/time/airnow/data"
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -986,7 +970,7 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # COLDSTART:
-  # Flag turning on/off warm start
+  # Flag turning on/off warm start of the first cycle
   #
   # WARMSTART_CYCLE_DIR:
   # Path to the directory where RESTART dir is located for warm start
@@ -1004,7 +988,11 @@ nco:
   #-----------------------------------------------------------------------
   #
   # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco").  Definitions:
+  # set to "nco"). All variables have the suffix [_default] meaning the default value.
+  # This is because they are supposed to be defined in job cards for the 
+  # production using ecFlow.
+  #
+  # Definitions: 
   #
   # envir, NET, model_ver, RUN:
   # Standard environment variables defined in the NCEP Central Operations WCOSS
@@ -1042,43 +1030,34 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir: "para"
-  NET: "rrfs"
-  RUN: "rrfs"
-  model_ver: "v1.0.0"
+  envir_default: "para"
+  NET_default: "rrfs"
+  RUN_default: "rrfs"
+  model_ver_default: "v1.0.0"
 
-  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT: '{{ OPSROOT }}/com'
-  PACKAGEROOT: '{{ OPSROOT }}/packages'
-  DATAROOT: '{{ OPSROOT }}/tmp'
-  DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
-  EXTROOT: '{{ OPSROOT }}/ext'
-  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
-  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT_default: '{{ OPSROOT_default }}/com'
+  DATAROOT_default: '{{ OPSROOT_default }}/tmp'
+  DCOMROOT_default: '{{ OPSROOT_default }}/dcom'
+  LOGBASEDIR_default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
+  COMIN_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
+  COMOUT_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
 
   #
   # New additions from RRFS_dev1
   #
-  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES: '{{ OPSROOT_default }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
 
-  #
-  #-----------------------------------------------------------------------
-  #
-  # The following are also described in the NCO doc above
-  #
-  #-----------------------------------------------------------------------
-  #
-  DBNROOT: ""
-  SENDECF: false
-  SENDDBN: false
-  SENDDBN_NTC: false
-  SENDCOM: false
-  SENDWEB: false
-  KEEPDATA: true
-  MAILTO: ""
-  MAILCC: ""
+  DBNROOT_default: ""
+  SENDECF_default: false
+  SENDDBN_default: false
+  SENDDBN_NTC_default: false
+  SENDCOM_default: false
+  SENDWEB_default: false
+  KEEPDATA_default: true
+  MAILTO_default: ""
+  MAILCC_default: ""
 
 #----------------------------------
 # GSI namelist parameters
@@ -1721,12 +1700,17 @@ task_make_ics:
   # FV3-LAM grid. This file will be copied later to a new location and name
   # changed to fvcom.nc
   #
+  # VCOORD_FILE:
+  # Full path to the file used to set the vertical coordinate in FV3.
+  # This file should be the same in both make_ics and make_lbcs.
+  #
   #------------------------------------------------------------------------
   #
   USE_FVCOM: false
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # MAKE LBCS config parameters
@@ -1735,6 +1719,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
 # FORECAST config parameters
@@ -2295,7 +2280,9 @@ global:
   # experiment directory
   #
   # ENS_TIME_LAG_HRS:
-  # Time lag (in hours) to use for each ensemble member.
+  # Time lag (in hours) to use for each ensemble member.  For a deterministic
+  # forecast, this is a one-element array.  Default values of array elements
+  # are zero.
   #
   #-----------------------------------------------------------------------
   #
@@ -2303,7 +2290,7 @@ global:
   NUM_ENS_MEMBERS: 0
   ENSMEM_NAMES: '{% for m in range(NUM_ENS_MEMBERS) %}{{ "mem%03d, " % m }}{% endfor %}'
   FV3_NML_ENSMEM_FPS: '{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'
-  ENS_TIME_LAG_HRS: '[ {% for m in range(NUM_ENS_MEMBERS) %} 0, {% endfor %} ]'
+  ENS_TIME_LAG_HRS: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'
   #
   #-----------------------------------------------------------------------
   #
@@ -2430,7 +2417,18 @@ verification:
   # This is used in forming the names of the verification output files as
   # well as in the contents of those files.
   #
+  # VX_FIELDS:
+  # The fields or groups of fields on which to run verification.
+  #
+  # VX_APCP_ACCUMS_HRS:
+  # The 2-digit accumulation periods (in units of hours) to consider for
+  # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
+  # VX_APCP_ACCUMS_HRS must contain at least one element.  If not,
+  # VX_APCP_ACCUMS_HRS will be ignored.
+  #
   VX_FCST_MODEL_NAME: '{{ nco.NET }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   #
   # VX_FCST_INPUT_BASEDIR:
   # Template for top-level directory containing forecast (but not obs)
@@ -2443,11 +2441,18 @@ verification:
   VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   #
+  # Number of digits in the ensember member names.  This is a configurable
+  # variable to allow users to change its value (e.g. to go from "mem004"
+  # to "mem02") when using staged forecast files that do not use the same
+  # number of digits as the SRW App.
+  #
+  VX_NDIGITS_ENSMEM_NAMES: 3
+  #
   # File name and path templates used in the verification tasks.
   #
-  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}${SLASH_ENSMEM_SUBDIR_OR_NULL}/postprd{% endif %}'
-  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" %}${DOT_ENSMEM_OR_NULL}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
+  FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
+  FCST_FN_TEMPLATE: '${NET}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
+  FCST_FN_METPROC_TEMPLATE: '${NET}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_a${ACCUM_HH}h.nc'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
@@ -2461,6 +2466,13 @@ verification:
   # number missing divided by the number that are expected to exist).
   #
   NUM_MISSING_OBS_FILES_MAX: 2
+  #
+  # For verification tasks that need forecast data, this specifies the
+  # maximum number of post-processed forecast files that may be missing. 
+  # If more than this number are missing, the verification task will not
+  # be run.
+  #
+  NUM_MISSING_FCST_FILES_MAX: 0
 
 #----------------------------
 # CPL_AQM config parameters
@@ -2496,13 +2508,13 @@ cpl_aqm_parm:
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
-  # AQM_BIO_DIR:
+  # DCOMINbio:
   # Path to the directory containing AQM bio files
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
   #
-  # AQM_DUST_DIR:
+  # DCOMINdust:
   # Path to the directory containing AQM dust file
   #
   # AQM_DUST_FILE_PREFIX:
@@ -2511,7 +2523,7 @@ cpl_aqm_parm:
   # AQM_DUST_FILE_SUFFIX:
   # Suffix and extension of AQM dust file
   #
-  # AQM_CANOPY_DIR:
+  # DCOMINcanopy:
   # Path to the directory containing AQM canopy files
   # 
   # AQM_CANOPY_FILE_PREFIX:
@@ -2520,7 +2532,7 @@ cpl_aqm_parm:
   # AQM_CANOPY_FILE_SUFFIX:
   # Suffix and extension of AQM CANOPY file
   # 
-  # AQM_FIRE_DIR:
+  # DCOMINfire:
   # Path to the directory containing AQM fire files
   # 
   # AQM_FIRE_FILE_PREFIX:
@@ -2541,13 +2553,13 @@ cpl_aqm_parm:
   # AQM_RC_PRODUCT_FREQUENCY:
   # Frequency of AQM output products
   #
-  # AQM_LBCS_DIR:
+  # DCOMINchem_lbc:
   # Path to the directory containing chemical LBC files
   # 
   # AQM_LBCS_FILES:
   # File name of chemical LBCs
   #
-  # AQM_GEFS_DIR:
+  # DCOMINgefs:
   # Path to the directory containing GEFS aerosol LBC files
   #
   # AQM_GEFS_FILE_PREFIX:
@@ -2579,11 +2591,19 @@ cpl_aqm_parm:
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
   #
-  # PT_SRC_BASEDIR:
+  # DCOMINpt_src:
   # Parent directory containing point source files
   #
-  # AQM_AIRNOW_HIST_DIR:
-  # Path to the directory where the historical AIRNOW data are located
+  # DCOMINairnow:
+  # Path to the directory containing AIRNOW observation data
+  #
+  # COMINbicor:
+  # Path of reading in historical training data for biascorrection 
+  #
+  # COMOUTbicor:
+  # Path to save the current cycle's model output and AirNow obs as 
+  # training data for future use $COMINbicor and $COMOUTbicor can be 
+  # distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   #-----------------------------------------------------------------------
   #
@@ -2597,19 +2617,26 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
+  DCOMINbio_default: ""
+  DCOMINdust_default: "/path/to/dust/dir"
+  DCOMINcanopy_default: "/path/to/canopy/dir"
+  DCOMINfire_default: ""
+  DCOMINchem_lbcs_default: ""
+  DCOMINgefs_default: ""
+  DCOMINpt_src_default: "/path/to/point/source/base/directory"
+  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"
+
   AQM_CONFIG_DIR: ""
-  AQM_BIO_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  AQM_DUST_DIR: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  AQM_CANOPY_DIR: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
-  AQM_FIRE_DIR: ""
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
@@ -2619,10 +2646,8 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  AQM_LBCS_DIR: ""
   AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
 
-  AQM_GEFS_DIR: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
@@ -2633,10 +2658,6 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
-
-  PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
-
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
 rocoto:
   attrs: ""

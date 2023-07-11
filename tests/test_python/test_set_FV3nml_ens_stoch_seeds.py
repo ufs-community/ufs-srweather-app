@@ -21,6 +21,7 @@ class Testing(unittest.TestCase):
     """ Define the tests """
     def test_set_FV3nml_ens_stoch_seeds(self):
         """ Call the function and make sure it doesn't fail"""
+        os.chdir(self.mem_dir)
         set_FV3nml_ens_stoch_seeds(cdate=self.cdate)
 
     def setUp(self):
@@ -40,18 +41,20 @@ class Testing(unittest.TestCase):
             )
         EXPTDIR = self.tmp_dir.name
 
+        # Put this in the tmp_dir structure so it gets cleaned up
+        self.mem_dir = os.path.join(
+                    EXPTDIR,
+                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}",
+                    "mem2",
+                )
+
+        mkdir_vrfy("-p", self.mem_dir)
         cp_vrfy(
             os.path.join(PARMdir, "input.nml.FV3"),
             os.path.join(EXPTDIR, "input.nml_base"),
         )
 
-        # Put this in the tmp_dir structure so it gets cleaned up
-        mem_dir = os.path.join(
-                    EXPTDIR,
-                    f"{date_to_str(self.cdate,format='%Y%m%d%H')}",
-                    "mem2",
-                )
-        mkdir_vrfy("-p", mem_dir)
+
         set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")

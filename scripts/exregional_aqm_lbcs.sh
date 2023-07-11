@@ -73,16 +73,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Move to working directory
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA}/tmp_AQM_LBCS"
-mkdir_vrfy -p "$DATA"
-cd_vrfy $DATA
-#
-#-----------------------------------------------------------------------
-#
 # Add chemical LBCS
 #
 #-----------------------------------------------------------------------
@@ -107,20 +97,33 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   ext_lbcs_file=${AQM_LBCS_FILES}
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
 
-  chem_lbcs_fp=${AQM_LBCS_DIR}/${chem_lbcs_fn}
+  chem_lbcs_fp=${DCOMINchem_lbcs}/${chem_lbcs_fn}
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
     cp_vrfy ${chem_lbcs_fp} .
   else
-    print_err_msg_exit "\
-The chemical LBC files do not exist:
-  CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
+    message_txt="The chemical LBC files do not exist:
+    CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
   fi
 
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     fhr=$( printf "%03d" "${hr}" )
     if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
       ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      export err=$?
+      if [ $err -ne 0 ]; then
+        message_txt="Call to NCKS returned with nonzero exit code."
+        if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+          err_exit "${message_txt}"
+        else
+          print_err_msg_exit "${message_txt}"
+        fi
+      fi
     fi
   done
 
@@ -152,7 +155,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_MOFILE_FP="${AQM_GEFS_DIR}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
   # Check if GEFS aerosol files exist
@@ -161,8 +164,17 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
     fhr=$( printf "%03d" "${hr_mod}" )
     AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
     if [ ! -e "${AQM_MOFILE_FHR_FP}" ]; then
-      print_err_msg_exit "The GEFS file (AQM_MOFILE_FHR_FP) for LBCs does not exist:
-      AQM_MOFILE_FHR_FP = \"${AQM_MOFILE_FHR_FP}\""  
+      message_txt="The GEFS file (AQM_MOFILE_FHR_FP) for LBCs of \"${cycle}\" does not exist:
+  AQM_MOFILE_FHR_FP = \"${AQM_MOFILE_FHR_FP}\""
+      if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+	message_warning="WARNING: ${message_txt}"
+        print_info_msg "${message_warning}"
+        if [ ! -z "${maillist}" ]; then
+          echo "${message_warning}" | mail.py $maillist
+        fi
+      else
+        print_err_msg_exit "${message_txt}"
+      fi 
     fi
   done
 
@@ -214,11 +226,17 @@ Please ensure that you've built this executable."
 #----------------------------------------------------------------------
 #
   PREP_STEP
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-    print_err_msg_exit "\
-Call to executable (exec_fp) to generate chemical and GEFS LBCs
-file for RRFS-CMAQ failed:
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_chk
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to executable (exec_fp) to generate chemical and 
+GEFS LBCs file for RRFS-CMAQ failed:
   exec_fp = \"${exec_fp}\""
+    fi
+  fi
   POST_STEP
 
   print_info_msg "

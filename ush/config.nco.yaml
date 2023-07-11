@@ -17,9 +17,9 @@ workflow:
   VERBOSE: true
   COMPILER: intel
 nco:
-  NET: rrfs
-  model_ver: v1.0
-  RUN: rrfs_test
+  NET_default: rrfs
+  model_ver_default: v1.0
+  RUN_default: rrfs_test
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2

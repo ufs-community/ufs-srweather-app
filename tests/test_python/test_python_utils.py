@@ -168,8 +168,7 @@ class Testing(unittest.TestCase):
         # python
         util.import_vars(env_vars=env_vars)
 
-        # assuming all environments arlready have $PWD set
-        #pylint: disable=
+        # assuming all environments already have $PWD set
         self.assertEqual(
             os.path.realpath(PWD), #pylint: disable=undefined-variable
             os.path.realpath(os.getcwd())

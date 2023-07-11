@@ -25,15 +25,11 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
 nco:
-  NET: aqm
+  NET_default: aqm
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_all.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     task_aqm_ics_ext:
-    task_post_stat_o3:
-    task_post_stat_pm25:
-    task_bias_correction_o3:
-    task_bias_correction_pm25:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 02:00:00

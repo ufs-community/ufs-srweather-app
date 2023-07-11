@@ -5,7 +5,6 @@ fix/
 include/
 lib/
 share/
-modulefiles/extrn_comp_build/
 sorc/*/
 tests/WE2E/WE2E_tests_*.yaml
 tests/WE2E/*.txt
@@ -14,6 +13,7 @@ tests/WE2E/log.*
 ush/__pycache__/
 ush/config.yaml
 ush/python_utils/__pycache__/
+ush/python_utils/workflow-tools/
 ush/*.swp
 
 *.swp

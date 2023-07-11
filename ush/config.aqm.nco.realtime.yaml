@@ -10,8 +10,8 @@ workflow:
   EXPT_SUBDIR: aqm_nco_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023051100'
-  DATE_LAST_CYCL: '2023051118'
+  DATE_FIRST_CYCL: '2023051600'
+  DATE_LAST_CYCL: '2023051618'
   INCR_CYCL_FREQ: 6
   FCST_LEN_HRS: -1
   FCST_LEN_CYCL:
@@ -29,15 +29,15 @@ workflow:
   COLDSTART: false
   WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
-  envir: prod
-  NET: aqm
-  model_ver: v7.0
-  RUN: aqm_nco_aqmna13km
-  OPSROOT: /path/to/custom/opsroot
-  KEEPDATA: true
+  envir_default: prod
+  NET_default: aqm
+  model_ver_default: v7.0
+  RUN_default: aqm
+  OPSROOT_default: /path/to/custom/opsroot
+  KEEPDATA_default: true
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/aqm_all.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
     task_get_extrn_lbcs:
       walltime: 02:00:00
     metatask_run_ensemble:
