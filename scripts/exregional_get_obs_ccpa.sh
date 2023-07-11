@@ -81,15 +81,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
   vhh_noZero=$((10#${vhh}))
 
-  # Calculate valid date - 1 day
-  vdate_ut_m1=`expr ${vdate_ut} - 86400` 
-  vdate_m1=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_m1}' seconds' +%Y%m%d%H` 
-  vyyyymmdd_m1=`echo ${vdate_m1} | cut -c1-8` 
-  vyyyy_m1=`echo ${vdate_m1} | cut -c1-4`
-  vmm_m1=`echo ${vdate_m1} | cut -c5-6` 
-  vdd_m1=`echo ${vdate_m1} | cut -c7-8`
-  vhh_m1=`echo ${vdate_m1} | cut -c9-10`
-
   # Calculate valid date + 1 day
   vdate_ut_p1=`expr ${vdate_ut} + 86400`
   vdate_p1=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_p1}' seconds' +%Y%m%d%H`
@@ -102,10 +93,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   # Create necessary raw and prop directories
   if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
     mkdir_vrfy -p $ccpa_raw/${vyyyymmdd}
-  fi
-
-  if [[ ! -d "$ccpa_raw/${vyyyymmdd_m1}" ]]; then
-    mkdir_vrfy -p $ccpa_raw/${vyyyymmdd_m1}
   fi
 
   if [[ ! -d "$ccpa_raw/${vyyyymmdd_p1}" ]]; then
@@ -121,20 +108,12 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com2_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
   fi
 
-  if [[ ${vyyyymmdd_m1} -ge 20190101 && ${vyyyymmdd_m1} -lt 20190812 ]]; then
-    TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/com2_ccpa_prod_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
-  fi
-
   if [[ ${vyyyymmdd_p1} -ge 20190101 && ${vyyyymmdd_p1} -lt 20190812 ]]; then
     TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com2_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
   fi
 
   if [[ ${vyyyymmdd} -ge 20190812 && ${vyyyymmdd} -le 20200217 ]]; then
     TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_m1} -ge 20190812 && ${vyyyymmdd_m1} -le 20200217 ]]; then
-    TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
   fi
 
   if [[ ${vyyyymmdd_p1} -ge 20190812 && ${vyyyymmdd_p1} -le 20200217 ]]; then
@@ -145,20 +124,12 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
   fi
 
-  if [[ ${vyyyymmdd_m1} -gt 20200217 && ${vyyyymmdd_p1} -le 20220618 ]]; then
-    TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/com_ccpa_prod_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
-  fi
-
   if [[ ${vyyyymmdd_p1} -gt 20200217 && ${vyyyymmdd_p1} -le 20220618 ]]; then
     TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
   fi
 
   if [[ ${vyyyymmdd} -ge 20220619 ]]; then
     TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_v4.2_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_m1} -ge 20220619 ]]; then
-    TarFile_m1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_m1}/${vyyyy_m1}${vmm_m1}/${vyyyy_m1}${vmm_m1}${vdd_m1}/com_ccpa_v4.2_ccpa.${vyyyy_m1}${vmm_m1}${vdd_m1}.tar"
   fi
 
   if [[ ${vyyyymmdd_p1} -ge 20220619 ]]; then
@@ -185,7 +156,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
       fi
 
-      # One hour CCPA files have incorrect metadeta in the files under the "00" directory from 20180718 to 20210504.
+      # One hour CCPA files have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
       # After data is pulled, reorganize into correct valid yyyymmdd structure.
       if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 6 ]]; then
         cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
