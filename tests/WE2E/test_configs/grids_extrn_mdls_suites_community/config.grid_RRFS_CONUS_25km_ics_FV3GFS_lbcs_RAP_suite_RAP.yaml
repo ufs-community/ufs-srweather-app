@@ -33,7 +33,7 @@ task_get_extrn_lbcs:
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
 platform:
-  CCPA_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/ccpa/proc'
-  MRMS_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/mrms/proc'
-  NDAS_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/ndas/proc'
+  CCPA_OBS_DIR: 'obs_data/ccpa/proc'
+  MRMS_OBS_DIR: 'obs_data/mrms/proc'
+  NDAS_OBS_DIR: 'obs_data/ndas/proc'
 

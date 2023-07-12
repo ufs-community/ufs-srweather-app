@@ -235,32 +235,12 @@ platform:
   #
   # CCPA_OBS_DIR:
   # User-specified location of top-level directory where CCPA hourly
-  # precipitation files used by METplus are located. This parameter
-  # needs to be set for both user-provided observations and for
-  # observations that are retrieved from the NOAA HPSS (if the user has
-  # access) via the get_obs_ccpa task (activated in workflow by
-  # including the parm/wflow/verify.yaml task set in the wflow config).
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/ccpa/proc. METplus is
-  # configured to verify 01-, 03-, 06-, and 24-h accumulated
-  # precipitation using hourly CCPA files.
-  # METplus configuration files require the use of predetermined
-  # directory structure and file names. Therefore, if the CCPA files are
-  # user provided, they need to follow the anticipated naming structure:
-  #
-  # {YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2,
-  #
-  # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD
-  # the 2-digit valid day of the month, and HH the 2-digit valid hour of
-  # the day. In addition, a caveat is noted for using hourly CCPA data.
-  # There is a problem with the valid time in the metadata for files
-  # valid from 19 - 00 UTC (or files under the '00' directory). The
-  # script to pull the CCPA data from the NOAA HPSS has an example of
-  # how to account for this as well as organizing the data into a more
-  # intuitive format: scripts/exregional_get_ccpa_files.sh. When a fix
-  # is provided, it will be accounted for in the
-  # exregional_get_ccpa_files.sh script.
+  # precipitation files used by METplus are located. Must end with the
+  # subdirectories "ccpa/proc". If a relative path, will be appended to
+  # EXPT_BASEDIR. See comments in file
+  # scripts/exregional_get_ccpa_files.sh for more details about files
+  # and directory structure, as well as important caveats about errors
+  # in the metadata and file names.
   #
   # NOHRSC_OBS_DIR:
   # User-specified location of top-level directory where NOHRSC 6- and 24-h hour
@@ -293,7 +273,7 @@ platform:
   # including the parm/wflow/verify.yaml task set in the wflow config).
   # In the case of pulling observations directly from NOAA HPSS, the
   # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/mrms/proc.
+  # path must be defined as /full-path-to-obs/mrms/proc.
   # METplus configuration files require the use of predetermined
   # directory structure and file names. Therefore, if the MRMS files are
   # user provided, they need to follow the anticipated naming structure:
@@ -324,7 +304,7 @@ platform:
   # parm/wflow/verify.yaml task set in the wflow config). 
   # In the case of pulling observations directly from NOAA HPSS, the
   # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/ndas/proc. METplus is
+  # path must be defined as /full-path-to-obs/ndas/proc. METplus is
   # configured to verify near-surface variables hourly and upper-air
   # variables at times valid at 00 and 12 UTC with NDAS prepbufr files.
   # METplus configuration files require the use of predetermined file
