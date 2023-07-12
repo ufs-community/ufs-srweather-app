@@ -346,15 +346,15 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
-   * ``ACCOUNT`` refers to a valid account name. Not all systems require a valid account name, but most do. 
+   * ``ACCOUNT`` refers to a valid account name. Not all systems require a valid account name, but most Level 1 & 2 systems do. 
 
    .. hint::
 
       To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
    * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
-   * ``/path/to/`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>`). 
-   * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Chapter %s <ConfigWorkflow>` for options). 
+   * ``/path/to/`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>` for data locations on Level 1 systems). 
+   * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Section %s <basic-get-extrn-ics>` or :numref:`%s <basic-get-extrn-lbcs>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
 
@@ -369,9 +369,9 @@ When running with GNU compilers (i.e., if the modulefile used to set up the buil
 
 .. note::
 
-   On ``JET``, users should also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file.
+   On ``JET``, users should add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file.
 
-For example, to run the out-of-the-box experiment on Gaea using cron to automate job submission, users should add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
+For example, to run the out-of-the-box experiment on Gaea using cron to automate job submission, users can add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` according to the following example (unmodified variables are not shown here): 
 
    .. code-block::
       
@@ -389,37 +389,35 @@ For example, to run the out-of-the-box experiment on Gaea using cron to automate
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
 
-Detailed information on these and other parameter options can be viewed in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
-.. COMMENT: Delete?
-   To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
+.. code-block:: console
 
-   .. code-block:: console
+   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml -k "(?\!rocoto\b)"
 
-      ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
-   A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+.. code-block:: console
 
-   .. code-block:: console
+   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+   FAILURE
 
-      INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-      FAILURE
+.. hint::
 
-   .. note::
+   * The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
-      The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+   * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
-.. note:: 
+Users can find detailed information on configuration parameter options in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
-   Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
+.. attention::
 
-**Next Steps:**
+   **Next Steps:**
 
-* To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
-* To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
-* To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
-* Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
-
+   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
+   * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
+   * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
+   * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
 .. _LinuxMacExptConfig:
 
@@ -537,11 +535,13 @@ The ``data:`` section of the machine file can point to various data sources that
 
 This can be helpful when conducting multiple experiments with different types of data. 
 
-**Next Steps:**
+.. attention::
 
-* To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
-* To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
-* Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
+   **Next Steps:**
+
+   * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
+   * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
+   * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
 
 .. _PlotOutput:
