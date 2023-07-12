@@ -50,12 +50,14 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
 
     unavailable = {}
     expand_source_paths = []
+    logging.debug(f"Cleaning up local paths: {source_paths}")
     for p in source_paths:
-        expand_source_paths.extend(glob.glob(p))
+        expand_source_paths.extend(glob.glob(p.lstrip("/")))
 
     # Check to make sure the files exist on disk
     for file_path in expand_source_paths:
         local_file_path = os.path.join(os.getcwd(), file_path.lstrip("/"))
+        logging.debug(f"Moving {local_file_path} to {output_path}")
         if not os.path.exists(local_file_path):
             logging.info(f"File does not exist: {local_file_path}")
             unavailable["hpss"] = expand_source_paths
