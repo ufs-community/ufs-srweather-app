@@ -71,7 +71,8 @@ METplus is being actively developed by :term:`NCAR`/Research Applications Labora
 Air Quality Modeling (AQM) Utilities
 =======================================
 
-For more information on AQM Utilities (AQM-utils), visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
+AQM Utilities (AQM-utils) includes the utility executables and python scripts to run SRW-AQM (Online-CMAQ).
+For more information on AQM-utils, visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
 
 NOAA Emission and eXchange Unified System (NEXUS)
 ===================================================

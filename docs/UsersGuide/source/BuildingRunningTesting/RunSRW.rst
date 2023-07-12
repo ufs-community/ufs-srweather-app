@@ -236,23 +236,21 @@ After running ``conda activate workflow_tools``, the user will typically see ``(
 Set Experiment Configuration Parameters
 ------------------------------------------
 
-Each experiment requires certain basic information to run (e.g., date, grid, physics suite). This information is specified in ``config_defaults.yaml`` and in the user-specified ``config.yaml`` file. When generating a new experiment, the SRW App first reads and assigns default values from ``config_defaults.yaml``. Then, it reads and (re)assigns variables from the user's custom ``config.yaml`` file. 
-
-For background info on ``config_defaults.yaml``, read :numref:`Section %s <DefaultConfigSection>` below, or jump to :numref:`Section %s <UserSpecificConfig>` to continue configuring the experiment if they prefer.
+Each experiment requires certain basic information to run (e.g., date, grid, physics suite). Default values are assigned in ``config_defaults.yaml``, and users adjust the desired variables in the experiment configuration file named ``config.yaml``. When generating a new experiment, the SRW App first reads and assigns default values from ``config_defaults.yaml``. Then, it reads and (re)assigns variables from the user's custom ``config.yaml`` file. 
 
 .. _DefaultConfigSection:
 
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Configuration parameters in the ``config_defaults.yaml`` file appear in :doc:`this table <DefaultVarsTable>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in the user-specified ``config.yaml`` file. Any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. There is usually no need for a user to modify the default configuration file. Additional information on the default settings can be found in the ``config_defaults.yaml`` file comments and in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>`.
+In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in the ``config_defaults.yaml`` file comments and in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. 
 
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must specify certain basic experiment configuration information in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a minimal example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases and is fully supported for this release. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and at the Global Systems Laboratory (:term:`GSL`) working on pre-implementation testing for the Rapid Refresh Forecast System (RRFS). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
+The user must set the specifics of their experiment configuration in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a basic example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases, and user support is available for running in community mode. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and the Global Systems Laboratory (:term:`GSL`) who are working on pre-implementation testing for the Rapid Refresh Forecast System (:term:`RRFS`). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
 
 .. _ConfigCommunity:
 
@@ -267,11 +265,9 @@ The user must specify certain basic experiment configuration information in a ``
    +--------------------------------+-------------------+------------------------------------+
    | ACCOUNT                        | "project_name"    | "an_account"                       |
    +--------------------------------+-------------------+------------------------------------+
-   | MODEL                          | ""                | "FV3_GFS_v16_CONUS_25km"           |
+   | MET_INSTALL_DIR                | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | METPLUS_PATH                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | MET_INSTALL_DIR                | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
@@ -279,9 +275,13 @@ The user must specify certain basic experiment configuration information in a ``
    +--------------------------------+-------------------+------------------------------------+
    | NDAS_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
+   | USE_CRON_TO_RELAUNCH           | false             | false                              |
+   +--------------------------------+-------------------+------------------------------------+
    | EXPT_SUBDIR                    | ""                | "test_community"                   |
    +--------------------------------+-------------------+------------------------------------+
    | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                      |
+   +--------------------------------+-------------------+------------------------------------+
+   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                  |
    +--------------------------------+-------------------+------------------------------------+
    | DATE_FIRST_CYCL                | "YYYYMMDDHH"      | '2019061518'                       |
    +--------------------------------+-------------------+------------------------------------+
@@ -301,42 +301,29 @@ The user must specify certain basic experiment configuration information in a ``
    +--------------------------------+-------------------+------------------------------------+
    | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                           |
    +--------------------------------+-------------------+------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                            |
-   +--------------------------------+-------------------+------------------------------------+
    | LBC_SPEC_INTVL_HRS             | 6                 | 6                                  |
    +--------------------------------+-------------------+------------------------------------+
-   | WTIME_RUN_FCST                 | "04:30:00"        | "02:00:00"                         |
+   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                            |
    +--------------------------------+-------------------+------------------------------------+
    | QUILTING                       | true              | true                               |
    +--------------------------------+-------------------+------------------------------------+
-   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                  |
+   | COMOUT_REF                     | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | DO_ENSEMBLE                    | false             | false                              |
    +--------------------------------+-------------------+------------------------------------+
    | NUM_ENS_MEMBERS                | 1                 | 2                                  |
    +--------------------------------+-------------------+------------------------------------+
    
-
-To get started, make a copy of ``config.community.yaml``. From the ``ufs-srweather-app`` directory, run:
+To get started with a basic forecast in *community* mode, make a copy of ``config.community.yaml``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
 
-   cd /path/to/ufs-srweather-app/ush
+   cd ush
    cp config.community.yaml config.yaml
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-.. note::
-
-   Users who have a previous configuration using the former shell-script-based can convert their ``config.sh`` file to a ``config.yaml`` file by running: 
-
-   .. code-block:: console
-
-      ./config_utils.py -c $PWD/config.sh -t $PWD/config_defaults.yaml -o yaml >config.yaml
-
-   Use caution when upgrading your experiment in this way, as many intervening changes in the workflow have occurred since the python changeover.
-
-Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users must change the ``MACHINE`` and ``ACCOUNT`` variables. Then, they can choose a name for the experiment directory by setting ``EXPT_SUBDIR``. If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true``, and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``workflow:`` section of the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
+Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users will usually need to change the ``MACHINE`` and ``ACCOUNT`` variables. Then, select a name for the experiment directory by renaming ``EXPT_SUBDIR`` from ``test_community`` to a name describing the experiment (e.g., ``basic_wflow_test``). If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``workflow:`` section of the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
 .. code-block:: console
 
@@ -347,7 +334,7 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
 
    Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment and python environment. 
 
-Detailed information on additional parameter options can be viewed in :numref:`Chapter %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Chapter %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+Detailed information on additional parameter options can be viewed in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 On Level 1 systems, the following fields typically need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case:
 
@@ -374,7 +361,7 @@ where:
       To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
 
    * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
-   * ``</path/to/>`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>`). 
+   * ``/path/to/`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>`). 
    * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Chapter %s <ConfigWorkflow>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
@@ -401,22 +388,23 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
          EXTRN_MDL_DATA_STORES: disk
 
-To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
+.. COMMENT: Delete?
+   To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
-.. code-block:: console
+   .. code-block:: console
 
-   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
+      ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml
 
-A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+   A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
-.. code-block:: console
+   .. code-block:: console
 
-   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-   FAILURE
+      INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+      FAILURE
 
-.. note::
+   .. note::
 
-   The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+      The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
 Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
@@ -983,18 +971,18 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
 
    CYCLE              TASK                   JOBID         STATE        EXIT STATUS   TRIES   DURATION
    ==========================================================================================================
-   201906151800       make_grid              4953154       SUCCEEDED         0          1          5.0
-   201906151800       make_orog              4953176       SUCCEEDED         0          1         26.0
-   201906151800       make_sfc_climo         4953179       SUCCEEDED         0          1         33.0
-   201906151800       get_extrn_ics          4953155       SUCCEEDED         0          1          2.0
-   201906151800       get_extrn_lbcs         4953156       SUCCEEDED         0          1          2.0
-   201906151800       make_ics               4953184       SUCCEEDED         0          1         16.0
-   201906151800       make_lbcs              4953185       SUCCEEDED         0          1         71.0
-   201906151800       run_fcst               4953196       SUCCEEDED         0          1       1035.0
-   201906151800       run_post_f000          4953244       SUCCEEDED         0          1          5.0
-   201906151800       run_post_f001          4953245       SUCCEEDED         0          1          4.0
+   201906151800   make_grid                4953154       SUCCEEDED         0          1          5.0
+   201906151800   make_orog                4953176       SUCCEEDED         0          1         26.0
+   201906151800   make_sfc_climo           4953179       SUCCEEDED         0          1         33.0
+   201906151800   get_extrn_ics            4953155       SUCCEEDED         0          1          2.0
+   201906151800   get_extrn_lbcs           4953156       SUCCEEDED         0          1          2.0
+   201906151800   make_ics                 4953184       SUCCEEDED         0          1         16.0
+   201906151800   make_lbcs                4953185       SUCCEEDED         0          1         71.0
+   201906151800   run_fcst                 4953196       SUCCEEDED         0          1       1035.0
+   201906151800   run_post_mem000_f000     4953244       SUCCEEDED         0          1          5.0
+   201906151800   run_post_mem000_f001     4953245       SUCCEEDED         0          1          4.0
    ...
-   201906151800       run_post_f012          4953381       SUCCEEDED         0          1          7.0
+   201906151800   run_post_mem000_f012     4953381       SUCCEEDED         0          1          7.0
 
 If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
@@ -1004,7 +992,7 @@ If users choose to run METplus verification tasks as part of their experiment, t
    ==========================================================================================================
    201906151800       make_grid              30466134       SUCCEEDED        0          1          5.0
    ...
-   201906151800       run_post_f012          30468271       SUCCEEDED        0          1          7.0
+   201906151800       run_post_mem000_f012   30468271       SUCCEEDED        0          1          7.0
    201906151800       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
    201906151800       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
    201906151800       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
@@ -1040,23 +1028,23 @@ This will output the last 40 lines of the log file, which list the status of the
 
 .. code-block:: console
 
-   CYCLE                    TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
+   CYCLE                          TASK                       JOBID        STATE   EXIT STATUS   TRIES  DURATION
    ======================================================================================================
-   201906151800        make_grid         druby://hfe01:33728   SUBMITTING             -       0       0.0
-   201906151800        make_orog                           -            -             -       -         -
-   201906151800   make_sfc_climo                           -            -             -       -         -
-   201906151800    get_extrn_ics         druby://hfe01:33728   SUBMITTING             -       0       0.0
-   201906151800   get_extrn_lbcs         druby://hfe01:33728   SUBMITTING             -       0       0.0
-   201906151800         make_ics                           -            -             -       -         -
-   201906151800        make_lbcs                           -            -             -       -         -
-   201906151800         run_fcst                           -            -             -       -         -
-   201906151800      run_post_00                           -            -             -       -         -
-   201906151800      run_post_01                           -            -             -       -         -
-   201906151800      run_post_02                           -            -             -       -         -
-   201906151800      run_post_03                           -            -             -       -         -
-   201906151800      run_post_04                           -            -             -       -         -
-   201906151800      run_post_05                           -            -             -       -         -
-   201906151800      run_post_06                           -            -             -       -         -
+   201906151800              make_grid         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   201906151800              make_orog                           -            -             -       -         -
+   201906151800         make_sfc_climo                           -            -             -       -         -
+   201906151800          get_extrn_ics         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   201906151800         get_extrn_lbcs         druby://hfe01:33728   SUBMITTING             -       0       0.0
+   201906151800               make_ics                           -            -             -       -         -
+   201906151800              make_lbcs                           -            -             -       -         -
+   201906151800               run_fcst                           -            -             -       -         -
+   201906151800   run_post_mem000_f000                           -            -             -       -         -
+   201906151800   run_post_mem000_f001                           -            -             -       -         -
+   201906151800   run_post_mem000_f002                           -            -             -       -         -
+   201906151800   run_post_mem000_f003                           -            -             -       -         -
+   201906151800   run_post_mem000_f004                           -            -             -       -         -
+   201906151800   run_post_mem000_f005                           -            -             -       -         -
+   201906151800   run_post_mem000_f006                           -            -             -       -         -
 
    Summary of workflow status:
    ~~~~~~~~~~~~~~~~~~~~~~~~~~
