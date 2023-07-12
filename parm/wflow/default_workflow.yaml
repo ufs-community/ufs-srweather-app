@@ -19,7 +19,6 @@ rocoto:
     NET: '{{ nco.NET_default }}'
     NOHRSC_OBS_DIR: '{{ platform.NOHRSC_OBS_DIR }}'
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
-    PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
     PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
     QUEUE_DEFAULT: '{{ platform.get("QUEUE_DEFAULT") }}'
