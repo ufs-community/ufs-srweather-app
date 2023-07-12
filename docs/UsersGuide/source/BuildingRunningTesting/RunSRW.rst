@@ -406,13 +406,13 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
    * The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
-   * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
+   * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
+   
+   * Various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
-Users can find detailed information on configuration parameter options in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
+   * Users can find detailed information on configuration parameter options in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. 
 
-.. attention::
-
-   **Next Steps:**
+**Next Steps:**
 
    * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
    * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
@@ -435,32 +435,22 @@ Configuring an Experiment on General Linux and MacOS Systems
 
 **Configure the SRW App:**
 
-After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file that looks similar to this: 
+After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file with the setting from ``community.config.yaml`` and updates similar to this: 
 
 .. code-block:: console
 
    user:
-      RUN_ENVIR: community
       MACHINE: macos
       ACCOUNT: user 
    workflow:
-      EXPT_SUBDIR: test_community
-      PREEXISTING_DIR_METHOD: rename
-      VERBOSE: true
+      EXPT_SUBDIR: my_test_expt
       COMPILER: gnu
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/input_model_data/FV3GFS/grib2/2019061518
-      EXTRN_MDL_DATA_STORES: disk
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/input_model_data/FV3GFS/grib2/2019061518
-      EXTRN_MDL_DATA_STORES: disk
-   task_run_fcst:
-      PREDEF_GRID_NAME: RRFS_CONUS_25km	
-      QUILTING: true
-
-.. COMMENT: Edit above! 
 
 Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition parameters directly in the section of the ``predef_grid_params.yaml`` file pertaining to the grid they want to use. Domain decomposition needs to take into account the number of available CPUs and configure the variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group`` accordingly. 
 
@@ -535,14 +525,11 @@ The ``data:`` section of the machine file can point to various data sources that
 
 This can be helpful when conducting multiple experiments with different types of data. 
 
-.. attention::
+**Next Steps:**
 
-   **Next Steps:**
-
-   * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
+   * To add the graphics plotting tasks to the experiment workflow, go to the next section :ref:`Plotting Configuration <PlotOutput>`. 
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
-
 
 .. _PlotOutput:
 
@@ -577,7 +564,7 @@ The Python plotting tasks require a path to the directory where the Cartopy Natu
 Task Configuration
 `````````````````````
 
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add it to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add the task yaml file to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
 
 .. code-block:: console
 
@@ -585,7 +572,7 @@ Users will need to add or modify certain variables in ``config.yaml`` to run the
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
-Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
+Users may also wish to adjust the start, end, and increment value for the plotting task in the ``config.yaml`` file. For example:  
 
 .. code-block:: console
 
@@ -594,7 +581,7 @@ Users may also wish to adjust the start, end, and increment value for the plotti
       PLOT_FCST_INC: 6
       PLOT_FCST_END: 12
 
-If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>`).
+If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>` for defaults).
 
 .. note::
    If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
@@ -642,23 +629,38 @@ To use METplus verification, the path to the MET and METplus directories must be
       METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
       MET_INSTALL_DIR: </path/to/met/10.1.0>
 
-To turn on verification tasks in the workflow, include the ``parm/wflow/verify.yaml`` file in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
+To turn on verification tasks in the workflow, include the desired ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
 
 .. code-block:: console
 
    rocoto:
      tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-The ``verify.yaml`` file includes the definitions of several common verification tasks by default. They are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
+The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. :numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. The tasks in each file are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
 
-To turn off a task, simply include its entry from ``verify.yaml`` as an empty YAML entry. For example, to turn off PointStat tasks:
+.. _VX-yamls:
+
+.. list-table:: Verification YAML Task Groupings
+   :widths: 20 50
+   :header-rows: 1
+
+   * - File
+     - Description
+   * - verify_pre.yaml
+     - Contains (meta)tasks that are prerequisites for both deterministic and ensemble verification (vx)
+   * - verify_det.yaml
+     - Perform deterministic vx
+   * - verify_ens.yaml
+     - Perform ensemble vx
+
+To turn off a task, simply include its entry from ``verify_*.yaml`` as an empty YAML entry in ``config.yaml``. For example, to turn off PointStat tasks:
 
 .. code-block:: console
 
    rocoto:
      tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_det.yaml"]|include }}'
      metatask_vx_ens_member:
        metatask_PointStat_mem#mem#:
 
@@ -982,9 +984,9 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
    201906151800   make_sfc_climo           4953179       SUCCEEDED         0          1         33.0
    201906151800   get_extrn_ics            4953155       SUCCEEDED         0          1          2.0
    201906151800   get_extrn_lbcs           4953156       SUCCEEDED         0          1          2.0
-   201906151800   make_ics                 4953184       SUCCEEDED         0          1         16.0
-   201906151800   make_lbcs                4953185       SUCCEEDED         0          1         71.0
-   201906151800   run_fcst                 4953196       SUCCEEDED         0          1       1035.0
+   201906151800   make_ics_mem000          4953184       SUCCEEDED         0          1         16.0
+   201906151800   make_lbcs_mem000         4953185       SUCCEEDED         0          1         71.0
+   201906151800   run_fcst_mem000          4953196       SUCCEEDED         0          1       1035.0
    201906151800   run_post_mem000_f000     4953244       SUCCEEDED         0          1          5.0
    201906151800   run_post_mem000_f001     4953245       SUCCEEDED         0          1          4.0
    ...
@@ -994,19 +996,30 @@ If users choose to run METplus verification tasks as part of their experiment, t
 
 .. code-block:: console
 
-   CYCLE              TASK                   JOBID          STATE       EXIT STATUS   TRIES   DURATION
-   ==========================================================================================================
-   201906151800       make_grid              30466134       SUCCEEDED        0          1          5.0
+   CYCLE          TASK                                 JOBID          STATE       EXIT STATUS   TRIES   DURATION
+   ================================================================================================================
+   201906151800   make_grid                            30466134       SUCCEEDED        0          1          5.0
    ...
-   201906151800       run_post_mem000_f012   30468271       SUCCEEDED        0          1          7.0
-   201906151800       run_gridstatvx         30468420       SUCCEEDED        0          1         53.0
-   201906151800       run_gridstatvx_refc    30468421       SUCCEEDED        0          1        934.0
-   201906151800       run_gridstatvx_retop   30468422       SUCCEEDED        0          1       1002.0
-   201906151800       run_gridstatvx_03h     30468491       SUCCEEDED        0          1         43.0
-   201906151800       run_gridstatvx_06h     30468492       SUCCEEDED        0          1         29.0
-   201906151800       run_gridstatvx_24h     30468493       SUCCEEDED        0          1         20.0
-   201906151800       run_pointstatvx        30468423       SUCCEEDED        0          1        670.0
-
+   201906151800   run_post_mem000_f012                 30468271       SUCCEEDED        0          1          7.0
+   201906151800   get_obs_ccpa                         46903539       SUCCEEDED        0          1          9.0
+   201906151800   get_obs_mrms                         46903540       SUCCEEDED        0          1         12.0
+   201906151800   get_obs_ndas                         46903541       SUCCEEDED        0          1          9.0
+   ...
+   201906151800   run_gridstatvx                       30468420       SUCCEEDED        0          1         53.0
+   201906151800   run_gridstatvx_refc                  30468421       SUCCEEDED        0          1        934.0
+   201906151800   run_gridstatvx_retop                 30468422       SUCCEEDED        0          1       1002.0
+   201906151800   run_gridstatvx_03h                   30468491       SUCCEEDED        0          1         43.0
+   201906151800   run_gridstatvx_06h                   30468492       SUCCEEDED        0          1         29.0
+   201906151800   run_gridstatvx_24h                   30468493       SUCCEEDED        0          1         20.0
+   201906151800   run_pointstatvx                      30468423       SUCCEEDED        0          1        670.0
+   ...
+   201906151800   run_MET_GridStat_vx_APCP01h_mem000      -                   -                   -         -             -
+   201906151800   run_MET_GridStat_vx_APCP03h_mem000      -                   -                   -         -             -
+   201906151800   run_MET_GridStat_vx_APCP06h_mem000      -                   -                   -         -             -
+   201906151800   run_MET_GridStat_vx_REFC_mem000         -                   -                   -         -             -
+   201906151800   run_MET_GridStat_vx_RETOP_mem000        -                   -                   -         -             -
+   201906151800   run_MET_PointStat_vx_SFC_mem000         -                   -                   -         -             -
+   201906151800   run_MET_PointStat_vx_UPA_mem000         -                   -                   -         -             -
 
 Launch the Rocoto Workflow Using a Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
