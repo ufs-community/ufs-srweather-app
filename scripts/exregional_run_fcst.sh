@@ -97,10 +97,7 @@ print_info_msg "$VERBOSE" "
 Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
-
 # Create links to fix files in the FIXlam directory.
-
-
 cd_vrfy ${DATA}/INPUT
 
 #
@@ -195,7 +192,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # that the FV3 model is hardcoded to recognize, and those are the names 
 # we use below.
 #
-suites=( "FV3_HRRR" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
+suites=( "FV3_RAP" "FV3_HRRR" "FV3_GFS_v15_thompson_mynn_lam3km" "FV3_GFS_v17_p8" )
 if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   file_ids=( "ss" "ls" )
   for file_id in "${file_ids[@]}"; do
@@ -514,11 +511,19 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   python3 $USHdir/update_input_nml.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
-    --restart || print_err_msg_exit "\
-Call to function to update the FV3 input.nml file for restart for the 
-current cycle's (cdate) run directory (DATA) failed:
+    --restart
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to function to update the FV3 input.nml file for restart 
+for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 
   # Check that restart files exist at restart_interval
   file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
@@ -579,12 +584,19 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
-    --init_concentrations "${init_concentrations}" \
-    || print_err_msg_exit "\
-Call to function to create an aqm.rc file for the current
+    --init_concentrations "${init_concentrations}"
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to function to create an aqm.rc file for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+      err_exit "${message_txt}"
+    else
+      print_err_msg_exit "${message_txt}"
+    fi
+  fi
 fi
 
 #
@@ -603,11 +615,19 @@ python3 $USHdir/create_model_configure_file.py \
   --run-dir "${DATA}" \
   --sub-hourly-post "${SUB_HOURLY_POST}" \
   --dt-subhourly-post-mnts "${DT_SUBHOURLY_POST_MNTS}" \
-  --dt-atmos "${DT_ATMOS}" || print_err_msg_exit "\
-Call to function to create a model configuration file for the current
-cycle's (cdate) run directory (DATA) failed:
+  --dt-atmos "${DT_ATMOS}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a model configuration file 
+for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -618,14 +638,23 @@ cycle's (cdate) run directory (DATA) failed:
 #
 python3 $USHdir/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --run-dir "${DATA}" || print_err_msg_exit "\
-Call to function to create a diag table file for the current cycle's 
-(cdate) run directory (DATA) failed:
+  --run-dir "${DATA}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a diag table file for the current 
+cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlinks to forecast output in DATA
+# Pre-generate symlink to forecast RESTART in DATA for early start of 
+# the next cycle
 #
 #-----------------------------------------------------------------------
 #
@@ -643,11 +672,18 @@ fi
 #
 python3 $USHdir/create_nems_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-  --run-dir "${DATA}" \
-  || print_err_msg_exit "\
-Call to function to create a NEMS configuration file for the current
-cycle's (cdate) run directory (DATA) failed:
+  --run-dir "${DATA}"
+export err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Call to function to create a NEMS configuration file for 
+the current cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -660,9 +696,15 @@ cycle's (cdate) run directory (DATA) failed:
 #-----------------------------------------------------------------------
 #
 PREP_STEP
-eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run FV3-LAM forecast returned with nonzero exit
-code."
+eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run FV3-LAM forecast returned with nonzero exit code."
+  fi
+fi
 POST_STEP
 #
 #-----------------------------------------------------------------------
@@ -677,15 +719,28 @@ POST_STEP
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
-    rm_vrfy -rf "${COMIN}/RESTART"
+    if [ -d "${COMIN}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
+      rm_vrfy -rf "${COMIN}/RESTART"
+    fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      mv_vrfy ${DATA}/RESTART ${COMIN}
-      ln_vrfy -sf ${COMIN}/RESTART ${DATA}/RESTART
+      cp_vrfy -Rp ${DATA}/RESTART ${COMIN}
     fi
   fi
 
-  mv_vrfy ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  cp_vrfy -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 
+  fhr_ct=0
+  fhr=0
+  while [ $fhr -le ${FCST_LEN_HRS} ]; do
+    fhr_ct=$(printf "%03d" $fhr)
+    source_dyn="${DATA}/dynf${fhr_ct}.nc"
+    source_phy="${DATA}/phyf${fhr_ct}.nc"
+    target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+    target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+    [ -f ${source_dyn} ] && cp_vrfy -p ${source_dyn} ${target_dyn}
+    [ -f ${source_phy} ] && cp_vrfy -p ${source_phy} ${target_phy}
+    (( fhr=fhr+1 ))
+  done                 
 fi
 #
 #-----------------------------------------------------------------------

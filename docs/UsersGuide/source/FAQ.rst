@@ -27,7 +27,7 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The four supported physics suites for the SRW Application as of the v2.1.0 release are:
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The five supported physics suites for the SRW Application as of the v2.1.0 release are:
 
 .. code-block:: console
    
@@ -35,6 +35,7 @@ The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using th
    FV3_RRFS_v1beta
    FV3_HRRR
    FV3_WoFS_v0
+   FV3_RAP
 
 When users run the ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``$EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.

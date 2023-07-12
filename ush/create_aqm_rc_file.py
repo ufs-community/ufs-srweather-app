@@ -63,24 +63,24 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #
     # Set parameters in the aqm.rc file.
     #
-    aqm_rc_bio_file_fp=os.path.join(AQM_BIO_DIR, AQM_BIO_FILE)
+    aqm_rc_bio_file_fp=os.path.join(DCOMINbio, AQM_BIO_FILE)
 
     # Fire config
     aqm_rc_fire_file_fp=os.path.join(
-        COMINext,
+        COMIN,
         "FIRE_EMISSION",
         f"{AQM_FIRE_FILE_PREFIX}_{yyyymmdd}_t{hh}z{AQM_FIRE_FILE_SUFFIX}"
         )
 
     # Dust config
     aqm_rc_dust_file_fp=os.path.join(
-            AQM_DUST_DIR,
+            DCOMINdust,
             f"{AQM_DUST_FILE_PREFIX}_{PREDEF_GRID_NAME}{AQM_DUST_FILE_SUFFIX}",
             )
 
     # Canopy config
     aqm_rc_canopy_file_fp=os.path.join(
-        AQM_CANOPY_DIR,
+        DCOMINcanopy,
         PREDEF_GRID_NAME,
         f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
         )
@@ -101,7 +101,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         "aqm_config_dir": AQM_CONFIG_DIR,
         "init_concentrations": init_concentrations,
         "aqm_rc_bio_file_fp": aqm_rc_bio_file_fp,
-        "aqm_bio_dir": AQM_BIO_DIR,
+        "dcominbio": DCOMINbio,
         "aqm_rc_fire_file_fp": aqm_rc_fire_file_fp,
         "aqm_rc_fire_frequency": AQM_RC_FIRE_FREQUENCY,
         "aqm_rc_dust_file_fp": aqm_rc_dust_file_fp,

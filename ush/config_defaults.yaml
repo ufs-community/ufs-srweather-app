@@ -357,6 +357,7 @@ platform:
   #-----------------------------------------------------------------------
   #
   TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
+  TEST_AQM_INPUT_BASEDIR: ""
   TEST_PREGEN_BASEDIR: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: ""
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: ""
@@ -415,23 +416,6 @@ platform:
   #-----------------------------------------------------------------------
   #
   EXTRN_MDL_DATA_STORES: ""
-  #
-  #-----------------------------------------------------------------------
-  #
-  # COMINgfs:
-  # Path to the real-time GFS data
-  #
-  # COMINgefs:
-  # Path to the real-time GEFS data
-  #
-  # COMINairnow:
-  # Path to the real-time AIRNOW observation data
-  #
-  #-----------------------------------------------------------------------
-  #
-  COMINgfs: ""
-  COMINgefs: ""
-  COMINairnow: "/path/to/real/time/airnow/data"
 #-----------------------------
 # WORKFLOW config parameters
 #-----------------------------
@@ -971,7 +955,7 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # COLDSTART:
-  # Flag turning on/off warm start
+  # Flag turning on/off warm start of the first cycle
   #
   # WARMSTART_CYCLE_DIR:
   # Path to the directory where RESTART dir is located for warm start
@@ -989,7 +973,11 @@ nco:
   #-----------------------------------------------------------------------
   #
   # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco").  Definitions:
+  # set to "nco"). All variables have the suffix [_default] meaning the default value.
+  # This is because they are supposed to be defined in job cards for the 
+  # production using ecFlow.
+  #
+  # Definitions: 
   #
   # envir, NET, model_ver, RUN:
   # Standard environment variables defined in the NCEP Central Operations WCOSS
@@ -1027,43 +1015,34 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir: "para"
-  NET: "rrfs"
-  RUN: "rrfs"
-  model_ver: "v1.0.0"
+  envir_default: "para"
+  NET_default: "rrfs"
+  RUN_default: "rrfs"
+  model_ver_default: "v1.0.0"
 
-  OPSROOT: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT: '{{ OPSROOT }}/com'
-  PACKAGEROOT: '{{ OPSROOT }}/packages'
-  DATAROOT: '{{ OPSROOT }}/tmp'
-  DCOMROOT: '{{ OPSROOT }}/dcom'
-  LOGBASEDIR: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
-  EXTROOT: '{{ OPSROOT }}/ext'
-  COMIN_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
-  COMOUT_BASEDIR: '{{ COMROOT }}/{{ NET }}/{{ model_ver }}'
+  OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  COMROOT_default: '{{ OPSROOT_default }}/com'
+  DATAROOT_default: '{{ OPSROOT_default }}/tmp'
+  DCOMROOT_default: '{{ OPSROOT_default }}/dcom'
+  LOGBASEDIR_default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
+  COMIN_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
+  COMOUT_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
 
   #
   # New additions from RRFS_dev1
   #
-  NWGES: '{{ OPSROOT }}/nwges'
+  NWGES: '{{ OPSROOT_default }}/nwges'
   NWGES_BASEDIR: '{{ NWGES }}'
 
-  #
-  #-----------------------------------------------------------------------
-  #
-  # The following are also described in the NCO doc above
-  #
-  #-----------------------------------------------------------------------
-  #
-  DBNROOT: ""
-  SENDECF: false
-  SENDDBN: false
-  SENDDBN_NTC: false
-  SENDCOM: false
-  SENDWEB: false
-  KEEPDATA: true
-  MAILTO: ""
-  MAILCC: ""
+  DBNROOT_default: ""
+  SENDECF_default: false
+  SENDDBN_default: false
+  SENDDBN_NTC_default: false
+  SENDCOM_default: false
+  SENDWEB_default: false
+  KEEPDATA_default: true
+  MAILTO_default: ""
+  MAILCC_default: ""
 
 #----------------------------------
 # GSI namelist parameters
@@ -2514,13 +2493,13 @@ cpl_aqm_parm:
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
-  # AQM_BIO_DIR:
+  # DCOMINbio:
   # Path to the directory containing AQM bio files
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
   #
-  # AQM_DUST_DIR:
+  # DCOMINdust:
   # Path to the directory containing AQM dust file
   #
   # AQM_DUST_FILE_PREFIX:
@@ -2529,7 +2508,7 @@ cpl_aqm_parm:
   # AQM_DUST_FILE_SUFFIX:
   # Suffix and extension of AQM dust file
   #
-  # AQM_CANOPY_DIR:
+  # DCOMINcanopy:
   # Path to the directory containing AQM canopy files
   # 
   # AQM_CANOPY_FILE_PREFIX:
@@ -2538,7 +2517,7 @@ cpl_aqm_parm:
   # AQM_CANOPY_FILE_SUFFIX:
   # Suffix and extension of AQM CANOPY file
   # 
-  # AQM_FIRE_DIR:
+  # DCOMINfire:
   # Path to the directory containing AQM fire files
   # 
   # AQM_FIRE_FILE_PREFIX:
@@ -2559,13 +2538,13 @@ cpl_aqm_parm:
   # AQM_RC_PRODUCT_FREQUENCY:
   # Frequency of AQM output products
   #
-  # AQM_LBCS_DIR:
+  # DCOMINchem_lbc:
   # Path to the directory containing chemical LBC files
   # 
   # AQM_LBCS_FILES:
   # File name of chemical LBCs
   #
-  # AQM_GEFS_DIR:
+  # DCOMINgefs:
   # Path to the directory containing GEFS aerosol LBC files
   #
   # AQM_GEFS_FILE_PREFIX:
@@ -2597,11 +2576,19 @@ cpl_aqm_parm:
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
   #
-  # PT_SRC_BASEDIR:
+  # DCOMINpt_src:
   # Parent directory containing point source files
   #
-  # AQM_AIRNOW_HIST_DIR:
-  # Path to the directory where the historical AIRNOW data are located
+  # DCOMINairnow:
+  # Path to the directory containing AIRNOW observation data
+  #
+  # COMINbicor:
+  # Path of reading in historical training data for biascorrection 
+  #
+  # COMOUTbicor:
+  # Path to save the current cycle's model output and AirNow obs as 
+  # training data for future use $COMINbicor and $COMOUTbicor can be 
+  # distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   #-----------------------------------------------------------------------
   #
@@ -2615,19 +2602,26 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
+  DCOMINbio_default: ""
+  DCOMINdust_default: "/path/to/dust/dir"
+  DCOMINcanopy_default: "/path/to/canopy/dir"
+  DCOMINfire_default: ""
+  DCOMINchem_lbcs_default: ""
+  DCOMINgefs_default: ""
+  DCOMINpt_src_default: "/path/to/point/source/base/directory"
+  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor: "/path/to/historical/airnow/data/dir"
+
   AQM_CONFIG_DIR: ""
-  AQM_BIO_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  AQM_DUST_DIR: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  AQM_CANOPY_DIR: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
-  AQM_FIRE_DIR: ""
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
@@ -2637,10 +2631,8 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  AQM_LBCS_DIR: ""
   AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
 
-  AQM_GEFS_DIR: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
@@ -2651,10 +2643,6 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_OFFSET_HRS: 0
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
-
-  PT_SRC_BASEDIR: "/path/to/point/source/base/directory"
-
-  AQM_AIRNOW_HIST_DIR: "/path/to/historical/airnow/data/dir"
 
 rocoto:
   attrs: ""

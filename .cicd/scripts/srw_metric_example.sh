@@ -50,15 +50,15 @@ conda activate regional_workflow
 set -e -u
 
 # build srw
-cd ${WORKSPACE}/tests
+cd ${workspace}/tests
 ./build.sh ${platform,,} ${SRW_COMPILER}
-cd ${WORKSPACE}
+cd ${workspace}
 
 # run test
 [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
-cd ${WORKSPACE}/tests/WE2E
+cd ${workspace}/tests/WE2E
 ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${SRW_PROJECT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
-cd ${WORKSPACE}
+cd ${workspace}
 
 # run skill-score check
 # first load MET env variables
@@ -70,8 +70,8 @@ source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
 # In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
 # temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
-cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/mem000/metprd/PointStat/*.stat ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat/
-${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
+cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
+${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
 # check skill-score.out
 cat skill-score.out

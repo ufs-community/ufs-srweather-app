@@ -95,11 +95,8 @@ if [ $components = "all" ]; then
     # Array of all optional GSI executables built
     #-----------------------------------------------------------------------
     executables_created+=( enkf.x \
-                           gsi.x \
-                           nc_diag_cat.x \
-                           ncdiag_cat_serial.x \
-                           test_nc_unlimdims.x )
-    
+                           gsi.x )
+
     #-----------------------------------------------------------------------
     # Array of all optional rrfs_utl executables built
     #-----------------------------------------------------------------------

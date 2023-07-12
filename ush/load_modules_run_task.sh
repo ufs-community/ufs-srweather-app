@@ -100,7 +100,9 @@ set -u
 #
 default_modules_dir="$HOMEdir/modulefiles"
 machine=$(echo_lowercase $MACHINE)
-source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
+  source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
+fi
 module use "${default_modules_dir}"
 
 if [ "${machine}" != "wcoss2" ]; then
@@ -177,8 +179,6 @@ elif [ -f ${modules_dir}/python_srw.lua ] ; then
   modules_dir = \"${modules_dir}\""
 fi
 
-
-
 module list
 
 # Modules that use conda and need an environment activated will set the
@@ -189,12 +189,6 @@ module list
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda activate ${SRW_ENV}
-  set -u
-fi
-
-if [ -n "${AQM_ENV:-}" ] ; then
-  set +u
-  source "${AQM_ENV_FP}/${AQM_ENV}/bin/activate"
   set -u
 fi
 
@@ -210,7 +204,13 @@ print_info_msg "$VERBOSE" "
 Launching J-job (jjob_fp) for task \"${task_name}\" ...
   jjob_fp = \"${jjob_fp}\"
 "
-exec "${jjob_fp}"
+
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  /bin/bash "${jjob_fp}"
+else
+  exec "${jjob_fp}"
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -220,5 +220,4 @@ exec "${jjob_fp}"
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-
 

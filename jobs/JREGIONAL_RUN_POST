@@ -56,14 +56,6 @@ This is the J-job script for the task that runs the post-processor (UPP)
 on the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
-#-----------------------------------------------------------------------
-#
-# Set the run directory.
-#
-#-----------------------------------------------------------------------
-#
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
-#
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
 # "fmn" into the post ex-script for the calculation of post_time.
@@ -90,10 +82,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" != "nco" ]; then
+if [ "${RUN_ENVIR}" = "community" ]; then
+  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
   export COMOUT="${DATA}/postprd"
+  mkdir_vrfy -p "${COMOUT}"
 fi
-mkdir_vrfy -p "${COMOUT}"
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
@@ -143,9 +136,11 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 
-  fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
-  if [ "${fhr}" = "${fcst_len_hrs}" ]; then
-    touch "${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+  if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then 
+    fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" ) 
+    if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+      touch "${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+    fi
   fi
 fi
 #
@@ -155,7 +150,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
+if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+    job_postamble "TRUE"
+else
+    job_postamble
+fi
 #
 #-----------------------------------------------------------------------
 #
