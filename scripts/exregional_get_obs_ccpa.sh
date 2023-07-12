@@ -140,7 +140,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   ccpa_file="$ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
   echo "CCPA FILE:${ccpa_file}"
   if [[ ! -f "${ccpa_file}" ]]; then 
-    if [[ ${accum} == "01" ]]; then
       # Check if valid hour is 00
       if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
         cd_vrfy $ccpa_raw/${vyyyymmdd_p1}
@@ -178,51 +177,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         fi
       fi
 
-    elif [[ ${accum} == "03" ]]; then
-      # Check if valid hour is 21
-      if [[ ${vhh_noZero} -ne 21 ]]; then
-        cd_vrfy $ccpa_raw/${vyyyymmdd}
-        # Pull CCPA data from HPSS
-        TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print \$7}'\`" 
-        echo "CALLING: ${TarCommand}"
-        htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
-      elif [[ ${vhh_noZero} -eq 21 ]]; then
-        cd_vrfy $ccpa_raw/${vyyyymmdd_p1}
-        # Pull CCPA data from HPSS
-        TarCommand="htar -xvf ${TarFile_p1} \`htar -tf ${TarFile_p1} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print \$7}'\`"
-        echo "CALLING: ${TarCommand}"
-        htar -xvf ${TarFile_p1} `htar -tf ${TarFile_p1} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
-      fi
-
-      if [[ ${vhh_noZero} -eq 0 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 3 || ${vhh_noZero} -eq 6 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 9 || ${vhh_noZero} -eq 12 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 15 || ${vhh_noZero} -eq 18 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 21 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      fi
-
-    elif [[ ${accum} == "06" ]]; then
-      cd_vrfy $ccpa_raw/${vyyyymmdd}
-      # Pull CCPA data from HPSS
-      TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print \$7}'\`"
-      echo "CALLING: ${TarCommand}"
-      htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
-
-      if [[ ${vhh_noZero} -eq 0 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 6 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/06/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 12 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/12/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      elif [[ ${vhh_noZero} -eq 18 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/18/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
-      fi
-    fi
   fi
   
   # Increment to next forecast hour      
