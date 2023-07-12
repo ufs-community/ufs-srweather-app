@@ -313,7 +313,12 @@ The user must set the specifics of their experiment configuration in a ``config.
    +--------------------------------+-------------------+------------------------------------+
    | NUM_ENS_MEMBERS                | 1                 | 2                                  |
    +--------------------------------+-------------------+------------------------------------+
-   
+
+.. _GeneralConfig:
+
+General Instructions for All Systems
+```````````````````````````````````````
+
 To get started with a basic forecast in *community* mode, make a copy of ``config.community.yaml``. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
@@ -323,20 +328,7 @@ To get started with a basic forecast in *community* mode, make a copy of ``confi
 
 The default settings in this file include a predefined 25-km :term:`CONUS` grid (RRFS_CONUS_25km), the :term:`GFS` v16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
-Next, users should edit the new ``config.yaml`` file to customize it for their machine. At a minimum, users will usually need to change the ``MACHINE`` and ``ACCOUNT`` variables. Then, select a name for the experiment directory by renaming ``EXPT_SUBDIR`` from ``test_community`` to a name describing the experiment (e.g., ``basic_wflow_test``). If users have pre-staged initialization data for the experiment, they can set ``USE_USER_STAGED_EXTRN_FILES: true`` and set the paths to the data for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. If the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler, check that the line ``COMPILER: "gnu"`` appears in the ``workflow:`` section of the ``config.yaml`` file. On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
-
-.. code-block:: console
-
-   USE_CRON_TO_RELAUNCH: true
-   CRON_RELAUNCH_INTVL_MNTS: 3
-
-.. note::
-
-   Generic Linux and MacOS users should refer to :numref:`Section %s <LinuxMacEnvConfig>` for additional details on configuring an experiment and python environment. 
-
-Detailed information on additional parameter options can be viewed in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
-
-On Level 1 systems, the following fields typically need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case:
+Next, users should edit the new ``config.yaml`` file to customize it for their machine. On most systems, the following fields need to be updated or added to the appropriate section of the ``config.yaml`` file in order to run the out-of-the-box SRW App case:
 
 .. code-block:: console
 
@@ -366,11 +358,20 @@ where:
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
    * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
 
+On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
+
+.. code-block:: console
+
+   USE_CRON_TO_RELAUNCH: true
+   CRON_RELAUNCH_INTVL_MNTS: 3
+
+When running with GNU compilers (i.e., if the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler), users must also set ``COMPILER: "gnu"`` in the ``workflow:`` section of the ``config.yaml`` file.
+
 .. note::
 
    On ``JET``, users should also add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file.
 
-For example, to run the out-of-the-box experiment on Gaea, add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
+For example, to run the out-of-the-box experiment on Gaea using cron to automate job submission, users should add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` (unmodified variables are not shown in this example): 
 
    .. code-block::
       
@@ -379,14 +380,16 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
          ACCOUNT: hfv3gfs
       workflow:
          EXPT_SUBDIR: run_basic_srw
+         USE_CRON_TO_RELAUNCH: true
+         CRON_RELAUNCH_INTVL_MNTS: 3
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
-         EXTRN_MDL_DATA_STORES: disk
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
-         EXTRN_MDL_DATA_STORES: disk
+
+Detailed information on these and other parameter options can be viewed in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. Additionally, information about the four predefined Limited Area Model (LAM) Grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`.
 
 .. COMMENT: Delete?
    To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
@@ -406,96 +409,25 @@ For example, to run the out-of-the-box experiment on Gaea, add or modify variabl
 
       The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
-Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
+.. note:: 
 
-To configure an experiment and python environment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>`. To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
+   Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. In addition, various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
-.. _PlotOutput:
+**Next Steps:**
 
-Plotting Configuration (optional)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
+* To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
+* To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
+* Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
-An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
-output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
-
-   * 2-m temperature
-   * 2-m dew point temperature
-   * 10-m winds
-   * 250 hPa winds
-   * Accumulated precipitation
-   * Composite reflectivity
-   * Surface-based :term:`CAPE`/:term:`CIN`
-   * Max/Min 2-5 km updraft helicity
-   * Sea level pressure (SLP)
-
-.. COMMENT: * 500 hPa heights, winds, and vorticity --> seems to be omitted? Why?
-
-This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
-the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
-
-.. _Cartopy:
-
-Cartopy Shapefiles
-`````````````````````
-
-The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
-
-Task Configuration
-`````````````````````
-
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add it to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-
-Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
-
-.. code-block:: console
-
-   task_plot_allvars:
-      PLOT_FCST_START: 0
-      PLOT_FCST_INC: 6
-      PLOT_FCST_END: 12
-
-If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>`).
-
-.. note::
-   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
-
-When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
-corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
-
-Plotting the Difference Between Two Experiments
-""""""""""""""""""""""""""""""""""""""""""""""""""
-
-When plotting the difference between two experiments (``expt1`` and ``expt2``), users must set the ``COMOUT_REF`` template variable in ``expt2``'s ``config.yaml`` file to point at forecast output from the ``expt1`` directory. For example, in *community* mode, users can set ``COMOUT_REF`` as follows in the ``expt2`` configuration file:
-
-.. code-block:: console
-
-   task_plot_allvars:
-      COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
-
-This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`` and ``expt2``. In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
-
-The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
-
-.. _LinuxMacEnvConfig:
-
-User-Specific Configuration on a Generic Linux/MacOS System
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The configuration process for Linux and MacOS systems is similar to the process for other systems, but it requires a few extra steps.
-
-.. note::
-    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
 .. _LinuxMacExptConfig:
 
 Configuring an Experiment on General Linux and MacOS Systems
 ``````````````````````````````````````````````````````````````
+
+.. note::
+    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
 
 **Optional: Install Rocoto**
 
@@ -505,14 +437,7 @@ Configuring an Experiment on General Linux and MacOS Systems
 
 **Configure the SRW App:**
 
-Configure an experiment using a template. Copy the contents of ``config.community.yaml`` into ``config.yaml``: 
-
-.. code-block:: console
-
-   cd /path/to/ufs-srweather-app/ush
-   cp config.community.yaml config.yaml
-
-In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and modify the account and experiment info. For example: 
+After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file that looks similar to this: 
 
 .. code-block:: console
 
@@ -536,6 +461,8 @@ In the ``config.yaml`` file, set ``MACHINE: macos`` or ``MACHINE: linux``, and m
    task_run_fcst:
       PREDEF_GRID_NAME: RRFS_CONUS_25km	
       QUILTING: true
+
+.. COMMENT: Edit above! 
 
 Due to the limited number of processors on MacOS systems, users must also configure the domain decomposition parameters directly in the section of the ``predef_grid_params.yaml`` file pertaining to the grid they want to use. Domain decomposition needs to take into account the number of available CPUs and configure the variables ``LAYOUT_X``, ``LAYOUT_Y``, and ``WRTCMP_write_tasks_per_group`` accordingly. 
 
@@ -609,6 +536,85 @@ The ``data:`` section of the machine file can point to various data sources that
       HRRR: /Users/username/DATA/UFS/HRRR/grib2
 
 This can be helpful when conducting multiple experiments with different types of data. 
+
+**Next Steps:**
+
+* To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
+* To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
+* Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
+
+
+.. _PlotOutput:
+
+Plotting Configuration (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
+
+   * 2-m temperature
+   * 2-m dew point temperature
+   * 10-m winds
+   * 250 hPa winds
+   * Accumulated precipitation
+   * Composite reflectivity
+   * Surface-based :term:`CAPE`/:term:`CIN`
+   * Max/Min 2-5 km updraft helicity
+   * Sea level pressure (SLP)
+
+.. COMMENT: * 500 hPa heights, winds, and vorticity --> seems to be omitted? Why?
+
+This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
+the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
+
+.. _Cartopy:
+
+Cartopy Shapefiles
+`````````````````````
+
+The Python plotting tasks require a path to the directory where the Cartopy Natural Earth shapefiles are located. The medium scale (1:50m) cultural and physical shapefiles are used to create coastlines and other geopolitical borders on the map. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, this path is already set in the system's machine file using the variable ``FIXshp``. Users on other systems will need to download the shapefiles and update the path of ``$FIXshp`` in the machine file they are using (e.g., ``$SRW/ush/machine/macos.yaml`` for a generic MacOS system, where ``$SRW`` is the path to the ``ufs-srweather-app`` directory). The subset of shapefiles required for the plotting task can be obtained from the `SRW Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz>`__. The full set of medium-scale (1:50m) Cartopy shapefiles can be downloaded `here <https://www.naturalearthdata.com/downloads/>`__. 
+
+Task Configuration
+`````````````````````
+
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add it to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+Users may also wish to adjust the start, end, and increment value for the plotting task. For example:  
+
+.. code-block:: console
+
+   task_plot_allvars:
+      PLOT_FCST_START: 0
+      PLOT_FCST_INC: 6
+      PLOT_FCST_END: 12
+
+If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>`).
+
+.. note::
+   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
+
+When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
+corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
+
+Plotting the Difference Between Two Experiments
+""""""""""""""""""""""""""""""""""""""""""""""""""
+
+When plotting the difference between two experiments (``expt1`` and ``expt2``), users must set the ``COMOUT_REF`` template variable in ``expt2``'s ``config.yaml`` file to point at forecast output from the ``expt1`` directory. For example, in *community* mode, users can set ``COMOUT_REF`` as follows in the ``expt2`` configuration file:
+
+.. code-block:: console
+
+   task_plot_allvars:
+      COMOUT_REF: '${EXPT_BASEDIR}/expt1/${PDY}${cyc}/postprd'
+
+This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`` and ``expt2``. In *community* mode, using default directory names and settings, ``$COMOUT_REF`` will resemble ``/path/to/expt_dirs/test_community/2019061518/postprd``. Additional details on the plotting variables are provided in :numref:`Section %s <PlotVars>`. 
+
+The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 
 .. _VXConfig:
 
