@@ -966,22 +966,6 @@ def parse_args(argv):
     )
     parser.add_argument(
         "--data_type",
-        choices=(
-            "FV3GFS",
-            "GFS_obs",
-            "GDAS",
-            "GEFS",
-            "GSMGFS",
-            "HRRR",
-            "NAM",
-            "NSSL_mrms",
-            "RAP",
-            "RAPx",
-            "RAP_obs",
-            "HRRRx",
-            "GSI-FIX",
-            "UFS-CASE-STUDY"
-        ),
         help="External model label. This input is case-sensitive",
         required=True,
     )
@@ -1075,6 +1059,10 @@ def parse_args(argv):
     args.fcst_hrs = arg_list_to_range(args.fcst_hrs)
     if args.members:
         args.members = arg_list_to_range(args.members)
+
+    # Check that output_path exists
+    if not os.path.isdir(args.output_path):
+        raise FileNotFoundError(f"Specified output path {args.output_path} does not exist")
 
     # Check required arguments for various conditions
     if not args.ics_or_lbcs and args.file_set in ["anl", "fcst"]:

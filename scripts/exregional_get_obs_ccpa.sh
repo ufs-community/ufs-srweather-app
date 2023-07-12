@@ -51,44 +51,33 @@ fi
 #accum=${ACCUM}
 accum=01
 
-# Initialization
-yyyymmdd=${PDY}
-hh=${cyc}
+# PDY and cyc are defined in rocoto XML...they are the yyyymmdd and hh for initial forecast hour respectively
+iyyyy=`echo ${PDY} | cut -c1-4`
+imm=`echo ${PDY} | cut -c5-6`
+idd=`echo ${PDY} | cut -c7-8`
+ihh=${cyc}
 
-init=${CDATE}${hh}
+# Unix date utility needs dates in yyyy-mm-dd hh:mm:ss format
+unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 
-fhr_last=`echo ${FHR}  | awk '{ print $NF }'`
-
-# Forecast length
-fcst_length=${fhr_last}
+# This awk expression gets the last item of the list $FHR
+fcst_length=`echo ${FHR}  | awk '{ print $NF }'`
 
 current_fcst=$accum
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
-  # Calculate valid date info
-  fcst_sec=`expr ${current_fcst} \* 3600` # convert forecast lead hour to seconds
-  yyyy=`echo ${init} | cut -c1-4`  # year (YYYY) of initialization time
-  mm=`echo ${init} | cut -c5-6`    # month (MM) of initialization time
-  dd=`echo ${init} | cut -c7-8`    # day (DD) of initialization time
-  hh=`echo ${init} | cut -c9-10`   # hour (HH) of initialization time
-  init_ut=`$DATE_UTIL -ud ''${yyyy}-${mm}-${dd}' UTC '${hh}':00:00' +%s` # convert initialization time to universal time
-  vdate_ut=`expr ${init_ut} + ${fcst_sec}` # calculate current forecast time in universal time
-  vdate=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut}' seconds' +%Y%m%d%H` # convert universal time to standard time
-  vyyyymmdd=`echo ${vdate} | cut -c1-8`  # forecast time (YYYYMMDD)
-  vyyyy=`echo ${vdate} | cut -c1-4`  # year (YYYY) of valid time
-  vmm=`echo ${vdate} | cut -c5-6`    # month (MM) of valid time
-  vdd=`echo ${vdate} | cut -c7-8`    # day (DD) of valid time
-  vhh=`echo ${vdate} | cut -c9-10`       # forecast hour (HH)
 
-  vhh_noZero=$((10#${vhh}))
+  # Calculate valid date info using date utility  
+  vdate=`$DATE_UTIL -d ${unix_init_DATE} ${current_fcst} hours +%Y%m%d%H`
+  vyyyymmdd=`echo ${vdate} | cut -c1-8`
+  vhh=`echo ${vdate} | cut -c9-10`
 
-  # Calculate valid date + 1 day
-  vdate_ut_p1=`expr ${vdate_ut} + 86400`
-  vdate_p1=`$DATE_UTIL -ud '1970-01-01 UTC '${vdate_ut_p1}' seconds' +%Y%m%d%H`
+  # Calculate valid date + 1 day; this is needed because (for some ungodly reason) CCPA files for 19-23z
+  # are stored in the *next* day's 00h directory
+  vdate_p1=`$DATE_UTIL -d ${unix_init_DATE} ${current_fcst} hours 1 day +%Y%m%d%H`
   vyyyymmdd_p1=`echo ${vdate_p1} | cut -c1-8`
-  vyyyy_p1=`echo ${vdate_p1} | cut -c1-4`
-  vmm_p1=`echo ${vdate_p1} | cut -c5-6` 
-  vdd_p1=`echo ${vdate_p1} | cut -c7-8`
-  vhh_p1=`echo ${vdate_p1} | cut -c9-10`
+
+  #remove leading zero from vhh because bash treats numbers with leading zeros as octal *sigh*
+  vhh_noZero=$((10#${vhh}))
 
   # Create necessary raw and prop directories
   if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
@@ -103,56 +92,56 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     mkdir_vrfy -p $ccpa_proc/${vyyyymmdd}
   fi
 
-  # Name of CCPA tar file on HPSS is dependent on date. Logic accounts for files from 2019 until Sept. 2020.
-  if [[ ${vyyyymmdd} -ge 20190101 && ${vyyyymmdd} -lt 20190812 ]]; then
-    TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com2_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_p1} -ge 20190101 && ${vyyyymmdd_p1} -lt 20190812 ]]; then
-    TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com2_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
-  fi
-
-  if [[ ${vyyyymmdd} -ge 20190812 && ${vyyyymmdd} -le 20200217 ]]; then
-    TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_p1} -ge 20190812 && ${vyyyymmdd_p1} -le 20200217 ]]; then
-    TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
-  fi
-
-  if [[ ${vyyyymmdd} -gt 20200217 && ${vyyyymmdd} -le 20220618 ]]; then
-    TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_prod_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_p1} -gt 20200217 && ${vyyyymmdd_p1} -le 20220618 ]]; then
-    TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com_ccpa_prod_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
-  fi
-
-  if [[ ${vyyyymmdd} -ge 20220619 ]]; then
-    TarFile="/NCEPPROD/hpssprod/runhistory/rh${vyyyy}/${vyyyy}${vmm}/${vyyyy}${vmm}${vdd}/com_ccpa_v4.2_ccpa.${vyyyy}${vmm}${vdd}.tar"
-  fi
-
-  if [[ ${vyyyymmdd_p1} -ge 20220619 ]]; then
-    TarFile_p1="/NCEPPROD/hpssprod/runhistory/rh${vyyyy_p1}/${vyyyy_p1}${vmm_p1}/${vyyyy_p1}${vmm_p1}${vdd_p1}/com_ccpa_v4.2_ccpa.${vyyyy_p1}${vmm_p1}${vdd_p1}.tar"
-  fi
-
   # Check if file exists on disk; if not, pull it.
   ccpa_file="$ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
   echo "CCPA FILE:${ccpa_file}"
   if [[ ! -f "${ccpa_file}" ]]; then 
       # Check if valid hour is 00
       if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
-        cd_vrfy $ccpa_raw/${vyyyymmdd_p1}
         # Pull CCPA data from HPSS
-        TarCommand="htar -xvf ${TarFile_p1} \`htar -tf ${TarFile_p1} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print \$7}'\`"
-        echo "CALLING: ${TarCommand}"
-        htar -xvf ${TarFile_p1} `htar -tf ${TarFile_p1} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
+        cmd="
+        python3 -u ${USHdir}/retrieve_data.py \
+          --debug \
+          --file_set obs \
+          --config ${PARMdir}/data_locations.yml \
+          --cycle_date ${vyyyymmdd}${vhh} \
+          --data_stores ${data_stores} \
+          --data_type CCPA_obs \
+          --output_path $ccpa_raw/${vyyyymmdd_p1} \
+          --summary_file ${EXTRN_DEFNS} \
+          --file_templates ${template_arr[@]} \
+          $additional_flags"
+
+        echo "CALLING: ${cmd}"
+        $cmd || print_err_msg_exit "\
+        Call to retrieve_data.py failed with a non-zero exit status.
+
+        The command was:
+        ${cmd}
+"
+
       else 
-        cd_vrfy $ccpa_raw/${vyyyymmdd}
         # Pull CCPA data from HPSS
-        TarCommand="htar -xvf ${TarFile} \`htar -tf ${TarFile} | egrep \"ccpa.t${vhh}z.${accum}h.hrap.conus.gb2\" | awk '{print \$7}'\`"
-        echo "CALLING: ${TarCommand}"
-        htar -xvf ${TarFile} `htar -tf ${TarFile} | egrep "ccpa.t${vhh}z.${accum}h.hrap.conus.gb2" | awk '{print \$7}'`
+        cmd="
+        python3 -u ${USHdir}/retrieve_data.py \
+          --debug \
+          --file_set obs \
+          --config ${PARMdir}/data_locations.yml \
+          --cycle_date ${vyyyymmdd}${vhh} \
+          --data_stores ${data_stores} \
+          --data_type CCPA_obs \
+          --output_path $ccpa_raw/${vyyyymmdd} \
+          --summary_file ${EXTRN_DEFNS} \
+          --file_templates ${template_arr[@]} \
+          $additional_flags"
+
+        echo "CALLING: ${cmd}"
+        $cmd || print_err_msg_exit "\
+        Call to retrieve_data.py failed with a non-zero exit status.
+
+        The command was:
+        ${cmd}
+"
       fi
 
       # One hour CCPA files have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
@@ -170,6 +159,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
           cp_vrfy $ccpa_raw/${vyyyymmdd_p1}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
         fi
       elif [[ ${vhh_noZero} -eq 0 ]]; then
+        # One hour CCPA files on HPSS have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
         if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
           wgrib2 $ccpa_raw/${vyyyymmdd}/00/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
         else
@@ -177,6 +167,8 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         fi
       fi
 
+  else
+    echo "File already exists on disk; will not retrieve"
   fi
   
   # Increment to next forecast hour      

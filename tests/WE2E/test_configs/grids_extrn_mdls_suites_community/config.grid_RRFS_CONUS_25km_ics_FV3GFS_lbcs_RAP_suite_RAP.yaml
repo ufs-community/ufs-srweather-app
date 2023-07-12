@@ -21,9 +21,6 @@ rocoto:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -35,3 +32,8 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
+platform:
+  CCPA_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/ccpa/proc'
+  MRMS_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/mrms/proc'
+  NDAS_OBS_DIR: '/mnt/lfs4/BMC/gsd-fv3-dev/kavulich/workdir/issue_850/expt_dirs/obs_data/ndas/proc'
+

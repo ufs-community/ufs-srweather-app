@@ -426,6 +426,29 @@ RAP_obs:
         - rap.t{hh}z.sevasr.tm00.bufr_d
         - rap.t{hh}z.ssmisu.tm00.bufr_d
 
+CCPA_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_internal_dir:
+      - "./00"
+      - "./06"
+      - "./12"
+      - "./18"
+    archive_file_names:
+      - "com2_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "com_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "com_ccpa_v4.2_ccpa.{yyyy}{mm}{dd}.tar"
+    file_names:
+      obs:
+        - "ccpa.t{hh}z.01h.hrap.conus.gb2"
+
 ###########################
 ###########################
 ####### Fix Files #########
