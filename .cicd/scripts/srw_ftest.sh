@@ -126,7 +126,8 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( gaea hera )
+deny_machines=( gaea )
+sed "s|ulimit -s unlimited;|ulimit -S -s unlimited;|" -i ${workspace}/ush/machine/hera.yaml
 if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
     echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
 else
