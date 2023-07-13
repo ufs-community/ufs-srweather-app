@@ -637,7 +637,7 @@ To turn on verification tasks in the workflow, include the desired ``parm/wflow/
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. :numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. The tasks in each file are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Additional verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
+The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. :numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. The tasks in each file are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Individual verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
 
 .. _VX-yamls:
 
@@ -685,8 +685,6 @@ Users who have already staged the observation data needed for METplus (i.e., the
        task_get_obs_ccpa:
        task_get_obs_mrms:
        task_get_obs_ndas:
-
-
 
 .. _GenerateWorkflow: 
 
