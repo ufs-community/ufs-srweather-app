@@ -24,11 +24,12 @@ default_task_verify_pre: &default_task_verify_pre
 
 task_get_obs_ccpa:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_CCPA"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     ACCUM_HH: '01'
     OBS_DIR: '&CCPA_OBS_DIR;'
+    OBTYPE: 'CCPA'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
@@ -47,10 +48,11 @@ task_get_obs_nohrsc:
 
 task_get_obs_mrms:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_MRMS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&MRMS_OBS_DIR;'
+    OBTYPE: 'MRMS'
     VAR: 'REFC RETOP'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -62,8 +64,9 @@ task_get_obs_ndas:
   envars:
     <<: *default_vars
     OBS_DIR: '&NDAS_OBS_DIR;'
+    OBTYPE: 'NDAS'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NDAS"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   queue: "&QUEUE_HPSS;"
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00

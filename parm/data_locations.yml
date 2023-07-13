@@ -318,7 +318,7 @@ GFS_obs:
 
 NSSL_mrms:
 
-  hpss:
+  hpss: &MRMS_hpss
     protocol: htar
     archive_format: tar
     archive_path:
@@ -336,7 +336,6 @@ NSSL_mrms:
     file_names:
       obs:
         - "*MergedReflectivityQC_*_{yyyymmdd}-{hh}{min}*.grib2*"
-
 
 RAP_obs:
   hpss:
@@ -448,6 +447,37 @@ CCPA_obs:
     file_names:
       obs:
         - "ccpa.t{hh}z.01h.hrap.conus.gb2"
+
+MRMS_obs:
+  hpss:
+    <<: *MRMS_hpss
+    file_names:
+      obs:
+        - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
+        - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
+    archive_internal_dir:
+      - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/MergedReflectivityQCComposite
+      - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/EchoTop
+      - ./upperair/mrms/conus/MergedReflectivityQCComposite
+      - ./upperair/mrms/conus/EchoTop
+
+NDAS_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "com2_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "gpfs_dell1_nco_ops_com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_obsproc_v*_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+    file_names:
+      obs:
+        - "./nam.t{hh}z.prepbufr.tm*.nr"
 
 ###########################
 ###########################

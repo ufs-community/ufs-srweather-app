@@ -45,41 +45,31 @@ if __name__ == "__main__":
     VALID_DIR = os.path.join(DATA_HEAD, valid.strftime("%Y%m%d"))
     if not os.path.exists(VALID_DIR):
         os.makedirs(VALID_DIR)
-    os.chdir(DATA_HEAD)
 
     # Sort list of files for each MRMS product
     print(valid.strftime("%Y%m%d"))
-    if valid.strftime("%Y%m%d") < "20200303":
-        search_path = (
-            MRMS_PROD_DIR
-            + "/"
-            + valid.strftime("%Y%m%d")
-            + "/dcom/us007003/ldmdata/obs/upperair/mrms/conus/"
-            + MRMS_PRODUCT
-            + "/"
-            + MRMS_PRODUCT
-            + "*.gz"
-        )
-    elif valid.strftime("%Y%m%d") >= "20200303":
-        search_path = (
-            MRMS_PROD_DIR
-            + "/"
-            + valid.strftime("%Y%m%d")
-            + "/upperair/mrms/conus/"
-            + MRMS_PRODUCT
-            + "/"
-            + MRMS_PRODUCT
-            + "*.gz"
-        )
+    search_path = (
+        MRMS_PROD_DIR
+        + "/"
+        + valid.strftime("%Y%m%d")
+        + "/"
+        + MRMS_PRODUCT
+        + "*.gz"
+    )
+    print(search_path)
     file_list = [f for f in glob.glob(search_path)]
+    print(file_list)
     time_list = [file_list[x][-24:-9] for x in range(len(file_list))]
+    print(file_list)
     int_list = [
         int(time_list[x][0:8] + time_list[x][9:15]) for x in range(len(time_list))
     ]
     int_list.sort()
+    print(int_list)
     datetime_list = [
         datetime.datetime.strptime(str(x), "%Y%m%d%H%M%S") for x in int_list
     ]
+    print(datetime_list)
 
     # Find the MRMS file closest to the valid time
     i = bisect.bisect_left(datetime_list, valid)
@@ -105,8 +95,6 @@ if __name__ == "__main__":
                 + MRMS_PROD_DIR
                 + "/"
                 + valid.strftime("%Y%m%d")
-                + "/dcom/us007003/ldmdata/obs/upperair/mrms/conus/"
-                + MRMS_PRODUCT
                 + "/"
                 + filename1
                 + " "
@@ -120,8 +108,6 @@ if __name__ == "__main__":
                 + MRMS_PROD_DIR
                 + "/"
                 + valid.strftime("%Y%m%d")
-                + "/dcom/us007003/ldmdata/obs/upperair/mrms/conus/"
-                + MRMS_PRODUCT
                 + "/"
                 + filename1
                 + " "
@@ -136,8 +122,6 @@ if __name__ == "__main__":
                 + MRMS_PROD_DIR
                 + "/"
                 + valid.strftime("%Y%m%d")
-                + "/upperair/mrms/conus/"
-                + MRMS_PRODUCT
                 + "/"
                 + filename1
                 + " "
@@ -152,8 +136,6 @@ if __name__ == "__main__":
                 + "/"
                 + valid.strftime("%Y%m%d")
                 + "/upperair/mrms/conus/"
-                + MRMS_PRODUCT
-                + "/"
                 + filename1
                 + " "
                 + VALID_DIR
