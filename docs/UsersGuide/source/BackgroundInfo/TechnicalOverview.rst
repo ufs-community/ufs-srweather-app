@@ -143,7 +143,7 @@ The UFS Weather Model contains a number of sub-repositories, which are documente
 
 Directory Structure
 ----------------------
-The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
+The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in :term:`NCEP` Central Operations (NCO) WCOSS `Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
 
 .. code-block:: console
 
@@ -193,7 +193,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` structure is determined by
 
 SRW App SubDirectories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. Users can reference the `NCO Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ (p. 19) for additional details on repository structure in NCO-compliant repositories. 
 
 .. _Subdirectories:
 
@@ -202,12 +202,19 @@ SRW App SubDirectories
    +-------------------------+----------------------------------------------------+
    | **Directory Name**      | **Description**                                    |
    +=========================+====================================================+
+   | docs                    | Repository documentation                           |
+   +-------------------------+----------------------------------------------------+
    | jobs                    | J-job scripts launched by Rocoto                   |
    +-------------------------+----------------------------------------------------+
    | modulefiles             | Files used to load modules needed for building and |
    |                         | running the workflow                               |
    +-------------------------+----------------------------------------------------+
+   | parm                    | Parameter files used to configure the model,       |
+   |                         | physics, workflow, and various SRW App components  |
+   +-------------------------+----------------------------------------------------+
    | scripts                 | Scripts launched by the J-jobs                     |
+   +-------------------------+----------------------------------------------------+
+   | sorc                    | External source code used to build the SRW App     |
    +-------------------------+----------------------------------------------------+
    | tests                   | Tests for baseline experiment configurations       |
    +-------------------------+----------------------------------------------------+
