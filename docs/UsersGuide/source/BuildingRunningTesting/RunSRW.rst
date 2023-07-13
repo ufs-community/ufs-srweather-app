@@ -435,7 +435,7 @@ Configuring an Experiment on General Linux and MacOS Systems
 
 **Configure the SRW App:**
 
-After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file with the setting from ``community.config.yaml`` and updates similar to this: 
+After following the steps in :numref:`Section %s: General Configuration <GeneralConfig>` above, users should have a ``config.yaml`` file with settings from ``community.config.yaml`` and updates similar to this: 
 
 .. code-block:: console
 
@@ -603,18 +603,24 @@ This will ensure that ``expt2`` can produce a difference plot comparing ``expt1`
 
 The output files (in ``.png`` format) will be located in the ``postprd`` directory for the experiment.
 
+**Next Steps:**
+
+   * To configure an experiment to run METplus verification tasks, see the :ref:`next section <VXConfig>`. 
+   * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
+
+
 .. _VXConfig:
 
 Configure METplus Verification Suite (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.yaml`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.yaml`` file. Other users may skip to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
 
 .. attention::
-   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.1.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+   METplus *installation* is not included as part of the build process for the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. METplus *use* is supported on systems with a functioning METplus installation, but installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
 
 .. note::
-   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` to correspond to their system's updated installation:
 
    .. code-block:: console
       
@@ -629,7 +635,9 @@ To use METplus verification, the path to the MET and METplus directories must be
       METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
       MET_INSTALL_DIR: </path/to/met/10.1.0>
 
-To turn on verification tasks in the workflow, include the desired ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
+On Level 1 systems, users can find this path in the machine file for their system. On other systems, users will need to determine where MET and METplus were installed. 
+
+To turn on verification (VX) tasks in the workflow, include the desired ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``. For example:
 
 .. code-block:: console
 
@@ -637,7 +645,7 @@ To turn on verification tasks in the workflow, include the desired ``parm/wflow/
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. :numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. The tasks in each file are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Individual verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
+:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to do VX; it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
 
 .. _VX-yamls:
 
@@ -654,24 +662,28 @@ The ``verify_*.yaml`` files include the definitions of several common verificati
    * - verify_ens.yaml
      - Perform ensemble vx
 
+The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. The tasks in each file are independent of each other, so users may want to turn some off depending on the needs of their experiment. Note that the ENSGRID and ENSPOINT tasks apply only to ensemble model verification. Individual verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`.
+
+.. COMMENT: Check task names (still ENSGRID and ENSPOINT?)
+
 To turn off a task, simply include its entry from ``verify_*.yaml`` as an empty YAML entry in ``config.yaml``. For example, to turn off PointStat tasks:
 
 .. code-block:: console
 
    rocoto:
      tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
      metatask_vx_ens_member:
        metatask_PointStat_mem#mem#:
 
 
 More information about configuring the ``rocoto:`` section can be found in :numref:`Section %s <DefineWorkflow>`.
 
-If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
+If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the default ``verify_pre.yaml`` taskgroup will activate the tasks, and the workflow will attempt to download the appropriate data from NOAA HPSS. In this case, the ``*_OBS_DIR`` paths must be set to the location where users want the downloaded data to reside. 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
-Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data and turn off the corresponding task by including them with no entry in ``config.yaml``. 
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml`` and turn off the corresponding task by including them with no entry in the ``rocoto:`` section of ``config.yaml``. 
 
 .. code-block:: console
 
@@ -681,7 +693,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
    rocoto:
      tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify.yaml"]|include }}'
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
        task_get_obs_ccpa:
        task_get_obs_mrms:
        task_get_obs_ndas:
@@ -697,11 +709,19 @@ Run the following command from the ``ufs-srweather-app/ush`` directory to genera
 
    ./generate_FV3LAM_wflow.py
 
-The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and :ref:`used later <Automate>` to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
+The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and used later to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. First, ``generate_FV3LAM_wflow.py`` runs the ``setup.py`` script to set the configuration parameters. Second, it symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). Third, it creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. Lastly, it creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py``: 
 
-The ``setup.py`` script reads three other configuration scripts in order: (1) ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`), (2) ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and (3) ``set_predef_grid_params.py``. If a parameter is specified differently in these scripts, the file containing the last defined value will be used.
+   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads three other configuration scripts in order: 
+      
+      a. ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`)
+      b. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and 
+      c. ``set_predef_grid_params.py``. 
+
+   #. Symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). 
+   #. Creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. 
+   #. Creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
 The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``.
 
@@ -720,7 +740,7 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are specified in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
 
 .. code-block:: console
 
@@ -761,138 +781,84 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
    |                      | lateral boundary conditions (LBCs)                         |
    +----------------------+------------------------------------------------------------+
-   | make_ics             | Generate initial conditions from the external data         |
+   | make_ics*            | Generate ICs from the external data                        |
    +----------------------+------------------------------------------------------------+
-   | make_lbcs            | Generate LBCs from the external data                       |
+   | make_lbcs*           | Generate LBCs from the external data                       |
    +----------------------+------------------------------------------------------------+
-   | run_fcst             | Run the forecast model (UFS Weather Model)                 |
+   | run_fcst*            | Run the forecast model (UFS Weather Model)                 |
    +----------------------+------------------------------------------------------------+
-   | run_post             | Run the post-processing tool (UPP)                         |
+   | run_post*            | Run the post-processing tool (UPP)                         |
    +----------------------+------------------------------------------------------------+
 
-In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run some or all of the METplus verification tasks. These tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. 
+In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run a variety of optional tasks, including plotting and verification tasks. 
+
+.. _PlottingTaskTable:
+
+.. table::  Plotting Task in the SRW App
+
+   +----------------------+------------------------------------------------------------+
+   | **Workflow Task**    | **Task Description**                                       |
+   +======================+============================================================+
+   | plot_allvars         | Run the plotting task and, optionally, the difference      |
+   |                      | plotting task                                              |
+   +----------------------+------------------------------------------------------------+
+   
+METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast).
 
 .. _VXWorkflowTasksTable:
 
-.. table:: Verification (VX) Workflow Tasks in the SRW App
+.. list-table:: Verification (VX) Workflow Tasks in the SRW App
+   :widths: 20 50
+   :header-rows: 1
 
-   +-----------------------+------------------------------------------------------------+
-   | **Workflow Task**     | **Task Description**                                       |
-   +=======================+============================================================+
-   | GET_OBS_CCPA          | Retrieves and organizes hourly :term:`CCPA` data from NOAA |
-   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
-   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
-   |                       | :term:`HPSS` data.                                         |
-   +-----------------------+------------------------------------------------------------+
-   | GET_OBS_NDAS          | Retrieves and organizes hourly :term:`NDAS` data from NOAA |
-   |                       | HPSS. Can only be run if ``verify.yaml`` is included in a  |
-   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
-   |                       | :term:`HPSS` data.                                         |
-   +-----------------------+------------------------------------------------------------+
-   | GET_OBS_MRMS          | Retrieves and organizes hourly :term:`MRMS` composite      |
-   |                       | reflectivity and :term:`echo top` data from NOAA HPSS. Can |
-   |                       | only be run if ``verify.yaml`` is included in a            |
-   |                       | ``tasksgroups`` list *and* user has access to NOAA         |
-   |                       | :term:`HPSS` data.                                         |
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT           | Runs METplus grid-to-grid verification for 1-h accumulated |
-   |                       | precipitation                                              |
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_REFC      | Runs METplus grid-to-grid verification for composite       |
-   |                       | reflectivity                                               |
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_RETOP     | Runs METplus grid-to-grid verification for :term:`echo top`|
-   +-----------------------+------------------------------------------------------------+
-   | VX_GRIDSTAT_##h       | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
-   |                       | 24-h (i.e., daily) accumulated precipitation. Valid values |
-   |                       | for ``##`` are ``03``, ``06``, and ``24``.                 |
-   +-----------------------+------------------------------------------------------------+
-   | VX_POINTSTAT          | Runs METplus grid-to-point verification for surface and    |
-   |                       | upper-air variables                                        |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID            | Runs METplus grid-to-grid ensemble verification for 1-h    |
-   |                       | accumulated precipitation.                                 |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_REFC       | Runs METplus grid-to-grid ensemble verification for        |
-   |                       | composite reflectivity.                                    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_RETOP      | Runs METplus grid-to-grid ensemble verification for        |
-   |                       | :term:`echo top`.                                          |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_##h        | Runs METplus grid-to-grid ensemble verification for 3-h,   |
-   |                       | 6-h, and 24-h (i.e., daily) accumulated precipitation.     |
-   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN       | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | 1-h accumulated precipitation.                             |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB       | Runs METplus grid-to-grid verification for 1-h accumulated |
-   |                       | precipitation probabilistic output.                        |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_MEAN_##h   | Runs METplus grid-to-grid verification for ensemble mean   |
-   |                       | 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. |
-   |                       | Valid values for ``##`` are ``03``, ``06``, and ``24``.    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_##h   | Runs METplus grid-to-grid verification for 3-h, 6-h, and   |
-   |                       | 24h (i.e., daily) accumulated precipitation probabilistic  |
-   |                       | output. Valid values for ``##`` are ``03``, ``06``, and    |
-   |                       | ``24``.                                                    |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_REFC  | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for composite reflectivity.                  |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSGRID_PROB_RETOP | Runs METplus grid-to-grid verification for ensemble        |
-   |                       | probabilities for :term:`echo top`.                        |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT           | Runs METplus grid-to-point ensemble verification for       |
-   |                       | surface and upper-air variables.                           |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT_MEAN      | Runs METplus grid-to-point verification for ensemble mean  |
-   |                       | surface and upper-air variables.                           |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-   | VX_ENSPOINT_PROB      | Runs METplus grid-to-point verification for ensemble       |
-   |                       | probabilities for surface and upper-air variables.         |
-   |                       | Can only be run if ``DO_ENSEMBLE: true``  and              |
-   |                       | ``verify_ensgrid.yaml`` is included in a ``taskgroups``    |
-   |                       | list.                                                      |
-   +-----------------------+------------------------------------------------------------+
-
+   * - Workflow Task
+     - Task Description
+   * - task_get_obs_ccpa
+     - Retrieves and organizes hourly :term:`CCPA` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+   * - task_get_obs_ndas
+     - Retrieves and organizes hourly :term:`NDAS` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+   * - task_get_obs_mrms
+     - Retrieves and organizes hourly :term:`MRMS` composite reflectivity and :term:`echo top` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+   * - task_run_MET_Pb2nc_obs
+     - Convert files from prepbufr to NetCDF format. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list.
+   * - metatask_PcpCombine_obs
+     - Derive 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, task will be named like ``MET_PcpCombine_obs_APCP##h`` where ##h is 03h, 06h, or 24h. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list.
+   * - metatask_check_post_output_all_mems
+     - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, task will be named like ``check_post_output_mem###``. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list. 
+   * - metatask_PcpCombine_fcst_all_accums_all_mems
+     - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, task will be named like ``MET_PcpCombine_fcst_APCP##h_mem###`` where ##h is 03h, 06h, or 24h. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list. 
+   * - metatask_GridStat_CCPA_all_accums_all_mems 
+     - Runs METplus grid-to-grid verification for 1- h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, task will be named like ``run_MET_GridStat_vx_APCP##h_mem###``. Valid values for ``##h`` are ``01h``, ``03h``, ``06h``, and ``24h``. 
+   * - metatask_GridStat_MRMS_all_mems
+     - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, task will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``.
+   * - metatask_PointStat_NDAS_all_mems
+     - Runs METplus grid-to-point verification for surface and upper-air variables In log files, task will be named like ``run_MET_PointStat_vx_SFC_mem###`` or ``run_MET_PointStat_vx_UPA_mem###``.
+   * - VX_ENSGRID
+     - Runs METplus grid-to-grid ensemble verification for 1-h accumulated precipitation. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_REFC
+     - Runs METplus grid-to-grid ensemble verification for composite reflectivity. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_RETOP
+     - Runs METplus grid-to-grid ensemble verification for :term:`echo top`. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_##h
+     - Runs METplus grid-to-grid ensemble verification for 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. Valid values for ``##`` are ``03``, ``06``, and ``24``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_MEAN
+     - Runs METplus grid-to-grid verification for ensemble mean 1-h accumulated precipitation. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_PROB
+     - Runs METplus grid-to-grid verification for 1-h accumulated precipitation probabilistic output. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_MEAN_##h
+     - Runs METplus grid-to-grid verification for ensemble mean 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation. Valid values for ``##`` are ``03``, ``06``, and ``24``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_PROB_##h
+     - Runs METplus grid-to-grid verification for 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. Valid values for ``##`` are ``03``, ``06``, and ``24``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_PROB_REFC
+     - Runs METplus grid-to-grid verification for ensemble probabilities for composite reflectivity. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSGRID_PROB_RETOP
+     - Runs METplus grid-to-grid verification for ensemble probabilities for :term:`echo top`. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSPOINT
+     - Runs METplus grid-to-point ensemble verification for surface and upper-air variables. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSPOINT_MEAN
+     - Runs METplus grid-to-point verification for ensemble mean surface and upper-air variables. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+   * - VX_ENSPOINT_PROB
+     - Runs METplus grid-to-point verification for ensemble probabilities for surface and upper-air variables. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
 
 .. _Run:
 
