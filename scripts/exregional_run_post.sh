@@ -216,9 +216,16 @@ print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
 PREP_STEP
-eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable to run post for forecast hour $fhr returned with non-
-zero exit code."
+eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR}
+export err=$?
+if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+  err_chk
+else
+  if [ $err -ne 0 ]; then
+    print_err_msg_exit "Call to executable to run post for forecast hour $fhr 
+returned with non-zero exit code."
+  fi
+fi
 POST_STEP
 #
 #-----------------------------------------------------------------------
@@ -287,18 +294,8 @@ for fid in "${fids[@]}"; do
   fi
 done
 
-# Move phy and dyn files to COMIN only for AQM
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  mv_vrfy ${dyn_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-  mv_vrfy ${phy_file} ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
-fi
-
 rm_vrfy -rf ${DATA_FHR}
 
-# Delete the forecast directory
-if [ $RUN_ENVIR = "nco" ] && [ $KEEPDATA = "FALSE" ]; then
-   rm -rf $DATAFCST
-fi
 #
 #-----------------------------------------------------------------------
 #

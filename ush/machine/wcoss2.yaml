@@ -22,6 +22,7 @@ platform:
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/aqm_data
   TEST_PREGEN_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/FV3LAM_pregen
   FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_aer
   FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/fix/fix_am
@@ -48,17 +49,19 @@ data:
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/epa/data
-  AQM_BIO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
-  AQM_DUST_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
-  AQM_CANOPY_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
-  AQM_FIRE_DIR: /lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
-  AQM_LBCS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  AQM_GEFS_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
-  AQM_AIRNOW_HIST_DIR: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
+  DCOMINbio_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
+  DCOMINdust_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
+  DCOMINcanopy_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
+  DCOMINfire_default: /lfs/h1/ops/dev/dcom
+  DCOMINchem_lbcs_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
+  DCOMINgefs_default: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
+  DCOMINpt_src_default: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
+  DCOMINairnow_default: /lfs/h1/ops/prod/dcom
+  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.81
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
-  PT_SRC_BASEDIR: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
 
 rocoto:
   tasks:
