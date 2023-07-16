@@ -23,12 +23,10 @@ source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
 #
 # This script retrieves and organizes the NOHRSC data into a more intuitive structure:
 # A valid YYYYMMDD directory is created, and all files for the valid day are placed within the directory.
-# NOTE: Accumulation is currently hardcoded to 06h and 24h which are aavailable every 6 and 12 hour, respectively..
+# NOTE: Accumulation is currently hardcoded to 06h and 24h which are available every 6 and 12 hours, respectively.
 #
 #-----------------------------------------------------------------------
 #
-
-set -x
 
 # Top-level NOHRSC directory
 nohrsc_dir=${OBS_DIR}/..

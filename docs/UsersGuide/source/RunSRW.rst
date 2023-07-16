@@ -724,7 +724,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
    platform:
       CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/nohrsc/proc
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
    rocoto:
