@@ -371,6 +371,10 @@ On platforms where Rocoto and :term:`cron` are available, users can automate res
    USE_CRON_TO_RELAUNCH: true
    CRON_RELAUNCH_INTVL_MNTS: 3
 
+.. note::
+
+   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
+
 When running with GNU compilers (i.e., if the modulefile used to set up the build environment in :numref:`Section %s <BuildExecutables>` uses a GNU compiler), users must also set ``COMPILER: "gnu"`` in the ``workflow:`` section of the ``config.yaml`` file.
 
 .. note::
@@ -863,7 +867,7 @@ The workflow can be run using the Rocoto workflow manager (see :numref:`Section 
 
 .. attention::
 
-   If users are running the SRW App on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>` instead of the instructions in this section.
+   If users are running the SRW App on a system that does not have Rocoto installed (e.g., `Level 3 & 4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, such as many MacOS or generic Linux systems), they should follow the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`.
 
 
 .. _UseRocoto:
@@ -871,14 +875,14 @@ The workflow can be run using the Rocoto workflow manager (see :numref:`Section 
 Run the Workflow Using Rocoto
 --------------------------------
 
-The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App release make use of the Rocoto workflow management software for running experiments. However, if Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
+The information in this section assumes that Rocoto is available on the desired platform. All official HPC platforms for the UFS SRW App make use of the Rocoto workflow management software for running experiments. However, if Rocoto is not available, it is still possible to run the workflow using stand-alone scripts according to the process outlined in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
 There are three ways to run the workflow with Rocoto: (1) automation via crontab (2) by calling the ``launch_FV3LAM_wflow.sh`` script, and (3) by manually issuing the ``rocotorun`` command.
 
 .. note::
-   Users may find it helpful to review :numref:`Chapter %s <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
+   Users may find it helpful to review :numref:`Section %s: Rocoto Introductory Information <RocotoInfo>` to gain a better understanding of Rocoto commands and workflow management before continuing, but this is not required to run the experiment. 
 
-Optionally, an environment variable can be set to navigate to the ``$EXPTDIR`` more easily. If the login shell is bash, it can be set as follows:
+Optionally, an environment variable can be set to navigate to the experiment directory (``$EXPTDIR``) more easily. If the login shell is bash, it can be set as follows:
 
 .. code-block:: console
 
@@ -896,7 +900,7 @@ If the login shell is csh/tcsh, it can be set using:
 Automated Option
 ^^^^^^^^^^^^^^^^^^^
 
-The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every 3 minutes), the user can add the following commands to their ``config.yaml`` file *before* generating the experiment:
+The simplest way to run the Rocoto workflow is to automate the process using a job scheduler such as :term:`Cron`. For automatic resubmission of the workflow at regular intervals (e.g., every 3 minutes), the user can add the following commands to their ``config.yaml`` file *before* generating the experiment (as outlined in :numref:`Section %s <GeneralConfig>`):
 
 .. code-block:: console
 
@@ -909,12 +913,12 @@ This will automatically add an appropriate entry to the user's :term:`cron table
 
    */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer and simply means that the workflow will be resubmitted every three minutes.
+where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer; it simply means that the workflow will be resubmitted every three minutes.
 
 .. hint::
 
    * On NOAA Cloud instances, ``*/1 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 1``) is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, admins discourage the ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on non-NOAA Cloud systems. 
+   * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on non-NOAA Cloud systems. 
 
 To check the experiment progress:
 
@@ -924,10 +928,6 @@ To check the experiment progress:
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
 After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
-
-.. note::
-
-   On Orion, *cron* is only available on the orion-login-1 node, so users will need to work on that node when running *cron* jobs on Orion.
 
 .. _Success:
 
@@ -950,7 +950,7 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
    ...
    201906151800   run_post_mem000_f012     4953381       SUCCEEDED         0          1          7.0
 
-If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
+If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_mem000_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
 .. code-block:: console
 
@@ -1001,7 +1001,7 @@ In order to launch additional tasks in the workflow, call the launch script agai
 
    ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-This will output the last 40 lines of the log file, which list the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 40 can be changed according to the user's preferences. The output will look similar to this:
+This will output the last 40 lines of the log file, which lists the status of the workflow tasks (e.g., SUCCEEDED, DEAD, RUNNING, SUBMITTING, QUEUED). The number 40 can be changed according to the user's preferences. The output will look similar to this:
 
 .. code-block:: console
 
@@ -1012,9 +1012,9 @@ This will output the last 40 lines of the log file, which list the status of the
    201906151800         make_sfc_climo                           -            -             -       -         -
    201906151800          get_extrn_ics         druby://hfe01:33728   SUBMITTING             -       0       0.0
    201906151800         get_extrn_lbcs         druby://hfe01:33728   SUBMITTING             -       0       0.0
-   201906151800               make_ics                           -            -             -       -         -
-   201906151800              make_lbcs                           -            -             -       -         -
-   201906151800               run_fcst                           -            -             -       -         -
+   201906151800        make_ics_mem000                           -            -             -       -         -
+   201906151800       make_lbcs_mem000                           -            -             -       -         -
+   201906151800        run_fcst_mem000                           -            -             -       -         -
    201906151800   run_post_mem000_f000                           -            -             -       -         -
    201906151800   run_post_mem000_f001                           -            -             -       -         -
    201906151800   run_post_mem000_f002                           -            -             -       -         -
@@ -1029,7 +1029,14 @@ This will output the last 40 lines of the log file, which list the status of the
      0 out of 1 cycles completed.
      Workflow status:  IN PROGRESS
 
-If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each task can be found in the task log files located in ``$EXPTDIR/log``. 
+If all the tasks complete successfully, the "Workflow status" at the bottom of the log file will change from "IN PROGRESS" to "SUCCESS". If certain tasks could not complete, the "Workflow status" will instead change to "FAILURE". Error messages for each task can be found in the task log files located in ``$EXPTDIR/log``. Users can look at the log file for a failed task to determine what caused the failure. For example, if the ``make_grid`` task failed, users can open the ``make_grid.log`` file to see what caused the problem: 
+
+.. code-block:: console
+
+   cd $EXPTDIR/log
+   vi make_grid.log
+
+After making any required changes, users can restart a DEAD or failed task as described in :numref:`Section %s of the FAQ <RestartTask>`.
 
 The workflow run is complete when all tasks have "SUCCEEDED", and the ``rocotostat`` command outputs a table similar to the one :ref:`above <Success>`.
 
@@ -1083,7 +1090,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessay to reload the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`). It may also be necessary to load the ``build_<platform>_<compiler>`` scripts as described in :numref:`Section %s <CMakeApproach>`.
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`).
 
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
@@ -1184,3 +1191,5 @@ Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory.
 
 .. note::
    On most HPC systems, users will need to submit a batch job to run multi-processor jobs. On some HPC systems, users may be able to run the first two jobs (serial) on a login node/command-line. Example scripts for Slurm (Hera) and PBS (Cheyenne) resource managers are provided (``sq_job.sh`` and ``qsub_job.sh``, respectively). These examples will need to be adapted to each user's system. Alternatively, some batch systems allow users to specify most of the settings on the command line (with the ``sbatch`` or ``qsub`` command, for example). 
+
+.. COMMENT: Test manual run section. 
