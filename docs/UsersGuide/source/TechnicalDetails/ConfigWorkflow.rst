@@ -323,7 +323,7 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf.
 
    * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
