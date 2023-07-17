@@ -22,14 +22,20 @@ set -x
 #
 #-----------------------------------------------------------------------
 #
-# This script performs several important tasks for preparing CCPA data
-# for verification tasks.
+# This script performs several important tasks for preparing data for
+# verification tasks. Depending on the value of the environment variable
+# OBTYPE=(CCPA|MRMS|NDAS), the script will prepare that particular data
+# set.
 #
 # If data is not available on disk (in the location specified by
-# CCPA_OBS_DIR), the script attempts to retrieve the data from HPSS using
-# the retrieve_data.py script. There are a few strange quirks and/or
+# CCPA_OBS_DIR, CCPA_OBS_DIR, or CCPA_OBS_DIR respectively), the script
+# attempts to retrieve the data from HPSS using the retrieve_data.py 
+# script. Depending on the data set, there are a few strange quirks and/or
 # bugs in the way data is organized; see in-line comments for details.
 #
+#
+# CCPA
+# ----------
 # If data is available on disk, it must be in the following 
 # directory structure and file name conventions expected by verification
 # tasks:
@@ -48,10 +54,48 @@ set -x
 # valid from 19 - 00 UTC (or files under the '00' directory). This is
 # accounted for in this script for data retrieved from HPSS, but if you
 # have manually staged data on disk you should be sure this is accouned
-# for. See in-line comments below for details
- 
-#-----------------------------------------------------------------------
+# for. See in-line comments below for details.
 #
+#
+# MRMS
+# ----------
+# If data is available on disk, it must be in the following 
+# directory structure and file name conventions expected by verification
+# tasks:
+#
+# {MRMS_OBS_DIR}/{YYYYMMDD}/[PREFIX]{YYYYMMDD}-{HH}0000.grib2,
+# 
+# Where [PREFIX] is MergedReflectivityQCComposite_00.50_ for reflectivity
+# data and EchoTop_18_00.50_ for echo top data. If data is not available
+# at the top of the hour, you should rename the file closest in time to
+# your hour(s) of interest to the above naming format. A script
+# "ush/mrms_pull_topofhour.py" is provided for this purpose. 
+#
+# If data is retrieved from HPSS, it will automatically staged by this
+# this script.
+#
+#
+# NDAS
+# ----------
+# If data is available on disk, it must be in the following 
+# directory structure and file name conventions expected by verification
+# tasks:
+#
+# {NDAS_OBS_DIR}/{YYYYMMDD}/prepbufr.ndas.{YYYYMMDDHH}
+# 
+# Note that data retrieved from HPSS and other sources may be in a
+# different format: nam.t{hh}z.prepbufr.tm{prevhour}.nr, where hh is 
+# either 00, 06, 12, or 18, and prevhour is the number of hours prior to
+# hh (00 through 05). If using custom staged data, you will have to
+# rename the files accordingly.
+# 
+# If data is retrieved from HPSS, it will automatically staged by this
+# this script.
+
+#-----------------------------------------------------------------------
+# Create and enter top-level obs directory (so temporary data from HPSS won't collide with other tasks)
+mkdir_vrfy -p ${OBS_DIR}/..
+cd_vrfy ${OBS_DIR}/..
 
 # Set log file for retrieving obs
 logfile=retrieve_data.log
@@ -255,7 +299,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         while [[ ${hour} -le 23 ]]; do
           HH=$(printf "%02d" $hour)
           echo "hour=${hour}"
-          python ${USHdir}/mrms_pull_topofhour.py ${vyyyymmdd}${vhh} ${mrms_proc} ${mrms_raw} ${field_base_name} ${level}
+          python ${USHdir}/mrms_pull_topofhour.py --valid_time ${vyyyymmdd}${HH} --outdir ${mrms_proc} --source ${mrms_raw} --product ${field_base_name} 
           hour=$((${hour} + 1)) # hourly increment
         done
 
