@@ -4,7 +4,7 @@
 Quick Start Guide
 ====================
 
-This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`, for additional explanations regarding each step.
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`, for additional explanations regarding each step.
 
 
 Install the HPC-Stack
@@ -13,12 +13,15 @@ SRW App users who are not working on a `Level 1 <https://github.com/ufs-communit
 
 Once the HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
+.. attention::
+   Although HPC-Stack is currently the fully-supported software stack option, UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. Users are encouraged to check out `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ to prepare for the upcoming shift in support from HPC-Stack to spack-stack. 
+
 .. _QuickBuildRun:
 
 Building and Running the UFS SRW Application 
 ===============================================
 
-For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Chapter %s: Building the SRW App <BuildSRW>` and :numref:`Chapter %s: Running the SRW App <RunSRW>`. :numref:`Figure %s <AppBuildProc>` outlines the steps of the build process. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail.
+For a detailed explanation of how to build and run the SRW App on any supported system, see :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. :numref:`Figure %s <AppBuildProc>` outlines the steps of the build process. The overall procedure for generating an experiment is shown in :numref:`Figure %s <AppOverallProc>`, with the scripts to generate and run the workflow shown in red. An overview of the required steps appears below. However, users can expect to access other referenced sections of this User's Guide for more detail.
 
    #. Clone the SRW App from GitHub:
 
@@ -49,8 +52,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
          
-         source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
-         module use <path/to/modulefiles>
+         module use </path/to/ufs-srweather-app/modulefiles>
          module load wflow_<platform>
 
       where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 
@@ -62,10 +64,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       
       then the user should run ``conda activate workflow_tools`` to activate the workflow environment. 
 
-      .. note::
-         If users source the *lmod-setup* file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
-
    #. Configure the experiment: 
+
+      Copy the contents of the sample experiment from ``config.community.yaml`` to ``config.yaml``:
 
       .. code-block:: console
 
