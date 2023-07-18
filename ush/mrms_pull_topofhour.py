@@ -77,7 +77,7 @@ def main():
     difference = abs(closest_timestamp - valid)
     if difference.total_seconds() <= 900:
         filename1 = f"{args.product}{args.level}{closest_timestamp.strftime('%Y%m%d-%H%M%S')}.grib2.gz"
-        filename2 = f"{args.product}{args.level}{valid_str}0000.grib2"
+        filename2 = f"{args.product}{args.level}{valid.strftime('%Y%m%d-%H')}0000.grib2"
         origfile = os.path.join(args.source, valid_str, filename1)
         target = os.path.join(dest_dir, filename2)
 

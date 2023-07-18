@@ -236,11 +236,12 @@ platform:
   # CCPA_OBS_DIR:
   # User-specified location of the directory where CCPA hourly
   # precipitation files used by METplus are located (or, if
-  # retrieved by the workflow, where they will be placed). This path
-  # must end with the subdirectories "ccpa/proc". See comments in file
-  # scripts/exregional_get_verif_obs.sh for more details about files
-  # and directory structure, as well as important caveats about errors
-  # in the metadata and file names.
+  # retrieved by the workflow, where they will be placed). See comments in file
+  # in file scripts/exregional_get_verif_obs.sh for more details about
+  # files and directory structure, as well as important caveats about
+  # errors in the metadata and file names.
+  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # otherwise unexpected results and data loss may occur
   #
   # NOHRSC_OBS_DIR:
   # User-specified location of top-level directory where NOHRSC 6- and 24-h hour
@@ -267,18 +268,20 @@ platform:
   # MRMS_OBS_DIR:
   # User-specified location of the directory where MRMS composite
   # reflectivity and echo top files used by METplus are located (or, if
-  # retrieved by the workflow, where they will be placed). This path
-  # must end with the subdirectories "mrms/proc". See comments in the
-  # scripts/exregional_get_verif_obs.sh for more details about files
-  # and directory structure.
+  # retrieved by the workflow, where they will be placed). See comments
+  # in the scripts/exregional_get_verif_obs.sh for more details about
+  # files and directory structure.
+  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # otherwise unexpected results and data loss may occur
   #
   # NDAS_OBS_DIR:
   # User-specified location of top-level directory where NDAS prepbufr 
   # files used by METplus are located (or, if retrieved by the workflow,
-  # where they will be placed). This path must end with the
-  # subdirectories "ndas/proc". See comments in file
+  # where they will be placed). See comments in file
   # scripts/exregional_get_verif_obs.sh for more details about files
   # and directory structure.
+  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # otherwise unexpected results and data loss may occur
   #
   #-----------------------------------------------------------------------
   #

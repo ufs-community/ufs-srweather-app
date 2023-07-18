@@ -28,7 +28,7 @@ set -x
 # set.
 #
 # If data is not available on disk (in the location specified by
-# CCPA_OBS_DIR, CCPA_OBS_DIR, or CCPA_OBS_DIR respectively), the script
+# CCPA_OBS_DIR, MRMS_OBS_DIR, or NDAS_OBS_DIR respectively), the script
 # attempts to retrieve the data from HPSS using the retrieve_data.py 
 # script. Depending on the data set, there are a few strange quirks and/or
 # bugs in the way data is organized; see in-line comments for details.
@@ -94,8 +94,8 @@ set -x
 
 #-----------------------------------------------------------------------
 # Create and enter top-level obs directory (so temporary data from HPSS won't collide with other tasks)
-mkdir_vrfy -p ${OBS_DIR}/..
-cd_vrfy ${OBS_DIR}/..
+mkdir_vrfy -p ${OBS_DIR}
+cd_vrfy ${OBS_DIR}
 
 # Set log file for retrieving obs
 logfile=retrieve_data.log
@@ -133,11 +133,11 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   # Retrieve CCPA observations
   if [[ ${OBTYPE} == "CCPA" ]]; then
 
-    # raw CCPA data from HPSS
-    ccpa_raw=${OBS_DIR}/../raw
+    # Staging location for raw CCPA data from HPSS
+    ccpa_raw=${OBS_DIR}/raw
 
     # Reorganized CCPA location
-    ccpa_proc=${OBS_DIR}/../proc
+    ccpa_proc=${OBS_DIR}
 
     # Accumulation is for accumulation of CCPA data to pull (hardcoded to 01h, see note above.)
     accum=01
@@ -230,10 +230,10 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   elif [[ ${OBTYPE} == "MRMS" ]]; then
     # Top-level MRMS directory
     # raw MRMS data from HPSS
-    mrms_raw=${OBS_DIR}/../raw
+    mrms_raw=${OBS_DIR}/raw
 
     # Reorganized MRMS location
-    mrms_proc=${OBS_DIR}/../proc
+    mrms_proc=${OBS_DIR}
 
     # Create necessary raw and proc directories
     if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
@@ -311,10 +311,10 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   # Retrieve NDAS observations
   elif [[ ${OBTYPE} == "NDAS" ]]; then
     # raw NDAS data from HPSS
-    ndas_raw=${OBS_DIR}/../raw
+    ndas_raw=${OBS_DIR}/raw
 
     # Reorganized NDAS location
-    ndas_proc=${OBS_DIR}/../proc
+    ndas_proc=${OBS_DIR}
 
     # Check if file exists on disk; NDAS data is available in 6-hourly combined prepbufr files
     # If forecast ends on an off-hour (i.e., not 00z, 06z, 12z, or 18z), the last few hours of data may not be retrieved
@@ -379,6 +379,11 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
   current_fcst=$((${current_fcst} + 1))
 
 done
+
+
+# Clean up raw, unprocessed observation files
+rm_vrfy -rf ${OBS_DIR}/raw
+
 #
 #-----------------------------------------------------------------------
 #
