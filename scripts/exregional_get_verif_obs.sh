@@ -94,8 +94,8 @@ set -x
 
 #-----------------------------------------------------------------------
 # Create and enter top-level obs directory (so temporary data from HPSS won't collide with other tasks)
-mkdir_vrfy -p ${OBS_DIR}
-cd_vrfy ${OBS_DIR}
+mkdir -p ${OBS_DIR}
+cd ${OBS_DIR}
 
 # Set log file for retrieving obs
 logfile=retrieve_data.log
@@ -148,13 +148,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     if [[ ! -f "${ccpa_file}" ]]; then 
       # Create necessary raw and prop directories
       if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
-        mkdir_vrfy -p $ccpa_raw/${vyyyymmdd}
+        mkdir -p $ccpa_raw/${vyyyymmdd}
       fi
       if [[ ! -d "$ccpa_raw/${vyyyymmdd_p1}" ]]; then
-        mkdir_vrfy -p $ccpa_raw/${vyyyymmdd_p1}
+        mkdir -p $ccpa_raw/${vyyyymmdd_p1}
       fi
       if [[ ! -d "$ccpa_proc/${vyyyymmdd}" ]]; then
-        mkdir_vrfy -p $ccpa_proc/${vyyyymmdd}
+        mkdir -p $ccpa_proc/${vyyyymmdd}
       fi
       # Check if valid hour is 00
       if [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
@@ -203,23 +203,23 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       # One hour CCPA files have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
       # After data is pulled, reorganize into correct valid yyyymmdd structure.
       if [[ ${vhh_noZero} -ge 1 && ${vhh_noZero} -le 6 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 7 && ${vhh_noZero} -le 12 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 13 && ${vhh_noZero} -le 18 ]]; then
-        cp_vrfy $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+        cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
       elif [[ ${vhh_noZero} -ge 19 && ${vhh_noZero} -le 23 ]]; then
         if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
           wgrib2 $ccpa_raw/${vyyyymmdd_p1}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
         else
-          cp_vrfy $ccpa_raw/${vyyyymmdd_p1}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+          cp $ccpa_raw/${vyyyymmdd_p1}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
         fi
       elif [[ ${vhh_noZero} -eq 0 ]]; then
         # One hour CCPA files on HPSS have incorrect metadata in the files under the "00" directory from 20180718 to 20210504.
         if [[ ${vyyyymmdd} -ge 20180718 && ${vyyyymmdd} -le 20210504 ]]; then
           wgrib2 $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -set_date -24hr -grib $ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 -s
         else
-          cp_vrfy $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
+          cp $ccpa_raw/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2 $ccpa_proc/${vyyyymmdd}
         fi
       fi
 
@@ -234,15 +234,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
     # Reorganized MRMS location
     mrms_proc=${OBS_DIR}
-
-    # Create necessary raw and proc directories
-    if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
-      mkdir_vrfy -p $mrms_raw/${vyyyymmdd}
-    fi
-    if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
-      mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
-    fi
-
 
     # For each field (REFC and RETOP), check if file exists on disk; if not, pull it.
     for field in ${VAR[@]}; do
@@ -267,10 +258,10 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       if [[ ! -f "${mrms_file}" ]]; then
         # Create directories if necessary
         if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
-          mkdir_vrfy -p $mrms_raw/${vyyyymmdd}
+          mkdir -p $mrms_raw/${vyyyymmdd}
         fi
         if [[ ! -d "$mrms_proc/${vyyyymmdd}" ]]; then
-          mkdir_vrfy -p $mrms_proc/${vyyyymmdd}
+          mkdir -p $mrms_proc/${vyyyymmdd}
         fi
 
 
@@ -318,13 +309,13 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
     # Check if file exists on disk; NDAS data is available in 6-hourly combined prepbufr files
     # If forecast ends on an off-hour (i.e., not 00z, 06z, 12z, or 18z), the last few hours of data may not be retrieved
-    if [[ ${vhh_noZero} -eq 0 || ${vhh} -eq 6 || ${vhh} -eq 12 || ${vhh} -eq 18 ]]; then
+    if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
       ndas_file="$ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}"
       echo "NDAS PB FILE:${ndas_file}"
 
       if [[ ! -f "${ndas_file}" ]]; then
         if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
-          mkdir_vrfy -p $ndas_raw/${vyyyymmdd}${vhh}
+          mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
         fi
 
         # Pull NDAS data from HPSS
@@ -349,7 +340,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 "
 
         if [[ ! -d "$ndas_proc" ]]; then
-          mkdir_vrfy -p $ndas_proc
+          mkdir -p $ndas_proc
         fi
 
         # copy files from the previous 6 hours
@@ -357,7 +348,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
           vyyyymmddhh_tm=`$DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H`
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
-          cp_vrfy $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
+          cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
         done
       else
         echo "NDAS file exists: ${ndas_file}"
@@ -382,7 +373,7 @@ done
 
 
 # Clean up raw, unprocessed observation files
-rm_vrfy -rf ${OBS_DIR}/raw
+rm -rf ${OBS_DIR}/raw
 
 #
 #-----------------------------------------------------------------------
