@@ -474,7 +474,7 @@ NDAS_obs:
       - "com2_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "gpfs_dell1_nco_ops_com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
       - "com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
-      - "com_obsproc_v*_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_obsproc_v1.1_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
     file_names:
       obs:
         - "./nam.t{hh}z.prepbufr.tm*.nr"
