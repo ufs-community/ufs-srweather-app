@@ -18,9 +18,6 @@ workflow:
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
 
 global:
   DO_ENSEMBLE: true
