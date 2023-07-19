@@ -3,7 +3,7 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script pulls MRMS observation data for comparison to the model.
+# This script checks, pulls. and stages observation data for model verification.
 #
 #-----------------------------------------------------------------------
 #
@@ -51,8 +51,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that pulls MRMS observation data
-for verification purposes.
+This is the J-job script for the task that checks, pulls, and stages
+observation data for verification purposes.
 ========================================================================"
 
 #
