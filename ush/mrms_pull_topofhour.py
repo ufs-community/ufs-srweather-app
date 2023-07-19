@@ -90,7 +90,7 @@ def main():
             with open(target, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
     else:
-        print(f"WARNING: Did not find a valid file within 15 minutes of {valid}; doing nothing for this time")
+        raise FileNotFoundError(f"Did not find a valid file within 15 minutes of {valid}")
  
 if __name__ == "__main__":
     main()
