@@ -7,7 +7,7 @@
 # We want this following a normal SRW build in an attempt to exercise environment setup, modules,
 # data sets, and workflow scripts, without using too much time nor account resources.
 # We hope to catch any snags that might prevent WE2E fundamental testing, which follows this gate.
-# NOTE: At this time, this script is a placeholder for functional test framework.
+# NOTE:
 # At this time, we are leaving the exercise of graphical plotting for a later stage, perhaps WE2E state.
 #
 # Required:
@@ -84,7 +84,7 @@ module load wflow_${platform,,}
 conda activate workflow_tools
 set -e -u
 
-export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools
+export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools:${workspace}/ush/python_utils/workflow-tools/src
 
 cd ${workspace}/ush
         # Consistency check ...
@@ -126,7 +126,7 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( gaea hera )
+deny_machines=( gaea )
 #sed "s|ulimit -s unlimited;|ulimit -S -s unlimited;|" -i ${workspace}/ush/machine/hera.yaml
 if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
     echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
