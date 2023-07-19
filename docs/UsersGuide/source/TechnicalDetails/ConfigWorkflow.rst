@@ -376,12 +376,6 @@ Compiler
 ``COMPILER``: (Default: "intel")
    Type of compiler invoked during the build step. Currently, this must be set manually; it is not inherited from the build system in the ``ufs-srweather-app`` directory. Valid values: ``"intel"`` | ``"gnu"``
 
-Verification Parameters
----------------------------
-
-``GET_OBS``: (Default: "get_obs")
-   Set the name of the Rocoto workflow task used to load proper module files for ``GET_OBS_*`` tasks. Users typically do not need to change this value. 
-
 
 .. _NCOModeParms:
 
