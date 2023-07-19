@@ -1062,10 +1062,6 @@ def parse_args(argv):
     if args.members:
         args.members = arg_list_to_range(args.members)
 
-    # Check that output_path exists
-    if not os.path.isdir(args.output_path):
-        raise FileNotFoundError(f"Specified output path {args.output_path} does not exist")
-
     # Check required arguments for various conditions
     if not args.ics_or_lbcs and args.file_set in ["anl", "fcst"]:
         raise argparse.ArgumentTypeError(f"--ics_or_lbcs is a required " \
