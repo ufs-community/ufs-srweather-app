@@ -25,6 +25,7 @@ platform:
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/aqm_data
   TEST_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
