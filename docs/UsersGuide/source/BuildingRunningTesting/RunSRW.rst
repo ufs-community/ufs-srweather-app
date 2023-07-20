@@ -689,7 +689,7 @@ If users have access to NOAA :term:`HPSS` but have not pre-staged the data, the 
 
 Users who do not have access to NOAA HPSS and do not have the data on their system will need to download :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data manually from collections of publicly available data, such as the ones listed `here <https://dtcenter.org/nwp-containers-online-tutorial/publicly-available-data-sets>`__. 
 
-Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml`` and turn off the corresponding task by including them with no entry in the ``rocoto:`` section of ``config.yaml``. 
+Users who have already staged the observation data needed for METplus (i.e., the :term:`CCPA`, :term:`MRMS`, and :term:`NDAS` data) on their system should set the path to this data in ``config.yaml``. 
 
 .. code-block:: console
 
@@ -697,12 +697,6 @@ Users who have already staged the observation data needed for METplus (i.e., the
       CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
-       task_get_obs_ccpa:
-       task_get_obs_mrms:
-       task_get_obs_ndas:
 
 .. _GenerateWorkflow: 
 
@@ -809,54 +803,71 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                      | plotting task                                              |
    +----------------------+------------------------------------------------------------+
    
-METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast).
+METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about Metatasks.
 
 .. _VXWorkflowTasksTable:
 
 .. list-table:: Verification (VX) Workflow Tasks in the SRW App
-   :widths: 20 50
+   :widths: 20 20 50
    :header-rows: 1
 
    * - Workflow Task
+     - ``taskgroup``
      - Task Description
    * - :bolditalic:`task_get_obs_ccpa`
-     - Retrieves and organizes hourly :term:`CCPA` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+     - ``verify_pre.yaml``
+     - If user has staged :term:`CCPA` data for verification, checks to ensure that data exists in the specified location (CCPA_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_get_obs_ndas`
-     - Retrieves and organizes hourly :term:`NDAS` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+     - ``verify_pre.yaml``
+     - If user has staged :term:`NDAS` data for verification, checks to ensure that data exists in the specified location (NDAS_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_get_obs_mrms`
-     - Retrieves and organizes hourly :term:`MRMS` composite reflectivity and :term:`echo top` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data.
+     - ``verify_pre.yaml``
+     - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (MRMS_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_run_MET_Pb2nc_obs`
-     - Convert files from prepbufr to NetCDF format. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list.
+     - ``verify_pre.yaml``
+     - Convert files from prepbufr to NetCDF format.
    * - :bolditalic:`metatask_PcpCombine_obs`
-     - Derive 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list. 
+     - ``verify_pre.yaml``
+     - Derive 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_check_post_output_all_mems`
-     - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list. 
+     - ``verify_pre.yaml``
+     - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
    * - :bolditalic:`metatask_PcpCombine_fcst_all_accums_all_mems`
-     - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list. 
+     - ``verify_pre.yaml``
+     - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
-     - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_det.yaml`` is included in a ``taskgroups`` list. 
+     - ``verify_det.yaml``
+     - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
    * - :bolditalic:`metatask_GridStat_MRMS_all_mems`
-     - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_det.yaml`` is included in a ``taskgroups`` list. 
+     - ``verify_det.yaml``
+     - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``.
    * - :bolditalic:`metatask_PointStat_NDAS_all_mems`
-     - Runs METplus grid-to-point verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_SFC_mem###`` or ``run_MET_PointStat_vx_UPA_mem###``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_det.yaml`` is included in a ``taskgroups`` list. 
+     - ``verify_det.yaml``
+     - Runs METplus grid-to-point verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_SFC_mem###`` or ``run_MET_PointStat_vx_UPA_mem###``.
    * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_CCPA` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_##h*)
-     - Runs METplus grid-to-grid ensemble verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_APCP##h`` or ``run_MET_GenEnsProd_vx_APCP##h``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid ensemble verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_APCP##h`` or ``run_MET_GenEnsProd_vx_APCP##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_MRMS` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_[REFC|RETOP]*)
-     - Runs METplus grid-to-grid ensemble verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[REFC|RETOP]`` or ``run_MET_EnsembleStat_vx_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid ensemble verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[REFC|RETOP]`` or ``run_MET_EnsembleStat_vx_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``. 
    * - :bolditalic:`metatask_GridStat_CCPA_ensmeanprob_all_accums` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_MEAN_##h* and *VX_ENSGRID_PROB_##h*)
-     - Runs METplus grid-to-grid verification for (1) ensemble mean 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation and (2) 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_APCP##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_APCP##h``, where ``##h`` is 01h, 03h, 06h, or 24h. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid verification for (1) ensemble mean 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation and (2) 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_APCP##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_APCP##h``, where ``##h`` is 01h, 03h, 06h, or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GridStat_MRMS_ensprob` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_PROB_[REFC|RETOP]*)
-     - Runs METplus grid-to-grid verification for ensemble probabilities for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_ensprob_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid verification for ensemble probabilities for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_ensprob_[REFC|RETOP]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_NDAS` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSPOINT*)
-     - Runs METplus grid-to-point ensemble verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[SFC|UPA]`` or ``run_MET_EnsembleStat_vx_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-point ensemble verification for surface and upper-air variables. In log files, tasks will be named like ``run_MET_GenEnsProd_vx_[SFC|UPA]`` or ``run_MET_EnsembleStat_vx_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_PointStat_NDAS_ensmeanprob` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSPOINT_[MEAN|PROB]*)
-     - Runs METplus grid-to-point verification for (1) ensemble mean surface and upper-air variables and (2) ensemble probabilities for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_ensmean_[SFC|UPA]`` or ``run_MET_PointStat_vx_ensprob_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true``  and ``verify_ens.yaml`` is included in a ``taskgroups`` list.
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-point verification for (1) ensemble mean surface and upper-air variables and (2) ensemble probabilities for surface and upper-air variables. In log files, tasks will be named like ``run_MET_PointStat_vx_ensmean_[SFC|UPA]`` or ``run_MET_PointStat_vx_ensprob_[SFC|UPA]``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
 
 .. _Run:
 
