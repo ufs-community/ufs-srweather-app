@@ -2498,9 +2498,9 @@ task_aqm_ics:
 task_aqm_lbcs:
   TN_AQM_LBCS: "aqm_lbcs"
   NNODES_AQM_LBCS: 1
-  PPN_AQM_LBCS: 24
+  PPN_AQM_LBCS: 128
   WTIME_AQM_LBCS: 00:30:00
-  MAXTRIES_AQM_LBCS: 2
+  MAXTRIES_AQM_LBCS: 1
 
 #----------------------------
 # NEXUS_GFS_SFC config parameters
@@ -2544,7 +2544,7 @@ task_fire_emission:
   TN_FIRE_EMISSION: "fire_emission"
   NNODES_FIRE_EMISSION: 1
   PPN_FIRE_EMISSION: 1
-  MEM_FIRE_EMISSION: 2G
+  MEM_FIRE_EMISSION: 24G
   WTIME_FIRE_EMISSION: 00:30:00
   MAXTRIES_FIRE_EMISSION: 2
   AQM_FIRE_FILE_OFFSET_HRS: 0

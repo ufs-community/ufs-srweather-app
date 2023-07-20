@@ -9,8 +9,8 @@ platform:
   MET_BIN_EXEC: bin
   MET_INSTALL_DIR: /apps/ops/para/libs/intel/19.1.3.304/met/10.1.1
   DOMAIN_PREGEN_BASEDIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/FV3LAM_pregen
-  QUEUE_DEFAULT: dev
-  QUEUE_FCST: dev
+  QUEUE_DEFAULT: devhigh
+  QUEUE_FCST: devhigh
   QUEUE_HPSS: dev_transfer
   RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} -ppn ${PPN_RUN_FCST} --cpu-bind core -depth ${OMP_NUM_THREADS_RUN_FCST}
   RUN_CMD_POST: mpiexec -n ${nprocs}
@@ -43,12 +43,13 @@ cpl_aqm_parm:
   DCOMINdust_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
   DCOMINcanopy_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/canopy
   DCOMINfire_dfv: /lfs/h1/ops/dev/dcom 
+  #DCOMINfire_dfv: /lfs/h2/emc/physics/noscrub/jianping.huang/RAVE_fire/RAVE_NA_NRT
   DCOMINchem_lbcs_dfv: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
   DCOMINgefs_dfv: /lfs/h1/ops/prod/com/gefs/v12.3 
   DCOMINpt_src_dfv: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
   DCOMINairnow_dfv: /lfs/h1/ops/prod/dcom
-  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
-  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0
+  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.82
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.82
   NEXUS_INPUT_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   NEXUS_FIX_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus/fix
   NEXUS_GFS_SFC_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GFS_DATA
