@@ -236,34 +236,12 @@ platform:
   # CCPA_OBS_DIR:
   # User-specified location of the directory where CCPA hourly
   # precipitation files used by METplus are located (or, if
-  # retrieved by the workflow, where they will be placed). See comments in file
+  # retrieved by the workflow, where they will be placed). See comments
   # in file scripts/exregional_get_verif_obs.sh for more details about
   # files and directory structure, as well as important caveats about
   # errors in the metadata and file names.
   # NOTE: This should not be set equal to other *OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
-  #
-  # NOHRSC_OBS_DIR:
-  # User-specified location of top-level directory where NOHRSC 6- and 24-h hour
-  # snowfall accumulation files used by METplus are located. This parameter
-  # needs to be set for both user-provided observations and for
-  # observations that are retrieved from the NOAA HPSS (if the user has
-  # access) via the get_obs_nohrsc task (activated in workflow by
-  # including the parm/wflow/verify_pre.yaml task set in the wflow config).
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/nohrsc/proc. METplus is
-  # configured to verify 06- and 24-h accumulated snowfall
-  # precipitation using 6- and 12-hourly NOHRSC files, respectively.
-  # METplus configuration files require the use of predetermined
-  # directory structure and file names. Therefore, if the NOHRSC files are
-  # user provided, they need to follow the anticipated naming structure:
-  #
-  # {YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
-  #
-  # where AA is the 2-digit accumulation duration, YYYY is the 4-digit
-  # valid year, MM the 2-digit valid month, DD the 2-digit valid day
-  # of the month, and HH the 2-digit valid hour of the day.
   #
   # MRMS_OBS_DIR:
   # User-specified location of the directory where MRMS composite
@@ -280,6 +258,15 @@ platform:
   # where they will be placed). See comments in file
   # scripts/exregional_get_verif_obs.sh for more details about files
   # and directory structure.
+  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # otherwise unexpected results and data loss may occur
+  #
+  # NOHRSC_OBS_DIR:
+  # User-specified location of top-level directory where NOHRSC 6- and
+  # 24-hour snowfall accumulation files used by METplus are located (or,
+  # if retrieved by the workflow, where they will be placed). See comments
+  # in file scripts/exregional_get_verif_obs.sh for more details about
+  # files and directory structure
   # NOTE: This should not be set equal to other *OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
   #

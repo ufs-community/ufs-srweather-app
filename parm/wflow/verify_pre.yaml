@@ -37,10 +37,11 @@ task_get_obs_ccpa:
 
 task_get_obs_nohrsc:
   <<: *default_task_verify_pre
-  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_OBS_NOHRSC"'
+  command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   envars:
     <<: *default_vars
     OBS_DIR: '&NOHRSC_OBS_DIR;'
+    OBTYPE: 'NOHRSC'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"

@@ -24,12 +24,12 @@ set -x
 #
 # This script performs several important tasks for preparing data for
 # verification tasks. Depending on the value of the environment variable
-# OBTYPE=(CCPA|MRMS|NDAS), the script will prepare that particular data
+# OBTYPE=(CCPA|MRMS|NDAS|NOHRSC), the script will prepare that particular data
 # set.
 #
 # If data is not available on disk (in the location specified by
-# CCPA_OBS_DIR, MRMS_OBS_DIR, or NDAS_OBS_DIR respectively), the script
-# attempts to retrieve the data from HPSS using the retrieve_data.py 
+# CCPA_OBS_DIR, MRMS_OBS_DIR, NDAS_OBS_DIR, or NOHRSC_OBS_DIR respectively),
+# the script attempts to retrieve the data from HPSS using the retrieve_data.py
 # script. Depending on the data set, there are a few strange quirks and/or
 # bugs in the way data is organized; see in-line comments for details.
 #
@@ -89,6 +89,23 @@ set -x
 # hh (00 through 05). If using custom staged data, you will have to
 # rename the files accordingly.
 # 
+# If data is retrieved from HPSS, it will automatically staged by this
+# this script.
+#
+#
+# NOHRSC
+# ----------
+# If data is available on disk, it must be in the following 
+# directory structure and file name conventions expected by verification
+# tasks:
+#
+# {NOHRSC_OBS_DIR}/{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2
+# 
+# where AA is the 2-digit accumulation duration in hours: 06 or 24
+#
+# METplus is configured to verify snowfall using 06- and 24-h accumulated
+# snowfall from 6- and 12-hourly NOHRSC files, respectively.
+#
 # If data is retrieved from HPSS, it will automatically staged by this
 # this script.
 
@@ -356,15 +373,67 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       fi
     fi
 
+  # Retrieve NOHRSC observations
+  elif [[ ${OBTYPE} == "NOHRSC" ]]; then
 
+    # Reorganized NOHRSC location (no need for raw data dir)
+    nohrsc_proc=${OBS_DIR}
 
+    nohrsc06h_file="$nohrsc_proc/${vyyyymmdd}/sfav2_CONUS_06h_${vyyyymmdd}${vhh}_grid184.grb2"
+    nohrsc24h_file="$nohrsc_proc/${vyyyymmdd}/sfav2_CONUS_24h_${vyyyymmdd}${vhh}_grid184.grb2"
+    retrieve=0
+    # If 24-hour files should be available (at 00z and 12z) then look for both files
+    # Otherwise just look for 6hr file
+    if (( ${current_fcst} % 12 == 0 )) && (( ${current_fcst} >= 24 )) ; then
+      if [ ! -f "${nohrsc06h_file}" ] || [ ! -f "${nohrsc24h_file}" ] ; then 
+        retrieve=1
+      else
+        echo "NOHRSC 6h accumulation file exists: ${nohrsc06h_file}"
+        echo "NOHRSC 24h accumulation file exists: ${nohrsc24h_file}"
+      fi
+    elif (( ${current_fcst} % 6 == 0 )) ; then
+      if [ ! -f "${nohrsc06h_file}" ]; then
+        retrieve=1
+      else
+        echo "NOHRSC 6h accumulation file exists: ${nohrsc06h_file}"
+      fi
+    fi
+    if [ $retrieve == 1 ]; then
+      if [[ ! -d "$nohrsc_proc/${vyyyymmdd}" ]]; then
+        mkdir -p $nohrsc_proc/${vyyyymmdd}
+      fi
 
+      # Pull NOHRSC data from HPSS; script will retrieve all files so only call once
+      cmd="
+      python3 -u ${USHdir}/retrieve_data.py \
+        --debug \
+        --file_set obs \
+        --config ${PARMdir}/data_locations.yml \
+        --cycle_date ${vyyyymmdd}${vhh} \
+        --data_stores hpss \
+        --data_type NOHRSC_obs \
+        --output_path $nohrsc_proc/${vyyyymmdd} \
+        --summary_file ${logfile}"
+
+      echo "CALLING: ${cmd}"
+
+      $cmd || print_err_msg_exit "\
+      Could not retrieve NOHRSC data from HPSS
+
+      The following command exited with a non-zero exit status:
+      ${cmd}
+"
+      # 6-hour forecast needs to be renamed
+      mv $nohrsc_proc/${vyyyymmdd}/sfav2_CONUS_6h_${vyyyymmdd}${vhh}_grid184.grb2 ${nohrsc06h_file}
+    else
+      echo "Will not retrieve from HPSS"
+    fi
 
   else
     print_err_msg_exit "\
-    Invalid OBTYPE specified for script; valid options are CCPA, MRMS, and NDAS
+    Invalid OBTYPE specified for script; valid options are CCPA, MRMS, NDAS, and NOHRSC
   "
-  fi
+  fi  # Increment to next forecast hour      
   # Increment to next forecast hour      
   echo "Finished fcst hr=${current_fcst}"
   current_fcst=$((${current_fcst} + 1))

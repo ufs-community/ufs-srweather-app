@@ -479,6 +479,22 @@ NDAS_obs:
       obs:
         - "./nam.t{hh}z.prepbufr.tm*.nr"
 
+NOHRSC_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyy}{mm}{dd}.tar"
+      - "dcom_{yyyy}{mm}{dd}.tar"
+    file_names:
+      obs:
+        - "sfav2_CONUS_*h_{yyyy}{mm}{dd}{hh}_grid184.grb2"
+    archive_internal_dir:
+      - ./wgrbbul/nohrsc_snowfall/
+
 ###########################
 ###########################
 ####### Fix Files #########
