@@ -1,11 +1,13 @@
 metadata:
   description: |-
-    This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUScompact_25km grid using the HRRR
-    physics suite with ICs derived from the FV3GFS and LBCs derived from
-    the RAP.
-    This test also ensures that MET deterministic verification runs
-    successfully.
+    This test is to ensure that the workflow completes successfully with
+    QUILTING disabled.  The forecast runs on the RRFS_CONUScompact_25km
+    grid using the RAP physics suite with ICs derived from the FV3GFS and
+    LBCs derived from the RAP.  Note that with QUILTING disabled, the run_post
+    and subsequent tasks in the SRW App workflow cannot be run.  This is
+    because QUILTING disabled, the output from the UFS Weather Model is on
+    the Weather Model's native grid, not the write-component grid, and UPP
+    does not (yet) have the capability to process output on the native grid.
 user:
   RUN_ENVIR: community
 workflow:
