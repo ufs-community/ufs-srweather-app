@@ -137,7 +137,7 @@ def create_model_configure_file(
     #
     # If not using the write-component (aka quilting), set those variables
     # needed for quilting in the jinja template for the model configuration
-    # file (MODEL_CONFIG_TMPL_FP) to "None".  This is necessary because 
+    # file (MODEL_CONFIG_TMPL_FP) to "None".  This is necessary because
     # otherwise, the run_fcst task will fail in the call to set_template()
     # below with a "variables are not provided" message.
     #
