@@ -90,6 +90,34 @@ def create_model_configure_file(
     # parameters and a set of grid parameters.  The latter depends on the type
     # (coordinate system) of the grid that the write-component will be using.
     #
+    # First, set the jinja template variables needed when using quilting (i.e. when
+    # outputting on the write-component grid) to default values.  If this is not
+    # done, the run_fcst task will fail with a "variables are not provided" message.
+    #
+    settings.update(
+        {
+            "write_groups": None,
+            "write_tasks_per_group": None,
+            "cen_lon": None,
+            "cen_lat": None,
+            "lon1": None,
+            "lat1": None,
+            "stdlat1": None,
+            "stdlat2": None,
+            "nx": None,
+            "ny": None,
+            "dx": None,
+            "dy": None,
+            "lon2": None,
+            "lat2": None,
+            "dlon": None,
+            "dlat": None,
+        }
+    )
+    #
+    # If using quilting, reset a subset of the above variables to non-default
+    # values.
+    #
     if QUILTING:
         settings.update(
             {
