@@ -670,7 +670,7 @@ To turn on verification (VX) tasks in the workflow, include the desired ``parm/w
    * - verify_det.yaml
      - Perform deterministic vx
    * - verify_ens.yaml
-     - Perform ensemble vx
+     - Perform ensemble vx (must set ``DO_ENSEMBLE: true`` in ``config.yaml``)
 
 The ``verify_*.yaml`` files include the definitions of several common verification tasks by default. Individual verification tasks appear in :numref:`Table %s <VXWorkflowTasksTable>`. The tasks in the ``verify_*.yaml`` files are independent of each other, so users may want to turn some off depending on the needs of their experiment. To turn off a task, simply include its entry from ``verify_*.yaml`` as an empty YAML entry in ``config.yaml``. For example, to turn off PointStat tasks:
 
@@ -816,13 +816,13 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
      - Task Description
    * - :bolditalic:`task_get_obs_ccpa`
      - ``verify_pre.yaml``
-     - If user has staged :term:`CCPA` data for verification, checks to ensure that data exists in the specified location (CCPA_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
+     - If user has staged :term:`CCPA` data for verification, checks to ensure that data exists in the specified location (``CCPA_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA :term:`HPSS`.
    * - :bolditalic:`task_get_obs_ndas`
      - ``verify_pre.yaml``
-     - If user has staged :term:`NDAS` data for verification, checks to ensure that data exists in the specified location (NDAS_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
+     - If user has staged :term:`NDAS` data for verification, checks to ensure that data exists in the specified location (``NDAS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_get_obs_mrms`
      - ``verify_pre.yaml``
-     - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (MRMS_OBS_DIR). If data does not exist, attempts to retrieve that data from NOAA HPSS.
+     - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (``MRMS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_run_MET_Pb2nc_obs`
      - ``verify_pre.yaml``
      - Convert files from prepbufr to NetCDF format.
