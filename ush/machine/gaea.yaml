@@ -5,9 +5,6 @@ platform:
   CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
   MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
   NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
-  METPLUS_PATH: /lustre/f2/dev/role.epic/contrib/hpc-stack/intel-classic-2022.0.2/intel-classic-2022.0.2/metplus/5.0.2
-  MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /lustre/f2/dev/role.epic/contrib/hpc-stack/intel-classic-2022.0.2/intel-classic-2022.0.2/met/11.0.2
   DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: windfall
   QUEUE_FCST: windfall
