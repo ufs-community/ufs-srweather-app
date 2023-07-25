@@ -1,3 +1,4 @@
+2020_CAD
 community
 custom_ESGgrid
 custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALSE
@@ -46,6 +47,7 @@ grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_RAP_suite_WoFS_v0
 grid_SUBCONUS_Ind_3km_ics_NAM_lbcs_NAM_suite_GFS_v16
 grid_SUBCONUS_Ind_3km_ics_RAP_lbcs_RAP_suite_RRFS_v1beta_plot
 GST_release_public_v1
+MET_ensemble_verification_only_vx
 MET_verification_only_vx
 nco
 nco_ensemble
@@ -56,4 +58,3 @@ nco_grid_RRFS_CONUScompact_25km_ics_HRRR_lbcs_RAP_suite_HRRR
 pregen_grid_orog_sfc_climo
 specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS
 specify_template_filenames
-2020_CAD
