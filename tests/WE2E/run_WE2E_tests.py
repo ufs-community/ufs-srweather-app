@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# pylint: disable=logging-fstring-interpolation
 import os
 import sys
 import glob
@@ -69,7 +69,13 @@ def run_we2e_tests(homedir, args) -> None:
                     filename = os.path.basename(f)
                     # We just want the test name in this list, so cut out the
                     # "config." prefix and ".yaml" extension
-                    tests_to_check.append(filename[7:-5])
+                    if len(filename) > 12:
+                        if filename[:7] == "config." and filename[-5:] == ".yaml":
+                            tests_to_check.append(filename[7:-5])
+                        else:
+                            logging.debug(f"Skipping non-test file {filename}")
+                    else:
+                        logging.debug(f"Skipping non-test file {filename}")
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] in ['fundamental', 'comprehensive', 'coverage']:
                 # I am writing this section of code under protest; we should use args.run_envir to
@@ -110,7 +116,13 @@ def run_we2e_tests(homedir, args) -> None:
                     filename = os.path.basename(f)
                     # We just want the test name in this list, so cut out the
                     # "config." prefix and ".yaml" extension
-                    tests_to_check.append(filename[7:-5])
+                    if len(filename) > 12:
+                        if filename[:7] == "config." and filename[-5:] == ".yaml":
+                            tests_to_check.append(filename[7:-5])
+                        else:
+                            logging.debug(f"Skipping non-test file {filename}")
+                    else:
+                        logging.debug(f"Skipping non-test file {filename}")
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a
                 # file containing test names
@@ -455,7 +467,7 @@ if __name__ == "__main__":
 
     #Get the "Home" directory, two levels above this one
     homedir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    logfile='log.run_WE2E_tests'
+    LOGFILE='log.run_WE2E_tests'
 
     #Parse arguments
     parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted "\
@@ -538,7 +550,7 @@ if __name__ == "__main__":
                 FATAL ERROR:
                 Experiment generation failed. See the error message(s) printed below.
                 For more detailed information, check the log file from the workflow
-                generation script: {logfile}
+                generation script: {LOGFILE}
                 *********************************************************************\n
                 """
             )
