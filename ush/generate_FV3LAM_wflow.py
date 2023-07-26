@@ -117,6 +117,8 @@ def generate_FV3LAM_wflow(
                 "-i", template_xml_fp,
                 "-c", rocoto_yaml_fp,
                 ]
+        if not debug:
+            args.append("-q")
         set_template(args)
     #
     # -----------------------------------------------------------------------
