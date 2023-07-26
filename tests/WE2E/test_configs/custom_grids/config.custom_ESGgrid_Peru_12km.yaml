@@ -6,11 +6,11 @@ metadata:
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_v15p2
+  CCPP_PHYS_SUITE: FV3_RAP
   GRID_GEN_METHOD: ESGgrid
   DATE_FIRST_CYCL: '2019061500'
   DATE_LAST_CYCL: '2019061500'
-  FCST_LEN_HRS: 24
+  FCST_LEN_HRS: 12
   PREEXISTING_DIR_METHOD: rename
 task_make_grid:
   ESGgrid_LON_CTR: -75.0
@@ -32,8 +32,8 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   DT_ATMOS: 90
-  LAYOUT_X: 6
-  LAYOUT_Y: 6
+  LAYOUT_X: 8
+  LAYOUT_Y: 8
   BLOCKSIZE: 32
   QUILTING: true
   WRTCMP_write_groups: 1

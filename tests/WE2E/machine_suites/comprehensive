@@ -1,7 +1,12 @@
 2020_CAD
 community
 custom_ESGgrid
+custom_ESGgrid_Central_Asia_3km
 custom_ESGgrid_Great_Lakes_snow_8km
+custom_ESGgrid_IndianOcean_6km
+custom_ESGgrid_NewZealand_3km
+custom_ESGgrid_Peru_12km
+custom_ESGgrid_SF_1p1km
 custom_GFDLgrid__GFDLgrid_USE_NUM_CELLS_IN_FILENAMES_eq_FALSE
 custom_GFDLgrid
 deactivate_tasks

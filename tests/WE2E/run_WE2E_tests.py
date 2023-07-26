@@ -133,8 +133,8 @@ def run_we2e_tests(homedir, args) -> None:
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
-                    does not appear to be a valid test name, a valid test suite, or a file
-                    containing valid test names.
+                    does not appear to be a valid test name, a valid test suite, a subdirectory
+                    under test_configs/, or a file containing valid test names.
 
                     Check your inputs and try again.
                     """))

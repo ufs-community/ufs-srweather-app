@@ -6,52 +6,56 @@ metadata:
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_v15_thompson_mynn_lam3km
+  CCPP_PHYS_SUITE: FV3_WoFS_v0
   GRID_GEN_METHOD: ESGgrid
-  DATE_FIRST_CYCL: '2019070100'
-  DATE_LAST_CYCL: '2019070100'
+  DATE_FIRST_CYCL: '2019061500'
+  DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_make_grid:
-  ESGgrid_LON_CTR: 76.0
-  ESGgrid_LAT_CTR: 37.0
-  ESGgrid_DELX: 3000.0
-  ESGgrid_DELY: 3000.0
-  ESGgrid_NX: 420
-  ESGgrid_NY: 300
+  ESGgrid_LON_CTR: -122.2
+  ESGgrid_LAT_CTR: 37.9
+  ESGgrid_DELX: 1100.0
+  ESGgrid_DELY: 1100.0
+  ESGgrid_NX: 600
+  ESGgrid_NY: 560
   ESGgrid_WIDE_HALO_WIDTH: 6
   ESGgrid_PAZI: 0.0
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
+  FV3GFS_FILE_FMT_LBCS: grib2
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
-  DT_ATMOS: 45
-  LAYOUT_X: 16
-  LAYOUT_Y: 10
-  BLOCKSIZE: 32
+  DT_ATMOS: 15
+  LAYOUT_X: 30
+  LAYOUT_Y: 20
+  BLOCKSIZE: 35
   QUILTING: true
   WRTCMP_write_groups: 1
   WRTCMP_write_tasks_per_group: '{{ LAYOUT_Y }}'
   WRTCMP_output_grid: lambert_conformal
   WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
   WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_lon_lwr_left: -69.6
-  WRTCMP_lat_lwr_left: 33.0
+  WRTCMP_lon_lwr_left: -125.48337893
+  WRTCMP_lat_lwr_left: 35.35354227
   WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_nx: 399
-  WRTCMP_ny: 285
+  WRTCMP_nx: 597
+  WRTCMP_ny: 557
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
 task_run_post:
-  POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_central_asia
+  POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_SF_Bay_Area
 rocoto:
   tasks:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 00:30:00
-
+      task_make_ics_mem#mem#:
+        nnodes: 16
+        ppn: 12
