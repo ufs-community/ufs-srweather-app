@@ -33,6 +33,8 @@ task_run_fcst:
   QUILTING: true
 task_plot_allvars:
   COMOUT_REF: ""
+rrfs:
+  DO_RETRO: true
 rocoto:
   entities:
     START_TIME_NSSLMOSAIC: 00:45:00
