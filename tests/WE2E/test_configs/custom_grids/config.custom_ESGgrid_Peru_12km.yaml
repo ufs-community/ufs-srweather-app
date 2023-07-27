@@ -42,7 +42,7 @@ task_run_fcst:
   WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
   WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_lon_lwr_left: -88.0
-  WRTCMP_lat_lwr_left: -24.0
+  WRTCMP_lat_lwr_left: -24.5
   WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_nx: 230

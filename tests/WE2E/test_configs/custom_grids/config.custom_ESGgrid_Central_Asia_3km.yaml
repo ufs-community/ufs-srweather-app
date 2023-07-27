@@ -39,7 +39,7 @@ task_run_fcst:
   WRTCMP_output_grid: lambert_conformal
   WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
   WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_lon_lwr_left: -69.6
+  WRTCMP_lon_lwr_left: 69.6
   WRTCMP_lat_lwr_left: 33.0
   WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'

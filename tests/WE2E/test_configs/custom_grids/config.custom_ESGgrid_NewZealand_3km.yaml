@@ -41,12 +41,12 @@ task_run_fcst:
   WRTCMP_output_grid: lambert_conformal
   WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
   WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_lon_lwr_left: 163.6
-  WRTCMP_lat_lwr_left: -46.9
+  WRTCMP_lon_lwr_left: 163.5
+  WRTCMP_lat_lwr_left: -47.0
   WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_nx: 399
-  WRTCMP_ny: 285
+  WRTCMP_nx: 595
+  WRTCMP_ny: 495
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
 task_run_post:
