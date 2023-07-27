@@ -16,20 +16,23 @@ from check_python_version import check_python_version
 from utils import calculate_core_hours, write_monitor_file, update_expt_status,\
                   update_expt_status_parallel, print_WE2E_summary
 
-def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug: bool = False) -> str:
+def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
+                 mode: str = 'continuous', debug: bool = False) -> str:
     """Function to monitor and run jobs for the specified experiment using Rocoto
 
     Args:
         expts_dict  (dict): A dictionary containing the information needed to run
                             one or more experiments. See example file monitor_jobs.yaml
         monitor_file (str): [optional]
+        mode         (str): [optional] Mode of job monitoring
+                            continuous (default): monitor jobs continuously until complete
+                            advance:
         debug       (bool): [optional] Enable extra output for debugging
 
     Returns:
-        str: The name of the file used for job monitoring (when script is finished, this 
+        str: The name of the file used for job monitoring (when script is finished, this
              contains results/summary)
     """
-
     monitor_start = datetime.now()
     # Write monitor_file, which will contain information on each monitored experiment
     monitor_start_string = monitor_start.strftime("%Y%m%d%H%M%S")
@@ -51,6 +54,12 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
             expts_dict[expt] = update_expt_status(expts_dict[expt], expt, True, debug)
 
     write_monitor_file(monitor_file,expts_dict)
+
+    if mode != 'continuous':
+        logging.debug("All experiments have been updated")
+        return monitor_file
+    else:
+        logging.debug("Continuous mode: will monitor jobs until all are complete")
 
     logging.info(f'Setup complete; monitoring {len(expts_dict)} experiments')
     logging.info('Use ctrl-c to pause job submission/monitoring')
@@ -102,7 +111,8 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1, debug
         endtime = datetime.now()
         total_walltime = endtime - monitor_start
 
-        logging.debug(f"Finished loop {i}\nWalltime so far is {str(total_walltime)}")
+        logging.debug(f"Finished loop {i}")
+        logging.debug(f"Walltime so far is {str(total_walltime)}")
         #Slow things down just a tad between loops so experiments behave better
         time.sleep(5)
 
@@ -160,6 +170,11 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--procs', type=int,
                         help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
                              'with provided number of parallel tasks', default=1)
+    parser.add_argument('-m', '--mode', type=str, default='continuous',
+                        choices=['continuous','advance'],
+                        help='continuous: script will run continuously until all experiments are'\
+                             'finished.'\
+                             'advance: will only advance each experiment one step')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')
 
@@ -175,7 +190,8 @@ if __name__ == "__main__":
     #Call main function
 
     try:
-        monitor_jobs(expts_dict,args.yaml_file,args.procs,args.debug)
+        monitor_jobs(expts_dict=expts_dict,monitor_file=args.yaml_file,procs=args.procs,
+                     mode=args.mode,debug=args.debug)
     except KeyboardInterrupt:
         logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
         logging.info(f"{__file__} -y={args.yaml_file} -p={args.procs}\n")
