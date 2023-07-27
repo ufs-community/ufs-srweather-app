@@ -27,7 +27,7 @@ from python_utils import (
 from set_namelist import set_namelist
 
 
-def set_FV3nml_sfc_climo_filenames():
+def set_FV3nml_sfc_climo_filenames(debug):
     """
     This function sets the values of the variables in
     the forecast model's namelist file that specify the paths to the surface
@@ -38,7 +38,7 @@ def set_FV3nml_sfc_climo_filenames():
     set by this function are relative or full paths to these links.
 
     Args:
-        None
+        debug   (bool): Enable extra output for debugging
     Returns:
         None
     """
@@ -92,7 +92,7 @@ def set_FV3nml_sfc_climo_filenames():
             settings =\n\n"""
         )
         + settings_str,
-        verbose=VERBOSE,
+        verbose=debug,
     )
 
     # Rename the FV3 namelist and call set_namelist
@@ -134,6 +134,8 @@ def parse_args(argv):
         required=True,
         help="Path to var_defns file.",
     )
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
 
     return parser.parse_args(argv)
 
@@ -143,4 +145,4 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    set_FV3nml_sfc_climo_filenames()
+    set_FV3nml_sfc_climo_filenames(args.debug)
