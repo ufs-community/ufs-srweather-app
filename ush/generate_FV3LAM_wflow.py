@@ -549,7 +549,7 @@ def generate_FV3LAM_wflow(
         #
         # populate the namelist file
         #
-        args=[ "-n", FV3_NML_FP, 
+        args=[ "-n", FV3_NML_FP,
                "-u", settings_str,
                "-o", FV3_NML_CYCSFC_FP,
               ]
@@ -834,7 +834,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')
-    args = parser.parse_args()
+    pargs = parser.parse_args()
 
     USHdir = os.path.dirname(os.path.abspath(__file__))
     wflow_logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
@@ -842,7 +842,7 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile, args.debug)
+        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile, pargs.debug)
     except: # pylint: disable=bare-except
         logging.exception(
             dedent(
