@@ -135,6 +135,34 @@ def create_model_configure_file(
                 }
             )
     #
+    # If not using the write-component (aka quilting), set those variables
+    # needed for quilting in the jinja template for the model configuration
+    # file (MODEL_CONFIG_TMPL_FP) to "None".  This is necessary because
+    # otherwise, the run_fcst task will fail in the call to set_template()
+    # below with a "variables are not provided" message.
+    #
+    else:
+        settings.update(
+            {
+                "write_groups": None,
+                "write_tasks_per_group": None,
+                "cen_lon": None,
+                "cen_lat": None,
+                "lon1": None,
+                "lat1": None,
+                "stdlat1": None,
+                "stdlat2": None,
+                "nx": None,
+                "ny": None,
+                "dx": None,
+                "dy": None,
+                "lon2": None,
+                "lat2": None,
+                "dlon": None,
+                "dlat": None,
+            }
+        )
+    #
     # If sub_hourly_post is set to "TRUE", then the forecast model must be
     # directed to generate output files on a sub-hourly interval.  Do this
     # by specifying the output interval in the model configuration file

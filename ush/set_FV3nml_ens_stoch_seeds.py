@@ -59,7 +59,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}_base"
 
-    ensmem_num = ENSMEM_INDX
+    ensmem_num = int(ENSMEM_INDX)
 
     cdate_i = int(cdate.strftime("%Y%m%d%H"))
 
