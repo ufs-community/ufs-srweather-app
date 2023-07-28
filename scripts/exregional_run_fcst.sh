@@ -449,7 +449,7 @@ if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" 
      STOCH="TRUE"
 fi
 if [ "${STOCH}" == "TRUE" ]; then
-  ln_vrfy -sf ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+  cp_vrfy ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
   ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
@@ -462,7 +462,6 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ "$STOCH" == "TRUE" ]; then
-  cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
