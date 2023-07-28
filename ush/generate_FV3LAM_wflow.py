@@ -718,7 +718,7 @@ def generate_FV3LAM_wflow(
     #
     #-----------------------------------------------------------------------
     #
-    if DO_ENSEMBLE and any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
+    if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
 
         set_namelist(
             [
