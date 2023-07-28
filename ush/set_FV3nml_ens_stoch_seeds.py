@@ -100,7 +100,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     print_info_msg(
         dedent(
             f"""
-            The variable 'settings' specifying seeds in '{FV3_NML_FP}'
+            The variable 'settings' specifying seeds in '{fv3_nml_ensmem_fp}'
             has been set as follows:
 
             settings =\n\n"""
