@@ -444,7 +444,7 @@ fi
 #-----------------------------------------------------------------------
 #
 STOCH="FALSE"
-if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
+if ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
    [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
      STOCH="TRUE"
 fi
@@ -461,7 +461,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$STOCH" == "TRUE" ]; then
+if ([ "$STOCH" == "TRUE" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]); then
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
