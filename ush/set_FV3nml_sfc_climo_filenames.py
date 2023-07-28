@@ -27,7 +27,7 @@ from python_utils import (
 from set_namelist import set_namelist
 
 
-def set_FV3nml_sfc_climo_filenames(debug):
+def set_FV3nml_sfc_climo_filenames(debug=False):
     """
     This function sets the values of the variables in
     the forecast model's namelist file that specify the paths to the surface
