@@ -51,6 +51,25 @@ where ``<machine>`` is ``hera``, or ``wcoss2``. The ``-a`` argument indicates th
 
 Building the SRW App with AQM on other machines, including other `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
 
+If the SRW-AQM build correctly, users should see the standard executables listed in :numref:`Table %s <ExecDescription>`. Additionally, users should see the AQM-utils executables described in :numref:`Table %s <>` in the ``ufs-srweather-app/exec`` directory.
+
+.. _AQM-exec:
+
+.. list-table:: *Names and descriptions of additional executables produced when the ATMAQ option is enabled*
+   :widths: 20 50
+   :header-rows: 1
+
+   * - Executable
+     - Description
+   * - decomp-ptemis-mpi
+     - Splits the point-source emission file into subdomain based on runtime configure setting.
+   * - gefs2lbc_para
+     - Interpolates GOCART concentration to be lateral boundary condition for regional air quality model and outputs a layer result for checking purpose. 
+   * - nexus
+     - 
+
+.. COMMENT: Add NEXUS definition
+
 Load the ``workflow_tools`` Environment
 --------------------------------------------
 
@@ -131,6 +150,115 @@ Users may check experiment status from the experiment directory with either of t
 
    # Check the experiment status and relaunch the workflow (for manual jobs)
    ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
+
+
+Description of Workflow Tasks
+-------------------------------
+
+The default workflow contains the workflow tasks described in :numref:`Table %s <WorkflowTasksTable>`. The SRW-AQM workflow contains these tasks along with additional tasks described in :numref:`Table %s <AQM-Wflow-Tasks>`. 
+
+
+.. _AQM-Wflow-Tasks:
+
+.. list-table:: *Workflow Tasks for the ATMAQ Configuration*
+   :widths: 20 50
+   :header-rows: 1
+
+   * - Task
+     - Description
+   * - nexus_gfs_sfc
+     - 
+   * - nexus_emission_##
+     - 
+   * - nexus_post_split
+     - 
+   * - fire_emission
+     - This executable is used to convert both satellite-retrieved gas and aerosol species emissions (RAVE) from mass (kg) to emission rates (kg/m2/s) and create 3-day hourly model-ready fire emission input files.
+   * - point_source
+     - 
+   * - aqm_ics
+     - It creates a chemical initial condition file by using the previous cycle restart files
+   * - aqm_lbcs
+     - 
+   * -
+     - 
+   * -
+     - 
+   * - pre_post_stat
+     - It creates surface (i.e., the model 1st level) meteorological and chemical files to support air quality product generation and generate training data to support bias correction tasks.
+   * - post_stat_o3
+     - It generates air quality forecast products including hourly-average and statistical products for O3 (e.g., daily 8-hour average maximum O3).
+   * - post_stat_pm25
+     - It generates air quality forecast products including hourly-average and statistical products for PM2.5 (e.g., 24-hour average PM2.5). 
+   * - bias_correction_o3:
+     - It applies a bias-correction technique (e.g., analog ensemble) to improve model raw forecast for O3 and generates the bias-corrected O3 products.
+   * - bias_correction_pm25:
+     - It applies a bias-correction technique (e.g., analog ensemble) to improve model raw forecast for PM2.5 and generates the bias-corrected PM2.5 products.
+
+
+
+:numref:`Figure %s <>` illustrates the overall AQM workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <AQM-Wflow-Tasks>` describes the function of each baseline task. The first three pre-processing tasks; MAKE_GRID, MAKE_OROG, and MAKE_SFC_CLIMO; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the prep.yaml file from the default taskgroups entry in the config.yaml file before running the generate_FV3LAM_wflow.py script:
+
+.. COMMENT: AQM wflow figure here
+
+The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (jobs/JREGIONAL_[task name]) in the prescribed order when the experiment is launched via the launch_FV3LAM_wflow.sh script or the rocotorun command. Each j-job task has its own source script (or “ex-script”) named exregional_[task name].sh in the scripts directory. Two database files named FV3LAM_wflow.db and FV3LAM_wflow_lock.db are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two *.db files and then call the launch script repeatedly for each task.
+
+
+
+
+.. _Success:
+
+The workflow run is complete when all tasks have "SUCCEEDED". If everything goes smoothly, users will eventually see a workflow status table similar to the following: 
+
+(workflow_tools) [Gillian.Petro@hfe03 aqm_community]$ rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
+       CYCLE                   TASK       JOBID     STATE   EXIT STATUS   TRIES   DURATION
+==========================================================================================
+202302170000              make_grid    47411619    QUEUED             -       0        0.0
+202302170000              make_orog           -         -             -       -          -
+202302170000         make_sfc_climo           -         -             -       -          -
+202302170000          nexus_gfs_sfc    47411620    QUEUED             -       0        0.0
+202302170000      nexus_emission_00           -         -             -       -          -
+202302170000      nexus_emission_01           -         -             -       -          -
+202302170000      nexus_emission_02           -         -             -       -          -
+202302170000       nexus_post_split           -         -             -       -          -
+202302170000          fire_emission    47411621    QUEUED             -       0        0.0
+202302170000           point_source           -         -             -       -          -
+202302170000               aqm_lbcs           -         -             -       -          -
+202302170000          get_extrn_ics    47411622    QUEUED             -       0        0.0
+202302170000         get_extrn_lbcs    47411623    QUEUED             -       0        0.0
+202302170000        make_ics_mem000           -         -             -       -          -
+202302170000       make_lbcs_mem000           -         -             -       -          -
+202302170000        run_fcst_mem000           -         -             -       -          -
+202302170000   run_post_mem000_f000           -         -             -       -          -
+202302170000   run_post_mem000_f001           -         -             -       -          -
+202302170000   run_post_mem000_f002           -         -             -       -          -
+...
+202302170000   run_post_mem000_f006           -         -             -       -          -
+==========================================================================================
+202302170600          nexus_gfs_sfc    47411624    QUEUED             -       0        0.0
+202302170600      nexus_emission_00           -         -             -       -          -
+202302170600      nexus_emission_01           -         -             -       -          -
+202302170600      nexus_emission_02           -         -             -       -          -
+202302170600       nexus_post_split           -         -             -       -          -
+202302170600          fire_emission    47411625    QUEUED             -       0        0.0
+202302170600           point_source           -         -             -       -          -
+202302170600                aqm_ics           -         -             -       -          -
+202302170600               aqm_lbcs           -         -             -       -          -
+202302170600          get_extrn_ics    47411626    QUEUED             -       0        0.0
+202302170600         get_extrn_lbcs    47411627    QUEUED             -       0        0.0
+202302170600        make_ics_mem000           -         -             -       -          -
+202302170600       make_lbcs_mem000           -         -             -       -          -
+202302170600        run_fcst_mem000           -         -             -       -          -
+202302170600   run_post_mem000_f000           -         -             -       -          -
+202302170600   run_post_mem000_f001           -         -             -       -          -
+202302170600   run_post_mem000_f002           -         -             -       -          -
+...
+202302170600   run_post_mem000_f012           -         -             -       -          -
+
+
+
+
+
 
 
 WE2E Test for AQM
