@@ -241,6 +241,7 @@ To activate the workflow, run the following commands:
 
 .. code-block:: console
 
+   source etc/lmod-setup.sh <platform>
    module use <path/to/modulefiles> 
    module load wflow_<platform>
 
