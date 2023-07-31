@@ -94,6 +94,8 @@ for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} )
   LBC_SPEC_FCST_HRS+=("$i_lbc")
 done
 
+echo "hjp111,LBC_SPEC_FCST_HRS=",$LBC_SPEC_FCST_HRS
+
 if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
 
   ext_lbcs_file=${AQM_LBCS_FILES}
@@ -105,7 +107,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     cp ${chem_lbcs_fp} .
   else
     message_txt="The chemical LBC files do not exist:
-  CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
+      CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
     if [ "${RUN_ENVIR}" = "community" ]; then
       print_err_msg_exit "${message_txt}"
     else
@@ -113,10 +115,49 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     fi
   fi
 
+  # Function to check if the file exists
+    function check_file_existence() {
+    if [ -f "$1" ]; then
+      echo "Found netCDF file: $1"
+      cp "$1" .
+    else
+      echo "Error: NetCDF file not found: $1"
+     return 1
+    fi
+    }
+
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     fhr=$( printf "%03d" "${hr}" )
-    if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
-      ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+   # Check if the file exists, retry three times with 5-second delay between attempts
+     netcdf_file="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
+
+     echo "Checking file: $netcdf_file"
+     echo "Current working directory: $(pwd)"
+
+     retries=3
+     while [ $retries -gt 0 ]; do
+       if check_file_existence "$netcdf_file"; then
+          break
+       else
+     # File doesn't exist, wait for 5 seconds and decrement the retry count
+         sync
+         sleep 5
+        ((retries--))
+       fi
+     done
+      # If file not found after three retries, exit with an error
+     if [ $retries -eq 0 ]; then
+       echo "Error: File not found after multiple retries: $netcdf_file"
+        exit 1
+     fi
+
+    echo "Checking file: ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
+    #if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
+      cp "$netcdf_file" .
+
+      #ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      ncks -A ${chem_lbcs_fn} ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      cp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
       export err=$?
       if [ $err -ne 0 ]; then
         message_txt="Call to NCKS returned with nonzero exit code."
@@ -126,7 +167,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
           err_exit "${message_txt}"
         fi
       fi
-    fi
+    # fi
   done
 
   print_info_msg "
@@ -159,36 +200,66 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   else
     AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
+#
+#
+
+check_file_with_recheck() {
+  local file_path="$1"
+  local max_rechecks=3
+  local wait_time=3
+
+  for recheck_count in $(seq 1 $max_rechecks); do
+    if [ -e "$file_path" ]; then
+       return 0  # File found
+    else
+     if [ $recheck_count -lt $max_rechecks ]; then
+       sleep $wait_time
+     fi
+    fi
+  done
+ return 1  # File not found even after rechecks
+}
 
   # Check if GEFS aerosol files exist
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     hr_mod=$(( hr + EXTRN_MDL_LBCS_OFFSET_HRS ))
     fhr=$( printf "%03d" "${hr_mod}" )
     AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
-    if [ ! -e "${AQM_MOFILE_FHR_FP}" ]; then
-      message_txt="The GEFS file (AQM_MOFILE_FHR_FP) for LBCs of \"${cycle}\" does not exist:
-  AQM_MOFILE_FHR_FP = \"${AQM_MOFILE_FHR_FP}\""
-      if [ "${RUN_ENVIR}" = "community" ]; then
-        print_err_msg_exit "${message_txt}"
-      else
-	message_warning="WARNING: ${message_txt}"
-        print_info_msg "${message_warning}"
+    ln -s ${AQM_MOFILE_FHR_FP}  .
+    if [ -e "${AQM_MOFILE_FHR_FP}" ]; then
+      # File exists, perform "ls" or "touch" action
+      touch "$AQM_MOFILE_FHR_FP"  # Replace this with your desired action
+      ls "$AQM_MOFILE_FHR_FP"    # Replace this with your desired action
+      echo "File exists: $AQM_MOFILE_FHR_FP"
+    else
+      # File doesn't exist, try rechecking the file with waiting mechanism
+      if check_file_with_recheck "$AQM_MOFILE_FHR_FP"; then
+        # File found after recheck, perform "ls" or "touch" action
+	touch "$AQM_MOFILE_FHR_FP"  # Replace this with your desired action
+	ls "$AQM_MOFILE_FHR_FP"    # Replace this with your desired action
+	echo "File exists after recheck: $AQM_MOFILE_FHR_FP"
+       else
+        # File not found even after rechecks
+        echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+
         if [ ! -z "${maillist}" ]; then
           echo "${message_warning}" | mail.py $maillist
         fi
+       fi
       fi
-    fi
   done
 
   NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
+ #lbcfile='${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
+ #mofile='${AQM_MOFILE_FN}','.nemsio'
 cat > gefs2lbc-nemsio.ini <<EOF
 &control
  tstepdiff=${TSTEPDIFF}
  dtstep=${LBC_SPEC_INTVL_HRS}
  bndname='aothrj','aecj','aorgcj','asoil','numacc','numcor'
  mofile='${AQM_MOFILE_FP}','.nemsio'
- lbcfile='${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
+ lbcfile='${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
  topofile='${OROG_DIR}/${CRES}_oro_data.tile7.halo4.nc'
 &end
 
@@ -220,6 +291,7 @@ The executable (exec_fp) for GEFS LBCs does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
   fi
+  #
 #
 #----------------------------------------------------------------------
 #
@@ -228,6 +300,7 @@ Please ensure that you've built this executable."
 #----------------------------------------------------------------------
 #
   PREP_STEP
+  sync
   eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR}
   export err=$?
   if [ "${RUN_ENVIR}" = "nco" ]; then
@@ -240,6 +313,8 @@ GEFS LBCs file for RRFS-CMAQ failed:
     fi
   fi
   POST_STEP
+
+  cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "
 ========================================================================
