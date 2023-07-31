@@ -57,9 +57,9 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}_base"
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
 
-    ensmem_num = ENSMEM_INDX
+    ensmem_num = int(ENSMEM_INDX)
 
     cdate_i = int(cdate.strftime("%Y%m%d%H"))
 
@@ -93,14 +93,14 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     if DO_LSM_SPP:
         iseed_lsm_spp = cdate_i * 1000 + ensmem_num * 10 + 9
 
-        settings["nam_sppperts"] = {"iseed_lndp": [iseed_lsm_spp]}
+        settings["nam_sfcperts"] = {"iseed_lndp": [iseed_lsm_spp]}
 
     settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(
         dedent(
             f"""
-            The variable 'settings' specifying seeds in '{FV3_NML_FP}'
+            The variable 'settings' specifying seeds in '{fv3_nml_ensmem_fp}'
             has been set as follows:
 
             settings =\n\n"""
@@ -111,7 +111,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
 
     try:
         set_namelist(
-            ["-q", "-n", FV3_NML_FP, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
+            ["-q", "-n", fv3_nml_ensmem_fp, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
         )
     except:
         print_err_msg_exit(

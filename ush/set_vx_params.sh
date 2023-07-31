@@ -166,6 +166,29 @@ this observation type (obtype) and field (field) combination:
       esac
       ;;
 
+    "NOHRSC")
+
+      _grid_or_point_="grid"
+      case "${field}" in
+
+        "ASNOW")
+          fieldname_in_obs_input="${field}"
+          fieldname_in_fcst_input="${field}"
+          fieldname_in_MET_output="${field}_${accum_hh}"
+          fieldname_in_MET_filedir_names="${field}"
+          ;;
+
+        *)
+          print_err_msg_exit "\
+A method for setting verification parameters has not been specified for
+this observation type (obtype) and field (field) combination:
+  obtype = \"${obtype}\"
+  field = \"${field}\""
+          ;;
+
+      esac
+      ;;
+
     "MRMS")
 
       _grid_or_point_="grid"

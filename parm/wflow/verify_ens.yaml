@@ -56,6 +56,37 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
         attrs:
           task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
 
+metatask_GenEnsProd_EnsembleStat_NOHRSC:
+  var:
+    ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+  task_run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h: &task_GenEnsProd_NOHRSC
+    <<: *default_task_verify_ens
+    command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
+    envars: &envars_GenEnsProd_NOHRSC
+      <<: *default_vars
+      ACCUM_HH: '#ACCUM_HH#'
+      OBS_DIR: '&NOHRSC_OBS_DIR;'
+      VAR: ASNOW
+      MET_TOOL: 'GENENSPROD'
+      OBTYPE: 'NOHRSC'
+    dependency:
+      and:
+        # The PcpCombine task for obs must be complete because this GenEnsProd
+        # task checks to see the forecast hours for which obs are available before
+        # processing the forecast for those hours.
+        metataskdep_pcpcombine_fcst:
+          attrs:
+            metatask: PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems
+  task_run_MET_EnsembleStat_vx_ASNOW#ACCUM_HH#h:
+    <<: *task_GenEnsProd_NOHRSC
+    envars:
+      <<: *envars_GenEnsProd_NOHRSC
+      MET_TOOL: 'ENSEMBLESTAT'
+    dependency:
+      taskdep_genensprod:
+        attrs:
+          task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
+
 metatask_GenEnsProd_EnsembleStat_MRMS:
   var:
     VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["REFC", "RETOP"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
@@ -147,6 +178,28 @@ metatask_GridStat_CCPA_ensmeanprob_all_accums:
         taskdep:
           attrs:
             task: run_MET_GenEnsProd_vx_APCP#ACCUM_HH#h
+
+metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
+  var:
+    stat: MEAN PROB
+    statlc: mean prob
+  metatask_GridStat_NOHRSC_ens#statlc#_all_accums:
+    var:
+      ACCUM_HH: '{% for ah in verification.VX_ASNOW_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
+    task_run_MET_GridStat_vx_ens#statlc#_ASNOW#ACCUM_HH#h:
+      <<: *default_task_verify_ens
+      command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'
+      envars:
+        <<: *default_vars
+        OBS_DIR: '&NOHRSC_OBS_DIR;'
+        VAR: ASNOW
+        MET_TOOL: 'GRIDSTAT'
+        OBTYPE: 'NOHRSC'
+        ACCUM_HH: '#ACCUM_HH#'
+      dependency:
+        taskdep:
+          attrs:
+            task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
 metatask_GridStat_MRMS_ensprob:
   var:

@@ -74,7 +74,11 @@ def str_to_type(s, return_string=0):
         # int
         try:
             v = int(s)
-            return v
+            # treat integers that start with 0 as string
+            if len(s) > 1 and s[0] == "0":
+                return s
+            else:
+                return v
         except:
             pass
         # float
