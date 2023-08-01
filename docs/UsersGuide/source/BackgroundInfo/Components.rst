@@ -74,6 +74,8 @@ Air Quality Modeling (AQM) Utilities
 AQM Utilities (AQM-utils) includes the utility executables and python scripts to run SRW-AQM (Online-CMAQ).
 For more information on AQM-utils, visit the GitHub repository at https://github.com/NOAA-EMC/AQM-utils. 
 
+.. _nexus:
+
 NOAA Emission and eXchange Unified System (NEXUS)
 ===================================================
 
