@@ -62,9 +62,9 @@ If the SRW-AQM builds correctly, users should see the standard executables liste
    * - Executable
      - Description
    * - decomp-ptemis-mpi
-     - Splits the point-source emission file into subdomain based on runtime configure setting.
+     - Splits the point-source emission file into subdomain based on runtime configure setting
    * - gefs2lbc_para
-     - Interpolates :term:`GOCART` concentration to be lateral boundary condition for regional air quality model and outputs a layer result for checking purpose. 
+     - Interpolates :term:`GOCART` concentration to be lateral boundary condition for regional air quality model and outputs a layer result for checking purpose 
    * - nexus
      - Runs the NOAA Emission and eXchange Unified System (:ref:`NEXUS <nexus>`) emissions processing system
 
@@ -121,7 +121,7 @@ Users may also wish to change :term:`cron`-related parameters in ``config.yaml``
 
 This means that cron will submit the launch script every 3 minutes. Users may choose not to submit using cron or to submit at a different frequency. Note that users should create a crontab by running ``crontab -e`` the first time they use cron.
 
-When using the basic ``config.aqm.community.yaml`` experiment, the AQM pre-processing tasks are automatically turned on by adding ``"parm/wflow/aqm_prep.yaml"`` to the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM post-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
+When using the basic ``config.aqm.community.yaml`` experiment, the AQM pre-processing tasks are automatically turned because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM post-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
 
 .. attention::
 
@@ -230,13 +230,13 @@ Structure of SRW-AQM Workflow
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW-AQM_workflow.png
    :alt: Flowchart of the SRW-AQM tasks.
 
-   *Workflow structure of SRW-AQM (non-DA)*
+   *Workflow Structure of SRW-AQM (non-DA)*
 
 
 Pre-processing Tasks of SRW-AQM
 ------------------------------------
 
-The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPrepAQM>`. 
+The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPrepAQM>`. They are defined in the ``parm/wflow/aqm_prep.yaml`` file. 
 
 .. _TasksPrepAQM:
 
@@ -249,9 +249,9 @@ The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Ta
    * - nexus_gfs_sfc
      - Retrieves the GFS surface files from the previous cycle in near real-time (NRT) or from the current cycle in retrospective cases. The surface radiation, soil moisture, and temperature fields are needed to predict the :term:`MEGAN` biogenics emissions within the ``nexus_emission_##`` task.
    * - nexus_emission_##
-     - Prepares the run directory with gridded emission inputs, runs :ref:`NEXUS` to create model-ready emissions for the given simulation day, and post processes NEXUS output to make it more readable. The task will also split the task into ``##`` jobs set by the user in ``config.yaml`` using ``NUM_SPLIT_NEXUS`` variable.
+     - Prepares the run directory with gridded emissions inputs, runs the :ref:`NEXUS` to create model-ready emissions for the given simulation day, and post processes NEXUS output to make it more readable. The task will also split the task into ``##`` jobs set by the user in ``config.yaml`` using the ``NUM_SPLIT_NEXUS`` variable.
    * - nexus_post_split
-     - Concatenates the NEXUS emission information into a single netCDF file (needed for the forecast) if NEXUS was split into multiple jobs.
+     - Concatenates the NEXUS emissions information into a single netCDF file (needed for the forecast) if NEXUS was split into multiple jobs using the ``NUM_SPLIT_NEXUS`` variable.
    * - fire_emission
      - Converts both satellite-retrieved gas and aerosol species emissions (RAVE) from mass (kg) to emissions rates (kg/m2/s) and creates 3-day hourly model-ready fire emissions input files.
    * - point_source
@@ -259,12 +259,12 @@ The pre-processing tasks for air quality modeling (AQM) are shown in :numref:`Ta
    * - aqm_ics
      - Creates a chemical initial conditions file by using the previous cycle restart files. 
    * - aqm_lbcs 
-     - Adds the chemical lateral boundary conditions (LBC) to the meteorological lateral boundary conditions to form the full set of ready-to-input LBCs for the simulation. ``aqm_lbcs`` includes two sub-tasks: addition of the gaseous species LBCs and addition of dynamic aerosol LBCs. The former adds static gaseous LBCs using monthly mean global data. The latter is the parallel job, which extracts the GEFS-Aerosol Model's output along the regional domain and performs the species conversion from GOCART aerosols to CMAQ aerosols. 
+     - Adds the chemical lateral boundary conditions (LBCs) to the meteorological LBCs to form the full set of ready-to-input LBCs for the simulation. This task includes two sub-tasks: (1) addition of the gaseous species LBCs and (2) addition of dynamic aerosol LBCs. The former adds static gaseous LBCs using monthly mean global data. The latter is the parallel job, which extracts the GEFS-Aerosol Model's output along the regional domain and performs the species conversion from :term:`GOCART` aerosols to CMAQ aerosols. 
 
 Post-processing Tasks of SRW-AQM
 ------------------------------------
 
-The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>`. Since the module required to run these tasks is available only on WCOSS2, these tasks should not be defined in the configuration file ``config.yaml`` on other platforms.
+The post-processing tasks for air quality modeling (AQM) are shown in :numref:`Table %s <TasksPostAQM>`. They are defined in the ``parm/wflow/aqm_post.yaml`` file. Since the module required to run these tasks is available only on WCOSS2, ``aqm_post.yaml`` should not be added to the ``rocoto: tasks: taskgroups:`` section of the configuration file ``config.yaml`` on other platforms.
 
 .. _TasksPostAQM:
 

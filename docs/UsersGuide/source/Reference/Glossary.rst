@@ -150,7 +150,7 @@ Glossary
       Lateral boundary conditions
 
    MEGAN
-      The Model of Emissions of Gases and Aerosols from Nature (`MEGAN <https://bai.ess.uci.edu/megan>`) is a modeling system for estimating the emission of gases and aerosols from terrestrial ecosystems into the atmosphere. It has been integrated into a number of chemistry and transport models, including :ref:`NEXUS <nexus>`.  
+      The Model of Emissions of Gases and Aerosols from Nature (`MEGAN <https://bai.ess.uci.edu/megan>`__) is a modeling system for estimating the emission of gases and aerosols from terrestrial ecosystems into the atmosphere. It has been integrated into a number of chemistry and transport models, including :ref:`NEXUS <nexus>`. 
 
    MERRA2
       The `Modern-Era Retrospective analysis for Research and Applications, Version 2 <https://gmao.gsfc.nasa.gov/reanalysis/MERRA-2/>`__ provides satellite observation data back to 1980. According to NASA, "It was introduced to replace the original MERRA dataset because of the advances made in the assimilation system that enable assimilation of modern hyperspectral radiance and microwave observations, along with GPS-Radio Occultation datasets. It also uses NASA's ozone profile observations that began in late 2004. Additional advances in both the GEOS model and the GSI assimilation system are included in MERRA-2. Spatial resolution remains about the same (about 50 km in the latitudinal direction) as in MERRA."
