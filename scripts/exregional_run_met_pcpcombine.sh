@@ -289,8 +289,8 @@ fi
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
-metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
-metplus_config_fn="${metplus_config_fn}.conf"
+metplus_config_tmpl_fn="${metplus_config_tmpl_fn}_${field}.conf"
+metplus_config_fn="${metplus_config_fn}_${field}.conf"
 metplus_log_fn="metplus.log.${metplus_log_fn}"
 #
 #-----------------------------------------------------------------------
