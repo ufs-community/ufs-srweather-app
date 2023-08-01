@@ -133,6 +133,9 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge6.350, ge12.700, ge25.400"
       ;;
+    "ASNOW")                                                                                                                                             
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"                                                                                         
+      ;;    
     "REFC")
       FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
       ;;
@@ -180,16 +183,22 @@ if [ "${grid_or_point}" = "grid" ]; then
     case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
       "APCP01h")
         OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+        ;;
+      "ASNOW")
+        OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_output_basedir}"
         ;;
       "REFC")
         OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
         ;;
       "RETOP")
         OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
         ;;
     esac
     OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${vx_fcst_input_basedir}"
   fi
 
 elif [ "${grid_or_point}" = "point" ]; then
@@ -219,7 +228,7 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
-  if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
+  if [ "${field_is_APCPgt01h}" = "TRUE" ] || [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
     template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
   else
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
