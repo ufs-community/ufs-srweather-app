@@ -244,8 +244,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-export MET_INSTALL_DIR
-export METPLUS_PATH
 export METPLUS_CONF
 export LOGDIR
 #
