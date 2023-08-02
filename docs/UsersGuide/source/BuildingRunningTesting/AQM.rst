@@ -108,8 +108,21 @@ Users may prefer to copy the ``config.aqm.nco.realtime.yaml`` for a default "nco
 
 Users will need to change the ``MACHINE`` and ``ACCOUNT`` variables in ``config.yaml`` to match their system. They may also wish to adjust other experiment settings. For more information on each task and variable, see :numref:`Section %s <ConfigWorkflow>`. 
 
-.. COMMENT: Get data locations!!! The NODD bucket below is empty.
-   Users can find the data required for the community experiment in the `NOAA Global Forecast System Data Bucket <https://registry.opendata.aws/noaa-gfs-bdp-pds/>`__.
+The community AQM configuration assumes that users have :term:`HPSS` access and attempts to download the data from HPSS. However, if users have the data on their system already, they may prefer to add the following lines to the ``task_get_extrn_*:`` to their ``config.yaml`` file, adjusting the file path to point to the data location:
+
+.. code-block:: console
+
+   task_get_extrn_ics:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/data
+   task_get_extrn_lbcs:
+      USE_USER_STAGED_EXTRN_FILES: true
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+
+On Hera, users can find :term:`ICs/LBCs` at ``/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA/gfs.20230217/{hh}/atmos``. 
+
+.. COMMENT: Get data locations!!! Add data to the SRW NODD bucket.
+   Users can find the data required for the community experiment in the `NOAA Global Forecast System Data Bucket <https://registry.opendata.aws/noaa-gfs-bdp-pds/>`__. --> bucket is empty. 
 
 Users may also wish to change :term:`cron`-related parameters in ``config.yaml``. In the ``config.aqm.community.yaml`` file, which was copied into ``config.yaml``, cron is used for automatic submission and resubmission of the workflow:
 
@@ -181,39 +194,37 @@ The workflow run is complete when all tasks display a "SUCCEEDED" message. If ev
    202302170000       nexus_post_split    47412034   SUCCEEDED             0       1       44.0
    202302170000          fire_emission    47411621   SUCCEEDED             0       1       19.0
    202302170000           point_source    47411732   SUCCEEDED             0       1       82.0
-   202302170000               aqm_lbcs    47412961   SUCCEEDED             0       1          -
+   202302170000               aqm_lbcs    47412961   SUCCEEDED             0       1      159.0
    202302170000          get_extrn_ics    47411622   SUCCEEDED             0       1      314.0
    202302170000         get_extrn_lbcs    47411623   SUCCEEDED             0       1        0.0
-   202302170000        make_ics_mem000           -   SUCCEEDED             0       1      109.0
-   202302170000       make_lbcs_mem000    47412035   SUCCEEDED             0       1          -
-   202302170000        run_fcst_mem000           -   SUCCEEDED             0       1          -
-   202302170000   run_post_mem000_f000           -   SUCCEEDED             0       1          -
-   202302170000   run_post_mem000_f001           -   SUCCEEDED             0       1          -
-   202302170000   run_post_mem000_f002           -   SUCCEEDED             0       1          -
+   202302170000        make_ics_mem000    47659593   SUCCEEDED             0       1      126.0
+   202302170000       make_lbcs_mem000    47659594   SUCCEEDED             0       1      113.0
+   202302170000        run_fcst_mem000    47659742   SUCCEEDED             0       1      763.0
+   202302170000   run_post_mem000_f000    47659910   SUCCEEDED             0       1       30.0
+   202302170000   run_post_mem000_f001    47660029   SUCCEEDED             0       1       30.0
+   202302170000   run_post_mem000_f002    47660030   SUCCEEDED             0       1       31.0
    ...
-   202302170000   run_post_mem000_f006           -   SUCCEEDED             0       1          -
+   202302170000   run_post_mem000_f006    47660110   SUCCEEDED             0       1       29.0
    ============================================================================================
-   202302170600          nexus_gfs_sfc    47411624   SUCCEEDED             0       1       44.0
-   202302170600      nexus_emission_00    47411733   SUCCEEDED             0       1      323.0
-   202302170600      nexus_emission_01    47411734   SUCCEEDED             0       1      323.0
-   202302170600      nexus_emission_02    47411735   SUCCEEDED             0       1      329.0
-   202302170600       nexus_post_split    47411736   SUCCEEDED             0       1       60.0
-   202302170600          fire_emission    47411625   SUCCEEDED             0       1       18.0
-   202302170600           point_source    47411736   SUCCEEDED             0       1      128.0
-   202302170600                aqm_ics           -   SUCCEEDED             0       1          -
-   202302170600               aqm_lbcs           -   SUCCEEDED             0       1          -
-   202302170600          get_extrn_ics    47411626   SUCCEEDED             0       1      493.0
-   202302170600         get_extrn_lbcs    47411627   SUCCEEDED             0       1        0.0
-   202302170600        make_ics_mem000    47412037   SUCCEEDED             0       1      134.0
-   202302170600       make_lbcs_mem000           -   SUCCEEDED             0       1          -
-   202302170600        run_fcst_mem000           -   SUCCEEDED             0       1          -
-   202302170600   run_post_mem000_f000           -   SUCCEEDED             0       1          -
-   202302170600   run_post_mem000_f001           -   SUCCEEDED             0       1          -
-   202302170600   run_post_mem000_f002           -   SUCCEEDED             0       1          -
+   202302170600          nexus_gfs_sfc    47659421   SUCCEEDED             0       1       44.0
+   202302170600      nexus_emission_00    47659475   SUCCEEDED             0       1      323.0
+   202302170600      nexus_emission_01    47659476   SUCCEEDED             0       1      323.0
+   202302170600      nexus_emission_02    47659477   SUCCEEDED             0       1      329.0
+   202302170600       nexus_post_split    47659595   SUCCEEDED             0       1       60.0
+   202302170600          fire_emission    47659422   SUCCEEDED             0       1       18.0
+   202302170600           point_source    47659478   SUCCEEDED             0       1      128.0
+   202302170600                aqm_ics    47659597   SUCCEEDED             0       1      159.0
+   202302170600               aqm_lbcs    47659598   SUCCEEDED             0       1      158.0
+   202302170600          get_extrn_ics    47659423   SUCCEEDED             0       1      493.0
+   202302170600         get_extrn_lbcs    47659424   SUCCEEDED             0       1      536.0
+   202302170600        make_ics_mem000    47659594   SUCCEEDED             0       1      134.0
+   202302170600       make_lbcs_mem000    47659596   SUCCEEDED             0       1      112.0
+   202302170600        run_fcst_mem000    47659812   SUCCEEDED             0       1     1429.0
+   202302170600   run_post_mem000_f000    47659998   SUCCEEDED             0       1       30.0
+   202302170600   run_post_mem000_f001    47660042   SUCCEEDED             0       1       31.0
+   202302170600   run_post_mem000_f002    47660043   SUCCEEDED             0       1       29.0
    ...
-   202302170600   run_post_mem000_f012           -   SUCCEEDED             0       1          -
-
-.. COMMENT: Fix table above by adding job numbers and duration!!!
+   202302170600   run_post_mem000_f012    47660134   SUCCEEDED             0       1       30.0
 
 .. _AQM-more-tasks:
 
