@@ -81,12 +81,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
   if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
      end_hr=$BOUNDARY_LEN_HRS
   fi
-  # Download 0th hour lbcs if requested for it, mostly for DA
-  if [ ${NEED_ALL_LBCS} = "TRUE" ]; then
-    first_time=$((TIME_OFFSET_HRS))
-  else
-    first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
-  fi
+  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
   last_time=$((TIME_OFFSET_HRS + end_hr))
 
 
