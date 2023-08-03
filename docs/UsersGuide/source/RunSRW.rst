@@ -666,10 +666,10 @@ This can be helpful when conducting multiple experiments with different types of
 Configure METplus Verification Suite (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``ush/machine/<machine>.yaml`` or ``config.yaml`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``ush/machine/<platform>.yaml`` or ``config.yaml`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
 .. note::
-   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<platform>/run_vx.local`` file to correspond to their system's updated installation:
 
    .. code-block:: console
       
