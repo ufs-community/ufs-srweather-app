@@ -26,7 +26,6 @@ platform:
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   FIXaer: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aer
-  FIXgsi: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_am
   FIXlut: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_lut
   FIXorg: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_orog
