@@ -677,6 +677,9 @@ Users who want to use the METplus verification suite to evaluate their forecasts
       module load met/<version.X.X>
       module load metplus/<version.X.X>
 
+.. note::
+    PRELIMINARY CHANGES, NEEDS TO BE UPDATE IN A SECTION BELOW: for the recent changes in develop, there are several verify_*.yaml files, verify_pre.yaml, verify_ens.yaml, verify_det.yaml. Documentation below still mentions a single `veryfy.yaml` file.
+
 To use METplus verification,  MET and METplus modules need to be installed. To turn on verification tasks in the workflow, include the ``parm/wflow/verify.yaml`` file in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
 
 .. code-block:: console
