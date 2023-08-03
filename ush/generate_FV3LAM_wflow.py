@@ -534,82 +534,6 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Generate namelist for surface cycle
-    #  Deleted in newer RRFS_dev version so here for testing only
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_SURFACE_CYCLE:
-        if SDF_USES_RUC_LSM:
-            lsoil=9
-        settings = {}
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
-        }
-
-        settings_str = cfg_to_yaml_str(settings)
-        #
-        # populate the namelist file
-        #
-        set_namelist(
-            [
-                "-n",
-                FV3_NML_FP,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_CYCSFC_FP,
-            ]
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate namelist for DA cycle
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_DACYCLE or DO_ENKFUPDATE:
-
-        if SDF_USES_RUC_LSM:
-            lsoil = 9
-
-        lupdatebc = False
-        if DO_UPDATE_BC:
-            lupdatebc = False   # not ready for setting this to true yet
-
-        settings = {}
-        settings["fv_core_nml"] = {
-            "external_ic": False,
-            "make_nh": False,
-            "na_init": 0,
-            "nggps_ic": False,
-            "mountain": True,
-            "regional_bcs_from_gsi": lupdatebc,
-            "warm_start": True,
-        }
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
-            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
-        }
-
-        settings_str = cfg_to_yaml_str(settings)
-        #
-        # populate the namelist file
-        #
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                FV3_NML_FP,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_RESTART_FP,
-            ]
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
     # Add the relevant tendency-based stochastic physics namelist variables to
     # "settings" when running with SPPT, SHUM, or SKEB turned on. If running
     # with SPP or LSM SPP, set the "new_lscale" variable.  Otherwise only
@@ -731,18 +655,6 @@ def generate_FV3LAM_wflow(
             ]
         )
 
-        if DO_DACYCLE or DO_ENKFUPDATE:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_RESTART_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_RESTART_STOCH_FP,
-                ]
-            )
     #
     # -----------------------------------------------------------------------
     #
