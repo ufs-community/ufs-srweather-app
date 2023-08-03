@@ -347,8 +347,6 @@ def generate_FV3LAM_wflow(
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
-        "regional_bcs_from_gsi": False,
-        "write_restart_with_bcs": False,
         #
         # Question:
         # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
