@@ -968,18 +968,14 @@ def parse_args(argv):
         "--data_type",
         choices=(
             "FV3GFS",
-            "GFS_obs",
             "GDAS",
             "GEFS",
             "GSMGFS",
             "HRRR",
             "NAM",
-            "NSSL_mrms",
             "RAP",
             "RAPx",
-            "RAP_obs",
             "HRRRx",
-            "GSI-FIX",
             "UFS-CASE-STUDY"
         ),
         help="External model label. This input is case-sensitive",
