@@ -110,7 +110,7 @@ where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the 
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
-   Variables ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` are set in the ./ush/machine.yaml configuration. Variables ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC`` are set in modulefiles for met/xx.x.x and metplus/x.x.x, when the modules are loaded in ./modulefiles/tasks/<platform>/run_vx.local  (run_vx.local.lua modulefile)
+   Variables ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` are set in the ./ush/machine/<platform>.yaml configuration. Variables ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC`` are set in modulefiles for met/xx.x.x and metplus/x.x.x, when the modules are loaded in ./modulefiles/tasks/<platform>/run_vx.local  (run_vx.local.lua modulefile)
 
 .. code-block:: console
 
