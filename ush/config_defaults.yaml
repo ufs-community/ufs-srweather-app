@@ -1044,8 +1044,8 @@ nco:
   #-----------------------------------------------------------------------
   #
   envir_default: "para"
-  NET_default: "rrfs"
-  RUN_default: "rrfs"
+  NET_default: "srw"
+  RUN_default: "srw"
   model_ver_default: "v1.0.0"
 
   OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
