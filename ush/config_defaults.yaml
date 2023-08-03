@@ -1037,12 +1037,6 @@ nco:
   # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
-  # NWGES:
-  # The beginning portion of the directory that will contain the output 
-  # files from the forecast for a given cycle.  For a cycle 
-  # that starts on the date specified by yyyymmdd and hour specified by hh
-  #   ${NWGES}/yyyymmddhh
-  # 
   # For more information on NCO standards
   #   
   #   https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf
@@ -1061,12 +1055,6 @@ nco:
   LOGBASEDIR_default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
   COMIN_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
   COMOUT_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
-
-  #
-  # New additions from RRFS_dev1
-  #
-  NWGES: '{{ OPSROOT_default }}/nwges'
-  NWGES_BASEDIR: '{{ NWGES }}'
 
   DBNROOT_default: ""
   SENDECF_default: false
