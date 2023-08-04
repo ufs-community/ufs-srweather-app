@@ -7,6 +7,7 @@ FAQ
 * :ref:`How do I define an experiment name? <DefineExptName>`
 * :ref:`How do I change the Physics Suite Definition File (SDF)? <ChangePhysics>`
 * :ref:`How do I change the grid? <ChangeGrid>`
+* :ref:`How can I select which workflow tasks to run? <SetTasks>`
 * :ref:`How do I turn on/off the cycle-independent workflow tasks? <CycleInd>`
 * :ref:`How do I restart a DEAD task? <RestartTask>`
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
@@ -29,7 +30,7 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The five supported physics suites for the SRW Application as of the v2.1.0 release are:
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The four supported physics suites for the SRW Application as of the v2.1.0 release are:
 
 .. code-block:: console
    
@@ -37,7 +38,6 @@ The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using th
    FV3_RRFS_v1beta
    FV3_HRRR
    FV3_WoFS_v0
-   FV3_RAP
 
 When users run the ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``$EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
@@ -57,7 +57,70 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
 
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Chapter %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the v2.1.0 release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the v2.1.0 release and is provided for informational purposes only. 
+
+.. _SetTasks:
+
+===============================================
+How can I select which workflow tasks to run? 
+===============================================
+
+The ``/parm/wflow`` directory contains several ``YAML`` files that configure various workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+
+.. _task-group-files:
+
+.. list-table:: Task group files
+   :widths: 20 50
+   :header-rows: 1
+
+   * - File
+     - Function
+   * - aqm_post.yaml
+     - SRW-AQM post-processing tasks
+   * - aqm_prep.yaml
+     - SRW-AQM pre-processing tasks
+   * - coldstart.yaml
+     - 
+   * - da_data_preproc.yaml
+     - 
+   * - plot.yaml
+     - Plotting tasks
+   * - post.yaml
+     - Post-processing tasks
+   * - prdgen.yaml
+     - 
+   * - prep.yaml
+     - Pre-processing tasks
+   * - verify_det.yaml
+     - Deterministic verification tasks
+   * - verify_ens.yaml
+     - Ensemble verification tasks
+   * - verify_pre.yaml
+     - Verification pre-processing tasks
+
+.. COMMENT: What does prdgen.yaml do? da_data_preproc.yaml? coldstart.yaml?
+
+The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in ``config.yaml`` will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars:``. 
+
+Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
+       task_post_stat_o3:
+       task_post_stat_pm25:
+       task_bias_correction_o3:
+       task_bias_correction_pm25:
 
 .. _CycleInd:
 
@@ -66,18 +129,24 @@ How do I turn on/off the cycle-independent workflow tasks?
 ===========================================================
 
 The first three pre-processing tasks ``make_grid``, ``make_orog``, and ``make_sfc_climo``
-are :term:`cycle-independent`, meaning that they only need to be run once per experiment. If the
+are :term:`cycle-independent`, meaning that they only need to be run once per experiment. 
+By default, the the workflow will run these tasks. However, if the
 grid, orography, and surface climatology files that these tasks generate are already 
 available (e.g., from a previous experiment that used the same grid as the current experiment), then
-these tasks can be skipped, and the workflow can use those pre-generated files. This 
-can be done by adding the following parameters to the appropriate sections of the ``config.yaml`` script before running ``generate_FV3LAM_wflow.py``:
+these tasks can be skipped, and the workflow can use those pre-generated files.
+
+To skip these tasks, remove ``parm/wflow/prep.yaml`` from the list of task groups in the Rocoto section of the configuration file (``config.yaml``):
 
 .. code-block:: console
 
-   workflow_switches:
-      RUN_TASK_MAKE_GRID: false
-      RUN_TASK_MAKE_OROG: false
-      RUN_TASK_MAKE_SFC_CLIMO: false
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+
+Then, add the paths to the previously generated grid, orography, and surface climatology files under the appropariate tasks in ``config.yaml``: 
+
+.. code-block:: console
+
    task_make_grid:
       GRID_DIR: /path/to/directory/containing/grid/files
    task_make_orog:
@@ -85,11 +154,7 @@ can be done by adding the following parameters to the appropriate sections of th
    task_make_sfc_climo:
       SFC_CLIMO_DIR: /path/to/directory/containing/surface/climatology/files
    
-The ``RUN_TASK_MAKE_GRID``, ``RUN_TASK_MAKE_OROG``, and ``RUN_TASK_MAKE_SFC_CLIMO`` flags disable their respective tasks. ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR``
-specify the directories where pre-generated grid, orography, and surface climatology files are located (all
-three sets of files *may* be placed in the same directory location). By default, the ``RUN_TASK_MAKE_*`` 
-flags are set to true in ``config_defaults.yaml``. This means that the workflow will
-run the ``make_grid``, ``make_orog``, and ``make_sfc_climo`` tasks by default.
+All three sets of files *may* be placed in the same directory location (and would therefore have the same path). 
 
 .. _RestartTask:
 
