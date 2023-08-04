@@ -118,31 +118,31 @@ cd ${OBS_DIR}
 logfile=retrieve_data.log
 
 # PDY and cyc are defined in rocoto XML...they are the yyyymmdd and hh for initial forecast hour respectively
-iyyyy=`echo ${PDY} | cut -c1-4`
-imm=`echo ${PDY} | cut -c5-6`
-idd=`echo ${PDY} | cut -c7-8`
+iyyyy=$(echo ${PDY} | cut -c1-4)
+imm=$(echo ${PDY} | cut -c5-6)
+idd=$(echo ${PDY} | cut -c7-8)
 ihh=${cyc}
 
 # Unix date utility needs dates in yyyy-mm-dd hh:mm:ss format
 unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 
 # This awk expression gets the last item of the list $FHR
-fcst_length=`echo ${FHR}  | awk '{ print $NF }'`
+fcst_length=$(echo ${FHR}  | awk '{ print $NF }')
 
 current_fcst=01
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
   #remove leading zero from current_fcst because bash treats numbers with leading zeros as octal *sigh*
   current_fcst=$((10#${current_fcst}))
   # Calculate valid date info using date utility  
-  vdate=`$DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H`
-  unix_vdate=`$DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00"`
-  vyyyymmdd=`echo ${vdate} | cut -c1-8`
-  vhh=`echo ${vdate} | cut -c9-10`
+  vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H)
+  unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
+  vyyyymmdd=$(echo ${vdate} | cut -c1-8)
+  vhh=$(echo ${vdate} | cut -c9-10)
 
   # Calculate valid date + 1 day; this is needed because (for some ungodly reason) CCPA files for 19-23z
   # are stored in the *next* day's 00h directory
-  vdate_p1=`$DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 day" +%Y%m%d%H`
-  vyyyymmdd_p1=`echo ${vdate_p1} | cut -c1-8`
+  vdate_p1=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 day" +%Y%m%d%H)
+  vyyyymmdd_p1=$(echo ${vdate_p1} | cut -c1-8)
 
   #remove leading zero again, this time keep original
   vhh_noZero=$((10#${vhh}))
@@ -362,7 +362,7 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
         # copy files from the previous 6 hours
         for tm in $(seq 0 5); do
-          vyyyymmddhh_tm=`$DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H`
+          vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H)
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
           cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}

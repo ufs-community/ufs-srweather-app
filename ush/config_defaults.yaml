@@ -240,7 +240,7 @@ platform:
   # in file scripts/exregional_get_verif_obs.sh for more details about
   # files and directory structure, as well as important caveats about
   # errors in the metadata and file names.
-  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # NOTE: Do not set this to the same path as other *_OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
   #
   # MRMS_OBS_DIR:
@@ -249,7 +249,7 @@ platform:
   # retrieved by the workflow, where they will be placed). See comments
   # in the scripts/exregional_get_verif_obs.sh for more details about
   # files and directory structure.
-  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # NOTE: Do not set this to the same path as other *_OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
   #
   # NDAS_OBS_DIR:
@@ -258,7 +258,7 @@ platform:
   # where they will be placed). See comments in file
   # scripts/exregional_get_verif_obs.sh for more details about files
   # and directory structure.
-  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # NOTE: Do not set this to the same path as other *_OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
   #
   # NOHRSC_OBS_DIR:
@@ -267,15 +267,15 @@ platform:
   # if retrieved by the workflow, where they will be placed). See comments
   # in file scripts/exregional_get_verif_obs.sh for more details about
   # files and directory structure
-  # NOTE: This should not be set equal to other *OBS_DIR variables,
+  # NOTE: Do not set this to the same path as other *_OBS_DIR variables,
   # otherwise unexpected results and data loss may occur
   #
   #-----------------------------------------------------------------------
   #
-  CCPA_OBS_DIR: ""
-  NOHRSC_OBS_DIR: ""
-  MRMS_OBS_DIR: ""
-  NDAS_OBS_DIR: ""
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
   #
   #-----------------------------------------------------------------------
   #
