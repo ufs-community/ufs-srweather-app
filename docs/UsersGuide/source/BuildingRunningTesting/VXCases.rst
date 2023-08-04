@@ -9,14 +9,14 @@ Introduction
 
 The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. In the future, additional sample cases will be provided. 
 
-Each sample case contains model output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables. These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
+Each sample case contains model output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables (when plotting tasks are run). These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
 Prerequisites
 ================
 
 This chapter assumes that users have already (1) built the SRW App v2.1.0 successfully and (2) installed MET and METplus on their system. 
 
-For instructions on how to build the v2.1.0 release of the SRW App, see the v2.1.0 release documentation on :ref:`Building the SRW App <srw_v2.1.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will have an easier time if they run through the out-of-the-box case described in :numref:`Chapter %s <RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
+For instructions on how to build the v2.1.0 release of the SRW App, see the v2.1.0 release documentation on :ref:`Building the SRW App <srw_v2.1.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will have an easier time if they run through the out-of-the-box case described in the v2.1.0 release documentation on :ref:`Running the SRW App <srw_v2.1.0:RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
 
 For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, and links to installation instructions and documentation for users on other systems. 
 
@@ -49,19 +49,19 @@ On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file us
 
    #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
 
-   #. Download from a terminal using the AWS command line interface (CLI) if installed:
+   #. Download from a terminal using the AWS command line interface (CLI), if installed:
 
       .. code-block:: console
 
          aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
    
-   #. Download from a terminal using wget: 
+   #. Download from a terminal using ``wget``: 
 
       .. code-block:: console
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download the fix files required for SRW App forecasts and the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with wget. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
+This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -87,13 +87,13 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workf
 
 .. code-block:: console
    
-   source <path/to/etc/lmod-setup.sh>
+   source <path/to/etc/lmod-setup.sh> <platform>
    module use </path/to/ufs-srweather-app/modulefiles>
    module load wflow_<platform>
 
-Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh>`` in place of the first command above. 
+Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh> <platform>`` in place of the first command above. 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate workflow_tools``. 
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
 Configure the Verification Sample Case
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -110,7 +110,7 @@ where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the 
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
-   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
+   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``.
 
 .. code-block:: console
 
@@ -154,7 +154,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to :numref:`Section %s <UserSpecificConfig>`.
+For additional configuration guidance, refer to the v2.1.0 release documentation on :ref:`configuring the SRW App <srw_v2.1.0:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -189,7 +189,7 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ^^^^^^^^^^^^^^^^^
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(workflow_tools)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
 
 .. code-block:: console
 
@@ -199,7 +199,7 @@ The plots are created using the graphics generation script that comes with the S
 Compare
 ----------
 
-Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against the forecast results provided in the ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>`. This directory contains the forecast output and plots from NOAA developers under the ``postprd`` directory and METplus verification files under the ``metprd`` directory. 
+Once the experiment has completed (i.e., all tasks have "SUCCEEDED" and the end of the ``log.launch_FV3LAM_wflow`` file lists "Workflow status: SUCCESS"), users can compare their forecast results against the forecast results provided in the ``Indy-Severe-Weather`` directory downloaded in :numref:`Section %s <GetSampleData>`. This directory contains the forecast output and plots from NOAA developers under the ``postprd`` subdirectory and METplus verification files under the ``metprd`` subdirectory. 
 
 Qualitative Comparison of the Plots
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
