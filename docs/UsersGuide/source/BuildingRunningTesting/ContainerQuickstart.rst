@@ -4,26 +4,24 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. Normally, containers can only run on a single compute node and are not compatible with the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto/wiki/Documentation>`__, so users must run each task in the workflow manually. However, the Singularity container described in this chapter has been adapted such that it is able to run across multiple nodes using Rocoto. This makes it an excellent starting point for beginners. The :ref:`non-container build approach <BuildSRW>` may still be more appropriate for users who desire additional customizability, particularly if they already have experience running the SRW App.
+This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. 
 
-The "out-of-the-box" SRW App case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
+The basic "out-of-the-box" case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
 .. attention::
 
    * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
-   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Chapter %s <NCQuickstart>` for a Quick Start Guide or :numref:`Chapter %s <BuildSRW>` for a detailed guide to building the SRW App **without** a container. 
+   * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Section %s <NCQuickstart>` for a Quick Start Guide or :numref:`Section %s <BuildSRW>` for a detailed guide to building the SRW App **without** a container. 
 
 .. _DownloadCodeC:
 
 Download the Container
-=========================================== 
+==========================
 
-Prerequisites: 
+Prerequisites 
 -------------------
 
-Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option for the ``develop`` branch assumes that Rocoto is pre-installed. 
-
-.. COMMENT: Remove "for the develop branch"?
+Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is pre-installed. 
 
 Install Singularity
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -32,6 +30,8 @@ To build and run the SRW App using a Singularity container, first install the Si
 
 .. warning:: 
    Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
+
+.. COMMENT: Update reference to HPC-Stack --> spack-stack?
 
 Working in the Cloud or on HPC Systems
 -----------------------------------------
@@ -91,17 +91,19 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
 .. note::
    Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
 
-Users can simply copy the container to their local working directory. For example, on Hera:
+Users can simply set an environment variable to point to the container: 
 
 .. code-block:: console
 
-   cp /scratch1/NCEPDEV/nems/role.epic/containers/ubuntu20.04-intel-srwapp-develop.img .
+   export img=/path/to/ubuntu20.04-intel-srwapp-develop.img
 
 Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
 .. code-block:: console
 
-   singularity build --sandbox ubuntu20.04-intel-srwapp ubuntu20.04-intel-srwapp-develop.img
+   singularity build --sandbox ubuntu20.04-intel-srwapp $img
+
+.. COMMENT: What about on Derecho?
 
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
@@ -129,6 +131,12 @@ Some users may prefer to issue the command without the ``sudo`` prefix. Whether 
    .. code-block:: console
 
       sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:release-public-v2.1.0
+
+For easier reference, users can set an environment variable to point to the container: 
+
+.. code-block:: console
+
+   export img=/path/to/ubuntu20.04-intel-srwapp
 
 
 .. _WorkOnHPC:
@@ -170,19 +178,18 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
 .. code-block:: console
 
-   singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   singularity exec -B /<local_base_dir>:/<container_dir> $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-where ``<container_name>`` is the name of the sandbox directory (i.e., ``ubuntu20.04-intel-srwapp``) or the name of the ``.img`` container file. 
+.. COMMENT: Is this still the case? Seems to work better on mnt than lfs now...
+   .. hint::
+      On Jet, users may need to bind to an ``/lfs`` directory (e.g., ``/lfs4``) rather than ``/mnt``.
 
-.. hint::
-   On Jet, users may need to bind to an ``lfs`` directory (e.g., ``/lfs4``) rather than ``/mnt``.
-
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the container sandbox and then bind it:
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
 
 .. code-block:: console
 
    mkdir <path/to/container>/user1234
-   singularity exec -B /user1234:/user1234 ./ubuntu20.04-intel-srwapp cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
+   singularity exec -B /user1234:/user1234 $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 .. attention::
    Be sure to bind the directory that contains the experiment data! 
@@ -191,7 +198,7 @@ To explore the container and view available directories, users can either ``cd``
 
 .. code-block:: console
 
-   singularity shell ./ubuntu20.04-intel-srwapp-develop.img
+   singularity shell $img
    cd /
    ls 
 
@@ -210,7 +217,16 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. Detailed instructions on how to add the data can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. In general, users can download fix file data and experiment data (:term:`ICs/LBCs`) from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ and then untar it:
+
+.. code-block:: console
+
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz
+   wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/gst_data.tgz
+   tar -xzf fix_data.tgz
+   tar -xzf gst_data.tgz
+
+More detailed information can be found in :numref:`Section %s <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
 .. _GenerateForecastC:
 
@@ -233,7 +249,7 @@ Copy the container's modulefiles to the local working directory so that the file
 
 .. code-block:: console
 
-   singularity exec -B /<local_base_dir>:/<container_dir> ./<container_name> cp -r /opt/ufs-srweather-app/modulefiles .
+   singularity exec -B /<local_base_dir>:/<container_dir> $img cp -r /opt/ufs-srweather-app/modulefiles .
 
 After this command runs, the local working directory should contain the ``modulefiles`` directory. 
 
@@ -241,7 +257,6 @@ To activate the workflow, run the following commands:
 
 .. code-block:: console
 
-   source etc/lmod-setup.sh <platform>
    module use <path/to/modulefiles> 
    module load wflow_<platform>
 
@@ -259,6 +274,8 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 
 then the user should run ``conda activate workflow_tools``. This will activate the ``workflow_tools`` conda environment. The command(s) will vary from system to system, but the user should see ``(workflow_tools)`` in front of the Terminal prompt at this point.
 
+.. COMMENT: Containers are old and still say regional_workflow...
+
 .. _SetUpConfigFileC: 
 
 Configure the Workflow
@@ -268,14 +285,14 @@ Run ``stage-srw.sh``:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=<compiler> -m=<mpi_implementation> -p=<platform> -i=<container_name>
+   ./stage-srw.sh -c=<compiler> -m=<mpi_implementation> -p=<platform> -i=$img
 
 where: 
 
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
-   * ``-i`` indicates the name of the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
+   * ``-i`` indicates the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
 
 For example, on Hera, the command would be:
 
@@ -324,8 +341,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_ICS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
-         EXTRN_MDL_FILES_ICS: []
-         EXTRN_MDL_DATA_STORES: disk
 
       On other systems, users will need to change the path for ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_FILES_LBCS`` (below) to reflect the location of the system's data. The location of the machine's global data can be viewed :ref:`here <Data>` for Level 1 systems. Alternatively, the user can add the path to their local data if they downloaded it as described in :numref:`Section %s <InitialConditions>`. 
 
@@ -335,8 +350,6 @@ From here, users can follow the steps below to configure the out-of-the-box SRW 
 
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
-         EXTRN_MDL_FILES_LBCS: []
-         EXTRN_MDL_DATA_STORES: disk
 
 
 .. _GenerateWorkflowC: 
@@ -363,10 +376,37 @@ The generated workflow will be in the experiment directory specified in the ``co
    cd ../../expt_dirs/test_community
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for information on how to run the workflow without Rocoto. 
+Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. The following message usually means that the experiment is still getting set up:
+
+.. code-block:: console
+
+   08/04/23 17:34:32 UTC :: FV3LAM_wflow.xml :: ERROR: Can not open FV3LAM_wflow.db read-only because it does not exist
+
+After a few (3-5) minutes, ``rocotostat`` should show a status-monitoring table:
+
+.. code-block:: console
+
+          CYCLE             TASK      JOBID    STATE   EXIT STATUS   TRIES   DURATION
+   ==================================================================================
+   201906151800        make_grid   53583094   QUEUED             -       0        0.0
+   201906151800        make_orog          -        -             -       -          -
+   201906151800   make_sfc_climo          -        -             -       -          -
+   201906151800    get_extrn_ics   53583095   QUEUED             -       0        0.0
+   201906151800   get_extrn_lbcs   53583096   QUEUED             -       0        0.0
+   201906151800         make_ics          -        -             -       -          -
+   201906151800        make_lbcs          -        -             -       -          -
+   201906151800         run_fcst          -        -             -       -          -
+   201906151800    run_post_f000          -        -             -       -          -
+   ...
+   201906151800    run_post_f012          -        -             -       -          -
+
+When all tasks show ``SUCCEEDED``, the experiment has completed successfully. 
+
+For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingStandaloneScripts>` for guidance on how to run the workflow without Rocoto. 
 
 Troubleshooting
 ------------------
+
 If a task goes DEAD, it will be necessary to restart it according to the instructions in :numref:`Section %s <RestartTask>`. To determine what caused the task to go DEAD, users should view the log file for the task in ``$EXPTDIR/log/<task_log>``, where ``<task_log>`` refers to the name of the task's log file. After fixing the problem and clearing the DEAD task, it is sometimes necessary to reinitialize the crontab. Users can copy-paste the crontab command from the bottom of the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file into the crontab:
 
 .. code-block:: console
