@@ -75,10 +75,10 @@ The test script has three required arguments: machine, account, and tests.
       #. A test suite name (e.g., "fundamental", "comprehensive", "coverage", or "all"). 
       #. The name of a text file (full or relative path), such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). 
 
-Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. :numref:`Section %s <Opt-Args>` provides additional examples using some of the most common optional arguments. 
+Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. 
 
-Simple Examples
-^^^^^^^^^^^^^^^^^
+Examples
+^^^^^^^^^^^
 
 .. attention::
 
@@ -106,6 +106,16 @@ To run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS
    ./run_WE2E_tests.py -t my_tests.txt -m noaacloud -a none
 
 By default, the experiment directory for a WE2E test has the same name as the test itself, and it is created in ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ``ufs-srweather-app`` repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the ``custom_ESGgrid`` experiment directory would be located in ``${HOMEdir}/../expt_dirs/custom_ESGgrid``.
+
+**A More Complex Example:** To run the fundamental suite of tests on Orion in parallel, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``, run:
+
+   .. code-block::
+
+      ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q -p 2
+
+   * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full path as an argument, which will place experiments in the given location. 
+   * ``-q``: Suppresses the output from ``generate_FV3LAM_wflow()`` and prints only important messages (warnings and errors) to the screen. The suppressed output will still be available in the ``log.run_WE2E_tests`` file.
+   * ``-p 2``: Indicates the number of parallel proceeses to run. By default, job monitoring and submission is serial, using a single task. Therefore, the script may take a long time to return to a given experiment and submit the next job when running large test suites. Depending on the machine settings, running in parallel can substantially reduce the time it takes to run all experiments. However, it should be used with caution on shared resources (such as HPC login nodes) due to the potential to overwhelm machine resources. 
 
 Workflow Information
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -234,49 +244,10 @@ One might have noticed the line during the experiment run that reads "Use ctrl-c
 
    ./monitor_jobs.py -y=WE2E_tests_20230418174042.yaml -p=1
 
-.. _Opt-Args:
-
-Additional Sample Cases With Optional Arguments 
---------------------------------------------------
-
-The full list of options for ``run_WE2E_tests.py`` can be found using the ``-h`` flag. The examples below demonstrate several of the more common options for ``run_WE2E_tests.py``. 
-
-
-#. This first example will run the fundamental suite of tests on Orion, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``:
-
-   .. code-block::
-
-      ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q 
-
-   * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full path as an argument, which will place experiments in the given location. 
-   * ``-q``: Suppresses the output from ``generate_FV3LAM_wflow()`` and prints only important messages (warnings and errors) to the screen. The suppressed output will still be available in the ``log.run_WE2E_tests`` file.
-
-#. By default, the job monitoring and submission process is serial, using a single task. Therefore, the script may take a long time to return to a given experiment and submit the next job when running large test suites. To speed up this process, users can run the job monitoring processes in parallel using the ``-p`` option to indicate the number of parallel processes (provided the user has access to a node with the appropriate availability):
-
-   .. code-block::
-
-      ./run_WE2E_tests.py -t=all -m=jet -a=gsd-fv3-dev -q -p 6
-
-   Depending on the machine settings, this can substantially reduce the time it takes to run all experiments. However, it should be used with caution on shared resources (such as HPC login nodes) due to the potential to overwhelm machine resources. 
-
-#. This example will run the single experiment ``custom_ESGgrid`` test on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
-
-   .. note::
-
-      This option is not recommended, as it does not work on some machines and can cause system bottlenecks on others.
-
-   .. code-block::
-
-      ./run_WE2E_tests.py -t=custom_ESGgrid -m=hera -a=fv3lam --use_cron_to_relaunch --cron_relaunch_intvl_mnts=1
-
-   * ``--use_cron_to_relaunch``: Instead of calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``).  
-   * ``--cron_relaunch_intvl_mnts=1``: By default, the launch script is run every 2 minutes, but users can set this parameter to a longer or shorter integer number of minutes (here, it is set to 1 minute). This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
-
-
 Checking Test Status and Summary
 =================================
-By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to screen when jobs are complete (either successfully or with a failure), and print a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
-However, if the user is using the legacy crontab option or would like to summarize one or more experiments that are either not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
+By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to console when jobs are complete (either successfully or with a failure), and printing a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
+However, if the user is using the legacy crontab option (by submitting ``./run_WE2E_tests.py`` with the ``--use_cron_to_relaunch`` flag), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
 In this example, an experiment was generated using the crontab option and has not yet finished running.
 We use the ``-e`` option to point to the experiment directory and get the current status of the experiment:
 
@@ -317,7 +288,7 @@ We use the ``-e`` option to point to the experiment directory and get the curren
 
     Detailed summary written to WE2E_summary_20230306173013.txt
 
-As with all python scripts in the App, additional options for this script can be viewed by calling with the ``-h`` argument.
+As with all python scripts in the SRW App, additional options for this script can be viewed by calling with the ``-h`` argument.
 
 
 .. _WE2ETestInfoFile:
@@ -353,9 +324,9 @@ The rows of the file/sheet represent the full set of available tests (not just t
 | Here, ``nx`` and ``ny`` are the number of grid points in the horizontal 
   (``x`` and ``y``) directions, ``num_time_steps`` is the number of time 
   steps in one forecast, and ``num_fcsts`` is the number of forecasts the 
-  test runs (see Column 5 below).  [Note that this cost calculation does 
-  not (yet) differentiate between different physics suites.]  The relative 
-  cost ``rel_cost`` is then calculated using
+  test runs (see Column 5 below). (Note that this cost calculation does 
+  not (yet) differentiate between different physics suites.)  The relative 
+  cost ``rel_cost`` is then calculated using:
 
 .. code-block::
 
@@ -364,7 +335,7 @@ The rows of the file/sheet represent the full set of available tests (not just t
 | where ``abs_cost_ref`` is the absolute cost of running the reference forecast 
   described above, i.e., a single (``num_fcsts = 1``) 6-hour forecast 
   (``FCST_LEN_HRS = 6``) on the ``RRFS_CONUS_25km grid`` (which currently has 
-  ``nx = 219``, ``ny = 131``, and ``DT_ATMOS =  40 sec`` (so that ``num_time_steps 
+  ``nx = 219``, ``ny = 131``, and ``DT_ATMOS = 40 sec`` (so that ``num_time_steps 
   = FCST_LEN_HRS*3600/DT_ATMOS = 6*3600/40 = 540``). Therefore, the absolute cost reference is calculated as:
 
 .. code-block::
@@ -399,8 +370,8 @@ The rows of the file/sheet represent the full set of available tests (not just t
 
 Modifying the WE2E System
 ============================
-This section describes various ways in which the WE2E testing system can be modified 
-to suit specific testing needs.
+
+Users may wish to modify the WE2E testing system to suit specific testing needs.
 
 
 .. _ModExistingTest:
@@ -419,7 +390,7 @@ Adding a New Test
 ---------------------
 To add a new test named, e.g., ``new_test01``, to one of the existing test categories, such as ``wflow_features``:
 
-#. Choose an existing test configuration file in any one of the category directories that matches most closely the new test to be added. 
+#. Choose an existing test configuration file that most closely matches the new test to be added. It could come from any one of the category directories. 
 
 #. Copy that file to ``config.new_test01.yaml`` and, if necessary, move it to the ``wflow_features`` category directory. 
 
