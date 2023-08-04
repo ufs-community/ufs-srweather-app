@@ -521,8 +521,8 @@ if __name__ == "__main__":
     ap.add_argument('--cron_relaunch_intvl_mnts', type=int,
                     help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
     ap.add_argument('--opsroot', type=str,
-                    help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for '\
-                         'more details on this variable)')
+                    help='If test is for NCO mode, sets OPSROOT_default (see config_defaults.yaml'\
+                         'for more details on this variable)')
     ap.add_argument('--print_test_info', action='store_true',
                     help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
                          'starting experiment')
