@@ -75,7 +75,7 @@ The test script has three required arguments: machine, account, and tests.
       #. A test suite name (e.g., "fundamental", "comprehensive", "coverage", or "all"). 
       #. The name of a text file (full or relative path), such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). 
 
-Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. :numref:`Section %s <Opt-Args>` provides examples using some of the most common optional arguments. 
+Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. :numref:`Section %s <Opt-Args>` provides additional examples using some of the most common optional arguments. 
 
 Simple Examples
 ^^^^^^^^^^^^^^^^^
@@ -246,15 +246,12 @@ The full list of options for ``run_WE2E_tests.py`` can be found using the ``-h``
 
    .. code-block::
 
-      ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q
+      ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q 
 
-   This will place all of the fundamental tests into ``${HOMEdir}/../expt_dirs/test_set_01/``. 
+   * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full path as an argument, which will place experiments in the given location. 
+   * ``-q``: Suppresses the output from ``generate_FV3LAM_wflow()`` and prints only important messages (warnings and errors) to the screen. The suppressed output will still be available in the ``log.run_WE2E_tests`` file.
 
-   The ``--expt_basedir`` option is useful for grouping various sets of tests. It can also take a full path as an argument, which will place experiments in the given location. 
-
-   The ``-q`` flag will suppress the output from ``generate_FV3LAM_wflow()`` and print only important messages (warnings and errors) to the screen. As always, this output will still be available in the ``log.run_WE2E_tests`` file.
-
-#. By default, the job monitoring and submission process is serial, using a single task. Therefore, the script may take a long time to return to a given experiment and submit the next job when running large test suites. To speed up this process, users can run the job monitoring processes in parallel using the ``-p`` option to indicate the number of parallel processes (provided they have access to a node with the appropriate availability):
+#. By default, the job monitoring and submission process is serial, using a single task. Therefore, the script may take a long time to return to a given experiment and submit the next job when running large test suites. To speed up this process, users can run the job monitoring processes in parallel using the ``-p`` option to indicate the number of parallel processes (provided the user has access to a node with the appropriate availability):
 
    .. code-block::
 
@@ -262,7 +259,7 @@ The full list of options for ``run_WE2E_tests.py`` can be found using the ``-h``
 
    Depending on the machine settings, this can substantially reduce the time it takes to run all experiments. However, it should be used with caution on shared resources (such as HPC login nodes) due to the potential to overwhelm machine resources. 
 
-#. This example will run the single experiment "custom_ESGgrid" on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
+#. This example will run the single experiment ``custom_ESGgrid`` test on Hera, charging computational resources to the "fv3lam" account. For this example, we submit the suite of tests using the legacy :term:`cron`-based system:
 
    .. note::
 
@@ -272,7 +269,8 @@ The full list of options for ``run_WE2E_tests.py`` can be found using the ``-h``
 
       ./run_WE2E_tests.py -t=custom_ESGgrid -m=hera -a=fv3lam --use_cron_to_relaunch --cron_relaunch_intvl_mnts=1
 
-   The option ``--use_cron_to_relaunch`` means that, rather than calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``). By default this script is run every 2 minutes, but we have changed that to 1 minute with the ``--cron_relaunch_intvl_mnts=1`` argument. This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
+   * ``--use_cron_to_relaunch``: Instead of calling the ``monitor_jobs()`` function, the ``generate_FV3LAM_wflow()`` function will create a new :term:`cron` job in the user's cron table that will launch the experiment with the workflow launch script (``launch_FV3LAM_wflow.sh``).  
+   * ``--cron_relaunch_intvl_mnts=1``: By default, the launch script is run every 2 minutes, but users can set this parameter to a longer or shorter integer number of minutes (here, it is set to 1 minute). This script will run until the workflow either completes successfully (i.e., all tasks SUCCEEDED) or fails (i.e., at least one task fails). The cron job is then removed from the user's cron table.
 
 
 Checking Test Status and Summary
