@@ -117,7 +117,7 @@ The community AQM configuration assumes that users have :term:`HPSS` access and 
       EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/data
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/data
 
 On Hera, users can find :term:`ICs/LBCs` at ``/scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA/gfs.20230217/{hh}/atmos``. 
 

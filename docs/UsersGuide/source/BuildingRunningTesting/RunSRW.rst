@@ -781,13 +781,13 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
    | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
    |                      | lateral boundary conditions (LBCs)                         |
    +----------------------+------------------------------------------------------------+
-   | make_ics*            | Generate ICs from the external data                        |
+   | make_ics_*           | Generate ICs from the external data                        |
    +----------------------+------------------------------------------------------------+
-   | make_lbcs*           | Generate LBCs from the external data                       |
+   | make_lbcs_*          | Generate LBCs from the external data                       |
    +----------------------+------------------------------------------------------------+
-   | run_fcst*            | Run the forecast model (UFS Weather Model)                 |
+   | run_fcst_*           | Run the forecast model (UFS Weather Model)                 |
    +----------------------+------------------------------------------------------------+
-   | run_post*            | Run the post-processing tool (UPP)                         |
+   | run_post_*           | Run the post-processing tool (UPP)                         |
    +----------------------+------------------------------------------------------------+
 
 In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run a variety of optional tasks, including plotting and verification tasks. 
