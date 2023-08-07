@@ -65,7 +65,7 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-The ``/parm/wflow`` directory contains several ``YAML`` files that configure various workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+The ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
 
 .. _task-group-files:
 
@@ -80,9 +80,9 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure var
    * - aqm_prep.yaml
      - SRW-AQM pre-processing tasks
    * - coldstart.yaml
-     - 
+     - Tasks required to run a cold-start forecast
    * - da_data_preproc.yaml
-     - 
+     - Preprocessing tasks for RRFS `DA <data assimilation>`.
    * - plot.yaml
      - Plotting tasks
    * - post.yaml
@@ -98,9 +98,9 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure var
    * - verify_pre.yaml
      - Verification pre-processing tasks
 
-.. COMMENT: What does prdgen.yaml do? da_data_preproc.yaml? coldstart.yaml?
+.. COMMENT: What does prdgen.yaml do? 
 
-The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in ``config.yaml`` will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
+The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
 
 .. code-block:: console
 
@@ -108,7 +108,7 @@ The default workflow task groups are set in ``parm/wflow/default_workflow.yaml``
      tasks:
        taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
-Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars:``. 
+Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars``. 
 
 Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
 
@@ -154,7 +154,7 @@ Then, add the paths to the previously generated grid, orography, and surface cli
    task_make_sfc_climo:
       SFC_CLIMO_DIR: /path/to/directory/containing/surface/climatology/files
    
-All three sets of files *may* be placed in the same directory location (and would therefore have the same path). 
+All three sets of files *may* be placed in the same directory location (and would therefore have the same path), but they can also reside in different directories and use different paths. 
 
 .. _RestartTask:
 
@@ -181,8 +181,8 @@ has been identified and fixed (by referencing the log files in ``$EXPTDIR/log``)
 
    rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201906151800 -t get_extrn_ics
 
-where ``-c`` specifies the cycle date (first column of rocotostat output) and ``-t`` represents the task name
-(second column of rocotostat output). After using ``rocotorewind``, the next time ``rocotorun`` is used to
+where ``-c`` specifies the cycle date (first column of ``rocotostat`` output) and ``-t`` represents the task name
+(second column of ``rocotostat`` output). After using ``rocotorewind``, the next time ``rocotorun`` is used to
 advance the workflow, the job will be resubmitted.
 
 .. _CleanUp:
@@ -227,7 +227,7 @@ In addition to the options above, many standard terminal commands can be run to 
 How can I run a new experiment?
 ==================================
 
-To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the regional workflow python environment: 
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the *workflow_tools* environment: 
 
 .. code-block:: console
    
@@ -235,9 +235,9 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
    module use <path/to/modulefiles>
    module load wflow_<platform>
 
-Follow any instructions output by the console. 
+Follow any instructions output by the console (e.g., ``conda activate workflow_tools``). 
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Chapter %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
 .. _AddPhys:
 
@@ -245,10 +245,10 @@ Then, users can configure a new experiment by updating the environment variables
 How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
 ====================================================================
 
-At this time, there are ten physics suites available in the SRW App, :ref:`five of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App.
-To enable an additional physics scheme, such as the YSU PBL scheme, users must modify ``ufs-srweather-app/parm/FV3.input.yml`` and set the variable corresponding to the desired physics scheme to True under the physics suite they would like to use (e.g., ``do_ysu = True``).
+At this time, there are ten physics suites available in the SRW App, :ref:`four of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App. The CCPP Scientific Documentation details the various `namelist options <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/_c_c_p_psuite_nml_desp.html>`__ available in the UFS WM, including physics schemes, and also includes an `overview of schemes and suites <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/allscheme_page.html>`__. 
+To enable an additional physics scheme, such as the YSU PBL scheme, in the SRW App, users must modify ``ufs-srweather-app/parm/FV3.input.yml`` and set the variable corresponding to the desired physics scheme to *True* under the physics suite they would like to use (e.g., ``do_ysu = True``).
 
-It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to False in the ``FV3.input.yml`` file.
+It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to *False* in the ``FV3.input.yml`` file.
 Regardless, users will need to modify the suite definition file (SDF) and recompile the code. For example, to activate the YSU PBL scheme, users should replace the line ``<scheme>satmedmfvdifq</scheme>`` with ``<scheme>ysuvdif</scheme>`` and recompile the code.
 
 Users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
@@ -263,4 +263,4 @@ If you encounter issues while generating ICS and LBCS for a predefined 3-km grid
 
 Additionally, users can try increasing the number of processors or the wallclock time requested for the jobs. Sometimes jobs may fail without errors because the process is cut short. These settings can be adusted in one of the ``ufs-srweather-app/parm/wflow`` files. For ICs/LBCs tasks, these parameters are set in the ``coldstart.yaml`` file. 
 
-Users can also update the hash of UFS_UTILS in the ``Externals.cfg`` file to the HEAD of that repository. There was a known memory issue with how ``chgres_cube`` was handling regridding of the 3-D wind field for large domains at high resolutions (see `UFS_UTILS PR #766 <https://github.com/ufs-community/UFS_UTILS/pull/766>`__ and the associated issue for more information). If changing the hash in ``Externals.cfg``, users will need to rerun ``manage_externals`` and rebuild the code (see :numref:`Chapter %s <BuildSRW>`). 
+Users can also update the hash of UFS_UTILS in the ``Externals.cfg`` file to the HEAD of that repository. There was a known memory issue with how ``chgres_cube`` was handling regridding of the 3-D wind field for large domains at high resolutions (see `UFS_UTILS PR #766 <https://github.com/ufs-community/UFS_UTILS/pull/766>`__ and the associated issue for more information). If changing the hash in ``Externals.cfg``, users will need to rerun ``manage_externals`` and rebuild the code (see :numref:`Section %s <BuildSRW>`). 
