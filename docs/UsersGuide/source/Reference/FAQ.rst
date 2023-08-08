@@ -231,8 +231,8 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
 
 .. code-block:: console
    
-   source <path/to/etc/lmod-setup.sh/or/lmod-setup.csh> <platform>
-   module use <path/to/modulefiles>
+   source /path/to/etc/lmod-setup.sh/or/lmod-setup.csh <platform>
+   module use /path/to/modulefiles
    module load wflow_<platform>
 
 Follow any instructions output by the console (e.g., ``conda activate workflow_tools``). 

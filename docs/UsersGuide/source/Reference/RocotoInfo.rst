@@ -31,7 +31,7 @@ automatically resubmit failed tasks and can recover from system outages without 
 
 .. code-block:: console
 
-   rocotorun -w </path/to/workflow/xml/file> -d </path/to/workflow/database/file> -v 10
+   rocotorun -w /path/to/workflow/xml/file -d /path/to/workflow/database/file -v 10
 
 where 				
 
@@ -70,7 +70,7 @@ workflow using the ``rocotostat`` command:
 
 .. code-block:: console
 
-   rocotostat -w </path/to/workflow/xml/file> -d </path/to/workflow/database/file>
+   rocotostat -w /path/to/workflow/xml/file -d /path/to/workflow/database/file
 
 Executing this command will generate a workflow status table similar to the following:
 
@@ -217,7 +217,7 @@ command will rerun tasks in the workflow. The command line options are the same 
 						
 .. code-block:: console
 
-   rocotorewind -w </path/to/workflow/xml/file> -d </path/to/workflow/database/> file -c <YYYYMMDDHHmm> -t <taskname> 
+   rocotorewind -w /path/to/workflow/xml/file -d /path/to/workflow/database/ file -c <YYYYMMDDHHmm> -t <taskname> 
 
 Running this command will edit the Rocoto database file ``FV3LAM_wflow.db`` to remove evidence that the job has been run.
 ``rocotorewind`` is recommended over ``rocotoboot`` for restarting a task, since ``rocotoboot`` will force a specific

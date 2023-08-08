@@ -80,7 +80,9 @@ This guide instructs both novice and experienced users on downloading, building,
 
 Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, or directories.
 
-File paths and code that include angle brackets (e.g., ``build_<platform>_<compiler>``) indicate that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel``). 
+Code that includes angle brackets (e.g., ``build_<platform>_<compiler>``) indicates that users should insert options appropriate to their SRW App configuration (e.g., ``build_orion_intel``). 
+
+File or directory paths that begin with ``/path/to/`` should be replaced with the actual path on the user's system. For example, ``/path/to/modulefiles`` might be replaced by ``/Users/Jane.Smith/ufs-srweather-app/modulefiles``. 
 
 User Support, Documentation, and Contributions to Development
 ===============================================================

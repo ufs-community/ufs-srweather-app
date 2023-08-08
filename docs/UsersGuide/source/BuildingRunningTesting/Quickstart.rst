@@ -52,7 +52,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
          
-         module use </path/to/ufs-srweather-app/modulefiles>
+         module use /path/to/ufs-srweather-app/modulefiles
          module load wflow_<platform>
 
       where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>`). After loading the workflow, users should follow the instructions printed to the console. For example, if the output says: 

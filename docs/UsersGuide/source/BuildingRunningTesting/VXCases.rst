@@ -87,11 +87,11 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workf
 
 .. code-block:: console
    
-   source <path/to/etc/lmod-setup.sh> <platform>
-   module use </path/to/ufs-srweather-app/modulefiles>
+   source /path/to/etc/lmod-setup.sh <platform>
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
-Users running a csh/tcsh shell would run ``source <path/to/etc/lmod-setup.csh> <platform>`` in place of the first command above. 
+Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
 
 After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
 
@@ -102,10 +102,10 @@ Once the workflow environment is loaded, copy the out-of-the-box configuration:
 
 .. code-block:: console
 
-   cd </path/to/ufs-srweather-app/ush>
+   cd /path/to/ufs-srweather-app/ush
    cp config.community.yaml config.yaml
    
-where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
+where ``/path/to/ufs-srweather-app/ush`` is replaced by the actual path to the ``ufs-srweather-app/ush`` directory on the user's system. 
    
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
@@ -118,13 +118,13 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       ACCOUNT: <my_account>
    platform:
       MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: </path/to/met/x.x.x>           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-      METPLUS_PATH: </path/to/METplus/METplus-x.x.x>  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
+      MET_INSTALL_DIR: /path/to/met/x.x.x           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
+      METPLUS_PATH: /path/to/METplus/METplus-x.x.x  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
       # Add MET_BIN_EXEC variable to config.yaml
       MET_BIN_EXEC: bin
-      CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
-      MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
-      NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
+      CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
+      MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
       DATE_FIRST_CYCL: '2019061500'
@@ -135,11 +135,11 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       RUN_TASK_VX_POINTSTAT: true
    task_get_extrn_ics:
       # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
       USE_USER_STAGED_EXTRN_FILES: true
    task_get_extrn_lbcs:
       # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: </path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500>
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
       USE_USER_STAGED_EXTRN_FILES: true
    task_run_fcst:
       WTIME_RUN_FCST: 05:00:00
@@ -193,7 +193,7 @@ The plots are created using the graphics generation script that comes with the S
 
 .. code-block:: console
 
-   cd <path/to/ufs-srweather-app/ush/Python>
+   cd /path/to/ufs-srweather-app/ush/Python
    python plot_allvars.py 2019061500 0 60 6 </path-to/$EXPTDIR> /<path-to/NaturalEarth> SUBCONUS_Ind_3km
 
 Compare

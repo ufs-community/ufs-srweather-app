@@ -40,8 +40,8 @@ For users working on systems with limited disk space in their ``/home`` director
 
 .. code-block:: 
 
-   export SINGULARITY_CACHEDIR=</absolute/path/to/writable/directory/cache>
-   export SINGULARITY_TMPDIR=</absolute/path/to/writable/directory/tmp>
+   export SINGULARITY_CACHEDIR=/absolute/path/to/writable/directory/cache
+   export SINGULARITY_TMPDIR=/absolute/path/to/writable/directory/tmp
 
 where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch``, or ``/glade`` on NOAA Level 1 systems). If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
 
@@ -188,7 +188,7 @@ If the command worked properly, ``stage-srw.sh`` should appear in the local dire
 
 .. code-block:: console
 
-   mkdir <path/to/container>/user1234
+   mkdir /path/to/container/user1234
    singularity exec -B /user1234:/user1234 $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
 .. attention::
@@ -257,12 +257,12 @@ To activate the workflow, run the following commands:
 
 .. code-block:: console
 
-   module use <path/to/modulefiles> 
+   module use /path/to/modulefiles
    module load wflow_<platform>
 
 where: 
 
-   * ``<path/to/modulefiles>`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
+   * ``/path/to/modulefiles`` is replaced with the actual path to the modulefiles on the user's local system (often ``$PWD/modulefiles``), and 
    * ``<platform>`` is a valid, lowercased machine/platform name (see the ``MACHINE`` variable in :numref:`Section %s <user>`). 
 
 The ``wflow_<platform>`` modulefile will then output instructions to activate the workflow. The user should run the commands specified in the modulefile output. For example, if the output says: 
@@ -413,7 +413,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
    crontab -e
    i
-   */3 * * * * cd /<path/to>/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */3 * * * * cd /path/to/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
    esc
    :wq
    enter
@@ -422,7 +422,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
 
 where: 
 
-   * ``<path/to>`` is replaced by the actual path to the user's experiment directory, and 
+   * ``/path/to`` is replaced by the actual path to the user's experiment directory, and 
    * ``esc`` and ``enter`` refer to the escape and enter **keys** (not a typed command). 
 
 New Experiment

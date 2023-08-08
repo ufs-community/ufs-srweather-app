@@ -167,7 +167,7 @@ Run the executable that pulls in SRW App components from external repositories:
 
 .. code-block:: console
 
-   cd </path/to/ufs-srweather-app/>
+   cd /path/to/ufs-srweather-app/
    ./manage_externals/checkout_externals
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
@@ -383,10 +383,10 @@ From here, ``Lmod`` is ready to load the modulefiles needed by the SRW App. Thes
 
 .. code-block:: console
 
-   module use </path/to/modulefiles>
+   module use /path/to/modulefiles
    module load build_<platform>_<compiler>
 
-where ``</path/to/modulefiles/>`` is the full path to the ``modulefiles`` directory. 
+where ``/path/to/modulefiles/`` is the full path to the ``modulefiles`` directory. 
 
 This will work on Level 1 systems, where a modulefile is available in the ``modulefiles`` directory. Users on Level 2-4 systems (including generic Linux/MacOS systems) will need to modify an appropriate ``build_<platform>_<compiler>`` modulefile. One of the current ``build_<platform>_<compiler>`` modulefiles can be copied and used as a template. However, users will need to adjust certain environment variables in their modulefile, such as the path to HPC-Stack, so that the SRW App can find and load the appropriate modules. 
 
@@ -457,8 +457,8 @@ Next, users must source the Lmod setup file, just as they would on other systems
 
 .. code-block:: console
    
-   source etc/lmod-setup.sh <platform>
-   module use <path/to/ufs-srweather-app/modulefiles>
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
+   module use /path/to/ufs-srweather-app/modulefiles
    module load build_<platform>_gnu
    export LDFLAGS+=" -L${MPI_ROOT}/lib "
 

@@ -338,7 +338,7 @@ In summary, users can run the ``scp`` command in a new terminal/command prompt w
 
    scp username@your-IP-address:/path/to/source_file_or_directory /path/to/destination_file_or_directory
    # OR
-   scp -P 12345 username@localhost:/path/to/source_file_or_directory path/to/destination_file_or_directory
+   scp -P 12345 username@localhost:/path/to/source_file_or_directory /path/to/destination_file_or_directory
 
 Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
 

@@ -126,8 +126,8 @@ The ``workflow_tools`` conda/Python environment has already been set up on Level
 
 .. code-block:: console
 
-   source </path/to/etc/lmod-setup.sh/OR/lmod-setup.csh> <platform>
-   module use </path/to/modulefiles>
+   source /path/to/etc/lmod-setup.sh/OR/lmod-setup.csh <platform>
+   module use /path/to/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). 
@@ -216,8 +216,8 @@ After creating a ``workflow_tools`` environment and making modifications to a ``
 
 .. code-block:: console
 
-   source </path/to/etc/lmod-setup.sh> <platform>
-   module use </path/to/modulefiles>
+   source /path/to/etc/lmod-setup.sh <platform>
+   module use /path/to/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (i.e., ``linux`` or ``macos``). 
@@ -634,7 +634,7 @@ Users who want to use the METplus verification suite to evaluate their forecasts
 
    .. code-block:: console
       
-      module use -a </path/to/met/modulefiles/>
+      module use -a /path/to/met/modulefiles
       module load met/<version.X.X>
 
 To use METplus verification, the path to the MET and METplus directories must be added to ``config.yaml``:
@@ -642,8 +642,8 @@ To use METplus verification, the path to the MET and METplus directories must be
 .. code-block:: console
 
    platform:
-      METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
-      MET_INSTALL_DIR: </path/to/met/10.1.0>
+      METPLUS_PATH: /path/to/METplus/METplus-4.1.0
+      MET_INSTALL_DIR: /path/to/met/10.1.0
 
 On Level 1 systems, users can find this path in the machine file for their system. On other systems, users will need to determine where MET and METplus were installed. 
 
@@ -922,9 +922,9 @@ This will automatically add an appropriate entry to the user's :term:`cron table
 
 .. code-block:: console
 
-   */3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
+   */3 * * * * cd /path/to/experiment/directory && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
 
-where ``<path/to/experiment/subdirectory>`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer; it simply means that the workflow will be resubmitted every three minutes.
+where ``/path/to/experiment/directory`` is changed to correspond to the user's ``$EXPTDIR``. The number ``3`` can be changed to a different positive integer; it simply means that the workflow will be resubmitted every three minutes.
 
 .. hint::
 
@@ -1128,7 +1128,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
    .. code-block:: console
 
-      cp <path/to>/ufs-srweather-app/ush/wrappers/* .
+      cp /path/to/ufs-srweather-app/ush/wrappers/* .
 
 #. Set the ``OMP_NUM_THREADS`` variable. 
 
