@@ -277,6 +277,8 @@ The user must set the specifics of their experiment configuration in a ``config.
    +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
+   | NOHRSC_OBS_DIR                 | ""                | ""                                 |
+   +--------------------------------+-------------------+------------------------------------+
    | MRMS_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | NDAS_OBS_DIR                   | ""                | ""                                 |
@@ -695,6 +697,7 @@ Users who have already staged the observation data needed for METplus (i.e., the
 
    platform:
       CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/nohrsc/proc
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
 
@@ -820,6 +823,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
    * - :bolditalic:`task_get_obs_ndas`
      - ``verify_pre.yaml``
      - If user has staged :term:`NDAS` data for verification, checks to ensure that data exists in the specified location (``NDAS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
+   * - :bolditalic:`task_get_obs_nohrsc`
+     - ``verify_pre.yaml``
+     - Retrieves and organizes hourly :term:`NOHRSC` data from NOAA HPSS. Can only be run if ``verify_pre.yaml`` is included in a ``tasksgroups`` list *and* user has access to NOAA :term:`HPSS` data. ``ASNOW`` should also be added to the ``VX_FIELDS`` list.
    * - :bolditalic:`task_get_obs_mrms`
      - ``verify_pre.yaml``
      - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (``MRMS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
