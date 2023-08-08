@@ -937,10 +937,10 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 ``FIXshp``: (Default: "")
    System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
 
-``TOPO_DIR``: (Default: "")
+``FIXorg``: (Default: "")
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
-``SFC_CLIMO_INPUT_DIR``: (Default: "")
+``FIXsfc``: (Default: "")
    The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
 
 ``SYMLINK_FIX_FILES``: (Default: true)

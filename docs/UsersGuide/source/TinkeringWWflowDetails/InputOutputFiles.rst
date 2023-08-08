@@ -180,7 +180,7 @@ After creating the new flat text file to reflect the changes, users will need to
 
 which tells the workflow to use the custom file located in the user-defined path. The path should include the filename. If ``USE_CUSTOM_POST_CONFIG_FILE`` is set to true, but the file path is not found, then an error will occur when trying to generate the SRW Application workflow.
 
-Users may then start their experiment workflow as usual, and the UPP will use the new flat ``*.txt`` file.
+After successfully generating the workflow, users may run/monitor their experiment as usual, and the UPP will use the new flat ``*.txt`` file.
 
 .. _SatelliteProducts:
 
@@ -230,13 +230,15 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
 
 Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release v2.1.0 fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
-The environment variables ``FIXgsm``, ``TOPO_DIR``, and ``SFC_CLIMO_INPUT_DIR`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``task_run_fcst:`` section of the ``config.yaml`` file, and alter the variable paths accordingly:
+.. COMMENT: Update release file list above for next SRW release.
+
+The environment variables ``FIXgsm``, ``FIXorg``, and ``FIXsfc`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``task_run_fcst:`` section of the ``config.yaml`` file, and alter the variable paths accordingly:
 
 .. code-block:: console
 
-   FIXgsm: </path-to/fix/fix_am>
-   TOPO_DIR: </path-to/fix/fix_am/fix_orog>
-   SFC_CLIMO_INPUT_DIR: </path-to/fix_am/fix/sfc_climo/>
+   FIXgsm: /path/to/fix/fix_am
+   FIXorg: /path/to/fix/fix_orog
+   FIXsfc: /path/to/fix/sfc_climo/
 
 .. _InitialConditions:
 
@@ -265,13 +267,11 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
-      EXTRN_MDL_DATA_STORES: disk
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/ufs-srweather-app/input_model_data/FV3GFS/grib2/YYYYMMDDHH
-      EXTRN_MDL_DATA_STORES: disk
 
-The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path-to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
+The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <IC/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
 When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
 
@@ -373,8 +373,8 @@ It is recommended that users have a separate directory for each file format if t
 
 .. code-block:: console
 
-   /path-to/input_model_data/FV3GFS/grib2/YYYYMMDDHH
-   /path-to/input_model_data/FV3GFS/nemsio/YYYYMMDDHH
+   /path/to/input_model_data/FV3GFS/grib2/YYYYMMDDHH
+   /path/to/input_model_data/FV3GFS/nemsio/YYYYMMDDHH
 
 Additionally, users must set the following environment variables if they plan to use GRIB2-formatted files for FV3GFS:
 
