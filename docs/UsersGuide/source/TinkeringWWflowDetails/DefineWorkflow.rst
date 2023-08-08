@@ -4,21 +4,20 @@
 Defining an SRW App Workflow
 =============================
 
+Many predefined workflows with optional variants exist within the Short-Range Weather Application, but the Application also includes the ability to define a new workflow from scratch. This functionality allows users to add tasks to the workflow to meet their scientific exploration needs.
 
-Rocoto is the primary workflow manager software used by the UFS SRW App. Because the SRW App supports a variety of research and operational configurations, it is important to incorporate the ability to build a static Rocoto XML from scratch. This means a user will be able to specify exactly which tasks are included in the workflow definition from a YAML configuration file. While many predefined workflows will exist with optional variants in the SRW App, additional tasks may be added by individuals for their scientific exploration needs.
-
-This guide explains how the Rocoto XML is built using a Jinja2 template (`Jinja docs here <https://jinja.palletsprojects.com/en/3.1.x/templates/>`__) and structured YAML files. The YAML follows the requirements in the `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__ with a few exceptions or additions outlined in this documentation.
+Rocoto is the primary workflow manager software used by the UFS SRW App. Rocoto workflows are defined in an XML file (``FV3LAM_wflow.xml``) based on parameters set during experiment generation. This section explains how the Rocoto XML is built using a Jinja2 template (`Jinja docs here <https://jinja.palletsprojects.com/en/3.1.x/templates/>`__) and structured YAML files. The YAML follows the requirements in the `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__ with a few exceptions or additions outlined in this documentation.
 
 The Jinja2 Template
 ===================
 
-In previous versions of the SRW App, the Jinja2 template to create the Rocoto XML was tightly coupled to specific configuration settings of the SRW App. It was built from a limited, pre-defined set of specific tasks, defining switches for those tasks to be included or not in the rendered XML.
+In previous versions of the SRW Application, the Jinja2 template to create the Rocoto XML was tightly coupled to specific configuration settings of the SRW App. It was built from a limited, pre-defined set of specific tasks, defining switches for those tasks to be included or not in the rendered XML.
 
-Now, the Jinja2 template is entirely agnostic to Short-Range Weather Application decisions and has been developed to wrap the features of Rocoto in an extensible, configurable format.
+Now, the Jinja2 template is entirely agnostic to SRW Application decisions and has been developed to wrap the features of Rocoto in an extensible, configurable format.
 
 
-The ``rocoto`` section of ``config.py``
-=======================================
+The ``rocoto`` section of ``config.yaml``
+==========================================
 The structured YAML file that defines the Rocoto XML is meant to reflect the sections required by any Rocoto XML. That structure looks like this, with some example values filled in:
 
 .. code-block:: console
@@ -32,10 +31,10 @@ The structured YAML file that defines the Rocoto XML is meant to reflect the sec
        taskthrottle:
      cycledefs:
        groupname:
-   !startstopfreq ['2022102000', ‘2023102018’, ‘06:00:00’]
-                   groupname2:
-   !startstopfreq ['2022102000', ‘2023102018’, ‘24:00:00’]
-   !startstopfreq ['2022102006', ‘2023102018’, ‘24:00:00’]
+         - !startstopfreq ['2022102000', ‘2023102018’, ‘06:00:00’]
+       groupname2:
+         - !startstopfreq ['2022102000', ‘2023102018’, ‘24:00:00’]
+         - !startstopfreq ['2022102006', ‘2023102018’, ‘24:00:00’]
      entities:
         foo: 1
         bar: “/some/path”
@@ -45,21 +44,21 @@ The structured YAML file that defines the Rocoto XML is meant to reflect the sec
        task_*:
        metatask_*:
 
-In addition to the structured YAML itself, the SRW App enables additional functionality in defining a YAML file. Often, PyYAML features are introduced and documented `here <https://pyyaml.org/wiki/PyYAMLDocumentation>`__. In the above example, the ``!startstopfreq`` is an example of a PyYAML constructor. Supported constructors will be outlined :ref:`below <YAMLconstructors>`. There are also examples of using PyYAML anchors and aliases in the definition of groups of tasks in the SRW App. Please see `this documentation <https://pyyaml.org/wiki/PyYAMLDocumentation>`__ for the behavior of PyYAML anchors and aliases.
-
-The use of Jinja2 templates inside the values of entries allows for the reference to other keys, mathematical operations, Jinja2 control structures, and the use of user-defined filters. Here, the ``include`` filter in the ``taskgroups`` entry is a user-defined filter. The supported filters are described in a section :ref:`below <J2filters>`.
-
 Under the Rocoto section, several subentries are required. They are described here using similar language as in the Rocoto documentation.
 
 ``attrs``: Any of the attributes to the ``workflow`` tag in Rocoto. This is meant to contain a nested dictionary defining any of the Rocoto-supported attributes, where the key is the name of the attribute, and the value is what Rocoto expects.
 
-``cycledefs``: A dictionary with each key defining a group name for a ``cycledef`` tag, where the key’s value is a list of acceptable ``cycledef`` formatted strings. The PyYAML constructor ``!startstopfreq`` has been included here to help with the automated construction of a tag of that nature. The preferred option for the SRW App is to use the “start, stop, step” method.
+``cycledefs``: A dictionary in which each key defines a group name for a ``cycledef`` tag; the key’s value is a list of acceptable ``cycledef`` formatted strings. The PyYAML constructor ``!startstopfreq`` has been included here to help with the automated construction of a tag of that nature. The preferred option for the SRW App is to use the “start, stop, step” method.
 
-``entities``: A dictionary with each key defining the name of a Rocoto entity and its value. These variables are referenceable throughout the workflow with the ‘&foo;’ notation.
+``entities``: A dictionary in which each key defines the name of a Rocoto entity and its value. These variables are referenceable throughout the workflow with the ``&foo;`` notation.
 
 ``log``: The path to the log file. This corresponds to the ``<log>`` tag.
 
 ``tasks``: This section is where the defined tasks and metatasks are created. This is the main portion of the workflow that will most commonly differ from experiment to experiment with different configurations.
+
+In addition to the structured YAML itself, the SRW App enables additional functionality when defining a YAML file. Often, PyYAML features are introduced and documented `here <https://pyyaml.org/wiki/PyYAMLDocumentation>`__. In the above example, the ``!startstopfreq`` is an example of a PyYAML constructor. Supported constructors will be outlined :ref:`below <YAMLconstructors>`. There are also examples of using PyYAML anchors and aliases in the definition of groups of tasks in the SRW App. Please see `this documentation <https://pyyaml.org/wiki/PyYAMLDocumentation>`__ for the behavior of PyYAML anchors and aliases.
+
+The use of Jinja2 templates inside the values of entries allows for the reference to other keys, mathematical operations, Jinja2 control structures, and the use of user-defined filters. Here, the ``include`` filter in the ``taskgroups`` entry is a user-defined filter. The supported filters are described in a section :ref:`below <J2filters>`.
 
 .. _tasks:
 
@@ -68,9 +67,9 @@ The ``tasks`` Subsection
 
 ``taskgroups``: This entry is not a standard Rocoto entry. It defines a set of files that will be included to build a workflow from predefined groups of tasks. The supported groups are included under ``parm/wflow`` for the SRW App, but the paths can point to any location on your local disk. The resulting order of the tasks will be in the same order as defined in this list. The syntax for the “include” is included as a Jinja2 filter.
 
-``task_*``: This is a section header to add a task. The task name will be whatever the section key has defined after the first underscore. For example, “task_run_fcst” will be named “run_fcst” in the resulting workflow. More information about defining a task is included :ref:`below <defining_tasks>`.
+``task_*``: This is a section header to add a task. The task name will be whatever the section key has defined after the first underscore. For example, ``task_run_fcst`` will be named ``run_fcst`` in the resulting workflow. More information about defining a task is included :ref:`below <defining_tasks>`.
 
-``metatask_*``: This is a section header to add a metatask. The metatask name will be whatever the section key has defined after the first underscore. For example “metatask_run_ensemble” will be named “run_ensemble” in the resulting workflow. More information about defining a metatask is included :ref:`below <defining_metatasks>`.
+``metatask_*``: This is a section header to add a metatask. The metatask name will be whatever the section key has defined after the first underscore. For example ``“``metatask_run_ensemble`` will be named ``run_ensemble`` in the resulting workflow. More information about defining a metatask is included :ref:`below <defining_metatasks>`.
 
 .. _defining_tasks:
 
@@ -107,7 +106,7 @@ Each task supports any of the tags that are defined in the Rocoto documentation.
 
 The following sections are constructs of the interface, while all others are direct translations to tags available in Rocoto. Any tag that allows for attributes to the XML tag will take an ``attrs`` nested dictionary entry.
 
-``attrs``: Any of the attributes to the task tag in Rocoto. This is meant to be a subdictionary defining any of the Rocoto-supported attributes, where the key is the name of the attribute, and the value is what Rocoto expects. This might include any combination of the following: cycledefs, maxtries, throttle, or final.
+``attrs``: Any of the attributes to the task tag in Rocoto. This is meant to be a subdictionary defining any of the Rocoto-supported attributes, where the key is the name of the attribute, and the value is what Rocoto expects. Attributes might include any combination of the following: cycledefs, maxtries, throttle, or final.
 
 ``envars``: A dictionary of keys that map to variable names that will be exported for the job. These will show up as the set of ``<envar>`` tags in the XML. The value will be the value of the defined variable when it is exported.
 
@@ -121,7 +120,7 @@ The dependency entry will be an arbitrarily deep nested dictionary of key, value
 
 Because we are representing these entries as a dictionary, which requires hashable keys (no repeats at the same level), some tags may need to be differentiated where XML may not differentiate at all. In these instances, it is best practice to name them something descriptive. For example, you might have multiple “or” dependencies at the same level that could be named “or_files_exist” and “or_task_ran”. This style can be adopted whether or not differentiation is needed. 
 
-The text entry on some dependencies is for those dependency tags that need the information to come between two flags, as in a data dependency.
+The ``text`` entry on some dependencies is for those dependency tags that need the information to come between two flags, as in a data dependency.
 
 Otherwise, all dependencies follow the same naming conventions as defined in Rocoto with ``attrs`` dictionaries included to define any of the tag attributes that may be accepted by Rocoto.
 
