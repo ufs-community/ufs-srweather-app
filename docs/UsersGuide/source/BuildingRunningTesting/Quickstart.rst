@@ -96,4 +96,4 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       The workflow must be relaunched regularly and repeatedly until the log output includes a ``Workflow status: SUCCESS`` message indicating that the experiment has finished.
 
-Optionally, users may :ref:`configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and/or :ref:`plot the output <Graphics>` of their experiment(s).
+Optionally, users may :ref:`configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and/or :ref:`plot the output <PlotOutput>` of their experiment(s).

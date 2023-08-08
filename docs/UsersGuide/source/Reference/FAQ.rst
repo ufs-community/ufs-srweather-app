@@ -239,6 +239,10 @@ Follow any instructions output by the console (e.g., ``conda activate workflow_t
 
 Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
+.. note:: 
+
+   If users have updated their clone of the SRW App (e.g., via ``git pull`` or ``git fetch``/``git merge``) since running their last experiement, and the updates include a change to ``Externals.cfg``, users will need to rerun ``checkout_externals`` (instructions :ref:`here <CheckoutExternals>`) and rebuild the SRW App according to the instructions in :numref:`Section %s <BuildExecutables>`.
+
 .. _AddPhys:
 
 ====================================================================
