@@ -194,7 +194,7 @@ The plots are created using the graphics generation script that comes with the S
 .. code-block:: console
 
    cd /path/to/ufs-srweather-app/ush/Python
-   python plot_allvars.py 2019061500 0 60 6 </path-to/$EXPTDIR> /<path-to/NaturalEarth> SUBCONUS_Ind_3km
+   python plot_allvars.py 2019061500 0 60 6 /path/to/experiment/directory /path/to/NaturalEarth SUBCONUS_Ind_3km
 
 Compare
 ----------

@@ -506,11 +506,11 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app
 
    task_make_orog:
       # Path to location of static input files used by the make_orog task
-      TOPO_DIR: path/to/FIXgsm/files 
+      FIXorg: path/to/FIXorg/files 
 
    task_make_sfc_climo:
       # Path to location of static surface climatology input fields used by sfc_climo_gen
-      SFC_CLIMO_INPUT_DIR: path/to/FIXgsm/files 
+      FIXsfc: path/to/FIXsfc/files 
 
    task_run_fcst:
       FIXaer: /path/to/FIXaer/files
@@ -897,13 +897,13 @@ Optionally, an environment variable can be set to navigate to the experiment dir
 
 .. code-block:: console
 
-   export EXPTDIR=/<path-to-experiment>/<directory_name>
+   export EXPTDIR=/path/to/experiment/directory
 
 If the login shell is csh/tcsh, it can be set using:
 
 .. code-block:: console
 
-   setenv EXPTDIR /<path-to-experiment>/<directory_name>
+   setenv EXPTDIR /path/to/experiment/directory
 
 
 .. _Automate:
