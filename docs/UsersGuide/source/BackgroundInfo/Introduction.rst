@@ -26,17 +26,10 @@ User's Guide Organization
 
 The SRW Application documentation is organized into four sections: *Background Information*; *Building, Running, and Testing the SRW App*; *Tinkering With Workflow Details*; and *Reference*. 
 
-.. hint:: 
-   * To get started with the SRW App, users can try one of the following options: 
-
-      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. 
-      #. To build the application in a container, which provides a more uniform work environment, users can refer to the :ref:`Container-Based Quick Start Guide <QuickstartC>`. 
-      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
-
 Background Information
 -------------------------
 
-   * This **Introduction** section explains how the SRW App documentation is organized, how to use this guide, and where to find user support/documentation. 
+   * This **Introduction** section explains how the SRW App documentation is organized, how to use this guide, and where to find user support and component documentation. 
    * :numref:`Section %s: Technical Overview <TechOverview>` provides a technical overview, including SRW App prerequisites and an overview of the code directory structure.
    * :numref:`Section %s: SRW Application Components <Components>` provides a detailed description of the application components, including optional application components.
 
@@ -44,13 +37,20 @@ Building, Running, and Testing the SRW App
 --------------------------------------------
 
    * :numref:`Section %s: Quick Start Guide <NCQuickstart>` is designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow.
-   * :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>` explains how to run the SRW Application in a container. Containers come with SRW App prerequisites already installed and run on a broad range of systems. 
+   * :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>` explains how to run the SRW Application in a container. Containers run on a broad range of systems and come with SRW App prerequisites already installed. 
    * :numref:`Section %s: Building the SRW App <BuildSRW>` provides a *detailed* explanation of how to build the SRW App. 
-   * :numref:`Section %s: Running the SRW App <RunSRW>` provides a *detailed* explanation of how to run the SRW App after it has been built. It includes information on standard workflow tasks, additional optional tasks (e.g., METplus verification, plotting), and different techniques for running the workflow. 
+   * :numref:`Section %s: Running the SRW App <RunSRW>` provides a *detailed* explanation of how to run the SRW App after it has been built/compiled. It includes information on standard workflow tasks, additional optional tasks (e.g., METplus verification, plotting), and different techniques for running the workflow. 
    * :numref:`Section %s: Testing the SRW App <WE2E_tests>` explains how to run workflow end-to-end (WE2E) tests to ensure that new developments do not break the current workflow. 
    * :numref:`Section %s: Tutorials <Tutorial>` walks users through different SRW App experiment cases and analysis of results. 
    * :numref:`Section %s: METplus Verification Sample Cases <VXCases>` explains how to run METplus verification as part of the workflow. 
    * :numref:`Section %s: Air Quality Modeling <AQM>` provides information specific to air quality modeling (AQM). This feature is currently unsupported, so documentation may be behind the current state of development, which is progressing rapidly. However, this section is a starting point for those interested in AQM. 
+
+.. hint:: 
+   * To get started with the SRW App, it is recommended that users try one of the following options: 
+
+      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. 
+      #. To build the application in a container, which provides a more uniform work environment, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
+      #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
 
 Tinkering with Workflow Details
 ---------------------------------
@@ -72,13 +72,13 @@ Reference Information
 SRW App Documentation Conventions
 ===================================
 
-This guide instructs both novice and experienced users on downloading, building, and running the SRW Application. Please post questions in the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions>`__ forum.
+This guide uses particular conventions to indicate commands and code snippets, file and directory paths, variables, and options. 
 
 .. code-block:: console
 
-   Throughout the guide, this presentation style indicates shell commands and options, code examples, etc.
+   Throughout the guide, this presentation style indicates shell commands, code snippets, etc.
 
-Variables presented as ``AaBbCc123`` in this User's Guide typically refer to variables in scripts, names of files, or directories.
+Text rendered as ``AaBbCc123`` typically refers to variables in scripts, names of files, or directories.
 
 Code that includes angle brackets (e.g., ``build_<platform>_<compiler>``) indicates that users should insert options appropriate to their SRW App configuration (e.g., ``build_hera_intel``). 
 
@@ -87,7 +87,7 @@ File or directory paths that begin with ``/path/to/`` should be replaced with th
 Component Documentation
 =========================
 
-A list of available component documentation is shown in :numref:`Table %s <list_of_documentation>`. In general, technical documentation will explain how to use a particular component, whereas scientific documentation provides more in-depth information on the science involved in a given file. 
+A list of available component documentation is shown in :numref:`Table %s <list_of_documentation>`. In general, technical documentation will explain how to use a particular component, whereas scientific documentation provides more in-depth information on the science involved in specific component files. 
 
 .. _list_of_documentation:
 
@@ -97,26 +97,24 @@ A list of available component documentation is shown in :numref:`Table %s <list_
 
    * - Documentation
      - Location
-   * - UFS SRW Application User's Guide
-     - https://ufs-srweather-app.readthedocs.io/en/develop/
+   * - HPC-Stack Documentation
+     - https://hpc-stack.readthedocs.io/en/latest/
+   * - spack-stack Documentation
+     - https://spack-stack.readthedocs.io/en/latest/
    * - UFS_UTILS Technical Documentation
      - https://noaa-emcufs-utils.readthedocs.io/en/latest
    * - UFS_UTILS Scientific Documentation
      - https://ufs-community.github.io/UFS_UTILS/index.html
    * - UFS Weather Model User's Guide
      - https://ufs-weather-model.readthedocs.io/en/latest
-   * - HPC-Stack Documentation
-     - https://hpc-stack.readthedocs.io/en/latest/
-   * - spack-stack Documentation
-     - https://spack-stack.readthedocs.io/en/latest/
-   * - FV3 Scientific Documentation
-     - https://repository.library.noaa.gov/view/noaa/30725
    * - FV3 Technical Documentation
      - https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html
-   * - CCPP Scientific Documentation
-     - https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/index.html
+   * - FV3 Scientific Documentation
+     - https://repository.library.noaa.gov/view/noaa/30725
    * - CCPP Technical Documentation
      - https://ccpp-techdoc.readthedocs.io/en/latest/
+   * - CCPP Scientific Documentation
+     - https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/index.html
    * - Stochastic Physics Documentation
      - https://stochastic-physics.readthedocs.io/en/latest/
    * - ESMF manual
@@ -127,6 +125,10 @@ A list of available component documentation is shown in :numref:`Table %s <list_
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
      - https://unified-workflow.readthedocs.io/en/latest/
+   * - METplus User's Guide
+     - https://metplus.readthedocs.io/en/latest/Users_Guide/index.html
+   * - HEMCO User's Guide (a component of the NEXUS AQM system)
+     - https://hemco.readthedocs.io/en/stable/
 
 User Support and Contributions to Development
 ===============================================================
@@ -134,14 +136,14 @@ User Support and Contributions to Development
 Questions
 -----------
 
-The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum provides online support for UFS users and developers to post questions and exchange information. When users are running into difficulties running the workflow, this is the place to post! Users can expect an initial response within two business days. 
+The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum provides online support for UFS users and developers to post questions and exchange information. When users encounter difficulties running the workflow, this is the place to post! Users can expect an initial response within two business days. 
 
 When posting a question, it is recommended that users provide the following information: 
 
 * The platform or system being used (e.g., Hera, Orion, MacOS, Linux)
-* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.1.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on). Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
+* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.1.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
 * Stage of the application when the issue appeared (i.e., configuration, build/compilation, or forecast run)
-* Configuration file
+* Configuration file contents
 * Error message or screenshot
 * Current shell (e.g., bash, csh) and modules loaded
 * Compiler + MPI combination being used
@@ -149,18 +151,18 @@ When posting a question, it is recommended that users provide the following info
 Bug Reports
 -------------
 
-If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change --- instead, the user is unfamiliar with the system an may have misunderstood some component of the system, which is then causing problems. 
+If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change/fix --- instead, the user is unfamiliar with the system and may have misunderstood some component of the system or the instructions, which is then causing problems. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code the requires someone to file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
 
-Feature Requests
-------------------
+Feature Requests and Enhancements
+-----------------------------------
 
-Users who want to request the addition of a new feature can file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ and add (or request that a code manager add) the ``EPIC Support Requested`` label. These feature requests will be forwarded to the Earth Prediction Innovation Center (EPIC) management team for prioritization and eventual addition to the SRW App. 
+Users who want to request the addition of a new feature can file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ and add (or request that a code manager add) the ``EPIC Support Requested`` label. These feature requests will be forwarded to the Earth Prediction Innovation Center (`EPIC <https://epic.noaa.gov/>`__) management team for prioritization and eventual addition to the SRW App. 
 
 Community Contributions
 -------------------------
 
-The UFS community is encouraged to contribute to the development effort of all related
-utilities, model code, and infrastructure. As described above, users can post issues in the SRW App and related GitHub repositories to report bugs or to announce upcoming contributions to the code base. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the `SRW App Contributor's Guide <https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide>`__. For code to be accepted into the authoritative repositories, users must follow the code management rules of each UFS component repository. These rules are usually outlined in the User's Guide (see :numref:`Table %s <list_of_documentation>`) or wiki for each respective repository (see :numref:`Table %s <top_level_repos>`). 
+The UFS community is encouraged to contribute to the development efforts of all related
+utilities, model code, and infrastructure. As described above, users can post issues in the SRW App to report bugs or to announce upcoming contributions to the code base. Additionally, users can file issues in component repositories for contributions that directly concern those repositories. Contributions to the `ufs-srweather-app <https://github.com/ufs-community/ufs-srweather-app>`__ repository should follow the guidelines contained in the `SRW App Contributor's Guide <https://github.com/ufs-community/ufs-srweather-app/wiki/Contributor's-Guide>`__. For code to be accepted into a component repository, users must follow the code management rules of that component's authoritative repository. These rules are usually outlined in the User's Guide (see :numref:`Table %s <list_of_documentation>`) or GitHub wiki for each respective repository (see :numref:`Table %s <top_level_repos>`). 
 
 Future Direction
 =================

@@ -1,4 +1,4 @@
-Tinkering with Workflow Details
+Tinkering With Workflow Details
 ==================================
    
 .. toctree::
