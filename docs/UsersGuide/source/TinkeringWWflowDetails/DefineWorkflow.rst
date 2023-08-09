@@ -219,16 +219,16 @@ There is a specific order of precedence imposed when the SRW App loads configura
 
 #. Load ``config_defaults.yaml`` file.
 #. Load the user’s ``config.yaml`` file.
-#. Load the workflow defaults YAML file.
-#. At this point, all anchors and references will be resolved.
-#. All PyYAML constructors will also be called for the data provided in that entry.
+#. Load the ``default_workflow.yaml`` file.
+
+   * At this point, all anchors and references will be resolved.
+   * All PyYAML constructors will also be called for the data provided in that entry.
 #. Call ``update_dict`` function to remove any null entries from default tasks using the PyYAML anchors.
 #. Load all files from the ``taskgroups:`` entry from the user’s config or from the default if not overridden. This is achieved with a call to the ``extend_yaml()`` function.
 #. Add the contents of the files to the ``task:`` section.
 #. Update the existing workflow configuration with any user-specified entries (removing the ones that are null entries).
 #. Add a ``jobname:`` entry to every task in the workflow definition section.
-
-#. Incorporate other default configuration settings from machine files, constants, etc. into the default config dictionary in memory.
+#. Incorporate other default configuration settings from machine files, constants, etc. into the default configuration dictionary in memory.
 #. Apply all user settings last to take highest precedence.
 #. Call ``extend_yaml()`` to render templates that are available.
    NOTE: This is the one that is likely to trip up any settings that ``setup.py`` will make. References to other defaults that get changed during the course of validation may be rendered here earlier than desired.
