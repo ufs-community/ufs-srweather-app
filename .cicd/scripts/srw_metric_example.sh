@@ -61,8 +61,6 @@ cd ${workspace}/tests/WE2E
 cd ${workspace}
 
 # run skill-score check
-# first load MET env variables
-#source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 [[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
