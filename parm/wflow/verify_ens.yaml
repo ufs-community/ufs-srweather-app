@@ -137,6 +137,7 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
       MET_TOOL: 'GENENSPROD'
       OBTYPE: 'NDAS'
       ACCUM_HH: '01'
+    walltime: 02:30:00
     dependency:
       and:
         # The Pb2nc task (which is run only for obs) must be complete because
@@ -152,6 +153,7 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
     envars:
       <<: *envars_GenEnsProd_NDAS
       MET_TOOL: 'ENSEMBLESTAT'
+    walltime: 01:00:00
     dependency:
       taskdep_genensprod:
         attrs:

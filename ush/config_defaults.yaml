@@ -233,18 +233,6 @@ platform:
   #
   # Set METplus parameters.  Definitions:
   #
-  # MET_INSTALL_DIR:
-  # Location to top-level directory of MET installation.
-  #
-  # MET_BIN_EXEC:
-  # Subdirectory containing MET binaries e.g. "bin"
-  #
-  # METPLUS_PATH:
-  # Location to top-level directory of METplus installation.
-  #
-  # MET_BIN_EXEC
-  # Name of subdirectory where METplus executables are installed.
-  #
   # CCPA_OBS_DIR:
   # User-specified location of top-level directory where CCPA hourly
   # precipitation files used by METplus are located. This parameter
@@ -354,9 +342,6 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  MET_INSTALL_DIR: ""
-  MET_BIN_EXEC: ""
-  METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
   NOHRSC_OBS_DIR: ""
   MRMS_OBS_DIR: ""
