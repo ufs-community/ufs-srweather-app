@@ -295,8 +295,6 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    |                        | are used to create ESMF interpolation weight files.                             |
    +------------------------+---------------------------------------------------------------------------------+
    
-.. COMMENT: Add "ufs_srweather_app.settings"? Is it an executable? 
-
 .. _RRFSexec:
 
 .. list-table:: *Names and descriptions of the executables produced when the RRFS option is enabled*

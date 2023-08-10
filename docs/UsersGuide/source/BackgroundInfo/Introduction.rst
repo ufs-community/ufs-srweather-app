@@ -136,7 +136,7 @@ User Support and Contributions to Development
 Questions
 -----------
 
-The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum provides online support for UFS users and developers to post questions and exchange information. When users encounter difficulties running the workflow, this is the place to post! Users can expect an initial response within two business days. 
+The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum provides online support for UFS users and developers to post questions and exchange information. When users encounter difficulties running the workflow, this is the place to post. Users can expect an initial response within two business days. 
 
 When posting a question, it is recommended that users provide the following information: 
 
@@ -151,12 +151,12 @@ When posting a question, it is recommended that users provide the following info
 Bug Reports
 -------------
 
-If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change/fix --- instead, the user is unfamiliar with the system and may have misunderstood some component of the system or the instructions, which is then causing problems. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code the requires someone to file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
+If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change/fix --- instead, the user is unfamiliar with the system and may have misunderstood some component of the system or the instructions, which is causing them problems. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code the requires the user to file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
 
 Feature Requests and Enhancements
 -----------------------------------
 
-Users who want to request the addition of a new feature can file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ and add (or request that a code manager add) the ``EPIC Support Requested`` label. These feature requests will be forwarded to the Earth Prediction Innovation Center (`EPIC <https://epic.noaa.gov/>`__) management team for prioritization and eventual addition to the SRW App. 
+Users who want to request a feature enhancement or the addition of a new feature can file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__ and add (or request that a code manager add) the ``EPIC Support Requested`` label. These feature requests will be forwarded to the Earth Prediction Innovation Center (`EPIC <https://epic.noaa.gov/>`__) management team for prioritization and eventual addition to the SRW App. 
 
 Community Contributions
 -------------------------

@@ -19,7 +19,7 @@ The instructions in this documentation assume that users have certain background
 * Familiarity with LINUX/UNIX systems
 * Command line basics
 * System configuration knowledge (e.g., compilers, environment variables, paths, etc.)
-* Numerical Weather Prediction (concepts of parameterizations: physical, microphysical, convective)
+* Numerical Weather Prediction (e.g., concepts of parameterizations: physical, microphysical, convective)
 * Meteorology (in particular, meteorology at the scales being predicted: 25km, 13km, and 3km resolutions)
 
 Additional background knowledge in the following areas could be helpful:
@@ -158,7 +158,11 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    ├── (lib)
    ├── manage_externals
    ├── modulefiles
+   │     ├── build_<platform>_<compiler>.lua
+   │     └── wflow_<platform>.lua
    ├── parm
+   │     ├── wflow
+   │     └── FV3LAM_wflow.xml
    ├── (share)
    ├── scripts
    ├── sorc
