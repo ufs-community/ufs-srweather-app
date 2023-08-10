@@ -7,9 +7,6 @@ platform:
   MRMS_OBS_DIR: /Users/username/DATA/UFS/obs_data/mrms/proc
   NDAS_OBS_DIR: /Users/username/DATA/UFS/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /Users/username/DATA/UFS/FV3LAM_pregen
-  METPLUS_PATH: ""
-  MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: ""
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
   RUN_CMD_POST: mpirun
   RUN_CMD_PRDGEN: mpirun
