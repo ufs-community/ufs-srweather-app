@@ -69,7 +69,7 @@ The ``tasks`` Subsection
 
 ``task_*``: This is a section header to add a task. The task name will be whatever the section key has defined after the first underscore. For example, ``task_run_fcst`` will be named ``run_fcst`` in the resulting workflow. More information about defining a task is included :ref:`below <defining_tasks>`.
 
-``metatask_*``: This is a section header to add a metatask. The metatask name will be whatever the section key has defined after the first underscore. For example ``“``metatask_run_ensemble`` will be named ``run_ensemble`` in the resulting workflow. More information about defining a metatask is included :ref:`below <defining_metatasks>`.
+``metatask_*``: This is a section header to add a metatask. The metatask name will be whatever the section key has defined after the first underscore. For example ``metatask_run_ensemble`` will be named ``run_ensemble`` in the resulting workflow. More information about defining a metatask is included :ref:`below <defining_metatasks>`.
 
 .. _defining_tasks:
 
