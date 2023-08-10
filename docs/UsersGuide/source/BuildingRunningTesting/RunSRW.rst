@@ -271,10 +271,6 @@ The user must set the specifics of their experiment configuration in a ``config.
    +--------------------------------+-------------------+------------------------------------+
    | ACCOUNT                        | "project_name"    | "an_account"                       |
    +--------------------------------+-------------------+------------------------------------+
-   | MET_INSTALL_DIR                | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | METPLUS_PATH                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | NOHRSC_OBS_DIR                 | ""                | ""                                 |
@@ -626,10 +622,7 @@ The output files (in ``.png`` format) will be located in the ``postprd`` directo
 Configure METplus Verification Suite (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.yaml`` file. Other users may skip to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
-
-.. attention::
-   METplus *installation* is not included as part of the build process for the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. METplus *use* is supported on systems with a functioning METplus installation, but installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their machine file (``ush/machine/<platform>.yaml``) or their ``config.yaml`` file. Other users may skip to the next step (:numref:`Section %s: Generate the SRW App Workflow <GenerateWorkflow>`). 
 
 .. note::
    If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` to correspond to their system's updated installation:
@@ -638,18 +631,9 @@ Users who want to use the METplus verification suite to evaluate their forecasts
       
       module use -a /path/to/met/modulefiles
       module load met/<version.X.X>
+      module load metplus/<version.X.X>
 
-To use METplus verification, the path to the MET and METplus directories must be added to ``config.yaml``:
-
-.. code-block:: console
-
-   platform:
-      METPLUS_PATH: /path/to/METplus/METplus-4.1.0
-      MET_INSTALL_DIR: /path/to/met/10.1.0
-
-On Level 1 systems, users can find this path in the machine file for their system. On other systems, users will need to determine where MET and METplus were installed. 
-
-To turn on verification (VX) tasks in the workflow, include the desired ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``. For example:
+To use METplus verification,  MET and METplus modules need to be installed. To turn on verification tasks in the workflow, include the ``parm/wflow/verify_*.yaml`` file(s) in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``. For example:
 
 .. code-block:: console
 

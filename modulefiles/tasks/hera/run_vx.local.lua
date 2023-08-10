@@ -1,9 +1,6 @@
 --[[
-Loading intel is really only necessary when running verification tasks
-with the COMPILER experiment parameter set to "gnu" because in that case,
-the intel libraries aren't loaded, but the MET/METplus vx software still
-needs them because it's built using the intel compiler.  This line can
-be removed if/when there is a version of MET/METplus built using GNU.
+Compiler-specific modules are used for met and metplus libraries
 --]]
-load(pathJoin("intel", os.getenv("intel_ver") or "18.0.5.274"))
+load(pathJoin("met", os.getenv("met_ver") or "10.1.2"))
+load(pathJoin("metplus", os.getenv("metplus_ver") or "4.1.3"))
 load("python_srw")

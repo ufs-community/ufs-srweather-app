@@ -127,18 +127,6 @@ METplus Parameters
 
 :ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. Many of the METplus parameters are described below, but additional documentation for the METplus components is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__. 
 
-``MODEL``: (Default: "")
-   A descriptive name of the user's choice for the model being verified.
-   
-``MET_INSTALL_DIR``: (Default: "")
-   Path to top-level directory of MET installation.
-
-``METPLUS_PATH``: (Default: "")
-   Path to top-level directory of METplus installation.
-
-``MET_BIN_EXEC``: (Default: "")
-   Name of subdirectory where METplus executables are installed.
-
 .. _METParamNote:
 
 .. note::
