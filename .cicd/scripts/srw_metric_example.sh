@@ -46,7 +46,7 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate regional_workflow
+conda activate workflow_tools
 set -e -u
 
 # build srw
