@@ -88,7 +88,7 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure dif
    * - post.yaml
      - Post-processing tasks
    * - prdgen.yaml
-     - 
+     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
    * - prep.yaml
      - Pre-processing tasks
    * - verify_det.yaml
@@ -97,8 +97,6 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure dif
      - Ensemble verification tasks
    * - verify_pre.yaml
      - Verification pre-processing tasks
-
-.. COMMENT: What does prdgen.yaml do? 
 
 The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
 
