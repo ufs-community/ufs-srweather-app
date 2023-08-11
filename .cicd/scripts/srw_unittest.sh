@@ -19,6 +19,11 @@ fi
 cd $workspace
 # Only run this on machines with hpss access
 hpss_machines=( jet jet-epic hera )
+
+if [[ ${hpss_machines} = jet-epic ]]; then
+   hpss_machines=jet
+fi
+
 if [[ ${hpss_machines[@]} =~ ${SRW_PLATFORM} ]] ; then
 
   source ${workspace}/ush/load_modules_wflow.sh ${SRW_PLATFORM}
