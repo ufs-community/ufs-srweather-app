@@ -42,6 +42,10 @@ else
     platform="${SRW_PLATFORM}"
 fi
 
+if [[ "${SRW_PLATFORM}" = jet-epic ]]; then
+    platform='jet'
+fi
+
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
@@ -64,7 +68,7 @@ sed "s|^workflow:|workflow:\n  EXPT_BASEDIR: ${workspace}/expt_dirs|1" -i ush/co
 sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec|1" -i ush/config.yaml
 
 # DATA_LOCATION differs on each platform ... find it.
-export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM,,}.yaml | awk '{printf "%s", $2}')
+export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')
 echo "DATA_LOCATION=${DATA_LOCATION}"
 
 # Configure a default test ...
