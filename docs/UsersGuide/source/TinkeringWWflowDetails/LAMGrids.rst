@@ -208,7 +208,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
 Changing the Number of Vertical Levels
 ========================================
 
-The four supported predefined grids included with the SRW App have 127 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical layers requires
+The four supported predefined grids included with the SRW App have 65 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
 knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical layers are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
 
 .. COMMENT: What are ak and bk?!?!
