@@ -223,6 +223,15 @@ Find ``ak``/``bk``
 
 Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values, which will be used by ``chgres_cube`` in the ________ task to ________.  Documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__. 
 
+Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. 
+
+UFS_UTILS Instructions:
+git clone https://github.com/ufs-community/UFS_UTILS.git
+cd UFS_UTILS/fix
+./link_fixdirs.sh emc hera
+cd ..
+./build_all.sh
+
 
 
 A text file is output containing the ‘ak’ and ‘bk’ values. To use it in chgres_cube, set namelist variable “vcoord_target_grid” to the path/name of this file.
