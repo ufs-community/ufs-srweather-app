@@ -203,61 +203,59 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
 .. note:: 
    The process above explains how to create a new *predefined* grid, which can be used more than once. If a user prefers to create a custom grid for one-time use, the variables above can instead be specified in ``config.yaml``, and ``PREDEF_GRID_NAME`` can be set to a null string. In this case, it is not necessary to modify ``valid_param_vals.yaml`` or ``predef_grid_params.yaml``. Users can view an example configuration file for a custom grid `here <https://github.com/ufs-community/ufs-srweather-app/blob/develop/tests/WE2E/test_configs/wflow_features/config.custom_ESGgrid.yaml>`__.
 
+.. _VerticalLevels:
+
 Changing the Number of Vertical Levels
 ========================================
 
 The four supported predefined grids included with the SRW App have 127 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical layers requires
 knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical layers are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
 
-Definitions
--------------
-
-``npz``: Vertical layers
-``levp``: Vertical levels
-``ak``: 
-``bk``: 
-
+.. COMMENT: What are ak and bk?!?!
 
 Find ``ak``/``bk``
 --------------------
 
-Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values, which will be used by ``chgres_cube`` in the ________ task to ________.  Documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__. 
+Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. 
+Documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__. Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. The program outputs a text file containing the ``ak`` and ``bk`` values. 
 
-UFS_UTILS Instructions:
-git clone https://github.com/ufs-community/UFS_UTILS.git
-cd UFS_UTILS/fix
-./link_fixdirs.sh emc hera
-cd ..
-./build_all.sh
+.. COMMENT: Do users need to link the fix dirs and build all? Or can they just run a script?
+   UFS_UTILS Instructions:
+   git clone https://github.com/ufs-community/UFS_UTILS.git
+   cd UFS_UTILS/fix
+   ./link_fixdirs.sh emc hera
+   cd ..
+   ./build_all.sh
 
+Configure the SRW App
+-----------------------
 
+Modify ``input.nml.FV3``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A text file is output containing the ‘ak’ and ‘bk’ values. To use it in chgres_cube, set namelist variable “vcoord_target_grid” to the path/name of this file.
-
-workflow that will be generated using the "ESGgrid" method (i.e., using the ``regional_esg_grid`` code
-in the `UFS_UTILS <https://github.com/ufs-community/UFS_UTILS>`__ repository, where ESG stands for "Extended Schmidt Gnomonic"). 
-
-
-
-Create the text file ``global_hyblev_fcst.txt``, containing ``ak``/``bk``, to define the levels. 
-
-The ``npz`` and ``levp`` variables also need to be reset in the FV3 namelist file (``input.nml``). For 51 vertical layers, those numbers would be ``npz=50`` and ``levp=51``. But levels and layers are not the same, so if you are actually interested in having 51 vertical levels, then you should use ``npz=51`` and ``levp=52``:
+The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n`` and ``levp=n+1``. For example, if a user who wants 51 vertical levels would set ``npz`` and ``levp`` as follows: 
 
 .. code-block:: console
    
    &fv_core_nml
-      npz = 50
+      npz = 51
 
    &external_ic_nml
-      levp = 51
+      levp = 52
 
-The approaches for applying the new vertical coordinate in ``chgres_cube`` or in FV3 are also different. If the vertical level conversion is done in ``chgres_cube``, as we are currently doing in the SRW App, the new text file will be specified in fort.41 when executing ``chgres_cube``. You would need to make sure to set ``external_eta = .true.`` in ``input.nml``.
+Additionally, check that ``external_eta = .true.``.
 
+.. note::
 
-An example file with the ``ak``/``bk`` of 51 layers in HRRR as an example:
-HRRR_op_51.txt
+   Keep in mind that levels and layers are not the same. For ``n``` vertical *layers*, set ``npz=n-1`` and ``levp=n``. 
+
+Modify the ``vcoord_gen`` Output File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An example ``vcoord_gen`` output file with the ``ak``/``bk`` of 51 *layers* in HRRR:
+
+.. COMMENT: So there are 52 levels? But it outputs the number of layers? 
 
 .. code-block:: console 
 
@@ -314,18 +312,29 @@ HRRR_op_51.txt
     2460.600  0.00000000
     2000.000  0.00000000
 
-If using ``chgres_cube``, the first line needs to be changed to:
+In the SRW App, the ``chgres_cube`` utility performs the vertical level conversion in the ``make_ics_*`` and ``make_lbcs_*`` tasks, so some additional changes to the ``vcoord_gen`` output file are required.
+
+The first line needs to be changed to:
 
 .. code-block:: console 
 
    2     52
 
-and one more line needs to be added at the bottom of the text file as:
+And one more line needs to be added at the bottom of the text file:
 
 .. code-block:: console 
 
    0   0
 
-These changes are not necessary when using FV3 for the vertical coordinate conversion.
+Modify ``config.yaml``
+^^^^^^^^^^^^^^^^^^^^^^^^
 
+To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, set: 
+
+.. code-block:: console
+
+   task_make_ics:
+      VCOORD_FILE: /Users/Jane.Smith/data/fix_am/global_hyblev.l75.txt
+   task_make_lbcs:
+      VCOORD_FILE: /Users/Jane.Smith/data/fix_am/global_hyblev.l75.txt
 
