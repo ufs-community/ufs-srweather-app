@@ -82,6 +82,7 @@ sed 's|^platform:|platform:\n  EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
 source etc/lmod-setup.sh ${platform,,}
 module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
+module unload python
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
@@ -133,18 +134,13 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( gaea )
-if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
-    echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
-else
-    echo "# Try ${platform} with the first few simple SRW tasks ..." | tee -a ${results_file}
-    for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
-                echo -n "./$task.sh ... "
-                ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
-                # stop at the first sign of trouble ...
-                [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
-    done
-fi
+echo "# Try ${platform} with the first few simple SRW tasks ..." | tee -a ${results_file}
+for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
+            echo -n "./$task.sh ... "
+            ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
+            # stop at the first sign of trouble ...
+            [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
+done
 
 # Set exit code to number of failures
 set +e
