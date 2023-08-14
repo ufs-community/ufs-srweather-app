@@ -211,22 +211,196 @@ Changing the Number of Vertical Levels
 The four supported predefined grids included with the SRW App have 65 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
 knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical layers are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
 
-.. COMMENT: What are ak and bk?!?!
-
 Find ``ak``/``bk``
 --------------------
 
-Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
+Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS WM uses a hybrid vertical coordinate system, which moves from purely sigma levels near the surface to purely isobaric levels near the top of the atmosphere (TOA). The equation :math:`pk=ak+bk*ps` (where ``ps`` is surface pressure) is used to derive the pressure value at a given level. The ``ak`` values define the contribution from the purely isobaric component of the hybrid vertical coordinate, and the ``bk`` values are the contribution from the sigma component. When ``ak`` and ``bk`` are both zero, it is the TOA (pressure is zero). When ``bk`` is 1 and ak is 0, it is a purely sigma vertical coordinate surface, which is the case near the surface (the first model level).
 
-Documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__. Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. The program outputs a text file containing the ``ak`` and ``bk`` values. 
+The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-.. COMMENT: Do users need to link the fix dirs and build all? Or can they just run a script?
-   UFS_UTILS Instructions:
-   git clone https://github.com/ufs-community/UFS_UTILS.git
-   cd UFS_UTILS/fix
-   ./link_fixdirs.sh emc hera
-   cd ..
+Technical documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__, and scientific documentation is available `here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
+
+.. code-block:: console 
+
+   cd /path/to/ufs-srweather-app/sorc/UFS_UTILS
    ./build_all.sh
+
+From here, the user can edit and run the ``vcoord_gen`` run script to save the ``ak``/``bk`` levels directly to a file. 
+
+.. code-block:: console
+
+   cd /path/to/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen
+
+By default, the ``run.sh`` script saves the ``ak``/``bk`` values in a file called ``global_hyblev.txt``. To change the name of this file, users must edit the output file name. For example:
+
+.. code-block:: console
+
+   outfile="./global_hyblev.L128.txt"
+
+At this point, users should also update the script variables (``levs``,``lupp``,``pbot``,``psig``,``ppre``,``pupp``,``ptop``,``dpbot``,``dpsig``,``dppre``,``dpupp``,``dptop``) according to their use case. The current values in the run script are: 128,88,100000.0,99500.0,7000.0,7000.0,0.0,240.0,1200.0,18000.0,550.0,1.0. After modifying these values, run the script to generate the file:
+
+.. code-block:: console
+
+   ./run.sh
+
+The script will print the variables to the screen, save ``ak``/``bk`` to the output file location, and exit: 
+
+.. code-block:: console
+
+   + outfile=./global_hyblev.L128.txt
+   + levs=128
+   + lupp=88
+   + pbot=100000.0
+   + psig=99500.0
+   + ppre=7000.0
+   + pupp=7000.0
+   + ptop=0.0
+   + dpbot=240.0
+   + dpsig=1200.0
+   + dppre=18000.0
+   + dpupp=550.0
+   + dptop=1.0
+   + rm -f ./global_hyblev.L128.txt
+   + echo 128 88 100000.0 99500.0 7000.0 7000.0 0.0 240.0 1200.0 18000.0 550.0 1.0
+   + ../../exec/vcoord_gen
+    Enter levs,lupp,pbot,psig,ppre,pupp,ptop,dpbot,dpsig,dppre,dpupp,dptop
+    pmin=   50392.6447810470
+   + exit
+
+The user can find the output file in the current working directory. Based on the default values used above, the contents of the file should look like this:
+
+.. code-block:: console
+
+        2   128
+       0.000  1.00000000
+       0.000  0.99752822
+       0.000  0.99490765
+       0.029  0.99212990
+       0.232  0.98918511
+       0.810  0.98606254
+       1.994  0.98275079
+       4.190  0.97923643
+       8.287  0.97550087
+      15.302  0.97152399
+      26.274  0.96728509
+      42.274  0.96276297
+      64.392  0.95793599
+      93.740  0.95278208
+     131.447  0.94727885
+     178.651  0.94140368
+     236.502  0.93513378
+     306.149  0.92844637
+     388.734  0.92131872
+     485.392  0.91372837
+     597.235  0.90565322
+     725.348  0.89707176
+     870.778  0.88796321
+    1034.524  0.87830771
+    1217.528  0.86808662
+    1420.661  0.85728262
+    1644.712  0.84588007
+    1890.375  0.83386518
+    2158.238  0.82122630
+    2448.768  0.80795416
+    2762.297  0.79404217
+    3099.010  0.77948666
+    3458.933  0.76428711
+    3841.918  0.74844646
+    4247.633  0.73197127
+    4675.554  0.71487200
+    5124.949  0.69716312
+    5594.876  0.67886334
+    6084.176  0.65999567
+    6591.468  0.64058751
+    7115.147  0.62067071
+    7653.387  0.60028151
+    8204.142  0.57946049
+    8765.155  0.55825245
+    9333.967  0.53670620
+    9907.927  0.51487434
+   10484.208  0.49281295
+   11059.827  0.47058127
+   11631.659  0.44824125
+   12196.468  0.42585715
+   12750.924  0.40349506
+   13291.629  0.38122237
+   13815.150  0.35910723
+   14318.040  0.33721804
+   14796.868  0.31562289
+   15248.247  0.29438898
+   15668.860  0.27358215
+   16055.485  0.25326633
+   16405.020  0.23350307
+   16714.504  0.21435112
+   16981.137  0.19586605
+   17202.299  0.17809988
+   17375.561  0.16110080
+   17498.697  0.14491294
+   17569.698  0.12957622
+   17586.772  0.11512618
+   17548.349  0.10159397
+   17453.084  0.08900629
+   17299.851  0.07738548
+   17088.325  0.06674372
+   16820.937  0.05706358
+   16501.018  0.04831661
+   16132.090  0.04047056
+   15717.859  0.03348954
+   15262.202  0.02733428
+   14769.153  0.02196239
+   14242.890  0.01732857
+   13687.727  0.01338492
+   13108.091  0.01008120
+   12508.519  0.00736504
+   11893.639  0.00518228
+   11268.157  0.00347713
+   10636.851  0.00219248
+   10004.553  0.00127009
+    9376.141  0.00065078
+    8756.529  0.00027469
+    8150.661  0.00008141
+    7563.494  0.00001018
+    7000.000  0.00000000
+    6463.864  0.00000000
+    5953.848  0.00000000
+    5468.017  0.00000000
+    5004.995  0.00000000
+    4563.881  0.00000000
+    4144.164  0.00000000
+    3745.646  0.00000000
+    3368.363  0.00000000
+    3012.510  0.00000000
+    2678.372  0.00000000
+    2366.252  0.00000000
+    2076.415  0.00000000
+    1809.028  0.00000000
+    1564.119  0.00000000
+    1341.538  0.00000000
+    1140.931  0.00000000
+     961.734  0.00000000
+     803.164  0.00000000
+     664.236  0.00000000
+     543.782  0.00000000
+     440.481  0.00000000
+     352.894  0.00000000
+     279.506  0.00000000
+     218.767  0.00000000
+     169.135  0.00000000
+     129.110  0.00000000
+      97.269  0.00000000
+      72.293  0.00000000
+      52.984  0.00000000
+      38.276  0.00000000
+      27.243  0.00000000
+      19.096  0.00000000
+      13.177  0.00000000
+       8.947  0.00000000
+       5.976  0.00000000
+       3.924  0.00000000
+       2.532  0.00000000
+       1.605  0.00000000
+       0.999  0.00000000
+       0.000  0.00000000
 
 Configure the SRW App
 -----------------------
@@ -334,7 +508,7 @@ To use the text file produced by ``vcoord_gen`` in the SRW App, users need to se
 .. code-block:: console
 
    task_make_ics:
-      VCOORD_FILE: /Users/Jane.Smith/data/fix_am/global_hyblev.l75.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.l128.txt
    task_make_lbcs:
-      VCOORD_FILE: /Users/Jane.Smith/data/fix_am/global_hyblev.l75.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.l128.txt
 
