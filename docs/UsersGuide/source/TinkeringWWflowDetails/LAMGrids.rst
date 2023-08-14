@@ -408,97 +408,21 @@ Configure the SRW App
 Modify ``input.nml.FV3``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n`` and ``levp=n+1``. For example, if a user who wants 51 vertical levels would set ``npz`` and ``levp`` as follows: 
+The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n`` and ``levp=n+1``. For example, a user who wants 128 vertical levels would set ``npz`` and ``levp`` as follows: 
 
 .. code-block:: console
    
    &fv_core_nml
-      npz = 51
+      npz = 128
 
    &external_ic_nml
-      levp = 52
+      levp = 129
 
 Additionally, check that ``external_eta = .true.``.
 
 .. note::
 
-   Keep in mind that levels and layers are not the same. For ``n``` vertical *layers*, set ``npz=n-1`` and ``levp=n``. 
-
-Modify the ``vcoord_gen`` Output File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-An example ``vcoord_gen`` output file with the ``ak``/``bk`` of 51 *layers* in HRRR:
-
-.. COMMENT: So there are 52 levels? But it outputs the number of layers? 
-
-.. code-block:: console 
-
-     2    51
-       0.000  1.00000000
-     100.489  0.99703511
-     301.301  0.99110699
-     652.193  0.98073807
-    1252.141  0.96297859
-    2048.934  0.93933066
-    3039.804  0.90982196
-    4172.131  0.87595869
-    5345.312  0.84070688
-    6654.616  0.80115384
-    8095.872  0.75734128
-    9664.085  0.70931915
-   11353.200  0.65714800
-   13155.709  0.60090291
-   15061.961  0.54068039
-   17058.872  0.47661128
-   19127.360  0.40888640
-   21196.533  0.33919467
-   22957.824  0.27748176
-   24425.977  0.22311023
-   25594.002  0.17614998
-   26490.401  0.13504199
-   27092.278  0.10011322
-   27389.473  0.07117127
-   27374.474  0.04789926
-   27047.652  0.03009748
-   26431.278  0.01734722
-   25569.228  0.00891572
-   24456.118  0.00368082
-   23317.667  0.00124733
-   22039.819  0.00020781
-   20678.800  0.00000000
-   19297.000  0.00000000
-   17915.200  0.00000000
-   16533.400  0.00000000
-   15151.600  0.00000000
-   13769.800  0.00000000
-   12388.000  0.00000000
-   11006.200  0.00000000
-    9624.400  0.00000000
-    8438.600  0.00000000
-    7566.400  0.00000000
-    6762.800  0.00000000
-    6008.200  0.00000000
-    5302.600  0.00000000
-    4655.800  0.00000000
-    4048.200  0.00000000
-    3479.800  0.00000000
-    2950.600  0.00000000
-    2460.600  0.00000000
-    2000.000  0.00000000
-
-In the SRW App, the ``chgres_cube`` utility performs the vertical level conversion in the ``make_ics_*`` and ``make_lbcs_*`` tasks, so some additional changes to the ``vcoord_gen`` output file are required.
-
-The first line needs to be changed to:
-
-.. code-block:: console 
-
-   2     52
-
-And one more line needs to be added at the bottom of the text file:
-
-.. code-block:: console 
-
-   0   0
+   Keep in mind that levels and layers are not the same. For ``n`` vertical *layers*, set ``npz=n-1`` and ``levp=n``. 
 
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -508,7 +432,7 @@ To use the text file produced by ``vcoord_gen`` in the SRW App, users need to se
 .. code-block:: console
 
    task_make_ics:
-      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.l128.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.L128.txt
    task_make_lbcs:
-      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.l128.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.L128.txt
 
