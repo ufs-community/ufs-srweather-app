@@ -31,11 +31,6 @@ global:
   NUM_ENS_MEMBERS: 2
   ENS_TIME_LAG_HRS: '[ 0, 12 ]'
 
-platform:
-  CCPA_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ccpa/proc'
-  MRMS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/mrms/proc'
-  NDAS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ndas/proc'
-
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km
   VX_FCST_INPUT_BASEDIR: '{{ platform.get("TEST_VX_FCST_INPUT_BASEDIR") }}'

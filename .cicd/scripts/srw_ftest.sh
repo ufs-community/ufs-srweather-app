@@ -133,18 +133,13 @@ rm -f ${results_file}
 status=0
 
 # Limit to machines that are fully ready
-deny_machines=( gaea )
-if [[ ${deny_machines[@]} =~ ${platform,,} ]] ; then
-    echo "# Deny ${platform} - incomplete configuration." | tee -a ${results_file}
-else
-    echo "# Try ${platform} with the first few simple SRW tasks ..." | tee -a ${results_file}
-    for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
-                echo -n "./$task.sh ... "
-                ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
-                # stop at the first sign of trouble ...
-                [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
-    done
-fi
+echo "# Try ${platform} with the first few simple SRW tasks ..." | tee -a ${results_file}
+for task in ${TASKS[@]:0:${TASK_DEPTH}} ; do
+            echo -n "./$task.sh ... "
+            ./$task.sh > $task-log.txt 2>&1 && echo "COMPLETE" || echo "FAIL rc=$(( status+=$? ))"
+            # stop at the first sign of trouble ...
+            [[ 0 != ${status} ]] && echo "$task: FAIL" >> ${results_file} && break || echo "$task: COMPLETE" >> ${results_file}
+done
 
 # Set exit code to number of failures
 set +e

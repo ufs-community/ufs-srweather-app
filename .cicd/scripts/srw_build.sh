@@ -25,7 +25,7 @@ else
 fi
 
 if [[ "${SRW_PLATFORM}" = jet-epic ]]; then
-    platform='jet' 
+    platform='jet'
 fi
 
 # Build and install
