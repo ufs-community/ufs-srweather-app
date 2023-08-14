@@ -209,7 +209,7 @@ Changing the Number of Vertical Levels
 ========================================
 
 The four supported predefined grids included with the SRW App have 65 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
-knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical layers are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
+knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
 
 Find ``ak``/``bk``
 --------------------
@@ -237,7 +237,13 @@ By default, the ``run.sh`` script saves the ``ak``/``bk`` values in a file calle
 
    outfile="./global_hyblev.L128.txt"
 
-At this point, users should also update the script variables (``levs``,``lupp``,``pbot``,``psig``,``ppre``,``pupp``,``ptop``,``dpbot``,``dpsig``,``dppre``,``dpupp``,``dptop``) according to their use case. The current values in the run script are: 128,88,100000.0,99500.0,7000.0,7000.0,0.0,240.0,1200.0,18000.0,550.0,1.0. After modifying these values, run the script to generate the file:
+At this point, users should also update the script variables (``levs``, ``lupp``, ``pbot``, ``psig``, ``ppre``, ``pupp``, ``ptop``, ``dpbot``, ``dpsig``, ``dppre``, ``dpupp``, ``dptop``) according to their use case. The current values in the run script are: 
+
+.. code-block:: console
+   
+   128,88,100000.0,99500.0,7000.0,7000.0,0.0,240.0,1200.0,18000.0,550.0,1.0
+   
+After modifying these values, run the script to generate the ``ak``/``bk`` output file:
 
 .. code-block:: console
 
