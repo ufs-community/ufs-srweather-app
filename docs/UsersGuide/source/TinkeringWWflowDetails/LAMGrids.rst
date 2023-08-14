@@ -6,18 +6,18 @@ Limited Area Model (:term:`LAM`) Grids:  Predefined and User-Generated Options
 In order to set up the workflow and generate an experiment with the SRW Application, the user
 must choose between various predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
 At this time, full support is only provided to those using one of the four predefined
-grids supported in the v2.1.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid. Currently, this feature is not fully supported and is "use at your own risk."
+grids supported in the v2.1.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid and/or adjust the number of vertical levels in the grid. Currently, this feature is not fully supported and is "use at your own risk."
 
 Predefined Grids
 =================
-The SRW App v2.1.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``task_run_fcst:`` section of the ``config.yaml`` script must be set to one of the following four options:
+The SRW App v2.1.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``workflow:`` section of the ``config.yaml`` script must be set to one of the following four options:
 
 * ``RRFS_CONUS_3km``
 * ``RRFS_CONUS_13km``
 * ``RRFS_CONUS_25km``
 * ``SUBCONUS_Ind_3km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the five supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suites: ``FV3_GFS_v16`` and ``FV3_RAP``. 
+These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suite: ``FV3_GFS_v16``. 
 
 .. _GridPhysicsCombos:
 
@@ -47,14 +47,20 @@ These four options are provided for flexibility related to compute resources and
    |                   | FV3_RAP          |
    +-------------------+------------------+
 
+.. note::
+
+   The ``FV3_RAP`` physics suite is not yet "fully supported" but is included here because it will be soon. 
+
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 
-The predefined :term:`CONUS` grids follow the naming convention (e.g., RRFS_CONUS_*km) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). The RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in 2024. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
+The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in late 2024. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
 
 Predefined 3-km CONUS Grid
 -----------------------------
 
-The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` and ``FV3_RAP`` suites generally should *not* be used with the 3-km domain because the cumulus physics used in those physics suites is not configured to run at the 3-km resolution. 
+The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` and ``FV3_RAP`` suites generally should *not* be used with the 3-km domain because the cumulus physics used in those physics suites is not configured to run at the 3-km resolution. 
+
+.. COMMENT: Check on the FV3_RAP part of that satement...
 
 .. _RRFS_CONUS_3km:
 
@@ -63,7 +69,7 @@ The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite
 
    *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write-component grid (blue).*
 
-The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the UPP to read in and correctly process the data.
+The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the :term:`UPP` to read in and correctly process the data.
 
 .. note::
    While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data (such as HRRR or RAP data) that has a resolution similar to that of the native FV3-LAM (predefined) grid.
@@ -92,6 +98,9 @@ Predefined 13-km Grid
    *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write-component grid (blue).*
 
 The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` or ``FV3_RAP`` physics suites. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
+
+.. COMMENT: Check on the FV3_RAP part of that satement...
+
 
 Predefined 25-km Grid
 ------------------------
@@ -129,15 +138,15 @@ The steps to add such a grid to the workflow are as follows:
 
 #. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/ush/valid_param_vals.yaml`` file.
 
-#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>`. For descriptions of the variables that need to be set, see Sections :numref:`%s <ESGgrid>` and :numref:`%s <FcstConfigParams>`.
+#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>`. For descriptions of the variables that need to be set, see Sections :numref:`%s <ESGgrid>` and :numref:`%s <workflow>`.
 
-To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.community.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` in the ``task_run_fcst:`` section to ``NEW_GRID``:
+To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.community.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` in the ``workflow:`` section to ``NEW_GRID``:
 
 .. code-block:: console
 
    PREDEF_GRID_NAME: "NEW_GRID"
 
-Then, load the regional workflow python environment, specify the other experiment parameters in ``config.community.yaml``, and generate a new experiment/workflow using the ``generate_FV3LAM_wflow.py`` script (see :numref:`Chapter %s <RunSRW>` for details).
+Then, load the workflow environment, specify the other experiment parameters in ``config.community.yaml``, and generate a new experiment/workflow using the ``generate_FV3LAM_wflow.py`` script (see :numref:`Section %s <GenerateForecast>` for details).
 
 Code Example
 ---------------
@@ -160,45 +169,45 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    
    #  The method used to generate the grid. This example is specifically for the "ESGgrid" method.
 
-      GRID_GEN_METHOD: "ESGgrid"
+     GRID_GEN_METHOD: "ESGgrid"
    
    #  ESGgrid parameters:
 
-      ESGgrid_LON_CTR: -97.5
-      ESGgrid_LAT_CTR: 38.5
-      ESGgrid_DELX: 25000.0
-      ESGgrid_DELY: 25000.0
-      ESGgrid_NX: 200
-      ESGgrid_NY: 112
-      ESGgrid_PAZI: 0.0
-      ESGgrid_WIDE_HALO_WIDTH: 6
+     ESGgrid_LON_CTR: -97.5
+     ESGgrid_LAT_CTR: 38.5
+     ESGgrid_DELX: 25000.0
+     ESGgrid_DELY: 25000.0
+     ESGgrid_NX: 200
+     ESGgrid_NY: 112
+     ESGgrid_PAZI: 0.0
+     ESGgrid_WIDE_HALO_WIDTH: 6
 
    #  Forecast configuration parameters:
 
-      DT_ATMOS: 40
-      LAYOUT_X: 5
-      LAYOUT_Y: 2
-      BLOCKSIZE: 40
+     DT_ATMOS: 40
+     LAYOUT_X: 5
+     LAYOUT_Y: 2
+     BLOCKSIZE: 40
 
    #  Parameters for the write-component (aka "quilting") grid. 
 
-      QUILTING:
-         WRTCMP_write_groups: 1
-         WRTCMP_write_tasks_per_group: 2
-         WRTCMP_output_grid: "lambert_conformal"
-         WRTCMP_cen_lon: -97.5
-         WRTCMP_cen_lat: 38.5
-         WRTCMP_lon_lwr_left: -121.12455072
-         WRTCMP_lat_lwr_left: 23.89394570
+     QUILTING:
+       WRTCMP_write_groups: 1
+       WRTCMP_write_tasks_per_group: 2
+       WRTCMP_output_grid: "lambert_conformal"
+       WRTCMP_cen_lon: -97.5
+       WRTCMP_cen_lat: 38.5
+       WRTCMP_lon_lwr_left: -121.12455072
+       WRTCMP_lat_lwr_left: 23.89394570
 
    #  Parameters required for the Lambert conformal grid mapping.
 
-         WRTCMP_stdlat1: 38.5
-         WRTCMP_stdlat2: 38.5
-         WRTCMP_nx: 197
-         WRTCMP_ny: 107
-         WRTCMP_dx: 25000.0
-         WRTCMP_dy: 25000.0
+       WRTCMP_stdlat1: 38.5
+       WRTCMP_stdlat2: 38.5
+       WRTCMP_nx: 197
+       WRTCMP_ny: 107
+       WRTCMP_dx: 25000.0
+       WRTCMP_dy: 25000.0
 
 .. note:: 
    The process above explains how to create a new *predefined* grid, which can be used more than once. If a user prefers to create a custom grid for one-time use, the variables above can instead be specified in ``config.yaml``, and ``PREDEF_GRID_NAME`` can be set to a null string. In this case, it is not necessary to modify ``valid_param_vals.yaml`` or ``predef_grid_params.yaml``. Users can view an example configuration file for a custom grid `here <https://github.com/ufs-community/ufs-srweather-app/blob/develop/tests/WE2E/test_configs/wflow_features/config.custom_ESGgrid.yaml>`__.
@@ -433,7 +442,7 @@ Additionally, check that ``external_eta = .true.``.
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, set: 
+To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory on Level 1 systems, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, set: 
 
 .. code-block:: console
 
