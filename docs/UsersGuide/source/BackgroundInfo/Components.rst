@@ -83,20 +83,6 @@ The NOAA Emission and eXchange Unified System (NEXUS) is an emissions processing
 
 For more information on NEXUS, visit the GitHub repository at https://github.com/noaa-oar-arl/NEXUS. 
 
-Gridpoint Statistical Interpolation (GSI)
-============================================
-
-The Gridpoint Statistical Interpolation (GSI) system is a variational :term:`data assimilation` (DA) system that provides 3DVar DA capabilities for the SRW App. It takes a set of observations along with an initial 6-hour forecast from the SRW App and generates an "analysis," which combines the forecast results with observational data to generate a starting point for a new regional forecast. 
-
-GSI is also capable of providing 3D ensemble-variational (3DEnVar) DA, as well as 4D (hourly) variational (4DVar) and ensemble-variational (4DEnVar) DA, but these features have not yet been incorporated into the SRW App. 
-
-In the future, GSI may be phased out in favor of :term:`JEDI`, and the UFS community welcomes contributions that will facilitate this shift! In the meantime, users can find more information about GSI on GitHub at https://github.com/NOAA-EMC/GSI.
-
-RRFS Utilities
-================
-
-The Rapid Refresh Forecast System (RRFS) Utilities (rrfs_utl) are a set of tools that that perform tasks required for implementing RRFS capabilities in the SRW App. For example, rrfs_utl performs preprocessing for lightning data, METAR cloud observations, NASA LaRC cloud products, and the NSSL radar reflectivity mosaic. It also provides cloud analysis for the FV3 dycore and radar reflectivity to temperature tendency conversions. For more information on RRFS Utilities, visit the GitHub repository at https://github.com/NOAA-GSL/rrfs_utl or see :numref:`Table %s <RRFSexec>` for a detailed description of executables. 
-
 .. _uwtools:
 
 Unified Workflow Tools
