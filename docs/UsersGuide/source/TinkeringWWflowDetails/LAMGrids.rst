@@ -225,68 +225,35 @@ Find ``ak``/``bk``
 
 Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS WM uses a hybrid vertical coordinate system, which moves from purely sigma levels near the surface to purely isobaric levels near the top of the atmosphere (TOA). The equation :math:`pk=ak+bk*ps` (where ``ps`` is surface pressure) is used to derive the pressure value at a given level. The ``ak`` values define the contribution from the purely isobaric component of the hybrid vertical coordinate, and the ``bk`` values are the contribution from the sigma component. When ``ak`` and ``bk`` are both zero, it is the TOA (pressure is zero). When ``bk`` is 1 and ak is 0, it is a purely sigma vertical coordinate surface, which is the case near the surface (the first model level).
 
-The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
+The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program can output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 
-   cd /path/to/ufs-srweather-app/sorc/UFS_UTILS
-   ./build_all.sh
+   cd /path/to/ufs-srweather-app/exec
+   ./vcoord_gen > /path/to/vcoord_gen_outfile.txt
 
-.. attention::
+Users should modify the output file path to save the output file in the desired location. In the SRW App, the default file defining vertical levels is named ``global_hyblev.txt``, so by convention, a file with a different number of levels is named according to its number of levels (e.g., ``global_hyblev.L128.txt``). Configuration files are typically placed in the ``parm`` directory. For example, users might run:
 
-   The ``build_all.sh`` script is designed for use on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems will need to create and source modulefiles appropriate for their system and build directly with CMake. One of the current modulefiles from the ``ufs-srweather-app/sorc/UFS_UTILS/modulefiles`` directory can be used as a starting point for the new modulefile, and the code in ``build_all.sh`` can be adjusted to build with CMake using this new modulefile. 
+.. code-block:: console 
 
-From here, the user can edit and run the ``vcoord_gen`` run script to save the ``ak``/``bk`` levels directly to a file. 
+   cd /path/to/ufs-srweather-app/exec
+   ./vcoord_gen > /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
 
-.. code-block:: console
-
-   cd /path/to/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen
-
-By default, the ``run.sh`` script saves the ``ak``/``bk`` values in a file called ``global_hyblev.txt``. To change the name of this file, users must edit the output file name. For example:
+When ``vcoord_gen`` starts, it will print a message telling users to specify certain variables for ``ak``/``bk`` generation: 
 
 .. code-block:: console
 
-   outfile="./global_hyblev.L128.txt"
+    Enter levs,lupp,pbot,psig,ppre,pupp,ptop,dpbot,dpsig,dppre,dpupp,dptop
 
-At this point, users should also update the script variables (``levs``, ``lupp``, ``pbot``, ``psig``, ``ppre``, ``pupp``, ``ptop``, ``dpbot``, ``dpsig``, ``dppre``, ``dpupp``, ``dptop``) according to their use case. The current values in the run script are: 
+For an experiment using 128 vertical levels, users might then input: 
 
 .. code-block:: console
    
    128,88,100000.0,99500.0,7000.0,7000.0,0.0,240.0,1200.0,18000.0,550.0,1.0
    
-After modifying these values, run the script to generate the ``ak``/``bk`` output file:
-
-.. code-block:: console
-
-   ./run.sh
-
-The script will print the variables to the screen, save ``ak``/``bk`` to the output file location, and exit: 
-
-.. code-block:: console
-
-   + outfile=./global_hyblev.L128.txt
-   + levs=128
-   + lupp=88
-   + pbot=100000.0
-   + psig=99500.0
-   + ppre=7000.0
-   + pupp=7000.0
-   + ptop=0.0
-   + dpbot=240.0
-   + dpsig=1200.0
-   + dppre=18000.0
-   + dpupp=550.0
-   + dptop=1.0
-   + rm -f ./global_hyblev.L128.txt
-   + echo 128 88 100000.0 99500.0 7000.0 7000.0 0.0 240.0 1200.0 18000.0 550.0 1.0
-   + ../../exec/vcoord_gen
-    Enter levs,lupp,pbot,psig,ppre,pupp,ptop,dpbot,dpsig,dppre,dpupp,dptop
-    pmin=   50392.6447810470
-   + exit
-
-The user can find the output file in the current working directory (unless the ``outfile`` location was updated to save elsewhere). Based on the default values used above, the contents of the file should look like this:
+After hitting ``Enter``, the program will print a ``pmin`` value (e.g., ``pmin=   50392.6447810470``) and save the output file in the designated location. Based on the default values used above, the contents of the file should look like this:
 
 .. code-block:: console
 
@@ -453,8 +420,8 @@ To use the text file produced by ``vcoord_gen`` in the SRW App, users need to se
 .. code-block:: console
 
    task_make_ics:
-      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.L128.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
    task_make_lbcs:
-      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.L128.txt
+      VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
 
 Configure other variables as desired and generate the experiment as described in :numref:`Section %s <GenerateForecast>`.
