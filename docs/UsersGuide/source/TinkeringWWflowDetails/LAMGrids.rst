@@ -17,7 +17,7 @@ The SRW App v2.1.0 release includes four predefined limited area model (:term:`L
 * ``RRFS_CONUS_25km``
 * ``SUBCONUS_Ind_3km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the four supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suite: ``FV3_GFS_v16``. 
+These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the five supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suites: ``FV3_GFS_v16`` and ``FV3_RAP``. 
 
 .. _GridPhysicsCombos:
 
@@ -60,7 +60,7 @@ Predefined 3-km CONUS Grid
 
 The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` and ``FV3_RAP`` suites generally should *not* be used with the 3-km domain because the cumulus physics used in those physics suites is not configured to run at the 3-km resolution. 
 
-.. COMMENT: Check on the FV3_RAP part of that satement...
+.. COMMENT: Check on the FV3_RAP part of that statement...
 
 .. _RRFS_CONUS_3km:
 
@@ -99,7 +99,7 @@ Predefined 13-km Grid
 
 The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` or ``FV3_RAP`` physics suites. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
 
-.. COMMENT: Check on the FV3_RAP part of that satement...
+.. COMMENT: Check on the FV3_RAP part of that statement...
 
 
 Predefined 25-km Grid
@@ -227,7 +227,7 @@ Users will need to determine ``ak`` and ``bk`` values, which are used to define 
 
 The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Technical documentation for ``vcoord_gen`` is available `here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__, and scientific documentation is available `here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__, and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 

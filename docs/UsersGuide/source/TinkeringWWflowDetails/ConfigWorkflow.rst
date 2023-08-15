@@ -306,7 +306,7 @@ CCPP Parameter
    | ``"FV3_RRFS_v1beta"`` 
    | ``"FV3_HRRR"``
    | ``"FV3_WoFS_v0"``
-   | ``"FV3_RAP"`` (limited support)
+   | ``"FV3_RAP"``
 
    Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users can not expect full support for these schemes.
 
