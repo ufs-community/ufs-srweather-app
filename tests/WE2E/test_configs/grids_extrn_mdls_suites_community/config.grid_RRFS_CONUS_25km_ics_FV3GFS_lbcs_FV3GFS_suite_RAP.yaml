@@ -1,14 +1,14 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUS_25km grid using the GFS_2017_gfdlmp
+    completes successfully on the RRFS_CONUS_25km grid using the RAP
     physics suite with ICs and LBCs derived from the FV3GFS.
     This test additionally includes the cycling ensemble capability, with
     2 members run over 2 cycles.
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
+  CCPP_PHYS_SUITE: FV3_RAP
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019070112'
   DATE_LAST_CYCL: '2019070200'
