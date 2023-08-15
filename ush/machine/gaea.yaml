@@ -2,9 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 32
   SCHED: slurm
-  CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: windfall
   QUEUE_FCST: windfall

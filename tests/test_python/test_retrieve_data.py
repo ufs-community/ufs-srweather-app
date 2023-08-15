@@ -168,7 +168,7 @@ class FunctionalTesting(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.path) as tmp_dir:
             os.chdir(tmp_dir)
 
-            out_path_tmpl = os.path.join(tmp_dir, "mem{{mem:03d}}")
+            out_path_tmpl = os.path.join(tmp_dir, "mem{mem:03d}")
 
             # fmt: off
             args = [
