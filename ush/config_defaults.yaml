@@ -5,7 +5,6 @@ metadata:
   description: >-
     Default configuration for an experiment. The valid values for most of the
     parameters are specified in valid_param_vals.yaml
-  version: !!str '1.0'
 #----------------------------
 # USER config parameters
 #----------------------------
