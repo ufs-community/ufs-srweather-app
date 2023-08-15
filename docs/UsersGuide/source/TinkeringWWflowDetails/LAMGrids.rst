@@ -218,25 +218,25 @@ Changing the Number of Vertical Levels
 ========================================
 
 The four supported predefined grids included with the SRW App have 65 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
-knowledge of how the SRW App interfaces with the Weather Model and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
+knowledge of how the SRW App interfaces with the UFS Weather Model (:term:`WM <Weather Model>`) and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
 
 Find ``ak``/``bk``
 --------------------
 
 Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS WM uses a hybrid vertical coordinate system, which moves from purely sigma levels near the surface to purely isobaric levels near the top of the atmosphere (TOA). The equation :math:`pk=ak+bk*ps` (where ``ps`` is surface pressure) is used to derive the pressure value at a given level. The ``ak`` values define the contribution from the purely isobaric component of the hybrid vertical coordinate, and the ``bk`` values are the contribution from the sigma component. When ``ak`` and ``bk`` are both zero, it is the TOA (pressure is zero). When ``bk`` is 1 and ak is 0, it is a purely sigma vertical coordinate surface, which is the case near the surface (the first model level).
 
-The UFS_UTILS ``vcoord_gen`` tool can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
+The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program will output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__, and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/sorc/UFS_UTILS`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 
    cd /path/to/ufs-srweather-app/sorc/UFS_UTILS
    ./build_all.sh
 
-.. note::
+.. attention::
 
-   The ``build_all.sh`` script is designed for use on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems will need to create and source modulefiles appropriate for their system and build directly with CMake. One of the current modulefiles from the ``ufs-srweather-app/sorc/UFS_UTILS/modulefiles`` directory can be used as a starting point. 
+   The ``build_all.sh`` script is designed for use on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems will need to create and source modulefiles appropriate for their system and build directly with CMake. One of the current modulefiles from the ``ufs-srweather-app/sorc/UFS_UTILS/modulefiles`` directory can be used as a starting point for the new modulefile, and the code in ``build_all.sh`` can be adjusted to build with CMake using this new modulefile. 
 
 From here, the user can edit and run the ``vcoord_gen`` run script to save the ``ak``/``bk`` levels directly to a file. 
 
@@ -286,7 +286,7 @@ The script will print the variables to the screen, save ``ak``/``bk`` to the out
     pmin=   50392.6447810470
    + exit
 
-The user can find the output file in the current working directory. Based on the default values used above, the contents of the file should look like this:
+The user can find the output file in the current working directory (unless the ``outfile`` location was updated to save elsewhere). Based on the default values used above, the contents of the file should look like this:
 
 .. code-block:: console
 
@@ -424,24 +424,26 @@ The user can find the output file in the current working directory. Based on the
 Configure the SRW App
 -----------------------
 
+To use the new ``ak``/``bk`` file to define vertical levels in an experiment, users will need to modify the input namelist file (``input.nml.FV3``) and their configuration file (``config.yaml``). 
+
 Modify ``input.nml.FV3``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n-1`` and ``levp=n``. For example, a user who wants 128 vertical levels would set ``npz`` and ``levp`` as follows: 
+The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``levp`` and ``npz`` variables in this file. For ``n`` vertical levels, users should set ``levp=n`` and ``npz=n-1``. For example, a user who wants 128 vertical levels would set ``levp`` and ``npz`` as follows: 
 
 .. code-block:: console
    
-   &fv_core_nml
-      npz = 127
-
    &external_ic_nml
       levp = 128
+   
+   &fv_core_nml
+      npz = 127
 
 Additionally, check that ``external_eta = .true.``.
 
 .. note::
 
-   Keep in mind that levels and layers are not the same. For ``n`` vertical *layers*, set ``npz=n`` and ``levp=n+1``. 
+   Keep in mind that levels and layers are not the same. In UFS code, ``levp`` is the number of vertical *levels*, and ``npz`` is the number of vertical levels without TOA. Thus, ``npz`` is equivalent to the number of vertical *layers*. For ``v`` vertical *layers*, set ``npz=v`` and ``levp=v+1``. Use the value of ``levp`` as the number of vertical levels when generating ``ak``/``bk``. 
 
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -455,3 +457,4 @@ To use the text file produced by ``vcoord_gen`` in the SRW App, users need to se
    task_make_lbcs:
       VCOORD_FILE: /Users/Jane.Smith/ufs-srweather-app/sorc/UFS_UTILS/util/vcoord_gen/global_hyblev.L128.txt
 
+Configure other variables as desired and generate the experiment as described in :numref:`Section %s <GenerateForecast>`.
