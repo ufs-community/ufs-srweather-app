@@ -234,6 +234,10 @@ Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs
    cd /path/to/ufs-srweather-app/sorc/UFS_UTILS
    ./build_all.sh
 
+.. note::
+
+   The ``build_all.sh`` script is designed for use on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users on other systems will need to create and source modulefiles appropriate for their system and build directly with CMake. One of the current modulefiles from the ``ufs-srweather-app/sorc/UFS_UTILS/modulefiles`` directory can be used as a starting point. 
+
 From here, the user can edit and run the ``vcoord_gen`` run script to save the ``ak``/``bk`` levels directly to a file. 
 
 .. code-block:: console
@@ -423,21 +427,21 @@ Configure the SRW App
 Modify ``input.nml.FV3``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n`` and ``levp=n+1``. For example, a user who wants 128 vertical levels would set ``npz`` and ``levp`` as follows: 
+The FV3 namelist file, ``input.nml.FV3``, is located in ``ufs-srweather-app/parm``. Users will need to update the ``npz`` and ``levp`` variables in this file. For ``n`` vertical levels, users should set ``npz=n-1`` and ``levp=n``. For example, a user who wants 128 vertical levels would set ``npz`` and ``levp`` as follows: 
 
 .. code-block:: console
    
    &fv_core_nml
-      npz = 128
+      npz = 127
 
    &external_ic_nml
-      levp = 129
+      levp = 128
 
 Additionally, check that ``external_eta = .true.``.
 
 .. note::
 
-   Keep in mind that levels and layers are not the same. For ``n`` vertical *layers*, set ``npz=n-1`` and ``levp=n``. 
+   Keep in mind that levels and layers are not the same. For ``n`` vertical *layers*, set ``npz=n`` and ``levp=n+1``. 
 
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
