@@ -173,6 +173,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
+mkdir -p ${EXTRN_MDL_STAGING_DIR}${mem_dir}
+
 if [ $RUN_ENVIR = "nco" ]; then
     EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
