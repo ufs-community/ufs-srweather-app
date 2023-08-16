@@ -32,8 +32,8 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   DT_ATMOS: 60
-  LAYOUT_X: 8
-  LAYOUT_Y: 8
+  LAYOUT_X: 6
+  LAYOUT_Y: 6
   BLOCKSIZE: 32
   QUILTING: true
   WRTCMP_write_groups: 1

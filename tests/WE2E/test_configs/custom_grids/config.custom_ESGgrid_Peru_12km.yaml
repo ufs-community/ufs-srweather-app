@@ -17,8 +17,8 @@ task_make_grid:
   ESGgrid_LAT_CTR: -12.5
   ESGgrid_DELX: 12000.0
   ESGgrid_DELY: 12000.0
-  ESGgrid_NX: 235
-  ESGgrid_NY: 235
+  ESGgrid_NX: 240
+  ESGgrid_NY: 240
   ESGgrid_WIDE_HALO_WIDTH: 6
   ESGgrid_PAZI: 0.0
 task_get_extrn_ics:
@@ -41,12 +41,12 @@ task_run_fcst:
   WRTCMP_output_grid: lambert_conformal
   WRTCMP_cen_lon: '{{ task_make_grid.ESGgrid_LON_CTR }}'
   WRTCMP_cen_lat: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_lon_lwr_left: -88.0
-  WRTCMP_lat_lwr_left: -24.5
+  WRTCMP_lon_lwr_left: -88.1
+  WRTCMP_lat_lwr_left: -24.6
   WRTCMP_stdlat1: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
   WRTCMP_stdlat2: '{{ task_make_grid.ESGgrid_LAT_CTR }}'
-  WRTCMP_nx: 230
-  WRTCMP_ny: 230
+  WRTCMP_nx: 235
+  WRTCMP_ny: 235
   WRTCMP_dx: '{{ task_make_grid.ESGgrid_DELX }}'
   WRTCMP_dy: '{{ task_make_grid.ESGgrid_DELY }}'
 task_run_post:
