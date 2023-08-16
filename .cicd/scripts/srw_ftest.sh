@@ -19,7 +19,7 @@
 [[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
 [[ -n ${BRANCH} ]] || BRANCH="develop"
 [[ -n ${TASKS} ]] || TASKS=""
-[[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=4
+[[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=9
 [[ -n ${FORGIVE_CONDA} ]] || FORGIVE_CONDA=true
 set -e -u -x
 
@@ -63,6 +63,9 @@ echo "EXPTDIR=${EXPTDIR}"
 sed "s|^workflow:|workflow:\n  EXPT_BASEDIR: ${workspace}/expt_dirs|1" -i ush/config.yaml
 sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec|1" -i ush/config.yaml
 
+# Decrease forecast length since we are running all the steps
+sed "s|^  FCST_LEN_HRS: 12|  FCST_LEN_HRS: 6|g" -i ush/config.yaml
+
 # DATA_LOCATION differs on each platform ... find it.
 export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM,,}.yaml | awk '{printf "%s", $2}')
 echo "DATA_LOCATION=${DATA_LOCATION}"
@@ -103,10 +106,8 @@ cp ${workspace}/ush/wrappers/* .
 # Set parameters that the task scripts require ...
 export JOBSdir=${workspace}/jobs
 export USHdir=${workspace}/ush
-export PDY=20190615
-export cyc=18
-export subcyc=0
 export OMP_NUM_THREADS=1
+export nprocs=24
 
 [[ -n ${TASKS} ]] || TASKS=(
                 run_make_grid
