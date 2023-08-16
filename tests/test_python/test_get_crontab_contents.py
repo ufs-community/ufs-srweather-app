@@ -2,7 +2,7 @@
 
 import unittest
 
-from python_utils import define_macos_utilities, set_env_var
+from python_utils import define_macos_utilities
 from get_crontab_contents import get_crontab_contents
 
 class Testing(unittest.TestCase):
