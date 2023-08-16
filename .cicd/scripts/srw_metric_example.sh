@@ -46,7 +46,7 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate regional_workflow
+conda activate workflow_tools
 set -e -u
 
 # build srw
@@ -61,8 +61,6 @@ cd ${workspace}/tests/WE2E
 cd ${workspace}
 
 # run skill-score check
-# first load MET env variables
-source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 [[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
@@ -71,7 +69,10 @@ source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 # In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
 # temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
 cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
-${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
+# load met and metplus
+module use modulefiles/tasks/${platform,,}
+module load run_vx.local 
+stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
 # check skill-score.out
 cat skill-score.out
