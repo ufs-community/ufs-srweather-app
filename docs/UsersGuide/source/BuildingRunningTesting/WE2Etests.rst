@@ -26,6 +26,9 @@ The list of fundamental and comprehensive tests can be viewed in the ``ufs-srwea
 
 For convenience, the WE2E tests are currently grouped into the following categories (under ``ufs-srweather-app/tests/WE2E/test_configs/``):
 
+* ``custom_grids``
+   This category tests custom grids aside from those specified in ``ufs-srweather-app/ush/predef_grid_params.yaml``. These tests help ensure a wide range of domain sizes, resolutions, and locations will work as expected. These test files can also serve as examples for how to set your own custom domain.
+
 * ``default_configs``
    This category tests example config files provided for user reference. They are symbolically linked from the ``ufs-srweather-app/ush/`` directory.
 
@@ -72,7 +75,8 @@ The test script has three required arguments: machine, account, and tests.
    * Users must specify the set of tests to run using the ``--tests`` or ``-t`` option. Users may pass (in order of priority): 
 
       #. The name of a single test or list of tests to the test script. 
-      #. A test suite name (e.g., "fundamental", "comprehensive", "coverage", or "all"). 
+      #. A test suite name (e.g., "fundamental", "comprehensive", "coverage", or "all").
+      #. The name of a subdirectory under ``ufs-srweather-app/tests/WE2E/test_configs/`` 
       #. The name of a text file (full or relative path), such as ``my_tests.txt``, which contains a list of the WE2E tests to run (one per line). 
 
 Users may run ``./run_WE2E_tests.py -h`` for additional (optional) usage instructions. 
@@ -107,7 +111,7 @@ To run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS
 
 By default, the experiment directory for a WE2E test has the same name as the test itself, and it is created in ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ``ufs-srweather-app`` repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the ``custom_ESGgrid`` experiment directory would be located in ``${HOMEdir}/../expt_dirs/custom_ESGgrid``.
 
-**A More Complex Example:** To run the fundamental suite of tests on Orion in parallel, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``, run:
+**A More Complex Example:** To run the fiundamental suite of tests on Orion in parallel, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``, run:
 
    .. code-block::
 
@@ -247,7 +251,7 @@ One might have noticed the line during the experiment run that reads "Use ctrl-c
 Checking Test Status and Summary
 =================================
 By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to console when jobs are complete (either successfully or with a failure), and printing a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
-However, if the user is using the legacy crontab option (by submitting ``./run_WE2E_tests.py`` with the ``--use_cron_to_relaunch`` flag), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
+However, if the user is using the legacy crontab option (by submitting ``./run_WE2E_tests.py`` with the ``--launch cron`` option), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
 In this example, an experiment was generated using the crontab option and has not yet finished running.
 We use the ``-e`` option to point to the experiment directory and get the current status of the experiment:
 
@@ -289,6 +293,35 @@ We use the ``-e`` option to point to the experiment directory and get the curren
     Detailed summary written to WE2E_summary_20230306173013.txt
 
 As with all python scripts in the SRW App, additional options for this script can be viewed by calling with the ``-h`` argument.
+
+The "Status" as specified by the above summary is explained below:
+
+* ``CREATED``
+   The experiment directory has been created, but the monitor script has not yet begun submitting jobs. This is immediately overwritten at the beginning of the "monitor_jobs" function, so this status should not be seen unless the experiment has not yet been started.
+
+* ``SUBMITTING``
+   All jobs are in status SUBMITTING or SUCCEEDED (as reported by the Rocoto workflow manager). This is a normal state; we will continue to monitor this experiment.
+
+* ``DYING``
+   One or more tasks have died (status "DEAD"), so this experiment has had an error. We will continue to monitor this experiment until all tasks are either status DEAD or status SUCCEEDED (see next entry).
+
+* ``DEAD``
+   One or more tasks are at status DEAD, and the rest are either DEAD or SUCCEEDED. We will no longer monitor this experiment.
+
+* ``ERROR``
+   Could not read the rocoto database file. This will require manual intervention to solve, so we will no longer monitor this experiment.
+
+* ``RUNNING``
+   One or more jobs are at status RUNNING, and the rest are either status QUEUED, SUBMITTED, or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
+
+* ``QUEUED``
+   One or more jobs are at status QUEUED, and some others may be at status SUBMITTED or SUCCEEDED. This is a normal state; we will continue to monitor this experiment.
+
+* ``SUCCEEDED``
+   All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are unsubmitted jobs remaining.
+
+* ``COMPLETE``
+   All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
 
 
 .. _WE2ETestInfoFile:
