@@ -111,7 +111,7 @@ To run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS
 
 By default, the experiment directory for a WE2E test has the same name as the test itself, and it is created in ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ``ufs-srweather-app`` repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the ``custom_ESGgrid`` experiment directory would be located in ``${HOMEdir}/../expt_dirs/custom_ESGgrid``.
 
-**A More Complex Example:** To run the fiundamental suite of tests on Orion in parallel, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``, run:
+**A More Complex Example:** To run the fundamental suite of tests on Orion in parallel, charging computational resources to the "gsd-fv3" account, and placing all the experiment directories into a directory named ``test_set_01``, run:
 
    .. code-block::
 
@@ -235,14 +235,13 @@ The progress of ``monitor_jobs()`` is tracked in a file ``WE2E_tests_{datetime}.
    Total                                     COMPLETE                         15.52
 
 
-One might have noticed the line during the experiment run that reads "Use ctrl-c to pause job submission/monitoring". The ``monitor_jobs()`` function (called automatically after all experiments are generated) is designed to be easily paused and re-started if necessary. To stop actively submitting jobs, simply quit the script using "ctrl-c" to stop the function, and a short message will appear explaining how to continue the experiment:
+One might have noticed the line during the experiment run that reads "Use ctrl-c to pause job submission/monitoring". The ``monitor_jobs()`` function (called automatically after all experiments are generated) is designed to be easily paused and re-started if necessary. To stop actively submitting jobs, simply quit the script using ``ctrl-c`` to stop the function, and a short message will appear explaining how to continue the experiment:
 
 .. code-block:: console
 
    Setup complete; monitoring 1 experiments
    Use ctrl-c to pause job submission/monitoring
    ^C
-
 
    User interrupted monitor script; to resume monitoring jobs run:
 
