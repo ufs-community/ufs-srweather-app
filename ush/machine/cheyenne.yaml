@@ -2,9 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 36
   SCHED: pbspro
-  CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular

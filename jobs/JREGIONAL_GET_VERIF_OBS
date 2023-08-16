@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
 #
-# This script pulls NDAS observation data for comparison to the model.
+# This script checks, pulls, and stages observation data for model verification.
 #
 #-----------------------------------------------------------------------
 #
@@ -51,8 +51,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that pulls NDAS observation data
-for verification purposes.
+This is the J-job script for the task that checks, pulls, and stages
+observation data for verification purposes.
 ========================================================================"
 
 #
@@ -64,7 +64,7 @@ for verification purposes.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_get_obs_ndas.sh || \
+$SCRIPTSdir/exregional_get_verif_obs.sh || \
 print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #

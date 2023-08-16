@@ -20,9 +20,6 @@ rocoto:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: NAM
   USE_USER_STAGED_EXTRN_FILES: true
