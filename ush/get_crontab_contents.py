@@ -141,13 +141,15 @@ def delete_crontab_line(called_from_cron, machine, crontab_line, debug):
         =========================================================
           {crontab_contents}
         =========================================================""",
-        verbose=True,
+        verbose=debug,
     )
 
-    if crontab_line + "\n" in crontab_contents:
+    if crontab_line in crontab_contents:
+        #Try removing with a newline first, then fall back to without newline
         crontab_contents = crontab_contents.replace(crontab_line + "\n", "")
-    else:
         crontab_contents = crontab_contents.replace(crontab_line, "")
+    else:
+        print(f"\nWARNING: line not found in crontab, nothing to remove:\n {crontab_line}\n")
 
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
 
@@ -157,7 +159,7 @@ def delete_crontab_line(called_from_cron, machine, crontab_line, debug):
         =========================================================
           {crontab_contents}
         =========================================================""",
-        verbose=True,
+        verbose=debug,
     )
 
 
@@ -205,7 +207,7 @@ def parse_args(argv):
     # Check that inputs are correct and consistent
     args = parser.parse_args(argv)
 
-    if args.delete:
+    if args.remove:
         if args.line is None:
             raise argparse.ArgumentTypeError("--line is a required argument if --remove is specified")
 
@@ -214,7 +216,7 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    if args.delete:
+    if args.remove:
         delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
     else:
         _,out = get_crontab_contents(args.called_from_cron,args.machine,args.debug)
