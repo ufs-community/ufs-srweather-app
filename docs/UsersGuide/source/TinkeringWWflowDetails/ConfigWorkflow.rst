@@ -3,14 +3,14 @@
 ================================================================================================
 Workflow Parameters: Configuring the Workflow in ``config.yaml`` and ``config_defaults.yaml``		
 ================================================================================================
-To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file (usually named ``config.yaml``). This file contains experiment-specific information, such as forecast dates, grid and physics suite choices, data directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``ush`` directory: ``config.community.yaml`` and ``config.nco.yaml``. The first is for running experiments in *community* mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in *nco* mode (``RUN_ENVIR`` set to "nco"). The content of these files can be copied into ``config.yaml`` and used as the starting point from which to generate a variety of experiment configurations for the SRW App. Note that for this release, only *community* mode is supported. 
+To create the experiment directory and workflow when running the SRW Application, the user must create an experiment configuration file (named ``config.yaml`` by default). This file contains experiment-specific information, such as forecast dates, grid and physics suite choices, data directories, and other relevant settings. To help the user, two sample configuration files have been included in the ``ush`` directory: ``config.community.yaml`` and ``config.nco.yaml``. The first is for running experiments in *community* mode (``RUN_ENVIR`` set to "community"), and the second is for running experiments in *nco* mode (``RUN_ENVIR`` set to "nco"). The content of these files can be copied into ``config.yaml`` and used as the starting point from which to generate a variety of experiment configurations for the SRW App. Note that for public releases, only *community* mode is supported. 
 
 There is an extensive list of experiment parameters that a user can set when configuring the experiment. Not all of these parameters need to be set explicitly by the user in ``config.yaml``. If a user does not define a variable in the ``config.yaml`` script, its value in ``config_defaults.yaml`` will be used, or the value will be reset depending on other parameters, such as the platform (``MACHINE``) selected for the experiment. 
 
 .. note::
-   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception in the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
+   The ``config_defaults.yaml`` file contains the full list of experiment parameters that a user may set in ``config.yaml``. The user cannot set parameters in ``config.yaml`` that are not initialized in ``config_defaults.yaml``, with the notable exception of the ``rocoto`` section, described in :numref:`Chapter %s <DefineWorkflow>`.
 
-The following is a list of the parameters in the ``config_defaults.yaml`` file. For each parameter, the default value and a brief description is provided. 
+The following is a list of the parameters in the ``config_defaults.yaml`` file. For each parameter, the default value and a brief description are provided. 
 
 .. _user:
 
@@ -27,19 +27,56 @@ If non-default parameters are selected for the variables in this section, they s
    | January 19, 2022
    | Version 11.0.0
    
-   Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not planning to implement their code into operations at NCO. Valid values: ``"nco"`` | ``"community"``
+   Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParellelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"``
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
-      Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``; to combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
+      Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
 
-``MACHINE_FILE``: (Default: "")
-   Path to a configuration file with machine-specific settings. If none is provided, ``setup.py`` will attempt to set the path to a configuration file for a supported platform.
-
-``ACCOUNT``: (Default: "project_name")
+``ACCOUNT``: (Default: "")
    The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
+
+``HOMEdir``: '{{ user.HOMEdir }}'
+   The path to the user's ``ufs-srweather-app`` directory. 
+
+``USHdir``: '{{ user.USHdir }}'
+   The path to the user's ``ufs-srweather-app/ush`` directory.
+
+``SCRIPTSdir``: '{{ [HOMEdir, "scripts"]|path_join }}'
+   The path to the user's ``ufs-srweather-app/scripts`` directory.
+
+``JOBSdir``: '{{ [HOMEdir, "jobs"]|path_join }}'
+   The path to the user's ``ufs-srweather-app/jobs`` directory.
+
+``SORCdir``: '{{ [HOMEdir, "sorc"]|path_join }}'
+   The path to the user's ``ufs-srweather-app/sorc`` directory.
+
+``PARMdir``: '{{ [HOMEdir, "parm"]|path_join }}'
+   The path to the user's ``ufs-srweather-app/parm`` directory.
+
+``MODULESdir``: '{{ [HOMEdir, "modulefiles"]|path_join }}'
+   The path to the user's ``ufs-srweather-app/modulefiles`` directory.
+
+``EXECdir``: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
+   The path to the user's ``ufs-srweather-app/exec`` directory.
+
+``VX_CONFIG_DIR``: '{{ [HOMEdir, "parm"]|path_join }}'
+   The path to the user's verification (VX) configuration directory. By default, configuration files for VX reside in ``ufs-srweather-app/parm``.
+
+``METPLUS_CONF``: '{{ [PARMdir, "metplus"]|path_join }}'
+   The path to the user's METplus configuration directory. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``.
+
+``MET_CONFIG``: '{{ [PARMdir, "met"]|path_join }}'
+   The path to the user's verification MET configuration directory. By default, MET configuration files reside in ``ufs-srweather-app/parm/met``.
+
+``UFS_WTHR_MDL_DIR``: '{{ userUFS_WTHR_MDL_DIR }}'
+
+``ARL_NEXUS_DIR``: '{{ [SORCdir, "arl_nexus"]|path_join }}'
+   The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/parm``.
+
+.. COMMENT: Add DIR documentation to config_defaults.yaml! 
 
 .. _PlatformConfig:
 
@@ -54,44 +91,34 @@ If non-default parameters are selected for the variables in this section, they s
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
-``BUILD_MOD_FN``: (Default: "")
-   Name of an alternative build module file to use if running on an unsupported platform. It is set automatically for supported machines.
+``TASKTHROTTLE``: (Default: 1000)
+  The number of active tasks run simultaneously. For Linux/MacOS, it makes sense to set this to 1. 
 
-``WFLOW_MOD_FN``: (Default: "")
-   Name of an alternative workflow module file to use if running on an unsupported platform. It is set automatically for supported machines.
+   .. COMMENT: Why does setting to 1 make sense? 
 
-``BUILD_VER_FN``: (Default: "")
-   File name containing the version of the modules used for building the app. Currently, WCOSS2 only uses this file.
+``BUILD_MOD_FN``: (Default: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}')
+   Name of an alternative build modulefile to use if running on an unsupported platform. It is set automatically for supported machines.
 
-``RUN_VER_FN``: (Default: "")
-   File name containing the version of the modules used for running the app. Currently, WCOSS2 only uses this file.
+``WFLOW_MOD_FN``: (Default: 'wflow_{{ user.MACHINE|lower() }}')
+   Name of an alternative workflow modulefile to use if running on an unsupported platform. It is set automatically for supported machines.
+
+``BUILD_VER_FN``: (Default: 'build.ver.{{ user.MACHINE|lower() }}')
+   File name containing the version of the modules used for building the App. Currently, only WCOSS2 uses this file.
+
+``RUN_VER_FN``: (Default: 'run.ver.{{ user.MACHINE|lower() }}')
+   File name containing the version of the modules used for running the App. Currently, only WCOSS2 uses this file.
 
 .. _sched:
 
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
-``SCHED_NATIVE_CMD``: (Default: "")
-   Allows an extra parameter to be passed to the job scheduler (Slurm or PBSPRO) via XML Native command. 
-
-``DOMAIN_PREGEN_BASEDIR``: (Default: "")
-   For use in NCO mode only (``RUN_ENVIR: "nco"``). The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
-
-   .. code-block:: console 
-
-      ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
-
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file set by ``EXPT_CONFIG_FN`` (usually ``config.yaml``).
-
-``PRE_TASK_CMDS``: (Default: "")
-   Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
-
 Machine-Dependent Parameters
 -------------------------------
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
-   This variable is only used with the Slurm job scheduler (i.e., when ``SCHED: "slurm"``). This is the default partition to which Slurm submits workflow tasks. When a variable that designates the partition (e.g., ``PARTITION_HPSS``, ``PARTITION_FCST``; see below) is **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet"`` | ``"vjet"`` | ``"kjet"`` | ``"xjet"`` | ``"workq"``
+   This variable is only used with the Slurm job scheduler (i.e., when ``SCHED: "slurm"``). This is the default partition to which Slurm submits workflow tasks. If the task's ``PARTITION_HPSS`` or ``PARTITION_FCST`` (see below) parameters are **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet"`` | ``"vjet"`` | ``"kjet"`` | ``"xjet"`` | ``"workq"``
 
 ``QUEUE_DEFAULT``: (Default: "")
    The default queue or QOS to which workflow tasks are submitted (QOS is Slurm's term for queue; it stands for "Quality of Service"). If the task's ``QUEUE_HPSS`` or ``QUEUE_FCST`` parameters (see below) are not specified, the task will be submitted to the queue indicated by this variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"batch"`` | ``"dev"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
@@ -108,19 +135,36 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 ``QUEUE_FCST``: (Default: "")
    The task that runs a forecast is submitted to this queue, or QOS (QOS is Slurm's term for queue; it stands for "Quality of Service"). If this variable is not set or set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"batch"`` | ``"dev"`` | ``"normal"`` | ``"regular"`` | ``"workq"``
 
+``REMOVE_MEMORY``: (Default: False)
+  Boolean flag that determines whether to remove the memory flag for the Rocoto XML. Some platforms are not configured to accept the memory flag, so it must not be included in the XML. Valid values: ``True`` | ``False``
+
 Parameters for Running Without a Workflow Manager
 -----------------------------------------------------
-These settings define the run commands for the platform.
+These settings define the run commands for the platform. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
 
-``RUN_CMD_UTILS``: (Default: "mpirun -np 1")
-   The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a different command for launching an MPI-enabled executable depending on their machine and MPI installation.
+``RUN_CMD_UTILS``: (Default: "")
+   The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
-``RUN_CMD_FCST``: (Default: "mpirun -np ${PE_MEMBER01}")
-   The run command for the model forecast step. This will be appended to the end of the variable definitions file (``var_defns.sh``). Changing the ``${PE_MEMBER01}`` variable is **not** recommended; it refers to the number of MPI tasks that the Weather Model will expect to run with. Running the Weather Model with a different number of MPI tasks than the workflow has been set up for can lead to segmentation faults and other errors. 
+``RUN_CMD_FCST``: (Default: "")
+   The run command for the model forecast step. 
 
-``RUN_CMD_POST``: (Default: "mpirun -np 1")
+``RUN_CMD_POST``: (Default: "")
    The run command for post-processing (via the :term:`UPP`). Can be left blank for smaller domains, in which case UPP will run without :term:`MPI`.
 
+``RUN_CMD_PRDGEN``: (Default: "")
+  The run command for the product generation job.
+
+``RUN_CMD_SERIAL``: (Default: "")
+  The run command for some serial jobs.
+
+``RUN_CMD_AQM``: (Default: "")
+  The run command for some AQM tasks.
+
+``RUN_CMD_AQMLBC``: (Default: "")
+  The run command for the ``aqm_lbcs`` task.
+
+``SCHED_NATIVE_CMD``: (Default: "")
+   Allows an extra parameter to be passed to the job scheduler (Slurm or PBSPRO) via XML Native command. 
 
 METplus Parameters
 ----------------------
@@ -141,7 +185,7 @@ METplus Parameters
 ``CCPA_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``). 
 
-   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. In NCO mode, this path must be defined as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
+   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
 
    .. note::
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory) for dates up until 2021-05-04. The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to account for this and organize the data into a more intuitive format.
@@ -149,13 +193,15 @@ METplus Parameters
 ``NOHRSC_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where NOHRSC 06- and 24-hour snowfall accumulation files (available every 6 and 12 hours respectively) used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_nohrsc`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
-   METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. In NCO mode, this path must be defined as ``/<full-path-to-obs>/nohrsc/proc``. METplus is configured to verify 06-, and 24-h accumulated precipitation using NOHRSC files.
+   METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. 
+   
+   When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. METplus is configured to verify 6-h and 24-h accumulated precipitation using NOHRSC files.
 
    .. note::
-      Due to limited availability of NOHRSC observation data on NOAA HPSS, and the likelihood that snowfall acumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable VX_FIELDS should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
+      Due to limited availability of NOHRSC observation data on NOAA HPSS and the likelihood that snowfall acumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, in NCO mode, this path must be defined as ``/<full-path-to-obs>/mrms/proc``. 
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. 
 
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
@@ -163,17 +209,37 @@ METplus Parameters
    METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified, which is why the minutes and seconds of the filename are hard-coded as "0000". Because MRMS composite reflectivity files do not typically match the valid time exactly, a script (``ush/mrms_pull_topofhour.py``) is called from within the MRMS task that identifies and renames the MRMS file nearest to the valid time to match the valid time of the forecast. This script can also be called separately for staging data independently of the workflow.
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, in NCO mode, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
+   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
 
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
+
+Other 
+-------------------
+
+.. COMMENT: Need better section title!
+
+``DOMAIN_PREGEN_BASEDIR``: (Default: "")
+   For use in NCO mode only (``RUN_ENVIR: "nco"``). The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
+
+   .. code-block:: console 
+
+      ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
+
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file (i.e.,  ``config.yaml``) set by ``EXPT_CONFIG_FN``.
+
+``PRE_TASK_CMDS``: (Default: "")
+   Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
 Test Directories
 ----------------------
 
-These directories are used only by the ``run_WE2E_tests.py`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test (see :numref:`Chapter %s <WE2E_tests>`). Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.py`` script would need to be adjusted accordingly.
+These directories are used only by the ``run_WE2E_tests.py`` script, so they are not used unless the user runs a Workflow End-to-End (WE2E) test (see :numref:`Section %s <WE2E_tests>`). Their function corresponds to the same variables without the ``TEST_`` prefix. Users typically should not modify these variables. For any alterations, the logic in the ``run_WE2E_tests.py`` script would need to be adjusted accordingly.
 
 ``TEST_EXTRN_MDL_SOURCE_BASEDIR``: (Default: "")
    This parameter allows testing of user-staged files in a known location on a given platform. This path contains a limited dataset and likely will not be useful for most user experiments. 
+
+``TEST_AQM_INPUT_BASEDIR``: (Default: "")
+   .. COMMENT: Add definition! 
 
 ``TEST_PREGEN_BASEDIR``: (Default: "")
    Similar to ``DOMAIN_PREGEN_BASEDIR``, this variable sets the base directory containing pregenerated grid, orography, and surface climatology files for WE2E tests. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. 
@@ -184,6 +250,8 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
    This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`LBCS`.
 
+``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
+   .. COMMENT: Add definition! 
 
 .. _workflow:
 
@@ -306,7 +374,7 @@ CCPP Parameter
    | ``"FV3_RRFS_v1beta"`` 
    | ``"FV3_HRRR"``
    | ``"FV3_WoFS_v0"``
-   | ``"FV3_RAP"`` (limited support)
+   | ``"FV3_RAP"``
 
    Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users can not expect full support for these schemes.
 

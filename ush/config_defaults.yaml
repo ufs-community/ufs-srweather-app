@@ -77,10 +77,10 @@ platform:
   #-----------------------------------------------------------------------
   #
   # WORKFLOW_MANAGER:
-  # The workflow manager to use (e.g. rocoto). This is set to "none" by
+  # The workflow manager to use (e.g., rocoto). This is set to "none" by
   # default, but if the machine name is set to a platform that supports
-  # rocoto, this will be overwritten and set to "rocoto". If set
-  # explicitly to rocoto along with the use of the MACHINE=linux target,
+  # Rocoto, this will be overwritten and set to "rocoto". If set
+  # explicitly to "rocoto" along with the use of the MACHINE: "linux" target,
   # the configuration layer assumes a Slurm batch manager when generating
   # the XML. Valid options: "rocoto" or "none"
   #
@@ -93,23 +93,23 @@ platform:
   # to 1 makes sense
   #
   # BUILD_MOD_FN:
-  # Name of alternative build module file to use if using an
+  # Name of an alternative build modulefile to use if using an
   # unsupported platform. Is set automatically for supported machines.
   #
   # WFLOW_MOD_FN:
-  # Name of alternative workflow module file to use if using an
+  # Name of alternative workflow modulefile to use if using an
   # unsupported platform. Is set automatically for supported machines.
   #
   # BUILD_VER_FN:
-  # File name containing the version of the modules used for building the app.
-  # Currently, WCOSS2 only uses this file.
+  # File name containing the version of the modules used for building the App.
+  # Currently, only WCOSS2 uses this file.
   #
   # RUN_VER_FN:
-  # File name containing the version of the modules used for running the app.
-  # Currently, WCOSS2 only uses this file.
+  # File name containing the version of the modules used for running the App.
+  # Currently, only WCOSS2 uses this file.
   #
   # SCHED:
-  # The job scheduler to use (e.g. slurm).  Set this to an empty string in
+  # The job scheduler to use (e.g., Slurm). Set this to an empty string in
   # order for the experiment generation script to set it depending on the
   # machine.
   #
@@ -134,28 +134,28 @@ platform:
   #
   # PARTITION_HPSS:
   # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
-  # the partition to which the tasks that get or create links to external 
+  # Tasks that get or create links to external 
   # model files [which are needed to generate initial conditions (ICs) and 
-  # lateral boundary conditions (LBCs)] are submitted.  If this is not set 
+  # lateral boundary conditions (LBCs)] are submitted to this partition.  If this is not set 
   # or is set to an empty string, it will be (re)set to a machine-dependent 
   # value.  This is not used if SCHED is not set to "slurm".
   #
   # QUEUE_HPSS:
-  # The queue or QOS to which the tasks that get or create links to external 
+  # Tasks that get or create links to external 
   # model files [which are needed to generate initial conditions (ICs) and 
-  # lateral boundary conditions (LBCs)] are submitted.  If this is not set 
+  # lateral boundary conditions (LBCs)] are submitted to this queue or QOS.  If this is not set 
   # or is set to an empty string, it will be (re)set to a machine-dependent 
   # value.
   #
   # PARTITION_FCST:
   # If using the slurm job scheduler (i.e. if SCHED is set to "slurm"), 
-  # the partition to which the task that runs forecasts is submitted.  If 
+  # The task that runs forecasts is submitted to this partition.  If 
   # this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.  This is not used if SCHED is not set to 
   # "slurm".
   #
   # QUEUE_FCST:
-  # The queue or QOS to which the task that runs a forecast is submitted.  
+  # The task that runs a forecast is submitted to this queue or QOS.  
   # If this is not set or set to an empty string, it will be (re)set to a 
   # machine-dependent value.
   #
@@ -187,7 +187,7 @@ platform:
   # will be ignored unless WORKFLOW_MANAGER: "none".  Definitions:
   #
   # RUN_CMD_UTILS:
-  # The run command for pre-processing utilities (shave, orog, sfc_climo_gen, 
+  # The run command for MPI-enabled pre-processing utilities (shave, orog, sfc_climo_gen, 
   # etc.) Can be left blank for smaller domains, in which case the executables 
   # will run without MPI.
   #
@@ -239,12 +239,8 @@ platform:
   # needs to be set for both user-provided observations and for
   # observations that are retrieved from the NOAA HPSS (if the user has
   # access) via the get_obs_ccpa task (activated in workflow by
-  # including the parm/wflow/verify.yaml task set in the wflow config).
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/ccpa/proc. METplus is
-  # configured to verify 01-, 03-, 06-, and 24-h accumulated
-  # precipitation using hourly CCPA files.
+  # including the parm/wflow/verify_pre.yaml task set in the wflow config).
+  # 
   # METplus configuration files require the use of predetermined
   # directory structure and file names. Therefore, if the CCPA files are
   # user provided, they need to follow the anticipated naming structure:
@@ -253,14 +249,20 @@ platform:
   #
   # where YYYY is the 4-digit valid year, MM the 2-digit valid month, DD
   # the 2-digit valid day of the month, and HH the 2-digit valid hour of
-  # the day. In addition, a caveat is noted for using hourly CCPA data.
+  # the day. 
+  # When pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. METplus is
+  # configured to verify 01-, 03-, 06-, and 24-h accumulated
+  # precipitation using hourly CCPA files.
+  #
+  # In addition, a caveat is noted for using hourly CCPA data.
   # There is a problem with the valid time in the metadata for files
   # valid from 19 - 00 UTC (or files under the '00' directory). The
   # script to pull the CCPA data from the NOAA HPSS has an example of
   # how to account for this as well as organizing the data into a more
-  # intuitive format: scripts/exregional_get_ccpa_files.sh. When a fix
+  # intuitive format: scripts/exregional_get_verif_obs.sh. When a fix
   # is provided, it will be accounted for in the
-  # exregional_get_ccpa_files.sh script.
+  # exregional_get_verif_obs.sh script.
   #
   # NOHRSC_OBS_DIR:
   # User-specified location of top-level directory where NOHRSC 6- and 24-h hour
@@ -268,10 +270,9 @@ platform:
   # needs to be set for both user-provided observations and for
   # observations that are retrieved from the NOAA HPSS (if the user has
   # access) via the get_obs_nohrsc task (activated in workflow by
-  # including the parm/wflow/verify_pre.yaml task set in the wflow config).
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/nohrsc/proc. METplus is
+  # including the parm/wflow/verify_pre.yaml task group in the wflow config).
+  # When pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. METplus is
   # configured to verify 06- and 24-h accumulated snowfall
   # precipitation using 6- and 12-hourly NOHRSC files, respectively.
   # METplus configuration files require the use of predetermined
@@ -290,10 +291,9 @@ platform:
   # needs to be set for both user-provided observations and for
   # observations that are retrieved from the NOAA HPSS (if the user has
   # access) via the get_obs_mrms task (activated in workflow by
-  # including the parm/wflow/verify.yaml task set in the wflow config).
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/mrms/proc.
+  # including the parm/wflow/verify_pre.yaml task set in the wflow config).
+  # When pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. 
   # METplus configuration files require the use of predetermined
   # directory structure and file names. Therefore, if the MRMS files are
   # user provided, they need to follow the anticipated naming structure:
@@ -311,7 +311,7 @@ platform:
   # HPSS, is used to identify and rename the MRMS composite reflectivity
   # file to match the valid time of the forecast.  The script to pull
   # the MRMS data from the NOAA HPSS has an example of the expected file
-  # naming structure: scripts/exregional_get_mrms_files.sh. This script
+  # naming structure: scripts/exregional_get_verif_obs.sh. This script
   # calls the script used to identify the MRMS file closest to the valid
   # time: ush/mrms_pull_topofhour.py.
   #
@@ -320,15 +320,14 @@ platform:
   # files used by METplus are located. This parameter needs to be set for
   # both user-provided observations and for observations that are 
   # retrieved from the NOAA HPSS (if the user has access) via the 
-  # get_obs_ndas task (activated in workflow by includeing the
-  # parm/wflow/verify.yaml task set in the wflow config). 
-  # In the case of pulling observations directly from NOAA HPSS, the
-  # data retrieved will be placed in this directory. Please note, this
-  # path must be defind as /full-path-to-obs/ndas/proc. METplus is
+  # get_obs_ndas task (activated in workflow by including the
+  # parm/wflow/verify_pre.yaml task group in the wflow config). 
+  # When pulling observations directly from NOAA HPSS, the
+  # data retrieved will be placed in this directory. METplus is
   # configured to verify near-surface variables hourly and upper-air
   # variables at times valid at 00 and 12 UTC with NDAS prepbufr files.
   # METplus configuration files require the use of predetermined file
-  # names. Therefore, if the NDAS files are user provided, they need to
+  # names. Therefore, if the NDAS files are user-provided, they need to
   # follow the anticipated naming structure:
   #
   # prepbufr.ndas.{YYYYMMDDHH},
@@ -338,7 +337,7 @@ platform:
   # the day. The script to pull the NDAS data from the NOAA HPSS has an
   # example of how to rename the NDAS data into a more intuitive format
   # with the valid time listed in the file name:
-  # scripts/exregional_get_ndas_files.sh
+  # scripts/exregional_get_verif_obs.sh
   #
   #-----------------------------------------------------------------------
   #
