@@ -26,7 +26,7 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
         monitor_file (str): [optional]
         mode         (str): [optional] Mode of job monitoring
                             continuous (default): monitor jobs continuously until complete
-                            advance:
+                            advance: increment jobs once, then quit
         debug       (bool): [optional] Enable extra output for debugging
 
     Returns:
