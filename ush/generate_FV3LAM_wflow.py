@@ -161,7 +161,9 @@ def generate_FV3LAM_wflow(
 
     # pylint: disable=undefined-variable
     if USE_CRON_TO_RELAUNCH:
-        add_crontab_line()
+        add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
+                         crontab_line=expt_config["workflow"]["CRONTAB_LINE"],
+                         exptdir=exptdir,debug=debug)
 
     #
     # Copy or symlink fix files
