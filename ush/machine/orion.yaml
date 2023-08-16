@@ -2,10 +2,10 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 40
   SCHED: slurm
-  TEST_CCPA_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ndas/proc
-  DOMAIN_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
+  DOMAIN_PREGEN_BASEDIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: orion
   QUEUE_DEFAULT: batch
   PARTITION_FCST: orion
@@ -21,17 +21,17 @@ platform:
   RUN_CMD_AQMLBC: srun --export=ALL -n ${NUMTS}
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data
-  TEST_AQM_INPUT_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/aqm_data
-  TEST_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
-  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
-  FIXaer: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_aer
-  FIXgsi: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_gsi
-  FIXgsm: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_am
-  FIXlut: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_lut
-  FIXorg: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_orog
-  FIXsfc: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_sfc_climo
-  FIXshp: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/NaturalEarth
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data
+  TEST_AQM_INPUT_BASEDIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/aqm_data
+  TEST_PREGEN_BASEDIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
+  FIXaer: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_gsi
+  FIXgsm: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_am
+  FIXlut: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_lut
+  FIXorg: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_orog
+  FIXsfc: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
+  FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads
 task_process_bufr:
   OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
