@@ -30,7 +30,7 @@ See :numref:`Section %s <UserSpecificConfig>` and/or :numref:`Section %s <DirPar
 How do I change the Physics Suite Definition File (SDF)?
 =========================================================
 
-The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The four supported physics suites for the SRW Application as of the v2.1.0 release are:
+The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using the variable ``CCPP_PHYS_SUITE``. The five supported physics suites for the SRW Application are:
 
 .. code-block:: console
    
@@ -38,6 +38,7 @@ The SDF is set in the ``workflow:`` section of the ``config.yaml`` file using th
    FV3_RRFS_v1beta
    FV3_HRRR
    FV3_WoFS_v0
+   FV3_RAP
 
 When users run the ``generate_FV3LAM_wflow.py`` script, the SDF file is copied from its location in the forecast
 model directory to the experiment directory ``$EXPTDIR``. For more information on the :term:`CCPP` physics suite parameters, see :numref:`Section %s <CCPP_Params>`.
@@ -88,7 +89,7 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure dif
    * - post.yaml
      - Post-processing tasks
    * - prdgen.yaml
-     - 
+     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
    * - prep.yaml
      - Pre-processing tasks
    * - verify_det.yaml
@@ -97,8 +98,6 @@ The ``/parm/wflow`` directory contains several ``YAML`` files that configure dif
      - Ensemble verification tasks
    * - verify_pre.yaml
      - Verification pre-processing tasks
-
-.. COMMENT: What does prdgen.yaml do? 
 
 The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
 
@@ -249,7 +248,7 @@ Then, users can configure a new experiment by updating the environment variables
 How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
 ====================================================================
 
-At this time, there are ten physics suites available in the SRW App, :ref:`four of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App. The CCPP Scientific Documentation details the various `namelist options <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/_c_c_p_psuite_nml_desp.html>`__ available in the UFS WM, including physics schemes, and also includes an `overview of schemes and suites <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/allscheme_page.html>`__. 
+At this time, there are ten physics suites available in the SRW App, :ref:`five of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App. The CCPP Scientific Documentation details the various `namelist options <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/_c_c_p_psuite_nml_desp.html>`__ available in the UFS WM, including physics schemes, and also includes an `overview of schemes and suites <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/allscheme_page.html>`__. 
 To enable an additional physics scheme, such as the YSU PBL scheme, in the SRW App, users must modify ``ufs-srweather-app/parm/FV3.input.yml`` and set the variable corresponding to the desired physics scheme to *True* under the physics suite they would like to use (e.g., ``do_ysu = True``).
 
 It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to *False* in the ``FV3.input.yml`` file.

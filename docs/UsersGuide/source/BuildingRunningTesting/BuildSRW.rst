@@ -211,27 +211,7 @@ where valid values are ``intel`` or ``gnu``.
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-If users want to build the optional ``GSI`` and ``rrfs_utl`` components for :term:`RRFS` capabilities, they can pass the ``gsi`` and ``rrfs_utils`` arguments to ``devbuild.sh``. For example:
-
-.. code-block:: console
-
-   ./devbuild.sh -p=hera gsi rrfs_utils
-
-.. note:: 
-   RRFS capabilities are currently build-only features. They are not yet available for use at runtime. 
-
-.. COMMENT: Is this still true? 
-
-The last few lines of the RRFS console output should be: 
-
-.. code-block:: console
-   
-   [100%] Built target RRFS_UTILS
-   Install the project...
-   -- Install configuration: "RELEASE"
-   -- Installing: /path/to/ufs-srweather-app/exec/ufs_srweather_app.settings
-
-After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If users choose to build the ``GSI`` and ``rrfs_utils`` components, the executables listed in :numref:`Table %s <RRFSexec>` will also appear there. If the ``devbuild.sh`` build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If the ``devbuild.sh`` build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 .. _ExecDescription:
 
@@ -295,64 +275,6 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    |                        | are used to create ESMF interpolation weight files.                             |
    +------------------------+---------------------------------------------------------------------------------+
    
-.. _RRFSexec:
-
-.. list-table:: *Names and descriptions of the executables produced when the RRFS option is enabled*
-   :widths: 20 50
-   :header-rows: 1
-
-   * - Executable
-     - Description
-   * - gsi.x
-     - Runs the Gridpoint Statistical Interpolation (GSI).  
-   * - enkf.x
-     - Runs the Ensemble Kalman Filter.
-   * - adjust_soiltq.exe
-     - Uses the lowest level temperature and moisture analysis increments to adjust the soil moisture and soil temperature after analysis.
-   * - check_imssnow_fv3lam.exe
-     - This is a tool used to read snow and ice fields from surface files and check those fields. 
-   * - ens_mean_recenter_P2DIO.exe
-     - 
-   * - fv3lam_nonvarcldana.exe
-     - Runs the non-variational cloud and precipitable hydrometeor analysis based on the METAR cloud observations, satellite-retrieved cloud top products, and radar reflectivity.
-   * - gen_annual_maxmin_GVF.exe
-     - Generates maximum and minimum greenness vegetation fraction (GVF) files based on year-long GVF observations for ``update_GVF`` process.
-   * - gen_cs.exe
-     - NCL scripts to perform cross section plotting
-   * - gen_ensmean_recenter.exe
-     - Runs the ensemble mean/recentering calculation for :term:`FV3` :term:`LAM` ensemble files.
-   * - lakesurgery.exe
-     - Replaces the existing lake depth with the GLOBathy bathymetry. It is designed to work with the HRRR model.
-   * - process_imssnow_fv3lam.exe
-     - Uses FV3LAM snow and ice fields based on the snow and ice information from imssnow.
-   * - process_larccld.exe
-     - Processes NASA Langley cloud top product, which reads the cloud top pressure, temperature, etc. and maps them to the ESG grid.
-   * - process_Lightning.exe
-     - Processes lightning data. Reads NLDN NetCDF observation files and maps the lightning observations into the FV3LAM ESG grid.
-   * - process_metarcld.exe
-     - Processes METAR ceilometer cloud observations. Reads the cloud base and coverage observations from PrepBUFR and distributes the cloud, weather, and visibility observations to the ESG grid.
-   * - process_NSSL_mosaic.exe
-     - Processes :term:`NSSL` MRMS radar reflectivity mosaic observations. Reads 33-level NSSL MRMS radar reflectivity grib2 files and then interpolates the reflectivity horizontally to the ESG grid.
-   * - process_updatesst.exe
-     - Updates sea surface temperature (SST) field based on the SST analysis from :term:`NCEP`.
-   * - ref2tten.exe
-     - Calculates temperature tendency based on the radar reflectivity observation at each grid point. This temperature tendency can be used by the model during integration as latent heating initialization for ongoing precipitation systems, especially convection.
-   * - rrfs_bufr.exe
-     -
-   * - rrfs_sndp.exe
-     -
-   * - rrfs_stnmlist.exe
-     -     
-   * - update_bc.exe
-     - Adjusts 0-h boundary conditions based on the analysis results during data assimilation cycling.
-   * - update_GVF.exe
-     - Updates the GVF in the surface file based on the real-time observation files.
-   * - update_ice.exe
-     - Replaces ice fields in warm-start surface files based on previous cold-start forecast results using the GFS as the initial file.
-   * - use_raphrrr_sfc.exe
-     - Uses RAP and HRRR surface fields to replace the surface fields in FV3LAM. This is only used for starting the RRFS surface cycling.
-
-.. COMMENT: Add definition of rrfs_*.exe and ens_mean_recenter_P2DIO.exe!!!
 
 .. _CMakeApproach:
 
