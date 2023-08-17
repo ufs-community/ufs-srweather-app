@@ -855,6 +855,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
        (formerly *VX_ENSGRID_MEAN_##h* and *VX_ENSGRID_PROB_##h*)
      - ``verify_ens.yaml``
      - Runs METplus grid-to-grid verification for (1) ensemble mean 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation and (2) 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_APCP##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_APCP##h``, where ``##h`` is 01h, 03h, 06h, or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
+   * - :bolditalic:`metatask_GridStat_NOHRSC_ensmeanprob_all_accums`
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid verification for (1) ensemble mean 6-h and 24h (i.e., daily) accumulated snow and (2) 6-h and 24h (i.e., daily) accumulated snow probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_ASNOW##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_ASNOW##h``, where ``##h`` is 06h or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GridStat_MRMS_ensprob` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_PROB_[REFC|RETOP]*)
      - ``verify_ens.yaml``
