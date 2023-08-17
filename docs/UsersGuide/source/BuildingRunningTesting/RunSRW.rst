@@ -822,7 +822,7 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
    * - :bolditalic:`metatask_check_post_output_all_mems`
      - ``verify_pre.yaml``
      - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
-   * - :bolditalic:`metatask_PcpCombine_fcst_all_accums_all_mems`
+   * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
      - ``verify_pre.yaml``
      - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
