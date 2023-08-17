@@ -825,6 +825,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
    * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
      - ``verify_pre.yaml``
      - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
+  * - :bolditalic:`metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems`
+     - ``verify_pre.yaml``
+     - Derive accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
