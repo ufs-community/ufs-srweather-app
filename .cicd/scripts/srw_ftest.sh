@@ -16,7 +16,7 @@
 #    SRW_COMPILER=<intel|gnu>
 #
 # Optional:
-[[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
+[[ -n ${SRW_PROJECT} ]] || SRW_PROJECT="no_account"
 [[ -n ${BRANCH} ]] || BRANCH="develop"
 [[ -n ${TASKS} ]] || TASKS=""
 [[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=9
@@ -58,8 +58,8 @@ pwd
 echo "BRANCH=${BRANCH}"
 
 # Set the ACCOUNT to use for this PLATFORM ...
-sed "s|^  ACCOUNT: \"\"|  ACCOUNT: \"${ACCOUNT}\"|1" -i ush/config_defaults.yaml
-sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${ACCOUNT}|1" > ush/config.yaml
+sed "s|^  ACCOUNT: \"\"|  ACCOUNT: \"${SRW_PROJECT}\"|1" -i ush/config_defaults.yaml
+sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${SRW_PROJECT}|1" > ush/config.yaml
 
 # Set directory paths ...
 export EXPTDIR=${workspace}/expt_dirs/test_community
