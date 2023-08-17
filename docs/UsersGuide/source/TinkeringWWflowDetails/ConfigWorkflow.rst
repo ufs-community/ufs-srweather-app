@@ -139,7 +139,7 @@ METplus Parameters
       * ``SS`` refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``). 
+   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
    METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
 
