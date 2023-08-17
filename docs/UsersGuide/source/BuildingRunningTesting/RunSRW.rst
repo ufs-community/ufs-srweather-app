@@ -844,6 +844,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
        (formerly *VX_ENSGRID_##h*)
      - ``verify_ens.yaml``
      - Runs METplus grid-to-grid ensemble verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_APCP##h`` or ``run_MET_GenEnsProd_vx_APCP##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_NOHRSC`
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid ensemble verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_ASNOW##h`` or ``run_MET_GenEnsProd_vx_ASNOW##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_MRMS` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_[REFC|RETOP]*)
      - ``verify_ens.yaml``
