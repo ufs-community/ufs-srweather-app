@@ -239,7 +239,7 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
    This parameter allows testing of user-staged files in a known location on a given platform. This path contains a limited dataset and likely will not be useful for most user experiments. 
 
 ``TEST_AQM_INPUT_BASEDIR``: (Default: "")
-   .. COMMENT: Add definition! 
+   The path to user-staged AQM fire emission data for WE2E testing. 
 
 ``TEST_PREGEN_BASEDIR``: (Default: "")
    Similar to ``DOMAIN_PREGEN_BASEDIR``, this variable sets the base directory containing pregenerated grid, orography, and surface climatology files for WE2E tests. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. 
@@ -251,7 +251,41 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
    This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`LBCS`.
 
 ``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
-   .. COMMENT: Add definition! 
+   The path to user-staged forecast files for WE2E testing of verificaton using user-staged forecast files in a known location on a given platform. 
+
+.. _SystemFixedFiles:
+
+Fixed File Directory Parameters
+----------------------------------
+
+These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
+
+``FIXgsm``: (Default: "")
+   Path to the system directory containing the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model.
+
+``FIXaer``: (Default: "")
+   Path to the system directory containing :term:`MERRA2` aerosol climatology files.
+
+``FIXlut``: (Default: "")
+   Path to the system directory containing the lookup tables for optics properties.
+
+``FIXorg``: (Default: "")
+   Path to the system directory containing static orography data (used by the ``make_orog`` task). Can be the same as ``FIXgsm``.
+
+``FIXsfc``: (Default: "")
+   Path to the system directory containing the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
+
+``FIXshp``: (Default: "")
+   System directory containing the graphics shapefiles. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
+
+``FIXcrtm``: (Default: "")
+   Path to system directory containing CRTM fixed files. 
+
+``FIXcrtmupp``: (Default: "")
+  Path to system directory containing CRTM fixed files specifically for UPP.
+
+``EXTRN_MDL_DATA_STORES``: (Default: "")
+   A list of data stores where the scripts should look for external model data. The list is in priority order. If disk information is provided via ``USE_USER_STAGED_EXTRN_FILES`` or a known location on the platform, the disk location will be highest priority. Valid values (in priority order): ``disk`` | ``hpss`` | ``aws`` | ``nomads``. 
 
 .. _workflow:
 
@@ -260,18 +294,30 @@ WORKFLOW Configuration Parameters
 
 If non-default parameters are selected for the variables in this section, they should be added to the ``workflow:`` section of the ``config.yaml`` file. 
 
+``WORKFLOW_ID``: (Default: ``!nowtimestamp ''``)
+   Unique ID for the workflow run that will be set in setup.py
+
+``RELATIVE_LINK_FLAG``: (Default: "--relative")
+   How to make links. The default is relative links; users may set an empty string for absolute paths in links.
+
 .. _Cron:
 
 Cron-Associated Parameters
 ------------------------------
 
-Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App. Cron periodically checks a cron table (aka crontab) to see if any tasks are are ready to execute. If so, it runs them. 
+Cron is a job scheduler accessed through the command-line on UNIX-like operating systems. It is useful for automating tasks such as the ``rocotorun`` command, which launches each workflow task in the SRW App. Cron periodically checks a cron table (aka crontab) to see if any tasks are ready to execute. If so, it runs them. 
 
 ``USE_CRON_TO_RELAUNCH``: (Default: false)
-   Flag that determines whether or not a line is added to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes. Valid values: ``True`` | ``False``
+   Flag that determines whether to add a line to the user's cron table, which calls the experiment launch script every ``CRON_RELAUNCH_INTVL_MNTS`` minutes. Valid values: ``True`` | ``False``
 
 ``CRON_RELAUNCH_INTVL_MNTS``: (Default: 3)
    The interval (in minutes) between successive calls of the experiment launch script by a cron job to (re)launch the experiment (so that the workflow for the experiment kicks off where it left off). This is used only if ``USE_CRON_TO_RELAUNCH`` is set to true.
+
+``CRONTAB_LINE``: (Default: "")
+   The launch command that will appear in the crontab (e.g., ``*/3 * * * * cd <path/to/experiment/subdirectory> && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"``).
+
+``LOAD_MODULES_RUN_TASK_FP``: (Default: '{{ [user.USHdir, "load_modules_run_task.sh"]|path_join }}')
+   Path to the ``load_modules_run_task.sh`` file. 
 
 .. _DirParams:
 
@@ -288,17 +334,19 @@ Directory Parameters
 
       EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
 
-   This parameter cannot be left as a null string. It must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
+   This parameter cannot be left empty. It must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
 
 ``EXEC_SUBDIR``: (Default: "exec")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
+
+``EXPTDIR``: (Default: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}')
+   The full path to the experiment directory. By default, this value is equivalent to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
 
 Pre-Processing File Separator Parameters
 --------------------------------------------
 
 ``DOT_OR_USCORE``: (Default: "_")
    This variable sets the separator character(s) to use in the names of the grid, mosaic, and orography fixed files. Ideally, the same separator should be used in the names of these fixed files as in the surface climatology fixed files. Valid values: ``"_"`` | ``"."``
-
 
 Set File Name Parameters
 ----------------------------
@@ -307,37 +355,110 @@ Set File Name Parameters
    Name of the user-specified configuration file for the forecast experiment.
 
 ``CONSTANTS_FN``: (Default: "constants.yaml")
-   Name of the file containing definitions of various mathematical, physical, and SRW App contants.
+   Name of the file containing definitions of various mathematical, physical, and SRW App contents.
 
 ``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
    Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
 
-``FV3_NML_BASE_SUITE_FN``: (Default: "input.nml.FV3")
-   Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites).
+``FV3_NML_FN``: (Default: "input.nml")
+   .. COMMENT: Add definition! 
+
+``FV3_NML_BASE_SUITE_FN``: (Default: "{{ FV3_NML_FN }}.FV3")
+   Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites). By default, it will be named ``input.nml.FV3``. 
 
 ``FV3_NML_YAML_CONFIG_FN``: (Default: "FV3.input.yml")
-   Name of YAML configuration file containing the forecast model's namelist settings for various physics suites.
+   Name of the YAML configuration file containing the forecast model's namelist settings for various physics suites.
 
-``FV3_NML_BASE_ENS_FN``: (Default: "input.nml.base_ens")
+``FV3_NML_BASE_ENS_FN``: (Default: "{{ FV3_NML_FN }}.base_ens")
    Name of the Fortran file containing the forecast model's base ensemble namelist (i.e., the original namelist file from which each of the ensemble members' namelist files is generated).
 
 ``FV3_EXEC_FN``: (Default: "ufs_model")
    Name to use for the forecast model executable. 
 
-``DIAG_TABLE_TMPL_FN``: (Default: "")
-   Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
+``DATA_TABLE_FN``: ( Default: "data_table")
+   .. COMMENT: Add definition!
 
-``FIELD_TABLE_TMPL_FN``: (Default: "")
-   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``field_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a different value for ``FIELD_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the names of the ``field_table`` options in the ``ufs-srweather-app/parm`` directory. 
+``DIAG_TABLE_FN``: ( Default: "diag_table")
+   .. COMMENT: Add definition!
 
-``DATA_TABLE_TMPL_FN``: (Default: "")
-   Name of a template file that contains the data table read in by the forecast model. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``data_table``), and users should **not** specify a different value for ``DATA_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``data_table`` in the ``ufs-srweather-app/parm`` directory. 
+``FIELD_TABLE_FN``: ( Default: "field_table")
+   .. COMMENT: Add definition!
 
-``MODEL_CONFIG_TMPL_FN``: (Default: "")
-   Name of a template file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``model_configure``), and users should **not** specify a different value for ``MODEL_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``model_configure`` in the ``ufs-srweather-app/parm`` directory. 
+``DIAG_TABLE_TMPL_FN``: (Default: 'diag_table.{{ CCPP_PHYS_SUITE }}')
+   Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
 
-``NEMS_CONFIG_TMPL_FN``: (Default: "")
-   Name of a template file that contains information about the various :term:`NEMS` components and their run sequence. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``nems.configure``), and users should **not** specify a different value for ``NEMS_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``nems.configure`` in the ``ufs-srweather-app/parm`` directory.
+``FIELD_TABLE_TMPL_FN``: (Default: 'field_table.{{ CCPP_PHYS_SUITE }}')
+   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``field_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a different value for ``FIELD_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the ``field_table`` options in the ``ufs-srweather-app/parm`` directory. 
+
+``MODEL_CONFIG_FN``: (Default: "model_configure")
+   Name of a file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``model_configure``), and users should **not** specify a different value for ``MODEL_CONFIG_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the name of ``model_configure`` in the ``ufs-srweather-app/parm`` directory.  
+
+``NEMS_CONFIG_FN``: (Default: "nems.configure")
+   Name of a file that contains information about the various :term:`NEMS` components and their run sequence. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``nems.configure``), and users should **not** specify a different value for ``NEMS_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``nems.configure`` in the ``ufs-srweather-app/parm`` directory.
+
+``AQM_RC_FN``: (Default: "aqm.rc")
+   Name of resource file for NOAA Air Quality Model (AQM). 
+
+``AQM_RC_TMPL_FN``: (Default: "aqm.rc")
+   Template file name of resource file for NOAA Air Quality Model (AQM). 
+
+``FV3_NML_BASE_SUITE_FP``: (Default: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_YAML_CONFIG_FP``: (Default: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_BASE_ENS_FP``: (Default: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``DATA_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}')
+   .. COMMENT: Add definition! 
+
+``DIAG_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}')
+   .. COMMENT: Add definition! 
+
+``FIELD_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}')
+   .. COMMENT: Add definition! 
+
+``MODEL_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}') 
+   .. COMMENT: Add definition!
+
+``NEMS_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}') 
+   .. COMMENT: Add definition!
+
+``AQM_RC_TMPL_FP``: (Default: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}') 
+   .. COMMENT: Add definition!
+
+
+
+.. COMMENT: # These are staged in the exptdir at configuration time
+
+``DATA_TABLE_FP``: (Default: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FIELD_TABLE_FP``: (Default: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``NEMS_CONFIG_FP``: (Default: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_FP``: (Default: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_CYCSFC_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_RESTART_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}')
+   .. COMMENT: Add definition!
+
+``FV3_NML_RESTART_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}')
+   .. COMMENT: Add definition!
+
+
+
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
@@ -348,6 +469,9 @@ Set File Name Parameters
 ``GLOBAL_VAR_DEFNS_FN``: (Default: "var_defns.sh")
    Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
 
+``ROCOTO_YAML_FN``: (Default: "rocoto_defns.yaml")
+   Name of the YAML file containing the YAML workflow definition from which the Rocoto XML file is created.
+
 ``EXTRN_MDL_VAR_DEFNS_FN``: (Default: "extrn_mdl_var_defns")
    Name of the file (a shell script) containing the definitions of variables associated with the external model from which :term:`ICs` or :term:`LBCs` are generated. This file is created by the ``GET_EXTRN_*`` task because the values of the variables it contains are not known before this task runs. The file is then sourced by the ``MAKE_ICS`` and ``MAKE_LBCS`` tasks.
 
@@ -356,6 +480,41 @@ Set File Name Parameters
 
 ``WFLOW_LAUNCH_LOG_FN``: (Default: "log.launch_FV3LAM_wflow")
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
+
+``GLOBAL_VAR_DEFNS_FP``: (Default: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}') 
+   .. COMMENT: Add definition!
+
+``ROCOTO_YAML_FP``: (Default: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}') 
+   .. COMMENT: Add definition!
+
+``WFLOW_LAUNCH_SCRIPT_FP``: (Default: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}') 
+   .. COMMENT: Add definition!
+
+``WFLOW_LAUNCH_LOG_FP``: (Default: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}') 
+   .. COMMENT: Add definition!
+
+Experiment Fix File Paths
+---------------------------
+
+These parameters are associated with the fixed (i.e., static) files. Unlike the parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
+
+``FIXdir``: (Default: '{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}')
+   Location where fix files will be stored for a given experiment.
+
+``FIXam``: (Default: '{{ [FIXdir, "fix_am"]|path_join }}')
+   Directory containing the fixed files (or symlinks to fixed files) for various fields on global grids (which are usually much coarser than the native FV3-LAM grid).
+
+``FIXclim``: (Default: '{{ [FIXdir, "fix_clim"]|path_join }}')
+   Directory containing the MERRA2 aerosol climatology data file and lookup tables for optics properties
+
+``FIXlam``: (Default: '{{ [FIXdir, "fix_lam"]|path_join }}')
+   Directory containing the fixed files (or symlinks to fixed files) for the grid, orography, and surface climatology on the native FV3-LAM grid.
+
+``THOMPSON_MP_CLIMO_FN``: (Default: "Thompson_MP_MONTHLY_CLIMO.nc")
+   Name of file that contains aerosol climatology data. It can be used to generate approximate versions of the aerosol fields needed by Thompson microphysics. This file will be used to generate such approximate aerosol fields in the :term:`ICs` and :term:`LBCs` if Thompson MP is included in the physics suite and if the external model for ICs or LBCs does not already provide these fields.
+   
+``THOMPSON_MP_CLIMO_FP``: (Default: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}')
+   Path to the file that contains aerosol climatology data (i.e., path to ``THOMPSON_MP_CLIMO_FN``). 
 
 .. _CCPP_Params:
 
@@ -434,12 +593,23 @@ Debug Parameter
 ``DEBUG``: (Default: false)
    Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to true, then VERBOSE will also be reset to true if it isn't already. Valid values: ``True`` | ``False``
 
-Compiler
------------
+Other
+--------
 
 ``COMPILER``: (Default: "intel")
    Type of compiler invoked during the build step. Currently, this must be set manually; it is not inherited from the build system in the ``ufs-srweather-app`` directory. Valid values: ``"intel"`` | ``"gnu"``
 
+``SYMLINK_FIX_FILES``: (Default: true)
+   Flag that indicates whether to symlink or copy fix files to the experiment directory. 
+
+``DO_REAL_TIME``: (Default: false)
+   Switch for real-time run.
+
+``COLDSTART``: (Default: true)
+   Flag for turning on/off warm start for the first cycle.
+
+``WARMSTART_CYCLE_DIR``: (Default: "/path/to/warm/start/cycle/dir")
+   Path to the cycle directory where RESTART subdirectory is located for warm start.
 
 .. _NCOModeParms:
 
@@ -983,32 +1153,6 @@ Aerosol Climatology Parameter
    Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. Valid values: ``True`` | ``False``
 
    .. COMMENT: When would it be appropriate to obtain these files?
-
-Fixed File Parameters
--------------------------
-
-These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
-
-``FIXgsm``: (Default: "")
-   System directory in which the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model are located.
-
-``FIXaer``: (Default: "")
-   System directory where :term:`MERRA2` aerosol climatology files are located.
-
-``FIXlut``: (Default: "")
-   System directory where the lookup tables for optics properties are located.
-
-``FIXshp``: (Default: "")
-   System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
-
-``FIXorg``: (Default: "")
-   The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
-
-``FIXsfc``: (Default: "")
-   The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
-
-``SYMLINK_FIX_FILES``: (Default: true)
-   Flag that indicates whether to symlink or copy fix files to the experiment directory. 
 
 RUN_POST Configuration Parameters
 =====================================

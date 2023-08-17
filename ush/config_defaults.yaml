@@ -400,11 +400,14 @@ platform:
   # System directory where the lookup tables for optics properties are located
   #
   # FIXorg:
-  # System directory where orography data is located
+  # System directory where orography data are located
   #
   # FIXsfc:
-  # System directory where surface climatology data is located
+  # System directory where surface climatology data are located
   #
+  # FIXshp:
+  # System directory where the graphics shapefiles are located.
+  # 
   # FIXgsi:
   # System directory where GSI fixed files are located
   # 
@@ -465,7 +468,7 @@ workflow:
   # Set cron-associated parameters.  Definitions:
   #
   # USE_CRON_TO_RELAUNCH:
-  # Flag that determines whether or not to add a line to the user's cron 
+  # Flag that determines whether to add a line to the user's cron 
   # table to call the experiment launch script every CRON_RELAUNCH_INTVL_MNTS 
   # minutes.
   #
@@ -474,6 +477,9 @@ workflow:
   # launch script by a cron job to (re)launch the experiment (so that the
   # workflow for the experiment kicks off where it left off).
   #
+  # CRONTAB_LINE: The launch command that will appear in the crontab
+  #
+  # LOAD_MODULES_RUN_TASK_FP: Path to load_modules_run_task.sh.
   #-----------------------------------------------------------------------
   #
   USE_CRON_TO_RELAUNCH: false
@@ -518,7 +524,7 @@ workflow:
   # and orography fixed files.
   #
   # Ideally, the same separator should be used in the names of these fixed
-  # files as the surface climatology fixed files (which always use a "."
+  # files as in the surface climatology fixed files (which always use a "."
   # as the separator), i.e. ideally, DOT_OR_USCORE should be set to "."
   #
   #-----------------------------------------------------------------------
@@ -534,7 +540,7 @@ workflow:
   #
   # CONSTANTS_FN:
   # Name of the file containing definitions of various mathematical, physical, 
-  # and SRW App contants.
+  # and SRW App contents.
   #
   # RGNL_GRID_NML_FN:
   # Name of file containing the namelist settings for the code that generates
@@ -573,12 +579,12 @@ workflow:
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
-  # MODEL_CONFIG_TMPL_FN:
+  # MODEL_CONFIG_FN:
   # Name of a template file that contains settings and configurations for the 
   # NUOPC/ESMF main component (ufs-weather-model: model_config). Its default 
   # value is the name of the file that the ufs weather model expects to read in.
   #
-  # NEMS_CONFIG_TMPL_FN:
+  # NEMS_CONFIG_FN:
   # Name of a template file that contains information about the various NEMS 
   # components and their run sequence (ufs-weather-model: nems.configure). 
   # Its default value is the name of the file that the ufs weather model expects 
@@ -980,7 +986,7 @@ workflow:
   # Flag turning on/off warm start of the first cycle
   #
   # WARMSTART_CYCLE_DIR:
-  # Path to the directory where RESTART dir is located for warm start
+  # Path to the cycle directory where RESTART dir is located for warm start
   #
   #-----------------------------------------------------------------------
   #
