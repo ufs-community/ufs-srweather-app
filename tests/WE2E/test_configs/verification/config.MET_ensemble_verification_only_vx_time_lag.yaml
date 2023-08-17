@@ -19,9 +19,6 @@ workflow:
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
 
 nco:
   NET_default: 'RRFSE_CONUS'
@@ -32,9 +29,9 @@ global:
   ENS_TIME_LAG_HRS: '[ 0, 12 ]'
 
 platform:
-  CCPA_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ccpa/proc'
-  MRMS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/mrms/proc'
-  NDAS_OBS_DIR: '/scratch2/BMC/fv3lam/ens_design_RRFS/obs_data/ndas/proc'
+  CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/ccpa/proc'
+  MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/mrms/proc'
+  NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/obs_data/ndas/proc'
 
 verification:
   VX_FCST_MODEL_NAME: FV3_GFS_v15p2_CONUS_25km

@@ -6,8 +6,6 @@ user:
   MACHINE: hera
   ACCOUNT: an_account
 platform:
-  MET_INSTALL_DIR: ""
-  METPLUS_PATH: ""
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""

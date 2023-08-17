@@ -1,12 +1,12 @@
 metadata:
   description: |-
-    This test is to ensure that the workflow running in community mode can produce
-    graphics on the RRFS_CONUS_25km grid and GFS_2017_gfdlmp_regional
+    This test is to ensure that the workflow running in community mode
+    completes successfully on the RRFS_CONUS_25km grid using the GFS_v16
     physics suite with ICs and LBCs derived from the FV3GFS.
 user:
   RUN_ENVIR: community
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp_regional
+  CCPP_PHYS_SUITE: FV3_GFS_v16
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019070100'
   DATE_LAST_CYCL: '2019070100'
@@ -20,5 +20,5 @@ task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: true
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
-  LBC_SPEC_INTVL_HRS: 6
+  LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true

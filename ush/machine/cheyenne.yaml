@@ -2,12 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 36
   SCHED: pbspro
-  CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
-  METPLUS_PATH: /glade/p/ral/jntp/MET/METplus/METplus-4.1.1
-  MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /glade/p/ral/jntp/MET/MET_releases/10.1.1
+  TEST_CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular
@@ -25,6 +22,7 @@ platform:
   TEST_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
   TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/glade/work/epicufsrt/contrib/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
   FIXaer: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_aer
   FIXgsi: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_gsi
   FIXgsm: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_am
