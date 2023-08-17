@@ -32,3 +32,5 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
+verification:
+  VX_FCST_MODEL_NAME: FV3_WoFS_v0_SUBCONUS_3km_test
