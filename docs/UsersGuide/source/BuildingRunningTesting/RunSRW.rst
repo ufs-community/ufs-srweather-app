@@ -828,6 +828,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
+   * - :bolditalic:`metatask_GridStat_NOHRSC_all_accums_all_mems` 
+     - ``verify_det.yaml``
+     - Runs METplus grid-to-grid verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_GridStat_vx_ASNOW##h_mem###``.
    * - :bolditalic:`metatask_GridStat_MRMS_all_mems`
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``.
