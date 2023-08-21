@@ -149,7 +149,7 @@ pipeline {
                     stage('Functional WorkflowTaskTests') {
                         steps {
                             echo "Running simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE})"
-                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/srw_ftest.sh"'
+                            sh 'bash --login "${WORKSPACE}/.cicd/scripts/wrapper_srw_ftest.sh"'
                         }
                     }
 
