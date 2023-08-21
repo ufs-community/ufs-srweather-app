@@ -35,7 +35,7 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/../expt_dirs/metric_test"
 we2e_test_dir="${workspace}/tests/WE2E"
-we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16"
+we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
 
 pwd
 
@@ -66,8 +66,8 @@ cd ${workspace}
 [[ -f skill-score.out ]] && rm skill-score.out
 # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
 # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
-# In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
-# temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
+# In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
+# temperature, and pressure at lowest level in the atmosphere over 6 hour lead time.
 cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
 # load met and metplus
 module use modulefiles/tasks/${platform,,}
