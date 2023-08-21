@@ -9,12 +9,12 @@
 //
 // Filtering input STAT lines by the contents of each column
 //
-model = ["FV3_GFS_v16_SUBCONUS_3km_test_mem000", "FV3_GFS_v16_SUBCONUS_3km"];
+model = ["FV3_WoFS_v0_SUBCONUS_3km_test_mem000", "FV3_GFS_v16_SUBCONUS_3km"];
 
-fcst_lead = [ "12", "24", "36", "48",
-              "12", "24", "36", "48",
-              "12", "24", "36", "48",
-              "12", "24", "36", "48"
+fcst_lead = [ "6",
+              "6",
+              "6",
+              "6"
             ];
 obs_lead  = [];
 
@@ -42,17 +42,17 @@ obs_init_inc    = [];
 obs_init_exc    = [];
 obs_init_hour   = [];
 
-fcst_var = [ "WIND",  "WIND",  "WIND",  "WIND",
-             "DPT",   "DPT",   "DPT",   "DPT",
-             "TMP",  "TMP",  "TMP",  "TMP",
-             "PRMSL", "PRMSL", "PRMSL", "PRMSL"
+fcst_var = [ "WIND",
+             "DPT",
+             "TMP",
+             "PRMSL"
            ];
 obs_var  = [];
 
-fcst_lev = [ "Z10",   "Z10",   "Z10",   "Z10",
-             "Z2",    "Z2",    "Z2",    "Z2",
-             "Z2",  "Z2",  "Z2",  "Z2",
-             "Z0",    "Z0",    "Z0",    "Z0"
+fcst_lev = [ "Z10",
+             "Z2",
+             "Z2",
+             "Z0"
            ];
 obs_lev  = [];
 
@@ -74,10 +74,10 @@ line_type = [ "SL1L2" ];
 
 column    = [ "RMSE" ];
             
-weight    = [ 8.0, 6.0, 4.0, 2.0,
-              8.0, 6.0, 4.0, 2.0,
-              8.0, 6.0, 4.0, 2.0,
-              8.0, 6.0, 4.0, 2.0
+weight    = [ 10.0,
+              10.0,
+              10.0,
+              10.0
             ];
 
 ////////////////////////////////////////////////////////////////////////////////
