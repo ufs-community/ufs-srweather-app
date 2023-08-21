@@ -17,6 +17,12 @@ else
   workflow_cmd=sbatch
 fi
 
+# Customize wrapper scripts
+if [[ "${SRW_PLATFORM}" == gaea ]]; then
+  sed -i '15i #SBATCH --clusters=c4' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+  sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+fi
+
 # Call job card
 echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
 ${workflow_cmd} -A ${SRW_PROJECT} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
