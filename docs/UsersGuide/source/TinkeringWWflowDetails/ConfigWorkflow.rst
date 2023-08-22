@@ -72,11 +72,12 @@ If non-default parameters are selected for the variables in this section, they s
    The path to the user's verification MET configuration directory. By default, MET configuration files reside in ``ufs-srweather-app/parm/met``.
 
 ``UFS_WTHR_MDL_DIR``: '{{ userUFS_WTHR_MDL_DIR }}'
+   .. COMMENT: Add definition!
 
 ``ARL_NEXUS_DIR``: '{{ [SORCdir, "arl_nexus"]|path_join }}'
    The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/parm``.
 
-.. COMMENT: Add DIR documentation to config_defaults.yaml! 
+.. COMMENT: Add/double check DIR documentation (above) to config_defaults.yaml! 
 
 .. _PlatformConfig:
 
@@ -140,7 +141,7 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 
 Parameters for Running Without a Workflow Manager
 -----------------------------------------------------
-These settings define the run commands for the platform. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
+These settings define the platform-specific run commands. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
 
 ``RUN_CMD_UTILS``: (Default: "")
    The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
@@ -165,6 +166,9 @@ These settings define the run commands for the platform. Users should set run co
 
 ``SCHED_NATIVE_CMD``: (Default: "")
    Allows an extra parameter to be passed to the job scheduler (Slurm or PBSPRO) via XML Native command. 
+
+``PRE_TASK_CMDS``: (Default: "")
+   Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
 METplus Parameters
 ----------------------
@@ -213,10 +217,8 @@ METplus Parameters
 
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
-Other 
--------------------
-
-.. COMMENT: Need better section title!
+Other Platform-Specific Directories
+--------------------------------------
 
 ``DOMAIN_PREGEN_BASEDIR``: (Default: "")
    For use in NCO mode only (``RUN_ENVIR: "nco"``). The base directory containing pregenerated grid, orography, and surface climatology files. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. For the pregenerated grid specified by ``PREDEF_GRID_NAME``, these "fixed" files are located in: 
@@ -226,9 +228,6 @@ Other
       ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
 
    The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file (i.e.,  ``config.yaml``) set by ``EXPT_CONFIG_FN``.
-
-``PRE_TASK_CMDS``: (Default: "")
-   Pre-task commands such as ``ulimit`` needed by tasks. For example: ``'{ ulimit -s unlimited; ulimit -a; }'``
 
 Test Directories
 ----------------------
@@ -361,7 +360,8 @@ Set File Name Parameters
    Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
 
 ``FV3_NML_FN``: (Default: "input.nml")
-   .. COMMENT: Add definition! 
+   Name of the forecast model's namelist file. It includes the information in ``FV3_NML_BASE_SUITE_FN`` (i.e., input.nml.FV3) and ``FV3_NML_YAML_CONFIG_FN`` (i.e., FV3.input.yml).
+   .. COMMENT: Check definition & add any mods to config defaults file, too. 
 
 ``FV3_NML_BASE_SUITE_FN``: (Default: "{{ FV3_NML_FN }}.FV3")
    Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites). By default, it will be named ``input.nml.FV3``. 
@@ -376,13 +376,15 @@ Set File Name Parameters
    Name to use for the forecast model executable. 
 
 ``DATA_TABLE_FN``: ( Default: "data_table")
-   .. COMMENT: Add definition!
+   Name of the file that contains the data table read in by the forecast model. 
 
 ``DIAG_TABLE_FN``: ( Default: "diag_table")
-   .. COMMENT: Add definition!
+   Prefix for the name of the file that specifies the output fields of the forecast model. 
+   .. COMMENT: Check definition!
 
 ``FIELD_TABLE_FN``: ( Default: "field_table")
-   .. COMMENT: Add definition!
+   Prefix for the name of the file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. 
+   .. COMMENT: Check definition!
 
 ``DIAG_TABLE_TMPL_FN``: (Default: 'diag_table.{{ CCPP_PHYS_SUITE }}')
    Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
@@ -403,47 +405,62 @@ Set File Name Parameters
    Template file name of resource file for NOAA Air Quality Model (AQM). 
 
 ``FV3_NML_BASE_SUITE_FP``: (Default: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the ``FV3_NML_BASE_SUITE_FN`` file. 
+   .. COMMENT: Check definition!
 
 ``FV3_NML_YAML_CONFIG_FP``: (Default: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the ``FV3_NML_YAML_CONFIG_FN`` file. 
+   .. COMMENT: Check definition!
 
 ``FV3_NML_BASE_ENS_FP``: (Default: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the ``FV3_NML_BASE_ENS_FN`` file. 
+   .. COMMENT: Check definition!
 
 ``DATA_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}')
-   .. COMMENT: Add definition! 
+   Path to the ``DATA_TABLE_FN`` file. 
+   .. COMMENT: Check definition! 
 
 ``DIAG_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}')
-   .. COMMENT: Add definition! 
+   Path to the ``DIAG_TABLE_TMPL_FN`` file. 
+   .. COMMENT: Check definition! 
 
 ``FIELD_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}')
-   .. COMMENT: Add definition! 
+   Path to the ``FIELD_TABLE_TMPL_FN`` file. 
+   .. COMMENT: Check definition! 
 
 ``MODEL_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the ``MODEL_CONFIG_FN``.
+   .. COMMENT: Check definition!
 
 ``NEMS_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the ``NEMS_CONFIG_FN`` file. 
+   .. COMMENT: Check definition!
 
 ``AQM_RC_TMPL_FP``: (Default: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the ``AQM_RC_TMPL_FN`` file. 
+   .. COMMENT: Check definition!
 
 
+Experiment Directory Files and Paths
+--------------------------------------
 
-.. COMMENT: # These are staged in the exptdir at configuration time
+These parameters contain files and paths to files that are staged in the experiment directory at configuration time. 
 
 ``DATA_TABLE_FP``: (Default: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the data table in the experiment directory. 
+   .. COMMENT: Check definition!
 
 ``FIELD_TABLE_FP``: (Default: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the field table in the experiment directory. (The field table specifies tracers that the forecast model reads in.)
+   .. COMMENT: Check definition!
 
 ``NEMS_CONFIG_FP``: (Default: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the ``NEMS_CONFIG_FN`` file in the experiment directory. 
+   .. COMMENT: Check definition!
 
 ``FV3_NML_FP``: (Default: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}')
-   .. COMMENT: Add definition!
+   Path to the ``FV3_NML_FN`` file in the experiment directory.
+   .. COMMENT: Check definition!
 
 ``FV3_NML_CYCSFC_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}')
    .. COMMENT: Add definition!
@@ -457,9 +474,6 @@ Set File Name Parameters
 ``FV3_NML_RESTART_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}')
    .. COMMENT: Add definition!
 
-
-
-
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
 
@@ -467,7 +481,7 @@ Set File Name Parameters
    Name of the Rocoto workflow XML file that the experiment generation script creates. This file defines the workflow for the experiment.
 
 ``GLOBAL_VAR_DEFNS_FN``: (Default: "var_defns.sh")
-   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration script (``config_defaults.yaml``) and in ``config.yaml``. The secondary experiment variables are generated by the experiment generation script. 
+   Name of the file (a shell script) containing definitions of the primary and secondary experiment variables (parameters). This file is sourced by many scripts (e.g., the J-job scripts corresponding to each workflow task) in order to make all the experiment variables available in those scripts. The primary variables are defined in the default configuration file (``config_defaults.yaml``) and in the user configuration file (``config.yaml``). The secondary experiment variables are generated by the experiment generation script. 
 
 ``ROCOTO_YAML_FN``: (Default: "rocoto_defns.yaml")
    Name of the YAML file containing the YAML workflow definition from which the Rocoto XML file is created.
@@ -482,16 +496,20 @@ Set File Name Parameters
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
 ``GLOBAL_VAR_DEFNS_FP``: (Default: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the global varibale definition file (``GLOBAL_VAR_DEFNS_FN``) in the experiment directory. 
+   .. COMMENT: Check definition!
 
-``ROCOTO_YAML_FP``: (Default: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}') 
-   .. COMMENT: Add definition!
+``ROCOTO_YAML_FP``: (Default: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}')
+   Path to the Rocoto YAML configuration file (``ROCOTO_YAML_FN``) in the experiment directory. 
+   .. COMMENT: Check definition!
 
 ``WFLOW_LAUNCH_SCRIPT_FP``: (Default: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``) in the experiment directory. 
+   .. COMMENT: Check definition!
 
 ``WFLOW_LAUNCH_LOG_FP``: (Default: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}') 
-   .. COMMENT: Add definition!
+   Path to the log file (``WFLOW_LAUNCH_LOG_FN``) in the experiment directory that contains output from successive calls to the workflow launch script. 
+   .. COMMENT: Check definition!
 
 Experiment Fix File Paths
 ---------------------------
