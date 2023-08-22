@@ -320,16 +320,22 @@ CCPA_obs:
 
 MRMS_obs:
   hpss:
-    <<: *MRMS_hpss
-    file_names:
-      obs:
-        - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
-        - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
       - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/MergedReflectivityQCComposite
       - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/EchoTop
       - ./upperair/mrms/conus/MergedReflectivityQCComposite
       - ./upperair/mrms/conus/EchoTop
+    file_names:
+      obs:
+        - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
+        - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
 
 NDAS_obs:
   hpss:
