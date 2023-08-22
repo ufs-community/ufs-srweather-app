@@ -3,6 +3,8 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the SUBCONUS_Ind_3km grid using the WoFS_v0
     physics suite with ICs and LBCs derived from the FV3GFS.
+    This test also ensures that MET deterministic verification runs
+    successfully.
 user:
   RUN_ENVIR: community
 workflow:
@@ -12,6 +14,12 @@ workflow:
   DATE_LAST_CYCL: '2019061500'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: grib2
@@ -21,3 +29,5 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
   USE_USER_STAGED_EXTRN_FILES: true
+verification:
+  VX_FCST_MODEL_NAME: FV3_WoFS_v0_SUBCONUS_3km_test

@@ -169,7 +169,7 @@ Configuration parameters in the ``config_defaults.yaml`` file appear in :numref:
    |                             | ENV_INIT_SCRIPTS_FPS, PRE_TASK_CMDS, PARTITION_DEFAULT, QUEUE_DEFAULT,|
    |                             | PARTITION_HPSS, QUEUE_HPSS, PARTITION_FCST, QUEUE_FCST,               |
    |                             | RUN_CMD_UTILS, RUN_CMD_FCST, RUN_CMD_POST, SLURM_NATIVE_CMD,          |
-   |                             | MODEL, MET_INSTALL_DIR, METPLUS_PATH, MET_BIN_EXEC, CCPA_OBS_DIR,     |
+   |                             | MODEL, CCPA_OBS_DIR,                         |
    |                             | MRMS_OBS_DIR, NDAS_OBS_DIR, NOHRSC_OBS_DIR                            |
    +-----------------------------+-----------------------------------------------------------------------+
    | Workflow                    | WORKFLOW_ID, USE_CRON_TO_RELAUNCH, CRON_RELAUNCH_INTVL_MNTS,          |
@@ -271,10 +271,6 @@ The user must specify certain basic experiment configuration information in a ``
    | ACCOUNT                        | "project_name"    | "an_account"                       |
    +--------------------------------+-------------------+------------------------------------+
    | MODEL                          | ""                | "FV3_GFS_v16_CONUS_25km"           |
-   +--------------------------------+-------------------+------------------------------------+
-   | METPLUS_PATH                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | MET_INSTALL_DIR                | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
@@ -670,28 +666,21 @@ This can be helpful when conducting multiple experiments with different types of
 Configure METplus Verification Suite (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``config.yaml`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
-
-.. attention::
-   METplus *installation* is not included as part of the build process for this release of the SRW App. However, METplus is preinstalled on many `Level 1 & 2 <https://dtcenter.org/community-code/metplus/metplus-4-1-existing-builds>`__ systems. For the v2.1.0 release, METplus *use* is supported on systems with a functioning METplus installation, although installation itself is not supported. For more information about METplus, see :numref:`Section %s <MetplusComponent>`.
+Users who want to use the METplus verification suite to evaluate their forecasts need to add additional information to their ``ush/machine/<platform>.yaml`` or ``config.yaml`` file. Other users may skip to the :ref:`next section <SetUpPythonEnv>`. 
 
 .. note::
-   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<machine>/run_vx.local`` file to correspond to their system's updated installation:
+   If METplus users update their METplus installation, they must update the module load statements in ``ufs-srweather-app/modulefiles/tasks/<platform>/run_vx.local`` file to correspond to their system's updated installation:
 
    .. code-block:: console
       
       module use -a </path/to/met/modulefiles/>
       module load met/<version.X.X>
+      module load metplus/<version.X.X>
 
-To use METplus verification, the path to the MET and METplus directories must be added to ``config.yaml``:
+.. note::
+    PRELIMINARY CHANGES, NEEDS TO BE UPDATE IN A SECTION BELOW: for the recent changes in develop, there are several verify_*.yaml files, verify_pre.yaml, verify_ens.yaml, verify_det.yaml. Documentation below still mentions a single `veryfy.yaml` file.
 
-.. code-block:: console
-
-   platform:
-      METPLUS_PATH: </path/to/METplus/METplus-4.1.0>
-      MET_INSTALL_DIR: </path/to/met/10.1.0>
-
-To turn on verification tasks in the workflow, include the ``parm/wflow/verify.yaml`` file in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
+To use METplus verification,  MET and METplus modules need to be installed. To turn on verification tasks in the workflow, include the ``parm/wflow/verify.yaml`` file in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``.
 
 .. code-block:: console
 

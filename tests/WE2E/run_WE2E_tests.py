@@ -188,7 +188,17 @@ def run_we2e_tests(homedir, args) -> None:
                                                                        config_defaults,"lbcs")
 
         if 'verification' in test_cfg:
-            logging.debug(test_cfg['verification'])
+            # This section checks if we are doing verification on a machine with staged verification
+            # obs. If so, and if the config file does not explicitly set the observation locations,
+            # fill these in with defaults from the machine files
+            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR']
+            if 'platform' not in test_cfg:
+                test_cfg['platform'] = {}
+            for obvar in obs_vars:
+                mach_path = machine_defaults['platform'].get('TEST_'+obvar)
+                if not test_cfg['platform'].get(obvar) and mach_path:
+                    logging.debug(f'Setting CCPA_OBS_DIR = {mach_path} from machine file')
+                    test_cfg['platform'][obvar] = mach_path
 
         if 'cpl_aqm_parm' in test_cfg:
             test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']

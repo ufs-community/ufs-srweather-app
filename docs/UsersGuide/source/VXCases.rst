@@ -110,7 +110,7 @@ where ``<path/to/ufs-srweather-app/ush>`` is replaced by the actual path to the 
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
-   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``
+   Variables ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` are set in the ./ush/machine/<platform>.yaml configuration. Variables ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC`` are set in modulefiles for met/xx.x.x and metplus/x.x.x, when the modules are loaded in ./modulefiles/tasks/<platform>/run_vx.local  (run_vx.local.lua modulefile)
 
 .. code-block:: console
 
@@ -118,13 +118,6 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       ACCOUNT: <my_account>
    platform:
       MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: </path/to/met/x.x.x>           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-      METPLUS_PATH: </path/to/METplus/METplus-x.x.x>  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-      # Add MET_BIN_EXEC variable to config.yaml
-      MET_BIN_EXEC: bin
-      CCPA_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ccpa/proc>
-      MRMS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/mrms/proc>
-      NDAS_OBS_DIR: </path/to/Indy-Severe-Weather/obs_data/ndas/proc>
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
       DATE_FIRST_CYCL: '2019061500'

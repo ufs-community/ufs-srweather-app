@@ -2,12 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 40
   SCHED: slurm
-  CCPA_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ccpa/proc
-  MRMS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/mrms/proc
-  NDAS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ndas/proc
-  METPLUS_PATH: /apps/contrib/MET/METplus/METplus-4.1.1
-  MET_BIN_EXEC: bin
-  MET_INSTALL_DIR: /apps/contrib/MET/10.1.1
+  TEST_CCPA_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: orion
   QUEUE_DEFAULT: batch
@@ -27,6 +24,7 @@ platform:
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data
   TEST_AQM_INPUT_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/aqm_data
   TEST_PREGEN_BASEDIR: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
   FIXaer: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_aer
   FIXgsm: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_am
   FIXlut: /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/fix/fix_lut

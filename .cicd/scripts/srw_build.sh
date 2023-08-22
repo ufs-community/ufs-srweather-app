@@ -24,6 +24,10 @@ else
     platform="${SRW_PLATFORM}"
 fi
 
+if [[ "${SRW_PLATFORM}" = jet-epic ]]; then
+    platform='jet'
+fi
+
 # Build and install
 cd ${workspace}/tests
 set +e
