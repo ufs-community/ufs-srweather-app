@@ -11,18 +11,51 @@
 
 # Set workflow cmd
 declare workflow_cmd
+declare arg_1
 if [[ "${SRW_PLATFORM}" == cheyenne ]] || [[ "${SRW_PLATFORM}" == derecho ]]; then
-  workflow_cmd=qsub  
+    workflow_cmd=qsub
+    arg_1=""
 else
-  workflow_cmd=sbatch
+    workflow_cmd=sbatch
+    arg_1="--parsable"
 fi
 
 # Customize wrapper scripts
 if [[ "${SRW_PLATFORM}" == gaea ]]; then
-  sed -i '15i #SBATCH --clusters=c4' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-  sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i '15i #SBATCH --clusters=c4' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
-# Call job card
-echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
-${workflow_cmd} -A ${SRW_PROJECT} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+# Call job card and return job_id
+echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
+job_id=$(${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh)
+
+# Check for job and exit when done
+while true
+do
+    job_id_list=$(squeue -u ${USER} -j ${job_id} --noheader)
+    if [ ! -z "$job_id_list" ]; then
+        echo "Job is still running. Check again in two minutes"
+        sleep 120
+    else
+        echo "Job has completed."
+
+        # Return exit code and check for results file first
+        results_file="${WORKSPACE}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
+        if [ ! -f "$results_file" ]; then
+            echo "Missing results file! \nexit 1"
+            exit 1
+        fi
+
+        # Set exit code to number of failures
+        set +e
+        failures=$(grep ": FAIL" ${results_file} | wc -l)
+        if [[ $failures -ne 0 ]]; then
+            failures=1
+        fi
+
+        set -e
+        echo "exit ${failures}"
+        exit ${failures}
+    fi
+done
