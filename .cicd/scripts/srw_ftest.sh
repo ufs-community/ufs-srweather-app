@@ -30,6 +30,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)
 declare workspace
 if [[ -n "${WORKSPACE}" ]]; then
     workspace="${WORKSPACE}"
+    cd $workspace
 else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
