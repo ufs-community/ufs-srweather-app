@@ -7,7 +7,7 @@ Usage: source etc/lmod-setup.sh PLATFORM
 
 OPTIONS:
    PLATFORM - name of machine you are building on
-      (e.g. cheyenne | hera | jet | orion | wcoss2 )
+      (e.g.  derecho | hera | jet | orion | wcoss2 )
 EOF_USAGE
    exit 1
 else
@@ -46,6 +46,15 @@ elif [ "$L_MACHINE" = singularity ]; then
 
 elif [ "$L_MACHINE" = gaea ]; then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
+
+elif [ "$L_MACHINE" = derecho ]; then
+   module purge 2>/dev/null
+
+   export BASH_ENV=/glade/u/apps/derecho/23.06/spack/opt/spack/lmod/8.7.20/gcc/7.5.0/pdxb/lmod/lmod/init/bash
+   source $BASH_ENV
+   export LMOD_SYSTEM_DEFAULT_MODULES="ncarenv:craype/2.7.20"
+   export PATH=$MODULESHOME/libexec:$MODULESHOME/init/ksh_funcs:$PATH
+   module --initial_load --no_redirect restore
 
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
