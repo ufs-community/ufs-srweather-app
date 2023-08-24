@@ -16,10 +16,10 @@
 #    SRW_COMPILER=<intel|gnu>
 #
 # Optional:
-[[ -n ${ACCOUNT} ]] || ACCOUNT="no_account"
+[[ -n ${SRW_PROJECT} ]] || SRW_PROJECT="no_account"
 [[ -n ${BRANCH} ]] || BRANCH="develop"
 [[ -n ${TASKS} ]] || TASKS=""
-[[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=4
+[[ -n ${TASK_DEPTH} ]] || TASK_DEPTH=9
 [[ -n ${FORGIVE_CONDA} ]] || FORGIVE_CONDA=true
 set -e -u -x
 
@@ -30,6 +30,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)
 declare workspace
 if [[ -n "${WORKSPACE}" ]]; then
     workspace="${WORKSPACE}"
+    cd $workspace
 else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
@@ -58,14 +59,17 @@ pwd
 echo "BRANCH=${BRANCH}"
 
 # Set the ACCOUNT to use for this PLATFORM ...
-sed "s|^  ACCOUNT: \"\"|  ACCOUNT: \"${ACCOUNT}\"|1" -i ush/config_defaults.yaml
-sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${ACCOUNT}|1" > ush/config.yaml
+sed "s|^  ACCOUNT: \"\"|  ACCOUNT: \"${SRW_PROJECT}\"|1" -i ush/config_defaults.yaml
+sed "s|hera|${platform,,}|1" ush/config.community.yaml | sed "s|an_account|${SRW_PROJECT}|1" > ush/config.yaml
 
 # Set directory paths ...
 export EXPTDIR=${workspace}/expt_dirs/test_community
 echo "EXPTDIR=${EXPTDIR}"
 sed "s|^workflow:|workflow:\n  EXPT_BASEDIR: ${workspace}/expt_dirs|1" -i ush/config.yaml
 sed "s|^workflow:|workflow:\n  EXEC_SUBDIR: ${workspace}/install_${SRW_COMPILER}/exec|1" -i ush/config.yaml
+
+# Decrease forecast length since we are running all the steps
+sed "s|^  FCST_LEN_HRS: 12|  FCST_LEN_HRS: 6|g" -i ush/config.yaml
 
 # DATA_LOCATION differs on each platform ... find it.
 export DATA_LOCATION=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${platform,,}.yaml | awk '{printf "%s", $2}')
@@ -107,10 +111,8 @@ cp ${workspace}/ush/wrappers/* .
 # Set parameters that the task scripts require ...
 export JOBSdir=${workspace}/jobs
 export USHdir=${workspace}/ush
-export PDY=20190615
-export cyc=18
-export subcyc=0
 export OMP_NUM_THREADS=1
+export nprocs=24
 
 [[ -n ${TASKS} ]] || TASKS=(
                 run_make_grid
