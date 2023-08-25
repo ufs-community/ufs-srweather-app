@@ -592,7 +592,7 @@ Users may also wish to adjust the start, end, and increment value for the plotti
 If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>` for defaults).
 
 .. note::
-   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
+   If a forecast starts at 18 UTC, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
 When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
