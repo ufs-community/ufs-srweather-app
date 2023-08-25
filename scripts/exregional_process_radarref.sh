@@ -261,7 +261,7 @@ EOF
 #-----------------------------------------------------------------------
 #
   PREP_STEP
-  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
+  eval $RUN_CMD_UTILS ${exec_fp} ${REDIRECT_OUT_ERR} || print_info_msg "\
     Call to executable to run radar refl process returned with nonzero exit code."
   POST_STEP
 

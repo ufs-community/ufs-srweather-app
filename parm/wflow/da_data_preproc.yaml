@@ -45,8 +45,6 @@ metatask_process_obs_cycle_type:
   task_process_radarref_#cycle_type#:
     <<: *default_preproc
     command: '&LOAD_MODULES_RUN_TASK_FP; "process_obs" "&JOBSdir;/JREGIONAL_PROCESS_RADARREF"'
-    envars:
-      <<: *default_envars
     nnodes: 2
     ppn: 24
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
