@@ -25,7 +25,7 @@ The instructions in this documentation assume that users have certain background
 Additional background knowledge in the following areas could be helpful:
 
 * High-Performance Computing (HPC) Systems (for those running the SRW App on an HPC system)
-* Programming (particularly Python) for those interested in contributing to the SRW App code
+* Programming (particularly Python and bash scripting) for those interested in contributing to the SRW App code
 * Creating an SSH Tunnel to access HPC systems from the command line
 * Containerization
 * Workflow Managers/Rocoto
