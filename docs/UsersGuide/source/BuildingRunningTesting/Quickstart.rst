@@ -94,6 +94,6 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          ./launch_FV3LAM_wflow.sh; tail -n 40 log.launch_FV3LAM_wflow
 
-      The workflow must be relaunched regularly and repeatedly until the log output includes a ``Workflow status: SUCCESS`` message indicating that the experiment has finished.
+      The workflow must be relaunched regularly and repeatedly until the log output includes a ``Workflow status: SUCCESS`` message indicating that the experiment has finished. The :term:`cron` utility may be used to automate repeated runs. The last section of the log messages from running ``./generate_FV3LAM_wflow.py`` instruct users how to use that functionality. Users may also refer to :numref:`Section %s <Automate>` for instructions.
 
 Optionally, users may :ref:`configure their own grid <UserDefinedGrid>`, instead of using a predefined grid, and/or :ref:`plot the output <PlotOutput>` of their experiment(s).
