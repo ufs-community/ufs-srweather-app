@@ -11,7 +11,7 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 Since the v2.1.0 release, developers have added a variety of features:
 
    * Bug fixes since the v2.1.0 release
-   * Rapid Refresh Forecast System (RRFS) capabilities
+   * Pre-implementation Rapid Refresh Forecast System (RRFS) forecast configurations
    * Air Quality Modeling (AQM) capabilities
    * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.1.0 release.
    * Support for the :term:`UPP` inline post option (see :ref:`here <InlinePost>`)
