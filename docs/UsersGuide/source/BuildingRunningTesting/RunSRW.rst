@@ -111,7 +111,7 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
 
 .. _Load-WF-L1:
 
@@ -184,25 +184,29 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating the ``workflow_tools`` Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
 
 .. code-block:: console
 
-   conda create --name workflow_tools python=<python3-conda-version>
+   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
+   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
+   rm Miniforge3-Linux-aarch64.sh
+   source ~/conda/etc/profile.d/conda.sh
+   conda activate
+   conda install -y conda-build conda-verify
+   cd path/to/your/workflow-tools/clone
+   conda build recipe
+   conda create -y -n workflow_tools -c local uwtools
    conda activate workflow_tools
-   conda install -c conda-forge f90nml
-   conda install jinja2
-   conda install pyyaml
-   # install packages for graphics environment
-   conda install scipy
-   conda install matplotlib
-   conda install -c conda-forge pygrib
-   conda install cartopy
-   # verify the packages installed
-   conda list
-   conda deactivate
 
-where ``<python3-conda-version>`` is a numeric version (e.g., ``3.9.12``) in the conda base installation resulting from the query ``python3 --version``.
+In future shells, you can activate and use this environment with:
+
+.. code-block:: console
+
+   source ~/conda/etc/profile.d/conda.sh
+   conda activate uwtools
+
+See the `workflow-tools respository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
