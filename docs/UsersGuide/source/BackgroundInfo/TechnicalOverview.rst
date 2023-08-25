@@ -126,10 +126,6 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
      - https://github.com/NOAA-EMC/AQM-utils
    * - Repository for NEXUS
      - https://github.com/noaa-oar-arl/NEXUS
-   * - Repository for Gridpoint Statistical Interpolation (GSI)
-     - https://github.com/NOAA-EMC/GSI
-   * - Repository for Rapid Refresh Forecast System (RRFS) Utilities
-     - https://github.com/NOAA-GSL/rrfs_utl
    * - Repository for the Unified Workflow (UW) Toolkit
      - https://github.com/ufs-community/workflow-tools
 
@@ -167,8 +163,6 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    ├── scripts
    ├── sorc
    │     ├── CMakeLists.txt
-   │     ├── (gsi)
-   │     ├── (rrfs_utl)
    │     ├── (UPP)
    │     │     ├── parm
    │     │     └── sorc
