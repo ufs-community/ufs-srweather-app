@@ -65,7 +65,7 @@ Build the Container
 ------------------------
 
 .. hint::
-   If a ``singularity: command not found`` error message appears in any of the following steps, try running: ``module load singularity``.
+   If a ``singularity: command not found`` error message appears when working on Level 1 platforms, try running: ``module load singularity``.
 
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
@@ -89,7 +89,8 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +--------------+--------------------------------------------------------+
 
 .. note::
-   Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
+   * Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
+   * The NOAA Cloud containers are accessible only to those with EPIC resources. 
 
 Users can simply set an environment variable to point to the container: 
 
@@ -418,7 +419,7 @@ If a task goes DEAD, it will be necessary to restart it according to the instruc
    :wq
    enter
 
-.. COMMENT: Check the crontab command to reflect python workflow.s
+.. COMMENT: Check the crontab command to reflect python workflow.
 
 where: 
 
