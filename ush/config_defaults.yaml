@@ -51,6 +51,35 @@ user:
   # ACCOUNT:
   # The account under which to submit jobs to the queue.
   #
+  # HOMEdir: The path to the user's ufs-srweather-app clone. This path 
+  # is set in ush/setup.py as the parent directory to USHdir. 
+  #
+  # USHdir: The path to the user's ush directory in their ufs-srweather-app clone. This path is set automatically in the main function of setup.py and corresponds to the location of setup.py (i.e., the ush directory).
+  # 
+  # SCRIPTSdir: The path to the user's scripts directory in their ufs-srweather-app clone.
+  # 
+  # JOBSdir: The path to the user's jobs directory in their ufs-srweather-app clone.
+  # 
+  # SORCdir: The path to the user's sorc directory in their ufs-srweather-app clone.
+  # 
+  # PARMdir: The path to the user's parm directory in their ufs-srweather-app clone.
+  # 
+  # MODULESdir: The path to the user's modulefiles directory in their ufs-srweather-app clone.
+  # 
+  # EXECdir: The path to the user's exec directory in their ufs-srweather-app clone.
+  #
+  # METPLUS_CONF: The path to the user's final METplus configuration file. By default, METplus configuration files reside in ufs-srweather-app/parm/metplus.
+  #  
+  # UFS_WTHR_MDL_DIR: The path to the location where the weather 
+  # model code is located within the ufs-srweather-app clone. This 
+  # parameter is set in setup.py and uses information from the 
+  # Externals.cfg file to build the correct path. It is built with 
+  # knowledge of HOMEdir and often corresponds to ufs-srweather-app/
+  # sorc/ufs-weather-model.
+  # 
+  # ARL_NEXUS_DIR: The path to the user's NEXUS directory. By 
+  # default, NEXUS source code resides in ufs-srweather-app/sorc/arl_nexus
+  # 
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
   ACCOUNT: ""
@@ -547,7 +576,7 @@ workflow:
   #
   # FV3_NML_FN: 
   # Name of the forecast model's namelist file. It includes the information in 
-  # FV3_NML_BASE_SUITE_FN (i.e., input.nml.FV3) and FV3_NML_YAML_CONFIG_FN (i.e., FV3.input.yml).
+  # FV3_NML_BASE_SUITE_FN (i.e., input.nml.FV3),  FV3_NML_YAML_CONFIG_FN (i.e., FV3.input.yml), and the user configuration file (i.e., config.yaml).
   #
   # FV3_NML_BASE_SUITE_FN:
   # Name of Fortran namelist file containing the forecast model's base suite
@@ -613,15 +642,6 @@ workflow:
   # NEMS_CONFIG_FP: Path to the `NEMS_CONFIG_FN file in the experiment directory. 
   # 
   # FV3_NML_FP: Path to the ``FV3_NML_FN`` file in the experiment directory.
-  # 
-  # FV3_NML_CYCSFC_FP: 
-  # 
-  # FV3_NML_RESTART_FP: 
-  # 
-  # FV3_NML_STOCH_FP: 
-  # 
-  # FV3_NML_RESTART_STOCH_FP:
-  #
   # 
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)

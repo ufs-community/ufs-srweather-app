@@ -38,44 +38,51 @@ If non-default parameters are selected for the variables in this section, they s
 ``ACCOUNT``: (Default: "")
    The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
+Application Directories
+--------------------------
+
 ``HOMEdir``: '{{ user.HOMEdir }}'
-   The path to the user's ``ufs-srweather-app`` directory. 
+   The path to the user's ``ufs-srweather-app`` clone. This path is set in ``ush/setup.py`` as the parent directory to ``USHdir``. 
 
 ``USHdir``: '{{ user.USHdir }}'
-   The path to the user's ``ufs-srweather-app/ush`` directory.
+   The path to the user's ``ush`` directory in their ``ufs-srweather-app`` clone. This path is set automatically in the main function of ``setup.py`` and corresponds to the location of ``setup.py`` (i.e., the ``ush`` directory).
 
 ``SCRIPTSdir``: '{{ [HOMEdir, "scripts"]|path_join }}'
-   The path to the user's ``ufs-srweather-app/scripts`` directory.
+   The path to the user's ``scripts`` directory in their ``ufs-srweather-app`` clone.
 
 ``JOBSdir``: '{{ [HOMEdir, "jobs"]|path_join }}'
-   The path to the user's ``ufs-srweather-app/jobs`` directory.
+   The path to the user's ``jobs`` directory in their ``ufs-srweather-app`` clone.
 
 ``SORCdir``: '{{ [HOMEdir, "sorc"]|path_join }}'
-   The path to the user's ``ufs-srweather-app/sorc`` directory.
+   The path to the user's ``sorc`` directory in their ``ufs-srweather-app`` clone.
 
 ``PARMdir``: '{{ [HOMEdir, "parm"]|path_join }}'
-   The path to the user's ``ufs-srweather-app/parm`` directory.
+   The path to the user's ``parm`` directory in their ``ufs-srweather-app`` clone.
 
 ``MODULESdir``: '{{ [HOMEdir, "modulefiles"]|path_join }}'
-   The path to the user's ``ufs-srweather-app/modulefiles`` directory.
+   The path to the user's ``modulefiles`` directory in their ``ufs-srweather-app`` clone.
 
 ``EXECdir``: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-   The path to the user's ``ufs-srweather-app/exec`` directory.
+   The path to the user's ``exec`` directory in their ``ufs-srweather-app`` clone.
 
-``VX_CONFIG_DIR``: '{{ [HOMEdir, "parm"]|path_join }}'
-   The path to the user's verification (VX) configuration directory. By default, configuration files for VX reside in ``ufs-srweather-app/parm``.
+.. COMMENT: Delete!
+   ``VX_CONFIG_DIR``: '{{ [HOMEdir, "parm"]|path_join }}'
+      The path to the user's verification (VX) configuration directory. By default, configuration files for VX reside in ``ufs-srweather-app/parm``.
+      .. COMMENT: Check definition!
 
 ``METPLUS_CONF``: '{{ [PARMdir, "metplus"]|path_join }}'
-   The path to the user's METplus configuration directory. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``.
+   The path to the user's final METplus configuration file. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``. 
 
-``MET_CONFIG``: '{{ [PARMdir, "met"]|path_join }}'
-   The path to the user's verification MET configuration directory. By default, MET configuration files reside in ``ufs-srweather-app/parm/met``.
+.. COMMENT: Delete!
+   ``MET_CONFIG``: '{{ [PARMdir, "met"]|path_join }}'
+      The path to the user's MET verification configuration directory. By default, MET configuration files reside in ``ufs-srweather-app/parm/met``.
+      .. COMMENT: Check definition!
 
 ``UFS_WTHR_MDL_DIR``: '{{ userUFS_WTHR_MDL_DIR }}'
-   .. COMMENT: Add definition!
+   The path to the location where the weather model code is located within the ``ufs-srweather-app`` clone. This parameter is set in ``setup.py`` and uses information from the ``Externals.cfg`` file to build the correct path. It is built with knowledge of HOMEdir and often corresponds to ``ufs-srweather-app/sorc/ufs-weather-model``.
 
 ``ARL_NEXUS_DIR``: '{{ [SORCdir, "arl_nexus"]|path_join }}'
-   The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/parm``.
+   The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/arl_nexus``.
 
 .. COMMENT: Add/double check DIR documentation (above) to config_defaults.yaml! 
 
@@ -360,7 +367,7 @@ Set File Name Parameters
    Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
 
 ``FV3_NML_FN``: (Default: "input.nml")
-   Name of the forecast model's namelist file. It includes the information in ``FV3_NML_BASE_SUITE_FN`` (i.e., input.nml.FV3) and ``FV3_NML_YAML_CONFIG_FN`` (i.e., FV3.input.yml).
+   Name of the forecast model's namelist file. It includes the information in ``FV3_NML_BASE_SUITE_FN`` (i.e., ``input.nml.FV3``),  ``FV3_NML_YAML_CONFIG_FN`` (i.e., ``FV3.input.yml``), and the user configuration file (i.e., ``config.yaml``).
    .. COMMENT: Check definition & add any mods to config defaults file, too. 
 
 ``FV3_NML_BASE_SUITE_FN``: (Default: "{{ FV3_NML_FN }}.FV3")
@@ -462,18 +469,6 @@ These parameters contain files and paths to files that are staged in the experim
    Path to the ``FV3_NML_FN`` file in the experiment directory.
    .. COMMENT: Check definition!
 
-``FV3_NML_CYCSFC_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}')
-   .. COMMENT: Add definition!
-
-``FV3_NML_RESTART_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}')
-   .. COMMENT: Add definition!
-
-``FV3_NML_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}')
-   .. COMMENT: Add definition!
-
-``FV3_NML_RESTART_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}')
-   .. COMMENT: Add definition!
-
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
 
@@ -537,7 +532,7 @@ These parameters are associated with the fixed (i.e., static) files. Unlike the 
 .. _CCPP_Params:
 
 CCPP Parameter
-------------------
+-----------------
 
 ``CCPP_PHYS_SUITE``: (Default: "FV3_GFS_v16")
    This parameter indicates which :term:`CCPP` (Common Community Physics Package) physics suite to use for the forecast(s). The choice of physics suite determines the forecast model's namelist file, the diagnostics table file, the field table file, and the XML physics suite definition file, which are staged in the experiment directory or the :term:`cycle` directories under it. 
