@@ -1118,14 +1118,6 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
       export EXPTDIR=`pwd`
       setenv EXPTDIR `pwd`
 
-#. Set the ``PDY`` and ``cyc`` environment variables. ``PDY`` refers to the first 8 characters (YYYYMMDD) of the ``DATE_FIRST_CYCL`` variable defined in the ``config.yaml``. ``cyc`` refers to the last two digits of ``DATE_FIRST_CYCL`` (HH) defined in ``config.yaml``. For example, if the ``config.yaml`` file defines ``DATE_FIRST_CYCL: '2019061518'``, the user should run:
-
-   .. code-block:: console 
-      
-      export PDY=20190615 && export cyc=18 
-   
-   before running the wrapper scripts.
-
 #. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 
    .. code-block:: console
