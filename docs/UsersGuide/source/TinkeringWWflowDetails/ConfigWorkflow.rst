@@ -67,24 +67,18 @@ Application Directories
 
 .. COMMENT: Delete!
    ``VX_CONFIG_DIR``: '{{ [HOMEdir, "parm"]|path_join }}'
-      The path to the user's verification (VX) configuration directory. By default, configuration files for VX reside in ``ufs-srweather-app/parm``.
-      .. COMMENT: Check definition!
 
 ``METPLUS_CONF``: '{{ [PARMdir, "metplus"]|path_join }}'
-   The path to the user's final METplus configuration file. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``. 
+   The path to the directory where the user's final METplus configuration file resides. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``. 
 
 .. COMMENT: Delete!
    ``MET_CONFIG``: '{{ [PARMdir, "met"]|path_join }}'
-      The path to the user's MET verification configuration directory. By default, MET configuration files reside in ``ufs-srweather-app/parm/met``.
-      .. COMMENT: Check definition!
 
 ``UFS_WTHR_MDL_DIR``: '{{ userUFS_WTHR_MDL_DIR }}'
    The path to the location where the weather model code is located within the ``ufs-srweather-app`` clone. This parameter is set in ``setup.py`` and uses information from the ``Externals.cfg`` file to build the correct path. It is built with knowledge of HOMEdir and often corresponds to ``ufs-srweather-app/sorc/ufs-weather-model``.
 
 ``ARL_NEXUS_DIR``: '{{ [SORCdir, "arl_nexus"]|path_join }}'
    The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/arl_nexus``.
-
-.. COMMENT: Add/double check DIR documentation (above) to config_defaults.yaml! 
 
 .. _PlatformConfig:
 
@@ -368,7 +362,6 @@ Set File Name Parameters
 
 ``FV3_NML_FN``: (Default: "input.nml")
    Name of the forecast model's namelist file. It includes the information in ``FV3_NML_BASE_SUITE_FN`` (i.e., ``input.nml.FV3``),  ``FV3_NML_YAML_CONFIG_FN`` (i.e., ``FV3.input.yml``), and the user configuration file (i.e., ``config.yaml``).
-   .. COMMENT: Check definition & add any mods to config defaults file, too. 
 
 ``FV3_NML_BASE_SUITE_FN``: (Default: "{{ FV3_NML_FN }}.FV3")
    Name of the Fortran file containing the forecast model's base suite namelist (i.e., the portion of the namelist that is common to all physics suites). By default, it will be named ``input.nml.FV3``. 
@@ -411,63 +404,56 @@ Set File Name Parameters
 ``AQM_RC_TMPL_FN``: (Default: "aqm.rc")
    Template file name of resource file for NOAA Air Quality Model (AQM). 
 
+Set File Path Parameters
+----------------------------
+
 ``FV3_NML_BASE_SUITE_FP``: (Default: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}')
    Path to the ``FV3_NML_BASE_SUITE_FN`` file. 
-   .. COMMENT: Check definition!
 
 ``FV3_NML_YAML_CONFIG_FP``: (Default: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}')
    Path to the ``FV3_NML_YAML_CONFIG_FN`` file. 
-   .. COMMENT: Check definition!
 
 ``FV3_NML_BASE_ENS_FP``: (Default: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}')
    Path to the ``FV3_NML_BASE_ENS_FN`` file. 
-   .. COMMENT: Check definition!
 
 ``DATA_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}')
    Path to the ``DATA_TABLE_FN`` file. 
-   .. COMMENT: Check definition! 
 
 ``DIAG_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}')
    Path to the ``DIAG_TABLE_TMPL_FN`` file. 
-   .. COMMENT: Check definition! 
 
 ``FIELD_TABLE_TMPL_FP``: (Default: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}')
    Path to the ``FIELD_TABLE_TMPL_FN`` file. 
-   .. COMMENT: Check definition! 
 
 ``MODEL_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}') 
-   Path to the ``MODEL_CONFIG_FN``.
-   .. COMMENT: Check definition!
+   Path to the ``MODEL_CONFIG_FN`` file.
 
 ``NEMS_CONFIG_TMPL_FP``: (Default: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}') 
    Path to the ``NEMS_CONFIG_FN`` file. 
-   .. COMMENT: Check definition!
 
 ``AQM_RC_TMPL_FP``: (Default: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}') 
    Path to the ``AQM_RC_TMPL_FN`` file. 
    .. COMMENT: Check definition!
 
 
-Experiment Directory Files and Paths
---------------------------------------
+*Experiment Directory* Files and Paths
+------------------------------------------
 
 These parameters contain files and paths to files that are staged in the experiment directory at configuration time. 
 
+.. COMMENT: Check definitions in this section!
+
 ``DATA_TABLE_FP``: (Default: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}')
    Path to the data table in the experiment directory. 
-   .. COMMENT: Check definition!
 
 ``FIELD_TABLE_FP``: (Default: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}')
    Path to the field table in the experiment directory. (The field table specifies tracers that the forecast model reads in.)
-   .. COMMENT: Check definition!
 
 ``NEMS_CONFIG_FP``: (Default: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}')
    Path to the ``NEMS_CONFIG_FN`` file in the experiment directory. 
-   .. COMMENT: Check definition!
 
 ``FV3_NML_FP``: (Default: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}')
    Path to the ``FV3_NML_FN`` file in the experiment directory.
-   .. COMMENT: Check definition!
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
@@ -492,19 +478,15 @@ These parameters contain files and paths to files that are staged in the experim
 
 ``GLOBAL_VAR_DEFNS_FP``: (Default: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}') 
    Path to the global varibale definition file (``GLOBAL_VAR_DEFNS_FN``) in the experiment directory. 
-   .. COMMENT: Check definition!
 
 ``ROCOTO_YAML_FP``: (Default: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}')
    Path to the Rocoto YAML configuration file (``ROCOTO_YAML_FN``) in the experiment directory. 
-   .. COMMENT: Check definition!
 
 ``WFLOW_LAUNCH_SCRIPT_FP``: (Default: '{{ [user.USHdir, WFLOW_LAUNCH_SCRIPT_FN] |path_join }}') 
    Path to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``) in the experiment directory. 
-   .. COMMENT: Check definition!
 
 ``WFLOW_LAUNCH_LOG_FP``: (Default: '{{ [EXPTDIR, WFLOW_LAUNCH_LOG_FN] |path_join }}') 
    Path to the log file (``WFLOW_LAUNCH_LOG_FN``) in the experiment directory that contains output from successive calls to the workflow launch script. 
-   .. COMMENT: Check definition!
 
 Experiment Fix File Paths
 ---------------------------
@@ -548,8 +530,28 @@ CCPP Parameter
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
 
-   Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users can not expect full support for these schemes.
+   Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users cannot expect full support for these schemes.
 
+``CCPP_PHYS_SUITE_FN``: (Default: 'suite_{{ CCPP_PHYS_SUITE }}.xml')
+   The name of the suite definition file (SDF) used for the experiment. 
+
+``CCPP_PHYS_SUITE_IN_CCPP_FP``: (Default: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}')
+   The full path to the suite definition file (SDF) in the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/FV3/ccpp/suites/$CCPP_PHYS_SUITE_FN``). 
+
+``CCPP_PHYS_SUITE_FP``: (Default: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}')
+   The full path to the suite definition file (SDF) in the experiment directory. 
+
+Field Dictionary Parameters
+------------------------------
+
+``FIELD_DICT_FN``: (Default: "fd_nems.yaml")
+   The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields that is automatically generated by the :term:`NUOPC` Layer. 
+
+``FIELD_DICT_IN_UWM_FP``: (Default: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}')
+   The full path to ``FIELD_DICT_FN`` within the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN``).
+
+``FIELD_DICT_FP``: (Default: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}')
+   The full path to ``FIELD_DICT_FN`` in the experiment directory.
 
 .. _GridGen:
 
@@ -571,19 +573,87 @@ Grid Generation Parameters
 
    If the experiment uses a **user-defined grid** (i.e., if ``PREDEF_GRID_NAME`` is set to a null string), then ``GRID_GEN_METHOD`` must be set in the experiment configuration file. Otherwise, the experiment generation will fail because the generation scripts check to ensure that the grid name is set to a non-empty string before creating the experiment directory.
 
+.. _PredefGrid:
+
+Predefined Grid Parameters
+------------------------------
+
+``PREDEF_GRID_NAME``: (Default: "")
+   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.yaml``. 
+   
+   **Currently supported options:**
+   
+   | ``"RRFS_CONUS_25km"``
+   | ``"RRFS_CONUS_13km"``
+   | ``"RRFS_CONUS_3km"``
+   | ``"SUBCONUS_Ind_3km"`` 
+   
+   **Other valid values include:**
+
+   | ``"AQM_NA_13km"``
+   | ``"CONUS_25km_GFDLgrid"`` 
+   | ``"CONUS_3km_GFDLgrid"``
+   | ``"EMC_AK"`` 
+   | ``"EMC_HI"`` 
+   | ``"EMC_PR"`` 
+   | ``"EMC_GU"`` 
+   | ``"GSL_HAFSV0.A_25km"`` 
+   | ``"GSL_HAFSV0.A_13km"`` 
+   | ``"GSL_HAFSV0.A_3km"`` 
+   | ``"GSD_HRRR_AK_50km"``
+   | ``"GSD_HRRR_25km"``
+   | ``"RRFS_AK_13km"``
+   | ``"RRFS_AK_3km"`` 
+   | ``"RRFS_CONUScompact_25km"``
+   | ``"RRFS_CONUScompact_13km"``
+   | ``"RRFS_CONUScompact_3km"``
+   | ``"RRFS_NA_13km"`` 
+   | ``"RRFS_NA_3km"``
+   | ``"WoFS_3km"``
+
+.. note::
+
+   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.yaml``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
+
+   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.yaml``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.yaml``) will be used.
+
 Forecast Parameters
 ----------------------
 ``DATE_FIRST_CYCL``: (Default: "YYYYMMDDHH")
-   Starting date of the first forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
+   Starting cycle date of the first forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
 
 ``DATE_LAST_CYCL``: (Default: "YYYYMMDDHH")
-   Starting date of the last forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
+   Starting cycle date of the last forecast in the set of forecasts to run. Format is "YYYYMMDDHH".
 
 ``INCR_CYCL_FREQ``: (Default: 24)
    Increment in hours for Rocoto cycle frequency. The default is 24, which means cycl_freq=24:00:00.
 
 ``FCST_LEN_HRS``: (Default: 24)
-   The length of each forecast, in integer hours.
+   The length of each forecast, in integer hours. (Or the short forecast length when there are different lengths.)
+
+``LONG_FCST_LEN_HRS``: (Default: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}')
+   The length of the longer forecast in integer hours in a system that varies the length of the forecast by time of day forecasts for a shorter period. There is no need for the user to update this value directly, as it is derived from ``FCST_LEN_CYCL`` when ``FCST_LEN_HRS=-1``.
+
+``FCST_LEN_CYCL``: (Default: - '{{ FCST_LEN_HRS }}')
+   The length of forecast for each cycle date in integer hours. This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day, or if less than one day the entries must include the length of each cycle to be run. By default, set it to a 1-item list containing the standard fcst length.
+
+.. COMMENT: The FCST_LEN_CYCL array is expected to correspond to hours in the day associated with a cycling freqency. For example, a list of 4 forecast lengths with a 6 hour cycling freqency indicates that the forecast lengths correspond to 0, 6, 12, and 18 UTC.
+
+``CYCL_HRS_SPINSTART``: (Default: [])
+   An array containing the hours of the day at which the spin-up cycle starts.
+
+``CYCL_HRS_PRODSTART``: (Default: [])
+   An array containing the hours of the day at which the product cycle starts from cold start input or from a spin-up cycle forcast.
+
+``BOUNDARY_LEN_HRS``: (Default: 0)
+   The length of boundary condition for normal forecast, in integer hours.
+
+``BOUNDARY_LONG_LEN_HRS``: (Default: 0)
+   The length of boundary condition for long forecast, in integer hours.
+
+``BOUNDARY_PROC_GROUP_NUM``: (Default: 1)
+   The number of groups used to run ``make_lbcs``, in integer from 1 to forecast longest hours.
+
 
 Pre-Existing Directory Parameter
 ------------------------------------
@@ -1115,49 +1185,6 @@ Write-Component (Quilting) Parameters
 
 ``WRTCMP_dy``: (Default: "")
    Grid cell size (in meters) along the y-axis of the Lambert conformal projection. 
-
-.. _PredefGrid:
-
-Predefined Grid Parameters
-------------------------------
-
-``PREDEF_GRID_NAME``: (Default: "")
-   This parameter indicates which (if any) predefined regional grid to use for the experiment. Setting ``PREDEF_GRID_NAME`` provides a convenient method of specifying a commonly used set of grid-dependent parameters. The predefined grid settings can be viewed in the script ``ush/set_predef_grid_params.yaml``. 
-   
-   **Currently supported options:**
-   
-   | ``"RRFS_CONUS_25km"``
-   | ``"RRFS_CONUS_13km"``
-   | ``"RRFS_CONUS_3km"``
-   | ``"SUBCONUS_Ind_3km"`` 
-   
-   **Other valid values include:**
-
-   | ``"CONUS_25km_GFDLgrid"`` 
-   | ``"CONUS_3km_GFDLgrid"``
-   | ``"EMC_AK"`` 
-   | ``"EMC_HI"`` 
-   | ``"EMC_PR"`` 
-   | ``"EMC_GU"`` 
-   | ``"GSL_HAFSV0.A_25km"`` 
-   | ``"GSL_HAFSV0.A_13km"`` 
-   | ``"GSL_HAFSV0.A_3km"`` 
-   | ``"GSD_HRRR_AK_50km"``
-   | ``"RRFS_AK_13km"``
-   | ``"RRFS_AK_3km"`` 
-   | ``"RRFS_CONUScompact_25km"``
-   | ``"RRFS_CONUScompact_13km"``
-   | ``"RRFS_CONUScompact_3km"``
-   | ``"RRFS_NA_13km"`` 
-   | ``"RRFS_NA_3km"``
-   | ``"RRFS_SUBCONUS_3km"`` 
-   | ``"WoFS_3km"``
-
-.. note::
-
-   * If ``PREDEF_GRID_NAME`` is set to a valid predefined grid name, the grid generation method, the (native) grid parameters, and the write component grid parameters are set to predefined values for the specified grid, overwriting any settings of these parameters in the user-specified experiment configuration file (``config.yaml``). In addition, if the time step ``DT_ATMOS`` and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) are not specified in that configuration file, they are also set to predefined values for the specified grid.
-
-   * If ``PREDEF_GRID_NAME`` is set to an empty string, it implies that the user will provide the native grid parameters in the user-specified experiment configuration file (``config.yaml``).  In this case, the grid generation method, the native grid parameters, the write component grid parameters, the main time step (``DT_ATMOS``), and the computational parameters (``LAYOUT_X``, ``LAYOUT_Y``, and ``BLOCKSIZE``) must be set in the configuration file. Otherwise, the values of the parameters in the default experiment configuration file (``config_defaults.yaml``) will be used.
 
 Aerosol Climatology Parameter
 ---------------------------------

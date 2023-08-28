@@ -92,9 +92,9 @@ user:
   PARMdir: '{{ [HOMEdir, "parm"]|path_join }}'
   MODULESdir: '{{ [HOMEdir, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEdir, workflow.EXEC_SUBDIR]|path_join }}'
-  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}'
+  VX_CONFIG_DIR: '{{ [HOMEdir, "parm"]|path_join }}' # DELETE! 
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
-  MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
+  MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}' # DELETE! 
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
 
@@ -598,7 +598,7 @@ workflow:
   # the directory in which it is created in the build step to the executables
   # directory (EXECDIR; this is set during experiment generation).
   #
-  # DATA_TABLE_FN: Name of the file that contains the data table read in by the forecast model. 
+  # DATA_TABLE_FN: Name of the file that contains the data table read # in by the forecast model. 
   # 
   # DIAG_TABLE_FN: Prefix for the name of the file that specifies 
   # the output fields of the forecast model. 
@@ -634,14 +634,76 @@ workflow:
   # 
   # AQM_RC_TMPL_FN:
   # Template file name of resource file for NOAA Air Quality Model (AQM)
+  #  
+  #-----------------------------------------------------------------------
   #
+  EXPT_CONFIG_FN: "config.yaml"
+  CONSTANTS_FN: "constants.yaml"
+  
+  RGNL_GRID_NML_FN: "regional_grid.nml"
+  
+  FV3_NML_FN: "input.nml"
+  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
+  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
+  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
+  FV3_EXEC_FN: "ufs_model"
+
+  DATA_TABLE_FN: "data_table"
+  DIAG_TABLE_FN: "diag_table"
+  FIELD_TABLE_FN: "field_table"
+  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
+  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
+  MODEL_CONFIG_FN: "model_configure"
+  NEMS_CONFIG_FN: "nems.configure"
+  AQM_RC_FN: "aqm.rc"
+  AQM_RC_TMPL_FN: "aqm.rc"
+
+  # 
+  #-----------------------------------------------------------------------
+  # FV3_NML_BASE_SUITE_FP: Path to the FV3_NML_BASE_SUITE_FN file. 
+  # 
+  # FV3_NML_YAML_CONFIG_FP: Path to the FV3_NML_YAML_CONFIG_FN file.
+  # 
+  # FV3_NML_BASE_ENS_FP: Path to the FV3_NML_BASE_ENS_FN file. 
+  # 
+  # DATA_TABLE_TMPL_FP: Path to the DATA_TABLE_FN file. 
+  # 
+  # DIAG_TABLE_TMPL_FP: Path to the DIAG_TABLE_TMPL_FN file. 
+  # 
+  # FIELD_TABLE_TMPL_FP: Path to the FIELD_TABLE_TMPL_FN file. 
+  # 
+  # MODEL_CONFIG_TMPL_FP: Path to the MODEL_CONFIG_FN file.
+  # 
+  # NEMS_CONFIG_TMPL_FP: Path to the NEMS_CONFIG_FN file. 
+  # 
+  # AQM_RC_TMPL_FP: Path to the AQM_RC_TMPL_FN file. 
+  #  
+  #-----------------------------------------------------------------------
+  #
+
+  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
+  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
+  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
+  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
+  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
+  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
+  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
+  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
+
+  # 
+  #-----------------------------------------------------------------------
+  # These are staged in the exptdir at configuration time
+  # 
   # DATA_TABLE_FP: Path to the data table in the experiment directory. 
   # 
   # FIELD_TABLE_FP: Path to the field table in the experiment directory. 
   # 
-  # NEMS_CONFIG_FP: Path to the `NEMS_CONFIG_FN file in the experiment directory. 
+  # NEMS_CONFIG_FP: Path to the NEMS_CONFIG_FN file in the 
+  # experiment directory. 
   # 
-  # FV3_NML_FP: Path to the ``FV3_NML_FN`` file in the experiment directory.
+  # FV3_NML_FP: Path to the FV3_NML_FN file in the experiment 
+  # directory.
   # 
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)
@@ -687,51 +749,20 @@ workflow:
   # WFLOW_LAUNCH_SCRIPT_FP: Path to the workflow launch script 
   # (WFLOW_LAUNCH_SCRIPT_FN) in the experiment directory. 
   #
-  # WFLOW_LAUNCH_LOG_FP: Path to the log file (WFLOW_LAUNCH_LOG_FN) in the experiment directory that 
-  # contains output from successive calls to the workflow launch script. 
+  # WFLOW_LAUNCH_LOG_FP: Path to the log file (WFLOW_LAUNCH_LOG_FN) in 
+  # the experiment directory that contains output from successive 
+  # calls to the workflow launch script. 
   # 
   #-----------------------------------------------------------------------
   #
-  EXPT_CONFIG_FN: "config.yaml"
-  CONSTANTS_FN: "constants.yaml"
-  
-  RGNL_GRID_NML_FN: "regional_grid.nml"
-  
-  FV3_NML_FN: "input.nml"
-  FV3_NML_BASE_SUITE_FN: "{{ FV3_NML_FN }}.FV3"
-  FV3_NML_YAML_CONFIG_FN: "FV3.input.yml"
-  FV3_NML_BASE_ENS_FN: "{{ FV3_NML_FN }}.base_ens"
-  FV3_EXEC_FN: "ufs_model"
-
-  DATA_TABLE_FN: "data_table"
-  DIAG_TABLE_FN: "diag_table"
-  FIELD_TABLE_FN: "field_table"
-  DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
-  FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
-  MODEL_CONFIG_FN: "model_configure"
-  NEMS_CONFIG_FN: "nems.configure"
-  AQM_RC_FN: "aqm.rc"
-  AQM_RC_TMPL_FN: "aqm.rc"
-
-  FV3_NML_BASE_SUITE_FP: '{{ [user.PARMdir, FV3_NML_BASE_SUITE_FN]|path_join }}'
-  FV3_NML_YAML_CONFIG_FP: '{{ [user.PARMdir, FV3_NML_YAML_CONFIG_FN]|path_join }}'
-  FV3_NML_BASE_ENS_FP: '{{ [EXPTDIR, FV3_NML_BASE_ENS_FN]|path_join }}'
-  DATA_TABLE_TMPL_FP: '{{ [user.PARMdir, DATA_TABLE_FN]|path_join }}'
-  DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
-  FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
-  MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
-  AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
-
-  # These are staged in the exptdir at configuration time
   DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
-  FV3_NML_CYCSFC_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}'
-  FV3_NML_RESTART_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}'
-  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
-  FV3_NML_RESTART_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}'
+  FV3_NML_CYCSFC_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_cycsfc"]|join ]|path_join }}' # DELETE! 
+  FV3_NML_RESTART_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart"]|join ]|path_join }}' # DELETE! 
+  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}' # DELETE! 
+  FV3_NML_RESTART_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_restart_stoch"]|join ]|path_join }}' # DELETE! 
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -796,6 +827,17 @@ workflow:
   #
   # *_FN and *_FP variables set the name and paths to the suite
   # definition files used for the experiment
+  # 
+  # CCPP_PHYS_SUITE_FN: The name of the suite definition file (SDF) 
+  # used for the experiment. 
+  # 
+  # CCPP_PHYS_SUITE_IN_CCPP_FP: The full path to the suite definition 
+  # file (SDF) in the forecast model's directory structure (e.g., 
+  # /path/to/ufs-srweather-app/sorc/ufs-weather-model/FV3/ccpp/suites/$CCPP_PHYS_SUITE_FN) 
+  #
+  # CCPP_PHYS_SUITE_FP: The full path to the suite definition file 
+  # (SDF) in the experiment directory. 
+  # 
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
@@ -806,6 +848,12 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # Set the field dictionary file name and paths.
+  #
+  # FIELD_DICT_FN: The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields that is automatically generated by the NUOPC Layer. 
+  #
+  # FIELD_DICT_IN_UWM_FP: The full path to FIELD_DICT_FN within the forecast model's directory structure (e.g., /path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN).
+  #
+  # FIELD_DICT_FP: The full path to FIELD_DICT_FN in the experiment directory.
   #
   #-----------------------------------------------------------------------
   #
@@ -819,34 +867,33 @@ workflow:
   # generate a regional grid in the horizontal.  The values that it can 
   # take on are:
   #
-  # * "GFDLgrid":
-  #   This setting will generate a regional grid by first generating a 
-  #   "parent" global cubed-sphere grid and then taking a portion of tile
-  #   6 of that global grid -- referred to in the grid generation scripts
-  #   as "tile 7" even though it doesn't correspond to a complete tile --
-  #   and using it as the regional grid.  Note that the forecast is run on
-  #   only on the regional grid (i.e. tile 7, not tiles 1 through 6).
-  #
   # * "ESGgrid":
   #   This will generate a regional grid using the map projection developed
   #   by Jim Purser of EMC.
   #
+  # * "GFDLgrid":
+  #   The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. a 
+  #   Then a portion from tile 6 of the global grid is used as the regional grid. 
+  #   This regional grid is referred to in the grid generation scripts 
+  #   as "tile 7," even though it does not correspond to a complete tile.
+  #   The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). 
+  #
   # Note that:
   #
-  # 1) If the experiment is using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined 
-  #    grids), then GRID_GEN_METHOD will be reset to the value of 
+  # 1) If the experiment uses a predefined grid (i.e. if 
+  #    PREDEF_GRID_NAME is set to the name of a valid predefined 
+  #    grid), then GRID_GEN_METHOD will be reset to the value of 
   #    GRID_GEN_METHOD for that grid.  This will happen regardless of 
-  #    whether or not GRID_GEN_METHOD is assigned a value in the user-
-  #    specified experiment configuration file, i.e. any value it may be
+  #    whether GRID_GEN_METHOD is assigned a value in the user-
+  #    specified experiment configuration file. In other words, any value 
   #    assigned in the experiment configuration file will be overwritten.
   #
   # 2) If the experiment is not using one of the predefined grids (i.e. if 
   #    PREDEF_GRID_NAME is set to a null string), then GRID_GEN_METHOD must 
-  #    be set in the experiment configuration file.  Otherwise, it will 
-  #    remain set to a null string, and the experiment generation will 
-  #    fail because the generation scripts check to ensure that it is set 
-  #    to a non-empty string before creating the experiment directory.
+  #    be set in the experiment configuration file.  Otherwise, 
+  #    the experiment generation will fail because the generation 
+  #    scripts check to ensure that the grid name is set to a non-empty 
+  #    string before creating the experiment directory.
   #
   #-----------------------------------------------------------------------
   #
@@ -854,8 +901,14 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # Set PREDEF_GRID_NAME.  This parameter specifies a predefined regional
-  # grid, as follows:
+  # Set PREDEF_GRID_NAME. This parameter indicates which (if any) 
+  # predefined regional grid to use for the experiment. 
+  #
+  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
+  # commonly used set of grid-dependent parameters.  The predefined grid 
+  # parameters are specified in the script 
+  #
+  #   $HOMEdir/ush/set_predef_grid_params.py
   #
   # * If PREDEF_GRID_NAME is set to a valid predefined grid name, the grid 
   #   generation method GRID_GEN_METHOD, the (native) grid parameters, and 
@@ -867,20 +920,14 @@ workflow:
   #   they are also set to predefined values for the specified grid.
   #
   # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   is providing the native grid parameters in the user-specified 
+  #   will provide the native grid parameters in the user-specified 
   #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
   #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
-  #   and the write-component grid parameters as well as the time step 
-  #   forecast model's main time step DT_ATMOS and the computational 
-  #   parameters LAYOUT_X, LAYOUT_Y, and BLOCKSIZE must be set in that 
+  #   and the write-component grid parameters, the forecast model's 
+  # main time step DT_ATMOS, and the computational 
+  #   parameters (LAYOUT_X, LAYOUT_Y, and BLOCKSIZE) must be set in that 
   #   configuration file; otherwise, the values of all of these parameters 
   #   in this default experiment configuration file will be used.
-  #
-  # Setting PREDEF_GRID_NAME provides a convenient method of specifying a
-  # commonly used set of grid-dependent parameters.  The predefined grid 
-  # parameters are specified in the script 
-  #
-  #   $HOMEdir/ush/set_predef_grid_params.py
   #
   #-----------------------------------------------------------------------
   #
@@ -896,7 +943,7 @@ workflow:
   # include the first cycle hour.
   #
   # DATE_LAST_CYCL:
-  # Starting cylce date of the LAST forecast in the set of forecasts to run.
+  # Starting cycle date of the LAST forecast in the set of forecasts to run.
   # Format is "YYYYMMDDHH".  Note: This has recently changed to include
   # the last cycle hour.
   #
@@ -917,18 +964,18 @@ workflow:
   # FCST_LEN_CYCL:
   # The length of forecast for each cycle date in integer hours.
   # This is valid only when FCST_LEN_HRS = -1.
-  # This pattern is recurred for all cycle dates.
+  # This pattern recurs for all cycle dates.
   # Must have the same number of entries as cycles per day, or if less
   # than one day the entries must include the length of each cycle to be
   # run. By default, set it to a 1-item list containing the standard
   # fcst length.
   #
   # CYCL_HRS_SPINSTART:
-  # An array containing the hours of the day at which the spin up cycle starts.
+  # An array containing the hours of the day at which the spin-up cycle starts.
   #
   # CYCL_HRS_PRODSTART:
   # An array containing the hours of the day at which the product cycle starts,
-  # from cold start input or from spin-up cycle forcast
+  # from cold start input or from a spin-up cycle forcast
   #
   # BOUNDARY_LEN_HRS
   # The length of boundary condition for normal forecast, in integer hours.
