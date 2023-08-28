@@ -477,7 +477,7 @@ These parameters contain files and paths to files that are staged in the experim
    Name of the log file that contains the output from successive calls to the workflow launch script (``WFLOW_LAUNCH_SCRIPT_FN``).
 
 ``GLOBAL_VAR_DEFNS_FP``: (Default: '{{ [EXPTDIR, GLOBAL_VAR_DEFNS_FN] |path_join }}') 
-   Path to the global varibale definition file (``GLOBAL_VAR_DEFNS_FN``) in the experiment directory. 
+   Path to the global variable definition file (``GLOBAL_VAR_DEFNS_FN``) in the experiment directory. 
 
 ``ROCOTO_YAML_FP``: (Default: '{{ [EXPTDIR, ROCOTO_YAML_FN] |path_join }}')
    Path to the Rocoto YAML configuration file (``ROCOTO_YAML_FN``) in the experiment directory. 
