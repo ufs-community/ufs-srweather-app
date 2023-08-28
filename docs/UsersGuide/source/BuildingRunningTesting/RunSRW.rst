@@ -1109,18 +1109,20 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
    When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`).
 
+.. note::
+   Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
    .. code-block:: console
       
       cd ../../expt_dirs/test_community
 
-#. Set the environment variable ``$EXPTDIR`` for either bash or csh, respectively:
+#. Set the environment variable ``$EXPTDIR``:
 
    .. code-block:: console
 
       export EXPTDIR=`pwd`
-      setenv EXPTDIR `pwd`
 
 #. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 
