@@ -126,11 +126,11 @@ The ``workflow_tools`` conda/Python environment has already been set up on Level
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh/OR/lmod-setup.csh <platform>
+   source /path/to/etc/lmod-setup.sh
    module use /path/to/modulefiles
    module load wflow_<platform>
 
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). 
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -905,7 +905,7 @@ Optionally, an environment variable can be set to navigate to the experiment dir
 
    export EXPTDIR=/path/to/experiment/directory
 
-If the login shell is csh/tcsh, it can be set using:
+If the login shell is csh/tcsh, it can instead be set using:
 
 .. code-block:: console
 
