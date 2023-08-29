@@ -107,8 +107,8 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
                 break
         if not comment:
             cronlines.append(line)
+    # Re-join all the separate lines into a multiline string again
     crontab_no_comments = """{}""".format("\n".join(cronlines))
-    # Add crontab line
     if crontab_line in crontab_no_comments:
         log_info(
             f"""
