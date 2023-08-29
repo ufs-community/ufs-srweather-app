@@ -273,7 +273,7 @@ def run_we2e_tests(homedir, args) -> None:
         else:
             logging.info("To automatically run and monitor experiments, use:\n")
             logging.info(f"./monitor_jobs.py -y={monitor_file}\n")
-    elif args.launch == "cron":
+    else:
         logging.info("All experiments have been generated; using cron to submit workflows")
         logging.info("To view running experiments in cron try `crontab -l`")
 
