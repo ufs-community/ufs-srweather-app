@@ -218,7 +218,7 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. In general, users can download fix file data and experiment data (:term:`ICs/LBCs`) from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ and then untar it:
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <RunContainer>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. In general, users can download fix file data and experiment data (:term:`ICs/LBCs`) from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ and then untar it:
 
 .. code-block:: console
 
