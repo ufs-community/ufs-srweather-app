@@ -103,7 +103,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The SRW Application includes the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, which tags the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
+The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. The SRW Application uses the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, to pull in the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
