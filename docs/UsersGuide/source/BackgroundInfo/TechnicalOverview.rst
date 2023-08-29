@@ -64,12 +64,11 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * git v2.12+
 
-* curl 
-
-* wget
-
 * Lmod
 
+* wget 
+
+   * Only required for retrieving data using ``retrieve_data.py``. If data is prestaged, *wget* is not required. If data is retrieved using other means, *curl* may be used as an alternative. 
 
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
