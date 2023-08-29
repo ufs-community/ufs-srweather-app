@@ -144,7 +144,7 @@ When posting a question, it is recommended that users provide the following info
 * The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.1.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
 * Stage of the application when the issue appeared (i.e., configuration, build/compilation, or forecast run)
 * Configuration file contents
-* Error message or screenshot
+* Full error message (preferably in text form rather than a screenshot)
 * Current shell (e.g., bash, csh) and modules loaded
 * Compiler + MPI combination being used
 
