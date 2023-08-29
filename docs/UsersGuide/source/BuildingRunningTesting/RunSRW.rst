@@ -405,7 +405,7 @@ To determine whether the ``config.yaml`` file adjustments are valid, users can r
 
 .. code-block:: console
 
-   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml -k "(?\!rocoto\b)"
+   ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
 
 A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
