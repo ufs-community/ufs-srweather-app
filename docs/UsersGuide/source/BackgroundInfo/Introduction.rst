@@ -151,7 +151,11 @@ When posting a question, it is recommended that users provide the following info
 Bug Reports
 -------------
 
-If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change/fix --- instead, the user is unfamiliar with the system and may have misunderstood some component of the system or the instructions, which is causing them problems. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code the requires the user to file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
+If users (especially new users) believe they have identified a bug in the system, it is recommended that they first ask about the problem in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__, since many "bugs" do not require a code change/fix --- instead, the user may be unfamiliar with the system and/or may have misunderstood some component of the system or the instructions, which is causing the problem. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code. 
+
+Users are also encouraged to search `open issues <https://github.com/ufs-community/ufs-srweather-app/issues>`__ to see if their bug has already been identified. 
+
+If there is a genuine bug, and there is no open issue to address it, users can report the bug by filing a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
 
 Feature Requests and Enhancements
 -----------------------------------
