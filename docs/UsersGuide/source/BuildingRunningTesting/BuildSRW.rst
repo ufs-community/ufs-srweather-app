@@ -273,7 +273,7 @@ After running ``devbuild.sh``, the executables listed in :numref:`Table %s <Exec
    +------------------------+---------------------------------------------------------------------------------+
    | vcoord_gen             | Generates hybrid coordinate interface profiles                                  |
    +------------------------+---------------------------------------------------------------------------------+
-   | weight_gen             | Creates ESMF ``scrip`` files for gaussian grids. These NetCDF-formatted files   |
+   | weight_gen             | Creates ESMF SCRIP files for gaussian grids. These NetCDF-formatted files       |
    |                        | are used to create ESMF interpolation weight files.                             |
    +------------------------+---------------------------------------------------------------------------------+
    
