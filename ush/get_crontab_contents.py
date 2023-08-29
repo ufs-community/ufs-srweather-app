@@ -91,18 +91,32 @@ def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
     # Create backup
     run_command(f"""printf "%s" '{crontab_contents}' > '{crontab_backup_fp}'""")
 
+    # Need to omit commented crontab entries for later logic
+    lines = crontab_contents.split('\n')
+    cronlines = []
+    for line in lines:
+        comment = False
+        for char in line:
+            if char == "#":
+                comment = True
+                break
+            elif char.isspace():
+                continue
+            else:
+                # If we find a character that isn't blank or comment, then this is a normal line
+                break
+        if not comment:
+            cronlines.append(line)
+    crontab_no_comments = """{}""".format("\n".join(cronlines))
     # Add crontab line
-    if crontab_line in crontab_contents:
-
+    if crontab_line in crontab_no_comments:
         log_info(
             f"""
             The following line already exists in the cron table and thus will not be
             added:
               crontab_line = '{crontab_line}'"""
         )
-
     else:
-
         log_info(
             f"""
             Adding the following line to the user's cron table in order to automatically
