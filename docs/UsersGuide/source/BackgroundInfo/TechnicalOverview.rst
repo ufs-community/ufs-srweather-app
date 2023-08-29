@@ -201,7 +201,7 @@ SRW App SubDirectories
    +=========================+====================================================+
    | docs                    | Repository documentation                           |
    +-------------------------+----------------------------------------------------+
-   | jobs                    | J-job scripts launched by Rocoto                   |
+   | jobs                    | :term:`J-job` scripts launched by Rocoto           |
    +-------------------------+----------------------------------------------------+
    | modulefiles             | Files used to load modules needed for building and |
    |                         | running the workflow                               |
