@@ -81,7 +81,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
          ./generate_FV3LAM_wflow.py
 
-   #. Run the workflow from the experiment directory (``$EXPTDIR``). There are several methods available for this step, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the :ref:`Rocoto Workflow Manager <RocotoInfo>`. 
+   #. Run the workflow from the experiment directory (``$EXPTDIR``). By default, the path to this directory is ``${EXPT_BASEDIR}/${EXPT_SUBDIR}`` (see :numref:`Section %s <DirParams>` for more detail). There are several methods for running the workflow, which are discussed in :numref:`Section %s <Run>`. One possible method is summarized below. It requires the :ref:`Rocoto Workflow Manager <RocotoInfo>`. 
 
       .. code-block:: console
 

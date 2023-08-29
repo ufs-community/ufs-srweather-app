@@ -196,7 +196,7 @@ On generic Mac and Linux systems, users need to create a conda ``workflow_tools`
    conda install -y conda-build conda-verify
    cd path/to/your/workflow-tools/clone
    conda build recipe
-   conda create -y -n workflow_tools -c local uwtools
+   conda create -y -n workflow_tools -c local workflow_tools
    conda activate workflow_tools
 
 In future shells, you can activate and use this environment with:
