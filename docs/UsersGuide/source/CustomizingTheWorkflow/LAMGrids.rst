@@ -47,10 +47,6 @@ These four options are provided for flexibility related to compute resources and
    |                   | FV3_RAP          |
    +-------------------+------------------+
 
-.. note::
-
-   The ``FV3_RAP`` physics suite is not yet "fully supported" but is included here because it will be soon. 
-
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 
 The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in late 2024. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
@@ -60,14 +56,13 @@ Predefined 3-km CONUS Grid
 
 The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite, since this suite definition file (:term:`SDF`) was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in RRFS. The 3-km domain can also be used with the ``FV3_HRRR`` and ``FV3_WoFS`` physics suites, which likewise do not include convective parameterizations. In fact, the ``FV3_WoFS`` physics suite is configured to run at 3-km *or less* and could therefore run with even higher-resolution user-defined domains if desired. However, the ``FV3_GFS_v16`` and ``FV3_RAP`` suites generally should *not* be used with the 3-km domain because the cumulus physics used in those physics suites is not configured to run at the 3-km resolution. 
 
-.. COMMENT: Check on the FV3_RAP part of that statement...
-
 .. _RRFS_CONUS_3km:
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_3km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 3 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write-component grid (blue).*
+
 
 The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the :term:`UPP` to read in and correctly process the data.
 
@@ -99,9 +94,6 @@ Predefined 13-km Grid
 
 The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` or ``FV3_RAP`` physics suites. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
 
-.. COMMENT: Check on the FV3_RAP part of that statement...
-
-
 Predefined 25-km Grid
 ------------------------
 
@@ -122,6 +114,7 @@ Ultimately, the choice of grid is experiment-dependent and resource-dependent. F
 
 Creating User-Generated Grids
 ===============================
+
 While the four supported predefined grids are ideal for users just starting
 out with the SRW App, more advanced users may wish to create their own predefined grid for testing over
 a different region and/or with a different resolution. Creating a user-defined grid requires
@@ -168,6 +161,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    "NEW_GRID":
    
    #  The method used to generate the grid. This example is specifically for the "ESGgrid" method.
+
 
      GRID_GEN_METHOD: "ESGgrid"
    
