@@ -1,5 +1,5 @@
-Tinkering With Workflow Details
-==================================
+Customizing the Workflow
+===========================
    
 .. toctree::
    :maxdepth: 3

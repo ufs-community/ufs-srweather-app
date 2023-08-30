@@ -11,7 +11,7 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 Since the v2.1.0 release, developers have added a variety of features:
 
    * Bug fixes since the v2.1.0 release
-   * Rapid Refresh Forecast System (RRFS) capabilities
+   * Pre-implementation Rapid Refresh Forecast System (RRFS) forecast configurations
    * Air Quality Modeling (AQM) capabilities
    * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.1.0 release.
    * Support for the :term:`UPP` inline post option (see :ref:`here <InlinePost>`)
@@ -24,7 +24,7 @@ UFS Development Team. (2022, Nov. 17). Unified Forecast System (UFS) Short-Range
 User's Guide Organization 
 ============================
 
-The SRW Application documentation is organized into four sections: *Background Information*; *Building, Running, and Testing the SRW App*; *Tinkering With Workflow Details*; and *Reference*. 
+The SRW Application documentation is organized into four sections: *Background Information*; *Building, Running, and Testing the SRW App*; *Customizing the Workflow*; and *Reference*. 
 
 Background Information
 -------------------------
@@ -36,8 +36,8 @@ Background Information
 Building, Running, and Testing the SRW App
 --------------------------------------------
 
-   * :numref:`Section %s: Quick Start Guide <NCQuickstart>` is designed for use on `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ or as an overview of the workflow.
-   * :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>` explains how to run the SRW Application in a container. Containers run on a broad range of systems and come with SRW App prerequisites already installed. 
+   * :numref:`Section %s: Quick Start Guide <NCQuickstart>` is an overview of the workflow and gives instructions for its use on `Level 1 platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__.
+   * :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>` explains how to run the SRW Application in a container. Containers may be run on a broad range of systems and come with SRW App prerequisites already installed. 
    * :numref:`Section %s: Building the SRW App <BuildSRW>` provides a *detailed* explanation of how to build the SRW App. 
    * :numref:`Section %s: Running the SRW App <RunSRW>` provides a *detailed* explanation of how to run the SRW App after it has been built/compiled. It includes information on standard workflow tasks, additional optional tasks (e.g., METplus verification, plotting), and different techniques for running the workflow. 
    * :numref:`Section %s: Testing the SRW App <WE2E_tests>` explains how to run workflow end-to-end (WE2E) tests to ensure that new developments do not break the current workflow. 
@@ -48,12 +48,12 @@ Building, Running, and Testing the SRW App
 .. hint:: 
    * To get started with the SRW App, it is recommended that users try one of the following options: 
 
-      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. 
+      #. View :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. Especially helpful for users with access to a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__.
       #. To build the application in a container, which provides a more uniform work environment, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
       #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
 
-Tinkering with Workflow Details
----------------------------------
+Customizing the Workflow
+---------------------------
 
    * :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` documents all of the user-configurable experiment parameters that can be set in the user configuration file (``config.yaml``). 
    * :numref:`Section %s: Input & Output Files <InputOutputFiles>` describes application input and output files, as well as information on where to get publicly available data. 
@@ -114,7 +114,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - CCPP Technical Documentation
      - https://ccpp-techdoc.readthedocs.io/en/latest/
    * - CCPP Scientific Documentation
-     - https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/index.html
+     - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
    * - Stochastic Physics Documentation
      - https://stochastic-physics.readthedocs.io/en/latest/
    * - ESMF manual
@@ -142,16 +142,16 @@ When posting a question, it is recommended that users provide the following info
 
 * The platform or system being used (e.g., Hera, Orion, MacOS, Linux)
 * The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.1.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
-* Stage of the application when the issue appeared (i.e., configuration, build/compilation, or forecast run)
+* Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents
-* Error message or screenshot
+* Full error message (preferably in text form rather than a screenshot)
 * Current shell (e.g., bash, csh) and modules loaded
 * Compiler + MPI combination being used
 
 Bug Reports
 -------------
 
-If users have identified a bug in the system, they can report it as a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. For new users, the best approach is typically to ask about problems in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ first, since many "bugs" do not require a code change/fix --- instead, the user is unfamiliar with the system and may have misunderstood some component of the system or the instructions, which is causing them problems. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code the requires the user to file a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
+If users (especially new users) believe they have identified a bug in the system, it is recommended that they first ask about the problem in `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__, since many "bugs" do not require a code change/fix --- instead, the user may be unfamiliar with the system and/or may have misunderstood some component of the system or the instructions, which is causing the problem. Asking for assistance in a `GitHub Discussion <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ post can help clarify whether there is a simple adjustment to fix the problem or whether there is a genuine bug in the code. Users are also encouraged to search `open issues <https://github.com/ufs-community/ufs-srweather-app/issues>`__ to see if their bug has already been identified. If there is a genuine bug, and there is no open issue to address it, users can report the bug by filing a `GitHub Issue <https://github.com/ufs-community/ufs-srweather-app/issues/new/choose>`__. 
 
 Feature Requests and Enhancements
 -----------------------------------
