@@ -83,6 +83,8 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +==============+========================================================+
    | Cheyenne     | /glade/scratch/epicufsrt/containers                    |
    +--------------+--------------------------------------------------------+
+   | Gaea         | /lustre/f2/dev/role.epic/containers                    |
+   +--------------+--------------------------------------------------------+
    | Hera         | /scratch1/NCEPDEV/nems/role.epic/containers            |
    +--------------+--------------------------------------------------------+
    | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers            |
@@ -93,7 +95,7 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +--------------+--------------------------------------------------------+
 
 .. note::
-   * Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
+   * Singularity is only available on the Gaea C5 partition, and therefore container use is only supported on Gaea C5. 
    * The NOAA Cloud containers are accessible only to those with EPIC resources. 
 
 Users can simply set an environment variable to point to the container: 
