@@ -24,7 +24,7 @@ UFS Development Team. (2022, Nov. 17). Unified Forecast System (UFS) Short-Range
 User's Guide Organization 
 ============================
 
-The SRW Application documentation is organized into four sections: *Background Information*; *Building, Running, and Testing the SRW App*; *Tinkering With Workflow Details*; and *Reference*. 
+The SRW Application documentation is organized into four sections: *Background Information*; *Building, Running, and Testing the SRW App*; *Customizing the Workflow*; and *Reference*. 
 
 Background Information
 -------------------------
@@ -52,8 +52,8 @@ Building, Running, and Testing the SRW App
       #. To build the application in a container, which provides a more uniform work environment, users can refer to :numref:`Section %s: Container-Based Quick Start Guide <QuickstartC>`. 
       #. For detailed instructions on building and running the SRW App, users can refer to :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`. 
 
-Tinkering with Workflow Details
----------------------------------
+Customizing the Workflow
+---------------------------
 
    * :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` documents all of the user-configurable experiment parameters that can be set in the user configuration file (``config.yaml``). 
    * :numref:`Section %s: Input & Output Files <InputOutputFiles>` describes application input and output files, as well as information on where to get publicly available data. 
