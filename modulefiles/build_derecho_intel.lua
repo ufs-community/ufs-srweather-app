@@ -1,6 +1,6 @@
 help([[
 This module loads libraries for building the UFS SRW App on
-the CISL machine Cheyenne using Intel-2022.1
+the CISL machine Derecho (Cray) using Intel-classic-2023.0.0
 ]])
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Cheyenne ]===])
@@ -11,7 +11,8 @@ load(pathJoin("craype", os.getenv("craype_ver") or "2.7.20"))
 
 unload("netcdf")
 unload("hdf5")
-unload("intel")
+load(pathJoin("intel-classic", os.getenv("intel_classic_ver") or "2023.0.0"))
+load(pathJoin("cray-mpich", os.getenv("cray_mpich_ver") or "8.1.25"))
 
 prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/derecho/hpc-stack/intel-classic-2023.0.0/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))

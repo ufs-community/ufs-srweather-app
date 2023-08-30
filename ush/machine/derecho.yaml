@@ -2,9 +2,9 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 128
   SCHED: pbspro
-  TEST_CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
+  CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
+  MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
+  NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: main
   QUEUE_FCST: main 
@@ -30,6 +30,7 @@ platform:
   FIXorg: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
+  EXTRN_MDL_DATA_STORES: disk aws nomads
 data:
   ics_lbcs:
     FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}

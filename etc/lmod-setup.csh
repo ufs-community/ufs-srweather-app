@@ -41,12 +41,7 @@ else if ( "$L_MACHINE" == gaea ) then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init.csh
 
 else if ( "$L_MACHINE" == derecho ) then
-   module purge > /dev/null
-   setenv ENV "/glade/u/apps/derecho/23.06/spack/opt/spack/lmod/8.7.20/gcc/7.5.0/pdxb/lmod/lmod/init/csh"
-   source $ENV
-   setenv BASH_ENV "/glade/u/apps/derecho/23.06/spack/opt/spack/lmod/8.7.20/gcc/7.5.0/pdxb/lmod/lmod/init/bash"
-   setenv PATH "$MODULESHOME/libexec:$MODULESHOME/init/ksh_funcs:$PATH"
-   module --initial_load --no_redirect restore
+   module reset
 
 else if ( "$L_MACHINE" == odin ) then
    module unload modules

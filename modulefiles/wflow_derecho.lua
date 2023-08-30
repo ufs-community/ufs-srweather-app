@@ -1,9 +1,9 @@
 help([[
 This module loads python environement for running the UFS SRW App on
-on the CISL machine Cheyenne
+on the CISL machine Derecho (Cray) 
 ]])
 
-whatis([===[Loads libraries needed for running the UFS SRW App on Cheyenne ]===])
+whatis([===[Loads libraries for running the UFS SRW Workflow on Derecho ]===])
 
 load("ncarenv")
 
