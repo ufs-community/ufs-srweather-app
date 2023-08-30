@@ -25,7 +25,7 @@ The instructions in this documentation assume that users have certain background
 Additional background knowledge in the following areas could be helpful:
 
 * High-Performance Computing (HPC) Systems (for those running the SRW App on an HPC system)
-* Programming (particularly Python) for those interested in contributing to the SRW App code
+* Programming (particularly Python and bash scripting) for those interested in contributing to the SRW App code
 * Creating an SSH Tunnel to access HPC systems from the command line
 * Containerization
 * Workflow Managers/Rocoto
@@ -64,12 +64,11 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * git v2.12+
 
-* curl 
-
-* wget
-
 * Lmod
 
+* wget 
+
+   * Only required for retrieving data using ``retrieve_data.py``. If data is prestaged, *wget* is not required. If data is retrieved using other means, *curl* may be used as an alternative. 
 
 The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
@@ -104,7 +103,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. An umbrella repository is a repository that houses external code, called "externals," from additional repositories. The SRW Application includes the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, which tags the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
+The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. The SRW Application uses the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, to pull in the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -126,10 +125,6 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
      - https://github.com/NOAA-EMC/AQM-utils
    * - Repository for NEXUS
      - https://github.com/noaa-oar-arl/NEXUS
-   * - Repository for Gridpoint Statistical Interpolation (GSI)
-     - https://github.com/NOAA-EMC/GSI
-   * - Repository for Rapid Refresh Forecast System (RRFS) Utilities
-     - https://github.com/NOAA-GSL/rrfs_utl
    * - Repository for the Unified Workflow (UW) Toolkit
      - https://github.com/ufs-community/workflow-tools
 
@@ -167,8 +162,6 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    ├── scripts
    ├── sorc
    │     ├── CMakeLists.txt
-   │     ├── (gsi)
-   │     ├── (rrfs_utl)
    │     ├── (UPP)
    │     │     ├── parm
    │     │     └── sorc
@@ -208,7 +201,7 @@ SRW App SubDirectories
    +=========================+====================================================+
    | docs                    | Repository documentation                           |
    +-------------------------+----------------------------------------------------+
-   | jobs                    | J-job scripts launched by Rocoto                   |
+   | jobs                    | :term:`J-job <J-jobs>` scripts launched by Rocoto  |
    +-------------------------+----------------------------------------------------+
    | modulefiles             | Files used to load modules needed for building and |
    |                         | running the workflow                               |

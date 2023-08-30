@@ -111,7 +111,7 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages (``PyYAML``, ``Jinja2``, ``f90nml``, ``scipy``, ``matplotlib``, ``pygrib``, and ``cartopy``) built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
 
 .. _Load-WF-L1:
 
@@ -126,11 +126,11 @@ The ``workflow_tools`` conda/Python environment has already been set up on Level
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh/OR/lmod-setup.csh <platform>
+   source /path/to/etc/lmod-setup.sh
    module use /path/to/modulefiles
    module load wflow_<platform>
 
-where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). 
+where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
 
 .. note::
    If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
@@ -184,25 +184,29 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating the ``workflow_tools`` Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms:
+On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
 
 .. code-block:: console
 
-   conda create --name workflow_tools python=<python3-conda-version>
+   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
+   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
+   rm Miniforge3-Linux-aarch64.sh
+   source ~/conda/etc/profile.d/conda.sh
+   conda activate
+   conda install -y conda-build conda-verify
+   cd path/to/your/workflow-tools/clone
+   conda build recipe
+   conda create -y -n workflow_tools -c local workflow_tools
    conda activate workflow_tools
-   conda install -c conda-forge f90nml
-   conda install jinja2
-   conda install pyyaml
-   # install packages for graphics environment
-   conda install scipy
-   conda install matplotlib
-   conda install -c conda-forge pygrib
-   conda install cartopy
-   # verify the packages installed
-   conda list
-   conda deactivate
 
-where ``<python3-conda-version>`` is a numeric version (e.g., ``3.9.12``) in the conda base installation resulting from the query ``python3 --version``.
+In future shells, you can activate and use this environment with:
+
+.. code-block:: console
+
+   source ~/conda/etc/profile.d/conda.sh
+   conda activate uwtools
+
+See the `workflow-tools respository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
@@ -269,7 +273,7 @@ The user must set the specifics of their experiment configuration in a ``config.
    +--------------------------------+-------------------+------------------------------------+
    | MACHINE                        | "BIG_COMPUTER"    | "hera"                             |
    +--------------------------------+-------------------+------------------------------------+
-   | ACCOUNT                        | "project_name"    | "an_account"                       |
+   | ACCOUNT                        | ""                | "an_account"                       |
    +--------------------------------+-------------------+------------------------------------+
    | CCPA_OBS_DIR                   | ""                | ""                                 |
    +--------------------------------+-------------------+------------------------------------+
@@ -401,7 +405,7 @@ To determine whether the ``config.yaml`` file adjustments are valid, users can r
 
 .. code-block:: console
 
-   ./config_utils.py -c $PWD/config.yaml -v $PWD/config_defaults.yaml -k "(?\!rocoto\b)"
+   ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
 
 A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
@@ -592,7 +596,7 @@ Users may also wish to adjust the start, end, and increment value for the plotti
 If the user chooses not to set these values, the default values will be used (see :numref:`Section %s <PlotVars>` for defaults).
 
 .. note::
-   If a forecast starts at 18h, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
+   If a forecast starts at 18 UTC, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. 
 
 When plotting output from a single experiment, no further adjustments are necessary. The output files (in ``.png`` format) will be located in the experiment directory under the ``$CDATE/postprd`` subdirectory where ``$CDATE`` 
 corresponds to the cycle date and hour in YYYYMMDDHH format (e.g., ``2019061518``).
@@ -822,12 +826,18 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
    * - :bolditalic:`metatask_check_post_output_all_mems`
      - ``verify_pre.yaml``
      - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
-   * - :bolditalic:`metatask_PcpCombine_fcst_all_accums_all_mems`
+   * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
      - ``verify_pre.yaml``
      - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
+   * - :bolditalic:`metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems`
+     - ``verify_pre.yaml``
+     - Derive accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
+   * - :bolditalic:`metatask_GridStat_NOHRSC_all_accums_all_mems` 
+     - ``verify_det.yaml``
+     - Runs METplus grid-to-grid verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_GridStat_vx_ASNOW##h_mem###``.
    * - :bolditalic:`metatask_GridStat_MRMS_all_mems`
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for composite reflectivity and :term:`echo top`. In log files, tasks will be named like ``run_MET_GridStat_vx_REFC_mem###`` or ``run_MET_GridStat_vx_RETOP_mem###``.
@@ -838,6 +848,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
        (formerly *VX_ENSGRID_##h*)
      - ``verify_ens.yaml``
      - Runs METplus grid-to-grid ensemble verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_APCP##h`` or ``run_MET_GenEnsProd_vx_APCP##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
+   * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_NOHRSC`
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid ensemble verification for 6-h and 24-h (i.e., daily) accumulated snow. In log files, tasks will be named like ``run_MET_EnsembleStat_vx_ASNOW##h`` or ``run_MET_GenEnsProd_vx_ASNOW##h``. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GenEnsProd_EnsembleStat_MRMS` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_[REFC|RETOP]*)
      - ``verify_ens.yaml``
@@ -846,6 +859,9 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
        (formerly *VX_ENSGRID_MEAN_##h* and *VX_ENSGRID_PROB_##h*)
      - ``verify_ens.yaml``
      - Runs METplus grid-to-grid verification for (1) ensemble mean 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation and (2) 1-h, 3-h, 6-h, and 24h (i.e., daily) accumulated precipitation probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_APCP##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_APCP##h``, where ``##h`` is 01h, 03h, 06h, or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
+   * - :bolditalic:`metatask_GridStat_NOHRSC_ensmeanprob_all_accums`
+     - ``verify_ens.yaml``
+     - Runs METplus grid-to-grid verification for (1) ensemble mean 6-h and 24h (i.e., daily) accumulated snow and (2) 6-h and 24h (i.e., daily) accumulated snow probabilistic output. In log files, the ensemble mean subtask will be named like ``run_MET_GridStat_vx_ensmean_ASNOW##h`` and the ensemble probabilistic output subtask will be named like ``run_MET_GridStat_vx_ensprob_ASNOW##h``, where ``##h`` is 06h or 24h. Can only be run if ``DO_ENSEMBLE: true`` in ``config.yaml``.
    * - :bolditalic:`metatask_GridStat_MRMS_ensprob` :raw-html:`<br/> <br/>`
        (formerly *VX_ENSGRID_PROB_[REFC|RETOP]*)
      - ``verify_ens.yaml``
@@ -889,7 +905,7 @@ Optionally, an environment variable can be set to navigate to the experiment dir
 
    export EXPTDIR=/path/to/experiment/directory
 
-If the login shell is csh/tcsh, it can be set using:
+If the login shell is csh/tcsh, it can instead be set using:
 
 .. code-block:: console
 
@@ -1093,26 +1109,20 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
    When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`).
 
+.. note::
+   Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+
 #. ``cd`` into the experiment directory. For example, from ``ush``, presuming default directory settings:
 
    .. code-block:: console
       
       cd ../../expt_dirs/test_community
 
-#. Set the environment variable ``$EXPTDIR`` for either bash or csh, respectively:
+#. Set the environment variable ``$EXPTDIR``:
 
    .. code-block:: console
 
       export EXPTDIR=`pwd`
-      setenv EXPTDIR `pwd`
-
-#. Set the ``PDY`` and ``cyc`` environment variables. ``PDY`` refers to the first 8 characters (YYYYMMDD) of the ``DATE_FIRST_CYCL`` variable defined in the ``config.yaml``. ``cyc`` refers to the last two digits of ``DATE_FIRST_CYCL`` (HH) defined in ``config.yaml``. For example, if the ``config.yaml`` file defines ``DATE_FIRST_CYCL: '2019061518'``, the user should run:
-
-   .. code-block:: console 
-      
-      export PDY=20190615 && export cyc=18 
-   
-   before running the wrapper scripts.
 
 #. Copy the wrapper scripts from the ``ush`` directory into the experiment directory. Each workflow task has a wrapper script that sets environment variables and runs the job script.
 

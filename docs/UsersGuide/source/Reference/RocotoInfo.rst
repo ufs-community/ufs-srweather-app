@@ -150,7 +150,7 @@ where
 * ``-c`` is the cycle to query in YYYYMMDDHHmm format.
 * ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst_mem000``). 
 
-The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. Users will need to include the absolute or relative path to the worflow XML and database files when running the command from another directory.
+The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. Users will need to include the absolute or relative path to the workflow XML and database files when running the command from another directory.
 
 A specific example is:
 

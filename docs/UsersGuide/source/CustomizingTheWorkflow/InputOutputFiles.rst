@@ -19,8 +19,8 @@ Initial and Boundary Condition Files
 The external model files needed for initializing an experiment can be obtained in a number of
 ways, including: 
 
-   * Pulled directly from `NOMADS <https://nomads.ncep.noaa.gov/pub/data/nccf/com/>`__ (limited timespan for data availability),
-   * Pulled from the NOAA High Performance Storage System (HPSS) during the workflow execution (requires user access), or 
+   * Pulled from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__,
+   * Pulled from the NOAA High Performance Storage System (:term:`HPSS`) during the workflow execution (requires user access), or 
    * Obtained and staged by the user from a different source. 
 
 The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More information on downloading and setting up the external model data can be found in :numref:`Section %s <DownloadingStagingInput>`. Once the data is set up, the end-to-end application will run the system and write output files to disk.

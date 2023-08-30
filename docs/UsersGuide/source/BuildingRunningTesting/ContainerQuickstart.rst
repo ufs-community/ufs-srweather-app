@@ -4,7 +4,7 @@
 Container-Based Quick Start Guide
 ====================================
 
-This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity <https://sylabs.io/guides/3.5/user-guide/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via Singularity container reduces this variability and allows for a smoother SRW App build experience. 
+This Container-Based Quick Start Guide will help users build and run the "out-of-the-box" case for the Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application using a `Singularity/Apptainer <https://apptainer.org/docs/user/1.2/introduction.html>`__ container. The :term:`container` approach provides a uniform enviroment in which to build and run the SRW App. Normally, the details of building and running the SRW App vary from system to system due to the many possible combinations of operating systems, compilers, :term:`MPIs <MPI>`, and package versions available. Installation via container reduces this variability and allows for a smoother SRW App build experience. 
 
 The basic "out-of-the-box" case described in this User's Guide builds a weather forecast for June 15-16, 2019. Multiple convective weather events during these two days produced over 200 filtered storm reports. Severe weather was clustered in two areas: the Upper Midwest through the Ohio Valley and the Southern Great Plains. This forecast uses a predefined 25-km Continental United States (:term:`CONUS`) grid (RRFS_CONUS_25km), the Global Forecast System (:term:`GFS`) version 16 physics suite (FV3_GFS_v16 :term:`CCPP`), and :term:`FV3`-based GFS raw external model data for initialization.
 
@@ -23,13 +23,17 @@ Prerequisites
 
 Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is pre-installed. 
 
-Install Singularity
-^^^^^^^^^^^^^^^^^^^^^^^
+Install Singularity/Apptainer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To build and run the SRW App using a Singularity container, first install the Singularity package according to the `Singularity Installation Guide <https://docs.sylabs.io/guides/3.2/user-guide/installation.html>`__. This will include the installation of dependencies and the installation of the Go programming language. SingularityCE Version 3.7 or above is recommended. 
+.. note::
+
+   As of November 2021, the Linux-supported version of Singularity has been `renamed <https://apptainer.org/news/community-announcement-20211130/>`__ to *Apptainer*. Apptainer has maintained compatibility with Singularity, so ``singularity`` commands should work with either Singularity or Apptainer (see compatibility details `here <https://apptainer.org/docs/user/1.2/introduction.html>`__.)
+
+To build and run the SRW App using a Singularity/Apptainer container, first install the software according to the `Apptainer Installation Guide <https://apptainer.org/docs/admin/1.2/installation.html>`__. This will include the installation of all dependencies.  
 
 .. warning:: 
-   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the HPC-Stack, inside a Docker container on an HPC system. However, a Singularity image may be built directly from a Docker image for use on the system.
+   Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the spack-stack, inside a Docker container on an HPC system. However, a Singularity/Apptainer image may be built directly from a Docker image for use on the system.
 
 .. COMMENT: Update reference to HPC-Stack --> spack-stack?
 
@@ -65,7 +69,7 @@ Build the Container
 ------------------------
 
 .. hint::
-   If a ``singularity: command not found`` error message appears in any of the following steps, try running: ``module load singularity``.
+   If a ``singularity: command not found`` error message appears when working on Level 1 platforms, try running: ``module load singularity``.
 
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
@@ -79,6 +83,8 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +==============+========================================================+
    | Cheyenne     | /glade/scratch/epicufsrt/containers                    |
    +--------------+--------------------------------------------------------+
+   | Gaea         | /lustre/f2/dev/role.epic/containers                    |
+   +--------------+--------------------------------------------------------+
    | Hera         | /scratch1/NCEPDEV/nems/role.epic/containers            |
    +--------------+--------------------------------------------------------+
    | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers            |
@@ -89,7 +95,8 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +--------------+--------------------------------------------------------+
 
 .. note::
-   Singularity is not available on Gaea, and therefore container use is not supported on Gaea. 
+   * Singularity is only available on the Gaea C5 partition, and therefore container use is only supported on Gaea C5. 
+   * The NOAA Cloud containers are accessible only to those with EPIC resources. 
 
 Users can simply set an environment variable to point to the container: 
 
@@ -180,10 +187,6 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-.. COMMENT: Is this still the case? Seems to work better on mnt than lfs now...
-   .. hint::
-      On Jet, users may need to bind to an ``/lfs`` directory (e.g., ``/lfs4``) rather than ``/mnt``.
-
 If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
 
 .. code-block:: console
@@ -217,7 +220,7 @@ Users can run ``exit`` to exit the shell.
 Download and Stage the Data
 ============================
 
-The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <BuildC>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. In general, users can download fix file data and experiment data (:term:`ICs/LBCs`) from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ and then untar it:
+The SRW App requires input files to run. These include static datasets, initial and boundary condition files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available as long as the bind argument (starting with ``-B``) in :numref:`Step %s <RunContainer>` included the directory with the input model data. See :numref:`Table %s <DataLocations>` for Level 1 data locations. For Level 2-4 systems, the data must be added manually by the user. In general, users can download fix file data and experiment data (:term:`ICs/LBCs`) from the `SRW App Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ and then untar it:
 
 .. code-block:: console
 
@@ -407,18 +410,12 @@ For users who do not have Rocoto installed, see :numref:`Section %s <RunUsingSta
 Troubleshooting
 ------------------
 
-If a task goes DEAD, it will be necessary to restart it according to the instructions in :numref:`Section %s <RestartTask>`. To determine what caused the task to go DEAD, users should view the log file for the task in ``$EXPTDIR/log/<task_log>``, where ``<task_log>`` refers to the name of the task's log file. After fixing the problem and clearing the DEAD task, it is sometimes necessary to reinitialize the crontab. Users can copy-paste the crontab command from the bottom of the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file into the crontab:
+If a task goes DEAD, it will be necessary to restart it according to the instructions in :numref:`Section %s <RestartTask>`. To determine what caused the task to go DEAD, users should view the log file for the task in ``$EXPTDIR/log/<task_log>``, where ``<task_log>`` refers to the name of the task's log file. After fixing the problem and clearing the DEAD task, it is sometimes necessary to reinitialize the crontab. Run ``crontab -e`` to open your configured editor. Inside the editor, copy-paste the crontab command from the bottom of the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file into the crontab:
 
 .. code-block:: console
 
    crontab -e
-   i
    */3 * * * * cd /path/to/expt_dirs/test_community && ./launch_FV3LAM_wflow.sh called_from_cron="TRUE"
-   esc
-   :wq
-   enter
-
-.. COMMENT: Check the crontab command to reflect python workflow.s
 
 where: 
 
