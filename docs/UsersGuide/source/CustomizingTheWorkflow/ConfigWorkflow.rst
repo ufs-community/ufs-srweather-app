@@ -355,7 +355,7 @@ Set File Name Parameters
    Name of the user-specified configuration file for the forecast experiment.
 
 ``CONSTANTS_FN``: (Default: "constants.yaml")
-   Name of the file containing definitions of various mathematical, physical, and SRW App contents.
+   Name of the file containing definitions of various mathematical, physical, and SRW App constants.
 
 ``RGNL_GRID_NML_FN``: (Default: "regional_grid.nml")
    Name of the file containing namelist settings for the code that generates an "ESGgrid" regional grid.
@@ -454,6 +454,9 @@ These parameters contain files and paths to files that are staged in the experim
 
 ``FV3_NML_FP``: (Default: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}')
    Path to the ``FV3_NML_FN`` file in the experiment directory.
+
+``FV3_NML_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}')
+   .. COMMENT: Add definition!!!
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
@@ -632,18 +635,38 @@ Forecast Parameters
    The length of each forecast, in integer hours. (Or the short forecast length when there are different lengths.)
 
 ``LONG_FCST_LEN_HRS``: (Default: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}')
-   The length of the longer forecast in integer hours in a system that varies the length of the forecast by time of day forecasts for a shorter period. There is no need for the user to update this value directly, as it is derived from ``FCST_LEN_CYCL`` when ``FCST_LEN_HRS=-1``.
+   The length of the longer forecast in integer hours in a system that varies the length of the forecast by time of day. There is no need for the user to update this value directly, as it is derived from ``FCST_LEN_CYCL`` when ``FCST_LEN_HRS=-1``.
+
+.. note::
+
+   Shorter forecasts are often used to save resources. However, users may wish to gain insight further into the future. In such cases, users can periodically run a longer forecast. For example, in an experiment, a researcher might run 18-hour forecasts for most forecast hours but run a longer 48-hour forecast at "synoptic times" (e.g., 0, 6, 12, 18 hours). This is particularly common with resource-intensive :term:`DA <data assimilation>` systems that cycle frequently. 
 
 ``FCST_LEN_CYCL``: (Default: - '{{ FCST_LEN_HRS }}')
-   The length of forecast for each cycle date in integer hours. This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day, or if less than one day the entries must include the length of each cycle to be run. By default, set it to a 1-item list containing the standard fcst length.
+   The length of forecast for each cycle date in integer hours. This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day, or if less than one day the entries must include the length of each cycle to be run. By default, it is set to a 1-item list containing the standard fcst length. 
 
-.. COMMENT: The FCST_LEN_CYCL array is expected to correspond to hours in the day associated with a cycling freqency. For example, a list of 4 forecast lengths with a 6 hour cycling freqency indicates that the forecast lengths correspond to 0, 6, 12, and 18 UTC.
+.. hint::
+   The interaction of ``FCST_LEN_HRS``, ``LONG_FCST_LEN_HRS``, and ``FCST_LEN_CYCL`` can be confusing. As an example, take an experiment with cycling every three hours, a short forecast length of 18 hours, and a long forecast length of 48 hours. The long forecasts are run at the 0th and 12th forecast hours. Users would put the following entry in their configuration file: 
+
+      .. code-block:: console
+
+         FCST_LEN_HRS: -1
+         FCST_LEN_CYCL: 
+           - 48
+           - 18
+           - 18 
+           - 18 
+           - 48
+           - 18
+           - 18
+           - 18
+
+   By setting ``FCST_LEN_HRS: -1``, the experiment will derive the values of ``FCST_LEN_HRS`` (18) and ``LONG_FCST_LEN_HRS`` (48) for each cycle date. 
 
 ``CYCL_HRS_SPINSTART``: (Default: [])
    An array containing the hours of the day at which the spin-up cycle starts.
 
 ``CYCL_HRS_PRODSTART``: (Default: [])
-   An array containing the hours of the day at which the product cycle starts from cold start input or from a spin-up cycle forcast.
+   An array containing the hours of the day at which the product cycle starts from cold start input or from a spin-up cycle forecast.
 
 ``BOUNDARY_LEN_HRS``: (Default: 0)
    The length of boundary condition for normal forecast, in integer hours.
