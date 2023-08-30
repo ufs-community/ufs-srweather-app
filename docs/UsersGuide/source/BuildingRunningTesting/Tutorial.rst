@@ -52,27 +52,27 @@ On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-P
       * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/HRRR/2019061518/
       * https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#input_model_data/RAP/2019061518/
 
-Load the Regional Workflow
--------------------------------
+Load the Workflow
+--------------------
 
-To load the regional workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
+To load the workflow environment, source the lmod-setup file. Then load the workflow conda environment. From the ``ufs-srweather-app`` directory, run:
 
 .. code-block:: console
    
    source etc/lmod-setup.sh <platform>       # OR: source etc/lmod-setup.csh <platform> when running in a csh/tcsh shell
-   module use /path/to/ufs-srweather-app/modulefiles
+   module use modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the regional workflow (replacing ``User.Name`` with their actual username):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate workflow_tools``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
    module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
    module load wflow_hera
-   conda activate regional_workflow
+   conda activate workflow_tools
 
 Configuration
 -------------------------
@@ -118,7 +118,7 @@ Start in the ``user:`` section and change the ``MACHINE`` and ``ACCOUNT`` variab
 
 For a detailed description of these variables, see :numref:`Section %s <user>`.
 
-Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Chapter %s <VXCases>`.
+Users do not need to change the ``platform:`` section of the configuration file for this tutorial. The default parameters in the ``platform:`` section pertain to METplus verification, which is not addressed here. For more information on verification, see :numref:`Section %s <VXCases>`.
 
 In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PREDEF_GRID_NAME``.
 
@@ -142,24 +142,27 @@ In the ``workflow:`` section of ``config.yaml``, update ``EXPT_SUBDIR`` and ``PR
 
    Users may also want to set ``USE_CRON_TO_RELAUNCH: true`` and add ``CRON_RELAUNCH_INTVL_MNTS: 3``. This will automate submission of workflow tasks when running the experiment. However, not all systems have :term:`cron`. 
 
-``EXPT_SUBDIR:`` This variable can be changed to any name the user wants. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Users can choose any name they want, from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. For example, this tutorial helps users to compare the output from two different forecasts: one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite. Therefore, "gfsv16_physics_fcst" could be a good alternative directory name.
+``EXPT_SUBDIR:`` This variable can be changed to any name the user wants from "gfsv16_physics_fcst" to "forecast1" to "a;skdfj". However, the best names will indicate useful information about the experiment. This tutorial uses ``control`` to establish a baseline, or "control", forecast. Since this tutorial helps users to compare the output from two different forecasts --- one that uses the FV3_GFS_v16 physics suite and one that uses the FV3_RRFS_v1beta physics suite --- "gfsv16_physics_fcst" could be a good alternative directory name.
 
 ``PREDEF_GRID_NAME:`` This experiment uses the SUBCONUS_Ind_3km grid, rather than the default RRFS_CONUS_25km grid. The SUBCONUS_Ind_3km grid is a high-resolution grid (with grid cell size of approximately 3km) that covers a small area of the U.S. centered over Indianapolis, IN. For more information on this grid, see :numref:`Section %s <SUBCONUS_Ind_3km>`.
 
 For a detailed description of other ``workflow:`` variables, see :numref:`Section %s <workflow>`.
 
 To turn on the plotting for the experiment, the YAML configuration file
-should be included in the ``rocoto:taskgroups:`` section, like this:
+should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
 
 .. code-block:: console
 
   rocoto:
     tasks:
+      metatask_run_ensemble:
+         task_run_fcst_mem#mem#:
+           walltime: 02:00:00
       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 
 For more information on how to turn on/off tasks in the worklfow, please
-see :numref:`Section %s <DefineWorkflow>`
+see :numref:`Section %s <DefineWorkflow>`.
 
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
@@ -171,7 +174,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      USE_USER_STAGED_EXTRN_FILES: true
      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
-For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`.
+For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
 Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBCS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on Level 1 systems). 
 
@@ -248,6 +251,8 @@ Once the control case is running, users can return to the ``config.yaml`` file (
    
    Later, users may want to conduct additional experiments using the FV3_HRRR and FV3_WoFS_v0 physics suites. Like FV3_RRFS_v1beta, these physics suites were designed for use with high-resolution grids for storm-scale predictions. 
 
+.. COMMENT: Maybe also FV3_RAP?
+
 Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` and ``task_get_extrn_lbcs:`` to use HRRR and RAP data rather than FV3GFS data. Users will need to change the following lines in each section:
 
 .. code-block:: console
@@ -262,14 +267,21 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
 
-``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (LBCs) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
+``EXTRN_MDL_LBCS_OFFSET_HRS:`` This variable allows users to use lateral boundary conditions (:term:`LBCs`) from a previous forecast run that was started earlier than the start time of the forecast being configured in this experiment. This variable is set to 0 by default except when using RAP data; with RAP data, the default value is 3, so the forecast will look for LBCs from a forecast started 3 hours earlier (i.e., at 2019061515 --- 15z --- instead of 2019061518). To avoid this, users must set ``EXTRN_MDL_LBCS_OFFSET_HRS`` explicitly. 
 
-Add a section to ``config.yaml`` to increase the maximum wall time (``WTIME_RUN_POST``) for the postprocessing tasks. The wall time is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
+Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the postprocessing tasks. The walltime is the maximum length of time a task is allowed to run. On some systems, the default of 15 minutes may be enough, but on others (e.g., NOAA Cloud), the post-processing time exceeds 15 minutes, so the tasks fail. 
 
 .. code-block:: console
 
-   task_run_post:
-     WTIME_RUN_POST: 00:20:00
+   rocoto:
+     tasks:
+       metatask_run_ensemble:
+         task_run_fcst_mem#mem#:
+           walltime: 02:00:00
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+       metatask_run_ens_post:
+         run_fcst_mem#mem#:
+           walltime: 00:20:00
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). ``COMOUT_REF`` should provide the path to the ``control`` experiment forecast output using single quotes as shown below:
 
@@ -302,6 +314,13 @@ To see experiment progress, users should navigate to their experiment directory.
    
    If users have not automated their workflow using cron, they will need to ensure that they continue issuing ``rocotorun`` commands to launch all of the tasks in each experiment. While switching between experiment directories to run ``rocotorun`` and ``rocotostat`` commands in both directories is possible, it may be easier to finish the ``control`` experiment's tasks before starting on ``test_expt``. 
 
+As with the ``control`` experiment, users can save the location of the ``test_expt`` directory in an environment variable (e.g., ``$TEST``). This makes it easier to navigate between directories later. For example:
+
+.. code-block:: console
+
+   export TEST=/path/to/expt_dirs/test_expt
+
+Users should substitute ``/path/to/expt_dirs/test_expt`` with the actual path on their system. 
 
 Compare and Analyze Results
 -----------------------------
@@ -319,7 +338,7 @@ In summary, users can run the ``scp`` command in a new terminal/command prompt w
 
    scp username@your-IP-address:/path/to/source_file_or_directory /path/to/destination_file_or_directory
    # OR
-   scp -P 12345 username@localhost:/path/to/source_file_or_directory path/to/destination_file_or_directory
+   scp -P 12345 username@localhost:/path/to/source_file_or_directory /path/to/destination_file_or_directory
 
 Users would need to modify ``username``, ``your-IP-address``, ``-P 12345``, and the file paths to reflect their systems' information. See the :ref:`Introduction to SSH & Data Transfer <SSHDataTransfer>` for example commands. 
 
@@ -356,7 +375,7 @@ The plots generated by the experiment cover a variety of variables. After downlo
    | Max/Min 2 - 5 km updraft helicity       | uh25_diff_regional_fhhh.png       |
    +-----------------------------------------+-----------------------------------+
 
-Each difference plotting ``.png`` file contains three subplots. The plot for the second experiment (``test_expt``) appears in the top left corner, and the plot for the first experiment (``control``) appears in the top right corner. The difference plot that compares both experiments appear at the bottom. Areas of white signify no difference between the plots. Therefore, if the forecast output from both experiments is exactly the same, the difference plot will show a white square (see :ref:`Sea Level Pressure <fcst1_slp>` for an example). If the forecast output from both experiments is extremely different, the plot will show lots of color. 
+Each difference plotting ``.png`` file contains three subplots. The plot for the second experiment (``test_expt``) appears in the top left corner, and the plot for the first experiment (``control``) appears in the top right corner. The difference plot that compares both experiments appears at the bottom. Areas of white signify no difference between the plots. Therefore, if the forecast output from both experiments is exactly the same, the difference plot will show a white square (see :ref:`Sea Level Pressure <fcst1_slp>` as an example). If the forecast output from both experiments is extremely different, the plot will show lots of color. 
 
 In general, it is expected that the results for ``test_expt`` (using FV3_RRFS_v1beta physics and HRRR/RAP data) will be more accurate than the results for ``control`` (using FV3_GFS_v16 physics and FV3GFS data) because the physics in ``test_expt`` is designed for high-resolution, storm-scale prediction over a short period of time. The ``control`` experiment physics is better for predicting the evolution of larger scale weather phenomena, like jet stream movement and cyclone development, since the cumulus physics in the FV3_GFS_v16 suite is not configured to run at 3-km resolution.
 
@@ -393,7 +412,7 @@ The predictions diverge further by f012, where a solid section of light blue in 
 Composite Reflectivity
 ``````````````````````````
 
-Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.weather.gov/jetstream/refl for a more detailed explanation of composite reflectivity.
+Reflectivity images visually represent the weather based on the energy (measured in decibels [dBZ]) reflected back from radar. Composite reflectivity generates an image based on reflectivity scans at multiple elevation angles, or "tilts", of the antenna. See https://www.noaa.gov/jetstream/reflectivity for a more detailed explanation of composite reflectivity.
 
 At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. The ``test_expt`` plot has significantly more areas with high composite reflectivity values. 
 
@@ -520,7 +539,7 @@ Sample Forecast #3: Southern Plains Winter Weather Event
 Weather Summary
 --------------------
 
-A polar vortex brought arctic air to much of the U.S. and Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances between February 14, 2021 at 06z and February 17, 2021 at 06z that brought several inches of snow to Oklahoma City. A lull on February 16, 2021 resulted in record daily low temperatures. 
+A polar vortex brought arctic air to much of the U.S. and Mexico. A series of cold fronts and vorticity disturbances helped keep this cold air in place for an extended period of time, resulting in record-breaking cold temperatures for many southern states and Mexico. This particular case captures two winter weather disturbances between February 14, 2021 at 06z and February 17, 2021 at 06z that brought several inches of snow to Oklahoma City. A lull on February 16, 2021 resulted in record daily low temperatures. 
    
 **Weather Phenomena:** Snow and record-breaking cold temperatures
 
