@@ -1193,7 +1193,7 @@ task_make_grid:
   #-----------------------------------------------------------------------
   #
   # GRID_DIR:
-  # The directory in which to look for pregenerated grid files if the
+  # The directory containing pregenerated grid files when the
   # make_grid task is not set to run.
   # 
   #-----------------------------------------------------------------------
@@ -1229,21 +1229,17 @@ task_make_grid:
   # the regional grid before shaving the halo down to the width(s) expected
   # by the forecast model.  
   #
-  # ESGgrid_PAZI:
-  # The rotational parameter for the ESG grid (in degrees).
-  #
-  # In order to generate grid files containing halos that are 3-cell and
-  # 4-cell wide and orography files with halos that are 0-cell and 3-cell
-  # wide (all of which are required as inputs to the forecast model), the
-  # grid and orography tasks first create files with halos around the regional
-  # domain of width ESGgrid_WIDE_HALO_WIDTH cells.  These are first stored 
-  # in files.  The files are then read in and "shaved" down to obtain grid
+  # The forecast model requires grid files containing 3-cell- and 
+  # 4-cell-wide halos and orography files with 0-cell- and 3-cell-wide halos.
+  # In order to generate grid and orography files with appropriately-sized halos, 
+  # the grid and orography tasks create preliminary files with halos around the regional domain
+  # of width ESGgrid_WIDE_HALO_WIDTH cells. 
+  # The files are then read in and "shaved" down to obtain grid
   # files with 3-cell-wide and 4-cell-wide halos and orography files with
-  # 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  For this reason, we
-  # refer to the original halo that then gets shaved down as the "wide" 
-  # halo, i.e. because it is wider than the 0-cell-wide, 3-cell-wide, and
-  # 4-cell-wide halos that we will eventually end up with.  Note that the
-  # grid and orography files with the wide halo are only needed as intermediates
+  # 0-cell-wide (i.e. no halo) and 3-cell-wide halos.  The original halo that
+  #  gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide,  
+  # 3-cell-wide, and 4-cell-wide halos that users eventually end up with.
+  # Note that the grid and orography files with the wide halo are only needed as intermediates
   # in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos;
   # they are not needed by the forecast model.  
   # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
@@ -1276,6 +1272,9 @@ task_make_grid:
   #    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
   #       experiment configuration file, then these parameters must be set
   #       in that configuration file.
+  #
+  # ESGgrid_PAZI:
+  # The rotational parameter for the ESG grid (in degrees).
   #
   #-----------------------------------------------------------------------
   #

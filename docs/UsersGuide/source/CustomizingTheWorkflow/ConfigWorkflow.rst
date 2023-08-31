@@ -494,7 +494,7 @@ These parameters contain files and paths to files that are staged in the experim
 Experiment Fix File Paths
 ---------------------------
 
-These parameters are associated with the fixed (i.e., static) files. Unlike the parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
+These parameters are associated with the fixed (i.e., static) files. Unlike the file path parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
 
 ``FIXdir``: (Default: '{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}')
    Location where fix files will be stored for a given experiment.
@@ -834,16 +834,16 @@ The following parameters must be set if using the "ESGgrid" method to generate a
 ``ESGgrid_NY``: (Default: "")
    The number of cells in the meridional direction on the regional grid.
 
-``ESGgrid_PAZI``: (Default: "")
-   The rotational parameter for the "ESGgrid" (in degrees).
-
 ``ESGgrid_WIDE_HALO_WIDTH``: (Default: "")
-   The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. The user need not specify this variable since it is set automatically in ``set_gridparams_ESGgrid.py``
+   The width (in number of grid cells) of the :term:`halo` to add around the regional grid before shaving the halo down to the width(s) expected by the forecast model. The user need not specify this variable since it is set automatically in ``set_gridparams_ESGgrid.py``.
 
 .. _WideHalo:
 
 .. note::
    A :term:`halo` is the strip of cells surrounding the regional grid; the halo is used to feed in the lateral boundary conditions to the grid. The forecast model requires **grid** files containing 3-cell- and 4-cell-wide halos and **orography** files with 0-cell- and 3-cell-wide halos. In order to generate grid and orography files with appropriately-sized halos, the grid and orography tasks create preliminary files with halos around the regional domain of width ``ESGgrid_WIDE_HALO_WIDTH`` cells. The files are then read in and "shaved" down to obtain grid files with 3-cell-wide and 4-cell-wide halos and orography files with 0-cell-wide and 3-cell-wide halos. The original halo that gets shaved down is referred to as the "wide" halo because it is wider than the 0-cell-wide, 3-cell-wide, and 4-cell-wide halos that users eventually end up with. Note that the grid and orography files with the wide halo are only needed as intermediates in generating the files with 0-cell-, 3-cell-, and 4-cell-wide halos; they are not needed by the forecast model.
+
+``ESGgrid_PAZI``: (Default: "")
+   The rotational parameter for the "ESGgrid" (in degrees).
 
 GFDLgrid Settings
 ---------------------
