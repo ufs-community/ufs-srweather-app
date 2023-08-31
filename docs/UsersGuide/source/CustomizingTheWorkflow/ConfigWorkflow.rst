@@ -456,7 +456,7 @@ These parameters contain files and paths to files that are staged in the experim
    Path to the ``FV3_NML_FN`` file in the experiment directory.
 
 ``FV3_NML_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}')
-   .. COMMENT: Add definition!!!
+   .. COMMENT: Add definition!!! Or DELETE bc RRFS-related? Not deleted from Christina's PR tho.
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
@@ -677,25 +677,28 @@ Forecast Parameters
 ``BOUNDARY_PROC_GROUP_NUM``: (Default: 1)
    The number of groups used to run ``make_lbcs``, in integer from 1 to forecast longest hours.
 
+.. COMMENT: Revist defs of 5 vars above.
 
 Pre-Existing Directory Parameter
 ------------------------------------
 ``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, or ``"quit"``.  The behavior for each of these values is as follows:
+   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, ``"reuse"``, or ``"quit"``.  The behavior for each of these values is as follows:
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
    * **"rename":** The preexisting directory is renamed and a new directory (having the same name as the original pre-existing directory) is created. The new name of the preexisting directory consists of its original name and the suffix "_old###", where ``###`` is a 3-digit integer chosen to make the new name unique.
 
+   * **"reuse":** This method will keep the preexisting directory intact. However, when the preexisting directory is ``$EXPDIR``, this method will save all old files to a subdirectory ``oldxxx/`` and then populate new files into the ``$EXPDIR`` directory. This is useful to keep ongoing runs uninterrupted; rocotoco ``*db`` files and previous cycles will stay and hence there is no need to manually copy or move ``*db`` files and previous cycles back, and there is no need to manually restart related rocoto tasks failed during the workflow generation process. This method may be best suited for incremental system reuses.
+
    * **"quit":** The preexisting directory is left unchanged, but execution of the currently running script is terminated. In this case, the preexisting directory must be dealt with manually before rerunning the script.
 
-Verbose Parameter
----------------------
+Detailed Output Messages
+--------------------------
+These variables are flags that indicate whether to print more detailed messages.
+
 ``VERBOSE``: (Default: true)
    Flag that determines whether the experiment generation and workflow task scripts print out extra informational messages. Valid values: ``True`` | ``False``
 
-Debug Parameter
---------------------
 ``DEBUG``: (Default: false)
    Flag that determines whether to print out very detailed debugging messages.  Note that if DEBUG is set to true, then VERBOSE will also be reset to true if it isn't already. Valid values: ``True`` | ``False``
 
@@ -706,16 +709,16 @@ Other
    Type of compiler invoked during the build step. Currently, this must be set manually; it is not inherited from the build system in the ``ufs-srweather-app`` directory. Valid values: ``"intel"`` | ``"gnu"``
 
 ``SYMLINK_FIX_FILES``: (Default: true)
-   Flag that indicates whether to symlink or copy fix files to the experiment directory. 
+   Flag that indicates whether to symlink fix files to the experiment directory (if true) or copy them (if false). Valid values: ``True`` | ``False``
 
 ``DO_REAL_TIME``: (Default: false)
-   Switch for real-time run.
+   Switch for real-time run. Valid values: ``True`` | ``False``
 
 ``COLDSTART``: (Default: true)
-   Flag for turning on/off warm start for the first cycle.
+   Flag for turning on/off warm start for the first cycle. Valid values: ``True`` | ``False``
 
 ``WARMSTART_CYCLE_DIR``: (Default: "/path/to/warm/start/cycle/dir")
-   Path to the cycle directory where RESTART subdirectory is located for warm start.
+   Path to the cycle directory where RESTART subdirectory is located for warm start. 
 
 .. _NCOModeParms:
 
@@ -725,25 +728,71 @@ NCO-Specific Variables
 A standard set of environment variables has been established for *nco* mode to simplify the production workflow and improve the troubleshooting process for operational and preoperational models. These variables are only used in *nco* mode (i.e., when ``RUN_ENVIR: "nco"``). When non-default parameters are selected for the variables in this section, they should be added to the ``nco:`` section of the ``config.yaml`` file. 
 
 .. note::
-   Only *community* mode is fully supported for this release. *nco* mode is used by those at the Environmental Modeling Center (EMC) and Global Systems Laboratory (GSL) who are working on pre-implementation operational testing. Other users should run the SRW App in *community* mode. 
+   Only *community* mode is fully supported for releases. *nco* mode is used by those at the Environmental Modeling Center (EMC) and Global Systems Laboratory (GSL) who are working on pre-implementation operational testing. Other users should run the SRW App in *community* mode. 
 
-``envir, NET, model_ver, RUN``:
+``envir_default, NET_default, model_ver_default, RUN_default``:
    Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5) as follows: 
 
-   ``envir``: (Default: "para")
+   ``envir_default``: (Default: "para")
       Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. 
 
-   ``NET``: (Default: "rrfs")
+   ``NET_default``: (Default: "srw")
       Model name (first level of ``com`` directory structure)
 
-   ``model_ver``: (Default: "v1.0.0")
+   ``model_ver_default``: (Default: "v1.0.0")
       Version number of package in three digits (second level of ``com`` directory)
 
-   ``RUN``: (Default: "rrfs")
-      Name of model run (third level of ``com`` directory structure). In general, same as ``$NET``.
+   ``RUN_default``: (Default: "srw")
+      Name of model run (third level of ``com`` directory structure). In general, same as ``${NET_default}``.
 
-``OPSROOT``: (Default: "")
+``OPSROOT_default``: (Default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs')
   The operations root directory in *nco* mode.
+
+``COMROOT_default``: (Default: '{{ OPSROOT_default }}/com')
+   The ``com`` root directory for input/output data on current system (typically ``$OPSROOT_default/com``). 
+
+``DATAROOT_default``: (Default: '{{OPSROOT_default }}/tmp')
+   Directory containing the working directory, typically ``$OPSROOT_default/tmp`` in production. 
+
+``DCOMROOT_default``: (Default: '{{OPSROOT_default }}/dcom')
+   ``dcom`` root directory, typically ``$OPSROOT_default/dcom``. 
+   .. COMMENT: Improve definition!
+
+``LOGBASEDIR_default``: (Default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}')
+   Directory in which the log files from the workflow tasks will be placed.
+
+``COMIN_BASEDIR``: (Default: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}')
+   ``com`` directory for current model's input data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``
+
+``COMOUT_BASEDIR``: (Default: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}')
+   ``com`` directory for current model's output data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``
+
+``DBNROOT_default``: (Default: "")
+   Root directory for the data-alerting utilities.
+   
+``SENDECF_default``: (Default: false)
+   Boolean variable used to control ``ecflow_client`` child commands.
+
+``SENDDBN_default``: (Default: false)
+   Boolean variable used to control sending products off WCOSS2.
+
+``SENDDBN_NTC_default``: (Default: false)
+   Boolean variable used to control sending products with WMO headers off WCOSS2.
+
+``SENDCOM_default``: (Default: false)
+   Boolean variable to control data copies to ``$COMOUT``.
+
+``SENDWEB_default``: (Default: false)
+   Boolean variable used to control sending products to a web server,often ``ncorzdm``.
+
+``KEEPDATA_default``: (Default: true)
+   Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
+
+``MAILTO_default``: (Default: "")
+   List of email addresses to send email to.
+
+``MAILCC_default``: (Default: "")
+   List of email addresses to CC on email.
 
 .. _make-grid:
 
@@ -757,7 +806,7 @@ Basic Task Parameters
 
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. Typically, users do not need to adjust the default values. 
 
-   ``GRID_DIR``: (Default: "")
+   ``GRID_DIR``: (Default: '{{ [workflow.EXPTDIR, "grid"]|path_join if rocoto.tasks.get("task_make_grid") else "" }}')
       The directory containing pre-generated grid files when the ``MAKE_GRID`` task is not meant to run.
 
 .. _ESGgrid:
