@@ -639,13 +639,13 @@ Forecast Parameters
 
 .. note::
 
-   Shorter forecasts are often used to save resources. However, users may wish to gain insight further into the future. In such cases, users can periodically run a longer forecast. For example, in an experiment, a researcher might run 18-hour forecasts for most forecast hours but run a longer 48-hour forecast at "synoptic times" (e.g., 0, 6, 12, 18 hours). This is particularly common with resource-intensive :term:`DA <data assimilation>` systems that cycle frequently. 
+   Shorter forecasts are often used to save resources. However, users may wish to gain insight further into the future. In such cases, users can periodically run a longer forecast. For example, in an experiment, a researcher might run 18-hour forecasts for most forecast hours but run a longer 48-hour forecast at "synoptic times" (e.g., 0, 6, 12, 18 UTC). This is particularly common with resource-intensive :term:`DA <data assimilation>` systems that cycle frequently. 
 
 ``FCST_LEN_CYCL``: (Default: - '{{ FCST_LEN_HRS }}')
-   The length of forecast for each cycle date in integer hours. This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day, or if less than one day the entries must include the length of each cycle to be run. By default, it is set to a 1-item list containing the standard fcst length. 
+   The length of forecast for each cycle in a given day (in integer hours). This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day (as defined by 24/``INCR_CYCL_FREQ``), or if less than one day the entries must include the length of each cycle to be run. By default, it is set to a 1-item list containing the standard fcst length. 
 
 .. hint::
-   The interaction of ``FCST_LEN_HRS``, ``LONG_FCST_LEN_HRS``, and ``FCST_LEN_CYCL`` can be confusing. As an example, take an experiment with cycling every three hours, a short forecast length of 18 hours, and a long forecast length of 48 hours. The long forecasts are run at the 0th and 12th forecast hours. Users would put the following entry in their configuration file: 
+   The interaction of ``FCST_LEN_HRS``, ``LONG_FCST_LEN_HRS``, and ``FCST_LEN_CYCL`` can be confusing. As an example, take an experiment with cycling every three hours, a short forecast length of 18 hours, and a long forecast length of 48 hours. The long forecasts are run at 0 and 12 UTC. Users would put the following entry in their configuration file: 
 
       .. code-block:: console
 
