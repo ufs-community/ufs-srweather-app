@@ -49,7 +49,7 @@ These four options are provided for flexibility related to compute resources and
 
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 
-The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the prototype 3-km continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in late 2024. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
+The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the 3-km version of the continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in 2025. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
 
 Predefined 3-km CONUS Grid
 -----------------------------
@@ -211,8 +211,8 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
 Changing the Number of Vertical Levels
 ========================================
 
-The four supported predefined grids included with the SRW App have 65 vertical levels. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
-knowledge of how the SRW App interfaces with the UFS Weather Model (:term:`WM <Weather Model>`) and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for modifying the number of vertical levels on a regional grid. 
+The four supported predefined grids included with the SRW App are configured to run with 65 levels by default. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
+knowledge of how the SRW App interfaces with the UFS Weather Model (:term:`WM <Weather Model>`) and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for creating a user-defined vertical coordinate distribution on a regional grid. 
 
 Find ``ak``/``bk``
 --------------------
@@ -228,7 +228,7 @@ Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs
    cd /path/to/ufs-srweather-app/exec
    ./vcoord_gen > /path/to/vcoord_gen_outfile.txt
 
-Users should modify the output file path to save the output file in the desired location. In the SRW App, the default file defining vertical levels is named ``global_hyblev.txt``, so by convention, a file with a different number of levels is named according to its number of levels (e.g., ``global_hyblev.L128.txt``). Configuration files are typically placed in the ``parm`` directory. For example, users might run:
+Users should modify the output file path to save the output file in the desired location. In the SRW App, the default file defining vertical levels is named ``global_hyblev.txt`` and contains the default 65 levels. By convention, users who create a new vertical coodinate distribution file often append this file name with ``LXX`` or ``LXXX`` for their number of levels (e.g., ``global_hyblev.L128.txt``). Configuration files are typically placed in the ``parm`` directory. For example, users might run:
 
 .. code-block:: console 
 
