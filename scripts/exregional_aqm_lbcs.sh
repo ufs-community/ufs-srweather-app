@@ -141,7 +141,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
        else
      # File doesn't exist, wait for 5 seconds and decrement the retry count
          sync
-         sleep 60 
+         sleep 60
         ((retries--))
        fi
      done
@@ -152,9 +152,9 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
      fi
 
     echo "Checking file: ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
-    if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
+      cp "$netcdf_file" .
 
-      ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+      ncks -A ${chem_lbcs_fn} ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
       cp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
       export err=$?
       if [ $err -ne 0 ]; then
@@ -165,7 +165,6 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
           err_exit "${message_txt}"
         fi
       fi
-     fi
   done
 
   print_info_msg "
@@ -204,7 +203,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 check_file_with_recheck() {
   local file_path="$1"
   local max_rechecks=5
-  local wait_time=30
+  local wait_time=60
 
   for recheck_count in $(seq 1 $max_rechecks); do
     if [ -e "$file_path" ]; then
@@ -226,14 +225,12 @@ check_file_with_recheck() {
     ln -s ${AQM_MOFILE_FHR_FP}  .
     if [ -e "${AQM_MOFILE_FHR_FP}" ]; then
       # File exists, perform "ls" or "touch" action
-      #touch "$AQM_MOFILE_FHR_FP"  # Replace this with your desired action
       ls "$AQM_MOFILE_FHR_FP"    # Replace this with your desired action
       echo "File exists: $AQM_MOFILE_FHR_FP"
     else
       # File doesn't exist, try rechecking the file with waiting mechanism
       if check_file_with_recheck "$AQM_MOFILE_FHR_FP"; then
         # File found after recheck, perform "ls" or "touch" action
-	touch "$AQM_MOFILE_FHR_FP"  # Replace this with your desired action
 	ls "$AQM_MOFILE_FHR_FP"    # Replace this with your desired action
 	echo "File exists after recheck: $AQM_MOFILE_FHR_FP"
        else
