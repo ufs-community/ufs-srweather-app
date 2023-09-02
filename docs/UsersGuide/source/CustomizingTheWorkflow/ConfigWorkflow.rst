@@ -127,9 +127,6 @@ METplus Parameters
 
 :ref:`METplus <MetplusComponent>` is a scientific verification framework that spans a wide range of temporal and spatial scales. Many of the METplus parameters are described below, but additional documentation for the METplus components is available on the `METplus website <https://dtcenter.org/community-code/metplus>`__. 
 
-``MODEL``: (Default: "")
-   A descriptive name of the user's choice for the model being verified.
-   
 .. _METParamNote:
 
 .. note::
@@ -144,31 +141,31 @@ METplus Parameters
 ``CCPA_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
-   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/ccpa/proc``. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.    
+   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
 
    .. note::
-      There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory). The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_obs_ccpa.sh``) has an example of how to account for this and organize the data into a more intuitive format. When a fix is provided, it will be accounted for in the ``exregional_get_obs_ccpa.sh`` script.
+      There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory) for dates up until 2021-05-04. The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to account for this and organize the data into a more intuitive format.
 
 ``NOHRSC_OBS_DIR``: (Default: "")
    User-specified location of top-level directory where NOHRSC 06- and 24-hour snowfall accumulation files (available every 6 and 12 hours respectively) used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_nohrsc`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
-   METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. This path must be defind as ``/<full-path-to-obs>/nohrsc/proc``. METplus is configured to verify 06-, and 24-h accumulated precipitation using NOHRSC files.
+   METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. METplus is configured to verify 06-, and 24-h accumulated precipitation using NOHRSC files.
 
    .. note::
       Due to limited availability of NOHRSC observation data on NOAA HPSS, and the likelihood that snowfall acumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable VX_FIELDS should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
 
 ``MRMS_OBS_DIR``: (Default: "")
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defind as ``/<full-path-to-obs>/mrms/proc``. 
-   
+   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory.  
+
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
 
 .. note::
-   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified; since MRMS composite reflectivity files do not always exactly match the valid time, a script (within the main script that retrieves MRMS data from the NOAA HPSS) is used to identify and rename the MRMS composite reflectivity file to match the valid time of the forecast. The script to pull the MRMS data from the NOAA HPSS has an example of the expected file-naming structure: ``scripts/exregional_get_obs_mrms.sh``. This script calls the script used to identify the MRMS file closest to the valid time: ``ush/mrms_pull_topofhour.py``.
+   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified, which is why the minutes and seconds of the filename are hard-coded as "0000". Because MRMS composite reflectivity files do not typically match the valid time exactly, a script (``ush/mrms_pull_topofhour.py``) is called from within the MRMS task that identifies and renames the MRMS file nearest to the valid time to match the valid time of the forecast. This script can also be called separately for staging data independently of the workflow.
 
 ``NDAS_OBS_DIR``: (Default: "")
-   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. Please note, this path must be defined as ``/<full-path-to-obs>/ndas/proc``. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
-   
-   METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_obs_ndas.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
+   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
+
+   METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
 
 Test Directories
 ----------------------
@@ -322,7 +319,7 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. 
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf.
 
    * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
@@ -374,12 +371,6 @@ Compiler
 
 ``COMPILER``: (Default: "intel")
    Type of compiler invoked during the build step. Currently, this must be set manually; it is not inherited from the build system in the ``ufs-srweather-app`` directory. Valid values: ``"intel"`` | ``"gnu"``
-
-Verification Parameters
----------------------------
-
-``GET_OBS``: (Default: "get_obs")
-   Set the name of the Rocoto workflow task used to load proper module files for ``get_obs_*`` tasks. Users typically do not need to change this value. 
 
 
 .. _NCOModeParms:
@@ -942,10 +933,10 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
 ``FIXshp``: (Default: "")
    System directory where the graphics shapefiles are located. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
 
-``TOPO_DIR``: (Default: "")
+``FIXorg``: (Default: "")
    The location on disk of the static input files used by the ``make_orog`` task (i.e., ``orog.x`` and ``shave.x``). Can be the same as ``FIXgsm``.
 
-``SFC_CLIMO_INPUT_DIR``: (Default: "")
+``FIXsfc``: (Default: "")
    The location on disk of the static surface climatology input fields, used by ``sfc_climo_gen``. These files are only used if the ``MAKE_SFC_CLIMO`` task is meant to run.
 
 ``SYMLINK_FIX_FILES``: (Default: true)
