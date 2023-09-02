@@ -6,18 +6,18 @@ platform:
   TEST_MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
   DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
-  QUEUE_DEFAULT: windfall
-  QUEUE_FCST: windfall
-  QUEUE_HPSS: windfall
+  QUEUE_DEFAULT: normal
+  QUEUE_FCST: normal
+  QUEUE_HPSS: normal
   REMOVE_MEMORY: True
   PARTITION_HPSS: eslogin_c5
   RUN_CMD_FCST: srun --export=ALL  -n ${PE_MEMBER01}
   RUN_CMD_POST: srun --export=ALL  -n $nprocs
   RUN_CMD_PRDGEN: srun --export=ALL  -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: srun --export=ALL -n $nprocs
-  SCHED_NATIVE_CMD: --clusters=c5 --export=ALL
-  SCHED_NATIVE_CMD_HPSS: --clusters=es --partition=eslogin_c5 --export=ALL
+  RUN_CMD_UTILS: srun --export=ALL  --mpi=pmi2 -n $nprocs
+  SCHED_NATIVE_CMD: --clusters=c5 --partition=batch
+  SCHED_NATIVE_CMD_HPSS: --clusters=es --partition=eslogin_c5 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data
   TEST_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
