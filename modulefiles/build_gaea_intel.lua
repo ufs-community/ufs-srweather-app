@@ -16,13 +16,6 @@ load("srw_common")
 -- Need at runtime
 load("alps")
 
-local MKLROOT="/opt/intel/oneapi/mkl/2023.1.0/"
-prepend_path("LD_LIBRARY_PATH",pathJoin(MKLROOT,"lib/intel64"))
-pushenv("MKLROOT", MKLROOT)
-
---pushenv("GSI_BINARY_SOURCE_DIR", "/lustre/f2/dev/role.epic/contrib/GSI_data/fix/20230601")
---pushenv("CRAYPE_LINK_TYPE","dynamic")
-
 setenv("CC","cc")
 setenv("FC","ftn")
 setenv("CXX","CC")
@@ -30,4 +23,8 @@ setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
 setenv("CMAKE_Fortran_COMPILER","ftn")
 setenv("CMAKE_Platform","gaea.intel")
+
+setenv("CFLAGS","-diag-disable=10441")
+setenv("FFLAGS","-diag-disable=10441 -fp-model source")
+
 

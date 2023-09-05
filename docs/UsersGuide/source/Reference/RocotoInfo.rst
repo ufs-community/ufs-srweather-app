@@ -3,21 +3,23 @@
 ==================================
 Rocoto Introductory Information
 ==================================
-The tasks in the SRW Application (:numref:`Table %s <WorkflowTasksTable>`) are typically run using
-the Rocoto Workflow Manager. Rocoto is a Ruby program that communicates with the batch system on an
+The tasks in the SRW Application are typically run using the Rocoto Workflow Manager 
+(see :numref:`Table %s <WorkflowTasksTable>` for default tasks). 
+Rocoto is a Ruby program that communicates with the batch system on an
 :term:`HPC` system to run and manage dependencies between the tasks. Rocoto submits jobs to the HPC batch
 system as the task dependencies allow and runs one instance of the workflow for a set of user-defined
-:term:`cycles <cycle>`. More information about Rocoto can be found on the `Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+:term:`cycles <cycle>`. More information about Rocoto can be found on the 
+`Rocoto Wiki <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
 
 The SRW App workflow is defined in a Jinja-enabled Rocoto XML template called ``FV3LAM_wflow.xml``,
-which resides in the ``parm`` directory. When the ``generate_FV3LAM_wflow.py``
-script is run, the ``set_template`` uwtool is called, and the parameters in the template file
+which resides in the ``parm`` directory. When the ``generate_FV3LAM_wflow.py`` script is run, 
+the :ref:`Unified Workflow <uwtools>` ``set_template`` tool is called, and the parameters in the template file
 are filled in. The completed file contains the workflow task names, parameters needed by the job scheduler,
 and task interdependencies. The generated XML file is then copied to the experiment directory:
 ``$EXPTDIR/FV3LAM_wflow.xml``.
 
 There are a number of Rocoto commands available to run and monitor the workflow; users can find more information in the
-complete `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+complete `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
 Descriptions and examples of commonly used commands are discussed below.
 
 .. _RocotoRunCmd:
@@ -29,12 +31,12 @@ automatically resubmit failed tasks and can recover from system outages without 
 
 .. code-block:: console
 
-   rocotorun -w </path/to/workflow/xml/file> -d </path/to/workflow/database/file> -v 10
+   rocotorun -w /path/to/workflow/xml/file -d /path/to/workflow/database/file -v 10
 
 where 				
 
 * ``-w`` specifies the name of the workflow definition file. This must be an XML file.
-* ``-d`` specifies the name of the database file that stores the state of the workflow. The database file is a binary file created and used only by Rocoto. It need not exist prior to the first time the command is run. 
+* ``-d`` specifies the name of the database file that stores the state of the workflow. The database file is a binary file created and used only by Rocoto. It does not need to exist when the command is initially run. 
 * ``-v`` (optional) specified level of verbosity. If no level is specified, a level of 1 is used.
 
 From the ``$EXPTDIR`` directory, the ``rocotorun`` command for the workflow would be:
@@ -43,10 +45,12 @@ From the ``$EXPTDIR`` directory, the ``rocotorun`` command for the workflow woul
 
    rocotorun -w FV3LAM_wflow.xml -d FV3LAM_wflow.db
 
+Users will need to include the absolute or relative path to these files when running the command from another directory. 
+
 It is important to note that the ``rocotorun`` process is iterative; the command must be executed
 many times before the entire workflow is completed, usually every 1-10 minutes. This command can be
-placed in the user’s crontab, and cron will call it with a specified frequency. More information on
-this command can be found in the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+placed in the user’s :term:`crontab`, and cron will call it with a specified frequency. More information on
+this command can be found in the `Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
 
 The first time the ``rocotorun`` command is executed for a workflow, the files ``FV3LAM_wflow.db`` and
 ``FV3LAM_wflow_lock.db`` are created.  There is usually no need for the user to modify these files.
@@ -66,29 +70,29 @@ workflow using the ``rocotostat`` command:
 
 .. code-block:: console
 
-   rocotostat -w </path/to/workflow/xml/file> -d </path/to/workflow/database/file>
+   rocotostat -w /path/to/workflow/xml/file -d /path/to/workflow/database/file
 
 Executing this command will generate a workflow status table similar to the following:
 
 .. code-block:: console
 
-          CYCLE                TASK                   JOBID          STATE    EXIT STATUS   TRIES    DURATION
-   =============================================================================================================
-   201907010000           make_grid                  175805         QUEUED              -       0         0.0
-   201907010000           make_orog                       -              -              -       -           -
-   201907010000      make_sfc_climo                       -              -              -       -           -
-   201907010000       get_extrn_ics     druby://hfe01:36261     SUBMITTING              -       0         0.0
-   201907010000      get_extrn_lbcs     druby://hfe01:36261     SUBMITTING              -       0         0.0
-   201907010000            make_ics                       -              -              -       -           -
-   201907010000           make_lbcs                       -              -              -       -           -
-   201907010000            run_fcst                       -              -              -       -           -
-   201907010000       run_post_f000                       -              -              -       -           -
-   201907010000       run_post_f001                       -              -              -       -           -
-   201907010000       run_post_f002                       -              -              -       -           -
-   201907010000       run_post_f003                       -              -              -       -           -
-   201907010000       run_post_f004                       -              -              -       -           -
-   201907010000       run_post_f005                       -              -              -       -           -
-   201907010000       run_post_f006                       -              -              -       -           -
+          CYCLE                    TASK                   JOBID          STATE    EXIT STATUS   TRIES    DURATION
+   ===============================================================================================================
+   201907010000               make_grid                  175805         QUEUED              -       0         0.0
+   201907010000               make_orog                       -              -              -       -           -
+   201907010000          make_sfc_climo                       -              -              -       -           -
+   201907010000           get_extrn_ics     druby://hfe01:36261     SUBMITTING              -       0         0.0
+   201907010000          get_extrn_lbcs     druby://hfe01:36261     SUBMITTING              -       0         0.0
+   201907010000         make_ics_mem000                       -              -              -       -           -
+   201907010000        make_lbcs_mem000                       -              -              -       -           -
+   201907010000         run_fcst_mem000                       -              -              -       -           -
+   201907010000   run_post__mem000_f000                       -              -              -       -           -
+   201907010000   run_post__mem000_f001                       -              -              -       -           -
+   201907010000   run_post__mem000_f002                       -              -              -       -           -
+   201907010000   run_post__mem000_f003                       -              -              -       -           -
+   201907010000   run_post__mem000_f004                       -              -              -       -           -
+   201907010000   run_post__mem000_f005                       -              -              -       -           -
+   201907010000   run_post__mem000_f006                       -              -              -       -           -
 
 This table indicates that the ``make_grid`` task was sent to the batch system and is now queued, while
 the ``get_extrn_ics`` and ``get_extrn_lbcs`` tasks for the ``201907010000`` cycle are currently being
@@ -105,27 +109,28 @@ on the grid size and computational resources available), the output of the ``roc
 
 .. code-block:: console
 
-          CYCLE                 TASK        JOBID           STATE   EXIT STATUS   TRIES   DURATION
-   ====================================================================================================
-   201907010000            make_grid       175805       SUCCEEDED            0       1       10.0
-   201907010000            make_orog       175810       SUCCEEDED            0       1       27.0
-   201907010000       make_sfc_climo       175822       SUCCEEDED            0       1       38.0
-   201907010000        get_extrn_ics       175806       SUCCEEDED            0       1       37.0
-   201907010000       get_extrn_lbcs       175807       SUCCEEDED            0       1       53.0
-   201907010000             make_ics       175825       SUCCEEDED            0       1       99.0
-   201907010000            make_lbcs       175826       SUCCEEDED            0       1       90.0
-   201907010000             run_fcst       175937         RUNNING            -       0        0.0
-   201907010000        run_post_f000            -               -            -       -          -
-   201907010000        run_post_f001            -               -            -       -          -
-   201907010000        run_post_f002            -               -            -       -          -
-   201907010000        run_post_f003            -               -            -       -          -
-   201907010000        run_post_f004            -               -            -       -          -
-   201907010000        run_post_f005            -               -            -       -          -
-   201907010000        run_post_f006            -               -            -       -          -
+          CYCLE                    TASK        JOBID           STATE   EXIT STATUS   TRIES   DURATION
+   ===================================================================================================
+   201907010000               make_grid       175805       SUCCEEDED            0       1       10.0
+   201907010000               make_orog       175810       SUCCEEDED            0       1       27.0
+   201907010000          make_sfc_climo       175822       SUCCEEDED            0       1       38.0
+   201907010000           get_extrn_ics       175806       SUCCEEDED            0       1       37.0
+   201907010000          get_extrn_lbcs       175807       SUCCEEDED            0       1       53.0
+   201907010000         make_ics_mem000       175825       SUCCEEDED            0       1       99.0
+   201907010000        make_lbcs_mem000       175826       SUCCEEDED            0       1       90.0
+   201907010000         run_fcst_mem000       175937         RUNNING            -       0        0.0
+   201907010000   run_post__mem000_f000            -               -            -       -          -
+   201907010000   run_post__mem000_f001            -               -            -       -          -
+   201907010000   run_post__mem000_f002            -               -            -       -          -
+   201907010000   run_post__mem000_f003            -               -            -       -          -
+   201907010000   run_post__mem000_f004            -               -            -       -          -
+   201907010000   run_post__mem000_f005            -               -            -       -          -
+   201907010000   run_post__mem000_f006            -               -            -       -          -
 
 When the workflow runs to completion, all tasks will be marked as SUCCEEDED. The log file for each task
 is located in ``$EXPTDIR/log``. If any task fails, the corresponding log file can be checked for error
-messages. Optional arguments for the ``rocotostat`` command can be found in the `Rocoto documentation <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__.
+messages. Optional arguments for the ``rocotostat`` command can be found in the 
+`Rocoto documentation <http://christopherwharrop.github.io/rocoto/>`__.
 
 .. _rocotocheck:
 
@@ -138,35 +143,35 @@ from the ``$EXPTDIR`` directory as follows:
 
 .. code-block:: console
 
-   rocotocheck -w </path/to/workflow/xml/file> -d </path/to/workflow/database/> file -c <YYYYMMDDHHmm> -t <taskname> 
+   rocotocheck -w FV3LAM_wflow.xml -d FV3LAM_wflow.db file -c <YYYYMMDDHHmm> -t <taskname> 
 
 where 
 
-* ``-c`` is the cycle to query in YYYYMMDDHHmm format
-* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst``). 
+* ``-c`` is the cycle to query in YYYYMMDDHHmm format.
+* ``-t`` is the task name (e.g., ``make_grid``, ``get_extrn_ics``, ``run_fcst_mem000``). 
 
-The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. 
+The cycle and task names appear in the first and second columns of the table output by ``rocotostat``. Users will need to include the absolute or relative path to the workflow XML and database files when running the command from another directory.
 
 A specific example is:
 
 .. code-block:: console
 
-   rocotocheck -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst
+   rocotocheck -w /Users/John.Doe/expt_dirs/test_community/FV3LAM_wflow.xml -d /Users/John.Doe/expt_dirs/test_community/FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst_mem000
 
 Running ``rocotocheck`` will result in output similar to the following:
 
 .. code-block:: console
    :emphasize-lines: 8,19,34
 
-   Task: run_fcst
+   Task: run_fcst_mem000
       account: gsd-fv3
-      command: /scratch2/BMC/det/$USER/ufs-srweather-app/ush/load_modules_run_task.sh "run_fcst" "/scratch2/BMC/det/$USER/ufs-srweather-app/jobs/JREGIONAL_RUN_FCST"
+      command: /scratch2/BMC/det/$USER/ufs-srweather-app/ush/load_modules_run_task.sh "run_fcst_mem000" "/scratch2/BMC/det/$USER/ufs-srweather-app/jobs/JREGIONAL_RUN_FCST"
       cores: 24
       final: false
       jobname: run_FV3
-      join: /scratch2/BMC/det/$USER/expt_dirs/test_community/log/run_fcst_2019070100.log
+      join: /scratch2/BMC/det/$USER/expt_dirs/test_community/log/run_fcst_mem000_2019070100.log
       maxtries: 3
-      name: run_fcst
+      name: run_fcst_mem000
       nodes: 1:ppn=24
       queue: batch
       throttle: 9999999
@@ -212,7 +217,7 @@ command will rerun tasks in the workflow. The command line options are the same 
 						
 .. code-block:: console
 
-   rocotorewind -w </path/to/workflow/xml/file> -d </path/to/workflow/database/> file -c <YYYYMMDDHHmm> -t <taskname> 
+   rocotorewind -w /path/to/workflow/xml/file -d /path/to/workflow/database/ file -c <YYYYMMDDHHmm> -t <taskname> 
 
 Running this command will edit the Rocoto database file ``FV3LAM_wflow.db`` to remove evidence that the job has been run.
 ``rocotorewind`` is recommended over ``rocotoboot`` for restarting a task, since ``rocotoboot`` will force a specific
@@ -222,13 +227,13 @@ command to rerun the forecast task from ``$EXPTDIR`` is:
 
 .. code-block:: console
 
-   rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst
+   rocotorewind -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10 -c 201907010000 -t run_fcst_mem000
 
 rocotoboot
 ===========
 ``rocotoboot`` will force a specific task of a cycle in a Rocoto workflow to run. All dependencies and throttle
 limits are ignored, and it is generally recommended to use ``rocotorewind`` instead. An example of how to
-use this command to rerun the ``make_ics`` task from the ``$EXPTDIR`` is:
+use this command to rerun the ``make_ics`` task from ``$EXPTDIR`` is:
 
 .. code-block:: console
 
