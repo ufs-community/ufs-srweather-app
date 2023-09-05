@@ -1203,7 +1203,7 @@ task_make_grid:
   #-----------------------------------------------------------------------
   #
   # Set parameters specific to the "ESGgrid" method of generating a regional
-  # grid (i.e. for GRID_GEN_METHOD set to "ESGgrid").  Definitions:
+  # grid (i.e. for GRID_GEN_METHOD set to "ESGgrid"). Definitions:
   #
   # ESGgrid_LON_CTR:
   # The longitude of the center of the grid (in degrees).
@@ -1245,34 +1245,6 @@ task_make_grid:
   # NOTE: Probably don't need to make ESGgrid_WIDE_HALO_WIDTH a user-specified 
   #       variable.  Just set it in the function set_gridparams_ESGgrid.py.
   #
-  # Note that:
-  #
-  # 1) If the experiment is using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined
-  #    grids), then:
-  #
-  #    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
-  #       these parameters will not be used and thus do not need to be reset
-  #       to non-empty strings.
-  #
-  #    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
-  #       these parameters will get reset to the values for that grid.  
-  #       This will happen regardless of whether or not they are assigned 
-  #       values in the user-specified experiment configuration file, i.e. 
-  #       any values they may be assigned in the experiment configuration 
-  #       file will be overwritten.
-  #
-  # 2) If the experiment is not using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to a null string), then:
-  #
-  #    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
-  #       experiment configuration file, then these parameters will not be 
-  #       used and thus do not need to be reset to non-empty strings.
-  #
-  #    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
-  #       experiment configuration file, then these parameters must be set
-  #       in that configuration file.
-  #
   # ESGgrid_PAZI:
   # The rotational parameter for the ESG grid (in degrees).
   #
@@ -1292,75 +1264,22 @@ task_make_grid:
   # Set parameters specific to the "GFDLgrid" method of generating a regional
   # grid (i.e. for GRID_GEN_METHOD set to "GFDLgrid").  The following 
   # parameters will be used only if GRID_GEN_METHOD is set to "GFDLgrid". 
+  #
   # In this grid generation method:
   #
   # * The regional grid is defined with respect to a "parent" global cubed-
-  #   sphere grid.  Thus, all the parameters for a global cubed-sphere grid
-  #   must be specified in order to define this parent global grid even 
-  #   though the model equations are not integrated on (they are integrated
+  #   sphere grid. Thus, all the parameters for a global cubed-sphere grid
+  #   must be specified even though the model equations are integrated 
   #   only on the regional grid).
-  #
-  # * GFDLgrid_NUM_CELLS is the number of grid cells in either one of the two 
-  #   horizontal directions x and y on any one of the 6 tiles of the parent
-  #   global cubed-sphere grid.  The mapping from GFDLgrid_NUM_CELLS to a nominal
-  #   resolution (grid cell size) for a uniform global grid (i.e. Schmidt
-  #   stretch factor GFDLgrid_STRETCH_FAC set to 1) for several values of
-  #   GFDLgrid_NUM_CELLS is as follows:
-  #
-  #     GFDLgrid_NUM_CELLS      typical cell size
-  #     ------------      -----------------
-  #              192                  50 km
-  #              384                  25 km
-  #              768                  13 km
-  #             1152                 8.5 km
-  #             3072                 3.2 km
-  #
-  #   Note that these are only typical cell sizes.  The actual cell size on
-  #   the global grid tiles varies somewhat as we move across a tile.
-  #
-  # * Tile 6 has arbitrarily been chosen as the tile to use to orient the
-  #   global parent grid on the sphere (Earth).  This is done by specifying 
-  #   GFDLgrid_LON_T6_CTR and GFDLgrid_LAT_T6_CTR, which are the longitude
-  #   and latitude (in degrees) of the center of tile 6.
-  #
-  # * Setting the Schmidt stretching factor GFDLgrid_STRETCH_FAC to a value
-  #   greater than 1 shrinks tile 6, while setting it to a value less than 
-  #   1 (but still greater than 0) expands it.  The remaining 5 tiles change
-  #   shape as necessary to maintain global coverage of the grid.
-  #
-  # * The cell size on a given global tile depends on both GFDLgrid_NUM_CELLS and
-  #   GFDLgrid_STRETCH_FAC (since changing GFDLgrid_NUM_CELLS changes the number
-  #   of cells in the tile, and changing GFDLgrid_STRETCH_FAC modifies the
-  #   shape and size of the tile).
-  #
-  # * The regional grid is embedded within tile 6 (i.e. it doesn't extend
-  #   beyond the boundary of tile 6).  Its exact location within tile 6 is
+  # Tile 6 has arbitrarily been chosen as the tile to use to orient the
+  #   global parent grid on the sphere (Earth). 
+  # For convenience, the regional grid is denoted as "tile 7" even though it
+  # is embedded within tile 6 (i.e., it doesn't extend
+  #   beyond the boundary of tile 6). Its exact location within tile 6 is
   #   is determined by specifying the starting and ending i and j indices
   #   of the regional grid on tile 6, where i is the grid index in the x
-  #   direction and j is the grid index in the y direction.  These indices
-  #   are stored in the variables 
-  #
-  #     GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G
-  #     GFDLgrid_JSTART_OF_RGNL_DOM_ON_T6G
-  #     GFDLgrid_IEND_OF_RGNL_DOM_ON_T6G
-  #     GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G
-  #
-  # * In the forecast model code and in the experiment generation and workflow
-  #   scripts, for convenience the regional grid is denoted as "tile 7" even
-  #   though it doesn't map back to one of the 6 faces of the cube from 
-  #   which the parent global grid is generated (it maps back to only a 
-  #   subregion on face 6 since it is wholly confined within tile 6).  Tile
-  #   6 may be referred to as the "parent" tile of the regional grid.
-  #
-  # * GFDLgrid_REFINE_RATIO is the refinement ratio of the regional grid 
-  #   (tile 7) with respect to the grid on its parent tile (tile 6), i.e.
-  #   it is the number of grid cells along the boundary of the regional grid
-  #   that abut one cell on tile 6.  Thus, the cell size on the regional 
-  #   grid depends not only on GFDLgrid_NUM_CELLS and GFDLgrid_STRETCH_FAC (because
-  #   the cell size on tile 6 depends on these two parameters) but also on 
-  #   GFDLgrid_REFINE_RATIO.  Note that as on the tiles of the global grid, 
-  #   the cell size on the regional grid is not uniform but varies as we 
-  #   move across the grid.
+  #   direction and j is the grid index in the y direction.  
+  # All of this information is set in the variables below.
   #
   # Definitions of parameters that need to be specified when GRID_GEN_METHOD
   # is set to "GFDLgrid":
@@ -1371,24 +1290,53 @@ task_make_grid:
   # GFDLgrid_LAT_T6_CTR:
   # Latitude of the center of tile 6 (in degrees).
   #
-  # GFDLgrid_NUM_CELLS:
-  # Number of points in each of the two horizontal directions (x and y) on
-  # each tile of the parent global grid.  Note that the name of this parameter
-  # is really a misnomer because although it has the string "RES" (for 
-  # "resolution") in its name, it specifies number of grid cells, not grid
-  # size (in say meters or kilometers).  However, we keep this name in order
-  # to remain consistent with the usage of the word "resolution" in the 
-  # global forecast model and other auxiliary codes.
+  # GFDLgrid_NUM_CELLS: The number of grid cells in either one of the two 
+  # horizontal directions x and y on any one of the 6 tiles of the parent
+  # global cubed-sphere grid.
+  # The mapping from GFDLgrid_NUM_CELLS to a nominal
+  #   resolution (grid cell size) for a uniform global grid (i.e., a grid with Schmidt
+  #   stretch factor GFDLgrid_STRETCH_FAC set to 1) for several values of
+  #   GFDLgrid_NUM_CELLS is as follows:
   #
-  # GFDLgrid_STRETCH_FAC:
-  # Stretching factor used in the Schmidt transformation applied to the
-  # parent cubed-sphere grid.
+  #     GFDLgrid_NUM_CELLS      typical cell size
+  #     ------------      -----------------
+  #               48                 200 km
+  #               96                 100 km
+  #              192                  50 km
+  #              384                  25 km
+  #              768                  13 km
+  #             1152                 8.5 km
+  #             3072                 3.2 km
   #
-  # GFDLgrid_REFINE_RATIO:
-  # Cell refinement ratio for the regional grid, i.e. the number of cells
-  # in either the x or y direction on the regional grid (tile 7) that abut
-  # one cell on its parent tile (tile 6).
+  # * Note that these are only typical cell sizes.  The actual cell size on
+  #   the global grid tiles varies somewhat as we move across a tile and is dependent
+  # on both GFDLgrid_NUM_CELLS and on GFDLgrid_STRETCH_FAC, which 
+  # modifies the shape and size of the tile.
   #
+  # * Note that the name of this parameter
+  #   is really a misnomer because although it has the string "RES" (for 
+  #   "resolution") in its name, it specifies number of grid cells, not grid
+  #   size (e.g., in meters or kilometers). However, we keep this name in order
+  #   to remain consistent with the usage of the word "resolution" in the 
+  #   global forecast model and other auxiliary code.
+  #
+  # GFDLgrid_STRETCH_FAC: Stretching factor used in the Schmidt transformation 
+  # applied to the parent cubed-sphere grid. 
+  # Setting the Schmidt stretching factor GFDLgrid_STRETCH_FAC to a value
+  # greater than 1 shrinks tile 6, while setting it to a value less than 
+  # 1 (but still greater than 0) expands it.  The remaining 5 tiles change
+  #   shape as necessary to maintain global coverage of the grid.
+  #
+  # * GFDLgrid_REFINE_RATIO is the refinement ratio of the regional grid 
+  #   (tile 7) with respect to the grid on its parent tile (tile 6), i.e.,
+  #   it is the number of grid cells along the boundary of the regional grid
+  #   that abut one cell on tile 6.  Thus, the cell size on the regional 
+  #   grid depends not only on GFDLgrid_NUM_CELLS and GFDLgrid_STRETCH_FAC (because
+  #   the cell size on tile 6 depends on these two parameters) but also on 
+  #   GFDLgrid_REFINE_RATIO.  Note that as on the tiles of the global grid, 
+  #   the cell size on the regional grid is not uniform but varies as we move across the grid.
+  #
+  # 
   # GFDLgrid_ISTART_OF_RGNL_DOM_ON_T6G:
   # i-index on tile 6 at which the regional grid (tile 7) starts.
   #
@@ -1413,7 +1361,7 @@ task_make_grid:
   # set to false, we calculate (in the grid generation task) an "equivalent
   # global uniform cubed-sphere resolution" -- call it RES_EQUIV -- and 
   # then set RES equal to it.  RES_EQUIV is the number of grid points in 
-  # each of the x and y directions on each tile that a global UNIFORM (i.e. 
+  # each of the x and y directions on each tile that a global UNIFORM (i.e., 
   # stretch factor of 1) cubed-sphere grid would have to have in order to
   # have the same average grid size as the regional grid.  This is a more
   # useful indicator of the grid size because it takes into account the 
@@ -1424,34 +1372,6 @@ task_make_grid:
   # resolution.  Nevertheless, some users still prefer to use GFDLgrid_NUM_CELLS
   # in the file names, so we allow for that here by setting this flag to
   # true.
-  #
-  # Note that:
-  #
-  # 1) If the experiment is using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to the name of one of the valid predefined
-  #    grids), then:
-  #
-  #    a) If the value of GRID_GEN_METHOD for that grid is "GFDLgrid", then
-  #       these parameters will get reset to the values for that grid.  
-  #       This will happen regardless of whether or not they are assigned 
-  #       values in the user-specified experiment configuration file, i.e. 
-  #       any values they may be assigned in the experiment configuration 
-  #       file will be overwritten.
-  #
-  #    b) If the value of GRID_GEN_METHOD for that grid is "ESGgrid", then
-  #       these parameters will not be used and thus do not need to be reset
-  #       to non-empty strings.
-  #
-  # 2) If the experiment is not using one of the predefined grids (i.e. if 
-  #    PREDEF_GRID_NAME is set to a null string), then:
-  #
-  #    a) If GRID_GEN_METHOD is set to "GFDLgrid" in the user-specified 
-  #       experiment configuration file, then these parameters must be set
-  #       in that configuration file.
-  #
-  #    b) If GRID_GEN_METHOD is set to "ESGgrid" in the user-specified 
-  #       experiment configuration file, then these parameters will not be 
-  #       used and thus do not need to be reset to non-empty strings.
   #
   #-----------------------------------------------------------------------
   #
