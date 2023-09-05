@@ -11,11 +11,11 @@ platform:
   QUEUE_HPSS: normal
   REMOVE_MEMORY: True
   PARTITION_HPSS: eslogin_c5
-  RUN_CMD_FCST: srun --export=ALL  -n ${PE_MEMBER01}
-  RUN_CMD_POST: srun --export=ALL  -n $nprocs
-  RUN_CMD_PRDGEN: srun --export=ALL  -n $nprocs
+  RUN_CMD_FCST: srun  --mpi=pmi2 -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --mpi=pmi2 -n $nprocs
+  RUN_CMD_PRDGEN: srun --mpi=pmi2  -n $nprocs
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: srun --export=ALL  --mpi=pmi2 -n $nprocs
+  RUN_CMD_UTILS: srun --mpi=pmi2 -n $nprocs
   SCHED_NATIVE_CMD: --clusters=c5 --partition=batch
   SCHED_NATIVE_CMD_HPSS: --clusters=es --partition=eslogin_c5 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
