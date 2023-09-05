@@ -5,7 +5,7 @@ Template Variables
 ======================
 
 The SRW App's experiment configuration system supports the use of template variables
-in ``config_defaults.yaml`` and ``config.yaml``. A template variable --- or "template" --- is an experiment configuration variable that contains references to values of other variables. 
+in ``config_defaults.yaml`` and ``config.yaml``. A template variable is an experiment configuration variable that contains references to values of other variables. 
 These references are **not** set to the values of the referenced variables (or "expanded") when the experiment's variable definitions file (``var_defns.sh``) is generated or sourced.
 Instead, they are expanded and evaluated **at run time** when bash's
 ``eval`` command is used on the template. 

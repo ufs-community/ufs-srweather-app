@@ -211,6 +211,7 @@ intersphinx_mapping = {
    'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
    'met': ('https://met.readthedocs.io/en/latest/', None),
    'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
+   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/latest/', None),
 }
 
 # -- Options for todo extension ----------------------------------------------
