@@ -659,12 +659,17 @@ workflow:
   #
   # *_FN and *_FP variables set the name and paths to the suite
   # definition files used for the experiment
+  #
+  # CCPP_PHYS_DIR:
+  # The directory of the CCPP physics source code. This is needed to
+  # link table(s) contained in that repository.
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
   CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
   CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
   CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
+  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics"] |path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -950,10 +955,10 @@ nco:
   #   Name of model run (third level of com directory structure).
   #   In general, same as ${NET_default}.
   #
-  # OPSROOT_default:
+  # OPSROOT:
   # The operations root directory in NCO mode.
   #
-  # LOGBASEDIR_default:
+  # LOGBASEDIR:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
   # NWGES:

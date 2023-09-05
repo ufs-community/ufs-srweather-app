@@ -439,12 +439,14 @@ fi
 #
 #----------------------------------------------------------------------
 #
-# Copy the new NOAH MP table into the $DATA directory
+# NOAHMP table copied from CCPP physics directory into $DATA directory.
+# This is a temporary solution that will need to be changed once NOAHMP
+# is included as a submodule in the weather model.
 #
 #----------------------------------------------------------------------
 #
 
-cp_vrfy ${PARMdir}/noahmptable.tbl .
+cp_vrfy ${CCPP_PHYS_DIR}/noahmptable.tbl .
 
 #
 #-----------------------------------------------------------------------
