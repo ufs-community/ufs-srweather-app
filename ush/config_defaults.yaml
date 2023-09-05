@@ -1389,6 +1389,16 @@ task_make_grid:
 #----------------------------
 # MAKE OROG config parameters
 #-----------------------------
+#-----------------------------------------------------------------------
+# KMP_AFFINITY_MAKE_OROG: Intel Thread Affinity Interface for the make_orog task. 
+# Settings for this task are disabled because this task does not use parallelized code.
+#
+# OMP_NUM_THREADS_MAKE_OROG: The number of OpenMP threads to use for parallel regions.
+#
+# OMP_STACKSIZE_MAKE_OROG: Controls the size of the stack for threads created by the OpenMP implementation.
+#
+# OROG_DIR: The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
+#-----------------------------------------------------------------------
 task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
   OMP_NUM_THREADS_MAKE_OROG: 6
@@ -1398,6 +1408,16 @@ task_make_orog:
 #----------------------------
 # MAKE SFC CLIMO config parameters
 #-----------------------------
+#-----------------------------------------------------------------------
+# KMP_AFFINITY_MAKE_SFC_CLIMO: Intel Thread Affinity Interface for the make_sfc_climo task. 
+#
+# OMP_NUM_THREADS_MAKE_SFC_CLIMO: The number of OpenMP threads to use for parallel regions.
+#
+# OMP_STACKSIZE_MAKE_SFC_CLIMO: Controls the size of the stack for threads created by the OpenMP implementation.
+#
+# SFC_CLIMO_DIR: The directory containing pre-generated surface climatology files 
+# to use when the MAKE_SFC_CLIMO task is not meant to run.
+#-----------------------------------------------------------------------
 task_make_sfc_climo:
   KMP_AFFINITY_MAKE_SFC_CLIMO: "scatter"
   OMP_NUM_THREADS_MAKE_SFC_CLIMO: 1
@@ -1415,19 +1435,19 @@ task_get_extrn_ics:
   # Definitions:
   #
   # EXTRN_MDL_NAME_ICS:
-  #`The name of the external model that will provide fields from which 
-  # initial condition (including and surface) files will be generated for
+  # The name of the external model that will provide fields from which initial
+  # condition files, surface files, and 0-th hour boundary condition files will be generated for
   # input into the forecast model.
   #
   # EXTRN_MDL_ICS_OFFSET_HRS:
-  # Users may wish to start a forecast from a forecast of a previous cycle
-  # of an external model. This variable sets the number of hours earlier
-  # the external model started than when the FV3 forecast configured here
-  # should start. For example, the forecast should start from a 6 hour
-  # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS=6.
+  # Users may wish to start a forecast using forecast data from a previous cycle
+  # of an external model. This variable indicates how many hours earlier
+  # the external model started than the FV3 forecast configured here.
+  # For example, if the forecast should start from a 6-hour
+  # forecast of the GFS, then EXTRN_MDL_ICS_OFFSET_HRS: "6".
   #
   # FV3GFS_FILE_FMT_ICS:
-  # If using the FV3GFS model as the source of the ICs (i.e. if EXTRN_MDL_NAME_ICS
+  # If using the FV3GFS model as the source of the ICs (i.e., if EXTRN_MDL_NAME_ICS
   # is set to "FV3GFS"), this variable specifies the format of the model
   # files to use when generating the ICs.
   #
@@ -1442,10 +1462,11 @@ task_get_extrn_ics:
   # Base directories in which to search for external model files.
   #
   # EXTRN_MDL_SYSBASEDIR_ICS:
-  # Base directory on the local machine containing external model files for
-  # generating ICs on the native grid.  The way the full path containing 
-  # these files is constructed depends on the user-specified external model
-  # for ICs, i.e. EXTRN_MDL_NAME_ICS.
+  # A known location of a real data stream on a given platform. This is typically 
+  # a real-time data stream as on Hera, Jet, or WCOSS. External model files 
+  # for generating ICs on the native grid should be accessible via this data stream. 
+  # The way the full path containing these files is constructed depends on the 
+  # user-specified external model for ICs, i.e. EXTRN_MDL_NAME_ICS.
   #
   # Note that this must be defined as a null string here so that if it is 
   # specified by the user in the experiment configuration file, it remains 
@@ -1467,9 +1488,8 @@ task_get_extrn_ics:
   #
   # EXTRN_MDL_SOURCE_BASEDIR_ICS:
   # Directory in which to look for external model files for generating ICs.
-  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
-  # this directory (specifically, in a subdirectory under this directory 
-  # named "YYYYMMDDHH" consisting of the starting date and cycle hour of 
+  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in this directory 
+  # for a subdirectory named "YYYYMMDDHH" consisting of the starting date and cycle hour of 
   # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
   # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
   # the external model files specified by the array EXTRN_MDL_FILES_ICS 
@@ -1482,10 +1502,10 @@ task_get_extrn_ics:
   # the directory specified by EXTRN_MDL_SOURCE_BASEDIR_ICS.  This
   # variable is not used if USE_USER_STAGED_EXTRN_FILES is set to false.
   # A single template should be used for each model file type that is
-  # meant to be used. You may use any of the Python-style templates
+  # used. You may use any of the Python-style templates
   # allowed in the ush/retrieve_data.py script. To see the full list of
-  # supported templates, run that script with a -h option. Here is an example of
-  # setting FV3GFS nemsio input files:
+  # supported templates, run that script with a -h option. For example, to 
+  # set FV3GFS nemsio input files, add:
   #   EXTRN_MDL_FILES_ICS=( gfs.t{hh}z.atmf{fcst_hr:03d}.nemsio \
   #   gfs.t{hh}z.sfcf{fcst_hr:03d}.nemsio )
   # Or for FV3GFS grib files:
@@ -1505,7 +1525,7 @@ task_get_extrn_lbcs:
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_NAME_LBCS:
-  #`The name of the external model that will provide fields from which 
+  # The name of the external model that will provide fields from which 
   # lateral boundary condition (LBC) files (except for the 0-th hour LBC 
   # file) will be generated for input into the forecast model.
   #
@@ -1515,21 +1535,22 @@ task_get_extrn_lbcs:
   # model specified in EXTRN_MDL_NAME_LBCS must have data available at a
   # frequency greater than or equal to that implied by LBC_SPEC_INTVL_HRS.
   # For example, if LBC_SPEC_INTVL_HRS is set to 6, then the model must have
-  # data availble at least every 6 hours.  It is up to the user to ensure 
+  # data availble at least every 6 hours. It is up to the user to ensure 
   # that this is the case.
   #
   # EXTRN_MDL_LBCS_OFFSET_HRS:
   # Users may wish to use lateral boundary conditions from a forecast that
-  # was started earlier than the initial time for the FV3 forecast
-  # configured here. This variable sets the number of hours earlier
-  # the external model started than when the FV3 forecast configured here
-  # should start. For example, the forecast should use lateral boundary
-  # conditions from the GFS started 6 hours earlier, then
-  # EXTRN_MDL_LBCS_OFFSET_HRS=6. Defaults to 0 except for RAP, which
-  # uses a 3 hour offset.
+  # was started earlier than the initial time for the forecast
+  # configured here. This variable indicates how many hours earlier
+  # the external model started than the forecast configured here.
+  # For example, the forecast should use lateral boundary
+  # conditions from a GFS forecast started 6 hours earlier, then
+  # EXTRN_MDL_LBCS_OFFSET_HRS: 6. Defaults to 0 except for RAP, which
+  # uses a 3 hour offset. The default value is model-dependent and is set 
+  # in ush/set_extrn_mdl_params.py.
   #
   # FV3GFS_FILE_FMT_LBCS:
-  # If using the FV3GFS model as the source of the LBCs (i.e. if 
+  # If using the FV3GFS model as the source of the LBCs (i.e., if 
   # EXTRN_MDL_NAME_LBCS is set to "FV3GFS"), this variable specifies the 
   # format of the model files to use when generating the LBCs.
   #
@@ -1543,14 +1564,14 @@ task_get_extrn_lbcs:
   #-----------------------------------------------------------------------
   #
   # LBCS_SEARCH_HRS:
-  #  When search boundary conditions tasks from previous cycles in prep_cyc step,
+  #  When searching boundary conditions tasks from previous cycles in the prep_cyc step,
   #  For example: 0 means search start for the same cycle lbcs task.
   #               1 means search start for 1-h previous cycle lbcs task.
   #               2 means search start for 2-h previous cycle lbcs task.
   #
   # EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS:
-  #  When search boundary conditions from previous cycles in prep_start step,
-  #  the search will start at cycle before (this parameter) of current cycle.
+  #  When searching boundary conditions from previous cycles in the prep_start step,
+  #  the search will start at the cycle before (this parameter) of current cycle.
   #  For example: 0 means search start at the same cycle lbcs directory.
   #               1 means search start at 1-h previous cycle  lbcs directory.
   #               2 means search start at 2-h previous cycle  lbcs directory.

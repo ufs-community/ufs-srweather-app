@@ -912,17 +912,15 @@ MAKE_OROG Configuration Parameters
 Non-default parameters for the ``make_orog`` task are set in the ``task_make_orog:`` section of the ``config.yaml`` file. 
 
 ``KMP_AFFINITY_MAKE_OROG``: (Default: "disabled")
-   Intel Thread Affinity Interface for the ``make_orog`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity. Settings for the ``make_orog`` task is disabled because this task does not use parallelized code.
+   Intel Thread Affinity Interface for the ``make_orog`` task. See :ref:`this note <thread-affinity>` for more information on thread affinity. Settings for the ``make_orog`` task are disabled because this task does not use parallelized code.
 
 ``OMP_NUM_THREADS_MAKE_OROG``: (Default: 6)
    The number of OpenMP threads to use for parallel regions.
 
-
-
 ``OMP_STACKSIZE_MAKE_OROG``: (Default: "2048m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
-``OROG_DIR``: (Default: "")
+``OROG_DIR``: (Default: '{{ [workflow.EXPTDIR, "orog"]|path_join if rocoto.tasks.get("task_make_orog") else "" }}')
    The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
 
 .. _make-sfc-climo:
@@ -941,7 +939,7 @@ Non-default parameters for the ``make_sfc_climo`` task are set in the ``task_mak
 ``OMP_STACKSIZE_MAKE_SFC_CLIMO``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
 
-``SFC_CLIMO_DIR``: (Default: "")
+``SFC_CLIMO_DIR``: (Default: '{{ [workflow.EXPTDIR, "sfc_climo"]|path_join if rocoto.tasks.get("task_make_sfc_climo") else "" }}')
    The directory containing pre-generated surface climatology files to use when the ``MAKE_SFC_CLIMO`` task is not meant to run.
 
 .. _task_get_extrn_ics:
@@ -970,17 +968,17 @@ For each workflow task, certain parameter values must be passed to the job sched
 File and Directory Parameters
 --------------------------------
 
-``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
-   Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
-
-``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "")
-   Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
-
 ``EXTRN_MDL_SYSBASEDIR_ICS``: (Default: '')
    A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`ICs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for ICs (defined above in :numref:`Section %s <basic-get-extrn-ics>` ``EXTRN_MDL_NAME_ICS``).
 
    .. note::
       This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
+
+``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
+   Flag that determines whether the workflow will look for the external model files needed for generating :term:`ICs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
+
+``EXTRN_MDL_SOURCE_BASEDIR_ICS``: (Default: "")
+   Directory containing external model files for generating ICs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_ICS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`ICs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
 
 ``EXTRN_MDL_FILES_ICS``: (Default: "")
    Array containing templates of the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false. A single template should be used for each model file type that is used. Users may use any of the Python-style templates allowed in the ``ush/retrieve_data.py`` script. To see the full list of supported templates, run that script with the ``-h`` option. 
@@ -997,20 +995,6 @@ File and Directory Parameters
    .. code-block:: console
 
       EXTRN_MDL_FILES_ICS=[ gfs.t{hh}z.pgrb2.0p25.f{fcst_hr:03d} ]
-
-``EXTRN_MDL_DATA_STORES``: (Default: "")
-   A list of data stores where the scripts should look to find external model data. The list is in priority order. If disk information is provided via ``USE_USER_STAGED_EXTRN_FILES`` or a known location on the platform, the disk location will receive highest priority. Valid values: ``disk`` | ``hpss`` | ``aws`` | ``nomads``
-
-NOMADS Parameters
----------------------
-
-Set parameters associated with NOMADS online data.
-
-``NOMADS``: (Default: false)
-   Flag controlling whether to use NOMADS online data. Valid values: ``True`` | ``False``
-
-``NOMADS_file_type``: (Default: "nemsio")
-   Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
 .. _task_get_extrn_lbcs:
 
@@ -1029,18 +1013,38 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
    The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
 
-``LBC_SPEC_INTVL_HRS``: (Default: "6")
+``LBC_SPEC_INTVL_HRS``: (Default: 6)
    The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary update interval*. Note that the model selected in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
 
-``EXTRN_MDL_LBCS_OFFSET_HRS``: (Default: "")
-   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should use lateral boundary conditions from the GFS started 6 hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS: "6"``. Note: the default value is model-dependent and is set in ``ush/set_extrn_mdl_params.py``.
+``EXTRN_MDL_LBCS_OFFSET_HRS``: (Default: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}')
+   Users may wish to use lateral boundary conditions from a forecast that was started earlier than the start of the forecast configured here. This variable indicates how many hours earlier the external model started than the forecast configured here. For example, if the forecast should use lateral boundary conditions from a GFS forecast started six hours earlier, then ``EXTRN_MDL_LBCS_OFFSET_HRS: 6``. Note: the default value is model-dependent and is set in ``ush/set_extrn_mdl_params.py``.
 
 ``FV3GFS_FILE_FMT_LBCS``: (Default: "nemsio")
    If using the FV3GFS model as the source of the :term:`LBCs` (i.e., if ``EXTRN_MDL_NAME_LBCS: "FV3GFS"``), this variable specifies the format of the model files to use when generating the LBCs. Valid values: ``"nemsio"`` | ``"grib2"`` | ``"netcdf"``
 
+``LBCS_SEARCH_HRS``: (Default: 6)
+   When searching boundary condition tasks from previous cycles in the prep_cyc step. For example: 
+   
+   * 0 means search start for the same cycle lbcs task.
+   * 1 means search start for 1-h previous cycle lbcs task.
+   * 2 means search start for 2-h previous cycle lbcs task.
+
+``EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS``: (Default: 0)
+   When searching boundary conditions from previous cycles in the ``prep_start`` step, the search will start at the cycle before (this parameter) of current cycle. For example: 
+   
+   * 0 means search start at the same cycle lbcs directory.
+   * 1 means search start at 1-h previous cycle lbcs directory.
+   * 2 means search start at 2-h previous cycle lbcs directory.
+
 
 File and Directory Parameters
 --------------------------------
+
+``EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: '')
+   Same as ``EXTRN_MDL_SYSBASEDIR_ICS`` but for :term:`LBCs`. A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`LBCs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined above in :numref:`Section %s <basic-get-extrn-lbcs>` ``EXTRN_MDL_NAME_LBCS`` above).
+
+   .. note::
+      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
 
 ``USE_USER_STAGED_EXTRN_FILES``: (Default: false)
    Analogous to ``USE_USER_STAGED_EXTRN_FILES`` in :term:`ICs` but for :term:`LBCs`. Flag that determines whether the workflow will look for the external model files needed for generating :term:`LBCs` in user-specified directories (rather than fetching them from mass storage like NOAA :term:`HPSS`). Valid values: ``True`` | ``False``
@@ -1049,28 +1053,8 @@ File and Directory Parameters
    Analogous to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` but for :term:`LBCs` instead of :term:`ICs`.
    Directory containing external model files for generating LBCs. If ``USE_USER_STAGED_EXTRN_FILES`` is set to true, the workflow looks within this directory for a subdirectory named "YYYYMMDDHH", which contains the external model files specified by the array ``EXTRN_MDL_FILES_LBCS``. This "YYYYMMDDHH" subdirectory corresponds to the start date and cycle hour of the forecast (see :ref:`above <METParamNote>`). These files will be used to generate the :term:`LBCs` on the native FV3-LAM grid. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false.
 
-``EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: '')
-   Same as ``EXTRN_MDL_SYSBASEDIR_ICS`` but for :term:`LBCs`. A known location of a real data stream on a given platform. This is typically a real-time data stream as on Hera, Jet, or WCOSS. External model files for generating :term:`LBCs` on the native grid should be accessible via this data stream. The way the full path containing these files is constructed depends on the user-specified external model for LBCs (defined above in :numref:`Section %s <basic-get-extrn-lbcs>` ``EXTRN_MDL_NAME_LBCS`` above).
-
-   .. note::
-      This variable must be defined as a null string in ``config_defaults.yaml`` so that if it is specified by the user in the experiment configuration file (``config.yaml``), it remains set to those values, and if not, it gets set to machine-dependent values.
-
 ``EXTRN_MDL_FILES_LBCS``: (Default: "")
    Analogous to ``EXTRN_MDL_FILES_ICS`` but for :term:`LBCs` instead of :term:`ICs`. Array containing templates of the file names to search for in the ``EXTRN_MDL_SOURCE_BASEDIR_LBCS`` directory. This variable is not used if ``USE_USER_STAGED_EXTRN_FILES`` is set to false. A single template should be used for each model file type that is used. Users may use any of the Python-style templates allowed in the ``ush/retrieve_data.py`` script. To see the full list of supported templates, run that script with the ``-h`` option. For examples, see the ``EXTRN_MDL_FILES_ICS`` variable above. 
-   
-``EXTRN_MDL_DATA_STORES``: (Default: "")
-   Analogous to ``EXTRN_MDL_DATA_STORES`` in :term:`ICs` but for :term:`LBCs`. A list of data stores where the scripts should look to find external model data. The list is in priority order. If disk information is provided via ``USE_USER_STAGED_EXTRN_FILES`` or a known location on the platform, the disk location will receive highest priority. Valid values: ``disk`` | ``hpss`` | ``aws`` | ``nomads``
-
-NOMADS Parameters
----------------------
-
-Set parameters associated with NOMADS online data. Analogus to :term:`ICs` NOMADS Parameters. 
-
-``NOMADS``: (Default: false)
-   Flag controlling whether to use NOMADS online data.
-
-``NOMADS_file_type``: (Default: "nemsio")
-   Flag controlling the format of the data. Valid values: ``"GRIB2"`` | ``"grib2"`` | ``"NEMSIO"`` | ``"nemsio"``
 
 MAKE_ICS Configuration Parameters
 ======================================
