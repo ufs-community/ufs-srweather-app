@@ -94,8 +94,6 @@ for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} )
   LBC_SPEC_FCST_HRS+=("$i_lbc")
 done
 
-echo "hjp111,LBC_SPEC_FCST_HRS=",$LBC_SPEC_FCST_HRS
-
 if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
 
   ext_lbcs_file=${AQM_LBCS_FILES}
@@ -107,7 +105,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     cp ${chem_lbcs_fp} .
   else
     message_txt="The chemical LBC files do not exist:
-      CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
+    CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
     if [ "${RUN_ENVIR}" = "community" ]; then
       print_err_msg_exit "${message_txt}"
     else
@@ -246,8 +244,6 @@ check_file_with_recheck() {
 
   NUMTS="$(( FCST_LEN_HRS / LBC_SPEC_INTVL_HRS + 1 ))"
 
- #lbcfile='${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
- #mofile='${AQM_MOFILE_FN}','.nemsio'
 cat > gefs2lbc-nemsio.ini <<EOF
 &control
  tstepdiff=${TSTEPDIFF}
