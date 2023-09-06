@@ -195,8 +195,6 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   else
     AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
-#
-#
 
 check_file_with_recheck() {
   local file_path="$1"
@@ -282,7 +280,6 @@ The executable (exec_fp) for GEFS LBCs does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
   fi
-  #
 #
 #----------------------------------------------------------------------
 #
