@@ -2698,6 +2698,113 @@ cpl_aqm_parm:
   NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
+#----------------------------
+# UFS FIRE config parameters
+#-----------------------------
+fire:
+  #
+  #-----------------------------------------------------------------------
+  #
+  # UFS_FIRE:
+  # Switch for turning on fire simulation
+  #
+  # FIRE_INPUT_DIR
+  # Directory where fire input file (geo_em.d01.nc) can be found
+  #
+  # FIRE_NUM_IGNITIONS
+  # Number of fire ignitions
+  #
+  # FIRE_IGNITION_ROS1
+  # 
+  #
+  # FIRE_IGNITION_START_LAT1
+  # 
+  #
+  # FIRE_IGNITION_START_LON1
+  # 
+  #
+  # FIRE_IGNITION_END_LAT1
+  # 
+  # 
+  # FIRE_IGNITION_END_LON1
+  # 
+  # 
+  # FIRE_IGNITION_RADIUS1
+  # 
+  # 
+  # FIRE_IGNITION_START_TIME1
+  # 
+  # 
+  # FIRE_IGNITION_END_TIME1
+  #
+  # 
+  # FIRE_WIND_HEIGHT
+  # Height to interpolate winds to for calculating fire spread rate
+  # 
+  # FIRE_PRINT_MSG
+  # Debug print level for the weather model fire core. Levels greater than 1 will print extra
+  # messages to the log file at run time.
+  #   0: no extra prints
+  #   1: Extra prints
+  #   2: More extra prints
+  #   3: Even more extra prints
+  #  
+  # FIRE_FUEL_LEFT_IRL
+  # Refinements to integrate fuel_left, must be even
+  #
+  # FIRE_FUEL_LEFT_JRL
+  # Refinements to integrate fuel_left, must be even
+  #
+  # FIRE_ATM_FEEDBACK
+  # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
+  # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
+  # NOTE: ONLY ONE-WAY COUPLING IS CURRENTLY SUPPORTED
+  #
+  # FIRE_GROWS_ONLY
+  # If >0, level set function cannot increase = fire can only grow
+  # 
+  # FIRE_VISCOSITY
+  # Artificial viscosity in level set method. Maximum 1, required for FIRE_UPWINDING=0
+  # 
+  # FIRE_UPWINDING = 9
+  # 0=NONE, 1=STANDARD, 2=GODUNOV, 3=ENO, 4=SETHIAN
+  #
+  # FIRE_FUEL_LEFT_METHOD
+  # For now, use 1 only
+  # 
+  # FIRE_LFN_EXT_UP
+  # 0.=extend level set function at boundary by reflection, 1.=always up
+  #
+  # FIRE_LSM_ZCOUPLING
+  #
+  # 
+  # FIRE_LSM_ZCOUPLING_REF
+  # 
+
+  UFS_FIRE: True
+  FIRE_INPUT_DIR: ""
+  FIRE_NUM_IGNITIONS: 1
+  FIRE_IGNITION_ROS1: 0.05
+  FIRE_IGNITION_START_LAT1: 40.609
+  FIRE_IGNITION_START_LON1: -105.879
+  FIRE_IGNITION_END_LAT1: 40.609
+  FIRE_IGNITION_END_LON1: -105.879
+  FIRE_IGNITION_RADIUS1: 250
+  FIRE_IGNITION_START_TIME1: 6480
+  FIRE_IGNITION_END_TIME1: 7000
+  FIRE_WIND_HEIGHT: 5.0
+  FIRE_PRINT_MSG: 0
+  FIRE_FUEL_LEFT_IRL: 2
+  FIRE_FUEL_LEFT_JRL: 2
+  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_GROWS_ONLY: 1
+  FIRE_VISCOSITY: 0.4
+  FIRE_UPWINDING: 9
+  FIRE_FUEL_LEFT_METHOD: 1
+  FIRE_LFN_EXT_UP: 1.0
+  FIRE_LSM_ZCOUPLING: False
+  FIRE_LSM_ZCOUPLING_REF: 60.0
+
 rocoto:
   attrs: ""
   cycledefs: ""

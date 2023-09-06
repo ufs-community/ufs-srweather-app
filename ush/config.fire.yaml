@@ -1,0 +1,71 @@
+metadata:
+  description: >-
+    Sample fire config
+user:
+  RUN_ENVIR: community
+  MACHINE: cheyenne
+  ACCOUNT: NWSA0002
+platform:
+  DOMAIN_PREGEN_BASEDIR: "/glade/work/frediani/Projects/UFS-fire/UFS/pregen_dir"
+workflow:
+  USE_CRON_TO_RELAUNCH: false
+  EXPT_SUBDIR: 2020081318_CO-HRRR_3km
+  CCPP_PHYS_SUITE: FV3_HRRR
+  PREDEF_GRID_NAME: SUBCONUS_CO_3km
+  DATE_FIRST_CYCL: '2020081318'
+  DATE_LAST_CYCL: '2020081318'
+  FCST_LEN_HRS: 27
+  PREEXISTING_DIR_METHOD: rename
+  VERBOSE: true
+  COMPILER: intel
+task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: "/glade/scratch/frediani/WRF-Fire/input/HRRR"
+  EXTRN_MDL_NAME_ICS: HRRR
+  FV3GFS_FILE_FMT_ICS: grib2
+  EXTRN_MDL_FILES_ICS:
+    - '{yy}{mm}{hh}.hrrr.t{fcst_hr:02d}z.wrfprsf00.grib2'
+task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/scratch/frediani/WRF-Fire/input/HRRR"
+  EXTRN_MDL_FILES_LBCS:
+    - '{yy}{mm}{hh}.hrrr.t{fcst_hr:02d}z.wrfprsf00.grib2'
+  EXTRN_MDL_NAME_LBCS: HRRR
+  EXTRN_MDL_LBCS_OFFSET_HRS: 0
+  LBC_SPEC_INTVL_HRS: 3
+  FV3GFS_FILE_FMT_LBCS: grib2
+task_run_fcst:
+  QUILTING: true
+task_plot_allvars:
+  COMOUT_REF: ""
+fire:
+  UFS_FIRE: True
+  FIRE_INPUT_DIR: /glade/scratch/kavulich/FIRE/esmf_fork/ufs-srweather-app/fire_data
+  FIRE_NUM_IGNITIONS: 1
+  FIRE_IGNITION_ROS1: 0.05
+  FIRE_IGNITION_START_LAT1: 40.609
+  FIRE_IGNITION_START_LON1: -105.879
+  FIRE_IGNITION_END_LAT1: 40.609
+  FIRE_IGNITION_END_LON1: -105.879
+  FIRE_IGNITION_RADIUS1: 250
+  FIRE_IGNITION_START_TIME1: 6480
+  FIRE_IGNITION_END_TIME1: 7000
+  FIRE_WIND_HEIGHT: 5.0
+  FIRE_PRINT_MSG: 1
+  FIRE_FUEL_LEFT_IRL: 2
+  FIRE_FUEL_LEFT_JRL: 2
+  FIRE_ATM_FEEDBACK: 0.0
+  FIRE_GROWS_ONLY: 1
+  FIRE_VISCOSITY: 0.4
+  FIRE_UPWINDING: 9
+  FIRE_FUEL_LEFT_METHOD: 1
+  FIRE_LFN_EXT_UP: 1.0
+  FIRE_LSM_ZCOUPLING: False
+  FIRE_LSM_ZCOUPLING_REF: 60.0
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 02:00:00
+

@@ -1532,6 +1532,31 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         logging.debug(f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}')
 
 
+    # -----------------------------------------------------------------------
+    #
+    # Check that UFS FIRE settings are correct and consistent
+    #
+    # -----------------------------------------------------------------------
+    fire_conf = expt_config["fire"]
+    if fire_conf["UFS_FIRE"]:
+        fire_input_file=os.path.join(fire_conf["FIRE_INPUT_DIR"],"geo_em.d01.nc")
+        if not os.path.isfile(fire_input_file):
+            raise FileNotFoundError(
+                dedent(
+                    f"""
+                The fire input file (geo_em.d01.nc) does not exist in the specified directory:
+                {fire_conf["FIRE_INPUT_DIR"]}
+                Check that the specified path is correct, and that the file exists and is readable
+                """
+                )
+            )
+        # Only one-way coupling supported for now
+        if fire_conf["FIRE_ATM_FEEDBACK"] > 0.0:
+            raise ValueError("Two-way coupling not supported; FIRE_ATM_FEEDBACK cannot be > 0.0")
+
+        if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
+            raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
+
     #
     # -----------------------------------------------------------------------
     #
