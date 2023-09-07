@@ -1585,7 +1585,7 @@ task_get_extrn_lbcs:
   # EXTRN_MDL_SYSBASEDIR_LBCS:
   # Same as EXTRN_MDL_SYSBASEDIR_ICS but for LBCs.
   #
-  # Note that this must be defined as a null string here so that if it is 
+  # Note that this variable must be defined as a null string here so that if it is 
   # specified by the user in the experiment configuration file, it remains 
   # set to those values, and if not, it gets set to machine-dependent 
   # values.
@@ -1599,7 +1599,7 @@ task_get_extrn_lbcs:
   # User-staged external model directories and files.  Definitions:
   #
   # USE_USER_STAGED_EXTRN_FILES:
-  # Analogous to USE_USER_STAGED_EXTRN_FILES in ICS but for LBCs
+  # Analogous to USE_USER_STAGED_EXTRN_FILES in ICS but for LBCs.
   #
   # EXTRN_MDL_SOURCE_BASEDIR_LBCS:
   # Analogous to EXTRN_MDL_SOURCE_BASEDIR_ICS but for LBCs instead of ICs.
@@ -1617,6 +1617,13 @@ task_get_extrn_lbcs:
 # MAKE ICS config parameters
 #-----------------------------
 task_make_ics:
+  #-----------------------------------------------------------------------
+  # KMP_AFFINITY_MAKE_ICS: Intel Thread Affinity Interface for the make_ics task. 
+  #
+  # OMP_NUM_THREADS_MAKE_ICS: The number of OpenMP threads to use for parallel regions.
+  #
+  # OMP_STACKSIZE_MAKE_ICS: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-----------------------------------------------------------------------
   KMP_AFFINITY_MAKE_ICS: "scatter"
   OMP_NUM_THREADS_MAKE_ICS: 1
   OMP_STACKSIZE_MAKE_ICS: "1024m"
@@ -1627,19 +1634,19 @@ task_make_ics:
   # Flag set to update surface conditions in FV3-LAM with fields generated
   # from the Finite Volume Community Ocean Model (FVCOM). This will
   # replace lake/sea surface temperature, ice surface temperature, and ice
-  # placement. FVCOM data must already be interpolated to the desired
-  # FV3-LAM grid. This flag will be used in make_ics to modify sfc_data.nc
-  # after chgres_cube is run by running the routine process_FVCOM.exe
+  # placement. This flag will be used in make_ics to modify sfc_data.nc
+  # after chgres_cube is run by running the routine process_FVCOM.exe 
+  # FVCOM data must already be interpolated to the desired FV3-LAM grid. 
   #
   # FVCOM_WCSTART:
-  # Define if this is a "warm" start or a "cold" start. Setting this to 
-  # "warm" will read in sfc_data.nc generated in a RESTART directory.
-  # Setting this to "cold" will read in the sfc_data.nc generated from 
+  # Define whether this is a "warm" start or a "cold" start. Setting this to 
+  # "warm" will read in the sfc_data.nc file generated in a RESTART directory.
+  # Setting this to "cold" will read in the sfc_data.nc file generated from 
   # chgres_cube in the make_ics portion of the workflow.
   #
   # FVCOM_DIR:
   # User defined directory where FVCOM data already interpolated to FV3-LAM
-  # grid is located. File name in this path should be "fvcom.nc" to allow
+  # grid is located. The file in this directory must be named fvcom.nc
   #
   # FVCOM_FILE:
   # Name of file located in FVCOM_DIR that has FVCOM data interpolated to 
@@ -1662,6 +1669,16 @@ task_make_ics:
 # MAKE LBCS config parameters
 #-----------------------------
 task_make_lbcs:
+  #------------------------------------------------------------------------
+  #
+  # KMP_AFFINITY_MAKE_LBCS: Intel Thread Affinity Interface for the make_lbcs task. 
+  # OMP_NUM_THREADS_MAKE_LBCS: The number of OpenMP threads to use for parallel regions.
+  # OMP_STACKSIZE_MAKE_LBCS: Controls the size of the stack for threads created by the OpenMP implementation.
+  #
+  # VCOORD_FILE: Full path to the file used to set the vertical coordinates in FV3. 
+  # This file should be the same in both make_ics and make_lbcs.
+#
+#------------------------------------------------------------------------
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
@@ -1696,15 +1713,12 @@ task_run_fcst:
   # guide/openmp-support/openmp-library-support/thread-affinity-interface-
   # linux-and-windows.html
   # 
-  # OMP_NUM_THREADS_*:
+  # OMP_NUM_THREADS_RUN_FCST:
   # The number of OpenMP threads to use for parallel regions.
   # 
-  # OMP_STACKSIZE_*:
+  # OMP_STACKSIZE_RUN_FCST:
   # Controls the size of the stack for threads created by the OpenMP 
   # implementation.
-  #
-  # Note that settings for the make_grid and make_orog tasks are not 
-  # included below as they do not use parallelized code.
   #
   #-----------------------------------------------------------------------
   #
@@ -1752,8 +1766,7 @@ task_run_fcst:
   #
   # LAYOUT_X, LAYOUT_Y:
   # The number of MPI tasks (processes) to use in the two horizontal 
-  # directions (x and y) of the regional grid when running the forecast 
-  # model.
+  # directions (x and y) of the regional grid when running the forecast model.
   #
   # BLOCKSIZE:
   # The amount of data that is passed into the cache at a time.
@@ -1784,15 +1797,28 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  # Set write-component (quilting) parameters.  Definitions:
+  # Set write-component (quilting) parameters. 
+  # 
+  # NOTE: The UPP (called by the run_post task) cannot process output on the 
+  # native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated 
+  # to a write component grid before writing them to an output file. The output files 
+  # written by the UFS Weather Model use an Earth System Modeling Framework (ESMF) 
+  # component, referred to as the write component. This model component is 
+  # configured with settings in the model_configure file, as described in the UFS 
+  # Weather Model documentation. 
+  #
+  # Definitions:
   #
   # QUILTING:
   # Flag that determines whether or not to use the write component for 
   # writing output files to disk. The regional grid requires the use of 
   # the write component, so users should not change the default value. 
-  #
+  # When set to true, the forecast model will output files named dynf$HHH.nc 
+  # and phyf$HHH.nc (where HHH is the 3-digit forecast hour) containing dynamics 
+  # and physics fields, respectively, on the write-component grid. 
+  # 
   # PRINT_ESMF:
-  # Flag for whether or not to output extra (debugging) information from
+  # Flag that determines whether to output extra (debugging) information from
   # ESMF routines. Must be true or false. Note that the write
   # component uses ESMF library routines to interpolate from the native
   # forecast model grid to the user-specified output grid (which is defined 
@@ -1820,6 +1846,7 @@ task_run_fcst:
   # WRTCMP_cen_lat:
   # Latitude (in degrees) of the center of the write component grid. Can 
   # usually be set to the corresponding value from the native grid.
+  #
   # WRTCMP_lon_lwr_left:
   # Longitude (in degrees) of the center of the lower-left (southwest) 
   # cell on the write component grid. If using the "rotated_latlon" 
@@ -1833,7 +1860,8 @@ task_run_fcst:
   # manually when running an experiment with a user-defined grid.
   # 
   # -----------------------------------------------------------------------
-  # 
+  # Parameters to set when WRTCMP_output_grid is set to "rotated_latlon":
+  #
   # WRTCMP_lon_upr_rght:
   # Longitude (in degrees) of the center of the upper-right (northeast) cell 
   # on the write component grid (expressed in terms of the rotated longitude).
@@ -1851,6 +1879,7 @@ task_run_fcst:
   # in terms of the rotated latitude).
   #
   # -----------------------------------------------------------------------
+  # Parameters to set when WRTCMP_output_grid is set to "lambert_conformal"
   # 
   # WRTCMP_stdlat1:
   # First standard latitude (in degrees) in definition of Lambert conformal 
@@ -1912,8 +1941,8 @@ task_run_fcst:
   #
   #-----------------------------------------------------------------------
   #
-  # Flag that determines whether MERRA2 aerosol climatology data and
-  # lookup tables for optics properties are obtained
+  # USE_MERRA_CLIMO: Flag that determines whether MERRA2 aerosol climatology 
+  # data and lookup tables for optics properties are obtained
   #
   #-----------------------------------------------------------------------
   #
@@ -1922,7 +1951,7 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   # DO_FCST_RESTART:
-  # Flag turning on/off restart capability of forecast task
+  # Flag to turn on/off restart capability of forecast task
   #
   #-----------------------------------------------------------------------
   #
@@ -1932,6 +1961,13 @@ task_run_fcst:
 # POST config parameters
 #-----------------------------
 task_run_post:
+  #-----------------------------------------------------------------------
+  # KMP_AFFINITY_RUN_POST: Intel Thread Affinity Interface for the run_post task. 
+  #
+  # OMP_NUM_THREADS_RUN_POST: The number of OpenMP threads to use for parallel regions.
+  #
+  # OMP_STACKSIZE_RUN_POST: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-----------------------------------------------------------------------
   KMP_AFFINITY_RUN_POST: "scatter"
   OMP_NUM_THREADS_RUN_POST: 1
   OMP_STACKSIZE_RUN_POST: "1024m"
@@ -1943,17 +1979,17 @@ task_run_post:
   #
   # SUB_HOURLY_POST:
   # Flag that indicates whether the forecast model will generate output 
-  # files on a sub-hourly time interval (e.g. 10 minutes, 15 minutes, etc).
+  # files on a sub-hourly time interval (e.g., 10 minutes, 15 minutes).
   # This will also cause the post-processor to process these sub-hourly
   # files.  If ths is set to true, then DT_SUBHOURLY_POST_MNTS should be 
-  # set to a value between "00" and "59".
+  # set to a value between 1 and 59.
   #
   # DT_SUB_HOURLY_POST_MNTS:
-  # Time interval in minutes between the forecast model output files.  If 
-  # SUB_HOURLY_POST is set to true, this needs to be set to a two-digit 
-  # integer between "01" and "59".  This is not used if SUB_HOURLY_POST is
-  # not set to true.  Note that if SUB_HOURLY_POST is set to true but
-  # DT_SUB_HOURLY_POST_MNTS is set to "00", SUB_HOURLY_POST will get reset
+  # Time interval in minutes between the forecast model output files 
+  # (only used if SUB_HOURLY_POST is set to true). If 
+  # SUB_HOURLY_POST is set to true, this needs to be set to a valid 
+  # integer between 1 and 59. Note that if SUB_HOURLY_POST is set to true, but
+  # DT_SUB_HOURLY_POST_MNTS is set to 0, SUB_HOURLY_POST will be reset
   # to false in the experiment generation scripts (there will be an 
   # informational message in the log file to emphasize this).
   #
@@ -1979,22 +2015,20 @@ task_run_post:
   # used for post-processing. This is only used if CUSTOM_POST_CONFIG_FILE
   # is set to true.
   #
-  # TESTBED_FIELDS_FN
-  # The file which lists grib2 fields to be extracted for testbed files
-  # Empty string means no need to generate testbed files
-  #
   # POST_OUTPUT_DOMAIN_NAME:
-  # Domain name (in lowercase) used in constructing the names of the output 
-  # files generated by UPP [which is called either by running the run_post 
-  # task or by activating the inline post feature (WRITE_DOPOST set to true)].  
+  # Domain name (in lowercase) used to construct the names of the output files
+  # generated by the UPP. If using a predefined grid, this variable defaults to PREDEF_GRID_NAME. 
+  # 
+  # If using a custom grid, POST_OUTPUT_DOMAIN_NAME must be specified by 
+  # the user. Note that this variable is first changed to lowercase
+  # before being used to construct the file names.
   # The post output files are named as follows:
   # 
   #   ${NET_default}.tHHz.[var_name].f###.${POST_OUTPUT_DOMAIN_NAME}.grib2
-  # 
-  # If using a custom grid, POST_OUTPUT_DOMAIN_NAME must be specified by 
-  # the user.  If using a predefined grid, POST_OUTPUT_DOMAIN_NAME defaults
-  # to PREDEF_GRID_NAME.  Note that this variable is first changed to lower
-  # case before being used to construct the file names.
+  #
+  # TESTBED_FIELDS_FN
+  # The file that lists grib2 fields to be extracted for testbed files.
+  # An empty string means no need to generate testbed files.
   #
   #-----------------------------------------------------------------------
   #
@@ -2007,13 +2041,18 @@ task_run_post:
 # RUN PRDGEN config parameters
 #-----------------------------
 task_run_prdgen:
+  #-----------------------------------------------------------------------
+  # KMP_AFFINITY_RUN_PRDGEN: Intel Thread Affinity Interface for the run_prdgen task. 
+  # OMP_NUM_THREADS_RUN_PRDGEN: The number of OpenMP threads to use for parallel regions.
+  # OMP_STACKSIZE_RUN_PRDGEN: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-----------------------------------------------------------------------
   KMP_AFFINITY_RUN_PRDGEN: "scatter"
   OMP_NUM_THREADS_RUN_PRDGEN: 1
   OMP_STACKSIZE_RUN_PRDGEN: "1024m"
   #-----------------------------------------------------------------------
-  #
+  # DO_PARALLEL_PRDGEN:
   # Flag that determines whether to use CFP to run the product generation
-  # job in parallel.  This should be used with the RRFS_NA_3km grid.
+  # job in parallel. This should be used with the RRFS_NA_3km grid.
   #
   #-----------------------------------------------------------------------
   DO_PARALLEL_PRDGEN: false
@@ -2021,7 +2060,7 @@ task_run_prdgen:
   #
   #-----------------------------------------------------------------------
   #
-  # Set additional output grids for wgrib2 remapping, if any
+  # Set additional output grids for wgrib2 remapping, if any.
   # Space-separated list of strings, e.g., ( "130" "242" "clue" )
   # Default is no additional grids
   #
@@ -2046,7 +2085,7 @@ task_run_prdgen:
 #-----------------------------
 task_plot_allvars:
   #-------------------------------------------------------------------------
-  # Reference experiment's COMOUT directory. This is where the GRIB2 files 
+  # Path to the reference experiment's COMOUT directory. This is where the GRIB2 files 
   # from postprocessing are located. Make this a template to compare
   # multiple cycle and dates. COMOUT_REF should end with:
   #    nco mode: $PDY/$cyc
@@ -2072,6 +2111,12 @@ task_plot_allvars:
 # NEXUS_EMISSION config parameters
 #-----------------------------
 task_nexus_emission:
+  #-------------------------------------------------------------------------------
+  # PPN_NEXUS_EMISSION: Processes per node for the nexus_emission_* tasks. 
+  # KMP_AFFINITY_NEXUS_EMISSION: Intel Thread Affinity Interface for the nexus_emission_* tasks. 
+  # OMP_NUM_THREADS_NEXUS_EMISSION: The number of OpenMP threads to use for parallel regions.
+  # OMP_STACKSIZE_NEXUS_EMISSION: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-------------------------------------------------------------------------------
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
@@ -2081,6 +2126,11 @@ task_nexus_emission:
 # BIAS_CORRECTION_O3 config parameters
 #-----------------------------
 task_bias_correction_o3:
+  #-------------------------------------------------------------------------------
+  # KMP_AFFINITY_BIAS_CORRECTION_O3: Intel Thread Affinity Interface for the bias_correction_o3 task. 
+  # OMP_NUM_THREADS_BIAS_CORRECTION_O3: The number of OpenMP threads to use for parallel regions.
+  # OMP_STACKSIZE_BIAS_CORRECTION_O3: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-------------------------------------------------------------------------------
   KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
   OMP_STACKSIZE_BIAS_CORRECTION_O3: "2056M"
@@ -2089,6 +2139,11 @@ task_bias_correction_o3:
 # BIAS_CORRECTION_PM25 config parameters
 #-----------------------------
 task_bias_correction_pm25:
+  #-------------------------------------------------------------------------------
+  # KMP_AFFINITY_BIAS_CORRECTION_PM25: Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
+  # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: The number of OpenMP threads to use for parallel regions.
+  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: Controls the size of the stack for threads created by the OpenMP implementation.
+  #-------------------------------------------------------------------------------
   KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
   OMP_STACKSIZE_BIAS_CORRECTION_PM25: "2056M"
@@ -2128,7 +2183,7 @@ global:
   # Flag that determines whether to run a set of ensemble forecasts (for
   # each set of specified cycles).  If this is set to true, NUM_ENS_MEMBERS
   # forecasts are run for each cycle, each with a different set of stochastic
-  # seed values.  Otherwise, a single forecast is run for each cycle.
+  # seed values.  When false, a single forecast is run for each cycle.
   #
   # NUM_ENS_MEMBERS:
   # The number of ensemble members to run if DO_ENSEMBLE is set to true.
@@ -2145,8 +2200,8 @@ global:
   # experiment directory
   #
   # ENS_TIME_LAG_HRS:
-  # Time lag (in hours) to use for each ensemble member.  For a deterministic
-  # forecast, this is a one-element array.  Default values of array elements
+  # Time lag (in hours) to use for each ensemble member. For a deterministic
+  # forecast, this is a one-element array. Default values of array elements
   # are zero.
   #
   #-----------------------------------------------------------------------
@@ -2192,18 +2247,20 @@ global:
   #
   #-----------------------------------------------------------------------
   #
-  # Set default SPP stochastic physics options. Each SPP option is an array, 
-  # applicable (in order) to the scheme/parameter listed in SPP_VAR_LIST. 
+  # Set default SPP stochastic physics options. 
+  # SPP perturbs specific tuning parameters within a physics parameterization 
+  # (unlike SPPT, which multiplies overall physics tendencies by a random  
+  # perturbation field *after* the call to the physics suite).Patterns evolve 
+  # and are applied at each time step. Each SPP option is an array, 
+  # applicable (in order) to the HRRR-based parameterization listed in SPP_VAR_LIST. 
   # Enter each value of the array in config.yaml as shown below without commas
-  # or single quotes (e.g., SPP_VAR_LIST=( "pbl" "sfc" "mp" "rad" "gwd" ). 
+  # or single quotes (e.g., SPP_VAR_LIST: [ "pbl" "sfc" "mp" "rad" "gwd" ] ). 
   # Both commas and single quotes will be added by Jinja when creating the
   # namelist.
   #
   # Note that SPP is currently only available for specific physics schemes 
-  # used in the RAP/HRRR physics suite.  Users need to be aware of which SDF
+  # used in the RAP/HRRR physics suite. Users need to be aware of which SDF
   # is chosen when turning this option on. 
-  #
-  # Patterns evolve and are applied at each time step.
   #
   #-----------------------------------------------------------------------
   #
@@ -2247,8 +2304,10 @@ global:
   #-----------------------------------------------------------------------
   # 
   # HALO_BLEND:
-  # Number of rows into the computational domain that should be blended 
-  # with the LBCs.  To shut halo blending off, this can be set to zero.
+  # The number of cells to use for "blending" the external solution (obtained from 
+  # the LBCs) with the internal solution from the FV3LAM dycore.
+  # Specifically, it refers to the number of rows into the computational domain 
+  # that should be blended with the LBCs. To shut halo blending off, this can be set to zero.
   #
   #-----------------------------------------------------------------------
   #
@@ -2257,7 +2316,7 @@ global:
   #-----------------------------------------------------------------------
   #
   # PRINT_DIFF_PGR:
-  # Option to turn on/off pressure tendency diagnostic
+  # Option to turn on/off the pressure tendency diagnostic.
   #
   #-----------------------------------------------------------------------
   #
