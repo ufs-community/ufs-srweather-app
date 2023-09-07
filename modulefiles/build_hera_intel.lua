@@ -8,27 +8,28 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Hera ]===])
 prepend_path("MODULEPATH","/contrib/sutils/modulefiles")
 load("sutils")
 
-load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.4.1/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
 
-intel_ver=os.getenv("intel_ver") or "2022.1.2"
-load(pathJoin("intel", intel_ver))
+stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
+load(pathJoin("stack-intel", stack_intel_ver))
 
-impi_ver=os.getenv("impi_ver") or "2022.1.2"
-load(pathJoin("impi", impi_ver))
+stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"
+load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
 
-prepend_path("MODULEPATH","/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/modulefiles/stack")
+stack_python_ver=os.getenv("stack_python_ver") or "3.9.12"
+load(pathJoin("stack-python", stack_python_ver))
 
-load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
-load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1.2"))
-load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver") or "2022.1.2"))
+cmake_ver=os.getenv("cmake_ver") or "3.20.1"
+load(pathJoin("cmake", cmake_ver))
 
 load("srw_common")
 
-load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
+load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
+load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
 setenv("CMAKE_Platform","hera.intel")
-
