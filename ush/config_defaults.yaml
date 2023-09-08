@@ -921,10 +921,10 @@ nco:
   #   Name of model run (third level of com directory structure).
   #   In general, same as ${NET_default}.
   #
-  # OPSROOT:
+  # OPSROOT_default:
   # The operations root directory in NCO mode.
   #
-  # LOGBASEDIR:
+  # LOGBASEDIR_default:
   # Directory in which the log files from the workflow tasks will be placed.
   # 
   # For more information on NCO standards

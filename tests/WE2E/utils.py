@@ -221,7 +221,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     CREATED: The experiments have been created, but the monitor script has not yet processed them.
              This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
              should never see this status in this function. Including just for completeness sake.
-    SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will 
+    SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will
              continue to monitor this experiment.
     DYING:   One or more tasks have died (status "DEAD"), so this experiment has had an error.
              We will continue to monitor this experiment until all tasks are either status DEAD or
@@ -268,7 +268,7 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     rocoto_xml = f"{expt['expt_dir']}/FV3LAM_wflow.xml"
     if submit:
         if refresh:
-            logging.info(f"Updating database for experiment {name}")
+            logging.debug(f"Updating database for experiment {name}")
         if debug:
             rocotorun_cmd = ["rocotorun", f"-w {rocoto_xml}", f"-d {rocoto_db}", "-v 10"]
             p = subprocess.run(rocotorun_cmd, stdout=subprocess.PIPE,
@@ -557,7 +557,7 @@ def compare_rocotostat(expt_dict,name):
             for ut in untracked_tasks:
                 msg += ut
             msg = msg + f"""WARNING: For experiment {name},
-                there are some jobs that are not being submitted. 
+                there are some jobs that are not being submitted.
                 It could be that your jobs are being throttled at the system level, or
                 some task dependencies have not been met.
 
