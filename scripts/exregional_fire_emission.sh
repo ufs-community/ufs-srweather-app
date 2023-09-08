@@ -154,7 +154,11 @@ else
     fi
   fi
 
-  ncrcat Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc ${aqm_fire_file_fn}
+  cp Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc 
+  cp Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_2.nc
+
+  ncrcat -O -D 2 Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_2.nc ${aqm_fire_file_fn}
+
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to NCRCAT returned with nonzero exit code."
@@ -188,6 +192,18 @@ file hsi_log_fn in the DATA directory for details:
     fi
   fi
 fi
+#
+ cd ${FIRE_EMISSION_STAGING_DIR}
+ cp ${aqm_fire_file_fn} ${aqm_fire_file_fn}_orig
+ mv ${aqm_fire_file_fn}  temp.nc
+ ncrename -v PM2.5,PM25 temp.nc temp1.nc
+ ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
+ ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
+ ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
+ ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
+ ncrename -v PM25,PM2.5 temp5.nc temp6.nc
+ mv temp6.nc ${aqm_fire_file_fn}
+ rm -rf temp*nc
 #
 #-----------------------------------------------------------------------
 #

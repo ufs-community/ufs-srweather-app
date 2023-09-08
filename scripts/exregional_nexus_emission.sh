@@ -174,6 +174,7 @@ OLSON_MAP="TRUE"
 Yuan_XLAI="TRUE"
 GEOS="TRUE"
 AnnualScalar="TRUE"
+OFFLINE_SOILNOX="TRUE"
 
 NEXUS_INPUT_BASE_DIR=${NEXUS_INPUT_DIR}
 ########################################################################
@@ -293,6 +294,10 @@ fi
 
 if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
   ln -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
+fi
+
+if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
+  ln -sf ${NEXUS_INPUT_BASE_DIR}/OFFLINE_SOILNOX ${DATAinput}
 fi
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
