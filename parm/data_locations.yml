@@ -332,6 +332,11 @@ MRMS_obs:
       - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/EchoTop
       - ./upperair/mrms/conus/MergedReflectivityQCComposite
       - ./upperair/mrms/conus/EchoTop
+    archive_file_names:
+      - dcom_ldmdata_obs.tar
+      - dcom_prod_ldmdata_obs.tar
+      - ldmdata.tide.{yyyymmdd}.tar
+      - ldmdata.gyre.{yyyymmdd}.tar
     file_names:
       obs:
         - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"

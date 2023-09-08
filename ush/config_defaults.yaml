@@ -778,22 +778,6 @@ workflow:
   # run. By default, set it to a 1-item list containing the standard
   # fcst length.
   #
-  # CYCL_HRS_SPINSTART:
-  # An array containing the hours of the day at which the spin up cycle starts.
-  #
-  # CYCL_HRS_PRODSTART:
-  # An array containing the hours of the day at which the product cycle starts,
-  # from cold start input or from spin-up cycle forcast
-  #
-  # BOUNDARY_LEN_HRS
-  # The length of boundary condition for normal forecast, in integer hours.
-  #
-  # BOUNDARY_LONG_LEN_HRS
-  # The length of boundary condition for long forecast, in integer hours.
-  #
-  # BOUNDARY_PROC_GROUP_NUM
-  # The number of groups used to run make_lbcs, in integer from 1 to forecast longest hours.
-  #
   #-----------------------------------------------------------------------
   #
   DATE_FIRST_CYCL: "YYYYMMDDHH"
@@ -804,11 +788,6 @@ workflow:
     - '{{ FCST_LEN_HRS }}'
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
 
-  CYCL_HRS_SPINSTART: []
-  CYCL_HRS_PRODSTART: []
-  BOUNDARY_LEN_HRS: 0
-  BOUNDARY_LONG_LEN_HRS: 0
-  BOUNDARY_PROC_GROUP_NUM: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1412,26 +1391,6 @@ task_get_extrn_lbcs:
   LBC_SPEC_INTVL_HRS: 6
   EXTRN_MDL_LBCS_OFFSET_HRS: '{{ 3 if EXTRN_MDL_NAME_LBCS == "RAP" else 0 }}'
   FV3GFS_FILE_FMT_LBCS: "nemsio"
-  #
-  #-----------------------------------------------------------------------
-  #
-  # LBCS_SEARCH_HRS:
-  #  When search boundary conditions tasks from previous cycles in prep_cyc step,
-  #  For example: 0 means search start for the same cycle lbcs task.
-  #               1 means search start for 1-h previous cycle lbcs task.
-  #               2 means search start for 2-h previous cycle lbcs task.
-  #
-  # EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS:
-  #  When search boundary conditions from previous cycles in prep_start step,
-  #  the search will start at cycle before (this parameter) of current cycle.
-  #  For example: 0 means search start at the same cycle lbcs directory.
-  #               1 means search start at 1-h previous cycle  lbcs directory.
-  #               2 means search start at 2-h previous cycle  lbcs directory.
-  #
-  #-----------------------------------------------------------------------
-  #
-  LBCS_SEARCH_HRS: 6
-  EXTRN_MDL_LBCS_SEARCH_OFFSET_HRS: 0
   #-----------------------------------------------------------------------
   #
   # EXTRN_MDL_SYSBASEDIR_LBCS:

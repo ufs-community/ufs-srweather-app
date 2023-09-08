@@ -78,9 +78,6 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
     FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
   fi
   end_hr=$FCST_LEN_HRS
-  if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
-     end_hr=$BOUNDARY_LEN_HRS
-  fi
   first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
   last_time=$((TIME_OFFSET_HRS + end_hr))
 
