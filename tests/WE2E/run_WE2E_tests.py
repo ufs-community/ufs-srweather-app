@@ -493,7 +493,8 @@ if __name__ == "__main__":
     ap.add_argument('-c', '--compiler', type=str,
                     help='Compiler used for building the app', default='intel')
     ap.add_argument('-d', '--debug', action='store_true',
-                    help='Script will be run in debug mode with more verbose output')
+                    help='Script will be run in debug mode with more verbose output. ' +
+                         'WARNING: increased verbosity may run very slow on some platforms')
     ap.add_argument('-q', '--quiet', action='store_true',
                     help='Suppress console output from workflow generation; this will help '\
                          'keep the screen uncluttered')
