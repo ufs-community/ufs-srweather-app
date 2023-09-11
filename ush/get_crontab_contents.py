@@ -4,168 +4,146 @@ import os
 import sys
 import argparse
 from datetime import datetime
-from textwrap import dedent
-
 from python_utils import (
     log_info,
-    import_vars,
-    set_env_var,
-    print_input_args,
     run_command,
-    define_macos_utilities,
     print_info_msg,
 )
 
 
-def get_crontab_contents(called_from_cron):
+def get_crontab_contents(called_from_cron, machine, debug):
     """
-    #-----------------------------------------------------------------------
-    #
-    # This function returns the contents of the user's
-    # cron table as well as the command to use to manipulate the cron table
-    # (i.e. the "crontab" command, but on some platforms the version or
-    # location of this may change depending on other circumstances, e.g. on
-    # Cheyenne, this depends on whether a script that wants to call "crontab"
-    # is itself being called from a cron job).  Arguments are as follows:
-    #
-    # called_from_cron:
-    # Boolean flag that specifies whether this function (and the scripts or
-    # functions that are calling it) are called as part of a cron job.  Must
-    # be set to "TRUE" or "FALSE".
-    #
-    # outvarname_crontab_cmd:
-    # Name of the output variable that will contain the command to issue for
-    # the system "crontab" command.
-    #
-    # outvarname_crontab_contents:
-    # Name of the output variable that will contain the contents of the
-    # user's cron table.
-    #
-    #-----------------------------------------------------------------------
+    This function returns the contents of the user's cron table, as well as the command used to
+    manipulate the cron table. Typically this latter value will be `crontab`, but on some 
+    platforms the version or location of this may change depending on other circumstances, e.g. on
+    Cheyenne, this depends on whether a script that wants to call `crontab` is itself being called
+    from a cron job.
+
+    Args:
+        called_from_cron  (bool): Set this to True if script is called from within a crontab
+        machine           (str) : The name of the current machine
+        debug             (bool): True will give more verbose output
+    Returns:
+        crontab_cmd       (str) : String containing the "crontab" command for this machine
+        crontab_contents  (str) : String containing the contents of the user's cron table.
     """
 
-    print_input_args(locals())
-
-    # import selected env vars
-    IMPORTS = ["MACHINE", "DEBUG"]
-    import_vars(env_vars=IMPORTS)
-
-    __crontab_cmd__ = "crontab"
     #
     # On Cheyenne, simply typing "crontab" will launch the crontab command
     # at "/glade/u/apps/ch/opt/usr/bin/crontab".  This is a containerized
-    # version of crontab that will work if called from scripts that are
+    # version of crontab that will not work if called from scripts that are
     # themselves being called as cron jobs.  In that case, we must instead
     # call the system version of crontab at /usr/bin/crontab.
     #
-    if MACHINE == "CHEYENNE":
+    if machine == "CHEYENNE":
         if called_from_cron:
-            __crontab_cmd__ = "/usr/bin/crontab"
+            crontab_cmd = "/usr/bin/crontab"
+    else:
+        crontab_cmd = "crontab"
 
     print_info_msg(
         f"""
         Getting crontab content with command:
         =========================================================
-          {__crontab_cmd__} -l
+          {crontab_cmd} -l
         =========================================================""",
-        verbose=DEBUG,
+        verbose=debug,
     )
 
-    (_, __crontab_contents__, _) = run_command(f"""{__crontab_cmd__} -l""")
+    (_, crontab_contents, _) = run_command(f"{crontab_cmd} -l")
+
+    if crontab_contents.startswith('no crontab for'):
+        crontab_contents=''
 
     print_info_msg(
         f"""
         Crontab contents:
         =========================================================
-          {__crontab_contents__}
+          {crontab_contents}
         =========================================================""",
-        verbose=DEBUG,
+        verbose=debug,
     )
 
     # replace single quotes (hopefully in comments) with double quotes
-    __crontab_contents__ = __crontab_contents__.replace("'", '"')
+    crontab_contents = crontab_contents.replace("'", '"')
 
-    return __crontab_cmd__, __crontab_contents__
+    return crontab_cmd, crontab_contents
 
 
-def add_crontab_line():
+def add_crontab_line(called_from_cron, machine, crontab_line, exptdir, debug):
     """Add crontab line to cron table"""
-
-    # import selected env vars
-    IMPORTS = ["MACHINE", "CRONTAB_LINE", "VERBOSE", "EXPTDIR"]
-    import_vars(env_vars=IMPORTS)
 
     #
     # Make a backup copy of the user's crontab file and save it in a file.
     #
     time_stamp = datetime.now().strftime("%F_%T")
-    crontab_backup_fp = os.path.join(EXPTDIR, f"crontab.bak.{time_stamp}")
+    crontab_backup_fp = os.path.join(exptdir, f"crontab.bak.{time_stamp}")
     log_info(
         f"""
         Copying contents of user cron table to backup file:
           crontab_backup_fp = '{crontab_backup_fp}'""",
-        verbose=VERBOSE,
+        verbose=debug,
     )
-
-    global called_from_cron
-    try:
-        called_from_cron
-    except:
-        called_from_cron = False
 
     # Get crontab contents
-    crontab_cmd, crontab_contents = get_crontab_contents(
-        called_from_cron=called_from_cron
-    )
+    crontab_cmd, crontab_contents = get_crontab_contents(called_from_cron, machine, debug)
 
     # Create backup
     run_command(f"""printf "%s" '{crontab_contents}' > '{crontab_backup_fp}'""")
 
-    # Add crontab line
-    if CRONTAB_LINE in crontab_contents:
-
+    # Need to omit commented crontab entries for later logic
+    lines = crontab_contents.split('\n')
+    cronlines = []
+    for line in lines:
+        comment = False
+        for char in line:
+            if char == "#":
+                comment = True
+                break
+            elif char.isspace():
+                continue
+            else:
+                # If we find a character that isn't blank or comment, then this is a normal line
+                break
+        if not comment:
+            cronlines.append(line)
+    # Re-join all the separate lines into a multiline string again
+    crontab_no_comments = """{}""".format("\n".join(cronlines))
+    if crontab_line in crontab_no_comments:
         log_info(
             f"""
             The following line already exists in the cron table and thus will not be
             added:
-              CRONTAB_LINE = '{CRONTAB_LINE}'"""
+              crontab_line = '{crontab_line}'"""
         )
-
     else:
-
         log_info(
             f"""
             Adding the following line to the user's cron table in order to automatically
             resubmit SRW workflow:
-              CRONTAB_LINE = '{CRONTAB_LINE}'""",
-            verbose=VERBOSE,
+              crontab_line = '{crontab_line}'""",
+            verbose=debug,
         )
 
         # add new line to crontab contents if it doesn't have one
-        NEWLINE_CHAR = ""
+        newline_char = ""
         if crontab_contents and crontab_contents[-1] != "\n":
-            NEWLINE_CHAR = "\n"
+            newline_char = "\n"
 
         # add the crontab line
         run_command(
-            f"""printf "%s%b%s\n" '{crontab_contents}' '{NEWLINE_CHAR}' '{CRONTAB_LINE}' | {crontab_cmd}"""
+            f"""printf "%s%b%s\n" '{crontab_contents}' '{newline_char}' '{crontab_line}' | {crontab_cmd}"""
         )
 
 
-def delete_crontab_line(called_from_cron):
+def delete_crontab_line(called_from_cron, machine, crontab_line, debug):
     """Delete crontab line after job is complete i.e. either SUCCESS/FAILURE
     but not IN PROGRESS status"""
-
-    print_input_args(locals())
-
-    # import selected env vars
-    IMPORTS = ["MACHINE", "CRONTAB_LINE", "DEBUG"]
-    import_vars(env_vars=IMPORTS)
 
     #
     # Get the full contents of the user's cron table.
     #
-    (crontab_cmd, crontab_contents) = get_crontab_contents(called_from_cron)
+    (crontab_cmd, crontab_contents) = get_crontab_contents(called_from_cron, machine, debug)
     #
     # Remove the line in the contents of the cron table corresponding to the
     # current forecast experiment (if that line is part of the contents).
@@ -177,13 +155,15 @@ def delete_crontab_line(called_from_cron):
         =========================================================
           {crontab_contents}
         =========================================================""",
-        verbose=True,
+        verbose=debug,
     )
 
-    if (CRONTAB_LINE + "\n") in crontab_contents:
-        crontab_contents = crontab_contents.replace(CRONTAB_LINE + "\n", "")
+    if crontab_line in crontab_contents:
+        #Try removing with a newline first, then fall back to without newline
+        crontab_contents = crontab_contents.replace(crontab_line + "\n", "")
+        crontab_contents = crontab_contents.replace(crontab_line, "")
     else:
-        crontab_contents = crontab_contents.replace(CRONTAB_LINE, "")
+        print(f"\nWARNING: line not found in crontab, nothing to remove:\n {crontab_line}\n")
 
     run_command(f"""echo '{crontab_contents}' | {crontab_cmd}""")
 
@@ -193,36 +173,65 @@ def delete_crontab_line(called_from_cron):
         =========================================================
           {crontab_contents}
         =========================================================""",
-        verbose=True,
+        verbose=debug,
     )
 
 
 def parse_args(argv):
     """Parse command line arguments for deleting crontab line.
-    This is needed because it is called from shell script
+    This is needed because it is called from shell script.
+    If 'delete' argument is not passed, print the crontab contents
     """
-    parser = argparse.ArgumentParser(description="Crontab job manupilation program.")
-
-    parser.add_argument(
-        "-d",
-        "--delete",
-        dest="delete",
-        action="store_true",
-        help="Delete crontab line.",
-    )
+    parser = argparse.ArgumentParser(description="Crontab job manipulation program.")
 
     parser.add_argument(
         "-c",
-        "--called-from-cron",
-        dest="called_from_cron",
+        "--called_from_cron",
         action="store_true",
         help="Called from cron.",
     )
 
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Print debug output",
+    )
+
+    parser.add_argument(
+        "-r",
+        "--remove",
+        action="store_true",
+        help="Remove specified crontab line.",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--line",
+        help="Line to remove from crontab. If --remove not specified, has no effect",
+    )
+
+    parser.add_argument(
+        "-m",
+        "--machine",
+        help="Machine name",
+        required=True
+    )
+
+    # Check that inputs are correct and consistent
+    args = parser.parse_args(argv)
+
+    if args.remove:
+        if args.line is None:
+            raise argparse.ArgumentTypeError("--line is a required argument if --remove is specified")
+
+    return args
 
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    if args.delete:
-        delete_crontab_line(args.called_from_cron)
+    if args.remove:
+        delete_crontab_line(args.called_from_cron,args.machine,args.line,args.debug)
+    else:
+        _,out = get_crontab_contents(args.called_from_cron,args.machine,args.debug)
+        print_info_msg(out)
