@@ -2442,17 +2442,43 @@ cpl_aqm_parm:
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
   #
+  # DCOMINbio_default:
+  # Path to the directory containing AQM bio files
+  # 
+  # DCOMINdust_default:
+  # Path to the directory containing AQM dust file
+  #
+  # DCOMINcanopy_default:
+  # Path to the directory containing AQM canopy files
+  # 
+  # DCOMINfire_default:
+  # Path to the directory containing AQM fire files
+  # 
+  # DCOMINchem_lbcs_default:
+  # Path to the directory containing chemical LBC files
+  # 
+  # DCOMINgefs_default:
+  # Path to the directory containing GEFS aerosol LBC files
+  #
+  # DCOMINpt_src_default:
+  # Parent directory containing point source files
+  #
+  # DCOMINairnow_default:
+  # Path to the directory containing AIRNOW observation data
+  #
+  # COMINbicor:
+  # Path of reading in historical training data for biascorrection 
+  #
+  # COMOUTbicor:
+  # Path to save the current cycle's model output and AirNow obs as 
+  # training data for future use $COMINbicor and $COMOUTbicor can be 
+  # distuigshed by the ${yyyy}${mm}$dd under the same location
+  #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
   # 
-  # DCOMINbio:
-  # Path to the directory containing AQM bio files
-  # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
-  #
-  # DCOMINdust:
-  # Path to the directory containing AQM dust file
   #
   # AQM_DUST_FILE_PREFIX:
   # Frefix of AQM dust file
@@ -2460,17 +2486,11 @@ cpl_aqm_parm:
   # AQM_DUST_FILE_SUFFIX:
   # Suffix and extension of AQM dust file
   #
-  # DCOMINcanopy:
-  # Path to the directory containing AQM canopy files
-  # 
   # AQM_CANOPY_FILE_PREFIX:
   # File name of AQM canopy file
   #
   # AQM_CANOPY_FILE_SUFFIX:
   # Suffix and extension of AQM CANOPY file
-  # 
-  # DCOMINfire:
-  # Path to the directory containing AQM fire files
   # 
   # AQM_FIRE_FILE_PREFIX:
   # Prefix of AQM FIRE file
@@ -2478,6 +2498,8 @@ cpl_aqm_parm:
   # AQM_FIRE_FILE_SUFFIX:
   # Suffix and extension of AQM FIRE file
   #
+  # AQM_FIRE_FILE_OFFSET_HRS: 
+  # 
   # AQM_FIRE_ARCHV_DIR:
   # Path to the archive directory for RAVE emission files on HPSS
   #
@@ -2490,14 +2512,8 @@ cpl_aqm_parm:
   # AQM_RC_PRODUCT_FREQUENCY:
   # Frequency of AQM output products
   #
-  # DCOMINchem_lbc:
-  # Path to the directory containing chemical LBC files
-  # 
   # AQM_LBCS_FILES:
   # File name of chemical LBCs
-  #
-  # DCOMINgefs:
-  # Path to the directory containing GEFS aerosol LBC files
   #
   # AQM_GEFS_FILE_PREFIX:
   # Prefix of AQM GEFS file ("geaer" or "gfs")
@@ -2527,20 +2543,6 @@ cpl_aqm_parm:
   #
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
-  #
-  # DCOMINpt_src:
-  # Parent directory containing point source files
-  #
-  # DCOMINairnow:
-  # Path to the directory containing AIRNOW observation data
-  #
-  # COMINbicor:
-  # Path of reading in historical training data for biascorrection 
-  #
-  # COMOUTbicor:
-  # Path to save the current cycle's model output and AirNow obs as 
-  # training data for future use $COMINbicor and $COMOUTbicor can be 
-  # distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   #-----------------------------------------------------------------------
   #

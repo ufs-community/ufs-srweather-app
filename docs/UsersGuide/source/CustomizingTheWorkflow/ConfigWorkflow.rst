@@ -1681,11 +1681,10 @@ Templates for Observation Files
 Templates for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` observation files.
 
 ``OBS_CCPA_APCP01h_FN_TEMPLATE``: (Default: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2')
-   .. COMMENT: Add definition!!
-
+   File name template used to obtain the input observation files (in the ``PcpCombine_obs`` tasks) that contain the 1-hour accumulated precipitation (APCP) from which APCP for longer accumulations will be generated.
 
 ``OBS_CCPA_APCPgt01h_FN_TEMPLATE``: (Default: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc')
-   .. COMMENT: Add definition!!
+   File name template used to generate the observation files (in the ``PcpCombine_obs`` tasks) containing accumulated precipitation for accumulation periods longer than 1-hour.
 
 ``OBS_NOHRSC_ASNOW_FN_TEMPLATE``: (Default: '{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2')
    .. COMMENT: Add definition!!
@@ -1706,32 +1705,18 @@ VX Forecast Model Name
 ------------------------
 
 ``VX_FCST_MODEL_NAME``: (Default: '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}')
-  # String that specifies a descriptive name for the model being verified.
-  # This is used in forming the names of the verification output files as
-  # well as in the contents of those files.
-  #
+   String that specifies a descriptive name for the model being verified. This is used in forming the names of the verification output files as well as in the contents of those files.
 
 ``VX_FIELDS``: (Default: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ])
-  # The fields or groups of fields on which to run verification. Because
-  # ASNOW is often not of interest in cases outside of winter, and 
-  # because observation files are not located for retrospective
-  # cases on NOAA HPSS before March 2020, ASNOW is not included by default.
-  # "ASNOW" may be added to this list in order to include
-  # the related verification tasks in the workflow. 
-  #
+   The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and  because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
+
+   .. COMMENT: Are there more valid values? Check!
+   
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
-  # The 2-digit accumulation periods (in units of hours) to consider for
-  # APCP (accumulated precipitation).  If VX_FIELDS contains "APCP", then
-  # VX_APCP_ACCUMS_HRS must contain at least one element.  If not,
-  # VX_APCP_ACCUMS_HRS will be ignored.
-  #
+   The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored.
 
 ``VX_ASNOW_ACCUMS_HRS``: (Default: [ 6, 24 ])
-  # The 2-digit accumulation periods (in units of hours) to consider for
-  # ASNOW (accumulated snowfall).  If VX_FIELDS contains "ASNOW", then
-  # VX_ASNOW_ACCUMS_HRS must contain at least one element.  If not,
-  # VX_ASNOW_ACCUMS_HRS will be ignored.
-  #
+   The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored.
 
 VX Directories
 -----------------
@@ -1742,228 +1727,164 @@ VX Directories
 ``VX_OUTPUT_BASEDIR``: (Default: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}')
    Template for top-level directory in which METplus will place its output.
 
-
 ``VX_NDIGITS_ENSMEM_NAMES``: 3
    Number of digits in the ensember member names. This is a configurable variable to allow users to change its value (e.g., to go from "mem004" to "mem02") when using staged forecast files that do not use the same number of digits as the SRW App.
 
-  # File name and path templates used in the verification tasks.
-  #
+VX File Name and Path Templates
+---------------------------------
+
+This section contains file name and path templates used in the verification (VX) tasks.
+
 ``FCST_SUBDIR_TEMPLATE``: (Default: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}')
-  FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET_default}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc'
-  #
-  # For verification tasks that need observational data, this specifies
-  # the maximum number of observation files that may be missing.  If more
-  # than this number are missing, the verification task will error out.
-  #
-  # Note that this is a crude way of checking that there are enough obs to
-  # conduct verification since this number should probably depend on the
-  # field being verified, the time interval between observations, the
-  # length of the forecast, etc.  An alternative may be to specify the
-  # maximum allowed fraction of obs files that can be missing (i.e. the
-  # number missing divided by the number that are expected to exist).
-  #
-  NUM_MISSING_OBS_FILES_MAX: 2
-  #
-  # For verification tasks that need forecast data, this specifies the
-  # maximum number of post-processed forecast files that may be missing. 
-  # If more than this number are missing, the verification task will not
-  # be run.
-  #
-  NUM_MISSING_FCST_FILES_MAX: 0
+   A template for the subdirectory in which to look for input forecast files for vx tasks.
+
+``FCST_FN_TEMPLATE``: (Default: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2')
+   A template for the forecast file names used as input to verification tasks.
+
+``FCST_FN_METPROC_TEMPLATE``: (Default: '${NET_default}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc')
+   A template for how to name the forecast files for accumulated precipitation (APCP) with greater than 1-hour accumulation (i.e., 3-, 6-, and 24-hour accumulations) after processing by ``PcpCombine``.
+
+``NUM_MISSING_OBS_FILES_MAX``: (Default: 2)
+   For verification tasks that need observational data, this specifies the maximum number of observation files that may be missing. If more than this number are missing, the verification task will error out.
+   Note that this is a crude way of checking that there are enough observations to conduct verification since this number should probably depend on the field being verified, the time interval between observations, the length of the forecast, etc.  An alternative may be to specify the maximum allowed fraction of observation files that can be missing (i.e., the number missing divided by the number that are expected to exist).
+
+``NUM_MISSING_FCST_FILES_MAX``: (Default: 0)
+   For verification tasks that need forecast data, this specifies the maximum number of post-processed forecast files that may be missing. If more than this number are missing, the verification task will not be run.
 
 Coupled AQM Configuration Parameters
 =====================================
 
-#----------------------------
-# CPL_AQM config parameters
-#-----------------------------
-cpl_aqm_parm:
-  #
-  #-----------------------------------------------------------------------
-  #
-  # CPL_AQM:
-  # Coupling flag for air quality modeling
-  #
-  # DO_AQM_DUST:
-  # Flag turning on/off AQM dust option in AQM_RC
-  #
-  # DO_AQM_CANOPY
-  # Flag turning on/off AQM canopy option in AQM_RC
-  # 
-  # DO_AQM_PRODUCT
-  # Flag turning on/off AQM output products in AQM_RC
-  # 
-  # DO_AQM_CHEM_LBCS:
-  # Add chemical LBCs to chemical LBCs
-  # 
-  # DO_AQM_GEFS_LBCS:
-  # Add GEFS aerosol LBCs to chemical LBCs
-  #
-  # DO_AQM_SAVE_AIRNOW_HIST:
-  # Save bias-correction airnow training data
-  #
-  # DO_AQM_SAVE_FIRE:
-  # Archive fire emission file to HPSS
-  #
-  # AQM_CONFIG_DIR:
-  # Configuration directory for AQM
-  # 
-  # DCOMINbio:
-  # Path to the directory containing AQM bio files
-  # 
-  # AQM_BIO_FILE:
-  # File name of AQM BIO file
-  #
-  # DCOMINdust:
-  # Path to the directory containing AQM dust file
-  #
-  # AQM_DUST_FILE_PREFIX:
-  # Frefix of AQM dust file
-  #
-  # AQM_DUST_FILE_SUFFIX:
-  # Suffix and extension of AQM dust file
-  #
-  # DCOMINcanopy:
-  # Path to the directory containing AQM canopy files
-  # 
-  # AQM_CANOPY_FILE_PREFIX:
-  # File name of AQM canopy file
-  #
-  # AQM_CANOPY_FILE_SUFFIX:
-  # Suffix and extension of AQM CANOPY file
-  # 
-  # DCOMINfire:
-  # Path to the directory containing AQM fire files
-  # 
-  # AQM_FIRE_FILE_PREFIX:
-  # Prefix of AQM FIRE file
-  # 
-  # AQM_FIRE_FILE_SUFFIX:
-  # Suffix and extension of AQM FIRE file
-  #
-  # AQM_FIRE_ARCHV_DIR:
-  # Path to the archive directory for RAVE emission files on HPSS
-  #
-  # AQM_RC_FIRE_FREQUENCY:
-  # Fire frequency in aqm.rc
-  #
-  # AQM_RC_PRODUCT_FN:
-  # File name of AQM output products
-  #
-  # AQM_RC_PRODUCT_FREQUENCY:
-  # Frequency of AQM output products
-  #
-  # DCOMINchem_lbc:
-  # Path to the directory containing chemical LBC files
-  # 
-  # AQM_LBCS_FILES:
-  # File name of chemical LBCs
-  #
-  # DCOMINgefs:
-  # Path to the directory containing GEFS aerosol LBC files
-  #
-  # AQM_GEFS_FILE_PREFIX:
-  # Prefix of AQM GEFS file ("geaer" or "gfs")
-  #
-  # AQM_GEFS_FILE_CYC:
-  # Cycle of the GEFS aerosol LBC files only if it is fixed
-  # 
-  # NEXUS_INPUT_DIR:
-  # Same as GRID_DIR but for the the air quality emission generation task.
-  # Should be blank for the default value specified in setup.sh
-  # 
-  # NEXUS_FIX_DIR:
-  # Directory containing grid_spec files as the input file of nexus
-  # 
-  # NEXUS_GRID_FN:
-  # File name of the input grid_spec file of nexus
-  #
-  # NUM_SPLIT_NEXUS:
-  # Number of split nexus emission tasks
-  #
-  # NEXUS_GFS_SFC_OFFSET_HRS: 0
-  # Time offset when retrieving gfs surface data files
-  # 
-  # NEXUS_GFS_SFC_DIR:
-  # Path to directory containing GFS surface data files
-  # This is set to COMINgfs when DO_REAL_TIME=TRUE. 
-  #
-  # NEXUS_GFS_SFC_ARCHV_DIR: 
-  # Path to archive directory for gfs surface files on HPSS
-  #
-  # DCOMINpt_src:
-  # Parent directory containing point source files
-  #
-  # DCOMINairnow:
-  # Path to the directory containing AIRNOW observation data
-  #
-  # COMINbicor:
-  # Path of reading in historical training data for biascorrection 
-  #
-  # COMOUTbicor:
-  # Path to save the current cycle's model output and AirNow obs as 
-  # training data for future use $COMINbicor and $COMOUTbicor can be 
-  # distuigshed by the ${yyyy}${mm}$dd under the same location
-  #
-  #-----------------------------------------------------------------------
-  #
-  CPL_AQM: false
+Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in the ``cpl_aqm_parm:`` section of the ``config.yaml`` file.
 
-  DO_AQM_DUST: true
-  DO_AQM_CANOPY: false
-  DO_AQM_PRODUCT: true
-  DO_AQM_CHEM_LBCS: true
-  DO_AQM_GEFS_LBCS: false
-  DO_AQM_SAVE_AIRNOW_HIST: false
-  DO_AQM_SAVE_FIRE: false
+``CPL_AQM``: (Default: false)
+   Coupling flag for air quality modeling
 
-  DCOMINbio_default: ""
-  DCOMINdust_default: "/path/to/dust/dir"
-  DCOMINcanopy_default: "/path/to/canopy/dir"
-  DCOMINfire_default: ""
-  DCOMINchem_lbcs_default: ""
-  DCOMINgefs_default: ""
-  DCOMINpt_src_default: "/path/to/point/source/base/directory"
-  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
-  COMINbicor: "/path/to/historical/airnow/data/dir"
-  COMOUTbicor: "/path/to/historical/airnow/data/dir"
+``DO_AQM_DUST``: (Default: true)
+   Flag turning on/off AQM dust option in AQM_RC
 
-  AQM_CONFIG_DIR: ""
-  AQM_BIO_FILE: "BEIS_SARC401.ncf"
+``DO_AQM_CANOPY``: (Default: false)
+   Flag turning on/off AQM canopy option in AQM_RC
 
-  AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
-  AQM_DUST_FILE_SUFFIX: ".nc"
+``DO_AQM_PRODUCT``: (Default: true)
+   Flag turning on/off AQM output products in AQM_RC
 
-  AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
-  AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
+``DO_AQM_CHEM_LBCS``: (Default: true)
+   Add chemical LBCs to chemical LBCs
 
-  AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
-  AQM_FIRE_FILE_SUFFIX: ".nc"
-  AQM_FIRE_FILE_OFFSET_HRS: 0
-  AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
+``DO_AQM_GEFS_LBCS``: (Default: false)
+   Add GEFS aerosol LBCs to chemical LBCs
+   
+``DO_AQM_SAVE_AIRNOW_HIST``: (Default: false)
+   Save bias-correction airnow training data
+   
+``DO_AQM_SAVE_FIRE``: (Default: false)
+   Archive fire emission file to HPSS
+   
+``DCOMINbio_default``: (Default: "")
+   Path to the directory containing AQM bio files
 
-  AQM_RC_FIRE_FREQUENCY: "static"
-  AQM_RC_PRODUCT_FN: "aqm.prod.nc"
-  AQM_RC_PRODUCT_FREQUENCY: "hourly"
+``DCOMINdust_default``: (Default: "/path/to/dust/dir")
+   Path to the directory containing AQM dust file
 
-  AQM_LBCS_FILES: "gfs_bndy_chen_<MM>.tile7.000.nc"
+``DCOMINcanopy_default``: (Default: "/path/to/canopy/dir")
+   Path to the directory containing AQM canopy files
 
-  AQM_GEFS_FILE_PREFIX: "geaer"
-  AQM_GEFS_FILE_CYC: ""
+``DCOMINfire_default``: (Default: "")
+   Path to the directory containing AQM fire files
 
-  NEXUS_INPUT_DIR: ""
-  NEXUS_FIX_DIR: ""
-  NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
-  NUM_SPLIT_NEXUS: 3
-  NEXUS_GFS_SFC_OFFSET_HRS: 0
-  NEXUS_GFS_SFC_DIR: ""
-  NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+``DCOMINchem_lbcs_default``: (Default: "")
+   Path to the directory containing chemical LBC files
+   
+``DCOMINgefs_default``: (Default: "")
+   Path to the directory containing GEFS aerosol LBC files
+
+``DCOMINpt_src_default``: (Default: "/path/to/point/source/base/directory")
+   Parent directory containing point source files.
+
+``DCOMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
+   Path to the directory containing AIRNOW observation data.
+
+``COMINbicor``: (Default: "/path/to/historical/airnow/data/dir")
+   Path of reading in historical training data for bias correction. 
+
+``COMOUTbicor``: (Default: "/path/to/historical/airnow/data/dir")
+   Path to save the current cycle's model output and AirNow obs as training data for future use ``$COMINbicor`` and ``$COMOUTbicor`` can be distuigshed by the ``${yyyy}${mm}$dd`` under the same location.
+
+``AQM_CONFIG_DIR``: (Default: "")
+   Configuration directory for AQM
+
+``AQM_BIO_FILE``: (Default: "BEIS_SARC401.ncf")
+   File name of AQM BIO file
+
+``AQM_DUST_FILE_PREFIX``: (Default: "FENGSHA_p8_10km_inputs")
+   Prefix of AQM dust file
+
+``AQM_DUST_FILE_SUFFIX``: (Default: ".nc")
+   Suffix and extension of AQM dust file
+
+``AQM_CANOPY_FILE_PREFIX``: (Default: "gfs.t12z.geo")
+   File name of AQM canopy file
+
+``AQM_CANOPY_FILE_SUFFIX``: (Default: ".canopy_regrid.nc")
+   Suffix and extension of AQM CANOPY file
+
+``AQM_FIRE_FILE_PREFIX``: (Default: "GBBEPx_C401GRID.emissions_v003")
+   Prefix of AQM FIRE file
+
+``AQM_FIRE_FILE_SUFFIX``: (Default: ".nc")
+   Suffix and extension of AQM FIRE file
+
+``AQM_FIRE_FILE_OFFSET_HRS``: (Default: 0)
+   .. COMMENT: Need def!
+
+``AQM_FIRE_ARCHV_DIR``: (Default: "/path/to/archive/dir/for/RAVE/on/HPSS")
+   Path to the archive directory for RAVE emission files on HPSS
+
+``AQM_RC_FIRE_FREQUENCY``: (Default: "static")
+   Fire frequency in ``aqm.rc``.
+
+``AQM_RC_PRODUCT_FN``: (Default: "aqm.prod.nc")
+   File name of AQM output products.
+
+``AQM_RC_PRODUCT_FREQUENCY``: (Default: "hourly")
+   Frequency of AQM output products.
+
+``AQM_LBCS_FILES``: (Default: "gfs_bndy_chen_<MM>.tile7.000.nc")
+   File name of chemical LBCs.
+
+``AQM_GEFS_FILE_PREFIX``: (Default: "geaer")
+   Prefix of AQM GEFS file ("geaer" or "gfs").
+
+``AQM_GEFS_FILE_CYC``: (Default: "")
+   Cycle of the GEFS aerosol LBC files only if it is fixed.
+
+``NEXUS_INPUT_DIR``: (Default: "")
+   Same as GRID_DIR but for the the air quality emission generation task. Should be blank for the default value specified in ``setup.sh``.
+
+``NEXUS_FIX_DIR``: (Default: "")
+   Directory containing grid_spec files as the input file of nexus
+
+``NEXUS_GRID_FN``: (Default: "grid_spec_GSD_HRRR_25km.nc")
+   File name of the input ``grid_spec`` file of NEXUS.
+
+``NUM_SPLIT_NEXUS``: (Default: 3)
+   Number of split NEXUS emission tasks.
+
+``NEXUS_GFS_SFC_OFFSET_HRS``: (Default: 0)
+   Time offset when retrieving gfs surface data files
+
+``NEXUS_GFS_SFC_DIR``: (Default: "")
+   Path to directory containing GFS surface data files. This is set to ``COMINgfs`` when ``DO_REAL_TIME=TRUE``. 
+
+``NEXUS_GFS_SFC_ARCHV_DIR``:  (Default: "/NCEPPROD/hpssprod/runhistory")
+   Path to archive directory for gfs surface files on HPSS.
 
 Rocoto Parameters
 ===================
 
 .. COMMENT: Edit this section!!!
+
+Non-default Rocoto workflow parameters are set in the ``rocoto:`` section of the ``config.yaml`` file. This section is structured as follows:
 
 .. code-block:: console
 
@@ -1975,6 +1896,16 @@ Rocoto Parameters
      tasks:
        taskgroups: ""
 
+Users are most likely to use the ``taskgroups:`` component of the ``rocoto:`` section to add or delete groups of tasks from the default list of tasks. For example, to add plotting tasks, users would add: 
+
+.. code-block:: console
+
+   rocoto:
+     ...
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+See :numref:`Section %s <DefineWorkflow>` for more information on the components of the ``rocoto:`` section and how to define a Rocoto workflow. 
 
 
 
