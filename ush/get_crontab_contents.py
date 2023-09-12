@@ -58,7 +58,7 @@ def get_crontab_contents(called_from_cron):
     # themselves being called as cron jobs.  In that case, we must instead
     # call the system version of crontab at /usr/bin/crontab.
     #
-    if MACHINE == "CHEYENNE" or "DERECHO":
+    if MACHINE == "CHEYENNE" or MACHINE == "DERECHO":
         if called_from_cron:
             __crontab_cmd__ = "/usr/bin/crontab"
 
