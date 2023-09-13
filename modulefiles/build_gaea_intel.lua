@@ -16,12 +16,6 @@ load("srw_common")
 -- Need at runtime
 load("alps")
 
-local MKLROOT="/opt/intel/oneapi/mkl/2022.0.2/"
-prepend_path("LD_LIBRARY_PATH",pathJoin(MKLROOT,"lib/intel64"))
-pushenv("MKLROOT", MKLROOT)
-
-pushenv("CRAYPE_LINK_TYPE","dynamic")
-
 setenv("CC","cc")
 setenv("FC","ftn")
 setenv("CXX","CC")
