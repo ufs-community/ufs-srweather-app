@@ -20,6 +20,8 @@ load("cmake/3.23.1")
 
 load("srw_common")
 load("ufs-pyenv")
+-- Need at runtime
+load("alps")
 
 setenv("CC","cc")
 setenv("FC","ftn")

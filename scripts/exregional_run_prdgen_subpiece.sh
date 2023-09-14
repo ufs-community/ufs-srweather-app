@@ -46,7 +46,7 @@ elif [ $domain == "pr" ]; then
 fi
 
 # Use different parm file for each subpiece
-wgrib2 $comout/rrfs.t${cyc}z.prslev.f${fhr}.grib2 | grep -F -f ${parmfile} | wgrib2 -i -grib inputs.grib${domain} $comout/rrfs.t${cyc}z.prslev.f${fhr}.grib2
+wgrib2 $comout/${NET}.${cyc}z.prslev.f${fhr}.grib2 | grep -F -f ${parmfile} | wgrib2 -i -grib inputs.grib${domain} $comout/${NET}.${cyc}z.prslev.f${fhr}.grib2
 wgrib2 inputs.grib${domain} -new_grid_vectors "UGRD:VGRD:USTM:VSTM" -submsg_uv inputs.grib${domain}.uv
 wgrib2 inputs.grib${domain}.uv -set_bitmap 1 -set_grib_type ${compress_type} \
   -new_grid_winds grid -new_grid_vectors "UGRD:VGRD:USTM:VSTM" \

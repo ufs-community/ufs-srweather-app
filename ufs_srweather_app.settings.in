@@ -19,7 +19,3 @@ Shared Library:		@enable_shared@
 Static Library:		@enable_static@
 Extra libraries:	@LIBS@
 
-# Features
-----------
-Parallel Support:	@HAS_PARALLEL@
-RRFS Components:        @ENABLE_RRFS@
