@@ -18,7 +18,6 @@ default_data_preproc_task: &default_preproc
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
-  nodesize: "&NCORES_PER_NODE;"
   ppn: 1
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   queue: '&QUEUE_DEFAULT;'
