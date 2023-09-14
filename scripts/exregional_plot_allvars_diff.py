@@ -325,6 +325,11 @@ if __name__ == "__main__":
         required=False,
     )
     parser.add_argument(
+        "--net",
+        help="Model name; prefix of model output files.",
+        default="srw",
+        )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="Print debug messages",
@@ -370,25 +375,12 @@ if __name__ == "__main__":
         vtime = ndate(itime, int(fhr))
     
         # Define the location of the input files
+        file_name = f"{args.net}.t{cyc}z.prslev.f{fhour}.{POST_OUTPUT_DOMAIN_NAME}.grib2"
         data1 = pygrib.open(
-            COMOUT_1
-            + "/rrfs.t"
-            + cyc
-            + "z.prslev.f"
-            + fhour
-            + "."
-            + POST_OUTPUT_DOMAIN_NAME
-            + ".grib2"
+            f"{COMOUT_1}/{file_name}"
         )
         data2 = pygrib.open(
-            COMOUT_2
-            + "/rrfs.t"
-            + cyc
-            + "z.prslev.f"
-            + fhour
-            + "."
-            + POST_OUTPUT_DOMAIN_NAME
-            + ".grib2"
+            f"{COMOUT_2}/{file_name}"
         )
     
         # Get the lats and lons

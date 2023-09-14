@@ -66,16 +66,19 @@ FV3_WoFS_v0:
 
 FV3_HRRR:
   fv_core_nml: &HRRR_fv_core
-    hord_dp: -5
-    hord_mt: 5
-    hord_tm: 5
-    hord_vt: 5
+    hord_dp: 6
+    hord_mt: 6
+    hord_tm: 6
+    hord_vt: 6
+    hord_tr: 8
     kord_mt: 9
     kord_tm: -9
     kord_tr: 9
     kord_wz: 9
-    nord_tr: 2
-    nrows_blend: 10
+    nord_tr: 0
+    nrows_blend: 20
+    d_con: 0.5
+    n_sponge: 9
   gfs_physics_nml:
     <<: *RRFS_v1beta_phys
     cdmbgwd: [3.5, 1.0]
@@ -91,6 +94,16 @@ FV3_HRRR:
     lsm: 3
     lsoil_lsm: 9
     sfclay_compute_flux: True
+    diag_log: True
+    ialb: 2
+    iems: 2
+    isncond_opt: 2
+    isncovr_opt: 3
+    mosaic_lu: 0
+    mosaic_soil: 0
+    thsfc_loc: False
+    nst_anl:
+    nstf_name:
 
 FV3_RAP:
   fv_core_nml:

@@ -8,8 +8,8 @@ user:
 workflow:
   CCPP_PHYS_SUITE: FV3_WoFS_v0
   GRID_GEN_METHOD: ESGgrid
-  DATE_FIRST_CYCL: '2019061500'
-  DATE_LAST_CYCL: '2019061500'
+  DATE_FIRST_CYCL: '2020080100'
+  DATE_LAST_CYCL: '2020080100'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_make_grid:
@@ -22,14 +22,16 @@ task_make_grid:
   ESGgrid_WIDE_HALO_WIDTH: 6
   ESGgrid_PAZI: 0.0
 task_get_extrn_ics:
-  EXTRN_MDL_NAME_ICS: FV3GFS
-  FV3GFS_FILE_FMT_ICS: grib2
+  EXTRN_MDL_NAME_ICS: HRRR
   USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_FILES_ICS:
+    - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_get_extrn_lbcs:
-  EXTRN_MDL_NAME_LBCS: FV3GFS
-  FV3GFS_FILE_FMT_LBCS: grib2
+  EXTRN_MDL_NAME_LBCS: RAP
   LBC_SPEC_INTVL_HRS: 3
   USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_FILES_LBCS:
+    - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
 task_run_fcst:
   DT_ATMOS: 15
   LAYOUT_X: 24

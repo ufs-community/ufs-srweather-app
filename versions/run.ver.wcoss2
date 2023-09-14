@@ -31,7 +31,6 @@ export nemsio_ver=2.5.2
 export sigio_ver=2.3.2
 export sfcio_ver=1.4.1
 export wrf_io_ver=1.2.0
-export bufr_ver=11.7.0
 export nemsiogfs_ver=2.5.3
 
 export python_ver=3.8.6
