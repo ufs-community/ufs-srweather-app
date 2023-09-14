@@ -66,9 +66,6 @@ fi
 if [[ "$*" != *"verbose"* ]]; then
    opts="${opts} --verbose"
 fi
-if [[ "$*" != *"cron_relaunch_intvl_mnts"* ]]; then
-   opts="${opts} --cron_relaunch_intvl_mnts=4"
-fi
 if [[ "$*" != *"exec_subdir"* ]]; then
    opts="${opts} --exec_subdir=install_${compiler}/exec"
 fi

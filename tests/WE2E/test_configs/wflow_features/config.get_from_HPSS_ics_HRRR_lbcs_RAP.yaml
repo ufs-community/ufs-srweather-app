@@ -7,6 +7,8 @@ metadata:
     forecast hour) will be derived.
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
 workflow:
   CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km

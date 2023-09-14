@@ -6,6 +6,8 @@ metadata:
     date (2019061200) on which the FV3GFS officially became operational.
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v15p2
   PREDEF_GRID_NAME: RRFS_CONUS_25km

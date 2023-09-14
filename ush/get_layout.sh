@@ -17,7 +17,7 @@ fi
 
 if [ "$#" -eq 3 ]; then
    nlayout=$3
-   echo "ncups= $nlayout"
+   echo "ncpus= $nlayout"
    layout_x=$(echo "sqrt($nlayout*$nx/$ny)" |bc )
    if [ $layout_x -gt $nx ]; then
       $layout_x=$nx
