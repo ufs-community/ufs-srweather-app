@@ -715,20 +715,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Symlink files to NWGES directory, dropping prefix
-#
-#-----------------------------------------------------------------------
-#
-for i in ${INPUT_DATA}/*.nc; do
-    file=$(basename $i)
-    prefix="${NET}.${cycle}${dot_ensmem}."
-    file=${file#"$prefix"}
-    file=${file/f000/000}
-    ln_vrfy -sf $i ${INPUT_DATA_NWGES}/${file}
-done
-#
-#-----------------------------------------------------------------------
-#
 # Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------

@@ -567,16 +567,6 @@ located in the following directory:
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
   mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
 
-#
-#-----------------------------------------------------------------------
-#
-# Symlink files to NWGES directory, dropping prefix
-#
-#-----------------------------------------------------------------------
-#
-  ln_vrfy -sf ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc \
-          ${INPUT_DATA_NWGES}/gfs_bndy.tile7.${fcst_hhh_FV3LAM}.nc
-
   fi
 done
 #
