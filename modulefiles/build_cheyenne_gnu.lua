@@ -14,19 +14,13 @@ setenv("MKLROOT", "/glade/u/apps/opt/intel/2022.1/mkl/latest")
 load(pathJoin("ncarcompilers", os.getenv("ncarcompilers_ver") or "0.5.0"))
 unload("netcdf")
 
-prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/hpc-stack/gnu11.2.0/modulefiles/stack")
+prepend_path("MODULEPATH","/glade/work/epicufsrt/contrib/hpc-stack/gnu11.2.0_ncdf492/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-gnu", os.getenv("hpc_gnu_ver") or "11.2.0"))
 load(pathJoin("hpc-mpt", os.getenv("hpc_mpt_ver") or "2.25"))
 
 load("srw_common")
 
-load(pathJoin("g2", os.getenv("g2_ver") or "3.4.5"))
-load(pathJoin("esmf", os.getenv("esmf_ver") or "8.3.0b09"))
-load(pathJoin("netcdf", os.getenv("netcdf_ver") or "4.7.4"))
-load(pathJoin("libpng", os.getenv("libpng_ver") or "1.6.37"))
-load(pathJoin("pio", os.getenv("pio_ver") or "2.5.7"))
-load(pathJoin("fms", os.getenv("fms_ver") or "2022.04"))
 load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.23"))
 
 unsetenv("MKLROOT")

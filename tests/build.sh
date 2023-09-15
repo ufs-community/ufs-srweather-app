@@ -89,37 +89,6 @@ declare -a executables_created=( chgres_cube \
                                  ufs_model \
                                  vcoord_gen )
 
-
-if [ $components = "all" ]; then
-    #-----------------------------------------------------------------------
-    # Array of all optional GSI executables built
-    #-----------------------------------------------------------------------
-    executables_created+=( enkf.x \
-                           gsi.x )
-
-    #-----------------------------------------------------------------------
-    # Array of all optional rrfs_utl executables built
-    #-----------------------------------------------------------------------
-    executables_created+=( adjust_soiltq.exe \
-                          check_imssnow_fv3lam.exe \
-                          fv3lam_nonvarcldana.exe \
-                          gen_annual_maxmin_GVF.exe \
-                          gen_cs.exe \
-                          gen_ensmean_recenter.exe \
-                          lakesurgery.exe \
-                          process_imssnow_fv3lam.exe \
-                          process_larccld.exe \
-                          process_Lightning.exe \
-                          process_metarcld.exe \
-                          process_NSSL_mosaic.exe \
-                          process_updatesst.exe \
-                          ref2tten.exe \
-                          update_bc.exe \
-                          update_GVF.exe \
-                          update_ice.exe \
-                          use_raphrrr_sfc.exe )
-fi
-
 #-----------------------------------------------------------------------
 # Set up the build environment and run the build script.
 #-----------------------------------------------------------------------

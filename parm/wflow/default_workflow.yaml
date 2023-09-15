@@ -31,8 +31,6 @@ rocoto:
     COLDSTART: '{{ workflow.COLDSTART }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
-    # rrfs
-    NWGES_BASEDIR: '{{ nco.NWGES_BASEDIR }}' 
   attrs:
     cyclethrottle: "200"
     realtime: "F"
