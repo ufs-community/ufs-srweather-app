@@ -13,7 +13,9 @@ prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/rocoto/modulefiles")
 load("rocoto")
 load("alps")
 
-pushenv("MKLROOT", "/opt/intel/oneapi/mkl/2022.0.2/")
+local MKLROOT="/opt/intel/oneapi/mkl/2023.1.0/"
+prepend_path("LD_LIBRARY_PATH",pathJoin(MKLROOT,"lib/intel64"))
+pushenv("MKLROOT", MKLROOT)
 pushenv("GSI_BINARY_SOURCE_DIR", "/lustre/f2/dev/role.epic/contrib/GSI_data/fix/20230601")
 setenv("PMI_NO_PREINITIALIZE","1")
 

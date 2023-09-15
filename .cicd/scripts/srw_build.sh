@@ -31,7 +31,7 @@ fi
 # Build and install
 cd ${workspace}/tests
 set +e
-./build.sh ${platform} ${SRW_COMPILER} all
+./build.sh ${platform} ${SRW_COMPILER}
 build_exit=$?
 set -e
 cd -

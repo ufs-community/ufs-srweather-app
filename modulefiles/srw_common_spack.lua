@@ -7,7 +7,6 @@ load("parallelio/2.5.9")
 load("esmf/8.4.2")
 load("fms/2023.01")
 
-load("bufr/12.0.0")
 load("bacio/2.4.1")
 load("crtm/2.4.0")
 load("g2/3.4.5")
@@ -26,5 +25,4 @@ load("sigio/2.3.2")
 load("w3nco/2.4.1")
 load("wrf-io/1.2.0")
 
-load("ncio/1.1.2")
 load("wgrib2/2.0.8")

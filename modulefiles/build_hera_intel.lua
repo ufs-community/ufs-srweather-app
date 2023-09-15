@@ -16,7 +16,7 @@ load(pathJoin("intel", intel_ver))
 impi_ver=os.getenv("impi_ver") or "2022.1.2"
 load(pathJoin("impi", impi_ver))
 
-prepend_path("MODULEPATH","/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/modulefiles/stack")
+prepend_path("MODULEPATH","/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2_ncdf492/modulefiles/stack")
 
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver") or "2022.1.2"))
@@ -25,7 +25,7 @@ load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver") or "2022.1.2"))
 load("srw_common")
 
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
-load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
+load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
