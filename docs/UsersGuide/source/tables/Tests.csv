@@ -48,7 +48,6 @@ yes,yes,grid_RRFS_CONUS_25km_ics_NAM_lbcs_NAM_suite_GFS_v16,RRFS_CONUS_25km,FV3_
 ,yes,grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_HRRR_suite_HRRR,SUBCONUS_Ind_3km,FV3_HRRR,HRRR,HRRR,2020081000,3,17,23,
 ,yes,grid_SUBCONUS_Ind_3km_ics_NAM_lbcs_NAM_suite_GFS_v16,SUBCONUS_Ind_3km,FV3_GFS_v16,NAM,NAM,2021061500,6,13,41,
 ,yes,grid_SUBCONUS_Ind_3km_ics_RAP_lbcs_RAP_suite_RRFS_v1beta,SUBCONUS_Ind_3km,FV3_RRFS_v1beta,RAP,RAP,2020080103,3,20,22,
-,yes,GST_release_public_v1,RRFS_CONUS_25km,FV3_GFS_v15p2,FV3GFS,FV3GFS,2019061500,48,31,35,
 ,yes,MET_ensemble_verification_only_vx,RRFS_CONUS_25km,*none*,*none*,*none*,2019061500,6,1,15,Runs ensemble verification tasks on staged data without running the rest of the workflow
 ,yes,MET_verification_only_vx,RRFS_CONUS_25km,*none*,*none*,*none*,2019061500,6,1,8,Runs verification tasks on staged data without running the rest of the workflow
 ,yes,nco,RRFS_CONUS_25km,FV3_GFS_v16,FV3GFS,FV3GFS,2022040700,6,7,20,
