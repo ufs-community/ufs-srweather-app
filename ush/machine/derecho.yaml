@@ -30,7 +30,7 @@ platform:
   FIXorg: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/NaturalEarth
-  EXTRN_MDL_DATA_STORES: disk aws nomads
+  EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
     FV3GFS: 
