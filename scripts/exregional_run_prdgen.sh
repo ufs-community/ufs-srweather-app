@@ -186,7 +186,7 @@ DATA=$COMOUT
 DATAprdgen=$DATA/prdgen_${fhr}
 mkdir_vrfy $DATAprdgen
 
-wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.grib2 >& $DATAprdgen/prslevf${fhr}.txt
+wgrib2 ${COMOUT}/${NET}.${cycle}.prslev.f${fhr}.grib2 >& $DATAprdgen/prslevf${fhr}.txt
 
 # Create parm files for subsetting on the fly - do it for each forecast hour
 # 10 subpieces for North American grid
@@ -254,9 +254,9 @@ for domain in ${domains[@]}
 do
   for task in $(seq ${tasks[count]})
   do
-    cat $DATAprdgen/prdgen_${domain}_${task}/${domain}_${task}.grib2 >> ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2
+    cat $DATAprdgen/prdgen_${domain}_${task}/${domain}_${task}.grib2 >> ${COMOUT}/${NET}.${cycle}.prslev.f${fhr}.${domain}.grib2
   done
-  wgrib2 ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2 -s > ${COMOUT}/rrfs.${cycle}.prslev.f${fhr}.${domain}.grib2.idx
+  wgrib2 ${COMOUT}/${NET}.${cycle}.prslev.f${fhr}.${domain}.grib2 -s > ${COMOUT}/${NET}.${cycle}.prslev.f${fhr}.${domain}.grib2.idx
   count=$count+1
 done
 

@@ -54,7 +54,7 @@ OPTIONS
 TARGETS
    default = builds the default list of apps (also not passing any target does the same)
    all = builds all apps
-   Or any combinations of (ufs, ufs_utils, upp, gsi, rrfs_utils)
+   Or any combinations of (ufs, ufs_utils, upp)
 
 NOTE: See User's Guide for detailed build instructions
 
@@ -84,8 +84,6 @@ Settings:
   BUILD_UFS=${BUILD_UFS}
   BUILD_UFS_UTILS=${BUILD_UFS_UTILS}
   BUILD_UPP=${BUILD_UPP}
-  BUILD_GSI=${BUILD_GSI}
-  BUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}
   BUILD_NEXUS=${BUILD_NEXUS}
   BUILD_AQM_UTILS=${BUILD_AQM_UTILS}
 
@@ -122,8 +120,6 @@ DEFAULT_BUILD=true
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
-BUILD_GSI="off"
-BUILD_RRFS_UTILS="off"
 BUILD_NEXUS="off"
 BUILD_AQM_UTILS="off"
 
@@ -178,13 +174,10 @@ while :; do
     # targets
     default) ;;
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
-         BUILD_UFS_UTILS="on"; BUILD_UPP="on";
-         BUILD_GSI="on"; BUILD_RRFS_UTILS="on";;
+         BUILD_UFS_UTILS="on"; BUILD_UPP="on";;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
-    gsi) DEFAULT_BUILD=false; BUILD_GSI="on" ;;
-    rrfs_utils) DEFAULT_BUILD=false; BUILD_RRFS_UTILS="on" ;;
     nexus) DEFAULT_BUILD=false; BUILD_NEXUS="on" ;;
     aqm_utils) DEFAULT_BUILD=false; BUILD_AQM_UTILS="on" ;;
     # unknown
@@ -321,8 +314,6 @@ CMAKE_SETTINGS="\
  -DBUILD_UFS=${BUILD_UFS}\
  -DBUILD_UFS_UTILS=${BUILD_UFS_UTILS}\
  -DBUILD_UPP=${BUILD_UPP}\
- -DBUILD_GSI=${BUILD_GSI}\
- -DBUILD_RRFS_UTILS=${BUILD_RRFS_UTILS}\
  -DBUILD_NEXUS=${BUILD_NEXUS}\
  -DBUILD_AQM_UTILS=${BUILD_AQM_UTILS}"
 
@@ -405,15 +396,6 @@ if [ $USE_SUB_MODULES = true ]; then
     if [ $BUILD_UPP = "on" ]; then
         printf "... Loading UPP modules ...\n"
         module use ${SRW_DIR}/sorc/UPP/modulefiles
-        load_module ""
-    fi
-    if [ $BUILD_GSI = "on" ]; then
-        printf "... Loading GSI modules ...\n"
-        module use ${SRW_DIR}/sorc/gsi/modulefiles
-        load_module "gsi_"
-    fi
-    if [ $BUILD_RRFS_UTILS = "on" ]; then
-        printf "... Loading RRFS_UTILS modules ...\n"
         load_module ""
     fi
     if [ $BUILD_NEXUS = "on" ]; then
