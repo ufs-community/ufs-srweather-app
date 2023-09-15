@@ -8,6 +8,9 @@ metadata:
 user:
   RUN_ENVIR: community
 
+nco:
+  NET_default: rrfs
+
 workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019061500'

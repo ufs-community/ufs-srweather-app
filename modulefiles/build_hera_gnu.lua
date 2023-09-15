@@ -13,7 +13,7 @@ load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
 gnu_ver=os.getenv("gnu_ver") or "9.2.0"
 load(pathJoin("gnu", gnu_ver))
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/gnu-9.2/modulefiles/stack")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/gnu-9.2_ncdf492/modulefiles/stack")
 
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
 load(pathJoin("hpc-gnu", os.getenv("hpc-gnu_ver") or "9.2"))
@@ -21,8 +21,8 @@ load(pathJoin("hpc-mpich", os.getenv("hpc-mpich_ver") or "3.3.2"))
 
 load("srw_common")
 
-load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9"))
-load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
+load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.1.0"))
+load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.23"))
 
 unsetenv("MKLROOT")

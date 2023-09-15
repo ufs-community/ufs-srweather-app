@@ -57,13 +57,10 @@ for the FV3 (in NetCDF format).
 #
 if [ $RUN_ENVIR = "nco" ]; then
     export INPUT_DATA="${COMIN}"
-    export INPUT_DATA_NWGES="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/ics"
 else
     export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
-    export INPUT_DATA_NWGES="${NWGES_DIR}${SLASH_ENSMEM_SUBDIR}/ics"
 fi
 mkdir_vrfy -p "${INPUT_DATA}"
-mkdir_vrfy -p "${INPUT_DATA_NWGES}"
 #
 #
 #-----------------------------------------------------------------------
