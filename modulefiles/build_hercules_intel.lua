@@ -20,7 +20,6 @@ load("srw_common")
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 
--- setenv-march=core-avx2
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
 
