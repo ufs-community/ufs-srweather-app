@@ -9,13 +9,13 @@ platform:
   QUEUE_DEFAULT: main
   QUEUE_FCST: main 
   QUEUE_HPSS: main
-  RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} --hostfile ${PBS_NODEFILE}
-  RUN_CMD_POST: mpiexec -n $nprocs  --hostfile ${PBS_NODEFILE}
-  RUN_CMD_PRDGEN: mpiexec -n $nprocs  --hostfile ${PBS_NODEFILE}
+  RUN_CMD_FCST: mpiexec -n ${PE_MEMBER01} 
+  RUN_CMD_POST: mpiexec -n $nprocs 
+  RUN_CMD_PRDGEN: mpiexec -n $nprocs 
   RUN_CMD_SERIAL: time
-  RUN_CMD_UTILS: mpiexec -n $nprocs  --hostfile ${PBS_NODEFILE}
-  RUN_CMD_NEXUS: mpiexec -n $nprocs  --hostfile ${PBS_NODEFILE}
-  RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}  --hostfile ${PBS_NODEFILE}
+  RUN_CMD_UTILS: mpiexec -n $nprocs 
+  RUN_CMD_NEXUS: mpiexec -n $nprocs 
+  RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}  
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data
   TEST_AQM_INPUT_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/aqm_data
@@ -36,6 +36,7 @@ data:
     FV3GFS: 
       nemsio: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
       grib2: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+      netcdf: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh}
     NAM: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/NAM/${yyyymmdd}${hh}
     HRRR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
