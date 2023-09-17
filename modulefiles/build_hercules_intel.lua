@@ -8,7 +8,7 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Orion ]===])
 load("contrib")
 load("noaatools")
 
-load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.2"))
+load(pathJoin("cmake", os.getenv("cmake_ver") or "3.26.3"))
 
 prepend_path("MODULEPATH","/work/noaa/epic/role-epic/contrib/hercules/hpc-stack/intel-2022.2.1/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
