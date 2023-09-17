@@ -32,8 +32,14 @@ platform:
   FIXorg: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
-  EXTRN_MDL_DATA_STORES: aws nomads
-task_process_bufr:
-  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
-task_analysis_gsi:
-  OBSPATH_TEMPLATE: '${OBSPATH}/${YYYYMMDD}.rap/rap'
+  EXTRN_MDL_DATA_STORES: aws
+data:
+  ics_lbcs:
+    FV3GFS:
+      nemsio: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+      netcdf: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh}
+    NAM: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/NAM/${yyyymmdd}${hh}
+    HRRR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
+    RAP: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
+    GSMGFS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
