@@ -95,7 +95,7 @@ else
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_rrfs.txt"
   fi
   print_info_msg "
 ====================================================================
@@ -107,23 +107,25 @@ temporary work directory (DATA_FHR):
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
 cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
-if [ ${USE_CRTM} = "TRUE" ]; then
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
-  cp_vrfy ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
-  print_info_msg "
+if [ ${CPL_AQM} != "TRUE" ]; then
+  if [ ${USE_CRTM} = "TRUE" ]; then
+    cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/FAST*.bin ./
+    cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
+    cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
+    print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
 work directory (DATA_FHR):
-  CRTM_DIR = \"${CRTM_DIR}\"
-  DATA_FHR = \"${DATA_FHR}\"
+    CRTM_DIR = \"${CRTM_DIR}\"
+    DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
+  fi
 fi
 #
 #-----------------------------------------------------------------------

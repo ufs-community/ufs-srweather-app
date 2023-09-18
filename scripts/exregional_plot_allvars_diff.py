@@ -446,9 +446,9 @@ if __name__ == "__main__":
         t1a = time.perf_counter()
     
         # Sea level pressure
-        slp_1 = data1.select(name="Pressure reduced to MSL")[0].values * 0.01
+        slp_1 = data1.select(name="MSLP (Eta model reduction)")[0].values * 0.01
         slpsmooth_1 = ndimage.gaussian_filter(slp_1, 13.78)
-        slp_2 = data2.select(name="Pressure reduced to MSL")[0].values * 0.01
+        slp_2 = data2.select(name="MSLP (Eta model reduction)")[0].values * 0.01
         slpsmooth_2 = ndimage.gaussian_filter(slp_2, 13.78)
         slp_diff = slp_2 - slp_1
     

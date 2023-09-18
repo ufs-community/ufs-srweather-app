@@ -429,7 +429,7 @@ if __name__ == "__main__":
         t1a = time.perf_counter()
     
         # Sea level pressure
-        slp = data1.select(name="Pressure reduced to MSL")[0].values * 0.01
+        slp = data1.select(name="MSLP (Eta model reduction)")[0].values * 0.01
         slpsmooth = ndimage.gaussian_filter(slp, 13.78)
     
         # 2-m temperature

@@ -35,6 +35,9 @@ platform:
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 
+global:
+  CRTM_DIR: /scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/impi-2022.1.2/crtm/2.4.0/fix
+
 cpl_aqm_parm:
   AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
   DCOMINbio_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
