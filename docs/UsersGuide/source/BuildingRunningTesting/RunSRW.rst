@@ -206,7 +206,7 @@ In future shells, you can activate and use this environment with:
    source ~/conda/etc/profile.d/conda.sh
    conda activate uwtools
 
-See the `workflow-tools respository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````

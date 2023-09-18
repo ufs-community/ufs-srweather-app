@@ -294,8 +294,8 @@ If the ``devbuild.sh`` approach failed, users need to set up their environment t
 
 .. code-block:: console
 
-   source etc/lmod-setup.sh gaea
-   source etc/lmod-setup.csh gaea
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh gaea
+   source /path/to/ufs-srweather-app/etc/lmod-setup.csh gaea
 
 .. note::
 

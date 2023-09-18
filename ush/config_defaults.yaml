@@ -434,9 +434,6 @@ platform:
   # FIXshp:
   # System directory where the graphics shapefiles are located.
   # 
-  # FIXgsi:
-  # System directory where GSI fixed files are located
-  # 
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -451,7 +448,6 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
-  FIXgsi: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #

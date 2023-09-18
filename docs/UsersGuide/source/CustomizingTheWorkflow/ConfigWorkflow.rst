@@ -1095,9 +1095,10 @@ For each workflow task, certain parameter values must be passed to the job sched
    Full path to the forecast model executable.
 
 ``IO_LAYOUT_Y``: (Default: 1)
-   Subdomain of restart files.
+   Specifies how many MPI ranks to use in the Y direction for input/output (I/O).
 
 .. COMMENT: Is this correct?!?! ^
+   Subdomain of restart files.
 
 ``KMP_AFFINITY_RUN_FCST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_fcst`` task. 
@@ -1630,12 +1631,10 @@ Verification Parameters
 
 Non-default parameters for verification tasks are set in the ``verification:`` section of the ``config.yaml`` file.
 
-.. COMMENT: Edit this file from here down!
-
 Templates for Observation Files
 ---------------------------------
 
-Templates for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` observation files.
+This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` observation files.
 
 ``OBS_CCPA_APCP01h_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'``)
    File name template used to obtain the input observation files (in the ``PcpCombine_obs`` tasks) that contain the 1-hour accumulated precipitation (APCP) from which APCP for longer accumulations will be generated.
@@ -1645,16 +1644,19 @@ Templates for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` obser
 
 ``OBS_NOHRSC_ASNOW_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'``)
    .. COMMENT: Add definition!!
+   File name template for accumulated snow observation data. 
 
 ``OBS_MRMS_REFC_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
    .. COMMENT: Add definition!!
-   File name template used to obtain the input observation files (in the ``PcpCombine_obs`` tasks) that contain the 1-hour accumulated precipitation (APCP) from which APCP for longer accumulations will be generated.
+   File name template for MRMS reflectivity observation data.
 
 ``OBS_MRMS_RETOP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
    .. COMMENT: Add definition!!
+   File name template for MRMS echo top observation data.
 
 ``OBS_NDAS_SFCorUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
    .. COMMENT: Add definition!!
+   File name template for NDAS surface or upper air variable observation data.
 
 ``OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE``: (Default: ``'${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'``)
    .. COMMENT: Add definition!!
