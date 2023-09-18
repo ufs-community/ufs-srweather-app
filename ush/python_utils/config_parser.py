@@ -604,15 +604,15 @@ def load_config_file(file_name, return_string=0):
         return load_yaml_config(file_name)
     if ext == "xml":
         return load_xml_config(file_name, return_string)
-    else:
-        errstr = dedent(
-                 f"""
-                 Unrecognized file extension ({ext}) for config file: {file_name}
-                 
-                 Valid file extensions include:\n""")
-        errstr = errstr + " .sh\n .ini\n .json\n .yaml\n .yml\n .xml"
 
-        raise ValueError(errstr)
+    errstr = dedent(
+             f"""
+             Unrecognized file extension ({ext}) for config file: {file_name}
+             
+             Valid file extensions include:\n""")
+    errstr += " .sh\n .ini\n .json\n .yaml\n .yml\n .xml"
+
+    raise ValueError(errstr)
 
 
 ##################
