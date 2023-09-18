@@ -23,23 +23,57 @@ from python_utils import (
 # These come from ush/python_utils/workflow-tools
 from scripts.templater import set_template
 
-def create_nems_configure_file(run_dir):
+def create_nems_configure_file(run_dir,cfg):
     """ Creates a nems configuration file in the specified
     run directory
 
     Args:
         run_dir: run directory
+        cfg: dictionary of config settings
     Returns:
         Boolean
     """
 
-    print_input_args(locals())
-
-    #import all environment variables
-    import_vars()
-
     # pylint: disable=undefined-variable
 
+    # Set necessary variables for each coupled configuration
+
+    pe_member01_m1 = str(int(cfg["PE_MEMBER01"])-1)
+
+    if cfg["CPL_AQM"]:
+        EARTH_component_list = 'ATM AQM'
+        ATM_petlist_bounds = '-1 -1'
+        ATM_omp_num_threads_line = ''
+        ATM_diag_line = ''
+        runseq = [ f"  cfg['DT_ATMOS']\n",
+                   "    ATM phase1\n",
+                   "    ATM -> AQM\n",
+                   "    AQM\n",
+                   "    AQM -> ATM\n",
+                   "    ATM phase2\n",
+                   "  @" ]
+    elif cfg["UFS_FIRE"]:
+        EARTH_component_list = 'ATM FIRE'
+        ATM_petlist_bounds = '-1 -1'
+        ATM_omp_num_threads_line = ''
+        ATM_diag_line = ''
+        runseq = [ f"  cfg['DT_ATMOS']\n",
+                   "    ATM -> FIRE\n",
+                   "    ATM\n",
+                   "    FIRE\n",
+                   "  @" ]
+    else:
+        EARTH_component_list = 'ATM'
+        ATM_petlist_bounds = f'0 {pe_member01_m1}'
+        ATM_omp_num_threads_line = \
+            f'ATM_omp_num_threads:            {cfg["OMP_NUM_THREADS_RUN_FCST"]}'
+        ATM_diag_line = '  Diagnostic = 0'
+        runseq = [ "  ATM" ]
+
+    if cfg["PRINT_ESMF"]:
+        logkindflag = 'ESMF_LOGKIND_MULTI'
+    else:
+        logkindflag = 'ESMF_LOGKIND_MULTI_ON_ERROR'
     #
     #-----------------------------------------------------------------------
     #
@@ -48,14 +82,13 @@ def create_nems_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     print_info_msg(f'''
-        Creating a nems.configure file (\"{NEMS_CONFIG_FN}\") in the specified 
+        Creating a nems.configure file (\"{cfg["NEMS_CONFIG_FN"]}\") in the specified 
         run directory (run_dir):
-          run_dir = \"{run_dir}\"''', verbose=VERBOSE)
+          {run_dir=}''', verbose=cfg["VERBOSE"])
     #
     # Set output file path
     #
-    nems_config_fp = os.path.join(run_dir, NEMS_CONFIG_FN)
-    pe_member01_m1 = str(int(PE_MEMBER01)-1)
+    nems_config_fp = os.path.join(run_dir, cfg["NEMS_CONFIG_FN"])
     #
     #-----------------------------------------------------------------------
     #
@@ -66,33 +99,37 @@ def create_nems_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     settings = {
-      "dt_atmos": DT_ATMOS,
-      "print_esmf": PRINT_ESMF,
-      "cpl_aqm": CPL_AQM,
-      "pe_member01_m1": pe_member01_m1,
-      "atm_omp_num_threads": OMP_NUM_THREADS_RUN_FCST,
+      "cpl_aqm": cfg["CPL_AQM"],
+      "ufs_fire": cfg["UFS_FIRE"],
+      "logKindFlag": logkindflag,
+      "EARTH_cl": EARTH_component_list,
+      "ATM_pb": ATM_petlist_bounds,
+      "ATM_omp_num_threads_line": ATM_omp_num_threads_line,
+      "ATM_diag_line": ATM_diag_line,
+      "runseq": runseq
     }
     settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(
         dedent(
             f"""
-            The variable \"settings\" specifying values to be used in the \"{NEMS_CONFIG_FN}\"
+            The variable \"settings\" specifying values to be used in the \"{cfg["NEMS_CONFIG_FN"]}\"
             file has been set as follows:\n
             settings =\n\n"""
         )
         + settings_str,
-        verbose=VERBOSE,
+        verbose=cfg["VERBOSE"],
     )
     #
     #-----------------------------------------------------------------------
     #
-    # Call a python script to generate the experiment's actual NEMS_CONFIG_FN
-    # file from the template file.
+    # Call set_template function from workflow_tools to fill in jinja template
+    # to create nems.configure file for this experiment
     #
     #-----------------------------------------------------------------------
-    #
-    # Store the settings in a temporary file
+
+    # Store the settings in a temporary file; hopefully soon workflow tools will be able
+    # to accept a dictionary as an argument directly
     with tempfile.NamedTemporaryFile(dir="./",
                                      mode="w+t",
                                      prefix="nems_config_settings",
@@ -100,7 +137,7 @@ def create_nems_configure_file(run_dir):
         tmpfile.write(settings_str)
         tmpfile.seek(0)
 
-        set_template(["-c", tmpfile.name, "-i", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
+        set_template(["-c", tmpfile.name, "-i", cfg["NEMS_CONFIG_TMPL_FP"], "-o", nems_config_fp])
     return True
 
 def parse_args(argv):
@@ -125,7 +162,4 @@ if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
-    create_nems_configure_file(
-        run_dir=args.run_dir,
-    )
+    create_nems_configure_file(run_dir=args.run_dir,cfg=cfg)
