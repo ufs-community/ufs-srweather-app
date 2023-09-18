@@ -26,6 +26,9 @@ The list of fundamental and comprehensive tests can be viewed in the ``ufs-srwea
 
 For convenience, the WE2E tests are currently grouped into the following categories (under ``ufs-srweather-app/tests/WE2E/test_configs/``):
 
+* ``aqm``
+   This category tests the :term:`AQM` configuration of the SRW App. 
+
 * ``custom_grids``
    This category tests custom grids aside from those specified in ``ufs-srweather-app/ush/predef_grid_params.yaml``. These tests help ensure a wide range of domain sizes, resolutions, and locations will work as expected. These test files can also serve as examples for how to set your own custom domain.
 
@@ -38,14 +41,29 @@ For convenience, the WE2E tests are currently grouped into the following categor
 * ``grids_extrn_mdls_suites_nco``
    This category of tests ensures that the workflow running in **NCO mode** (i.e., with ``RUN_ENVIR`` set to ``"nco"``) completes successfully for various combinations of predefined grids, physics suites, and input data from different external models. Note that in NCO mode, an operational run environment is used. This involves a specific directory structure and variable names (see :numref:`Section %s <NCOModeParms>`).
 
+* ``ufs_case_studies``
+   This category tests that the workflow running in community mode completes successfully when running cases derived from the `ufs-case-studies repository <https://github.com/dtcenter/ufs-case-studies>`__. 
+
 * ``verification``
    This category specifically tests the various combinations of verification capabilities using METPlus. 
 
-* ``release_SRW_v1``
-   This category was reserved for the official "Graduate Student Test" case for the Version 1 SRW code release.
-
 * ``wflow_features``
    This category of tests ensures that the workflow completes successfully with particular features/capabilities activated.
+
+.. note::
+
+   Users should be aware that some tests assume :term:`HPSS` access. 
+   
+      * ``custom_ESGgrid_Great_Lakes_snow_8km`` and ``MET_verification_only_vx_time_lag`` require HPSS access. 
+      * On certain machines, *community* and *nco* tests assume HPSS. If the ``ush/machine/*.yaml`` file contains the following lines, users will need to have HPSS access or modify the tests to point to another data source:
+
+      .. control-block::
+
+         data:
+           ics_lbcs:
+             FV3GFS:
+             RAP:
+             HRRR:
 
 Some tests are duplicated among the above categories via symbolic links, both for legacy reasons (when tests for different capabilities were consolidated) and for convenience when a user would like to run all tests for a specific category (e.g., verification tests).
 
