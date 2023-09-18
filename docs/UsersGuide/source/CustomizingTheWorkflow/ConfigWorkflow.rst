@@ -107,6 +107,7 @@ If non-default parameters are selected for the variables in this section, they s
 ``SCHED``: (Default: "")
    The job scheduler to use (e.g., Slurm) on the specified ``MACHINE``. Leaving this an empty string allows the experiment generation script to set it automatically depending on the machine the workflow is running on. Valid values: ``"slurm"`` | ``"pbspro"`` | ``"lsf"`` | ``"lsfcray"`` | ``"none"``
 
+
 Machine-Dependent Parameters
 -------------------------------
 These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
@@ -338,9 +339,6 @@ Pre-Processing File Separator Parameters
 
 Set File Name Parameters
 ----------------------------
-
-``EXPT_CONFIG_FN``: (Default: "config.yaml")
-   Name of the user-specified configuration file for the forecast experiment.
 
 ``CONSTANTS_FN``: (Default: "constants.yaml")
    Name of the file containing definitions of various mathematical, physical, and SRW App constants.

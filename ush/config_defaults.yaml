@@ -339,7 +339,7 @@ platform:
   # that will point to a subdirectory (having the name of the grid being
   # used) under this directory.  This variable should be set to a null 
   # string in this file, but it can be specified in the user-specified 
-  # workflow configuration file (EXPT_CONFIG_FN).
+  # workflow configuration file
   #
   #-----------------------------------------------------------------------
   #
@@ -545,9 +545,6 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # Set file names.  Definitions:
-  #
-  # EXPT_CONFIG_FN:
-  # Name of the user-specified configuration file for the forecast experiment.
   #
   # CONSTANTS_FN:
   # Name of the file containing definitions of various mathematical, physical, 
@@ -929,11 +926,11 @@ workflow:
   #   they are also set to predefined values for the specified grid.
   #
   # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
-  #   will provide the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN). In this case, the 
+  #   is providing the native grid parameters in the user-specified 
+  #   experiment configuration file.  In this case, the 
   #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
   #   the write-component grid parameters, the forecast model's 
-  # main time step DT_ATMOS, and the computational 
+  #   main time step DT_ATMOS, and the computational 
   #   parameters (LAYOUT_X, LAYOUT_Y, and BLOCKSIZE) must be set in that 
   #   configuration file; otherwise, the values of all of these parameters 
   #   in this default experiment configuration file will be used.
@@ -1810,7 +1807,7 @@ task_run_fcst:
   #
   # 1) If the experiment is using a predefined grid, then if the user 
   #    sets the parameter in the user-specified experiment configuration 
-  #    file (EXPT_CONFIG_FN), that value will be used in the forecast(s).
+  #    file, that value will be used in the forecast(s).
   #    Otherwise, the default value of the parameter for that predefined 
   #    grid will be used.
   #

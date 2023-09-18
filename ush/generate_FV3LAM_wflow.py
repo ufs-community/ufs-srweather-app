@@ -2,7 +2,7 @@
 
 """
 User interface to create an experiment directory consistent with the
-user-defined config.yaml file.
+user-defined YAML configuration file.
 """
 
 # pylint: disable=invalid-name
@@ -40,6 +40,7 @@ from scripts.templater import set_template
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
         ushdir,
+        config: str = "config.yaml",
         logfile: str = "log.generate_FV3LAM_wflow",
         debug: bool = False) -> str:
     """Function to setup a forecast experiment and create a workflow
@@ -69,7 +70,7 @@ def generate_FV3LAM_wflow(
 
     # The setup function reads the user configuration file and fills in
     # non-user-specified values from config_defaults.yaml
-    expt_config = setup(ushdir,debug=debug)
+    expt_config = setup(ushdir,user_config_fn=config,debug=debug)
 
     #
     # -----------------------------------------------------------------------
@@ -91,7 +92,7 @@ def generate_FV3LAM_wflow(
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the jinja variables in the template rocoto
     # XML should be set to.  These values are set either in the user-specified
-    # workflow configuration file (EXPT_CONFIG_FN) or in the setup() function
+    # workflow configuration file (config) or in the setup() function
     # called above.  Then call the python script that generates the XML.
     #
     # -----------------------------------------------------------------------
@@ -659,7 +660,7 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    cp_vrfy(os.path.join(ushdir, EXPT_CONFIG_FN), EXPTDIR)
+    cp_vrfy(os.path.join(ushdir, config), EXPTDIR)
 
     #
     # -----------------------------------------------------------------------
@@ -755,6 +756,8 @@ if __name__ == "__main__":
                      description="Script for setting up a forecast and creating a workflow"\
                      "according to the parameters specified in the config file\n")
 
+    parser.add_argument('-c', '--config', default='config.yaml',
+                        help='Name of experiment config file in YAML format')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Script will be run in debug mode with more verbose output')
     pargs = parser.parse_args()
@@ -765,7 +768,7 @@ if __name__ == "__main__":
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile, pargs.debug)
+        expt_dir = generate_FV3LAM_wflow(USHdir, pargs.config, wflow_logfile, pargs.debug)
     except: # pylint: disable=bare-except
         logging.exception(
             dedent(
