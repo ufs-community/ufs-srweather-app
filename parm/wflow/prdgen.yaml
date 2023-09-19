@@ -23,7 +23,6 @@ metatask_run_prdgen:
       join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
       native: '{{ platform.SCHED_NATIVE_CMD }}'
       nodes: '{{ nnodes }}:ppn={{ ppn }}'
-      nodesize: "&NCORES_PER_NODE;"
       nnodes: 1
       partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
       ppn: 22

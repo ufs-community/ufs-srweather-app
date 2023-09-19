@@ -15,8 +15,9 @@ load("cmake/3.23.1")
 
 load("srw_common")
 
-load("nccmp/1.9.0.1")
-load("nco/5.0.6")
+load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.1.0"))
+load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
+load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.23"))
 load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpicc")

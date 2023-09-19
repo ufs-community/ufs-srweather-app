@@ -18,7 +18,6 @@ default_task_post: &default_task
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 2
   ppn: 24
-  nodesize: "&NCORES_PER_NODE;"
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:15:00

@@ -30,3 +30,6 @@ setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_CXX_COMPILER","CC")
 setenv("CMAKE_Fortran_COMPILER","ftn")
 setenv("CMAKE_Platform","gaea.intel")
+
+setenv("CFLAGS","-diag-disable=10441")
+setenv("FFLAGS","-diag-disable=10441 -fp-model source")
