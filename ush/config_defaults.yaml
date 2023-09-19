@@ -619,9 +619,10 @@ workflow:
   # AQM_RC_TMPL_FN:
   # Template file name of resource file for NOAA Air Quality Model (AQM)
   #  
+  # FIRE_NML_FN:
+  # Name of namelist file for UFS_FIRE capability.
   #-----------------------------------------------------------------------
   #
-  EXPT_CONFIG_FN: "config.yaml"
   CONSTANTS_FN: "constants.yaml"
   
   RGNL_GRID_NML_FN: "regional_grid.nml"
@@ -641,6 +642,7 @@ workflow:
   NEMS_CONFIG_FN: "nems.configure"
   AQM_RC_FN: "aqm.rc"
   AQM_RC_TMPL_FN: "aqm.rc"
+  FIRE_NML_FN: "namelist.fire"
 
   # 
   #-----------------------------------------------------------------------
@@ -683,6 +685,7 @@ workflow:
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
   NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
   AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
+  FIRE_NML_BASE_FP: '{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'
 
   # 
   #-----------------------------------------------------------------------
@@ -759,6 +762,7 @@ workflow:
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
   FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
+  FIRE_NML_FP: '{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -1661,9 +1665,16 @@ task_make_ics:
   # FV3-LAM grid. This file will be copied later to a new location and name
   # changed to fvcom.nc
   #
+  # LEVP:
+  # Number of vertical levels in the atmosphere. In order to change this
+  # number, the user will additionally need to create a vertical coordinate
+  # distribution file; this process is described in the Users Guide section
+  # "Changing the Number of Vertical Levels". This value should be the same
+  # in both make_ics and make_lbcs.
+  #
   # VCOORD_FILE:
-  # Full path to the file used to set the vertical coordinate in FV3.
-  # This file should be the same in both make_ics and make_lbcs.
+  # Full path to the vertical coordinate distribution file. This file should
+  # be the same in both make_ics and make_lbcs.
   #
   #------------------------------------------------------------------------
   #
@@ -1671,6 +1682,7 @@ task_make_ics:
   FVCOM_WCSTART: "cold"
   FVCOM_DIR: ""
   FVCOM_FILE: "fvcom.nc"
+  LEVP: 65
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
@@ -1696,6 +1708,7 @@ task_make_lbcs:
   KMP_AFFINITY_MAKE_LBCS: "scatter"
   OMP_NUM_THREADS_MAKE_LBCS: 1
   OMP_STACKSIZE_MAKE_LBCS: "1024m"
+  LEVP: 65
   VCOORD_FILE: "{{ workflow.FIXam }}/global_hyblev.l65.txt"
 
 #----------------------------
@@ -2708,6 +2721,12 @@ fire:
   # FIRE_INPUT_DIR
   # Directory where fire input file (geo_em.d01.nc) can be found
   #
+  # DT_FIRE
+  # The fire behavior component’s integration timestep
+  #
+  # OUTPUT_DT_FIRE
+  # The fire behavior component’s output timestep
+  # 
   # FIRE_NUM_IGNITIONS
   # Number of fire ignitions
   #
@@ -2780,6 +2799,8 @@ fire:
 
   UFS_FIRE: True
   FIRE_INPUT_DIR: ""
+  DT_FIRE: 0.5
+  OUTPUT_DT_FIRE: 300
   FIRE_NUM_IGNITIONS: 1
   FIRE_IGNITION_ROS1: 0.05
   FIRE_IGNITION_START_LAT1: 40.609

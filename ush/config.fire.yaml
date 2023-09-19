@@ -41,6 +41,8 @@ task_plot_allvars:
 fire:
   UFS_FIRE: True
   FIRE_INPUT_DIR: /glade/scratch/kavulich/FIRE/esmf_fork/ufs-srweather-app/fire_data
+  DT_FIRE: 0.5
+  OUTPUT_DT_FIRE: 300
   FIRE_NUM_IGNITIONS: 1
   FIRE_IGNITION_ROS1: 0.05
   FIRE_IGNITION_START_LAT1: 40.609

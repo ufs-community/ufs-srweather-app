@@ -298,6 +298,9 @@ def generate_FV3LAM_wflow(
     npx = NX + 1
     npy = NY + 1
     #
+    # Set npz, which is just LEVP minus 1.
+    npz = LEVP - 1
+    #
     # For the physics suites that use RUC LSM, set the parameter kice to 9,
     # Otherwise, leave it unspecified (which means it gets set to the default
     # value in the forecast model).
@@ -366,6 +369,8 @@ def generate_FV3LAM_wflow(
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
+        "levp": LEVP,
+        "npz": npz,
     })
     if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
                            "FV3_GFS_2017_gfdlmp_regional",
@@ -649,6 +654,46 @@ def generate_FV3LAM_wflow(
               ]
         if not debug:
             args.append("-q")
+        set_namelist(args)
+    #
+    #-----------------------------------------------------------------------
+    #
+    # Generate UFS_FIRE namelist if needed. Most variables in the &time section
+    # will be updated at the run_fcst step
+    #
+    #-----------------------------------------------------------------------
+    #
+    if expt_config['fire'].get('UFS_FIRE'):
+        fire_nml_dict = {}
+        fire_nml_dict['atm'] = {}
+        fire_nml_dict['time'] = {}
+        fire_nml_dict['fire'] = {}
+        # Fill in &atm variables
+        fire_nml_dict['atm']['interval_atm'] = expt_config['task_run_fcst']['DT_ATMOS']
+        fire_nml_dict['atm']['kde'] = expt_config['task_make_ics']['LEVP']
+        # Fill in &fire and static &time variables
+        for setting in expt_config['fire']:
+            # Would like to use pattern matching here but don't want to force Python 3.10
+            print(fire_nml_dict)
+            if setting == "UFS_FIRE":
+                pass
+            elif setting == "DT_FIRE":
+                fire_nml_dict['time']['dt'] = expt_config['fire'][setting]
+            elif setting == "OUTPUT_DT_FIRE":
+                fire_nml_dict['time']['interval_output'] = expt_config['fire'][setting]
+            else:
+                # For all other settings in config.yaml, convert to lowercase
+                # and enter into namelist.fire's &fire section
+                fire_nml_dict['fire'][setting.lower()] = expt_config['fire'][setting]
+
+        settings_str = cfg_to_yaml_str(fire_nml_dict)
+
+        args=[ "-n", FIRE_NML_BASE_FP,
+               "-u", settings_str,
+               "-o", FIRE_NML_FP,
+              ]
+#        if not debug:
+#            args.append("-q")
         set_namelist(args)
 
     #

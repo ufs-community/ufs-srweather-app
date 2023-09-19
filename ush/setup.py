@@ -665,8 +665,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
 
 
-    # Make sure the vertical coordinate file for both make_lbcs and
-    # make_ics is the same.
+    # Make sure the vertical coordinate file and LEVP for both make_lbcs and make_ics is the same.
     if ics_vcoord := expt_config.get("task_make_ics", {}).get("VCOORD_FILE") != \
             (lbcs_vcoord := expt_config.get("task_make_lbcs", {}).get("VCOORD_FILE")):
          raise ValueError(
@@ -680,6 +679,20 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
              make_lbcs:
                VCOORD_FILE: {lbcs_vcoord}
+             """
+         )
+    if ics_levp := expt_config.get("task_make_ics", {}).get("LEVP") != \
+            (lbcs_levp := expt_config.get("task_make_lbcs", {}).get("LEVP")):
+         raise ValueError(
+             f"""
+             The number of vertical levels LEVP must be set to the same value for both the
+             make_ics task and the make_lbcs tasks. They are currently set to:
+
+             make_ics:
+               LEVP: {ics_levp}
+
+             make_lbcs:
+               LEVP: {lbcs_levp}
              """
          )
 
