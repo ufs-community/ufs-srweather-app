@@ -45,7 +45,7 @@ def create_nems_configure_file(run_dir,cfg):
         ATM_petlist_bounds = '-1 -1'
         ATM_omp_num_threads_line = ''
         ATM_diag_line = ''
-        runseq = [ f"  cfg['DT_ATMOS']\n",
+        runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM phase1\n",
                    "    ATM -> AQM\n",
                    "    AQM\n",
@@ -57,7 +57,7 @@ def create_nems_configure_file(run_dir,cfg):
         ATM_petlist_bounds = '-1 -1'
         ATM_omp_num_threads_line = ''
         ATM_diag_line = ''
-        runseq = [ f"  cfg['DT_ATMOS']\n",
+        runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM -> FIRE\n",
                    "    ATM\n",
                    "    FIRE\n",

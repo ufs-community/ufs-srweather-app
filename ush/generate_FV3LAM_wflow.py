@@ -369,7 +369,6 @@ def generate_FV3LAM_wflow(
         "npy": npy,
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
-        "levp": LEVP,
         "npz": npz,
     })
     if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
@@ -438,6 +437,10 @@ def generate_FV3LAM_wflow(
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
+
+    # Update levp in external_ic_nml; this should be the only variable that needs changing
+
+    settings["external_ic_nml"] = {"levp": LEVP}
 
     #
     # Add to "settings" the values of those namelist variables that specify
@@ -674,8 +677,7 @@ def generate_FV3LAM_wflow(
         # Fill in &fire and static &time variables
         for setting in expt_config['fire']:
             # Would like to use pattern matching here but don't want to force Python 3.10
-            print(fire_nml_dict)
-            if setting == "UFS_FIRE":
+            if setting in ["UFS_FIRE", "FIRE_INPUT_DIR"]:
                 pass
             elif setting == "DT_FIRE":
                 fire_nml_dict['time']['dt'] = expt_config['fire'][setting]

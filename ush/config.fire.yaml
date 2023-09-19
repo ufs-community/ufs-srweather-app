@@ -4,7 +4,7 @@ metadata:
 user:
   RUN_ENVIR: community
   MACHINE: cheyenne
-  ACCOUNT: NWSA0002
+  ACCOUNT: P48503002
 platform:
   DOMAIN_PREGEN_BASEDIR: "/glade/work/frediani/Projects/UFS-fire/UFS/pregen_dir"
 workflow:
@@ -24,18 +24,19 @@ task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: HRRR
   FV3GFS_FILE_FMT_ICS: grib2
   EXTRN_MDL_FILES_ICS:
-    - '{yy}{mm}{hh}.hrrr.t{fcst_hr:02d}z.wrfprsf00.grib2'
+    - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/scratch/frediani/WRF-Fire/input/HRRR"
   EXTRN_MDL_FILES_LBCS:
-    - '{yy}{mm}{hh}.hrrr.t{fcst_hr:02d}z.wrfprsf00.grib2'
+    - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
   EXTRN_MDL_NAME_LBCS: HRRR
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   LBC_SPEC_INTVL_HRS: 3
   FV3GFS_FILE_FMT_LBCS: grib2
 task_run_fcst:
   QUILTING: true
+  PRINT_ESMF: True
 task_plot_allvars:
   COMOUT_REF: ""
 fire:
