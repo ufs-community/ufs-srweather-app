@@ -47,6 +47,9 @@ elif [ "$L_MACHINE" = singularity ]; then
 elif [ "$L_MACHINE" = gaea ]; then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
 
+elif [ "$L_MACHINE" = derecho ]; then
+   module reset
+
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules
    unset -f module

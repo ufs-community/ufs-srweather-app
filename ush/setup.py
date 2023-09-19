@@ -742,7 +742,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
-                fcst_config[param] = value
+                if fcst_config.get(param) == "":
+                    fcst_config[param] = value
             elif param == "GRID_GEN_METHOD":
                 workflow_config[param] = value
             else:
