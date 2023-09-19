@@ -420,18 +420,16 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
   cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
   cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
-  if [ ${CPL_AQM} != "TRUE" ]; then
-     if [ ${USE_CRTM} = "TRUE" ]; then
-        cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/FAST*.bin ./
-        cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
-        cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
-     fi
+  if [ ${USE_CRTM} = "TRUE" ]; then
+     cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/FAST*.bin ./
+     cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
+     cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
   fi
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then

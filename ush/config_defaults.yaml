@@ -1555,12 +1555,19 @@ task_run_fcst:
   # weather model].  If this is set to true, the the run_post task will
   # be deactivated.
   #
+  # ITASKS:
+  # Variable denoting the number of write tasks in the i direction in the
+  # current group.  Used for inline post 2d decomposition.  Setting this
+  # variable to a value greater than 1 will enable 2d decomposition.
+  # Default setting is 1.
+  #
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
   FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
+  ITASKS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -1812,12 +1819,17 @@ task_run_post:
   # to PREDEF_GRID_NAME.  Note that this variable is first changed to lower
   # case before being used to construct the file names.
   #
+  # NUMX:
+  # The number of i regions in a 2D decomposition.  Each i row is 
+  # distibuted to numx ranks. Default value of numx is 1.
+  #
   #-----------------------------------------------------------------------
   #
   USE_CUSTOM_POST_CONFIG_FILE: false
   CUSTOM_POST_CONFIG_FP: ""
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
   TESTBED_FIELDS_FN: ""
+  NUMX: 1
 
 #----------------------------
 # RUN PRDGEN config parameters

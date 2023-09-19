@@ -107,25 +107,23 @@ temporary work directory (DATA_FHR):
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
 cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
-if [ ${CPL_AQM} != "TRUE" ]; then
-  if [ ${USE_CRTM} = "TRUE" ]; then
-    cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/FAST*.bin ./
-    cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
-    cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
-    print_info_msg "
+if [ ${USE_CRTM} = "TRUE" ]; then
+  cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/FAST*.bin ./
+  cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
+  cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
+  print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
 work directory (DATA_FHR):
-    CRTM_DIR = \"${CRTM_DIR}\"
-    DATA_FHR = \"${DATA_FHR}\"
+  CRTM_DIR = \"${CRTM_DIR}\"
+  DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
-  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -203,7 +201,7 @@ fileNameFlux='${phy_file}'
 /
 
  &NAMPGB
- KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add}
+ KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,${post_itag_add},numx=${NUMX}
  /
 EOF
 #

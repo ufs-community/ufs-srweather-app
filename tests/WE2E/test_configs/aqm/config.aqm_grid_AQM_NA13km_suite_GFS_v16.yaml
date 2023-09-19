@@ -49,6 +49,7 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
   USE_CUSTOM_POST_CONFIG_FILE: false
 global:
+  USE_CRTM: false
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
   HALO_BLEND: 0
