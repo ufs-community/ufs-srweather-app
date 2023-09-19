@@ -19,7 +19,6 @@ default_task_plot: &default_task
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  nodesize: "&NCORES_PER_NODE;"
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   ppn: 24
   queue: '&QUEUE_DEFAULT;'

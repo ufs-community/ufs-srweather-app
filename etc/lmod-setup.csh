@@ -43,6 +43,9 @@ else if ( "$L_MACHINE" == gaea ) then
 else if ( "$L_MACHINE" == gaea_c5 ) then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init_C5.csh
 
+else if ( "$L_MACHINE" == derecho ) then
+   module reset
+
 else if ( "$L_MACHINE" == odin ) then
    module unload modules
    unset -f module
