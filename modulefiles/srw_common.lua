@@ -4,7 +4,7 @@ load_any("png/1.6.37","libpng/1.6.37")
 
 load_any("netcdf/4.9.2","netcdf-c/4.9.2")
 load_any("netcdf/4.9.2","netcdf-fortran/4.6.0")
-load_any("pio/2.5.10","parallelio/2.5.10")
+load_any("pio/2.5.10","parallelio/2.5.9")
 load("esmf/8.4.2")
 load("fms/2023.01")
 
