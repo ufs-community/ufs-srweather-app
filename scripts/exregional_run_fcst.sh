@@ -642,6 +642,48 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Call the function for updating the &time section of namelist.fire
+#
+#-----------------------------------------------------------------------
+#
+FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
+settings="
+'time': {
+    'start_year': '${CDATE:0:4}',
+    'start_month': '${CDATE:4:2}',
+    'start_day': '${CDATE:6:2}',
+    'start_hour': '${CDATE:8:2}',
+    'start_minute': '00',
+    'start_second': '00',
+    'end_year': '${FCST_END_DATE:0:4}',
+    'end_month': '${FCST_END_DATE:4:2}',
+    'end_day': '${FCST_END_DATE:6:2}',
+    'end_hour': '${FCST_END_DATE:8:2}',
+    'end_minute': '${FCST_END_DATE:10:2}',
+    'end_second': '${FCST_END_DATE:12:2}',
+ }
+"
+${USHdir}/set_namelist.py -n "${FIRE_NML_FP}" -u "$settings" -o "${FIRE_NML_FN}" || \
+  print_err_msg_exit "\
+Call to python script set_namelist.py to update ${FIRE_NML_FN} failed.
+Parameters passed to this script are:
+    FIRE_NML_FN = \"${FIRE_NML_FN}\"
+    FIRE_NML_FP = \"${FIRE_NML_FP}\"
+  Namelist settings specified on command line:
+    settings =
+$settings"
+
+## TEMPORARY LINK namelist.fire to namelist.input
+ln -sf namelist.fire namelist.input
+
+# Link fire input file
+ln -sf FIRE_INPUT_DIR
+create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
+                       symlink="geo_em.d01.nc" \
+                       relative="FALSE"
+#
+#-----------------------------------------------------------------------
+#
 # Call the function that creates the diag_table file within each cycle 
 # directory.
 #
