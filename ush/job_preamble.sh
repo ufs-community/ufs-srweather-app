@@ -59,14 +59,16 @@ else
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 
-export DCOMINbio="${DCOMINbio:-${DCOMINbio_dfv}}"
-export DCOMINdust="${DCOMINdust:-${DCOMINdust_dfv}}"
-export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_dfv}}"
-export DCOMINfire="${DCOMINfire:-${DCOMINfire_dfv}}"
-export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_dfv}}"
-export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_dfv}}"
-export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_dfv}}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
+export FIXaqmbio="${FIXaqmbio:-${HOMEaqm}/fix/bio}"
+export FIXaqmdust="${FIXaqmdust:-${HOMEaqm}/fix/dust}"
+export FIXaqmcanopy="${FIXaqmcanopy:-${HOMEaqm}/fix/canopy}"
+export FIXaqmchem_lbcs="${FIXaqmchem_lbcs:-${HOMEaqm}/fix/chem_lbcs}"
+export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+export COMINemispt="${COMINemispt:-${COMIN}/emission/pt}"
+export COMINemis="${COMINemis:-${COMIN}/emission}"
+export DCOMINfire="${DCOMINfire:-${DCOMINfire}}"
+export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow}}"
 
 #
 #-----------------------------------------------------------------------

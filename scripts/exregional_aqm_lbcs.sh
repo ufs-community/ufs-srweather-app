@@ -99,7 +99,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   ext_lbcs_file=${AQM_LBCS_FILES}
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
 
-  chem_lbcs_fp=${DCOMINchem_lbcs}/${chem_lbcs_fn}
+  chem_lbcs_fp=${FIXaqmchem_lbcs}/${chem_lbcs_fn}
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
     cp ${chem_lbcs_fp} .

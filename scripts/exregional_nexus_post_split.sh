@@ -76,7 +76,7 @@ end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hou
 #
 cp ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
 
-cp ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
   cp ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
