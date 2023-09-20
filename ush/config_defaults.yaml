@@ -5,7 +5,6 @@ metadata:
   description: >-
     Default configuration for an experiment. The valid values for most of the
     parameters are specified in valid_param_vals.yaml
-  version: !!str '1.0'
 #----------------------------
 # USER config parameters
 #----------------------------
@@ -753,7 +752,7 @@ workflow:
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
   NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
-  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}' # DELETE! ?
+  FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
 
   FCST_MODEL: "ufs-weather-model"
   WFLOW_XML_FN: "FV3LAM_wflow.xml"
@@ -792,7 +791,7 @@ workflow:
   # be used to generate approximate versions of the aerosol fields
   # needed by Thompson microphysics.  This file will be used to
   # generate such approximate aerosol fields in the ICs and LBCs if
-  # Thompson MP is included in the physics suite and if the exteranl
+  # Thompson MP is included in the physics suite and if the external
   # model for ICs or LBCs does not already provide these fields.
   #
   #-----------------------------------------------------------------------
@@ -829,12 +828,16 @@ workflow:
   # CCPP_PHYS_SUITE_FP: The full path to the suite definition file 
   # (SDF) in the experiment directory. 
   # 
+  # CCPP_PHYS_DIR:
+  # The directory containing the CCPP physics source code. This is needed to
+  # link table(s) contained in that repository.
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"
   CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
   CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
   CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
+  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics"] |path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -969,6 +972,10 @@ workflow:
   FCST_LEN_CYCL:
     - '{{ FCST_LEN_HRS }}'
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
+<<<<<<< HEAD
+=======
+
+>>>>>>> fc0403ef5e555c8bcd6d53faaa968f30f15e5949
   #
   #-----------------------------------------------------------------------
   #
@@ -1137,8 +1144,8 @@ nco:
   #-----------------------------------------------------------------------
   #
   envir_default: "para"
-  NET_default: "rrfs"
-  RUN_default: "rrfs"
+  NET_default: "srw"
+  RUN_default: "srw"
   model_ver_default: "v1.0.0"
 
   OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'

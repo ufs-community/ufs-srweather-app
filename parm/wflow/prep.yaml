@@ -17,7 +17,6 @@ default_task_prep: &default_task
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
   nnodes: 1
-  nodesize: "&NCORES_PER_NODE;"
   ppn: 24
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   queue: '&QUEUE_DEFAULT;'
@@ -49,6 +48,8 @@ task_make_orog:
 task_make_sfc_climo:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "make_sfc_climo" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"'
+  envars:
+    <<: *default_envars
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   nnodes: 2
   dependency:

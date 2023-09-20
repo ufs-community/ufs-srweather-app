@@ -381,11 +381,9 @@ script for this experiment:
 # Remove CRONTAB_LINE from cron table
 #
     if [ "${called_from_cron}" = "TRUE" ]; then
-       MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
-           python3 $USHdir/get_crontab_contents.py --delete --called-from-cron
+       python3 $USHdir/get_crontab_contents.py --remove -m=${machine} -l="${CRONTAB_LINE}" -c -d
     else
-       MACHINE=$MACHINE CRONTAB_LINE=$CRONTAB_LINE \
-           python3 $USHdir/get_crontab_contents.py --delete
+       python3 $USHdir/get_crontab_contents.py --remove -m=${machine} -l="${CRONTAB_LINE}" -d
     fi
   fi
 #

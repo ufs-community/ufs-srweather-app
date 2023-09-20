@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# pylint: disable=logging-fstring-interpolation
 import os
 import sys
 import glob
@@ -47,6 +47,8 @@ def run_we2e_tests(homedir, args) -> None:
         if run_envir not in ['nco', 'community']:
             raise KeyError(f"Invalid 'run_envir' provided: {run_envir}")
 
+    alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
+    testdirs = next(os.walk('test_configs'))[1]
     # If args.tests is a list of length more than one, we assume it is a list of test names
     if len(args.tests) > 1:
         tests_to_check=args.tests
@@ -62,13 +64,18 @@ def run_we2e_tests(homedir, args) -> None:
             # If not a valid test name, check if it is a test suite
             logging.debug(f'Checking if {user_spec_tests} is a valid test suite')
             if user_spec_tests[0] == 'all':
-                alltests = glob.glob('test_configs/**/config*.yaml', recursive=True)
                 tests_to_check = []
                 for f in alltests:
                     filename = os.path.basename(f)
                     # We just want the test name in this list, so cut out the
                     # "config." prefix and ".yaml" extension
-                    tests_to_check.append(filename[7:-5])
+                    if len(filename) > 12:
+                        if filename[:7] == "config." and filename[-5:] == ".yaml":
+                            tests_to_check.append(filename[7:-5])
+                        else:
+                            logging.debug(f"Skipping non-test file {filename}")
+                    else:
+                        logging.debug(f"Skipping non-test file {filename}")
                 logging.debug(f"Will check all tests:\n{tests_to_check}")
             elif user_spec_tests[0] in ['fundamental', 'comprehensive', 'coverage']:
                 # I am writing this section of code under protest; we should use args.run_envir to
@@ -99,6 +106,23 @@ def run_we2e_tests(homedir, args) -> None:
                 with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
                 logging.debug(f"Will check {user_spec_tests[0]} tests:\n{tests_to_check}")
+            elif user_spec_tests[0] in testdirs:
+                # If a subdirectory under test_configs/ is specified, run all tests in that directory
+                logging.debug(f"{user_spec_tests[0]} is one of the testing directories:\n{testdirs}")
+                logging.debug(f"Will run all tests in test_configs/{user_spec_tests[0]}")
+                tests_in_dir = glob.glob(f'test_configs/{user_spec_tests[0]}/config*.yaml', recursive=True)
+                tests_to_check = []
+                for f in tests_in_dir:
+                    filename = os.path.basename(f)
+                    # We just want the test name in this list, so cut out the
+                    # "config." prefix and ".yaml" extension
+                    if len(filename) > 12:
+                        if filename[:7] == "config." and filename[-5:] == ".yaml":
+                            tests_to_check.append(filename[7:-5])
+                        else:
+                            logging.debug(f"Skipping non-test file {filename}")
+                    else:
+                        logging.debug(f"Skipping non-test file {filename}")
             else:
                 # If we have gotten this far then the only option left for user_spec_tests is a
                 # file containing test names
@@ -109,8 +133,8 @@ def run_we2e_tests(homedir, args) -> None:
                 else:
                     raise FileNotFoundError(dedent(f"""
                     The specified 'tests' argument '{user_spec_tests}'
-                    does not appear to be a valid test name, a valid test suite, or a file
-                    containing valid test names.
+                    does not appear to be a valid test name, a valid test suite, a subdirectory
+                    under test_configs/, or a file containing valid test names.
 
                     Check your inputs and try again.
                     """))
@@ -133,7 +157,7 @@ def run_we2e_tests(homedir, args) -> None:
     machine_defaults = load_config_file(machine_file)
 
     # Set up dictionary for job monitoring yaml
-    if not args.use_cron_to_relaunch:
+    if args.launch != "cron":
         monitor_yaml = dict()
 
     for test in tests_to_run:
@@ -169,8 +193,8 @@ def run_we2e_tests(homedir, args) -> None:
         test_cfg['workflow'].update({"EXPT_SUBDIR": test_name})
         if args.exec_subdir:
             test_cfg['workflow'].update({"EXEC_SUBDIR": args.exec_subdir})
-        if args.use_cron_to_relaunch:
-            test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": args.use_cron_to_relaunch})
+        if args.launch == "cron":
+            test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": True})
         if args.cron_relaunch_intvl_mnts:
             test_cfg['workflow'].update({"CRON_RELAUNCH_INTVL_MNTS": args.cron_relaunch_intvl_mnts})
         if args.debug_tests:
@@ -232,23 +256,26 @@ def run_we2e_tests(homedir, args) -> None:
             monitor_yaml[test_name].update({"status": "CREATED"})
             monitor_yaml[test_name].update({"start_time": starttime_string})
 
-    if not args.use_cron_to_relaunch:
-        logging.info("calling function that monitors jobs, prints summary")
+    if args.launch != "cron":
         monitor_file = f'WE2E_tests_{starttime_string}.yaml'
         write_monitor_file(monitor_file,monitor_yaml)
-        try:
-            monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs,
-                                        debug=args.debug)
-        except KeyboardInterrupt:
-            logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
-            logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
+        logging.info("All experiments have been generated;")
+        logging.info(f"Experiment file {monitor_file} created")
+        if args.launch == "python":
+            write_monitor_file(monitor_file,monitor_yaml)
+            logging.debug("calling function that monitors jobs, prints summary")
+            try:
+                monitor_file = monitor_jobs(monitor_yaml, monitor_file=monitor_file, procs=args.procs,
+                                            debug=args.debug)
+            except KeyboardInterrupt:
+                logging.info("\n\nUser interrupted monitor script; to resume monitoring jobs run:\n")
+                logging.info(f"./monitor_jobs.py -y={monitor_file} -p={args.procs}\n")
         else:
-            logging.info("All experiments are complete")
-            logging.info(f"Summary of results available in {monitor_file}")
+            logging.info("To automatically run and monitor experiments, use:\n")
+            logging.info(f"./monitor_jobs.py -y={monitor_file}\n")
     else:
         logging.info("All experiments have been generated; using cron to submit workflows")
         logging.info("To view running experiments in cron try `crontab -l`")
-
 
 
 def check_tests(tests: list) -> list:
@@ -443,14 +470,14 @@ if __name__ == "__main__":
 
     #Get the "Home" directory, two levels above this one
     homedir=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    logfile='log.run_WE2E_tests'
+    LOGFILE='log.run_WE2E_tests'
 
     #Parse arguments
-    parser = argparse.ArgumentParser(epilog="For more information about config arguments (denoted "\
+    ap = argparse.ArgumentParser(epilog="For more information about config arguments (denoted "\
                                             "in CAPS), see ush/config_defaults.yaml\n")
     # Create a group for optional arguments so they can be listed after required args
-    optional = parser._action_groups.pop()
-    required = parser.add_argument_group('required arguments')
+    optional = ap._action_groups.pop()
+    required = ap.add_argument_group('required arguments')
 
     required.add_argument('-m', '--machine', type=str,
                           help='Machine name; see ush/machine/ for valid values', required=True)
@@ -463,44 +490,55 @@ if __name__ == "__main__":
     3. The name of a file (full or relative path) containing a list of test names.
     """, required=True)
 
-    parser.add_argument('-c', '--compiler', type=str,
-                        help='Compiler used for building the app', default='intel')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='Script will be run in debug mode with more verbose output')
-    parser.add_argument('-q', '--quiet', action='store_true',
-                        help='Suppress console output from workflow generation; this will help '\
-                             'keep the screen uncluttered')
-    parser.add_argument('-p', '--procs', type=int,
-                        help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
-                             'with provided number of parallel tasks', default=1)
+    ap.add_argument('-c', '--compiler', type=str,
+                    help='Compiler used for building the app', default='intel')
+    ap.add_argument('-d', '--debug', action='store_true',
+                    help='Script will be run in debug mode with more verbose output')
+    ap.add_argument('-q', '--quiet', action='store_true',
+                    help='Suppress console output from workflow generation; this will help '\
+                         'keep the screen uncluttered')
+    ap.add_argument('-p', '--procs', type=int,
+                    help='Run resource-heavy tasks (such as calls to rocotorun) in parallel, '\
+                         'with provided number of parallel tasks', default=1)
+    ap.add_argument('-l', '--launch', type=str, choices=['python', 'cron', 'none'],
+                    help='Method for launching jobs. Valid values are:\n'\
+                         ' python: [default] Monitor and launch experiments using monitor_jobs.py\n'
+                         ' cron:   Launch expts using ush/launch_FV3LAM_wflow.sh from crontab\n'\
+                         ' none:   Do not launch experiments; only create experiment directories',
+                         default="python")
 
-    parser.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
-    parser.add_argument('--run_envir', type=str,
-                        help='Overrides RUN_ENVIR variable to a new value ("nco" or "community") '\
-                             'for all experiments', default='')
-    parser.add_argument('--expt_basedir', type=str,
-                        help='Explicitly set EXPT_BASEDIR for all experiments')
-    parser.add_argument('--exec_subdir', type=str,
-                        help='Explicitly set EXEC_SUBDIR for all experiments')
-    parser.add_argument('--use_cron_to_relaunch', action='store_true',
-                        help='Explicitly set USE_CRON_TO_RELAUNCH for all experiments; this '\
-                             'option disables the "monitor" script functionality')
-    parser.add_argument('--cron_relaunch_intvl_mnts', type=int,
-                        help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
-    parser.add_argument('--opsroot', type=str,
-                        help='If test is for NCO mode, sets OPSROOT (see config_defaults.yaml for '\
-                             'more details on this variable)')
-    parser.add_argument('--print_test_info', action='store_true',
-                        help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
-                             'starting experiment')
-    parser.add_argument('--debug_tests', action='store_true',
-                        help='Explicitly set DEBUG=TRUE for all experiments')
-    parser.add_argument('--verbose_tests', action='store_true',
-                        help='Explicitly set VERBOSE=TRUE for all experiments')
 
-    parser._action_groups.append(optional)
+    ap.add_argument('--modulefile', type=str, help='Modulefile used for building the app')
+    ap.add_argument('--run_envir', type=str,
+                    help='Overrides RUN_ENVIR variable to a new value ("nco" or "community") '\
+                         'for all experiments', default='')
+    ap.add_argument('--expt_basedir', type=str,
+                    help='Explicitly set EXPT_BASEDIR for all experiments')
+    ap.add_argument('--exec_subdir', type=str,
+                    help='Explicitly set EXEC_SUBDIR for all experiments')
+    ap.add_argument('--use_cron_to_relaunch', action='store_true',
+                    help='DEPRECATED; DO NOT USE. See "launch" option.')
+    ap.add_argument('--cron_relaunch_intvl_mnts', type=int,
+                    help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
+    ap.add_argument('--opsroot', type=str,
+                    help='If test is for NCO mode, sets OPSROOT_default (see config_defaults.yaml'\
+                         'for more details on this variable)')
+    ap.add_argument('--print_test_info', action='store_true',
+                    help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
+                         'starting experiment')
+    ap.add_argument('--debug_tests', action='store_true',
+                    help='Explicitly set DEBUG=TRUE for all experiments')
+    ap.add_argument('--verbose_tests', action='store_true',
+                    help='Explicitly set VERBOSE=TRUE for all experiments')
 
-    args = parser.parse_args()
+    ap._action_groups.append(optional)
+
+    args = ap.parse_args()
+
+    # Exit for deprecated options
+    if args.use_cron_to_relaunch:
+        raise ValueError("\nWARNING: The argument --use_cron_to_relaunch has been superseded by "\
+                        "--launch=cron\nPlease update your workflow accordingly")
 
     #Set defaults that need other argument values
     if args.modulefile is None:
@@ -526,7 +564,7 @@ if __name__ == "__main__":
                 FATAL ERROR:
                 Experiment generation failed. See the error message(s) printed below.
                 For more detailed information, check the log file from the workflow
-                generation script: {logfile}
+                generation script: {LOGFILE}
                 *********************************************************************\n
                 """
             )

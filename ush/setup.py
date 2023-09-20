@@ -742,7 +742,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
-                fcst_config[param] = value
+                if fcst_config.get(param) == "":
+                    fcst_config[param] = value
             elif param == "GRID_GEN_METHOD":
                 workflow_config[param] = value
             else:
@@ -1637,7 +1638,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     return expt_config
 
 def clean_rocoto_dict(rocotodict):
-    """Removes any invalid entries from rocoto_dict. Examples of invalid entries are:
+    """Removes any invalid entries from rocotodict. Examples of invalid entries are:
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries"""

@@ -5,6 +5,8 @@ metadata:
     model (FCST_LEN_HRS>=40).
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
 workflow:
   CCPP_PHYS_SUITE: FV3_GFS_v16
   PREDEF_GRID_NAME: RRFS_CONUS_25km

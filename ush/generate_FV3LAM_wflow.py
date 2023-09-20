@@ -7,6 +7,7 @@ user-defined config.yaml file.
 
 # pylint: disable=invalid-name
 
+import argparse
 import os
 import logging
 from textwrap import dedent
@@ -70,7 +71,6 @@ def generate_FV3LAM_wflow(
     # non-user-specified values from config_defaults.yaml
     expt_config = setup(ushdir,debug=debug)
 
-    verbose = expt_config["workflow"]["VERBOSE"]
     #
     # -----------------------------------------------------------------------
     #
@@ -117,6 +117,8 @@ def generate_FV3LAM_wflow(
                 "-i", template_xml_fp,
                 "-c", rocoto_yaml_fp,
                 ]
+        if not debug:
+            args.append("-q")
         set_template(args)
     #
     # -----------------------------------------------------------------------
@@ -135,7 +137,7 @@ def generate_FV3LAM_wflow(
         workflow launch script (WFLOW_LAUNCH_SCRIPT_FP):
           EXPTDIR = '{exptdir}'
           WFLOW_LAUNCH_SCRIPT_FP = '{wflow_launch_script_fp}'""",
-        verbose=verbose,
+        verbose=debug,
     )
 
     create_symlink_to_file(
@@ -159,7 +161,9 @@ def generate_FV3LAM_wflow(
 
     # pylint: disable=undefined-variable
     if USE_CRON_TO_RELAUNCH:
-        add_crontab_line()
+        add_crontab_line(called_from_cron=False,machine=expt_config["user"]["MACHINE"],
+                         crontab_line=expt_config["workflow"]["CRONTAB_LINE"],
+                         exptdir=exptdir,debug=debug)
 
     #
     # Copy or symlink fix files
@@ -170,7 +174,7 @@ def generate_FV3LAM_wflow(
             Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=verbose,
+            verbose=debug,
         )
 
         ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
@@ -181,7 +185,7 @@ def generate_FV3LAM_wflow(
             Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
               FIXgsm = '{FIXgsm}'
               FIXam = '{FIXam}'""",
-            verbose=verbose,
+            verbose=debug,
         )
 
         check_for_preexist_dir_file(FIXam, "delete")
@@ -207,7 +211,7 @@ def generate_FV3LAM_wflow(
               FIXaer = '{FIXaer}'
               FIXlut = '{FIXlut}'
               FIXclim = '{FIXclim}'""",
-            verbose=verbose,
+            verbose=debug,
         )
 
         check_for_preexist_dir_file(FIXclim, "delete")
@@ -229,20 +233,20 @@ def generate_FV3LAM_wflow(
     log_info(
         """
         Copying templates of various input files to the experiment directory...""",
-        verbose=verbose,
+        verbose=debug,
     )
 
     log_info(
         """
         Copying the template data table file to the experiment directory...""",
-        verbose=verbose,
+        verbose=debug,
     )
     cp_vrfy(DATA_TABLE_TMPL_FP, DATA_TABLE_FP)
 
     log_info(
         """
         Copying the template field table file to the experiment directory...""",
-        verbose=verbose,
+        verbose=debug,
     )
     cp_vrfy(FIELD_TABLE_TMPL_FP, FIELD_TABLE_FP)
 
@@ -255,7 +259,7 @@ def generate_FV3LAM_wflow(
         """
         Copying the CCPP physics suite definition XML file from its location in
         the forecast model directory structure to the experiment directory...""",
-        verbose=verbose,
+        verbose=debug,
     )
     cp_vrfy(CCPP_PHYS_SUITE_IN_CCPP_FP, CCPP_PHYS_SUITE_FP)
     #
@@ -268,7 +272,7 @@ def generate_FV3LAM_wflow(
         Copying the field dictionary file from its location in the
         forecast model directory structure to the experiment
         directory...""",
-        verbose=verbose,
+        verbose=debug,
     )
     cp_vrfy(FIELD_DICT_IN_UWM_FP, FIELD_DICT_FP)
     #
@@ -281,7 +285,8 @@ def generate_FV3LAM_wflow(
     log_info(
         f"""
         Setting parameters in weather model's namelist file (FV3_NML_FP):
-        FV3_NML_FP = '{FV3_NML_FP}'"""
+        FV3_NML_FP = '{FV3_NML_FP}'""",
+        verbose=debug,
     )
     #
     # Set npx and npy, which are just NX plus 1 and NY plus 1, respectively.
@@ -347,8 +352,6 @@ def generate_FV3LAM_wflow(
         "target_lon": LON_CTR,
         "target_lat": LAT_CTR,
         "nrows_blend": HALO_BLEND,
-        "regional_bcs_from_gsi": False,
-        "write_restart_with_bcs": False,
         #
         # Question:
         # For a ESGgrid type grid, what should stretch_fac be set to?  This depends
@@ -486,9 +489,9 @@ def generate_FV3LAM_wflow(
         """
         The variable 'settings' specifying values of the weather model's
         namelist variables has been set as follows:\n""",
-        verbose=verbose,
+        verbose=debug,
     )
-    log_info("\nsettings =\n\n" + settings_str, verbose=verbose)
+    log_info("\nsettings =\n\n" + settings_str, verbose=debug)
     #
     # -----------------------------------------------------------------------
     #
@@ -502,19 +505,14 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    set_namelist(
-        [
-            "-n",
-            FV3_NML_BASE_SUITE_FP,
-            "-c",
-            FV3_NML_YAML_CONFIG_FP,
-            CCPP_PHYS_SUITE,
-            "-u",
-            settings_str,
-            "-o",
-            FV3_NML_FP,
-        ]
-    )
+    args=[ "-n", FV3_NML_BASE_SUITE_FP,
+           "-c", FV3_NML_YAML_CONFIG_FP, CCPP_PHYS_SUITE,
+           "-u", settings_str,
+           "-o", FV3_NML_FP,
+          ]
+    if not debug:
+        args.append("-q")
+    set_namelist(args)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -529,84 +527,8 @@ def generate_FV3LAM_wflow(
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
-        set_FV3nml_sfc_climo_filenames()
+        set_FV3nml_sfc_climo_filenames(debug)
 
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate namelist for surface cycle
-    #  Deleted in newer RRFS_dev version so here for testing only
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_SURFACE_CYCLE:
-        if SDF_USES_RUC_LSM:
-            lsoil=9
-        settings = {}
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
-        }
-
-        settings_str = cfg_to_yaml_str(settings)
-        #
-        # populate the namelist file
-        #
-        set_namelist(
-            [
-                "-n",
-                FV3_NML_FP,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_CYCSFC_FP,
-            ]
-        )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Generate namelist for DA cycle
-    #
-    # -----------------------------------------------------------------------
-    #
-    if DO_DACYCLE or DO_ENKFUPDATE:
-
-        if SDF_USES_RUC_LSM:
-            lsoil = 9
-
-        lupdatebc = False
-        if DO_UPDATE_BC:
-            lupdatebc = False   # not ready for setting this to true yet
-
-        settings = {}
-        settings["fv_core_nml"] = {
-            "external_ic": False,
-            "make_nh": False,
-            "na_init": 0,
-            "nggps_ic": False,
-            "mountain": True,
-            "regional_bcs_from_gsi": lupdatebc,
-            "warm_start": True,
-        }
-        settings["gfs_physics_nml"] = {
-            "lsoil": lsoil or None
-            #"fh_dfi_radar": FH_DFI_RADAR # commented out untile develop gets radar tten code
-        }
-
-        settings_str = cfg_to_yaml_str(settings)
-        #
-        # populate the namelist file
-        #
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                FV3_NML_FP,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_RESTART_FP,
-            ]
-        )
     #
     # -----------------------------------------------------------------------
     #
@@ -720,29 +642,14 @@ def generate_FV3LAM_wflow(
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
 
-        set_namelist(
-            [
-                "-n",
-                FV3_NML_FP,
-                "-u",
-                settings_str,
-                "-o",
-                FV3_NML_STOCH_FP,
-            ]
-        )
+        args=[ "-n", FV3_NML_FP,
+               "-u", settings_str,
+               "-o", FV3_NML_STOCH_FP,
+              ]
+        if not debug:
+            args.append("-q")
+        set_namelist(args)
 
-        if DO_DACYCLE or DO_ENKFUPDATE:
-            set_namelist(
-                [
-                    "-q",
-                    "-n",
-                    FV3_NML_RESTART_FP,
-                    "-u",
-                    settings_str,
-                    "-o",
-                    FV3_NML_RESTART_STOCH_FP,
-                ]
-            )
     #
     # -----------------------------------------------------------------------
     #
@@ -843,13 +750,22 @@ def setup_logging(logfile: str = "log.generate_FV3LAM_wflow", debug: bool = Fals
 
 if __name__ == "__main__":
 
+    #Parse arguments
+    parser = argparse.ArgumentParser(
+                     description="Script for setting up a forecast and creating a workflow"\
+                     "according to the parameters specified in the config file\n")
+
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Script will be run in debug mode with more verbose output')
+    pargs = parser.parse_args()
+
     USHdir = os.path.dirname(os.path.abspath(__file__))
     wflow_logfile = f"{USHdir}/log.generate_FV3LAM_wflow"
 
     # Call the generate_FV3LAM_wflow function defined above to generate the
     # experiment/workflow.
     try:
-        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile)
+        expt_dir = generate_FV3LAM_wflow(USHdir, wflow_logfile, pargs.debug)
     except: # pylint: disable=bare-except
         logging.exception(
             dedent(
