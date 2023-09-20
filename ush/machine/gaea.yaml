@@ -38,6 +38,8 @@ data:
       grib2: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
     RAP: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     HRRR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
+global:
+  CRTM_DIR: /lustre/f2/dev/role.epic/contrib/hpc-stack/intel-classic-2022.0.2/intel-classic-2022.0.2/cray-mpich-7.7.20/crtm/2.4.0/fix
 rocoto:
   tasks:
     metatask_run_ensemble:
