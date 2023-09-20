@@ -32,3 +32,5 @@ platform:
 data:
   ics_lbcs:
     FV3GFS: /glade/p/ral/jntp/UFS_CAM/COMGFS/gfs.${yyyymmdd}/${hh}
+global:
+  CRTM_DIR: /glade/work/epicufsrt/contrib/hpc-stack/intel2022.1_ncdf492/intel-2022.1/mpt-2.25/crtm/2.4.0/fix
