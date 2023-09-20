@@ -445,7 +445,8 @@ These parameters contain files and paths to files that are staged in the experim
    Path to the ``FV3_NML_FN`` file in the experiment directory.
 
 ``FV3_NML_STOCH_FP``: (Default: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}')
-   .. COMMENT: Add definition!!! Or DELETE bc RRFS-related? Not deleted from Christina's PR tho.
+   .. COMMENT: Add definition!!! 
+   Path to a namelist file with stochastic physics namelist parameters included. 
 
 ``FCST_MODEL``: (Default: "ufs-weather-model")
    Name of forecast model. Valid values: ``"ufs-weather-model"`` | ``"fv3gfs_aqm"``
@@ -1098,8 +1099,9 @@ For each workflow task, certain parameter values must be passed to the job sched
 ``IO_LAYOUT_Y``: (Default: 1)
    Specifies how many MPI ranks to use in the Y direction for input/output (I/O).
 
-.. COMMENT: Is this correct?!?! ^
-   Subdomain of restart files.
+   .. note::
+
+      ``IO_LAYOUT_X`` does not explicitly exist because its value is assumed to be 1. 
 
 ``KMP_AFFINITY_RUN_FCST``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``run_fcst`` task. 
@@ -1644,23 +1646,19 @@ This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`
    File name template used to generate the observation files (in the ``PcpCombine_obs`` tasks) containing accumulated precipitation for accumulation periods longer than 1-hour.
 
 ``OBS_NOHRSC_ASNOW_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'``)
-   .. COMMENT: Add definition!!
-   File name template for accumulated snow observation data. 
+   File name template for NOHRSC snow observations.
 
 ``OBS_MRMS_REFC_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
-   .. COMMENT: Add definition!!
-   File name template for MRMS reflectivity observation data.
+   File name template for :term:`MRMS` reflectivity observations.
 
 ``OBS_MRMS_RETOP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
-   .. COMMENT: Add definition!!
-   File name template for MRMS echo top observation data.
+   File name template for MRMS echo top observations.
 
 ``OBS_NDAS_SFCorUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
-   .. COMMENT: Add definition!!
-   File name template for NDAS surface or upper air variable observation data.
+   File name template for :term:`NDAS` surface and upper air observations.
 
 ``OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE``: (Default: ``'${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'``)
-   .. COMMENT: Add definition!!
+   File name template for NDAS surface and upper air observations after processing by MET's ``pb2nc`` tool (to change format to NetCDF).
 
 VX Forecast Model Name
 ------------------------
@@ -1670,9 +1668,7 @@ VX Forecast Model Name
 
 ``VX_FIELDS``: (Default: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ])
    The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and  because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
-
-   .. COMMENT: Are there more valid values? Check!
-   
+  
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
    The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored.
 
