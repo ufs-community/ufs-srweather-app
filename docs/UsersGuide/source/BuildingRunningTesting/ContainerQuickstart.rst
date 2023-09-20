@@ -95,7 +95,7 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.im
    +--------------+--------------------------------------------------------+
 
 .. note::
-   * Singularity is only available on the Gaea C5 partition, and therefore container use is only supported on Gaea C5. 
+   * On Gaea, Singularity/Apptainer is only available on the C5 partition, and therefore container use is only supported on Gaea C5. 
    * The NOAA Cloud containers are accessible only to those with EPIC resources. 
 
 Users can simply set an environment variable to point to the container: 
@@ -241,7 +241,7 @@ To generate the forecast experiment, users must:
 #. :ref:`Set experiment parameters <SetUpConfigFileC>`
 #. :ref:`Run a script to generate the experiment workflow <GenerateWorkflowC>`
 
-The first two steps depend on the platform being used and are described here for Level 1 platforms. Users will need to adjust the instructions to their machine if their local machine is a Level 2-4 platform. 
+The first two steps depend on the platform being used and are described here for Level 1 platforms. Users will need to adjust the instructions to match their machine configuration if their local machine is a Level 2-4 platform. 
 
 .. _SetUpPythonEnvC:
 

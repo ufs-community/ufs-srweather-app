@@ -88,9 +88,7 @@ If non-default parameters are selected for the variables in this section, they s
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
 
 ``TASKTHROTTLE``: (Default: 1000)
-  The number of active tasks run simultaneously. For Linux/MacOS, it makes sense to set this to 1. 
-
-   .. COMMENT: Why does setting to 1 make sense? 
+  The number of active tasks that can be run simultaneously. For Linux/MacOS systems, it makes sense to set this to 1 because these systems often have a small number of available cores/CPUs and therefore less capacity to run multiple tasks simultaneously. 
 
 ``BUILD_MOD_FN``: (Default: 'build_{{ user.MACHINE|lower() }}_{{ workflow.COMPILER }}')
    Name of an alternative build modulefile to use if running on an unsupported platform. It is set automatically for supported machines.

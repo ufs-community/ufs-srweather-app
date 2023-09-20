@@ -561,8 +561,6 @@ output over the :term:`CONUS`. It generates graphics plots for a number of varia
    * Max/Min 2-5 km updraft helicity
    * Sea level pressure (SLP)
 
-.. COMMENT: * 500 hPa heights, winds, and vorticity --> seems to be omitted? Why?
-
 This workflow task can produce both plots from a single experiment and difference plots that compare the same cycle from two experiments. When plotting the difference, the two experiments must be on the same domain and available for 
 the same cycle starting date/time and forecast hours. Other parameters may differ (e.g., the experiments may use different physics suites).
 
@@ -702,7 +700,7 @@ Run the following command from the ``ufs-srweather-app/ush`` directory to genera
 
 The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and used later to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py``: 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` file: 
 
    #. Runs the ``setup.py`` script to set the configuration parameters. This script reads three other configuration scripts in order: 
       
