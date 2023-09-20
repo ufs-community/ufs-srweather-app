@@ -74,7 +74,7 @@ Build the Container
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
 
-On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-develop.img`` has already been built at the following locations:
+On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.img`` has already been built at the following locations:
 
 .. table:: Locations of pre-built containers
 
@@ -102,7 +102,7 @@ Users can simply set an environment variable to point to the container:
 
 .. code-block:: console
 
-   export img=/path/to/ubuntu20.04-intel-srwapp-develop.img
+   export img=/path/to/ubuntu20.04-intel-ue-1.4.1-srw-dev.img
 
 Users may convert the container ``.img`` file to a writable sandbox. This step is required when running on Cheyenne but is optional on other systems:
 
@@ -117,7 +117,7 @@ When making a writable sandbox on Level 1 systems, the following warnings common
 .. code-block:: console
 
    INFO:    Starting build...
-   INFO:    Verifying bootstrap image ubuntu20.04-intel-srwapp-develop.img
+   INFO:    Verifying bootstrap image ubuntu20.04-intel-ue-1.4.1-srw-dev.img
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
@@ -277,8 +277,6 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 
 then the user should run ``conda activate workflow_tools``. This will activate the ``workflow_tools`` conda environment. The command(s) will vary from system to system, but the user should see ``(workflow_tools)`` in front of the Terminal prompt at this point.
 
-.. COMMENT: Containers are old and still say regional_workflow...
-
 .. _SetUpConfigFileC: 
 
 Configure the Workflow
@@ -295,13 +293,13 @@ where:
    * ``-c`` indicates the compiler on the user's local machine (e.g., ``intel/2022.1.2``)
    * ``-m`` indicates the :term:`MPI` on the user's local machine (e.g., ``impi/2022.1.2``)
    * ``<platform>`` refers to the local machine (e.g., ``hera``, ``jet``, ``noaacloud``, ``mac``). See ``MACHINE`` in :numref:`Section %s <user>` for a full list of options. 
-   * ``-i`` indicates the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-srwapp-develop.img`` by default).
+   * ``-i`` indicates the container image that was built in :numref:`Step %s <BuildC>` (``ubuntu20.04-intel-srwapp`` or ``ubuntu20.04-intel-ue-1.4.1-srw-dev.img`` by default).
 
 For example, on Hera, the command would be:
 
 .. code-block:: console
 
-   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-srwapp-develop.img
+   ./stage-srw.sh -c=intel/2022.1.2 -m=impi/2022.1.2 -p=hera -i=ubuntu20.04-intel-ue-1.4.1-srw-dev.img
 
 .. attention::
 
