@@ -42,6 +42,8 @@ data:
     GFS:
       prepbufr: /public/data/grids/gfs/prepbufr
       tcvitals: /public/data/grids/gfs/bufr
+global:
+  CRTM_DIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/hpc-stack/libs/intel-2022.1.2/intel-2022.1.2/impi-2022.1.2/crtm/2.4.0/fix
 
 rocoto:
   tasks:
