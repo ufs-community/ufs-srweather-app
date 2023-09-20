@@ -176,12 +176,14 @@ if __name__ == "__main__":
                              'finished.'\
                              'advance: will only advance each experiment one step')
     parser.add_argument('-d', '--debug', action='store_true',
-                        help='Script will be run in debug mode with more verbose output')
+                        help='Script will be run in debug mode with more verbose output. ' +
+                             'WARNING: increased verbosity may run very slow on some platforms')
 
     args = parser.parse_args()
 
     setup_logging(logfile,args.debug)
 
+    logging.debug(f"Loading configure file {args.yaml_file}")
     expts_dict = load_config_file(args.yaml_file)
 
     if args.procs < 1:
