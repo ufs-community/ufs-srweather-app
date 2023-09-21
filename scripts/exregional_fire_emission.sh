@@ -82,20 +82,21 @@ else
     missing_download_time=$( $DATE_UTIL --utc --date "${yyyymmdd_dn} ${hh_dn} UTC - 24 hours" "+%Y%m%d%H" )
     yyyymmdd_dn_md1=${missing_download_time:0:8}
     FILE_13km_md1=Hourly_Emissions_13km_${missing_download_time}00_${missing_download_time}00.nc
-    if [ -e "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}" ]; then
+    if [ -s "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}" ] && [ $(stat -c %s "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}") -gt 4000000 ]; then
       cp -p "${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}" .
-    elif [ -e "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}" ]; then
-      echo "WARNING: ${FILE_13km} does not exist. Replacing with the file of previous date ..."
+    elif [ -s "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}" ] && [ $(stat -c %s "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}") -gt 4000000 ]; then
+      echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
       cp -p "${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}" "${FILE_13km}"
     else
-      message_txt="Fire Emission RAW data does not exist:
+      message_txt="Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
       if [ "${RUN_ENVIR}" = "community" ]; then
         print_err_msg_exit "${message_txt}"
       else
-        cp -p  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
+        #cp -p  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
+        cp -p  "${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
         if [ ! -z "${maillist}" ]; then
@@ -204,7 +205,7 @@ fi
  ncrename -v PM25,PM2.5 temp5.nc temp6.nc
  mv temp6.nc ${aqm_fire_file_fn}
  rm -rf temp*nc
-#
+     #
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/function.

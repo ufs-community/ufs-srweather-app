@@ -39,19 +39,20 @@ data:
     NAM: compath.py ${envir}/nam/${nam_ver}/nam.${PDYext}
     HRRR: compath.py ${envir}/hrrr/${hrrr_ver}/hrrr.${PDYext}/conus
 cpl_aqm_parm:
-  #FIXaqmconfig: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/aqm/epa/data
-  #FIXaqmbio: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/bio
-  #FIXaqmdust: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/FENGSHA
-  #FIXaqmcanopy: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/canopy
-  #FIXaqmchem_lbcs: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/chem_lbcs/AQM_NA13km_AM4_v1
-  #FIXaqmnexus: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/nexus 
-  #FIXaqmnexus_gfs_sfc: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84d/fix/gfs 
+  #FIXaqmconfig: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/aqm/epa/data
+  #FIXaqmbio: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/bio
+  #FIXaqmdust: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/FENGSHA
+  #FIXaqmcanopy: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/canopy
+  #FIXaqmchem_lbcs: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/chem_lbcs/AQM_NA13km_AM4_v1
+  #FIXaqmnexus: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/nexus 
+  #FIXaqmnexus_gfs_sfc: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/gfs 
+  #FIXaqmfire: /lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.84e/fix/fire 
   COMINgefs: /lfs/h1/ops/prod/com/gefs/v12.3 
   COMINemispt: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
   COMINemis: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/nexus_emissions
   DCOMINairnow: /lfs/h1/ops/prod/dcom
   #DCOMINfire: /lfs/h1/ops/dev/dcom 
   DCOMINfire: /lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT/RAVE_raw_scaleup
-  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.84d
-  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.84d
+  COMINbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.84e
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/jianping.huang/Bias_correction/aqmv7.0.84e
 

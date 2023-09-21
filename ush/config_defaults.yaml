@@ -71,6 +71,7 @@ user:
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
   FIXaqm: '{{ [HOMEaqm, "fix"]|path_join }}' 
   FIXaqmchem_lbcs: '{{ [FIXaqm, "chem_lbcs"]|path_join }}' 
+  FIXaqmfire: '{{ [FIXaqm, "fire"]|path_join }}' 
   FIXaqmnexus: '{{ [FIXaqm, "nexus"]|path_join }}' 
   FIXaqmnexus_gfs_sfc: '{{ [FIXaqm, "gfs"]|path_join }}' 
 
@@ -2981,6 +2982,9 @@ cpl_aqm_parm:
   # 
   # FIXaqmnexus:
   # Directory containing grid_spec files as the input file of nexus
+  # 
+  # FIXaqmfire:
+  # Directory containing climatology fire emissions 
   # 
   # NEXUS_GRID_FN:
   # File name of the input grid_spec file of nexus
