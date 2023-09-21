@@ -32,3 +32,5 @@ platform:
   FIXsfc: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads
+global:
+  CRTM_DIR: /work/noaa/epic/role-epic/contrib/orion/hpc-stack/intel-2022.1.2_ncdf492/intel-2022.1.2/impi-2022.1.2/crtm/2.4.0/fix
