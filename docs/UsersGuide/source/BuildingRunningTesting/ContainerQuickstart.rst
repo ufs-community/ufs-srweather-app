@@ -69,7 +69,7 @@ Build the Container
 ------------------------
 
 .. hint::
-   If a ``singularity: command not found`` error message appears when working on Level 1 platforms, try running: ``module load singularity``.
+   If a ``singularity: command not found`` error message appears when working on Level 1 platforms, try running: ``module load singularity`` or (on Derecho) ``module load apptainer``.
 
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
@@ -110,8 +110,6 @@ Users may convert the container ``.img`` file to a writable sandbox. This step i
 
    singularity build --sandbox ubuntu20.04-intel-srwapp $img
 
-.. COMMENT: What about on Derecho?
-
 When making a writable sandbox on Level 1 systems, the following warnings commonly appear and can be ignored:
 
 .. code-block:: console
@@ -129,8 +127,6 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 .. code-block:: console
 
    sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
-
-.. COMMENT: Update?
 
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
