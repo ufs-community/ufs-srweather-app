@@ -26,7 +26,6 @@ class Testing(unittest.TestCase):
                 sub_hourly_post=True,
                 dt_subhourly_post_mnts=4,
                 dt_atmos=1,
-                itasks=1,
             )
         )
 
