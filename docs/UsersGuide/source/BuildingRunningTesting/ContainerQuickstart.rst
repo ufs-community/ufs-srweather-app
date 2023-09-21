@@ -130,6 +130,8 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 
    sudo singularity build --sandbox ubuntu20.04-intel-srwapp docker://noaaepic/ubuntu20.04-intel-srwapp:develop
 
+.. COMMENT: Update?
+
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
