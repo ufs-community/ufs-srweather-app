@@ -57,7 +57,7 @@ For convenience, the WE2E tests are currently grouped into the following categor
       * ``custom_ESGgrid_Great_Lakes_snow_8km`` and ``MET_verification_only_vx_time_lag`` require HPSS access. 
       * On certain machines, *community* and *nco* tests assume HPSS. If the ``ush/machine/*.yaml`` file contains the following lines, users will need to have HPSS access or modify the tests to point to another data source:
 
-      .. control-block::
+      .. code-block:: console
 
          data:
            ics_lbcs:
