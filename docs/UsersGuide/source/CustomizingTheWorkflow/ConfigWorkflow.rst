@@ -1248,7 +1248,7 @@ Aerosol Climatology Parameter
 ---------------------------------
 
 ``USE_MERRA_CLIMO``: (Default: ``'{{ workflow.CCPP_PHYS_SUITE == "FV3_GFS_v15_thompson_mynn_lam3km" or workflow.CCPP_PHYS_SUITE == "FV3_GFS_v17_p8" }}'``)
-   Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. Valid values: ``True`` | ``False``
+   Flag that determines whether :term:`MERRA2` aerosol climatology data and lookup tables for optics properties are obtained. This value should be set to false until MERRA2 climatology and Thompson microphysics are fully implemented in supported physics suites. Valid values: ``True`` | ``False``
 
 Restart Parameters
 --------------------
