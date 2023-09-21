@@ -1694,7 +1694,7 @@ VX File Name and Path Templates
 This section contains file name and path templates used in the verification (VX) tasks.
 
 ``FCST_SUBDIR_TEMPLATE``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'``)
-   A template for the subdirectory in which to look for input forecast files for vx tasks.
+   A template for the subdirectory containing input forecast files for vx tasks.
 
 ``FCST_FN_TEMPLATE``: (Default: ``'${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'``)
    A template for the forecast file names used as input to verification tasks.
@@ -1715,46 +1715,46 @@ Coupled AQM Configuration Parameters
 Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in the ``cpl_aqm_parm:`` section of the ``config.yaml`` file.
 
 ``CPL_AQM``: (Default: false)
-   Coupling flag for air quality modeling
+   Coupling flag for air quality modeling.
 
 ``DO_AQM_DUST``: (Default: true)
-   Flag turning on/off AQM dust option in AQM_RC
+   Flag turning on/off AQM dust option in AQM_RC.
 
 ``DO_AQM_CANOPY``: (Default: false)
-   Flag turning on/off AQM canopy option in AQM_RC
+   Flag turning on/off AQM canopy option in AQM_RC.
 
 ``DO_AQM_PRODUCT``: (Default: true)
-   Flag turning on/off AQM output products in AQM_RC
+   Flag turning on/off AQM output products in AQM_RC.
 
 ``DO_AQM_CHEM_LBCS``: (Default: true)
-   Add chemical LBCs to chemical LBCs
+   Add chemical LBCs to chemical LBCs.
 
 ``DO_AQM_GEFS_LBCS``: (Default: false)
-   Add GEFS aerosol LBCs to chemical LBCs
+   Add GEFS aerosol LBCs to chemical LBCs.
    
 ``DO_AQM_SAVE_AIRNOW_HIST``: (Default: false)
-   Save bias-correction airnow training data
+   Save bias-correction airnow training data.
    
 ``DO_AQM_SAVE_FIRE``: (Default: false)
-   Archive fire emission file to HPSS
+   Archive fire emission file to HPSS.
    
 ``DCOMINbio_default``: (Default: "")
-   Path to the directory containing AQM bio files
+   Path to the directory containing AQM bio files.
 
 ``DCOMINdust_default``: (Default: "/path/to/dust/dir")
-   Path to the directory containing AQM dust file
+   Path to the directory containing AQM dust file.
 
 ``DCOMINcanopy_default``: (Default: "/path/to/canopy/dir")
-   Path to the directory containing AQM canopy files
+   Path to the directory containing AQM canopy files.
 
 ``DCOMINfire_default``: (Default: "")
-   Path to the directory containing AQM fire files
+   Path to the directory containing AQM fire files.
 
 ``DCOMINchem_lbcs_default``: (Default: "")
-   Path to the directory containing chemical LBC files
+   Path to the directory containing chemical LBC files.
    
 ``DCOMINgefs_default``: (Default: "")
-   Path to the directory containing GEFS aerosol LBC files
+   Path to the directory containing GEFS aerosol LBC files.
 
 ``DCOMINpt_src_default``: (Default: "/path/to/point/source/base/directory")
    Parent directory containing point source files.
@@ -1769,34 +1769,34 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Path to save the current cycle's model output and AirNow obs as training data for future use ``$COMINbicor`` and ``$COMOUTbicor`` can be distuigshed by the ``${yyyy}${mm}$dd`` under the same location.
 
 ``AQM_CONFIG_DIR``: (Default: "")
-   Configuration directory for AQM
+   Configuration directory for AQM.
 
 ``AQM_BIO_FILE``: (Default: "BEIS_SARC401.ncf")
-   File name of AQM BIO file
+   File name of AQM BIO file.
 
 ``AQM_DUST_FILE_PREFIX``: (Default: "FENGSHA_p8_10km_inputs")
-   Prefix of AQM dust file
+   Prefix of AQM dust file.
 
 ``AQM_DUST_FILE_SUFFIX``: (Default: ".nc")
-   Suffix and extension of AQM dust file
+   Suffix and extension of AQM dust file.
 
 ``AQM_CANOPY_FILE_PREFIX``: (Default: "gfs.t12z.geo")
-   File name of AQM canopy file
+   File name of AQM canopy file.
 
 ``AQM_CANOPY_FILE_SUFFIX``: (Default: ".canopy_regrid.nc")
-   Suffix and extension of AQM CANOPY file
+   Suffix and extension of AQM CANOPY file.
 
 ``AQM_FIRE_FILE_PREFIX``: (Default: "GBBEPx_C401GRID.emissions_v003")
-   Prefix of AQM FIRE file
+   Prefix of AQM FIRE file.
 
 ``AQM_FIRE_FILE_SUFFIX``: (Default: ".nc")
-   Suffix and extension of AQM FIRE file
+   Suffix and extension of AQM FIRE file.
 
 ``AQM_FIRE_FILE_OFFSET_HRS``: (Default: 0)
-   .. COMMENT: Need def!
+   Time offset when retrieving fire emission data files. In a real-time run, the data files for :term:`ICs/LBCs` are not ready for use until the case starts. To resolve this issue, a real-time run uses the input data files in the previous cycle. For example, if the experiment run cycle starts at 12z, and ``AQM_FIRE_FILE_OFFSET_HRS: 6``, the fire emission data file from the previous cycle (06z) is used.
 
 ``AQM_FIRE_ARCHV_DIR``: (Default: "/path/to/archive/dir/for/RAVE/on/HPSS")
-   Path to the archive directory for RAVE emission files on HPSS
+   Path to the archive directory for RAVE emission files on HPSS.
 
 ``AQM_RC_FIRE_FREQUENCY``: (Default: "static")
    Fire frequency in ``aqm.rc``.
@@ -1829,7 +1829,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Number of split NEXUS emission tasks.
 
 ``NEXUS_GFS_SFC_OFFSET_HRS``: (Default: 0)
-   Time offset when retrieving gfs surface data files
+   Time offset when retrieving GFS surface data files.
 
 ``NEXUS_GFS_SFC_DIR``: (Default: "")
    Path to directory containing GFS surface data files. This is set to ``COMINgfs`` when ``DO_REAL_TIME=TRUE``. 
@@ -1839,8 +1839,6 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 Rocoto Parameters
 ===================
-
-.. COMMENT: Edit this section!!!
 
 Non-default Rocoto workflow parameters are set in the ``rocoto:`` section of the ``config.yaml`` file. This section is structured as follows:
 

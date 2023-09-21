@@ -50,34 +50,49 @@ user:
   # ACCOUNT:
   # The account under which to submit jobs to the queue.
   #
-  # HOMEdir: The path to the user's ufs-srweather-app clone. This path 
+  # HOMEdir: 
+  # The path to the user's ufs-srweather-app clone. This path 
   # is set in ush/setup.py as the parent directory to USHdir. 
   #
-  # USHdir: The path to the user's ush directory in their ufs-srweather-app clone. This path is set automatically in the main function of setup.py and corresponds to the location of setup.py (i.e., the ush directory).
+  # USHdir: 
+  # The path to the user's ush directory in their ufs-srweather-app clone. 
+  # This path is set automatically in the main function of setup.py and 
+  # corresponds to the location of setup.py (i.e., the ush directory).
   # 
-  # SCRIPTSdir: The path to the user's scripts directory in their ufs-srweather-app clone.
+  # SCRIPTSdir: 
+  # The path to the user's scripts directory in their ufs-srweather-app clone.
   # 
-  # JOBSdir: The path to the user's jobs directory in their ufs-srweather-app clone.
+  # JOBSdir: 
+  # The path to the user's jobs directory in their ufs-srweather-app clone.
   # 
-  # SORCdir: The path to the user's sorc directory in their ufs-srweather-app clone.
+  # SORCdir: 
+  # The path to the user's sorc directory in their ufs-srweather-app clone.
   # 
-  # PARMdir: The path to the user's parm directory in their ufs-srweather-app clone.
+  # PARMdir: 
+  # The path to the user's parm directory in their ufs-srweather-app clone.
   # 
-  # MODULESdir: The path to the user's modulefiles directory in their ufs-srweather-app clone.
+  # MODULESdir: 
+  # The path to the user's modulefiles directory in their ufs-srweather-app 
+  # clone.
   # 
-  # EXECdir: The path to the user's exec directory in their ufs-srweather-app clone.
+  # EXECdir: 
+  # The path to the user's exec directory in their ufs-srweather-app clone.
   #
-  # METPLUS_CONF: The path to the user's final METplus configuration file. By default, METplus configuration files reside in ufs-srweather-app/parm/metplus.
+  # METPLUS_CONF: 
+  # The path to the user's final METplus configuration file. By default, 
+  # METplus configuration files reside in ufs-srweather-app/parm/metplus.
   #  
-  # UFS_WTHR_MDL_DIR: The path to the location where the weather 
+  # UFS_WTHR_MDL_DIR: 
+  # The path to the location where the weather 
   # model code is located within the ufs-srweather-app clone. This 
   # parameter is set in setup.py and uses information from the 
   # Externals.cfg file to build the correct path. It is built with 
   # knowledge of HOMEdir and often corresponds to ufs-srweather-app/
   # sorc/ufs-weather-model.
   # 
-  # ARL_NEXUS_DIR: The path to the user's NEXUS directory. By 
-  # default, NEXUS source code resides in ufs-srweather-app/sorc/arl_nexus
+  # ARL_NEXUS_DIR: 
+  # The path to the user's NEXUS directory. By default, NEXUS source 
+  # code resides in ufs-srweather-app/sorc/arl_nexus
   # 
   #-----------------------------------------------------------------------
   MACHINE: "BIG_COMPUTER"
@@ -402,6 +417,37 @@ platform:
   #-----------------------------------------------------------------------
   # Test directories used in run_WE2E script
   #-----------------------------------------------------------------------
+  # TEST_EXTRN_MDL_SOURCE_BASEDIR: 
+  # This parameter allows testing of user-staged files in a known location 
+  # on a given platform. This path contains a limited dataset and likely 
+  # will not be useful for most user experiments. 
+  # 
+  # TEST_AQM_INPUT_BASEDIR: 
+  # The path to user-staged AQM fire emission data for WE2E testing. 
+  # 
+  # TEST_PREGEN_BASEDIR: 
+  # Similar to DOMAIN_PREGEN_BASEDIR, this variable sets the base 
+  # directory containing pregenerated grid, orography, and surface 
+  # climatology files for WE2E tests. This is an alternative for setting 
+  # GRID_DIR, OROG_DIR, and SFC_CLIMO_DIR individually. 
+  # 
+  # TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: 
+  # This parameter is used to test the mechanism that allows users to 
+  # point to a data stream on disk. It sets up a sandbox location that 
+  # mimics the stream in a more controlled way and tests the ability 
+  # to access ICS. 
+  # 
+  # TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: 
+  # This parameter is used to test the mechanism that allows users to 
+  # point to a data stream on disk. It sets up a sandbox location that 
+  # mimics the stream in a more controlled way and tests the ability 
+  # to access LBCS.
+  # 
+  # TEST_VX_FCST_INPUT_BASEDIR: 
+  # The path to user-staged forecast files for WE2E testing of verificaton 
+  # using user-staged forecast files in a known location on a given platform. 
+  #
+  #-----------------------------------------------------------------------
   #
   TEST_EXTRN_MDL_SOURCE_BASEDIR: ""
   TEST_AQM_INPUT_BASEDIR: ""
@@ -498,9 +544,11 @@ workflow:
   # launch script by a cron job to (re)launch the experiment (so that the
   # workflow for the experiment kicks off where it left off).
   #
-  # CRONTAB_LINE: The launch command that will appear in the crontab
+  # CRONTAB_LINE: 
+  # The launch command that will appear in the crontab
   #
-  # LOAD_MODULES_RUN_TASK_FP: Path to load_modules_run_task.sh.
+  # LOAD_MODULES_RUN_TASK_FP: 
+  # Path to load_modules_run_task.sh.
   #-----------------------------------------------------------------------
   #
   USE_CRON_TO_RELAUNCH: false
@@ -591,12 +639,15 @@ workflow:
   # the directory in which it is created in the build step to the executables
   # directory (EXECDIR; this is set during experiment generation).
   #
-  # DATA_TABLE_FN: Name of the file that contains the data table read # in by the forecast model. 
+  # DATA_TABLE_FN: 
+  # Name of the file that contains the data table read # in by the forecast model. 
   # 
-  # DIAG_TABLE_FN: Prefix for the name of the file that specifies 
+  # DIAG_TABLE_FN: 
+  # Prefix for the name of the file that specifies 
   # the output fields of the forecast model. 
   # 
-  # FIELD_TABLE_FN: Prefix for the name of the file that specifies 
+  # FIELD_TABLE_FN: 
+  # Prefix for the name of the file that specifies 
   # the tracers that the forecast model will read in from the IC/LBC files.
   # 
   # DIAG_TABLE_TMPL_FN:
@@ -623,7 +674,8 @@ workflow:
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
-  # AQM_RC_FN: Name of resource file for NOAA Air Quality Model (AQM). 
+  # AQM_RC_FN: 
+  # Name of resource file for NOAA Air Quality Model (AQM). 
   # 
   # AQM_RC_TMPL_FN:
   # Template file name of resource file for NOAA Air Quality Model (AQM)
@@ -653,23 +705,32 @@ workflow:
 
   # 
   #-----------------------------------------------------------------------
-  # FV3_NML_BASE_SUITE_FP: Path to the FV3_NML_BASE_SUITE_FN file. 
+  # FV3_NML_BASE_SUITE_FP: 
+  # Path to the FV3_NML_BASE_SUITE_FN file. 
   # 
-  # FV3_NML_YAML_CONFIG_FP: Path to the FV3_NML_YAML_CONFIG_FN file.
+  # FV3_NML_YAML_CONFIG_FP: 
+  # Path to the FV3_NML_YAML_CONFIG_FN file.
   # 
-  # FV3_NML_BASE_ENS_FP: Path to the FV3_NML_BASE_ENS_FN file. 
+  # FV3_NML_BASE_ENS_FP: 
+  # Path to the FV3_NML_BASE_ENS_FN file. 
   # 
-  # DATA_TABLE_TMPL_FP: Path to the DATA_TABLE_FN file. 
+  # DATA_TABLE_TMPL_FP: 
+  # Path to the DATA_TABLE_FN file. 
   # 
-  # DIAG_TABLE_TMPL_FP: Path to the DIAG_TABLE_TMPL_FN file. 
+  # DIAG_TABLE_TMPL_FP: 
+  # Path to the DIAG_TABLE_TMPL_FN file. 
   # 
-  # FIELD_TABLE_TMPL_FP: Path to the FIELD_TABLE_TMPL_FN file. 
+  # FIELD_TABLE_TMPL_FP: 
+  # Path to the FIELD_TABLE_TMPL_FN file. 
   # 
-  # MODEL_CONFIG_TMPL_FP: Path to the MODEL_CONFIG_FN file.
+  # MODEL_CONFIG_TMPL_FP: 
+  # Path to the MODEL_CONFIG_FN file.
   # 
-  # NEMS_CONFIG_TMPL_FP: Path to the NEMS_CONFIG_FN file. 
+  # NEMS_CONFIG_TMPL_FP: 
+  # Path to the NEMS_CONFIG_FN file. 
   # 
-  # AQM_RC_TMPL_FP: Path to the AQM_RC_TMPL_FN file. 
+  # AQM_RC_TMPL_FP: 
+  # Path to the AQM_RC_TMPL_FN file. 
   #  
   #-----------------------------------------------------------------------
   #
@@ -688,15 +749,17 @@ workflow:
   #-----------------------------------------------------------------------
   # These are staged in the exptdir at configuration time
   # 
-  # DATA_TABLE_FP: Path to the data table in the experiment directory. 
+  # DATA_TABLE_FP: 
+  # Path to the data table in the experiment directory. 
   # 
-  # FIELD_TABLE_FP: Path to the field table in the experiment directory. 
+  # FIELD_TABLE_FP: 
+  # Path to the field table in the experiment directory. 
   # 
-  # NEMS_CONFIG_FP: Path to the NEMS_CONFIG_FN file in the 
-  # experiment directory. 
+  # NEMS_CONFIG_FP: 
+  # Path to the NEMS_CONFIG_FN file in the experiment directory. 
   # 
-  # FV3_NML_FP: Path to the FV3_NML_FN file in the experiment 
-  # directory.
+  # FV3_NML_FP: 
+  # Path to the FV3_NML_FN file in the experiment directory.
   # 
   # FCST_MODEL:
   # Name of forecast model (default=ufs-weather-model)
@@ -733,16 +796,20 @@ workflow:
   # Name of the log file that contains the output from successive calls to
   # the workflow launch script (WFLOW_LAUNCH_SCRIPT_FN).
   #
-  # GLOBAL_VAR_DEFNS_FP: Path to the global varibale definition file 
+  # GLOBAL_VAR_DEFNS_FP: 
+  # Path to the global varibale definition file 
   # (GLOBAL_VAR_DEFNS_FN) in the experiment directory. 
   #
-  # ROCOTO_YAML_FP: Path to the Rocoto YAML configuration file 
+  # ROCOTO_YAML_FP: 
+  # Path to the Rocoto YAML configuration file 
   # (ROCOTO_YAML_FN) in the experiment directory. 
   #
-  # WFLOW_LAUNCH_SCRIPT_FP: Path to the workflow launch script 
+  # WFLOW_LAUNCH_SCRIPT_FP: 
+  # Path to the workflow launch script 
   # (WFLOW_LAUNCH_SCRIPT_FN) in the experiment directory. 
   #
-  # WFLOW_LAUNCH_LOG_FP: Path to the log file (WFLOW_LAUNCH_LOG_FN) in 
+  # WFLOW_LAUNCH_LOG_FP: 
+  # Path to the log file (WFLOW_LAUNCH_LOG_FN) in 
   # the experiment directory that contains output from successive 
   # calls to the workflow launch script. 
   # 
@@ -843,11 +910,17 @@ workflow:
   #
   # Set the field dictionary file name and paths.
   #
-  # FIELD_DICT_FN: The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields that is automatically generated by the NUOPC Layer. 
+  # FIELD_DICT_FN: 
+  # The name of the field dictionary file. This file is a community-based 
+  # dictionary for shared coupling fields that is automatically generated 
+  # by the NUOPC Layer. 
   #
-  # FIELD_DICT_IN_UWM_FP: The full path to FIELD_DICT_FN within the forecast model's directory structure (e.g., /path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN).
+  # FIELD_DICT_IN_UWM_FP: 
+  # The full path to FIELD_DICT_FN within the forecast model's directory structure 
+  # (e.g., /path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN).
   #
-  # FIELD_DICT_FP: The full path to FIELD_DICT_FN in the experiment directory.
+  # FIELD_DICT_FP: 
+  # The full path to FIELD_DICT_FN in the experiment directory.
   #
   #-----------------------------------------------------------------------
   #
@@ -857,8 +930,8 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  # Set GRID_GEN_METHOD.  This variable specifies the method to use to 
-  # generate a regional grid in the horizontal.  The values that it can 
+  # Set GRID_GEN_METHOD. This variable specifies the method to use to 
+  # generate a regional grid in the horizontal. The values that it can 
   # take on are:
   #
   # * "ESGgrid":
@@ -972,10 +1045,6 @@ workflow:
   FCST_LEN_CYCL:
     - '{{ FCST_LEN_HRS }}'
   LONG_FCST_LEN: '{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'
-<<<<<<< HEAD
-=======
-
->>>>>>> fc0403ef5e555c8bcd6d53faaa968f30f15e5949
   #
   #-----------------------------------------------------------------------
   #
@@ -1054,7 +1123,7 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # DO_REAL_TIME:
-  # switch for real-time run
+  # Switch for real-time run
   #
   #-----------------------------------------------------------------------
   #
@@ -1108,38 +1177,58 @@ nco:
   # OPSROOT_default:
   # The operations root directory in NCO mode.
   #
-  # COMROOT_default: The com root directory for input/output data that is located on the current system.
+  # COMROOT_default: 
+  # The com root directory for input/output data that is located on 
+  # the current system.
   #
-  # DATAROOT_default: Directory containing the (temporary) working 
-  # directory for running jobs.
+  # DATAROOT_default: 
+  # Directory containing the (temporary) working directory for running
+  # jobs.
   #
-  # DCOMROOT_default: dcom root directory, which contains input/
-  # incoming data that is retrieved from outside WCOSS.
+  # DCOMROOT_default: 
+  # dcom root directory, which contains input/incoming data that is
+  # retrieved from outside WCOSS.
   #
   # LOGBASEDIR_default:
   # Directory in which the log files from the workflow tasks will be placed.
   #
-  # COMIN_BASEDIR: com directory for current model's input data, typically $COMROOT/$NET/$model_ver/$RUN.$PDY
+  # COMIN_BASEDIR: 
+  # com directory for current model's input data, typically 
+  # $COMROOT/$NET/$model_ver/$RUN.$PDY
   #
-  # COMOUT_BASEDIR: com directory for current model's output data, typically $COMROOT/$NET/$model_ver/$RUN.$PDY
+  # COMOUT_BASEDIR: 
+  # com directory for current model's output data, typically 
+  # $COMROOT/$NET/$model_ver/$RUN.$PDY
   #
-  # DBNROOT_default: Root directory for the data-alerting utilities.
+  # DBNROOT_default: 
+  # Root directory for the data-alerting utilities.
   #
-  # SENDECF_default: Boolean variable used to control ecflow_client child commands.
+  # SENDECF_default: 
+  # Boolean variable used to control ecflow_client child commands.
   #
-  # SENDDBN_default: Boolean variable used to control sending products off WCOSS2.
+  # SENDDBN_default: 
+  # Boolean variable used to control sending products off WCOSS2.
   #
-  # SENDDBN_NTC_default: Boolean variable used to control sending products with WMO headers off WCOSS2.
+  # SENDDBN_NTC_default: 
+  # Boolean variable used to control sending products with WMO 
+  # headers off WCOSS2.
   #
-  # SENDCOM_default: Boolean variable to control data copies to $COMOUT.
+  # SENDCOM_default: 
+  # Boolean variable to control data copies to $COMOUT.
   #
-  # SENDWEB_default: Boolean variable used to control sending products to a web server,often ncorzdm.
+  # SENDWEB_default: 
+  # Boolean variable used to control sending products to a web server, 
+  # often ncorzdm.
   #
-  # KEEPDATA_default: Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
+  # KEEPDATA_default: 
+  # Boolean variable used to specify whether or not the working 
+  # directory should be kept upon successful job completion.
   #
-  # MAILTO_default: List of email addresses to send email to.
+  # MAILTO_default: 
+  # List of email addresses to send email to.
   #
-  # MAILCC_default: List of email addresses to CC on email.
+  # MAILCC_default: 
+  # List of email addresses to CC on email.
   #
   #-----------------------------------------------------------------------
   #
@@ -1301,7 +1390,8 @@ task_make_grid:
   #   to remain consistent with the usage of the word "resolution" in the 
   #   global forecast model and other auxiliary code.
   #
-  # GFDLgrid_STRETCH_FAC: Stretching factor used in the Schmidt transformation 
+  # GFDLgrid_STRETCH_FAC: 
+  # Stretching factor used in the Schmidt transformation 
   # applied to the parent cubed-sphere grid. 
   # Setting the Schmidt stretching factor GFDLgrid_STRETCH_FAC to a value
   # greater than 1 shrinks tile 6, while setting it to a value less than 
@@ -1371,14 +1461,21 @@ task_make_grid:
 # MAKE OROG config parameters
 #-----------------------------
 #-----------------------------------------------------------------------
-# KMP_AFFINITY_MAKE_OROG: Intel Thread Affinity Interface for the make_orog task. 
-# Settings for this task are disabled because this task does not use parallelized code.
+# KMP_AFFINITY_MAKE_OROG: 
+# Intel Thread Affinity Interface for the make_orog task. 
+# Settings for this task are disabled because this task does not use 
+# parallelized code.
 #
-# OMP_NUM_THREADS_MAKE_OROG: The number of OpenMP threads to use for parallel regions.
+# OMP_NUM_THREADS_MAKE_OROG: 
+# The number of OpenMP threads to use for parallel regions.
 #
-# OMP_STACKSIZE_MAKE_OROG: Controls the size of the stack for threads created by the OpenMP implementation.
+# OMP_STACKSIZE_MAKE_OROG: 
+# Controls the size of the stack for threads created by the OpenMP 
+# implementation.
 #
-# OROG_DIR: The directory containing pre-generated orography files to use when the ``MAKE_OROG`` task is not meant to run.
+# OROG_DIR: 
+# The directory containing pre-generated orography files to use when 
+# the MAKE_OROG task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_orog:
   KMP_AFFINITY_MAKE_OROG: "disabled"
@@ -1390,13 +1487,18 @@ task_make_orog:
 # MAKE SFC CLIMO config parameters
 #-----------------------------
 #-----------------------------------------------------------------------
-# KMP_AFFINITY_MAKE_SFC_CLIMO: Intel Thread Affinity Interface for the make_sfc_climo task. 
+# KMP_AFFINITY_MAKE_SFC_CLIMO: 
+# Intel Thread Affinity Interface for the make_sfc_climo task. 
 #
-# OMP_NUM_THREADS_MAKE_SFC_CLIMO: The number of OpenMP threads to use for parallel regions.
+# OMP_NUM_THREADS_MAKE_SFC_CLIMO: 
+# The number of OpenMP threads to use for parallel regions.
 #
-# OMP_STACKSIZE_MAKE_SFC_CLIMO: Controls the size of the stack for threads created by the OpenMP implementation.
+# OMP_STACKSIZE_MAKE_SFC_CLIMO: 
+# Controls the size of the stack for threads created by the OpenMP 
+# implementation.
 #
-# SFC_CLIMO_DIR: The directory containing pre-generated surface climatology files 
+# SFC_CLIMO_DIR: 
+# The directory containing pre-generated surface climatology files 
 # to use when the MAKE_SFC_CLIMO task is not meant to run.
 #-----------------------------------------------------------------------
 task_make_sfc_climo:
@@ -1417,8 +1519,8 @@ task_get_extrn_ics:
   #
   # EXTRN_MDL_NAME_ICS:
   # The name of the external model that will provide fields from which initial
-  # condition files, surface files, and 0-th hour boundary condition files will be generated for
-  # input into the forecast model.
+  # condition files, surface files, and 0-th hour boundary condition files will 
+  # be generated for input into the forecast model.
   #
   # EXTRN_MDL_ICS_OFFSET_HRS:
   # Users may wish to start a forecast using forecast data from a previous cycle
@@ -1469,13 +1571,14 @@ task_get_extrn_ics:
   #
   # EXTRN_MDL_SOURCE_BASEDIR_ICS:
   # Directory in which to look for external model files for generating ICs.
-  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in this directory 
-  # for a subdirectory named "YYYYMMDDHH" consisting of the starting date and cycle hour of 
+  # If USE_USER_STAGED_EXTRN_FILES is set to true, the workflow looks in 
+  # this directory for a subdirectory named "YYYYMMDDHH" consisting of the 
+  # starting date and cycle hour of 
   # the forecast, where YYYY is the 4-digit year, MM the 2-digit month, DD 
   # the 2-digit day of the month, and HH the 2-digit hour of the day) for 
   # the external model files specified by the array EXTRN_MDL_FILES_ICS 
   # (these files will be used to generate the ICs on the native FV3-LAM 
-  # grid).  This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
+  # grid). This variable is not used if USE_USER_STAGED_EXTRN_FILES is 
   # set to false.
   # 
   # EXTRN_MDL_FILES_ICS:
@@ -1580,11 +1683,15 @@ task_get_extrn_lbcs:
 #-----------------------------
 task_make_ics:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_MAKE_ICS: Intel Thread Affinity Interface for the make_ics task. 
+  # KMP_AFFINITY_MAKE_ICS: 
+  # Intel Thread Affinity Interface for the make_ics task. 
   #
-  # OMP_NUM_THREADS_MAKE_ICS: The number of OpenMP threads to use for parallel regions.
+  # OMP_NUM_THREADS_MAKE_ICS: 
+  # The number of OpenMP threads to use for parallel regions.
   #
-  # OMP_STACKSIZE_MAKE_ICS: Controls the size of the stack for threads created by the OpenMP implementation.
+  # OMP_STACKSIZE_MAKE_ICS: 
+  # Controls the size of the stack for threads created by the OpenMP 
+  # implementation.
   #-----------------------------------------------------------------------
   KMP_AFFINITY_MAKE_ICS: "scatter"
   OMP_NUM_THREADS_MAKE_ICS: 1
@@ -1633,11 +1740,17 @@ task_make_ics:
 task_make_lbcs:
   #------------------------------------------------------------------------
   #
-  # KMP_AFFINITY_MAKE_LBCS: Intel Thread Affinity Interface for the make_lbcs task. 
-  # OMP_NUM_THREADS_MAKE_LBCS: The number of OpenMP threads to use for parallel regions.
-  # OMP_STACKSIZE_MAKE_LBCS: Controls the size of the stack for threads created by the OpenMP implementation.
+  # KMP_AFFINITY_MAKE_LBCS: 
+  # Intel Thread Affinity Interface for the make_lbcs task. 
+  # 
+  # OMP_NUM_THREADS_MAKE_LBCS: 
+  # The number of OpenMP threads to use for parallel regions.
+  # 
+  # OMP_STACKSIZE_MAKE_LBCS: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #
-  # VCOORD_FILE: Full path to the file used to set the vertical coordinates in FV3. 
+  # VCOORD_FILE: 
+  # Full path to the file used to set the vertical coordinates in FV3. 
   # This file should be the same in both make_ics and make_lbcs.
   #
   #------------------------------------------------------------------------
@@ -1652,14 +1765,18 @@ task_make_lbcs:
 task_run_fcst:
   #------------------------------------------------------------------------
   #
-  # NNODES_RUN_FCST: The number of nodes to request from the job scheduler 
+  # NNODES_RUN_FCST: 
+  # The number of nodes to request from the job scheduler 
   # for the forecast task. 
   # 
-  # PPN_RUN_FCST: Processes per node for the forecast task. 
+  # PPN_RUN_FCST: 
+  # Processes per node for the forecast task. 
   #
-  # FV3_EXEC_FP: Full path to the forecast model executable.
+  # FV3_EXEC_FP: 
+  # Full path to the forecast model executable.
   #
-  # IO_LAYOUT_Y: Specifies how many MPI ranks to use in the Y direction for 
+  # IO_LAYOUT_Y: 
+  # Specifies how many MPI ranks to use in the Y direction for 
   # input/output (I/O). (X direction is assumed to be 1.)
   #
   #------------------------------------------------------------------------
@@ -1937,11 +2054,14 @@ task_run_fcst:
 #-----------------------------
 task_run_post:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_RUN_POST: Intel Thread Affinity Interface for the run_post task. 
+  # KMP_AFFINITY_RUN_POST: 
+  # Intel Thread Affinity Interface for the run_post task. 
   #
-  # OMP_NUM_THREADS_RUN_POST: The number of OpenMP threads to use for parallel regions.
+  # OMP_NUM_THREADS_RUN_POST: 
+  # The number of OpenMP threads to use for parallel regions.
   #
-  # OMP_STACKSIZE_RUN_POST: Controls the size of the stack for threads created by the OpenMP implementation.
+  # OMP_STACKSIZE_RUN_POST: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
   KMP_AFFINITY_RUN_POST: "scatter"
   OMP_NUM_THREADS_RUN_POST: 1
@@ -2017,9 +2137,14 @@ task_run_post:
 #-----------------------------
 task_run_prdgen:
   #-----------------------------------------------------------------------
-  # KMP_AFFINITY_RUN_PRDGEN: Intel Thread Affinity Interface for the run_prdgen task. 
-  # OMP_NUM_THREADS_RUN_PRDGEN: The number of OpenMP threads to use for parallel regions.
-  # OMP_STACKSIZE_RUN_PRDGEN: Controls the size of the stack for threads created by the OpenMP implementation.
+  # KMP_AFFINITY_RUN_PRDGEN: 
+  # Intel Thread Affinity Interface for the run_prdgen task. 
+  #
+  # OMP_NUM_THREADS_RUN_PRDGEN: 
+  # The number of OpenMP threads to use for parallel regions.
+  # 
+  # OMP_STACKSIZE_RUN_PRDGEN: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-----------------------------------------------------------------------
   KMP_AFFINITY_RUN_PRDGEN: "scatter"
   OMP_NUM_THREADS_RUN_PRDGEN: 1
@@ -2087,10 +2212,17 @@ task_plot_allvars:
 #-----------------------------
 task_nexus_emission:
   #-------------------------------------------------------------------------------
-  # PPN_NEXUS_EMISSION: Processes per node for the nexus_emission_* tasks. 
-  # KMP_AFFINITY_NEXUS_EMISSION: Intel Thread Affinity Interface for the nexus_emission_* tasks. 
-  # OMP_NUM_THREADS_NEXUS_EMISSION: The number of OpenMP threads to use for parallel regions.
-  # OMP_STACKSIZE_NEXUS_EMISSION: Controls the size of the stack for threads created by the OpenMP implementation.
+  # PPN_NEXUS_EMISSION: 
+  # Processes per node for the nexus_emission_* tasks. 
+  # 
+  # KMP_AFFINITY_NEXUS_EMISSION: 
+  # Intel Thread Affinity Interface for the nexus_emission_* tasks. 
+  # 
+  # OMP_NUM_THREADS_NEXUS_EMISSION: 
+  # The number of OpenMP threads to use for parallel regions.
+  # 
+  # OMP_STACKSIZE_NEXUS_EMISSION: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
@@ -2102,9 +2234,14 @@ task_nexus_emission:
 #-----------------------------
 task_bias_correction_o3:
   #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_O3: Intel Thread Affinity Interface for the bias_correction_o3 task. 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_O3: The number of OpenMP threads to use for parallel regions.
-  # OMP_STACKSIZE_BIAS_CORRECTION_O3: Controls the size of the stack for threads created by the OpenMP implementation.
+  # KMP_AFFINITY_BIAS_CORRECTION_O3: 
+  # Intel Thread Affinity Interface for the bias_correction_o3 task. 
+  # 
+  # OMP_NUM_THREADS_BIAS_CORRECTION_O3: 
+  # The number of OpenMP threads to use for parallel regions.
+  # 
+  # OMP_STACKSIZE_BIAS_CORRECTION_O3: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   KMP_AFFINITY_BIAS_CORRECTION_O3: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_O3: 32
@@ -2115,9 +2252,14 @@ task_bias_correction_o3:
 #-----------------------------
 task_bias_correction_pm25:
   #-------------------------------------------------------------------------------
-  # KMP_AFFINITY_BIAS_CORRECTION_PM25: Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
-  # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: The number of OpenMP threads to use for parallel regions.
-  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: Controls the size of the stack for threads created by the OpenMP implementation.
+  # KMP_AFFINITY_BIAS_CORRECTION_PM25: 
+  # Intel Thread Affinity Interface for the ``bias_correction_pm25`` task. 
+  # 
+  # OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 
+  # The number of OpenMP threads to use for parallel regions.
+  # 
+  # OMP_STACKSIZE_BIAS_CORRECTION_PM25: 
+  # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   KMP_AFFINITY_BIAS_CORRECTION_PM25: "scatter"
   OMP_NUM_THREADS_BIAS_CORRECTION_PM25: 32
@@ -2305,24 +2447,32 @@ verification:
   #
   # Templates for CCPA, MRMS, and NDAS observation files.
   # 
-  # OBS_CCPA_APCP01h_FN_TEMPLATE: File name template used to obtain the 
-  # input observation files (in the PcpCombine_obs tasks) that contain 
-  # the 1-hour accumulated precipitation (APCP) from which APCP for longer 
-  # accumulations will be generated.
-  # OBS_CCPA_APCPgt01h_FN_TEMPLATE: File name template used to generate 
-  # the observation files (in the PcpCombine_obs tasks) containing 
-  # accumulated precipitation for accumulation periods longer than 1-hour.
-  # OBS_NOHRSC_ASNOW_FN_TEMPLATE: File name template for NOHRSC snow 
-  # observations.
-  # OBS_MRMS_REFC_FN_TEMPLATE: File name template for MRMS reflectivity 
-  # observations.
-  # OBS_MRMS_RETOP_FN_TEMPLATE: File name template for MRMS echo top 
-  # observations.
-  # OBS_NDAS_SFCorUPA_FN_TEMPLATE: File name template for NDAS surface and 
-  # upper air observations.
-  # OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: File name template for NDAS 
-  # surface and upper air observations after processing by MET's pb2nc 
-  # tool (to change format to NetCDF).
+  # OBS_CCPA_APCP01h_FN_TEMPLATE: 
+  # File name template used to obtain the input observation files (in 
+  # the PcpCombine_obs tasks) that contain the 1-hour accumulated 
+  # precipitation (APCP) from which APCP for longer accumulations will 
+  # be generated.
+  # 
+  # OBS_CCPA_APCPgt01h_FN_TEMPLATE: 
+  # File name template used to generate the observation files (in the 
+  # PcpCombine_obs tasks) containing accumulated precipitation for 
+  # accumulation periods longer than 1-hour.
+  # 
+  # OBS_NOHRSC_ASNOW_FN_TEMPLATE: 
+  # File name template for NOHRSC snow observations.
+  # 
+  # OBS_MRMS_REFC_FN_TEMPLATE: 
+  # File name template for MRMS reflectivity observations.
+  # 
+  # OBS_MRMS_RETOP_FN_TEMPLATE: 
+  # File name template for MRMS echo top observations.
+  # 
+  # OBS_NDAS_SFCorUPA_FN_TEMPLATE: 
+  # File name template for NDAS surface and upper air observations.
+  # 
+  # OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: 
+  # File name template for NDAS surface and upper air observations 
+  # after processing by MET's pb2nc tool (to change format to NetCDF).
   #
  
   OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
@@ -2382,6 +2532,17 @@ verification:
   VX_NDIGITS_ENSMEM_NAMES: 3
   #
   # File name and path templates used in the verification tasks.
+  #
+  # FCST_SUBDIR_TEMPLATE: A template for the subdirectory containing 
+  # input forecast files for vx tasks.
+  # 
+  # FCST_FN_TEMPLATE: A template for the forecast file names used as 
+  # input to verification tasks.
+  # 
+  # FCST_FN_METPROC_TEMPLATE: A template for how to name the forecast 
+  # files for accumulated precipitation (APCP) with greater than 1-hour 
+  # accumulation (i.e., 3-, 6-, and 24-hour accumulations) after 
+  # processing by PcpCombine.
   #
   FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
   FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
@@ -2495,6 +2656,7 @@ cpl_aqm_parm:
   # Suffix and extension of AQM FIRE file
   #
   # AQM_FIRE_FILE_OFFSET_HRS: 
+  # Time offset when retrieving fire emission data files. 
   # 
   # AQM_FIRE_ARCHV_DIR:
   # Path to the archive directory for RAVE emission files on HPSS
