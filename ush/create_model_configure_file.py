@@ -25,7 +25,7 @@ from scripts.templater import set_template
 
 
 def create_model_configure_file(
-    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos
+    cdate, fcst_len_hrs, fhrot, run_dir, sub_hourly_post, dt_subhourly_post_mnts, dt_atmos, itasks
     ): #pylint: disable=too-many-arguments
     """Creates a model configuration file in the specified
     run directory
@@ -38,6 +38,7 @@ def create_model_configure_file(
         sub_hourly_post
         dt_subhourly_post_mnts
         dt_atmos
+        itasks
     Returns:
         Boolean
     """
@@ -301,6 +302,14 @@ def parse_args(argv):
     )
 
     parser.add_argument(
+        "-it",
+        "--itasks",
+        dest="itasks",
+        required=True,
+        help="Number of write tasks in the i direction"
+    )
+
+    parser.add_argument(
         "-p",
         "--path-to-defns",
         dest="path_to_defns",
@@ -324,4 +333,5 @@ if __name__ == "__main__":
         sub_hourly_post=str_to_type(args.sub_hourly_post),
         dt_subhourly_post_mnts=str_to_type(args.dt_subhourly_post_mnts),
         dt_atmos=str_to_type(args.dt_atmos),
+        itasks=str_to_type(args.itasks),
     )
