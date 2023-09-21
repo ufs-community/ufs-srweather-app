@@ -69,6 +69,10 @@ user:
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
+  FIXaqm: '{{ [HOMEaqm, "fix"]|path_join }}' 
+  FIXaqmchem_lbcs: '{{ [FIXaqm, "chem_lbcs"]|path_join }}' 
+  FIXaqmnexus: '{{ [FIXaqm, "nexus"]|path_join }}' 
+  FIXaqmnexus_gfs_sfc: '{{ [FIXaqm, "gfs"]|path_join }}' 
 
 #----------------------------
 # PLATFORM config parameters
@@ -3047,7 +3051,14 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_CYC: ""
 
   COMINemis: ""
-  FIXaqmnexus: "/path/to/emission/nexus/fix/dir"
+  FIXaqmconfig: '{{ [user.FIXaqm, "aqm/epa/data"]|path_join }}'
+  FIXaqmbio: '{{ [user.FIXaqm, "bio"]|path_join }}'
+  FIXaqmdust: '{{ [user.FIXaqm, "FENGSHA"]|path_join }}'
+  FIXaqmcanopy: '{{ [user.FIXaqm, "canopy"]|path_join }}'
+  FIXaqmchem_lbcs: '{{ [user.FIXaqm, "chem_lbcs"]|path_join }}'
+  FIXaqmnexus: '{{ [user.FIXaqm, "nexus"]|path_join }}'
+  FIXaqmnexus_gfs_sfc: '{{ [user.FIXaqm, "gfs"]|path_join }}'
+
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
   FIXaqmnexus_gfs_sfc: "/path/to/emission/gfs_sfc/fix/dir"
