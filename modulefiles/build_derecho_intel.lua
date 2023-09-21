@@ -3,7 +3,7 @@ This module loads libraries for building the UFS SRW App on
 the CISL machine Derecho (Cray) using Intel-classic-2023.0.0
 ]])
 
-whatis([===[Loads libraries needed for building the UFS SRW App on Cheyenne ]===])
+whatis([===[Loads libraries needed for building the UFS SRW App on Derecho ]===])
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.26.3"))
 load(pathJoin("ncarenv", os.getenv("ncarenv_ver") or "23.06"))
