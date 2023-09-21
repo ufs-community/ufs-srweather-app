@@ -2797,7 +2797,7 @@ fire:
   # FIRE_LSM_ZCOUPLING_REF
   # 
 
-  UFS_FIRE: True
+  UFS_FIRE: False
   FIRE_INPUT_DIR: ""
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
