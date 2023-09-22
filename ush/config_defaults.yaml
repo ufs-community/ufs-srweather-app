@@ -896,8 +896,8 @@ workflow:
   # (SDF) in the experiment directory. 
   # 
   # CCPP_PHYS_DIR:
-  # The directory containing the CCPP physics source code. This is needed to
-  # link table(s) contained in that repository.
+  # The directory containing the CCPP physics source code. This path is needed to
+  # be able to use table(s) contained in that repository.
   #-----------------------------------------------------------------------
   #
   CCPP_PHYS_SUITE: "FV3_GFS_v16"

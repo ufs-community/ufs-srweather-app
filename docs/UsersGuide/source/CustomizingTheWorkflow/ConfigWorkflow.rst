@@ -236,14 +236,14 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
 ``TEST_PREGEN_BASEDIR``: (Default: "")
    Similar to ``DOMAIN_PREGEN_BASEDIR``, this variable sets the base directory containing pregenerated grid, orography, and surface climatology files for WE2E tests. This is an alternative for setting ``GRID_DIR``, ``OROG_DIR``, and ``SFC_CLIMO_DIR`` individually. 
 
-``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``: (Default: "")
-   This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`ICS`. 
-
-``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
-   This parameter is used to test the mechanism that allows users to point to a data stream on disk. It sets up a sandbox location that mimics the stream in a more controlled way and tests the ability to access :term:`LBCS`.
+``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``, ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
+   These parameters are used by the testing script to test the mechanism that allows users to point to a data stream on disk. They set up a sandbox location that mimics the stream in a more controlled way and test the ability to access :term:`ICS` or :term:`LBCS`, respectively. 
 
 ``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
    The path to user-staged forecast files for WE2E testing of verificaton using user-staged forecast files in a known location on a given platform. 
+
+``TEST_CCPA_OBS_DIR``, ``TEST_MRMS_OBS_DIR``, ``TEST_NDAS_OBS_DIR``: (Default: "")
+These parameters are used by the testing script to test the mechanism that allows user to point to data streams on disk for observation data for verification tasks. They test the ability for users to set ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` respectively.
 
 .. _SystemFixedFiles:
 
