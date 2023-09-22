@@ -109,7 +109,7 @@ def file_exists(arg):
 
     if not os.path.exists(arg):
         msg = f"{arg} does not exist!"
-        raise argparse.ArgumentTypeError(msg)
+        raise FileNotFoundError(msg)
 
     return arg
 
