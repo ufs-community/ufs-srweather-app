@@ -700,7 +700,7 @@ Run the following command from the ``ufs-srweather-app/ush`` directory to genera
 
 The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3 * * * *``, can be saved and used later to automatically run portions of the workflow if users have the Rocoto workflow manager installed on their system. 
 
-This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` file: 
+This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` script: 
 
    #. Runs the ``setup.py`` script to set the configuration parameters. This script reads three other configuration scripts in order: 
       
