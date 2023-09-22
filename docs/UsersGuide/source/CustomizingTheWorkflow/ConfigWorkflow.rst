@@ -180,35 +180,31 @@ METplus Parameters
       * ``SS`` refers to the two-digit valid seconds of the hour
 
 ``CCPA_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"``)
-   User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
-
-   METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
-
-   .. note::
-      There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory) for dates up until 2021-05-04. The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to account for this and organize the data into a more intuitive format.
+   User-specified location of the directory where :term:`CCPA` hourly precipitation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure, as well as important caveats about errors in the metadata and file names. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
 
 ``NOHRSC_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"``)
-   User-specified location of top-level directory where NOHRSC 06- and 24-hour snowfall accumulation files (available every 6 and 12 hours respectively) used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_nohrsc`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
-
-   METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. 
+   User-specified location of top-level directory where NOHRSC 6- and 24-hour snowfall accumulation files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file scripts/exregional_get_verif_obs.sh for more details about files and directory structure 
    
-   When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. METplus is configured to verify 6-h and 24-h accumulated precipitation using NOHRSC files.
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur. 
 
    .. note::
-      Due to limited availability of NOHRSC observation data on NOAA HPSS and the likelihood that snowfall accumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
+      Due to limited availability of NOHRSC observation data on NOAA :term:`HPSS` and the likelihood that snowfall accumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
 
 ``MRMS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/mrms/proc"``)
-   User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. 
-
-   METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
-
-.. note::
-   METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified, which is why the minutes and seconds of the filename are hard-coded as "0000". Because MRMS composite reflectivity files do not typically match the valid time exactly, a script (``ush/mrms_pull_topofhour.py``) is called from within the MRMS task that identifies and renames the MRMS file nearest to the valid time to match the valid time of the forecast. This script can also be called separately for staging data independently of the workflow.
+   User-specified location of the directory where :term:`MRMS` composite reflectivity and echo top files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in the ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
 
 ``NDAS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ndas/proc"``)
-   User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
-
-   METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
+   User-specified location of top-level directory where :term:`NDAS` prepbufr files used by METplus are located (or, if retrieved by the workflow, where they will be placed). See comments in file ``scripts/exregional_get_verif_obs.sh`` for more details about files and directory structure. 
+   
+   .. attention:: 
+      Do not set this to the same path as other ``*_OBS_DIR`` variables; otherwise unexpected results and data loss may occur.
 
 Other Platform-Specific Directories
 --------------------------------------
