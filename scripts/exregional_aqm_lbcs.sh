@@ -178,7 +178,6 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
-	
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
@@ -193,7 +192,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     AQM_MOFILE_FP="${COMINgefs}/gefs.${yyyymmdd}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
   else
-    AQM_MOFILE_FP="${DCOMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    AQM_MOFILE_FP="${COMINgefs}/${yyyymmdd}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
   fi  
 
 check_file_with_recheck() {
