@@ -54,7 +54,7 @@ For convenience, the WE2E tests are currently grouped into the following categor
 
    Users should be aware that some tests assume :term:`HPSS` access. 
    
-      * ``custom_ESGgrid_Great_Lakes_snow_8km`` and ``MET_verification_only_vx_time_lag`` require HPSS access. 
+      * ``custom_ESGgrid_Great_Lakes_snow_8km`` and ``MET_verification_only_vx_time_lag`` require HPSS access, as well as ``rstprod`` access on both :term:`RDHPCS` and HPSS. 
       * On certain machines, *community* and *nco* tests assume HPSS access. If the ``ush/machine/*.yaml`` file contains the following lines, and these paths are different from what is provided in ``TEST_EXTRN_MDL_SOURCE_BASEDIR``, users will need to have HPSS access or modify the tests to point to another data source:
 
       .. code-block:: console
