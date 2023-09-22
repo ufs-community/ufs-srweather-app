@@ -62,6 +62,7 @@ user:
   SORCdir: '{{ [HOMEaqm, "sorc"]|path_join }}'
   PARMdir: '{{ [HOMEaqm, "parm"]|path_join }}'
   FIXdir: '{{ [HOMEaqm, "fix"]|path_join }}'
+  FIXaqm: '{{ [HOMEaqm, "fix"]|path_join }}' 
   MODULESdir: '{{ [HOMEaqm, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEaqm, workflow.EXEC_SUBDIR]|path_join }}'
   VX_CONFIG_DIR: '{{ [HOMEaqm, "parm"]|path_join }}'
@@ -69,11 +70,6 @@ user:
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
-  FIXaqm: '{{ [HOMEaqm, "fix"]|path_join }}' 
-  FIXaqmchem_lbcs: '{{ [FIXaqm, "chem_lbcs"]|path_join }}' 
-  FIXaqmfire: '{{ [FIXaqm, "fire"]|path_join }}' 
-  FIXaqmnexus: '{{ [FIXaqm, "nexus"]|path_join }}' 
-  FIXaqmnexus_gfs_sfc: '{{ [FIXaqm, "gfs"]|path_join }}' 
 
 #----------------------------
 # PLATFORM config parameters
@@ -876,7 +872,7 @@ workflow:
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
-  SYMLINK_FIX_FILES: true
+  SYMLINK_FIX_FILES: false 
   #
   #-----------------------------------------------------------------------
   #
@@ -3026,19 +3022,16 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
-  FIXaqmconfig: ""
-  FIXaqmbio: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  FIXaqmdust: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  FIXaqmcanopy: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
   DCOMINfire: ""
+
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
@@ -3056,6 +3049,7 @@ cpl_aqm_parm:
 
   COMINemis: ""
   FIXaqmconfig: '{{ [user.FIXaqm, "aqm/epa/data"]|path_join }}'
+  FIXaqmfire: '{{ [user.FIXaqm, "fire"]|path_join }}' 
   FIXaqmbio: '{{ [user.FIXaqm, "bio"]|path_join }}'
   FIXaqmdust: '{{ [user.FIXaqm, "FENGSHA"]|path_join }}'
   FIXaqmcanopy: '{{ [user.FIXaqm, "canopy"]|path_join }}'
@@ -3065,7 +3059,6 @@ cpl_aqm_parm:
 
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
-  FIXaqmnexus_gfs_sfc: "/path/to/emission/gfs_sfc/fix/dir"
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
   COMINemispt: "/path/to/point/source/base/directory"

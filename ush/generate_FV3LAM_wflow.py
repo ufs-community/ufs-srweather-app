@@ -296,17 +296,17 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #
     # Copy or symlink fix files
     #
-    #if SYMLINK_FIX_FILES:
+    if SYMLINK_FIX_FILES:
 
-    #    log_info(
-    #        f"""
-    #        Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-    #          FIXgsm = '{FIXgsm}'
-    #          FIXam = '{FIXam}'""",
-    #        verbose=verbose,
-    #    )
+        log_info(
+            f"""
+            Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
+              FIXgsm = '{FIXgsm}'
+              FIXam = '{FIXam}'""",
+            verbose=verbose,
+        )
 
-    #    ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
+        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
     #else:
 
     #    log_info(
@@ -317,7 +317,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #        verbose=verbose,
     #    )
    
-    #     check_for_preexist_dir_file(FIXam, "delete")
+    #    check_for_preexist_dir_file(FIXam, "delete")
     #    mkdir_vrfy("-p", FIXam)
     #    mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
 
@@ -325,7 +325,7 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
     #    for i in range(num_files):
     #        fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
     #        cp_vrfy(os.path.join(FIXgsm, fn), os.path.join(FIXam, fn))
-    #
+    
     # -----------------------------------------------------------------------
     #
     # Copy MERRA2 aerosol climatology data.

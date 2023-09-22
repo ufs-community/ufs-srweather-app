@@ -95,7 +95,6 @@ else
       if [ "${RUN_ENVIR}" = "community" ]; then
         print_err_msg_exit "${message_txt}"
       else
-        #cp -p  "${DCOMINfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
         cp -p  "${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc" "${FILE_13km}"
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
@@ -205,7 +204,7 @@ fi
  ncrename -v PM25,PM2.5 temp5.nc temp6.nc
  mv temp6.nc ${aqm_fire_file_fn}
  rm -rf temp*nc
-     #
+#
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/function.
