@@ -30,7 +30,7 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
@@ -69,7 +69,7 @@ Application Directories
    The path to the directory where the user's final METplus configuration file resides. By default, METplus configuration files reside in ``ufs-srweather-app/parm/metplus``. 
 
 ``UFS_WTHR_MDL_DIR``: (Default: ``'{{ userUFS_WTHR_MDL_DIR }}'``)
-   The path to the location where the weather model code is located within the ``ufs-srweather-app`` clone. This parameter is set in ``setup.py`` and uses information from the ``Externals.cfg`` file to build the correct path. It is built with knowledge of HOMEdir and often corresponds to ``ufs-srweather-app/sorc/ufs-weather-model``.
+   The path to the location where the UFS Weather Model code is located within the ``ufs-srweather-app`` clone. This parameter is set in ``setup.py`` and uses information from the ``Externals.cfg`` file to build the correct path. It is built with knowledge of ``HOMEdir`` and often corresponds to ``ufs-srweather-app/sorc/ufs-weather-model``.
 
 ``ARL_NEXUS_DIR``: (Default: ``'{{ [SORCdir, "arl_nexus"]|path_join }}'``)
    The path to the user's NEXUS directory. By default, NEXUS source code resides in ``ufs-srweather-app/sorc/arl_nexus``.
@@ -134,10 +134,10 @@ These parameters vary depending on machine. On `Level 1 and 2 <https://github.co
 
 Parameters for Running Without a Workflow Manager
 -----------------------------------------------------
-These settings define the platform-specific run commands. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
+These settings define platform-specific run commands. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
 
 ``RUN_CMD_UTILS``: (Default: "")
-   The run command for MPI-enabled pre-processing utilities (e.g., shave, orog, sfc_climo_gen). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
+   The run command for MPI-enabled pre-processing utilities (e.g., ``shave``, ``orog``, ``sfc_climo_gen``). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
 ``RUN_CMD_FCST``: (Default: "")
    The run command for the model forecast step. 
@@ -179,7 +179,7 @@ METplus Parameters
       * ``mm`` refers to the 2-digit valid minutes of the hour
       * ``SS`` refers to the two-digit valid seconds of the hour
 
-``CCPA_OBS_DIR``: (Default: "")
+``CCPA_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"``)
    User-specified location of top-level directory where CCPA hourly precipitation files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ccpa`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
    METplus configuration files require the use of a predetermined directory structure and file names. If the CCPA files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/ccpa.t{HH}z.01h.hrap.conus.gb2``, where YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``CCPA_OBS_DIR`` directory. METplus is configured to verify 01-, 03-, 06-, and 24-h accumulated precipitation using hourly CCPA files.
@@ -187,7 +187,7 @@ METplus Parameters
    .. note::
       There is a problem with the valid time in the metadata for files valid from 19 - 00 UTC (i.e., files under the "00" directory) for dates up until 2021-05-04. The script to pull the CCPA data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to account for this and organize the data into a more intuitive format.
 
-``NOHRSC_OBS_DIR``: (Default: "")
+``NOHRSC_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"``)
    User-specified location of top-level directory where NOHRSC 06- and 24-hour snowfall accumulation files (available every 6 and 12 hours respectively) used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_nohrsc`` task. (This task is activated in the workflow by using the taskgroup file ``parm/wflow/verify_pre.yaml``).
 
    METplus configuration files require the use of a predetermined directory structure and file names. If the NOHRSC files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/sfav2_CONUS_{AA}h_{YYYYMMDD}{HH}_grid184.grb2``, where AA is the 2-digit accumulation duration, and YYYYMMDD and HH are as described in the note :ref:`above <METParamNote>`. 
@@ -195,9 +195,9 @@ METplus Parameters
    When pulling observations from NOAA HPSS, the data retrieved will be placed in the ``NOHRSC_OBS_DIR`` directory. METplus is configured to verify 6-h and 24-h accumulated precipitation using NOHRSC files.
 
    .. note::
-      Due to limited availability of NOHRSC observation data on NOAA HPSS and the likelihood that snowfall acumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
+      Due to limited availability of NOHRSC observation data on NOAA HPSS and the likelihood that snowfall accumulation verification will not be desired outside of winter cases, this verification option is currently not present in the workflow by default. In order to use it, the verification environment variable ``VX_FIELDS`` should be updated to include ``ASNOW``. This will allow the related workflow tasks to be run.
 
-``MRMS_OBS_DIR``: (Default: "")
+``MRMS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/mrms/proc"``)
    User-specified location of top-level directory where MRMS composite reflectivity files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_mrms`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. 
 
    METplus configuration files require the use of a predetermined directory structure and file names. Therefore, if the MRMS files are user-provided, they need to follow the anticipated naming structure: ``{YYYYMMDD}/MergedReflectivityQCComposite_00.50_{YYYYMMDD}-{HH}{mm}{SS}.grib2``, where YYYYMMDD and {HH}{mm}{SS} are as described in the note :ref:`above <METParamNote>`. 
@@ -205,7 +205,7 @@ METplus Parameters
 .. note::
    METplus is configured to look for a MRMS composite reflectivity file for the valid time of the forecast being verified, which is why the minutes and seconds of the filename are hard-coded as "0000". Because MRMS composite reflectivity files do not typically match the valid time exactly, a script (``ush/mrms_pull_topofhour.py``) is called from within the MRMS task that identifies and renames the MRMS file nearest to the valid time to match the valid time of the forecast. This script can also be called separately for staging data independently of the workflow.
 
-``NDAS_OBS_DIR``: (Default: "")
+``NDAS_OBS_DIR``: (Default: ``"{{ workflow.EXPTDIR }}/obs_data/ndas/proc"``)
    User-specified location of the top-level directory where NDAS prepbufr files used by METplus are located. This parameter needs to be set for both user-provided observations and for observations that are retrieved from the NOAA :term:`HPSS` (if the user has access) via the ``get_obs_ndas`` task (activated in the workflow automatically when using the taskgroup file ``parm/wflow/verify_pre.yaml``). When pulling observations directly from NOAA HPSS, the data retrieved will be placed in this directory. METplus is configured to verify near-surface variables hourly and upper-air variables at 00 and 12 UTC with NDAS prepbufr files. 
 
    METplus configuration files require the use of predetermined file names. Therefore, if the NDAS files are user-provided, they need to follow the anticipated naming structure: ``prepbufr.ndas.{YYYYMMDDHH}``, where YYYYMMDDHH is as described in the note :ref:`above <METParamNote>`. The script to pull the NDAS data from the NOAA HPSS (``scripts/exregional_get_verif_obs.sh``) has an example of how to rename the NDAS data into a more intuitive format with the valid time listed in the file name.
@@ -239,11 +239,11 @@ These directories are used only by the ``run_WE2E_tests.py`` script, so they are
 ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS``, ``TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS``: (Default: "")
    These parameters are used by the testing script to test the mechanism that allows users to point to a data stream on disk. They set up a sandbox location that mimics the stream in a more controlled way and test the ability to access :term:`ICS` or :term:`LBCS`, respectively. 
 
-``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
-   The path to user-staged forecast files for WE2E testing of verificaton using user-staged forecast files in a known location on a given platform. 
-
 ``TEST_CCPA_OBS_DIR``, ``TEST_MRMS_OBS_DIR``, ``TEST_NDAS_OBS_DIR``: (Default: "")
 These parameters are used by the testing script to test the mechanism that allows user to point to data streams on disk for observation data for verification tasks. They test the ability for users to set ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR`` respectively.
+
+``TEST_VX_FCST_INPUT_BASEDIR``: (Default: "") 
+   The path to user-staged forecast files for WE2E testing of verificaton using user-staged forecast files in a known location on a given platform. 
 
 .. _SystemFixedFiles:
 
@@ -287,7 +287,7 @@ WORKFLOW Configuration Parameters
 If non-default parameters are selected for the variables in this section, they should be added to the ``workflow:`` section of the ``config.yaml`` file. 
 
 ``WORKFLOW_ID``: (Default: ``!nowtimestamp ''``)
-   Unique ID for the workflow run that will be set in setup.py
+   Unique ID for the workflow run that will be set in ``setup.py``.
 
 ``RELATIVE_LINK_FLAG``: (Default: "--relative")
    How to make links. The default is relative links; users may set an empty string for absolute paths in links.
@@ -326,7 +326,7 @@ Directory Parameters
 
       EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
 
-   This parameter cannot be left empty. It must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
+   This parameter must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
 
 ``EXEC_SUBDIR``: (Default: "exec")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
@@ -428,7 +428,7 @@ Set File Path Parameters
 *Experiment Directory* Files and Paths
 ------------------------------------------
 
-These parameters contain files and paths to files that are staged in the experiment directory at configuration time. 
+This section contains files and paths to files that are staged in the experiment directory at configuration time. 
 
 ``DATA_TABLE_FP``: (Default: ``'{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'``)
    Path to the data table in the experiment directory. 
@@ -490,7 +490,7 @@ These parameters are associated with the fixed (i.e., static) files. Unlike the 
    Directory containing the fixed files (or symlinks to fixed files) for various fields on global grids (which are usually much coarser than the native FV3-LAM grid).
 
 ``FIXclim``: (Default: ``'{{ [FIXdir, "fix_clim"]|path_join }}'``)
-   Directory containing the MERRA2 aerosol climatology data file and lookup tables for optics properties
+   Directory containing the MERRA2 aerosol climatology data file and lookup tables for optics properties.
 
 ``FIXlam``: (Default: ``'{{ [FIXdir, "fix_lam"]|path_join }}'``)
    Directory containing the fixed files (or symlinks to fixed files) for the grid, orography, and surface climatology on the native FV3-LAM grid.
@@ -538,7 +538,7 @@ Field Dictionary Parameters
 ------------------------------
 
 ``FIELD_DICT_FN``: (Default: "fd_nems.yaml")
-   The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields that is automatically generated by the :term:`NUOPC` Layer. 
+   The name of the field dictionary file. This file is a community-based dictionary for shared coupling fields and is automatically generated by the :term:`NUOPC` Layer. 
 
 ``FIELD_DICT_IN_UWM_FP``: (Default: ``'{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'``)
    The full path to ``FIELD_DICT_FN`` within the forecast model's directory structure (e.g., ``/path/to/ufs-srweather-app/sorc/ufs-weather-model/tests/parm/$FIELD_DICT_FN``).
@@ -614,7 +614,7 @@ Forecast Parameters
    Increment in hours for Rocoto cycle frequency. The default is 24, which means cycl_freq=24:00:00.
 
 ``FCST_LEN_HRS``: (Default: 24)
-   The length of each forecast, in integer hours. (Or the short forecast length when there are different lengths.)
+   The length of each forecast in integer hours. (Or the short forecast length when there are different lengths.)
 
 ``LONG_FCST_LEN_HRS``: (Default: ``'{% if FCST_LEN_HRS < 0 %}{{ FCST_LEN_CYCL|max }}{% else %}{{ FCST_LEN_HRS }}{% endif %}'``)
    The length of the longer forecast in integer hours in a system that varies the length of the forecast by time of day. There is no need for the user to update this value directly, as it is derived from ``FCST_LEN_CYCL`` when ``FCST_LEN_HRS=-1``.
@@ -680,7 +680,7 @@ Other
    Switch for real-time run. Valid values: ``True`` | ``False``
 
 ``COLDSTART``: (Default: true)
-   Flag for turning on/off warm start for the first cycle. Valid values: ``True`` | ``False``
+   Flag for turning on/off cold start for the first cycle. Valid values: ``True`` | ``False``
 
 ``WARMSTART_CYCLE_DIR``: (Default: "/path/to/warm/start/cycle/dir")
    Path to the cycle directory where RESTART subdirectory is located for warm start. 
@@ -747,7 +747,7 @@ A standard set of environment variables has been established for *nco* mode to s
    Boolean variable to control data copies to ``$COMOUT``.
 
 ``SENDWEB_default``: (Default: false)
-   Boolean variable used to control sending products to a web server,often ``ncorzdm``.
+   Boolean variable used to control sending products to a web server, often ``ncorzdm``.
 
 ``KEEPDATA_default``: (Default: true)
    Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
@@ -1184,7 +1184,7 @@ Write-Component (Quilting) Parameters
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
 
-``WRTCMP_write_tasks_per_group``: (Default: """)
+``WRTCMP_write_tasks_per_group``: (Default: "")
    The number of MPI tasks to allocate for each write group.
 
 ``WRTCMP_output_grid``: (Default: "''")
@@ -1658,7 +1658,7 @@ VX Forecast Model Name
    String that specifies a descriptive name for the model being verified. This is used in forming the names of the verification output files as well as in the contents of those files.
 
 ``VX_FIELDS``: (Default: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ])
-   The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and  because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
+   The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
   
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
    The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored.
@@ -1666,8 +1666,8 @@ VX Forecast Model Name
 ``VX_ASNOW_ACCUMS_HRS``: (Default: [ 6, 24 ])
    The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored.
 
-VX Directories
------------------
+Verification (VX) Directories
+------------------------------
 
 ``VX_FCST_INPUT_BASEDIR``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'``)
    Template for top-level directory containing forecast (but not obs) files that will be used as input into METplus for verification.
@@ -1678,13 +1678,13 @@ VX Directories
 ``VX_NDIGITS_ENSMEM_NAMES``: 3
    Number of digits in the ensember member names. This is a configurable variable to allow users to change its value (e.g., to go from "mem004" to "mem02") when using staged forecast files that do not use the same number of digits as the SRW App.
 
-VX File Name and Path Templates
----------------------------------
+Verification (VX) File Name and Path Templates
+------------------------------------------------
 
 This section contains file name and path templates used in the verification (VX) tasks.
 
 ``FCST_SUBDIR_TEMPLATE``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'``)
-   A template for the subdirectory containing input forecast files for vx tasks.
+   A template for the subdirectory containing input forecast files for VX tasks.
 
 ``FCST_FN_TEMPLATE``: (Default: ``'${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'``)
    A template for the forecast file names used as input to verification tasks.
@@ -1756,7 +1756,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Path of reading in historical training data for bias correction. 
 
 ``COMOUTbicor``: (Default: "/path/to/historical/airnow/data/dir")
-   Path to save the current cycle's model output and AirNow obs as training data for future use ``$COMINbicor`` and ``$COMOUTbicor`` can be distuigshed by the ``${yyyy}${mm}$dd`` under the same location.
+   Path to save the current cycle's model output and AirNow observations as training data for future use. ``$COMINbicor`` and ``$COMOUTbicor`` can be distuigshed by the ``${yyyy}${mm}${dd}`` under the same location.
 
 ``AQM_CONFIG_DIR``: (Default: "")
    Configuration directory for AQM.
@@ -1786,7 +1786,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Time offset when retrieving fire emission data files. In a real-time run, the data files for :term:`ICs/LBCs` are not ready for use until the case starts. To resolve this issue, a real-time run uses the input data files in the previous cycle. For example, if the experiment run cycle starts at 12z, and ``AQM_FIRE_FILE_OFFSET_HRS: 6``, the fire emission data file from the previous cycle (06z) is used.
 
 ``AQM_FIRE_ARCHV_DIR``: (Default: "/path/to/archive/dir/for/RAVE/on/HPSS")
-   Path to the archive directory for RAVE emission files on HPSS.
+   Path to the archive directory for RAVE emission files on :term:`HPSS`.
 
 ``AQM_RC_FIRE_FREQUENCY``: (Default: "static")
    Fire frequency in ``aqm.rc``.
@@ -1807,10 +1807,10 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Cycle of the GEFS aerosol LBC files only if it is fixed.
 
 ``NEXUS_INPUT_DIR``: (Default: "")
-   Same as GRID_DIR but for the the air quality emission generation task. Should be blank for the default value specified in ``setup.sh``.
+   Same as ``GRID_DIR`` but for the the air quality emission generation task. Should be blank for the default value specified in ``setup.sh``.
 
 ``NEXUS_FIX_DIR``: (Default: "")
-   Directory containing grid_spec files as the input file of nexus
+   Directory containing ``grid_spec`` files as the input file of NEXUS.
 
 ``NEXUS_GRID_FN``: (Default: "grid_spec_GSD_HRRR_25km.nc")
    File name of the input ``grid_spec`` file of NEXUS.

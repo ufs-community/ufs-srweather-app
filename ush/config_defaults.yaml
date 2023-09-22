@@ -387,10 +387,10 @@ platform:
   #
   #-----------------------------------------------------------------------
   #
-  CCPA_OBS_DIR: ""
-  NOHRSC_OBS_DIR: ""
-  MRMS_OBS_DIR: ""
-  NDAS_OBS_DIR: ""
+  CCPA_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
+  NOHRSC_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/nohrsc/proc"
+  MRMS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
+  NDAS_OBS_DIR: "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
   #
   #-----------------------------------------------------------------------
   #
@@ -640,7 +640,7 @@ workflow:
   # directory (EXECDIR; this is set during experiment generation).
   #
   # DATA_TABLE_FN: 
-  # Name of the file that contains the data table read # in by the forecast model. 
+  # Name of the file that contains the data table read in by the forecast model. 
   # 
   # DIAG_TABLE_FN: 
   # Prefix for the name of the file that specifies 
@@ -912,7 +912,7 @@ workflow:
   #
   # FIELD_DICT_FN: 
   # The name of the field dictionary file. This file is a community-based 
-  # dictionary for shared coupling fields that is automatically generated 
+  # dictionary for shared coupling fields and is automatically generated 
   # by the NUOPC Layer. 
   #
   # FIELD_DICT_IN_UWM_FP: 
@@ -988,9 +988,9 @@ workflow:
   #
   # * If PREDEF_GRID_NAME is set to an empty string, it implies the user
   #   will provide the native grid parameters in the user-specified 
-  #   experiment configuration file (EXPT_CONFIG_FN).  In this case, the 
+  #   experiment configuration file (EXPT_CONFIG_FN). In this case, the 
   #   grid generation method GRID_GEN_METHOD, the native grid parameters, 
-  #   and the write-component grid parameters, the forecast model's 
+  #   the write-component grid parameters, the forecast model's 
   # main time step DT_ATMOS, and the computational 
   #   parameters (LAYOUT_X, LAYOUT_Y, and BLOCKSIZE) must be set in that 
   #   configuration file; otherwise, the values of all of these parameters 
@@ -1132,7 +1132,7 @@ workflow:
   #-----------------------------------------------------------------------
   #
   # COLDSTART:
-  # Flag turning on/off warm start for the first cycle
+  # Flag turning on/off cold start for the first cycle
   #
   # WARMSTART_CYCLE_DIR:
   # Path to the cycle directory where RESTART subdirectory is located for warm start
@@ -2628,8 +2628,8 @@ cpl_aqm_parm:
   #
   # COMOUTbicor:
   # Path to save the current cycle's model output and AirNow obs as 
-  # training data for future use $COMINbicor and $COMOUTbicor can be 
-  # distuigshed by the ${yyyy}${mm}$dd under the same location
+  # training data for future use. $COMINbicor and $COMOUTbicor can be 
+  # distuigshed by the ${yyyy}${mm}${dd} under the same location
   #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
