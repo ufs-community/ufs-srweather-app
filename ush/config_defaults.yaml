@@ -609,7 +609,7 @@ workflow:
   #
   # CONSTANTS_FN:
   # Name of the file containing definitions of various mathematical, physical, 
-  # and SRW App contents.
+  # and SRW App constants.
   #
   # RGNL_GRID_NML_FN:
   # Name of file containing the namelist settings for the code that generates

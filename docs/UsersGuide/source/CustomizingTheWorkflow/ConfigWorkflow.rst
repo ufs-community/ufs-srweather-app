@@ -586,14 +586,6 @@ Predefined Grid Parameters
    | ``"AQM_NA_13km"``
    | ``"CONUS_25km_GFDLgrid"`` 
    | ``"CONUS_3km_GFDLgrid"``
-   | ``"EMC_AK"`` 
-   | ``"EMC_HI"`` 
-   | ``"EMC_PR"`` 
-   | ``"EMC_GU"`` 
-   | ``"GSL_HAFSV0.A_25km"`` 
-   | ``"GSL_HAFSV0.A_13km"`` 
-   | ``"GSL_HAFSV0.A_3km"`` 
-   | ``"GSD_HRRR_AK_50km"``
    | ``"GSD_HRRR_25km"``
    | ``"RRFS_AK_13km"``
    | ``"RRFS_AK_3km"`` 
