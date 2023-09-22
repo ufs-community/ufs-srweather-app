@@ -42,6 +42,11 @@ class Testing(unittest.TestCase):
         logfile = "log.generate_FV3LAM_wflow"
         sed = get_env_var("SED")
 
+        # set USE_CRTM to false in config_defaults.yaml file
+        run_command(
+            f"""{sed} -i 's/USE_CRTM: true/USE_CRTM: false/g' {USHdir}/config_defaults.yaml"""
+        )
+
         # community test case
         cp_vrfy(f"{USHdir}/config.community.yaml", f"{USHdir}/config.yaml")
         run_command(
