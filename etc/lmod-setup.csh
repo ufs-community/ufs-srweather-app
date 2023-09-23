@@ -40,6 +40,9 @@ else if ( "$L_MACHINE" == singularity ) then
 else if ( "$L_MACHINE" == gaea ) then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init.csh
 
+else if ( "$L_MACHINE" == gaea_c5 ) then
+   source /lustre/f2/dev/role.epic/contrib/Lmod_init_C5.csh
+
 else if ( "$L_MACHINE" == derecho ) then
    module reset
 
