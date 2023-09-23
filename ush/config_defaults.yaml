@@ -2937,7 +2937,7 @@ cpl_aqm_parm:
   # Suffix and extension of AQM CANOPY file
   # 
   # DCOMINfire:
-  # Path to the directory containing AQM fire emission files
+  # Path to the directory containing AQM fire emission files (RAVE)
   # 
   # AQM_FIRE_FILE_PREFIX:
   # Prefix of AQM FIRE file
@@ -3040,7 +3040,6 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  FIXaqmchem_lbcs: ""
   AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
   COMINgefs: ""
