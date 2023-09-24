@@ -26,5 +26,5 @@ setenv("CXX","CC")
 setenv("CMAKE_C_COMPILER","cc")
 setenv("CMAKE_Fortran_COMPILER","ftn")
 setenv("CMAKE_CXX_COMPILER","CC")
-setenv("CMAKE_Platform","gaea_c5.intel")
+setenv("CMAKE_Platform","gaea-c5.intel")
 

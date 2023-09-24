@@ -47,7 +47,7 @@ elif [ "$L_MACHINE" = singularity ]; then
 elif [ "$L_MACHINE" = gaea ]; then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
 
-elif [ "$L_MACHINE" = gaea_c5 ]; then
+elif [ "$L_MACHINE" = gaea-c5 ]; then
    source /lustre/f2/dev/role.epic/contrib/Lmod_init_C5.sh
 
 elif [ "$L_MACHINE" = derecho ]; then

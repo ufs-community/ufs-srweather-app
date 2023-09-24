@@ -28,7 +28,7 @@ if [[ "${SRW_PLATFORM}" == gaea ]]; then
     sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
-if [[ "${SRW_PLATFORM}" == gaea_c5 ]]; then
+if [[ "${SRW_PLATFORM}" == gaea-c5 ]]; then
     sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
