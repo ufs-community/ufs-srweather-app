@@ -23,4 +23,3 @@ if (mode() == "unload") then
   unload(pathJoin("metplus",metplus_ver))
 end
 load("python_srw")
-

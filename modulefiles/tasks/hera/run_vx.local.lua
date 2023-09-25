@@ -23,3 +23,8 @@ if (mode() == "unload") then
   unload(pathJoin("metplus",metplus_ver))
 end
 load("python_srw")
+
+setenv("MET_INSTALL_DIR", os.getenv("met_ROOT"))
+setenv("MET_BASE", pathJoin(os.getenv("met_ROOT"), "share", "met"))
+setenv("METPLUS_PATH", os.getenv("metplus_ROOT"))
+--
