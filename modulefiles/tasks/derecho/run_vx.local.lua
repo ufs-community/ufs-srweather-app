@@ -14,7 +14,7 @@ setenv("MET_INSTALL_DIR", base_met)
 setenv("MET_BIN_EXEC",    pathJoin(base_met,"bin"))
 setenv("MET_BASE",        pathJoin(base_met,"share/met"))
 setenv("MET_VERSION",     met_ver)
-setenv("METP:US_VERSION", metplus_ver)
+setenv("METPLUS_VERSION", metplus_ver)
 setenv("METPLUS_ROOT",    base_metplus)
 setenv("METPLUS_PATH",    base_metplus)
 
