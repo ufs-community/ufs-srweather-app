@@ -14,7 +14,7 @@ setenv("MET_INSTALL_DIR", base_met)
 setenv("MET_BIN_EXEC",    pathJoin(base_met,"bin"))
 setenv("MET_BASE",        pathJoin(base_met,"share/met"))
 setenv("MET_VERSION",     met_ver)
-setenv("MET_VERSION",     metplus_ver)
+setenv("METPLUS_VERSION",     metplus_ver)
 setenv("METPLUS_ROOT",    base_metplus)
 setenv("METPLUS_PATH",    base_metplus)
 
@@ -23,8 +23,3 @@ if (mode() == "unload") then
   unload(pathJoin("metplus",metplus_ver))
 end
 load("python_srw")
-
-setenv("MET_INSTALL_DIR", os.getenv("met_ROOT"))
-setenv("MET_BASE", pathJoin(os.getenv("met_ROOT"), "share", "met"))
-setenv("METPLUS_PATH", os.getenv("metplus_ROOT"))
-
