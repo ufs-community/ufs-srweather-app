@@ -26,4 +26,4 @@ load("sigio/2.3.2")
 load("w3nco/2.4.1")
 load_any("wrf_io/1.2.0","wrf-io/1.2.0")
 
-load("wgrib2/2.0.8")
+load_any("wgrib2/2.0.8","wgrib2/3.1.1")
