@@ -70,7 +70,7 @@ user:
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
-
+ 
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -325,6 +325,7 @@ platform:
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
+  FIXaqm_sav: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -872,7 +873,7 @@ workflow:
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
-  SYMLINK_FIX_FILES: false 
+  SYMLINK_FIX_FILES: true 
   #
   #-----------------------------------------------------------------------
   #
