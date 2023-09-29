@@ -188,6 +188,7 @@ module list
 
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
+  conda deactivate
   conda activate ${SRW_ENV}
   set -u
 fi
