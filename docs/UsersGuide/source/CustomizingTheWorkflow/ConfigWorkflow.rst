@@ -494,7 +494,7 @@ These parameters are associated with the fixed (i.e., static) files. Unlike the 
 ``THOMPSON_MP_CLIMO_FN``: (Default: "Thompson_MP_MONTHLY_CLIMO.nc")
    Name of file that contains aerosol climatology data. It can be used to generate approximate versions of the aerosol fields needed by Thompson microphysics. This file will be used to generate such approximate aerosol fields in the :term:`ICs` and :term:`LBCs` if Thompson MP is included in the physics suite and if the external model for ICs or LBCs does not already provide these fields.
    
-``THOMPSON_MP_CLIMO_FP``: (Default: '{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}')
+``THOMPSON_MP_CLIMO_FP``: (Default: ``'{{ [FIXam, THOMPSON_MP_CLIMO_FN]|path_join }}'``)
    Path to the file that contains aerosol climatology data (i.e., path to ``THOMPSON_MP_CLIMO_FN``). 
 
 .. _CCPP_Params:
@@ -619,7 +619,7 @@ Forecast Parameters
 
    Shorter forecasts are often used to save resources. However, users may wish to gain insight further into the future. In such cases, users can periodically run a longer forecast. For example, in an experiment, a researcher might run 18-hour forecasts for most forecast hours but run a longer 48-hour forecast at "synoptic times" (e.g., 0, 6, 12, 18 UTC). This is particularly common with resource-intensive :term:`DA <data assimilation>` systems that cycle frequently. 
 
-``FCST_LEN_CYCL``: (Default: - '{{ FCST_LEN_HRS }}')
+``FCST_LEN_CYCL``: (Default: ``- '{{ FCST_LEN_HRS }}'``)
    The length of forecast for each cycle in a given day (in integer hours). This is valid only when ``FCST_LEN_HRS = -1``. This pattern recurs for all cycle dates. Must have the same number of entries as cycles per day (as defined by 24/``INCR_CYCL_FREQ``), or if less than one day the entries must include the length of each cycle to be run. By default, it is set to a 1-item list containing the standard fcst length. 
 
 .. hint::
@@ -722,10 +722,10 @@ A standard set of environment variables has been established for *nco* mode to s
    Directory in which the log files from the workflow tasks will be placed.
 
 ``COMIN_BASEDIR``: (Default: ``'{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'``)
-   ``com`` directory for current model's input data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``
+   ``com`` directory for current model's input data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``.
 
 ``COMOUT_BASEDIR``: (Default: ``'{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'``)
-   ``com`` directory for current model's output data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``
+   ``com`` directory for current model's output data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``.
 
 ``DBNROOT_default``: (Default: "")
    Root directory for the data-alerting utilities.
@@ -1175,7 +1175,7 @@ Write-Component (Quilting) Parameters
    
    .. math::
       
-      `LAYOUT_X * LAYOUT_Y + WRTCMP_write_groups * WRTCMP_write_tasks_per_group`  
+      LAYOUT_X * LAYOUT_Y + WRTCMP_write_groups * WRTCMP_write_tasks_per_group 
 
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
@@ -1438,7 +1438,7 @@ Set parameters associated with running ensembles.
 ``FV3_NML_ENSMEM_FPS``: (Default: ``'{% for mem in ENSMEM_NAMES %}{{ [EXPTDIR, "%s_%s" % FV3_NML_FN, mem]|path_join }}{% endfor %}'``)
    Paths to the corresponding ensemble member namelists in the experiment directory
 
-``ENS_TIME_LAG_HRS``: (Default: '[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]')
+``ENS_TIME_LAG_HRS``: (Default: ``'[ {% for m in range([1,NUM_ENS_MEMBERS]|max) %} 0, {% endfor %} ]'``)
    Time lag (in hours) to use for each ensemble member. For a deterministic forecast, this is a one-element array. Default values of array elements are zero.
 
 
