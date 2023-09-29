@@ -52,3 +52,5 @@ rocoto:
         nnodes:
         nodesize:
         ppn:
+global:
+  CRTM_DIR: /lustre/f2/dev/role.epic/contrib/C5/hpc-stack/intel-classic-2023.1.0/intel-classic-2023.1.0/cray-mpich-8.1.25/crtm/2.4.0/fix
