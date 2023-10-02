@@ -54,11 +54,11 @@ workflow_switches:
   RUN_TASK_BIAS_CORRECTION_O3: true
   RUN_TASK_BIAS_CORRECTION_PM25: true
 task_make_grid:
-  GRID_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  GRID_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/aqm/DOMAIN_DATA/AQM_NA_13km
 task_make_orog:
-  OROG_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  OROG_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/aqm/DOMAIN_DATA/AQM_NA_13km
 task_make_sfc_climo:
-  SFC_CLIMO_DIR: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/DOMAIN_DATA/AQM_NA_13km
+  SFC_CLIMO_DIR: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/aqm/DOMAIN_DATA/AQM_NA_13km
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
