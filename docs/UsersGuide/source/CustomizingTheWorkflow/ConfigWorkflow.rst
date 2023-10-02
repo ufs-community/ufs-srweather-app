@@ -1672,7 +1672,7 @@ Verification (VX) Directories
    Template for top-level directory in which METplus will place its output.
 
 ``VX_NDIGITS_ENSMEM_NAMES``: 3
-   Number of digits in the ensember member names. This is a configurable variable to allow users to change its value (e.g., to go from "mem004" to "mem02") when using staged forecast files that do not use the same number of digits as the SRW App.
+   Number of digits in the ensemble member names. This is a configurable variable to allow users to change its value (e.g., to go from "mem004" to "mem04") when using staged forecast files that do not use the same number of digits as the SRW App.
 
 Verification (VX) File Name and Path Templates
 ------------------------------------------------

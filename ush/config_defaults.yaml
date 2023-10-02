@@ -2464,9 +2464,9 @@ verification:
   VX_FCST_INPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/../..{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   VX_OUTPUT_BASEDIR: '{% if user.RUN_ENVIR == "nco" %}$COMOUT/metout{% else %}{{ workflow.EXPTDIR }}{% endif %}'
   #
-  # Number of digits in the ensember member names.  This is a configurable
+  # Number of digits in the ensemble member names.  This is a configurable
   # variable to allow users to change its value (e.g. to go from "mem004"
-  # to "mem02") when using staged forecast files that do not use the same
+  # to "mem04") when using staged forecast files that do not use the same
   # number of digits as the SRW App.
   #
   VX_NDIGITS_ENSMEM_NAMES: 3
