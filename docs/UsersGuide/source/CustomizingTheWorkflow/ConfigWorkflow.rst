@@ -1752,7 +1752,7 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
    Path of reading in historical training data for bias correction. 
 
 ``COMOUTbicor``: (Default: "/path/to/historical/airnow/data/dir")
-   Path to save the current cycle's model output and AirNow observations as training data for future use. ``$COMINbicor`` and ``$COMOUTbicor`` can be distuigshed by the ``${yyyy}${mm}${dd}`` under the same location.
+   Path to save the current cycle's model output and AirNow observations as training data for future use. ``$COMINbicor`` and ``$COMOUTbicor`` can be distinguished by the ``${yyyy}${mm}${dd}`` under the same location.
 
 ``AQM_CONFIG_DIR``: (Default: "")
    Configuration directory for AQM.
