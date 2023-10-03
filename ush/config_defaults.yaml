@@ -61,6 +61,8 @@ user:
   JOBSdir: '{{ [HOMEaqm, "jobs"]|path_join }}'
   SORCdir: '{{ [HOMEaqm, "sorc"]|path_join }}'
   PARMdir: '{{ [HOMEaqm, "parm"]|path_join }}'
+  FIXdir: '{{ [HOMEaqm, "fix"]|path_join }}'
+  FIXaqm: '{{ [HOMEaqm, "fix"]|path_join }}' 
   MODULESdir: '{{ [HOMEaqm, "modulefiles"]|path_join }}'
   EXECdir: '{{ [HOMEaqm, workflow.EXEC_SUBDIR]|path_join }}'
   VX_CONFIG_DIR: '{{ [HOMEaqm, "parm"]|path_join }}'
@@ -68,7 +70,7 @@ user:
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
   ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
-
+ 
 #----------------------------
 # PLATFORM config parameters
 #-----------------------------
@@ -323,6 +325,7 @@ platform:
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
   NDAS_OBS_DIR: ""
+  FIXaqm_sav: ""
   #
   #-----------------------------------------------------------------------
   #
@@ -870,7 +873,7 @@ workflow:
   #------------------------------------------------------------------------
   #
   COMPILER: "intel"
-  SYMLINK_FIX_FILES: true
+  SYMLINK_FIX_FILES: false 
   #
   #-----------------------------------------------------------------------
   #
@@ -2907,16 +2910,16 @@ cpl_aqm_parm:
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
   #
-  # AQM_CONFIG_DIR:
+  # FIXaqmconfig:
   # Configuration directory for AQM
   # 
-  # DCOMINbio:
+  # FIXaqmbio:
   # Path to the directory containing AQM bio files
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
   #
-  # DCOMINdust:
+  # FIXaqmdust:
   # Path to the directory containing AQM dust file
   #
   # AQM_DUST_FILE_PREFIX:
@@ -2925,7 +2928,7 @@ cpl_aqm_parm:
   # AQM_DUST_FILE_SUFFIX:
   # Suffix and extension of AQM dust file
   #
-  # DCOMINcanopy:
+  # FIXaqmcanopy:
   # Path to the directory containing AQM canopy files
   # 
   # AQM_CANOPY_FILE_PREFIX:
@@ -2935,7 +2938,7 @@ cpl_aqm_parm:
   # Suffix and extension of AQM CANOPY file
   # 
   # DCOMINfire:
-  # Path to the directory containing AQM fire emission files
+  # Path to the directory containing AQM fire emission files (RAVE)
   # 
   # AQM_FIRE_FILE_PREFIX:
   # Prefix of AQM FIRE file
@@ -2955,7 +2958,7 @@ cpl_aqm_parm:
   # AQM_RC_PRODUCT_FREQUENCY:
   # Frequency of AQM output products
   #
-  # DCOMINchem_lbc:
+  # FIXaqmchem_lbcs:
   # Path to the directory containing chemical LBC files
   # 
   # AQM_LBCS_FILES:
@@ -2970,12 +2973,15 @@ cpl_aqm_parm:
   # AQM_GEFS_FILE_CYC:
   # Cycle of the GEFS aerosol LBC files only if it is fixed
   # 
-  # NEXUS_INPUT_DIR:
+  # COMINemis:
   # Same as GRID_DIR but for the the air quality emission generation task.
   # Should be blank for the default value specified in setup.sh
   # 
-  # NEXUS_FIX_DIR:
+  # FIXaqmnexus:
   # Directory containing grid_spec files as the input file of nexus
+  # 
+  # FIXaqmfire:
+  # Directory containing climatology fire emissions 
   # 
   # NEXUS_GRID_FN:
   # File name of the input grid_spec file of nexus
@@ -2986,14 +2992,14 @@ cpl_aqm_parm:
   # NEXUS_GFS_SFC_OFFSET_HRS: 0
   # Time offset when retrieving gfs surface data files
   # 
-  # NEXUS_GFS_SFC_DIR:
+  # FIXaqmnexus_gfs_sfc:
   # Path to directory containing GFS surface data files
   # This is set to COMINgfs when DO_REAL_TIME=TRUE. 
   #
   # NEXUS_GFS_SFC_ARCHV_DIR: 
   # Path to archive directory for gfs surface files on HPSS
   #
-  # DCOMINpt_src:
+  # COMINemispt:
   # Path to the directory containing point source files
   #
   # DCOMINairnow:
@@ -3017,19 +3023,16 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
-  AQM_CONFIG_DIR: ""
-  DCOMINbio_dfv: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
-  DCOMINdust_dfv: "/path/to/dust/dir"
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
   AQM_DUST_FILE_SUFFIX: ".nc"
 
-  DCOMINcanopy_dfv: "/path/to/canopy/dir"
   AQM_CANOPY_FILE_PREFIX: "gfs.t12z.geo"
   AQM_CANOPY_FILE_SUFFIX: ".canopy_regrid.nc"
 
-  DCOMINfire_dfv: ""
+  DCOMINfire: ""
+
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
@@ -3038,22 +3041,28 @@ cpl_aqm_parm:
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
   AQM_RC_PRODUCT_FREQUENCY: "hourly"
 
-  DCOMINchem_lbcs_dfv: ""
   AQM_LBCS_FILES: "am4_bndy_c793.2019<MM>.v1.nc"
 
-  DCOMINgefs_dfv: ""
+  COMINgefs: ""
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
-  NEXUS_INPUT_DIR: ""
-  NEXUS_FIX_DIR: ""
+  COMINemis: ""
+  FIXaqmconfig: '{{ [user.FIXaqm, "aqm/epa/data"]|path_join }}'
+  FIXaqmfire: '{{ [user.FIXaqm, "fire"]|path_join }}' 
+  FIXaqmbio: '{{ [user.FIXaqm, "bio"]|path_join }}'
+  FIXaqmdust: '{{ [user.FIXaqm, "FENGSHA"]|path_join }}'
+  FIXaqmcanopy: '{{ [user.FIXaqm, "canopy"]|path_join }}'
+  FIXaqmchem_lbcs: '{{ [user.FIXaqm, "chem_lbcs"]|path_join }}'
+  FIXaqmnexus: '{{ [user.FIXaqm, "nexus"]|path_join }}'
+  FIXaqmnexus_gfs_sfc: '{{ [user.FIXaqm, "gfs"]|path_join }}'
+
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
-  NEXUS_GFS_SFC_DIR: ""
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
 
-  DCOMINpt_src_dfv: "/path/to/point/source/base/directory"
+  COMINemispt: "/path/to/point/source/base/directory"
 
-  DCOMINairnow_dfv: "/path/to/airnow/obaservation/data"
+  DCOMINairnow: "/path/to/airnow/obaservation/data"
   COMINbicor: "/path/to/historical/airnow/data/dir"
   COMOUTbicor: "/path/to/historical/airnow/data/dir"

@@ -315,13 +315,14 @@ def link_fix(
     # experiment directory.  In this case, we use relative symlinks for
     # portability and readability. Make absolute links otherwise.
     #
-    relative_link_flag = False
+    relative_link_flag = True 
     if run_task:
         relative_link_flag = True
-
-    for fp in fps:
-        fn = os.path.basename(fp)
-        create_symlink_to_file(fp, fn, relative_link_flag)
+   
+    if relative_link_flag:
+       for fp in fps:
+          fn = os.path.basename(fp)
+          create_symlink_to_file(fp, fn, relative_link_flag)
     #
     # -----------------------------------------------------------------------
     #
@@ -330,7 +331,7 @@ def link_fix(
     #
     # -----------------------------------------------------------------------
     #
-    cres = f"C{res}"
+       cres = f"C{res}"
     #
     # -----------------------------------------------------------------------
     #
@@ -341,10 +342,10 @@ def link_fix(
     #
     # -----------------------------------------------------------------------
     #
-    if file_group == "grid":
-        target = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh4}.nc"
-        symlink = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.nc"
-        create_symlink_to_file(target, symlink, True)
+       if file_group == "grid":
+         target = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.halo{nh4}.nc"
+         symlink = f"{cres}{dot_or_uscore}grid.tile{tile_rgnl}.nc"
+         create_symlink_to_file(target, symlink, True)
     #
     # -----------------------------------------------------------------------
     #
@@ -357,7 +358,7 @@ def link_fix(
     #
     # -----------------------------------------------------------------------
     #
-    if file_group == "sfc_climo":
+       if file_group == "sfc_climo":
 
         for field in sfc_climo_fields:
 

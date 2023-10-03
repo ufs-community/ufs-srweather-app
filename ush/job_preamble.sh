@@ -59,14 +59,20 @@ else
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 
-export DCOMINbio="${DCOMINbio:-${DCOMINbio_dfv}}"
-export DCOMINdust="${DCOMINdust:-${DCOMINdust_dfv}}"
-export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_dfv}}"
-export DCOMINfire="${DCOMINfire:-${DCOMINfire_dfv}}"
-export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_dfv}}"
-export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_dfv}}"
-export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_dfv}}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_dfv}}"
+export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
+export FIXaqmbio="${FIXaqmbio:-${HOMEaqm}/fix/bio}"
+export FIXaqmdust="${FIXaqmdust:-${HOMEaqm}/fix/dust}"
+export FIXaqmcanopy="${FIXaqmcanopy:-${HOMEaqm}/fix/canopy}"
+export FIXaqmchem_lbcs="${FIXaqmchem_lbcs:-${HOMEaqm}/fix/chem_lbcs}"
+export FIXaqmnexus="${FIXaqmnexus:-${HOMEaqm}/fix/nexus}"
+export FIXaqmnexus_gfs_sfc="${FIXaqmnexus:-${HOMEaqm}/fix/gfs}"
+export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
+export COMINgefs="${COMINgefs:-${COMROOT}/gefs/${gefs_ver})}"
+export COMINgfs="${COMINgfs:-$(compath.py  ${envir}/gfs/${gfs_ver})}"
+export COMINemispt="${COMINemispt:-${COMIN}/emission/pt}"
+export COMINemis="${COMINemis:-${COMIN}/emission}"
+export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
+export DCOMINairnow="${DCOMINairnow:-${DCOMROOT}}"
 
 #
 #-----------------------------------------------------------------------

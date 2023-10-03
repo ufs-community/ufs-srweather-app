@@ -300,32 +300,44 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
 
         log_info(
             f"""
-            Symlinking fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
+            Symlinking fixed files from system directory (FIXaqm_sav) to a subdirectory (FIXaqm):
+              FIXaqm_sav = '{FIXaqm_sav}'
+              FIXaqm = '{FIXaqm}'""",
             verbose=verbose,
         )
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fix_am' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/nexus' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fix_aer' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fix_lut' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fix_orog' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fix_sfc_climo' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/ufs' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/FENGSHA' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/chem_lbcs' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/aqm' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/fire' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/gfs' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/canopy' '{FIXaqm}'""")
+        ln_vrfy(f"""-fsn '{FIXaqm_sav}/bio' '{FIXaqm}'""")
+    #else:
 
-        ln_vrfy(f"""-fsn '{FIXgsm}' '{FIXam}'""")
-    else:
+    #    log_info(
+    #        f"""
+    #        Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
+    #          FIXgsm = '{FIXgsm}'
+    #          FIXam = '{FIXam}'""",
+    #        verbose=verbose,
+    #    )
+   
+    #    check_for_preexist_dir_file(FIXam, "delete")
+    #    mkdir_vrfy("-p", FIXam)
+    #    mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
 
-        log_info(
-            f"""
-            Copying fixed files from system directory (FIXgsm) to a subdirectory (FIXam):
-              FIXgsm = '{FIXgsm}'
-              FIXam = '{FIXam}'""",
-            verbose=verbose,
-        )
-
-        check_for_preexist_dir_file(FIXam, "delete")
-        mkdir_vrfy("-p", FIXam)
-        mkdir_vrfy("-p", os.path.join(FIXam, "fix_co2_proj"))
-
-        num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
-        for i in range(num_files):
-            fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
-            cp_vrfy(os.path.join(FIXgsm, fn), os.path.join(FIXam, fn))
-    #
+    #    num_files = len(FIXgsm_FILES_TO_COPY_TO_FIXam)
+    #    for i in range(num_files):
+    #        fn = f"{FIXgsm_FILES_TO_COPY_TO_FIXam[i]}"
+    #        cp_vrfy(os.path.join(FIXgsm, fn), os.path.join(FIXam, fn))
+    
     # -----------------------------------------------------------------------
     #
     # Copy MERRA2 aerosol climatology data.

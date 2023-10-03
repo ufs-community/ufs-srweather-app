@@ -109,7 +109,8 @@ fi
 #-----------------------------------------------------------------------
 #
 cp ${EXECdir}/nexus ${DATA}
-cp ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+
+cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then
     cp ${ARL_NEXUS_DIR}/config/cmaq_gfs_megan/*.rc ${DATA}
@@ -176,7 +177,7 @@ GEOS="TRUE"
 AnnualScalar="TRUE"
 OFFLINE_SOILNOX="TRUE"
 
-NEXUS_INPUT_BASE_DIR=${NEXUS_INPUT_DIR}
+NEXUS_INPUT_BASE_DIR=${COMINemis}
 ########################################################################
 
 #
