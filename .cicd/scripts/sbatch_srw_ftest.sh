@@ -13,4 +13,4 @@
 #SBATCH -o log_wrap.%j.log
 #SBATCH -e err_wrap.%j.err 
 
-bash ${WORKSPACE}/.cicd/scripts/srw_ftest.sh
+bash ${WORKSPACE}/${SRW_PROJECT}/.cicd/scripts/srw_ftest.sh

@@ -12,4 +12,4 @@
 #PBS -o log_wrap.%j.log
 #PBS -e err_wrap.%j.err 
 
-bash ${WORKSPACE}/.cicd/scripts/srw_ftest.sh
+bash ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_ftest.sh
