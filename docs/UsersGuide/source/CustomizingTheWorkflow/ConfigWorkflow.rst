@@ -255,7 +255,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    Path to the system directory containing :term:`MERRA2` aerosol climatology files. Only used if running with a physics suite that uses Thompson microphysics.
 
 ``FIXlut``: (Default: "")
-   Path to the system directory containing the lookup tables for optics properties.
+   Path to the system directory containing the lookup tables for optics properties. Only used if running with a physics suite that uses Thompson microphysics.
 
 ``FIXorg``: (Default: "")
    Path to the system directory containing static orography data (used by the ``make_orog`` task). Can be the same as ``FIXgsm``.
