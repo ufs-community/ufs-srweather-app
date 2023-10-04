@@ -372,17 +372,23 @@ Set File Name Parameters
 ``FIELD_TABLE_FN``: ( Default: "field_table")
    Prefix for the name of the file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. 
 
+.. _tmpl-fn-warning:
+
+.. attention::
+
+   For the file names below, the SRW App expects to read in the default value set in ``setup.py`` (e.g., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for these variables in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the corresponding files in the ``ufs-srweather-app/parm`` directory (e.g., change the names of ``diag_table`` options in ``parm`` when setting ``DIAG_TABLE_TMPL_FN``).
+
 ``DIAG_TABLE_TMPL_FN``: (Default: ``'diag_table.{{ CCPP_PHYS_SUITE }}'``)
-   Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``diag_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a value for ``DIAG_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the ``diag_table`` options in the ``ufs-srweather-app/parm`` directory. 
+   Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``FIELD_TABLE_TMPL_FN``: (Default: ``'field_table.{{ CCPP_PHYS_SUITE }}'``)
-   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``field_table.{CCPP_PHYS_SUITE}``), and users should **not** specify a different value for ``FIELD_TABLE_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the names of the ``field_table`` options in the ``ufs-srweather-app/parm`` directory. 
+   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``MODEL_CONFIG_FN``: (Default: "model_configure")
-   Name of a file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``model_configure``), and users should **not** specify a different value for ``MODEL_CONFIG_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes and (2) they also change the name of ``model_configure`` in the ``ufs-srweather-app/parm`` directory.  
+   Name of a file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``NEMS_CONFIG_FN``: (Default: "nems.configure")
-   Name of a file that contains information about the various :term:`NEMS` components and their run sequence. Generally, the SRW App expects to read in the default value set in ``setup.py`` (i.e., ``nems.configure``), and users should **not** specify a different value for ``NEMS_CONFIG_TMPL_FN`` in their configuration file (i.e., ``config.yaml``) unless (1) the file name required by the model changes, and (2) they also change the name of ``nems.configure`` in the ``ufs-srweather-app/parm`` directory.
+   Name of a file that contains information about the various :term:`NEMS` components and their run sequence. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``AQM_RC_FN``: (Default: "aqm.rc")
    Name of resource file for NOAA Air Quality Model (AQM). 

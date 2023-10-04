@@ -405,10 +405,12 @@ platform:
   # files that are needed to run the FV3-LAM model are located
   #
   # FIXaer:
-  # System directory where MERRA2 aerosol climatology files are located
+  # System directory where MERRA2 aerosol climatology files are located.
+  # Only used if running with a physics suite that uses Thompson microphysics.
   #
   # FIXlut:
-  # System directory where the lookup tables for optics properties are located
+  # System directory where the lookup tables for optics properties are located.
+  # Only used if running with a physics suite that uses Thompson microphysics.
   #
   # FIXorg:
   # System directory where orography data are located
