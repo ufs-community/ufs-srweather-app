@@ -677,7 +677,7 @@ def generate_FV3LAM_wflow(
         # Fill in &fire and static &time variables
         for setting in expt_config['fire']:
             # Would like to use pattern matching here but don't want to force Python 3.10
-            if setting in ["UFS_FIRE", "FIRE_INPUT_DIR"]:
+            if setting in ["UFS_FIRE", "FIRE_INPUT_DIR", "FIRE_NUM_TASKS"]:
                 pass
             elif setting == "DT_FIRE":
                 fire_nml_dict['time']['dt'] = expt_config['fire'][setting]

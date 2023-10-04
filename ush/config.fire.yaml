@@ -41,6 +41,7 @@ task_plot_allvars:
   COMOUT_REF: ""
 fire:
   UFS_FIRE: True
+  FIRE_NUM_TASKS: 1
   FIRE_INPUT_DIR: /glade/scratch/kavulich/FIRE/esmf_fork/ufs-srweather-app/fire_data
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300

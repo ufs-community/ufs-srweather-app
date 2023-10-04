@@ -38,7 +38,9 @@ def create_nems_configure_file(run_dir,cfg):
 
     # Set necessary variables for each coupled configuration
 
-    pe_member01_m1 = str(int(cfg["PE_MEMBER01"])-1)
+    atm_end = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"]) -1)
+    fire_start = str(int(cfg["PE_MEMBER01"]) - int(cfg["FIRE_NUM_TASKS"]))
+    fire_end = str(int(cfg["PE_MEMBER01"]) - 1)
 
     if cfg["CPL_AQM"]:
         EARTH_component_list = 'ATM AQM'
@@ -54,9 +56,10 @@ def create_nems_configure_file(run_dir,cfg):
                    "  @" ]
     elif cfg["UFS_FIRE"]:
         EARTH_component_list = 'ATM FIRE'
-        ATM_petlist_bounds = '-1 -1'
+        ATM_petlist_bounds = f'0 {atm_end}'
         ATM_omp_num_threads_line = ''
         ATM_diag_line = ''
+        FIRE_petlist_bounds = f'{fire_start} {fire_end}'
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
                    "    ATM -> FIRE\n",
                    "    ATM\n",
@@ -64,7 +67,7 @@ def create_nems_configure_file(run_dir,cfg):
                    "  @" ]
     else:
         EARTH_component_list = 'ATM'
-        ATM_petlist_bounds = f'0 {pe_member01_m1}'
+        ATM_petlist_bounds = f'0 {atm_end}'
         ATM_omp_num_threads_line = \
             f'ATM_omp_num_threads:            {cfg["OMP_NUM_THREADS_RUN_FCST"]}'
         ATM_diag_line = '  Diagnostic = 0'
@@ -108,6 +111,9 @@ def create_nems_configure_file(run_dir,cfg):
       "ATM_diag_line": ATM_diag_line,
       "runseq": runseq
     }
+    if cfg["UFS_FIRE"]:
+        settings["FIRE_pb"] = FIRE_petlist_bounds
+
     settings_str = cfg_to_yaml_str(settings)
 
     print_info_msg(

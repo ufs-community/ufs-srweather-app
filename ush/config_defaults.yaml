@@ -1954,7 +1954,7 @@ task_run_fcst:
   QUILTING: true
   PRINT_ESMF: false
 
-  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X}}'
+  PE_MEMBER01: '{{ LAYOUT_Y * LAYOUT_X + fire.FIRE_NUM_TASKS + WRTCMP_write_groups * WRTCMP_write_tasks_per_group if QUILTING else LAYOUT_Y * LAYOUT_X + fire.FIRE_NUM_TASKS }}'
   
   WRTCMP_write_groups: ""
   WRTCMP_write_tasks_per_group: ""
@@ -2765,12 +2765,6 @@ fire:
   #   2: More extra prints
   #   3: Even more extra prints
   #  
-  # FIRE_FUEL_LEFT_IRL
-  # Refinements to integrate fuel_left, must be even
-  #
-  # FIRE_FUEL_LEFT_JRL
-  # Refinements to integrate fuel_left, must be even
-  #
   # FIRE_ATM_FEEDBACK
   # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
   # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
@@ -2785,9 +2779,6 @@ fire:
   # FIRE_UPWINDING = 9
   # 0=NONE, 1=STANDARD, 2=GODUNOV, 3=ENO, 4=SETHIAN
   #
-  # FIRE_FUEL_LEFT_METHOD
-  # For now, use 1 only
-  # 
   # FIRE_LFN_EXT_UP
   # 0.=extend level set function at boundary by reflection, 1.=always up
   #
@@ -2796,6 +2787,8 @@ fire:
   # 
   # FIRE_LSM_ZCOUPLING_REF
   # 
+  # FIRE_NUM_TASKS
+  # Number of MPI tasks assigned to the FIRE_BEHAVIOR component.
 
   UFS_FIRE: False
   FIRE_INPUT_DIR: ""
@@ -2812,16 +2805,14 @@ fire:
   FIRE_IGNITION_END_TIME1: 7000
   FIRE_WIND_HEIGHT: 5.0
   FIRE_PRINT_MSG: 0
-  FIRE_FUEL_LEFT_IRL: 2
-  FIRE_FUEL_LEFT_JRL: 2
   FIRE_ATM_FEEDBACK: 0.0
   FIRE_GROWS_ONLY: 1
   FIRE_VISCOSITY: 0.4
   FIRE_UPWINDING: 9
-  FIRE_FUEL_LEFT_METHOD: 1
   FIRE_LFN_EXT_UP: 1.0
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
+  FIRE_NUM_TASKS: 0
 
 rocoto:
   attrs: ""
