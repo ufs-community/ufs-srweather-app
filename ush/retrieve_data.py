@@ -133,7 +133,7 @@ def download_file(url):
     # -c continue previous attempt
     # -T timeout seconds
     # -t number of tries
-    cmd = f"wget -q -c -T 10 -t 2 {url}"
+    cmd = f"wget -q -c -T 15 -t 2 {url}"
     logging.debug(f"Running command: \n {cmd}")
     try:
         subprocess.run(
