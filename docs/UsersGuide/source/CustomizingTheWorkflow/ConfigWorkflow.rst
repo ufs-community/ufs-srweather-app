@@ -1150,14 +1150,6 @@ Computational Parameters
 ``BLOCKSIZE``: (Default: ``'{{ BLOCKSIZE }}'``)
    The amount of data that is passed into the cache at a time.
 
-.. note::
-
-   In ``config_defaults.yaml`` the computational parameters are set to null strings so that:
-.. COMMENT: Is this still true^ 
-
-   #. If the experiment is using a predefined grid and the user sets the parameter in the user-specified experiment configuration file (i.e., ``config.yaml``), that value will be used in the forecast(s). Otherwise, the default value for that predefined grid will be used.
-   #. If the experiment is *not* using a predefined grid (i.e., it is using a custom grid whose parameters are specified in the experiment configuration file), then the user must specify a value for the parameter in that configuration file. Otherwise, the parameter will remain set to a null string, and the experiment generation will fail because the generation scripts check to ensure that all the parameters defined in this section are set to non-empty strings before creating the experiment directory.
-
 .. _WriteComp:
 
 Write-Component (Quilting) Parameters
