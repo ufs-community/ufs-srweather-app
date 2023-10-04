@@ -647,20 +647,22 @@ fi
 #-----------------------------------------------------------------------
 #
 FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
+# This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
+# trying to octal all up in our business
 settings="
 'time': {
-    'start_year': '${CDATE:0:4}',
-    'start_month': '${CDATE:4:2}',
-    'start_day': '${CDATE:6:2}',
-    'start_hour': '${CDATE:8:2}',
-    'start_minute': '00',
-    'start_second': '00',
-    'end_year': '${FCST_END_DATE:0:4}',
-    'end_month': '${FCST_END_DATE:4:2}',
-    'end_day': '${FCST_END_DATE:6:2}',
-    'end_hour': '${FCST_END_DATE:8:2}',
-    'end_minute': '${FCST_END_DATE:10:2}',
-    'end_second': '${FCST_END_DATE:12:2}',
+    'start_year': $((10#${CDATE:0:4})),
+    'start_month': $((10#${CDATE:4:2})),
+    'start_day': $((10#${CDATE:6:2})),
+    'start_hour': $((10#${CDATE:8:2})),
+    'start_minute': 00,
+    'start_second': 00,
+    'end_year': $((10#${FCST_END_DATE:0:4})),
+    'end_month': $((10#${FCST_END_DATE:4:2})),
+    'end_day': $((10#${FCST_END_DATE:6:2})),
+    'end_hour': $((10#${FCST_END_DATE:8:2})),
+    'end_minute': $((10#${FCST_END_DATE:10:2})),
+    'end_second': $((10#${FCST_END_DATE:12:2})),
  }
 "
 ${USHdir}/set_namelist.py -n "${FIRE_NML_FP}" -u "$settings" -o "${FIRE_NML_FN}" || \
@@ -677,7 +679,6 @@ $settings"
 ln -sf namelist.fire namelist.input
 
 # Link fire input file
-ln -sf FIRE_INPUT_DIR
 create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
                        symlink="geo_em.d01.nc" \
                        relative="FALSE"

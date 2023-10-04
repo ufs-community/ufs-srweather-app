@@ -32,13 +32,10 @@
  fire_ignition_end_time1        =       7000,
  fire_wind_height = 5.0,           ! height to interpolate winds to for calculating fire spread rate 
  fire_print_msg = 1,               ! 1 print fire debugging messages
- fire_fuel_left_irl = 2,           ! refinement to integrate fuel_left, must be even
- fire_fuel_left_jrl = 2,           ! refinement to integrate fuel_left, must be even
  fire_atm_feedback = 1.0,          ! real, multiplier for heat fluxes, 1.=normal, 0.=turn off two-way coupling 
  fire_grows_only = 1,              ! if >0 level set function cannot increase = fire can only grow
  fire_viscosity = 0.4,             ! artificial viscosity in level set method (max 1, needed with fire_upwinding=0)
  fire_upwinding = 9,               ! 0=none, 1=standard, 2=godunov, 3=eno, 4=sethian
- fire_fuel_left_method = 1,        ! for now, use 1 only
  fire_lfn_ext_up = 1.0,            ! 0.=extend level set function at boundary by reflection, 1.=always up
  fire_lsm_zcoupling             =     .false.,
  fire_lsm_zcoupling_ref         =       60.0,
