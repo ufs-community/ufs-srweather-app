@@ -137,7 +137,7 @@ Parameters for Running Without a Workflow Manager
 These settings define platform-specific run commands. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
 
 ``RUN_CMD_UTILS``: (Default: "")
-   The run command for MPI-enabled pre-processing utilities (e.g., ``shave``, ``orog``, ``sfc_climo_gen``). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
+   The run command for MPI-enabled pre-processing utilities (e.g., ``shave``, ``orog``, ``sfc_climo_gen``). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use an ``mpirun`` or similar command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
 ``RUN_CMD_FCST``: (Default: "")
    The run command for the model forecast step. 
@@ -216,7 +216,7 @@ Other Platform-Specific Directories
 
       ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file (i.e.,  ``config.yaml``) set by ``EXPT_CONFIG_FN``.
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory.
 
 Test Directories
 ----------------------
@@ -252,10 +252,10 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    Path to the system directory containing the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model.
 
 ``FIXaer``: (Default: "")
-   Path to the system directory containing :term:`MERRA2` aerosol climatology files.
+   Path to the system directory containing :term:`MERRA2` aerosol climatology files. Only used if running with a physics suite that uses Thompson microphysics.
 
 ``FIXlut``: (Default: "")
-   Path to the system directory containing the lookup tables for optics properties.
+   Path to the system directory containing the lookup tables for optics properties. Only used if running with a physics suite that uses Thompson microphysics.
 
 ``FIXorg``: (Default: "")
    Path to the system directory containing static orography data (used by the ``make_orog`` task). Can be the same as ``FIXgsm``.
