@@ -1,0 +1,20 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=4:mpiprocs=12:ncpus=12
+#PBS -q regular
+#PBS -l walltime=00:30:00
+#PBS -j oe -o make_lbcs.log
+#PBS -N make_lbcs
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export PDY='20190615'
+export cyc='18'
+export nprocs='48'
+export subcyc='00'
+export ENSMEM_INDX='000'
+export SLASH_ENSMEM_SUBDIR='/'
+export bcgrp='00'
+export bcgrpnum='1'
+
+$USHdir/load_modules_run_task.sh "make_lbcs" $USHdir"/../jobs/JREGIONAL_MAKE_LBCS"

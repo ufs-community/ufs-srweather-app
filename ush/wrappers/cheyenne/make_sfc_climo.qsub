@@ -1,0 +1,13 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=2:mpiprocs=24:ncpus=24
+#PBS -q regular
+#PBS -l walltime=00:20:00
+#PBS -j oe -o make_sfc_climo.log
+#PBS -N make_sfc_climo
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export nprocs='48'
+
+$USHdir/load_modules_run_task.sh "make_sfc_climo" $USHdir"/../jobs/JREGIONAL_MAKE_SFC_CLIMO"
