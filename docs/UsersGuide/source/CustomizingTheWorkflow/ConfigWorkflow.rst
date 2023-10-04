@@ -137,7 +137,7 @@ Parameters for Running Without a Workflow Manager
 These settings define platform-specific run commands. Users should set run commands for platforms without a workflow manager. These values will be ignored unless ``WORKFLOW_MANAGER: "none"``.
 
 ``RUN_CMD_UTILS``: (Default: "")
-   The run command for MPI-enabled pre-processing utilities (e.g., ``shave``, ``orog``, ``sfc_climo_gen``). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use a non-default command for launching an MPI-enabled executable depending on their machine and MPI installation.
+   The run command for MPI-enabled pre-processing utilities (e.g., ``shave``, ``orog``, ``sfc_climo_gen``). This can be left blank for smaller domains, in which case the executables will run without :term:`MPI`. Users may need to use an ``mpirun`` or similar command for launching an MPI-enabled executable depending on their machine and MPI installation.
 
 ``RUN_CMD_FCST``: (Default: "")
    The run command for the model forecast step. 
