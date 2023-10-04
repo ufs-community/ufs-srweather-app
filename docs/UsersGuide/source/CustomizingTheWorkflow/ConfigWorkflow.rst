@@ -252,7 +252,7 @@ These parameters are associated with the fixed (i.e., static) files. On `Level 1
    Path to the system directory containing the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model.
 
 ``FIXaer``: (Default: "")
-   Path to the system directory containing :term:`MERRA2` aerosol climatology files.
+   Path to the system directory containing :term:`MERRA2` aerosol climatology files. Only used if running with a physics suite that uses Thompson microphysics.
 
 ``FIXlut``: (Default: "")
    Path to the system directory containing the lookup tables for optics properties.
