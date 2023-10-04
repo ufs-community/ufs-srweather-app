@@ -1,0 +1,22 @@
+#! /bin/sh
+#SBATCH --account=epic
+#SBATCH --nodes=1-1
+#SBATCH --tasks-per-node=1
+#SBATCH --partition=service
+#SBATCH --qos=batch
+#SBATCH -t 00:45:00
+#SBATCH -o get_extrn_lbcs.log
+#SBATCH --mem=2048
+#SBATCH --job-name=get_extrn_lbcs
+#SBATCH --export=NONE
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export PDY='20230912'
+export cyc='18'
+export nprocs='1'
+export subcyc='00'
+export ENSMEM_INDX='#mem#'
+export ICS_OR_LBCS='LBCS'
+
+$USHdir/load_modules_run_task.sh "get_extrn_lbcs" $USHdir"/../jobs/JREGIONAL_GET_EXTRN_MDL_FILES"
