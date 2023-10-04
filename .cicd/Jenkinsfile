@@ -14,8 +14,7 @@ pipeline {
         // Use the line below to enable the PW AWS cluster
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
         // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'gaea', 'gaea-c5', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Uncomment the following line to re-enable comprehensive tests
@@ -79,8 +78,7 @@ pipeline {
                     axis {
                         name 'SRW_PLATFORM'
                         // values 'cheyenne', 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        // values 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'gaea', 'gaea-c5', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'gaea', 'gaea-c5', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -94,8 +92,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            // values 'gaea', 'gaea-c5', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                            values 'gaea', 'gaea-c5', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'gaea', 'gaea-c5', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
