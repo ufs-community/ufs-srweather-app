@@ -1,0 +1,12 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=24:ncpus=24
+#PBS -q main
+#PBS -l walltime=00:20:00
+#PBS -j oe -o make_grid.log
+#PBS -N make_grid
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+
+$USHdir/load_modules_run_task.sh "make_grid" $USHdir"/../jobs/JREGIONAL_MAKE_GRID"

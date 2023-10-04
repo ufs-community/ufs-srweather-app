@@ -1,0 +1,17 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=36:ncpus=36
+#PBS -q main
+#PBS -l walltime=00:30:00
+#PBS -j oe -o run_fcst.log
+#PBS -N run_fcst
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export PDY='20190615'
+export cyc='18'
+export subcyc='00'
+export ENSMEM_INDX='000'
+export SLASH_ENSMEM_SUBDIR='/'
+
+$USHdir/load_modules_run_task.sh "run_fcst" $USHdir"/../jobs/JREGIONAL_RUN_FCST"

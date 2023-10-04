@@ -1,0 +1,18 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=1:ncpus=1:mem=2G
+#PBS -q main
+#PBS -l walltime=01:30:00
+#PBS -j oe -o get_extrn_lbcs.log
+#PBS -N get_extrn_lbcs
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export PDY='20190615'
+export cyc='18'
+export nprocs='1'
+export subcyc='00'
+export ENSMEM_INDX='#mem#'
+export ICS_OR_LBCS='LBCS'
+
+$USHdir/load_modules_run_task.sh "get_extrn_lbcs" $USHdir"/../jobs/JREGIONAL_GET_EXTRN_MDL_FILES"

@@ -1,0 +1,13 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=24:ncpus=24
+#PBS -q main
+#PBS -l walltime=00:20:00
+#PBS -j oe -o make_orog.log
+#PBS -N make_orog
+
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export nprocs='24'
+
+$USHdir/load_modules_run_task.sh "make_orog" $USHdir"/../jobs/JREGIONAL_MAKE_OROG"
