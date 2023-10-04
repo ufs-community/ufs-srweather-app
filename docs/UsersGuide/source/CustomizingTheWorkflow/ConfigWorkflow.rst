@@ -216,7 +216,7 @@ Other Platform-Specific Directories
 
       ${DOMAIN_PREGEN_BASEDIR}/${PREDEF_GRID_NAME}
 
-   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory. This variable should be set to a null string in ``config_defaults.yaml``, but it can be changed in the user-specified workflow configuration file (i.e.,  ``config.yaml``) set by ``EXPT_CONFIG_FN``.
+   The workflow scripts will create a symlink in the experiment directory that will point to a subdirectory (having the same name as the experiment grid) under this directory.
 
 Test Directories
 ----------------------
