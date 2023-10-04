@@ -1355,7 +1355,7 @@ Typically, the following parameters must be set explicitly by the user in the ``
 Air Quality Modeling (AQM) Parameters
 ======================================
 
-This section includes parameters related to Air Quality Modeling (AQM) tasks. 
+This section includes parameters related to Air Quality Modeling (AQM) tasks. Note that AQM features are not currently supported for community use. 
 
 NEXUS_EMISSION Configuration Parameters
 -------------------------------------------------
@@ -1696,7 +1696,7 @@ This section contains file name and path templates used in the verification (VX)
 Coupled AQM Configuration Parameters
 =====================================
 
-Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in the ``cpl_aqm_parm:`` section of the ``config.yaml`` file.
+Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in the ``cpl_aqm_parm:`` section of the ``config.yaml`` file. Note that coupled AQM features are not currently supported for community use. 
 
 ``CPL_AQM``: (Default: false)
    Coupling flag for air quality modeling.
