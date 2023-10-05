@@ -315,9 +315,9 @@ def link_fix(
     # experiment directory.  In this case, we use relative symlinks for
     # portability and readability. Make absolute links otherwise.
     #
-    relative_link_flag = True 
-    if run_task:
-        relative_link_flag = True
+    relative_link_flag = False 
+    #if run_task:
+    #    relative_link_flag = True
    
     if relative_link_flag:
        for fp in fps:
