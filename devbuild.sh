@@ -102,9 +102,9 @@ usage_error () {
 # default settings
 LCL_PID=$$
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${SRW_DIR}/build"
-INSTALL_DIR=${SRW_DIR}
+MACHINE_SETUP=${SRW_DIR}/sorc/UFS_UTILS/sorc/machine-setup.sh
+BUILD_DIR="${SRW_DIR}/sorc/build"
+INSTALL_DIR="${SRW_DIR}/sorc/build"
 BIN_DIR="exec"
 COMPILER=""
 APPLICATION=""
@@ -200,6 +200,16 @@ PLATFORM="${PLATFORM,,}"
 COMPILER="${COMPILER,,}"
 EXTERNALS="${EXTERNALS^^}"
 
+# move the pre-compiled executables to the designated location and exit
+if [ "${BUILD}" = false ] && [ "${MOVE}" = true ]; then
+  if [[ ! ${SRW_DIR} -ef ${INSTALL_DIR} ]]; then
+    printf "... Moving pre-compiled executables to designated location ...\n"
+    mkdir -p ${SRW_DIR}/${BIN_DIR}
+    mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
+  fi
+  exit 0
+fi
+
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
   printf "\nERROR: Please set PLATFORM.\n\n"
@@ -217,7 +227,7 @@ if [ "${DEFAULT_BUILD}" = true ]; then
   BUILD_UPP="on"
 fi
 
-# Choose components to build for air quality modeling (Online-CMAQ)
+# Choose components to build for air quality modeling (SRW-AQM)
 if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ "${DEFAULT_BUILD}" = true ]; then
     BUILD_NEXUS="on"
@@ -440,33 +450,22 @@ if [ "${CLEAN}" = true ]; then
        printf "... Clean executables ...\n"
        make ${MAKE_SETTINGS} clean 2>&1 | tee log.make
     fi
-elif [ "${BUILD}" = true ]; then
-    printf "... Generate CMAKE configuration ...\n"
-    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
-
-    printf "... Compile executables ...\n"
-    make ${MAKE_SETTINGS} build 2>&1 | tee log.make
 else
     printf "... Generate CMAKE configuration ...\n"
     cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
 
-    printf "... Compile and install executables ...\n"
+    printf "... Compile and install executables in build directory ...\n"
     make ${MAKE_SETTINGS} install 2>&1 | tee log.make
 
-    if [ "${MOVE}" = true ]; then
-       if [[ ! ${SRW_DIR} -ef ${INSTALL_DIR} ]]; then
-           printf "... Moving executables to final locations ...\n"
-           mkdir -p ${SRW_DIR}/${BIN_DIR}
-           mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
-       fi
+    # move executables to the designated location (HOMEdir/exec) only when 
+    # both --build and --move are not set (no additional arguments) or
+    # both --build and --move are set in the build command line
+    if [[ "${BUILD}" = false && "${MOVE}" = false ]] || 
+       [[ "${BUILD}" = true && "${MOVE}" = true ]]; then
+      printf "... Moving pre-compiled executables to designated location ...\n"
+      mkdir -p ${SRW_DIR}/${BIN_DIR}
+      mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
     fi
 fi
-
-# Remove temporary directories
-cd ${SRW_DIR}
-rm -rf build
-rm -rf include
-rm -rf lib
-rm -rf share
 
 exit 0
