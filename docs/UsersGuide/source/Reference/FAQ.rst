@@ -249,12 +249,22 @@ How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
 ====================================================================
 
 At this time, there are ten physics suites available in the SRW App, :ref:`five of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App. The CCPP Scientific Documentation details the various `namelist options <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/_c_c_p_psuite_nml_desp.html>`__ available in the UFS WM, including physics schemes, and also includes an `overview of schemes and suites <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/allscheme_page.html>`__. 
-To enable an additional physics scheme, such as the YSU PBL scheme, in the SRW App, users must modify ``ufs-srweather-app/parm/FV3.input.yml`` and set the variable corresponding to the desired physics scheme to *True* under the physics suite they would like to use (e.g., ``do_ysu = True``).
 
-It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to *False* in the ``FV3.input.yml`` file.
-Regardless, users will need to modify the suite definition file (SDF) and recompile the code. For example, to activate the YSU PBL scheme, users should replace the line ``<scheme>satmedmfvdifq</scheme>`` with ``<scheme>ysuvdif</scheme>`` and recompile the code.
+.. attention::
 
-Users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
+   Note that when users enable new physics schemes in the SRW App, they are using untested and unverified combinations of physics, which can lead to unexpected and/or poor results. It is recommended that users run experiments only with the supported physics suites and physics schemes unless they have an excellent understanding of how these physics schemes work and a specific research purpose in mind for making such changes. 
+
+To enable an additional physics scheme, such as the YSU PBL scheme, users may need to modify ``ufs-srweather-app/parm/FV3.input.yml``. This is necessary when the namelist has a logical variable corresponding to the desired physics scheme. In this case, it should be set to *True* for the physics scheme they would like to use (e.g., ``do_ysu = True``). 
+
+It may be necessary to disable another physics scheme, too. For example, when using the YSU PBL scheme, users should disable the default SATMEDMF PBL scheme (*satmedmfvdifq*) by setting the ``satmedmf`` variable to *False* in the ``FV3.input.yml`` file. 
+
+It may also be necessary to add or subtract interstitial schemes, so that the communication between schemes and between schemes and the host model is in order. For example, it is necessary that the connections between clouds and radiation are correctly established.
+
+Regardless, users will need to modify the suite definition file (:term:`SDF`) and recompile the code. For example, to activate the YSU PBL scheme, users should replace the line ``<scheme>satmedmfvdifq</scheme>`` with ``<scheme>ysuvdif</scheme>`` and recompile the code.
+
+Depending on the scheme, additional changes to the SDF (e.g., to add, remove, or change interstitial schemes) and to the namelist (to include scheme-specific tuning parameters) may be required. Users are encouraged to reach out on GitHub Discussions to find out more from subject matter experts about recommendations for the specific scheme they want to implement. Users can post on the `SRW App Discussions page <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ or ask their questions directly to the developers of `ccpp-physics <https://github.com/NCAR/ccpp-physics/discussions>`__ and `ccpp-framework <https://github.com/NCAR/ccpp-framework/discussions>`__, which also handle support through GitHub Discussions.
+
+After making appropriate changes to the SDF and namelist files, users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
 
 .. _IC-LBC-gen-issue:
 
