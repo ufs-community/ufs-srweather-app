@@ -220,6 +220,9 @@ Glossary
    RAP
       `Rapid Refresh <https://rapidrefresh.noaa.gov/>`__. The continental-scale NOAA hourly-updated assimilation/modeling system operational at :term:`NCEP`. RAP covers North America and is comprised primarily of a numerical forecast model and an analysis/assimilation system to initialize that model. RAP is complemented by the higher-resolution 3km High-Resolution Rapid Refresh (:term:`HRRR`) model.
 
+   RDHPCS
+      NOAA Research & Development High-Performance Computing Systems.
+
    Repository
       A central location in which files (e.g., data, code, documentation) are stored and managed. 
 
