@@ -5,27 +5,21 @@ the NOAA RDHPC machine Hera using GNU 9.2.0
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Hera using GNU 9.2.0 ]===])
 
-prepend_path("MODULEPATH","/contrib/sutils/modulefiles")
-load("sutils")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.4.1/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
 
-load(pathJoin("cmake", os.getenv("cmake_ver") or "3.20.1"))
-
-gnu_ver=os.getenv("gnu_ver") or "9.2.0"
-load(pathJoin("gnu", gnu_ver))
-
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/hpc-stack/libs/gnu-9.2_ncdf492/modulefiles/stack")
-
-load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
-load(pathJoin("hpc-gnu", os.getenv("hpc-gnu_ver") or "9.2"))
-load(pathJoin("hpc-mpich", os.getenv("hpc-mpich_ver") or "3.3.2"))
+load("stack-gcc/9.2.0")
+load("stack-openmpi/4.1.5")
+load("stack-python/3.9.12")
+load("cmake/3.23.1")
 
 load("srw_common")
 
-load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.1.0"))
+load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
-load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.23"))
+load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.19"))
+load("ufs-pyenv")
 
-unsetenv("MKLROOT")
 setenv("CMAKE_C_COMPILER","mpicc")
 setenv("CMAKE_CXX_COMPILER","mpicxx")
 setenv("CMAKE_Fortran_COMPILER","mpif90")
