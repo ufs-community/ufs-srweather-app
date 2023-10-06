@@ -117,6 +117,7 @@ VERBOSE=false
 
 # Turn off all apps to build and choose default later
 DEFAULT_BUILD=true
+BUILD_CONDA="off"
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
@@ -175,6 +176,7 @@ while :; do
     default) ;;
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
          BUILD_UFS_UTILS="on"; BUILD_UPP="on";;
+    conda) BUILD_CONDA="on";;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
@@ -304,6 +306,30 @@ else
       esac
     done
   fi
+fi
+
+# build conda and conda environments, if requested.
+set -x
+CONDA_BUILD_DIR="./conda"
+if [ "${BUILD_CONDA}" = "on" ] ; then
+  if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
+    installer=Miniforge3-$(uname)-$(uname -m).sh
+    wget "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
+    bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
+    rm ${installer}
+  fi
+
+  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+  conda activate
+  if ! conda env list | grep -q "^srw_app\s" ; then
+    mamba env create -n srw_app --file environment.yml
+  fi
+  if ! conda env list | grep -q "^srw_graphics\s" ; then
+    mamba env create -n srw_graphics --file graphics_environment.yml
+  fi
+else
+  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+  conda activate
 fi
 
 # cmake settings
