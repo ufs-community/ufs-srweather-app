@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=24
 #SBATCH --cpus-per-task=1
-#SBATCH -t 00:30:00
+#SBATCH -t 01:00:00
 #SBATCH -o log_wrap.%j.log
 #SBATCH -e err_wrap.%j.err 
 
