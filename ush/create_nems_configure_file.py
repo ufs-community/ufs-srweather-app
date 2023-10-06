@@ -69,7 +69,7 @@ def create_nems_configure_file(run_dir,cfg):
         EARTH_component_list = 'ATM'
         ATM_petlist_bounds = f'0 {atm_end}'
         ATM_omp_num_threads_line = \
-            f'ATM_omp_num_threads:            {cfg["OMP_NUM_THREADS_RUN_FCST"]}'
+            f"\nATM_omp_num_threads:            {cfg['OMP_NUM_THREADS_RUN_FCST']}"
         ATM_diag_line = '  Diagnostic = 0'
         runseq = [ "  ATM" ]
 
@@ -109,7 +109,8 @@ def create_nems_configure_file(run_dir,cfg):
       "ATM_pb": ATM_petlist_bounds,
       "ATM_omp_num_threads_line": ATM_omp_num_threads_line,
       "ATM_diag_line": ATM_diag_line,
-      "runseq": runseq
+      "runseq": runseq,
+      "FIRE_pb": ""
     }
     if cfg["UFS_FIRE"]:
         settings["FIRE_pb"] = FIRE_petlist_bounds

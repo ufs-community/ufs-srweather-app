@@ -646,11 +646,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
-# This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
-# trying to octal all up in our business
-settings="
-'time': {
+if [ "${UFS_FIRE}" = "TRUE" ]; then
+  FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
+  # This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
+  # trying to octal all up in our business
+  settings="
+  'time': {
     'start_year': $((10#${CDATE:0:4})),
     'start_month': $((10#${CDATE:4:2})),
     'start_day': $((10#${CDATE:6:2})),
@@ -663,25 +664,26 @@ settings="
     'end_hour': $((10#${FCST_END_DATE:8:2})),
     'end_minute': $((10#${FCST_END_DATE:10:2})),
     'end_second': $((10#${FCST_END_DATE:12:2})),
- }
+   }
 "
-${USHdir}/set_namelist.py -n "${FIRE_NML_FP}" -u "$settings" -o "${FIRE_NML_FN}" || \
-  print_err_msg_exit "\
-Call to python script set_namelist.py to update ${FIRE_NML_FN} failed.
-Parameters passed to this script are:
+  ${USHdir}/set_namelist.py -n "${FIRE_NML_FP}" -u "$settings" -o "${FIRE_NML_FN}" || \
+    print_err_msg_exit "\
+  Call to python script set_namelist.py to update ${FIRE_NML_FN} failed.
+  Parameters passed to this script are:
     FIRE_NML_FN = \"${FIRE_NML_FN}\"
     FIRE_NML_FP = \"${FIRE_NML_FP}\"
   Namelist settings specified on command line:
     settings =
 $settings"
 
-## TEMPORARY LINK namelist.fire to namelist.input
-ln -sf namelist.fire namelist.input
+  ## TEMPORARY LINK namelist.fire to namelist.input
+  ln -sf namelist.fire namelist.input
 
-# Link fire input file
-create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
-                       symlink="geo_em.d01.nc" \
-                       relative="FALSE"
+  # Link fire input file
+  create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
+                         symlink="geo_em.d01.nc" \
+                         relative="FALSE"
+fi
 #
 #-----------------------------------------------------------------------
 #
