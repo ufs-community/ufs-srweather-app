@@ -234,7 +234,7 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
    module use /path/to/modulefiles
    module load wflow_<platform>
 
-Follow any instructions output by the console (e.g., ``conda activate workflow_tools``). 
+Follow any instructions output by the console (e.g., ``conda activate srw_app``). 
 
 Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 

@@ -94,6 +94,11 @@ Optional but recommended prerequisites for all systems:
 * Rocoto Workflow Management System (1.3.1)
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
+.. note::
+The SRW build will install conda, and necessary conda environments for running the workflow and the
+graphics automatically when the ``conda`` target is included at build time.
+
+
 .. _SRWStructure:
 
 Code Repositories and Directory Structure
