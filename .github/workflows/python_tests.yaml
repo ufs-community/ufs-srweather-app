@@ -23,12 +23,13 @@ jobs:
 
       # Install dependencies
       - name: Install Micromamba with no environment
-        uses: mamba-org/provision-with-micromamba@main
+      uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: false
           channel-priority: flexible
+          init-shell: bash
           cache-downloads: true
-          cache-env: true
+          cache-environment: true
       - name: Install srw_app environment
         run: micromamba create -y -n srw_app --file environment.yml
       - name: Checkout externals
