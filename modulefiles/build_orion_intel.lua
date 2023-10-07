@@ -9,7 +9,6 @@ load("contrib")
 load("noaatools")
 
 load(pathJoin("cmake", os.getenv("cmake_ver") or "3.22.1"))
-load(pathJoin("python", os.getenv("python_ver") or "3.9.2"))
 
 prepend_path("MODULEPATH","/work/noaa/epic/role-epic/contrib/orion/hpc-stack/intel-2022.1.2_ncdf492/modulefiles/stack")
 load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))

@@ -6,22 +6,7 @@ whatis([===[This module sets a path for conda environment needed for running the
 
 setenv("CMAKE_Platform", "linux")
 
--- Conda initialization function
-function init_conda(conda_path)
-    local shell=myShellType()
-    local conda_file
-    if shell == "csh" then
-      conda_file=pathJoin(conda_path,"etc/profile.d/conda.csh")
-    else
-      conda_file=pathJoin(conda_path,"etc/profile.d/conda.sh")
-    end
-    local mcmd="source " .. conda_file
-    execute{cmd=mcmd, modeA={"load"}}
-end
-
--- initialize conda
-local conda_path="/home/username/miniconda3"
-init_conda(conda_path)
+load("conda")
 
 -- add rocoto to path
 local rocoto_path="/home/username/rocoto"
@@ -37,6 +22,6 @@ load("set_pythonpath")
 -- display conda activation message
 if mode() == "load" then
      LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate workflow_tools
+       > conda activate srw_app
 ]===])
 end
