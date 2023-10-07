@@ -4,12 +4,12 @@ metadata:
 user:
   RUN_ENVIR: community
   MACHINE: cheyenne
-  ACCOUNT: P48503002
+  ACCOUNT: ACCOUNT_NUMBER
 platform:
   DOMAIN_PREGEN_BASEDIR: "/glade/work/frediani/Projects/UFS-fire/UFS/pregen_dir"
 workflow:
-  USE_CRON_TO_RELAUNCH: false
-  EXPT_SUBDIR: 2020081318_CO-HRRR_3km
+  USE_CRON_TO_RELAUNCH: true
+  EXPT_SUBDIR: fire_test_case
   CCPP_PHYS_SUITE: FV3_HRRR
   PREDEF_GRID_NAME: SUBCONUS_CO_3km
   DATE_FIRST_CYCL: '2020081318'
@@ -65,7 +65,6 @@ fire:
   FIRE_LSM_ZCOUPLING_REF: 60.0
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 02:00:00
