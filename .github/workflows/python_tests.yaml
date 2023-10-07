@@ -12,7 +12,7 @@ on:
 
 defaults:
   run:
-    shell: bash -leo pipefail {0} {0}
+    shell: bash -leo pipefail {0}
 
 jobs:
   install_environment:
@@ -44,6 +44,7 @@ jobs:
       - name: Run python unittests
         run: |
           # exclude test_retrieve_data that is tested in functional test
+          cat /home/runner/.bashrc
           micromamba activate srw_app
           export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
           python -m unittest -b tests/test_python/*.py
