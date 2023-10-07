@@ -3,22 +3,21 @@ This module loads libraries for building the UFS SRW App on
 the MSU machine Hercules using intel-oneapi-compilers/2022.2.1
 ]])
 
-whatis([===[Loads libraries needed for building the UFS SRW App on Orion ]===])
+whatis([===[Loads libraries needed for building the UFS SRW App on Hercules ]===])
 
-load("contrib")
-load("noaatools")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.4.1/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
-load(pathJoin("cmake", os.getenv("cmake_ver") or "3.26.3"))
-
-prepend_path("MODULEPATH","/work/noaa/epic/role-epic/contrib/hercules/hpc-stack/intel-2022.2.1/modulefiles/stack")
-load(pathJoin("hpc", os.getenv("hpc_ver") or "1.2.0"))
-load(pathJoin("hpc-intel-oneapi-compilers", os.getenv("hpc_intel_ver") or "2022.2.1"))
-load(pathJoin("hpc-intel-oneapi-mpi", os.getenv("hpc_mpi_ver") or "2021.7.1"))
+load("stack-intel/2021.7.1")
+load("stack-intel-oneapi-mpi/2021.7.1")
+load("stack-python/3.9.14")
+load("cmake/3.26.3")
 
 load("srw_common")
 
-load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.8.9.0"))
-load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
+load("nccmp/1.9.0.1")
+load("nco/5.0.6")
+load("ufs-pyenv")
 
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
@@ -27,4 +26,3 @@ setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
 setenv("CMAKE_Fortran_COMPILER","mpiifort")
 setenv("CMAKE_Platform","hercules.intel")
-
