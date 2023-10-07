@@ -1,0 +1,75 @@
+name: Python Tests
+on:
+  push:
+    branches:
+      - develop
+      - 'release/*'
+  pull_request:
+    branches:
+      - develop
+      - 'release/*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  install_environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Install dependencies
+      - name: Install Micromamba with no environment
+        uses: mamba-org/provision-with-micromamba@main
+        with:
+          environment-file: false
+          channel-priority: flexible
+          cache-downloads: true
+          cache-env: true
+      - name: Install srw_app environment
+        run: micromamba create -y -n srw_app --file environment.yml
+      - name: Checkout externals
+        run: |
+          ./manage_externals/checkout_externals ufs-weather-model workflow-tools
+
+  python_unittests:
+    env:
+      UNIT_TEST: True
+    needs: install_environment
+    runs-on: ubuntu-latest
+    steps:
+      # Run python unittests
+      - name: Run python unittests
+        run: |
+          # exclude test_retrieve_data that is tested in functional test
+          micromamba activate srw_app
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          python -m unittest -b tests/test_python/*.py
+
+  python_functests:
+    env:
+      CI: true
+    needs: install_environment
+    runs-on: ubuntu-latest
+    steps:
+      # Run python functional tests
+      - name: Run python functional tests
+        run: |
+          micromamba activate srw_app
+          export PYTHONPATH=${PWD}/ush
+          python3 -m unittest -b tests/test_python/test_retrieve_data.py
+
+  python_formatting:
+    needs: install_environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint the python code
+        run: |
+          micromamba activate srw_app
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          pylint --ignore-imports=yes tests/test_python/
+          pylint ush/create_*.py
+          pylint ush/generate_FV3LAM_wflow.py

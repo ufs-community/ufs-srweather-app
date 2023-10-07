@@ -42,7 +42,7 @@ machine=$(echo "${MACHINE}" | tr '[A-Z]' '[a-z]')  # scripts in sorc need lower 
 
 compiler=${2:-"intel"}
 
-components=${3:-"default"}
+components=${3:-"default conda"}
 
 #-----------------------------------------------------------------------
 # Check that machine is valid
