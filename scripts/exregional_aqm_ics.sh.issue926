@@ -53,41 +53,36 @@ tial or boundary condition files for the FV3 will be generated.
 #
 #-----------------------------------------------------------------------
 #
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+if [ "${DO_REAL_TIME}" = "TRUE" ]; then #KW
 
   case ${cyc} in
-   00) 
-       rst_dir1=${COMINm1}/18/RESTART
+   00) rst_dir1=${COMINm1}/18/RESTART
        rst_file1=fv_tracer.res.tile1.nc
        fv_tracer_file1=${rst_dir1}/${rst_file1}
        rst_dir2=${COMINm1}/12/RESTART
        rst_file2=fv_tracer.res.tile1.nc
-       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
-       ;;
-   06) 
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file}
+   06)
        rst_dir1=${COMIN}/00/RESTART
        rst_file1=fv_tracer.res.tile1.nc
        fv_tracer_file1=${rst_dir1}/${rst_file1}
        rst_dir2=${COMINm1}/12/RESTART
        rst_file2=fv_tracer.res.tile1.nc
-       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
-       ;;
-   12) 
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file}
+   12)
        rst_dir1=${COMIN}/06/RESTART
        rst_file1=fv_tracer.res.tile1.nc
        fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
        rst_dir2=${COMINm1}/12/RESTART
        rst_file2=fv_tracer.res.tile1.nc
-       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
-       ;;
-   18) 
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file}
+   18)
        rst_dir1=${COMIN}/12/RESTART
        rst_file1=fv_tracer.res.tile1.nc
        fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
        rst_dir2=${COMIN}/06/RESTART
        rst_file2=fv_tracer.res.tile1.nc
-       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
-       ;;
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file}
   esac
 
   print_info_msg "
@@ -97,24 +92,24 @@ if [ "${DO_REAL_TIME}" = "TRUE" ]; then
     fv_tracer_file=${fv_tracer_file1}
     print_info_msg "
     Tracer file found: \"${fv_tracer_file}\""
-  elif [ -s ${fv_tracer_file2} ]; then
+  elif [ -s ${fv_tracer_file1} ]; then
     fv_tracer_file=${fv_tracer_file2}
     print_info_msg "
     Tracer file: \"${fv_tracer_file1}\" not found."
     print_info_msg "
     Instead using tracer file: \"${fv_tracer_file}\"
   else
-    rst_dir=${HOMEaqm}/fix/restart
-    rst_file=fv_tracer.res.tile1.nc
+    rst_dir=DUMMYDIR
+    rst_file=DUMMYrstfile
     fv_tracer_file=${rst_dir}/${rst_file}
     print_info_msg "
     Both tracer files: \"${fv_tracer_file1}\" and 
     \"${fv_tracer_file2}\" not found."
     print_info_msg "
     Instead using dummy tracer file: \"${fv_tracer_file}\"
-  fi
+  if
 
-else 
+else #KW
 
   rst_dir=${PREV_CYCLE_DIR}/RESTART
   rst_file=fv_tracer.res.tile1.nc
@@ -146,7 +141,7 @@ else
     fi
   fi
 
-fi 
+fi #KW
 #
 #-----------------------------------------------------------------------
 #

@@ -42,10 +42,11 @@ export SENDWEB="${SENDWEB:-${SENDWEB_dfv}}"
 export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
 export MAILTO="${MAILTO:-${MAILTO_dfv}}"
 export MAILCC="${MAILCC:-${MAILCC_dfv}}"
+export PDYm1=$( $DATE_UTIL --date "${PDY} -1 day" "+%Y%m%d" )
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
     [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
-    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
     export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
   

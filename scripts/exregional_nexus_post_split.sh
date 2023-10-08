@@ -79,9 +79,9 @@ cp ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
 cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cp ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
-  python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+  python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."

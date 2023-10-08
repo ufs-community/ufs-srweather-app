@@ -156,7 +156,7 @@ mkdir -p "${DATA}/data"
 FCST_LEN_HRS=$( printf "%03d" ${FCST_LEN_HRS} )
 ic=1
 while [ $ic -lt 120 ]; do
-  if [ -s ${COMIN}/${NET}.${cycle}.chem_sfc.f${FCST_LEN_HRS}.nc ]; then
+  if [ -s ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.f${FCST_LEN_HRS}.nc ]; then
     echo "cycle ${cyc} post1 is done!"
     break
   else
@@ -175,8 +175,8 @@ if [ -d "${DATA_grid}/${cyc}z/${PDY}" ]; then
 fi
 
 mkdir -p "${DATA_grid}/${cyc}z/${PDY}"
-ln -sf ${COMIN}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
-ln -sf ${COMIN}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
 
 #-----------------------------------------------------------------------------
 # STEP 3:  Intepolating CMAQ O3 into AIRNow sites
@@ -228,7 +228,7 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   cp ${DATA}/data/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}/HourlyAQObs.${PDYm3}.nc ${COMOUTbicor}/bcdata.${yyyymm_m3}/airnow/netcdf/${yyyy_m3}/${PDYm3}
 
   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
-  cp ${COMIN}/${NET}.${cycle}.*sfc*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+  cp ${COMIN}/${cyc}/${NET}.${cycle}.*sfc*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
 fi
 
 #-----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ else
 fi
 POST_STEP
 
-cp ${DATA}/out/ozone.corrected* ${COMIN}
+cp ${DATA}/out/ozone.corrected* ${COMOUT}
 
 if [ "${cyc}" = "12" ]; then
   cp ${DATA}/data/sites/sites.valid.ozone.${PDY}.${cyc}z.list ${DATA}
@@ -264,7 +264,7 @@ fi
 # STEP 5:  converting netcdf to grib format
 #-----------------------------------------------------------------------------
 
-ln -sf ${COMIN}/ozone.corrected.${PDY}.${cyc}z.nc .
+ln -sf ${COMIN}/${cyc}/ozone.corrected.${PDY}.${cyc}z.nc .
 
 #
 cat >bias_cor.ini <<EOF1
@@ -313,8 +313,8 @@ EOF1
   flag_run_bicor_max=yes
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN}/../00/ozone.corrected.${PDY}.00z.nc ]; then
-      ln -sf ${COMIN}/../00/ozone.corrected.${PDY}.00z.nc b.nc
+    if [ -s ${COMIN}/00/ozone.corrected.${PDY}.00z.nc ]; then
+      ln -sf ${COMIN}/00/ozone.corrected.${PDY}.00z.nc b.nc
     elif [ -s ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
       ln -sf ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
       chk=0
@@ -325,8 +325,8 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
-    if [ -s ${COMIN}/../00/ozone.corrected.${PDY}.00z.nc ]; then
-      ln -sf ${COMIN}/../00/ozone.corrected.${PDY}.00z.nc b.nc
+    if [ -s ${COMIN}/00/ozone.corrected.${PDY}.00z.nc ]; then
+      ln -sf ${COMIN}/00/ozone.corrected.${PDY}.00z.nc b.nc
     elif [ -s ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
       ln -sf ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc b.nc
       chk=0
@@ -335,8 +335,8 @@ EOF1
     fi
 
     # 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN}/../06/ozone.corrected.${PDY}.06z.nc ]; then
-      ln -sf ${COMIN}/../06/ozone.corrected.${PDY}.06z.nc c.nc
+    if [ -s ${COMIN}/06/ozone.corrected.${PDY}.06z.nc ]; then
+      ln -sf ${COMIN}/06/ozone.corrected.${PDY}.06z.nc c.nc
     elif [ -s ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc ]; then
       ln -sf ${COMINm1}/12/ozone.corrected.${PDYm1}.12z.nc c.nc
       chk1=0

@@ -70,7 +70,7 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   rm -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
   rm -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
 
-  ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${COMIN}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
+  ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${COMIN}/${cyc}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
 
   ncks -C -O -x -v pfull ${DATA}/tmp2a.nc ${DATA}/tmp2b.nc
 
@@ -80,9 +80,9 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 
   mv ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
 
-  ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
+  ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${cyc}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
 
-  ncks -v aod ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
+  ncks -v aod ${COMIN}/${cyc}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
 
   (( ist=ist+1 ))
 done
@@ -112,10 +112,10 @@ ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.
 #
 #-----------------------------------------------------------------------
 #
-mv ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
-mv ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
-mv ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
-mv ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMOUT}
 #
 #-----------------------------------------------------------------------
 #
