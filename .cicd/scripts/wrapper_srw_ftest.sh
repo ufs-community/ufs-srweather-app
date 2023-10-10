@@ -33,6 +33,12 @@ if [[ "${SRW_PLATFORM}" == gaea-c5 ]]; then
     sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
+if [[ "${SRW_PLATFORM}" == hera ]]; then
+    if [[ "${SRW_COMPILER}" == gnu ]]; then
+        sed -i 's|00:30:00|00:45:00|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    fi
+fi
+
 # Call job card and return job_id
 echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
 job_id=$(${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh)

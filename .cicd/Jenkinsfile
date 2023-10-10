@@ -173,11 +173,6 @@ pipeline {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "Testing SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
 
-                            // Remove the following line to re-enable comprehensive tests
-                            sh 'SRW_WE2E_COMPREHENSIVE_TESTS=false bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_test.sh"'
-
-                            // Uncomment the following block to re-enable comprehensive tests
-                            /*
                             // If executing for a Pull Request, check for the run_we2e_comprehensive_tests. If set,
                             // override the value of the SRW_WE2E_COMPREHENSIVE_TESTS parameter
                             script {
@@ -194,7 +189,6 @@ pipeline {
 
                                 sh "SRW_WE2E_COMPREHENSIVE_TESTS=${run_we2e_comprehensive_tests}" + ' bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_test.sh"'
                             }
-                            */
                             }
                         }
 
