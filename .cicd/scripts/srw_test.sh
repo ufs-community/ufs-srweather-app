@@ -11,8 +11,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)
 # Get repository root from Jenkins WORKSPACE variable if set, otherwise, set
 # relative to script directory.
 declare workspace
-if [[ -n "${WORKSPACE}" ]]; then
-    workspace="${WORKSPACE}"
+if [[ -n "${WORKSPACE}/${SRW_PLATFORM}" ]]; then
+    workspace="${WORKSPACE}/${SRW_PLATFORM}"
 else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
@@ -23,10 +23,6 @@ if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)clusternoaa ]]; then
     platform='noaacloud'
 else
     platform="${SRW_PLATFORM}"
-fi
-
-if [[ "${SRW_PLATFORM}" = jet-epic ]]; then
-    platform='jet'
 fi
 
 # Test directories
