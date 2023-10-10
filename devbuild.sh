@@ -314,18 +314,22 @@ CONDA_BUILD_DIR="./conda"
 if [ "${BUILD_CONDA}" = "on" ] ; then
   if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
     installer=Miniforge3-$(uname)-$(uname -m).sh
-    wget "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
     bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
     rm ${installer}
   fi
 
   source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+  # Put some additional packages in the base environment on MacOS systems
+  if [ $(uname) == "Darwin" ] ; then
+    conda install -y bash coreutils sed
+  fi
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
-    mamba env create -n srw_app --file environment.yml
+    conda env create -n srw_app --file environment.yml
   fi
   if ! conda env list | grep -q "^srw_graphics\s" ; then
-    mamba env create -n srw_graphics --file graphics_environment.yml
+    conda env create -n srw_graphics --file graphics_environment.yml
   fi
 else
   source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
