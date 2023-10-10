@@ -99,12 +99,8 @@ usage_error () {
 
 # default settings
 LCL_PID=$$
-SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${SRW_DIR}/build"
-INSTALL_DIR=${SRW_DIR}
 BIN_DIR="exec"
-CONDA_BUILD_DIR="${SRW_DIR}/conda"
+CONDA_BUILD_DIR="conda"
 COMPILER=""
 APPLICATION=""
 CCPP_SUITES=""
@@ -192,11 +188,48 @@ while :; do
   shift
 done
 
+# build conda and conda environments, if requested.
+set -x
+if [ "${BUILD_CONDA}" = "on" ] ; then
+  if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
+    os=$(uname)
+    test $os == Darwin && os=MacOSX
+    hardware=$(uname -m)
+    installer=Miniforge3-${os}-${hardware}.sh
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
+    bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
+    rm ${installer}
+  fi
+
+  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+  # Put some additional packages in the base environment on MacOS systems
+  if [ "${os}" == "MacOSX" ] ; then
+    mamba install -y bash coreutils sed
+  fi
+  conda activate
+  if ! conda env list | grep -q "^srw_app\s" ; then
+    mamba env create -n srw_app --file environment.yml
+  fi
+  if ! conda env list | grep -q "^srw_graphics\s" ; then
+    mamba env create -n srw_graphics --file graphics_environment.yml
+  fi
+else
+  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+  conda activate
+fi
+
+# Conda environment should have linux utilties to perform these tasks on macos.
+SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
+BUILD_DIR="${SRW_DIR}/build"
+INSTALL_DIR=${SRW_DIR}
+CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
+echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
+
 # Ensure uppercase / lowercase ============================================
-APPLICATION="${APPLICATION^^}"
-PLATFORM="${PLATFORM,,}"
-COMPILER="${COMPILER,,}"
-EXTERNALS="${EXTERNALS^^}"
+APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
+PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
+COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
 
 # check if PLATFORM is set
 if [ -z $PLATFORM ] ; then
@@ -310,38 +343,6 @@ else
     done
   fi
 fi
-
-# build conda and conda environments, if requested.
-set -x
-CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
-if [ "${BUILD_CONDA}" = "on" ] ; then
-  if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
-    os=$(uname)
-    test $os == Darwin && os=MacOSX
-    hardware=$(uname -m)
-    installer=Miniforge3-${os}-${hardware}.sh
-    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
-    bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
-    rm ${installer}
-  fi
-
-  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
-  # Put some additional packages in the base environment on MacOS systems
-  if [ "${os}" == "MacOSX" ] ; then
-    mamba install -y bash coreutils sed
-  fi
-  conda activate
-  if ! conda env list | grep -q "^srw_app\s" ; then
-    mamba env create -n srw_app --file environment.yml
-  fi
-  if ! conda env list | grep -q "^srw_graphics\s" ; then
-    mamba env create -n srw_graphics --file graphics_environment.yml
-  fi
-else
-  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
-  conda activate
-fi
-echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
 # cmake settings
 CMAKE_SETTINGS="\
