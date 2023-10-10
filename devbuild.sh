@@ -104,6 +104,7 @@ MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${SRW_DIR}/build"
 INSTALL_DIR=${SRW_DIR}
 BIN_DIR="exec"
+CONDA_BUILD_DIR="${SRW_DIR}/conda"
 COMPILER=""
 APPLICATION=""
 CCPP_SUITES=""
@@ -165,6 +166,8 @@ while :; do
     --install-dir|--install-dir=) usage_error "$1 requires argument." ;;
     --bin-dir=?*) BIN_DIR=${1#*=} ;;
     --bin-dir|--bin-dir=) usage_error "$1 requires argument." ;;
+    --conda-dir=?*) CONDA_BUILD_DIR=${1#*=} ;;
+    --conda-dir|--conda-dir=) usage_error "$1 requires argument." ;;
     --build-type=?*) BUILD_TYPE=${1#*=} ;;
     --build-type|--build-type=) usage_error "$1 requires argument." ;;
     --build-jobs=?*) BUILD_JOBS=$((${1#*=})) ;;
@@ -310,10 +313,13 @@ fi
 
 # build conda and conda environments, if requested.
 set -x
-CONDA_BUILD_DIR="./conda"
+CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
 if [ "${BUILD_CONDA}" = "on" ] ; then
   if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
-    installer=Miniforge3-$(uname)-$(uname -m).sh
+    os=$(uname)
+    test $os == Darwin && os=MacOSX
+    hardware=$(uname -m)
+    installer=Miniforge3-${os}-${hardware}.sh
     curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
     bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
     rm ${installer}
@@ -321,20 +327,21 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
 
   source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
   # Put some additional packages in the base environment on MacOS systems
-  if [ $(uname) == "Darwin" ] ; then
-    conda install -y bash coreutils sed
+  if [ "${os}" == "MacOSX" ] ; then
+    mamba install -y bash coreutils sed
   fi
   conda activate
   if ! conda env list | grep -q "^srw_app\s" ; then
-    conda env create -n srw_app --file environment.yml
+    mamba env create -n srw_app --file environment.yml
   fi
   if ! conda env list | grep -q "^srw_graphics\s" ; then
-    conda env create -n srw_graphics --file graphics_environment.yml
+    mamba env create -n srw_graphics --file graphics_environment.yml
   fi
 else
   source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
   conda activate
 fi
+echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
 # cmake settings
 CMAKE_SETTINGS="\
