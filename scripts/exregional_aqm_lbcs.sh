@@ -198,7 +198,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 check_file_with_recheck() {
   local file_path="$1"
   local max_rechecks=5
-  local wait_time=60
+  local wait_time=20
 
   for recheck_count in $(seq 1 $max_rechecks); do
     if [ -e "$file_path" ]; then

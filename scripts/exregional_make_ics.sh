@@ -687,6 +687,109 @@ The following variables were being used:
   fvcom_exe = \"${fvcom_exe}\""
   POST_STEP
 fi
+
+#-----------------------------------------------------------------------
+#
+# Set up the RESTART folder for AQM runs
+#
+#-----------------------------------------------------------------------
+
+if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
+  
+  export yyyy=$(echo $PDY | cut -c1-4)
+  export mm=$(echo $PDY | cut -c5-6)
+  export dd=$(echo $PDY | cut -c7-8)
+
+  case ${cyc} in
+   00) rst_dir1=${COMINm1}/18/RESTART
+       rst_file1=fv_tracer.res.tile1.nc
+       fv_tracer_file1=${rst_dir1}/${rst_file1}
+       rst_dir2=${COMINm1}/12/RESTART
+       rst_file2=fv_tracer.res.tile1.nc
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
+       ;;
+   06)
+       rst_dir1=${COMIN}/00/RESTART
+       rst_file1=fv_tracer.res.tile1.nc
+       fv_tracer_file1=${rst_dir1}/${rst_file1}
+       rst_dir2=${COMINm1}/12/RESTART
+       rst_file2=fv_tracer.res.tile1.nc
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
+       ;;
+   12)
+       rst_dir1=${COMIN}/06/RESTART
+       rst_file1=fv_tracer.res.tile1.nc
+       fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
+       rst_dir2=${COMINm1}/12/RESTART
+       rst_file2=fv_tracer.res.tile1.nc
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
+       ;;
+   18)
+       rst_dir1=${COMIN}/12/RESTART
+       rst_file1=fv_tracer.res.tile1.nc
+       fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
+       rst_dir2=${COMIN}/06/RESTART
+       rst_file2=fv_tracer.res.tile1.nc
+       fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
+       ;;
+  esac
+
+  rst_dir_fix=${HOMEaqm}/fix/restart
+  rst_file_fix=fv_tracer.res.tile1.nc
+  fv_tracer_file_fix=${rst_dir_fix}/${rst_file_fix}
+
+  print_info_msg "
+  Looking for tracer restart file: \"${fv_tracer_file1}\""
+
+  if [ -d ${rst_dir1} ]; then
+    if [ -s ${fv_tracer_file1} ]; then
+      print_info_msg "
+      Tracer file found: \"${fv_tracer_file1}\""
+    elif [ -s ${fv_tracer_file2} ]; then
+      print_info_msg "
+      Tracer file: \"${fv_tracer_file1}\" not found."
+      print_info_msg "
+      Instead using tracer file: \"${fv_tracer_file2}\""
+      cp ${fv_tracer_file2} ${fv_tracer_file1}
+      cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+    else
+      print_info_msg "
+      Both tracer files: \"${fv_tracer_file1}\" and
+      \"${fv_tracer_file2}\" not found."
+      print_info_msg "
+      Instead using dummy tracer file: \"${fv_tracer_file_fix}\""
+      cp ${fv_tracer_file_fix} ${fv_tracer_file1}
+      cp ${rst_dir_fix}/coupler.res  ${rst_dir1}
+      sed -i "s/yyyy/$yyyy/g" ${rst_dir1}/coupler.res
+      sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
+      sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
+      sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
+    fi 
+  elif [ -s ${fv_tracer_file2} ]; then
+    mkdir -p ${rst_dir1}
+    cp ${fv_tracer_file2} ${fv_tracer_file1} 
+    cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+    print_info_msg "
+    Tracer file: \"${fv_tracer_file1}\" not found."
+    print_info_msg "
+    Instead using tracer file: \"${fv_tracer_file2}\""
+  else
+    mkdir -p ${rst_dir1}
+    print_info_msg "
+    Both tracer files: \"${fv_tracer_file1}\" and
+    \"${fv_tracer_file2}\" not found."
+    print_info_msg "
+    Instead using dummy tracer file: \"${fv_tracer_file_fix}\""
+    cp ${fv_tracer_file_fix} ${fv_tracer_file1}
+    cp ${rst_dir_fix}/coupler.res  ${rst_dir1}
+    sed -i "s/yyyy/$yyyy/g" ${rst_dir1}/coupler.res
+    sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
+    sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
+    sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
+  fi
+
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -709,5 +812,3 @@ In directory:    \"${scrfunc_dir}\"
 # tion.
 #
 #-----------------------------------------------------------------------
-#
-{ restore_shell_opts; } > /dev/null 2>&1
