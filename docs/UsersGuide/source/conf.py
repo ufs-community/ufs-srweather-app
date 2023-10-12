@@ -85,6 +85,13 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Documentation-wide substitutions
+
+rst_prolog = """
+.. |wflow_env| replace:: ``workflow_tools``
+.. |activate| replace:: ``conda activate workflow_tools``
+.. |prompt| replace:: ``(workflow_tools)``
+"""
 
 # -- Options for HTML output -------------------------------------------------
 

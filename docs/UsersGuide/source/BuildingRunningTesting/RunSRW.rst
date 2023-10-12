@@ -111,7 +111,7 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named |wflow_env|. On Level 1 systems, a |wflow_env| environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
 
 .. _Load-WF-L1:
 
@@ -122,7 +122,7 @@ Loading the Workflow Environment on Level 1 Systems
 
    Users on a Level 2-4 system should skip to the :ref:`next section <Load-WF-L234>` for instructions.
 
-The ``workflow_tools`` conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The |wflow_env| conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
 
 .. code-block:: console
 
@@ -142,7 +142,7 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
    Please do the following to activate conda:
        > conda activate workflow_tools
 
-then the user should run ``conda activate workflow_tools``. This activates the ``workflow_tools`` conda environment, and the user typically sees ``(workflow_tools)`` in front of the Terminal prompt at this point.
+then the user should run |activate|. This activates the |wflow_env| conda environment, and the user typically sees |prompt| in front of the Terminal prompt at this point.
 
 After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
@@ -181,10 +181,10 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 
 .. _LinuxMacVEnv: 
 
-Creating the ``workflow_tools`` Environment on Linux and Mac OS
+Creating the |wflow_env| Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
+On generic Mac and Linux systems, users need to create a conda |wflow_env| environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
 
 .. code-block:: console
 
@@ -211,12 +211,12 @@ See the `workflow-tools repository <https://github.com/ufs-community/workflow-to
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
 
-Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Users must modify the files to provide paths for python, miniconda modules, module loads, conda initialization, and the user's ``workflow_tools`` conda environment. 
+Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Users must modify the files to provide paths for python, miniconda modules, module loads, conda initialization, and the user's |wflow_env| conda environment. 
 
 Load the Workflow Environment
 ```````````````````````````````
 
-After creating a ``workflow_tools`` environment and making modifications to a ``wflow_<platform>`` file, users can run the commands below to activate the workflow environment:
+After creating a |wflow_env| environment and making modifications to a ``wflow_<platform>`` file, users can run the commands below to activate the workflow environment:
 
 .. code-block:: console
 
@@ -236,10 +236,10 @@ The ``wflow_<platform>`` modulefile will then output the following instructions:
    Please do the following to activate conda:
        > conda activate workflow_tools
 
-After running ``conda activate workflow_tools``, the user will typically see ``(workflow_tools)`` in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
+After running |activate|, the user will typically see |prompt| in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
 
 .. note::
-   ``conda`` needs to be initialized before running ``conda activate workflow_tools`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
+   ``conda`` needs to be initialized before running |activate| command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -416,7 +416,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 .. hint::
 
-   * The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+   * The |wflow_env| environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
    * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
    

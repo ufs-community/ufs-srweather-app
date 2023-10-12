@@ -68,7 +68,7 @@ If the SRW-AQM builds correctly, users should see the standard executables liste
    * - nexus
      - Runs the NOAA Emission and eXchange Unified System (:ref:`NEXUS <nexus>`) emissions processing system
 
-Load the ``workflow_tools`` Environment
+Load the |wflow_env| Environment
 --------------------------------------------
 
 Load the python environment for the workflow:
@@ -90,7 +90,7 @@ If the console outputs a message, the user should run the commands specified in 
    Please do the following to activate conda:
        > conda activate workflow_tools
 
-then the user should run ``conda activate workflow_tools``. Otherwise, the user can continue with configuring the workflow. 
+then the user should run |activate|. Otherwise, the user can continue with configuring the workflow. 
 
 .. _AQMConfig:
 
