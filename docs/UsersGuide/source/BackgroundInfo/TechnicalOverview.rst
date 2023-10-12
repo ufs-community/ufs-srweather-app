@@ -95,8 +95,8 @@ Optional but recommended prerequisites for all systems:
 * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` for graphics
 
 .. note::
-The SRW build will install conda, and necessary conda environments for running the workflow and the
-graphics automatically when the ``conda`` target is included at build time.
+  The SRW build will install conda, and necessary conda environments for running the workflow and the
+  graphics automatically when the ``conda`` target is included at build time.
 
 
 .. _SRWStructure:
