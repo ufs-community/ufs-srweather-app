@@ -12,8 +12,8 @@
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
 export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
-export PDY='20230912'
-export cyc='18'
+export PDY=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c1-8`
+export cyc=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c9-10`
 export SLASH_ENSMEM_SUBDIR='/'
 export ENSMEM_INDX='000'
 export nprocs='48'
