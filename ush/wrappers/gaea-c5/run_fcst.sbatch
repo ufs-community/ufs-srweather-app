@@ -8,11 +8,12 @@
 #SBATCH --cpus-per-task 1 --exclusive --clusters=c5 --partition=batch --export=NONE
 
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
-export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 export PDY='20190615'
 export cyc='18'
 export subcyc='00'
 export ENSMEM_INDX='000'
 export SLASH_ENSMEM_SUBDIR='/'
 
-$USHdir/load_modules_run_task.sh "run_fcst" $USHdir"/../jobs/JREGIONAL_RUN_FCST"
+$USHdir/load_modules_run_task.sh "run_fcst" $JOBSdir/JREGIONAL_RUN_FCST

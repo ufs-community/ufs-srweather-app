@@ -7,7 +7,8 @@
 #PBS -N run_post
 
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
-export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 export PDY='20190615'
 export cyc='18'
 export SLASH_ENSMEM_SUBDIR='/'
@@ -19,5 +20,5 @@ export FCST_LEN_HRS='12'
 num_fcst_hrs=${FCST_LEN_HRS}
 for (( i=0; i<=$((num_fcst_hrs)); i++ )); do
   export fhr=`printf "%03i" ${i}`
-$USHdir/load_modules_run_task.sh "run_post" $USHdir"/../jobs/JREGIONAL_RUN_POST"
+$USHdir/load_modules_run_task.sh "run_post" $JOBSdir/JREGIONAL_RUN_POST
 done

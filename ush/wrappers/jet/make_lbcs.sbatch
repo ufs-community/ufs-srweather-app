@@ -10,7 +10,8 @@
 #SBATCH --export=NONE
 
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
-export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 export PDY='20190615'
 export cyc='18'
 export subcyc='00'
@@ -20,4 +21,4 @@ export nprocs='48'
 export bcgrp='00'
 export bcgrpnum='1'
 
-$USHdir/load_modules_run_task.sh "make_lbcs" $USHdir"/../jobs/JREGIONAL_MAKE_LBCS"
+$USHdir/load_modules_run_task.sh "make_lbcs" $JOBSdir/JREGIONAL_MAKE_LBCS

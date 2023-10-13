@@ -9,6 +9,7 @@
 #SBATCH --export=NONE
 
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
-export USHdir=$PWD'/../../../ufs-srweather-app/ush'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 
-$USHdir/load_modules_run_task.sh "make_sfc_climo" $USHdir"/../jobs/JREGIONAL_MAKE_SFC_CLIMO"
+$USHdir/load_modules_run_task.sh "make_sfc_climo" $JOBSdir/JREGIONAL_MAKE_SFC_CLIMO
