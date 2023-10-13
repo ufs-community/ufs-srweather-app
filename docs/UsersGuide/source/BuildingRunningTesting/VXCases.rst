@@ -7,16 +7,16 @@ METplus Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added with the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. In the future, additional sample cases will be provided. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added ahead of the |release| release was **a severe weather event over Indianapolis on June 15-16, 2019**. In the future, additional sample cases will be provided. 
+
+.. COMMENT: Change!
 
 Each sample case contains model output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables (when plotting tasks are run). These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
 Prerequisites
 ================
 
-This chapter assumes that users have already (1) built the SRW App v2.1.0 successfully and (2) installed MET and METplus on their system. 
-
-For instructions on how to build the v2.1.0 release of the SRW App, see the v2.1.0 release documentation on :ref:`Building the SRW App <srw_v2.1.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will have an easier time if they run through the out-of-the-box case described in the v2.1.0 release documentation on :ref:`Running the SRW App <srw_v2.1.0:RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
+This chapter assumes that users have already (1) built the SRW App |release| successfully and (2) installed MET and METplus on their system (e.g., as part of :term:`spack-stack` installation). For instructions on how to build the |release| release, see :numref:`Section %s <BuildSRW>`. Users will have an easier time if they run through the out-of-the-box case described in :numref:`Section %s <RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
 
 For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, and links to installation instructions and documentation for users on other systems. 
 
@@ -36,7 +36,7 @@ There were many storm reports for this event with the majority of tornadoes and 
 Set Up Verification
 -----------------------
 
-Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
+Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (|release|). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
 
 .. _GetSampleData:
 
@@ -61,7 +61,7 @@ On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file us
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
+This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <Cartopy>` for more information on plotting. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -154,7 +154,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to the v2.1.0 release documentation on :ref:`configuring the SRW App <srw_v2.1.0:UserSpecificConfig>`.
+For additional configuration guidance, refer to the |release| release documentation on :ref:`configuring the SRW App <srw_|release|:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -189,12 +189,14 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ^^^^^^^^^^^^^^^^^
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+The plots are created by adding the plotting task(s) to the SRW App workflow. Instructions on how to configure these tasks can be found in :numref:`Section %s <PlotOutput>`. If the python environment is already loaded (i.e., |prompt| is visible in the command prompt), users can configure the plotting task in ``config.yaml``:
 
 .. code-block:: console
 
-   cd /path/to/ufs-srweather-app/ush/Python
-   python plot_allvars.py 2019061500 0 60 6 /path/to/experiment/directory /path/to/NaturalEarth SUBCONUS_Ind_3km
+   task_plot_allvars:
+     COMOUT_REF: ""
+     PLOT_FCST_INC: 6
+     PLOT_DOMAINS: ["regional"]
 
 Compare
 ----------
