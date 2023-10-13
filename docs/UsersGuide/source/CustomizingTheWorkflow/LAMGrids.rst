@@ -92,6 +92,8 @@ Predefined 13-km CONUS Grid
 
 .. _RRFS_CONUS_13km:
 
+.. COMMENT: Update link once image has been added!
+
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_13km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 

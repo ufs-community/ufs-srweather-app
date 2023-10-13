@@ -49,7 +49,7 @@ model directory to the experiment directory ``$EXPTDIR``. For more information o
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids as of the SRW Application v2.1.0 release are:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids as of the SRW Application |latestr| release are:
 
 .. code-block:: console
    

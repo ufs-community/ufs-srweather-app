@@ -11,15 +11,15 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 Since the v2.1.0 release, developers have added a variety of features:
 
    * Bug fixes since the v2.1.0 release
-   * New supported `RRFS_NA_13km` grid
+   * New supported `RRFS_NA_13km` grid and ``FV3_RAP`` physics suite 
    * Air Quality Modeling (AQM) capabilities (unsupported but available)
    * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.1.0 release.
    * Introduced option to change vertical coordinate file (`PR #813 <https://github.com/ufs-community/ufs-srweather-app/pull/813>`__) and :ref:`instructions on how to use this feature <VerticalLevels>`. 
    * Documentation updates to reflect the changes above
 
-The SRW App v2.1.0 citation is as follows and should be used when presenting results based on research conducted with the App:
+The SRW App |release| citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2022, Nov. 17). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.1.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
+UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version |release|). Zenodo. https://doi.org/10.5281/zenodo.7277602
 
 User's Guide Organization 
 ============================
