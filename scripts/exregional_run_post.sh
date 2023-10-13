@@ -173,8 +173,8 @@ else
 fi
 
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  dyn_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-  phy_file="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+  dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+  phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
 else
   dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
   phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
