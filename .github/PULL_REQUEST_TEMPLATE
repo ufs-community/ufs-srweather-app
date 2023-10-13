@@ -32,9 +32,12 @@
 
 - [ ] hera.intel
 - [ ] orion.intel
+- [ ] hercules.intel
 - [ ] cheyenne.intel
 - [ ] cheyenne.gnu
+- [ ] derecho.intel
 - [ ] gaea.intel
+- [ ] gaeac5.intel
 - [ ] jet.intel
 - [ ] wcoss2.intel
 - [ ] NOAA Cloud (indicate which platform)
