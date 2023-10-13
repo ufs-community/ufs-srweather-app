@@ -22,6 +22,17 @@ pipeline {
     }
 
     stages {
+        stage('Launch SonarQube') {
+            steps {
+                script {
+                    build job: '/ufs-srweather-app/ufs-srw-sonarqube', parameters: [
+                        string(name: 'BRANCH_NAME', value: env.CHANGE_BRANCH ?: 'develop'),
+                        string(name: 'FORK_NAME', value: env.CHANGE_FORK ?: '')
+                    ], wait: false
+                }
+            }
+        }
+
         // Uncomment the following block to re-enable PW clusters
         /*
         // Start the NOAA Parallel Works clusters, if necessary
