@@ -12,8 +12,6 @@ load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
 prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/C5/rocoto/modulefiles")
 load("rocoto")
 
-pushenv("MKLROOT", "/opt/intel/oneapi/mkl/2023.1.0/")
-
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
        > conda activate workflow_tools
