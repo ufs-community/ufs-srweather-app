@@ -11,15 +11,26 @@ The UFS includes `multiple applications <https://ufscommunity.org/science/abouta
 Since the v2.1.0 release, developers have added a variety of features:
 
    * Bug fixes since the v2.1.0 release
-   * New supported `RRFS_NA_13km` grid and ``FV3_RAP`` physics suite 
-   * Air Quality Modeling (AQM) capabilities (unsupported but available)
-   * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.1.0 release.
+   * Newly supported `RRFS_NA_13km` grid and ``FV3_RAP`` physics suite (PR `# <>`__ and `#811 <https://github.com/ufs-community/ufs-srweather-app/pull/811>`__)
+   * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.2.0 release.
+   * Integrate Unified Workflow tools, including a templater tool (`PR #793 <https://github.com/ufs-community/ufs-srweather-app/pull/793>`__) and ability to create a user-defined custom workflow (`PR #738 <https://github.com/ufs-community/ufs-srweather-app/pull/738>`__).  
    * Introduced option to change vertical coordinate file (`PR #813 <https://github.com/ufs-community/ufs-srweather-app/pull/813>`__) and :ref:`instructions on how to use this feature <VerticalLevels>`. 
+   * Added support for Derecho, Hercules, and Gaea C5 platforms (PR `#894 <https://github.com/ufs-community/ufs-srweather-app/pull/894>`__, `#898 <https://github.com/ufs-community/ufs-srweather-app/pull/898>`__, `#911 <https://github.com/ufs-community/ufs-srweather-app/pull/911>`__)
+   * Shifted most supported platforms to spack-stack to correspond with the UFS WM (PR `#913 <https://github.com/ufs-community/ufs-srweather-app/pull/913>`__, `# <>`__, `# <>`__, `#941 <https://github.com/ufs-community/ufs-srweather-app/pull/941>`__)
+   * Improvements to verification capabilities and tasks verification of precipitation type (including snowfall accumulation) (see, e.g., PR `#552 <https://github.com/ufs-community/ufs-srweather-app/pull/552>`__, `#618 <https://github.com/ufs-community/ufs-srweather-app/pull/618>`__, `#614 <https://github.com/ufs-community/ufs-srweather-app/pull/614>`__, `#659 <https://github.com/ufs-community/ufs-srweather-app/pull/659>`__, `#668 <https://github.com/ufs-community/ufs-srweather-app/pull/668>`__, `#683 <https://github.com/ufs-community/ufs-srweather-app/pull/683>`__, `#757 <https://github.com/ufs-community/ufs-srweather-app/pull/757>`__, `#809 <https://github.com/ufs-community/ufs-srweather-app/pull/809>`__, `#853 <https://github.com/ufs-community/ufs-srweather-app/pull/853>`__, `#826 <https://github.com/ufs-community/ufs-srweather-app/pull/826>`__)
+   * Improvements to the WE2E testing suite (e.g., PR `#558 <https://github.com/ufs-community/ufs-srweather-app/pull/558>`__, `#637 <https://github.com/ufs-community/ufs-srweather-app/pull/637>`__, `#686 <https://github.com/ufs-community/ufs-srweather-app/pull/686>`__, `#732 <https://github.com/ufs-community/ufs-srweather-app/pull/732>`__,  `#864 <https://github.com/ufs-community/ufs-srweather-app/pull/864>`__, `#871 <https://github.com/ufs-community/ufs-srweather-app/pull/871>`__, )
+   * Addition of a sample verification case ()
+   * Incorporation of UFS Case Studies within the WE2E framework (`PR #822 <https://github.com/ufs-community/ufs-srweather-app/pull/822>`__, `PR #736 <https://github.com/ufs-community/ufs-srweather-app/pull/736>`__)
+   * Incorporation of plotting tasks into the workflow; addition of ability to plot on both CONUS or smaller regional grid (PR `482 <https://github.com/ufs-community/ufs-srweather-app/pull/482>`__, PR `#560 <https://github.com/ufs-community/ufs-srweather-app/pull/560>`__)
+   * Air Quality Modeling (AQM) capabilities (unsupported but available)
    * Documentation updates to reflect the changes above
 
-The SRW App |release| citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version |release|). Zenodo. https://doi.org/10.5281/zenodo.7277602
+.. COMMENT: Add UFS-Case Studies, UW
+
+The SRW App v2.2.0 citation is as follows and should be used when presenting results based on research conducted with the App:
+
+UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
 
 User's Guide Organization 
 ============================
@@ -100,9 +111,9 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - HPC-Stack Documentation
      - https://hpc-stack.readthedocs.io/en/latest/
    * - spack-stack Documentation
-     - https://spack-stack.readthedocs.io/en/latest/
+     - https://spack-stack.readthedocs.io/en/1.4.1/
    * - UFS_UTILS Technical Documentation
-     - https://noaa-emcufs-utils.readthedocs.io/en/latest
+     - https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_9_0/
    * - UFS_UTILS Scientific Documentation
      - https://ufs-community.github.io/UFS_UTILS/index.html
    * - UFS Weather Model User's Guide
@@ -141,7 +152,7 @@ The SRW App's `GitHub Discussions <https://github.com/ufs-community/ufs-srweathe
 When posting a question, it is recommended that users provide the following information: 
 
 * The platform or system being used (e.g., Hera, Orion, MacOS, Linux)
-* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.1.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
+* The version of the SRW Application being used (e.g., ``develop``, ``release/public-v2.2.0``). (To determine this, users can run ``git branch``, and the name of the branch with an asterisk ``*`` in front of it is the name of the branch they are working on.) Note that the version of the application being used and the version of the documentation being used should match, or users will run into difficulties. 
 * Stage of the application when the issue appeared (i.e., configuration, build/compilation, or name of a workflow task)
 * Configuration file contents
 * Full error message (preferably in text form rather than a screenshot)
