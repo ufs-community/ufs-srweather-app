@@ -11,6 +11,7 @@ from python_utils import (
     log_info,
     cd_vrfy,
     mkdir_vrfy,
+    ln_vrfy,
     rm_vrfy,
     check_var_valid_value,
     lowercase,
@@ -1126,6 +1127,13 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                RUN_TASK_VX_ENSPOINT = \"{run_task_vx_enspoint}\"'''
         )
 
+    # Temporary solution to link fix directory for AQM.v7
+    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    homeaqm_fix = os.path.join(homeaqm,"fix")
+    print(homeaqm_fix)
+    if os.path.islink(homeaqm_fix) or os.path.exists(homeaqm_fix):
+        rm_vrfy("-rf", homeaqm_fix)
+    
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
@@ -1191,8 +1199,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 )
                 raise FileNotFoundError(msg)
 
-            # Link the fix files and check that their resolution is
-            # consistent
+            # Link the fix files and check that their resolution is consistent
             res_in_fns = link_fix(
                 verbose=verbose,
                 file_group=prep_task.lower(),
@@ -1233,6 +1240,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
+    # Temporary solution to link fix directory for AQM.v7
+    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    homeaqm_fix = os.path.join(homeaqm,"fix")
+    if os.path.exists(homeaqm_fix):
+        rm_vrfy("-rf", homeaqm_fix)
+
+    fixaqm_sav = expt_config["platform"].get("FIXaqm_sav")
+    ln_vrfy(f"""-fsn {fixaqm_sav} {homeaqm_fix}""")
+    
     #
     # -----------------------------------------------------------------------
     #

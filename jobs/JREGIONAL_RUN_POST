@@ -62,7 +62,7 @@ on the output files corresponding to a specified forecast hour.
 #
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/${cyc}}"
 #
 # If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
 # minutes (fmn) are set to "00".  This is necessary in order to pass
@@ -146,7 +146,7 @@ fi
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then 
   fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" ) 
   if [ "${fhr}" = "${fcst_len_hrs}" ]; then
-    touch "${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+    touch "${COMIN}/${cyc}/post_${PDY}${cyc}_task_complete.txt"
   fi
 fi
 #

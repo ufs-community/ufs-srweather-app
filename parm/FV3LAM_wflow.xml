@@ -753,7 +753,10 @@ MODULES_RUN_TASK_FP script.
     <envar><name>SLASH_ENSMEM_SUBDIR</name><value><cyclestr>{{ slash_ensmem_subdir }}</cyclestr></value></envar>
 
     <dependency>
+      <and>
+        <taskdep task="&TN_MAKE_ICS;"/>
         <taskdep task="&TN_MAKE_LBCS;"/>
+      </and>
     </dependency>
 
   </task>

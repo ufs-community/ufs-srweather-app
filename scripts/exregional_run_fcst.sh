@@ -645,7 +645,7 @@ fi
 #
 if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
   # create an intermediate symlink to RESTART
-  ln -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+  ln -sf "${DATA}/RESTART" "${COMOUT}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -764,11 +764,11 @@ fi
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
-    if [ -d "${COMIN}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
-      rm -rf "${COMIN}/RESTART"
+    if [ -d "${COMOUT}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
+      rm -rf "${COMOUT}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp -Rp ${DATA}/RESTART ${COMIN}
+      cp -Rp ${DATA}/RESTART ${COMOUT}
     fi
   fi
 
@@ -780,8 +780,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     fhr_ct=$(printf "%03d" $fhr)
     source_dyn="${DATA}/dynf${fhr_ct}.nc"
     source_phy="${DATA}/phyf${fhr_ct}.nc"
-    target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
-    target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
     [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
     [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
     (( fhr=fhr+1 ))

@@ -45,9 +45,8 @@ export MAILCC="${MAILCC:-${MAILCC_dfv}}"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
     [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
-    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
     export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
   
     export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
     export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
@@ -131,6 +130,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
         COMROOT=$COMROOT setpdy.sh
         . ./PDY
     fi
+    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+    export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
 else
     export PDYm1=$( $DATE_UTIL --date "${PDY} -1 day" "+%Y%m%d" )
     export PDYm2=$( $DATE_UTIL --date "${PDY} -2 day" "+%Y%m%d" )

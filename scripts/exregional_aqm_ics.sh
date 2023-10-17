@@ -61,7 +61,12 @@ print_info_msg "
 if [ ! -r ${fv_tracer_file} ]; then
   if [ -r ${rst_dir}/coupler.res ]; then
     rst_info=( $( tail -n 1 ${rst_dir}/coupler.res ) )
-    rst_date=$( printf "%04d%02d%02d%02d" ${rst_info[@]:0:4} )
+    # Remove leading zeros from ${rst_info[1]}
+    month="${rst_info[1]#"${rst_info[1]%%[!0]*}"}"
+    # Remove leading zeros from ${rst_info[2]}
+    day="${rst_info[2]#"${rst_info[2]%%[!0]*}"}"
+    # Format the date without leading zeros
+    rst_date=$(printf "%04d%02d%02d%02d" ${rst_info[0]} $((10#$month)) $((10#$day)) ${rst_info[3]})
     print_info_msg "
   Tracer file not found. Checking available restart date:
     requested date: \"${PDY}${cyc}\"
