@@ -40,7 +40,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
             
-         ./devbuild.sh --platform=<machine_name>
+         ./devbuild.sh --platform=<machine_name> conda
 
       where ``<machine_name>`` is replaced with the name of the user's platform/system. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` | ``wcoss2``
 
