@@ -226,7 +226,7 @@ In addition to the options above, many standard terminal commands can be run to 
 How can I run a new experiment?
 ==================================
 
-To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the *workflow_tools* environment: 
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the *srw_app* environment: 
 
 .. code-block:: console
    
