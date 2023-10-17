@@ -8,29 +8,30 @@ The Unified Forecast System (:term:`UFS`) is a community-based, coupled, compreh
 
 The UFS includes `multiple applications <https://ufscommunity.org/science/aboutapps/>`__ that support different forecast durations and spatial domains. This documentation describes the UFS Short-Range Weather (SRW) Application, which targets predictions of atmospheric behavior on a limited spatial domain and on time scales from minutes to several days. The most recent SRW Application includes a prognostic atmospheric model, pre- and post-processing, and a community workflow for running the system end-to-end. These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. The SRW App also includes support for a verification package (METplus) for both deterministic and ensemble simulations and support for four stochastically perturbed physics schemes. 
 
-Since the v2.1.0 release, developers have added a variety of features:
+Since the last release, developers have added a variety of features:
 
    * Bug fixes since the v2.1.0 release
-   * Newly supported `RRFS_NA_13km` grid and ``FV3_RAP`` physics suite (PR `# <>`__ and `#811 <https://github.com/ufs-community/ufs-srweather-app/pull/811>`__)
+   * Addition of the supported ``FV3_RAP`` physics suite (`PR #811 <https://github.com/ufs-community/ufs-srweather-app/pull/811>`__) and support for the ``RRFS_NA_13km`` predefined grid
    * Updates to :term:`CCPP` that target the top of the ``main`` branch (which is ahead of CCPP v6.0.0). See :ref:`this page <CCPPUpdates>` for a detailed summary of updates that came in ahead of the v2.2.0 release.
-   * Integrate Unified Workflow tools, including a templater tool (`PR #793 <https://github.com/ufs-community/ufs-srweather-app/pull/793>`__) and ability to create a user-defined custom workflow (`PR #738 <https://github.com/ufs-community/ufs-srweather-app/pull/738>`__).  
-   * Introduced option to change vertical coordinate file (`PR #813 <https://github.com/ufs-community/ufs-srweather-app/pull/813>`__) and :ref:`instructions on how to use this feature <VerticalLevels>`. 
-   * Added support for Derecho, Hercules, and Gaea C5 platforms (PR `#894 <https://github.com/ufs-community/ufs-srweather-app/pull/894>`__, `#898 <https://github.com/ufs-community/ufs-srweather-app/pull/898>`__, `#911 <https://github.com/ufs-community/ufs-srweather-app/pull/911>`__)
-   * Shifted most supported platforms to spack-stack to correspond with the UFS WM (PR `#913 <https://github.com/ufs-community/ufs-srweather-app/pull/913>`__, `# <>`__, `# <>`__, `#941 <https://github.com/ufs-community/ufs-srweather-app/pull/941>`__)
-   * Improvements to verification capabilities and tasks verification of precipitation type (including snowfall accumulation) (see, e.g., PR `#552 <https://github.com/ufs-community/ufs-srweather-app/pull/552>`__, `#618 <https://github.com/ufs-community/ufs-srweather-app/pull/618>`__, `#614 <https://github.com/ufs-community/ufs-srweather-app/pull/614>`__, `#659 <https://github.com/ufs-community/ufs-srweather-app/pull/659>`__, `#668 <https://github.com/ufs-community/ufs-srweather-app/pull/668>`__, `#683 <https://github.com/ufs-community/ufs-srweather-app/pull/683>`__, `#757 <https://github.com/ufs-community/ufs-srweather-app/pull/757>`__, `#809 <https://github.com/ufs-community/ufs-srweather-app/pull/809>`__, `#853 <https://github.com/ufs-community/ufs-srweather-app/pull/853>`__, `#826 <https://github.com/ufs-community/ufs-srweather-app/pull/826>`__)
-   * Improvements to the WE2E testing suite (e.g., PR `#558 <https://github.com/ufs-community/ufs-srweather-app/pull/558>`__, `#637 <https://github.com/ufs-community/ufs-srweather-app/pull/637>`__, `#686 <https://github.com/ufs-community/ufs-srweather-app/pull/686>`__, `#732 <https://github.com/ufs-community/ufs-srweather-app/pull/732>`__,  `#864 <https://github.com/ufs-community/ufs-srweather-app/pull/864>`__, `#871 <https://github.com/ufs-community/ufs-srweather-app/pull/871>`__, )
-   * Addition of a sample verification case ()
-   * Incorporation of UFS Case Studies within the WE2E framework (`PR #822 <https://github.com/ufs-community/ufs-srweather-app/pull/822>`__, `PR #736 <https://github.com/ufs-community/ufs-srweather-app/pull/736>`__)
-   * Incorporation of plotting tasks into the workflow; addition of ability to plot on both CONUS or smaller regional grid (PR `482 <https://github.com/ufs-community/ufs-srweather-app/pull/482>`__, PR `#560 <https://github.com/ufs-community/ufs-srweather-app/pull/560>`__)
-   * Air Quality Modeling (AQM) capabilities (unsupported but available)
+   * Expansion of `Level 1 platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ to include Derecho, Hercules, and Gaea C5 (PR `#894 <https://github.com/ufs-community/ufs-srweather-app/pull/894>`__, `#898 <https://github.com/ufs-community/ufs-srweather-app/pull/898>`__, `#911 <https://github.com/ufs-community/ufs-srweather-app/pull/911>`__)
+   * Transition to spack-stack modulefiles for most supported platforms to align with the UFS WM shift to spack-stack (PRs `#913 <https://github.com/ufs-community/ufs-srweather-app/pull/913>`__ and `#941 <https://github.com/ufs-community/ufs-srweather-app/pull/941>`__)
+   * Overhaul of WE2E testing suite (see, e.g., PRs `#686 <https://github.com/ufs-community/ufs-srweather-app/pull/686>`__, `#732 <https://github.com/ufs-community/ufs-srweather-app/pull/732>`__,  `#864 <https://github.com/ufs-community/ufs-srweather-app/pull/864>`__, `#871 <https://github.com/ufs-community/ufs-srweather-app/pull/871>`__)
+   * Incorporation of additional METplus verification capabilities (PRs `#552 <https://github.com/ufs-community/ufs-srweather-app/pull/552>`__, `#614 <https://github.com/ufs-community/ufs-srweather-app/pull/614>`__, `#757 <https://github.com/ufs-community/ufs-srweather-app/pull/757>`__, `#853 <https://github.com/ufs-community/ufs-srweather-app/pull/853>`__)
+   * Integration of the Unified Workflow's templater tool (`PR #793 <https://github.com/ufs-community/ufs-srweather-app/pull/793>`__)
+   * Ability to create a user-defined custom workflow (`PR #676 <https://github.com/ufs-community/ufs-srweather-app/pull/676>`__).  
+   * Option to use a custom vertical coordinate file with different distribution of vertical layers (`PR #813 <https://github.com/ufs-community/ufs-srweather-app/pull/813>`__) and :ref:`instructions on how to use this feature <VerticalLevels>`. 
+   * Incorporation of plotting tasks into the workflow; addition of ability to plot on both CONUS and smaller regional grid (PRs `482 <https://github.com/ufs-community/ufs-srweather-app/pull/482>`__ and `#560 <https://github.com/ufs-community/ufs-srweather-app/pull/560>`__)
+   * Addition of a sample verification case (`PR #500 <https://github.com/ufs-community/ufs-srweather-app/pull/500>`__) with :ref:`documentation <VXCases>`. 
+   * Incorporation of `UFS Case Studies <https://github.com/dtcenter/ufs-case-studies>`__ within the WE2E framework (PRs `#736 <https://github.com/ufs-community/ufs-srweather-app/pull/736>`__ and `#822 <https://github.com/ufs-community/ufs-srweather-app/pull/822>`__)
+   * Improvements to the CI/CD automated testing pipeline (see, e.g., PRs `#707 <https://github.com/ufs-community/ufs-srweather-app/pull/707>`__ and `#847 <https://github.com/ufs-community/ufs-srweather-app/pull/847>`__)
+   * Air Quality Modeling (AQM) capabilities (unsupported but available; see `PR #613 <https://github.com/ufs-community/ufs-srweather-app/pull/613>`__)
    * Documentation updates to reflect the changes above
 
-
-.. COMMENT: Add UFS-Case Studies, UW
+.. COMMENT: Add new CCPP updates page
 
 The SRW App v2.2.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.7277602
+UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
 
 User's Guide Organization 
 ============================
@@ -113,9 +114,9 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - spack-stack Documentation
      - https://spack-stack.readthedocs.io/en/1.4.1/
    * - UFS_UTILS Technical Documentation
-     - https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_9_0/
+     - https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_10_0/
    * - UFS_UTILS Scientific Documentation
-     - https://ufs-community.github.io/UFS_UTILS/index.html
+     - https://ufs-community.github.io/UFS_UTILS/ver-1.10.0/index.html
    * - UFS Weather Model User's Guide
      - https://ufs-weather-model.readthedocs.io/en/latest
    * - FV3 Technical Documentation
@@ -129,17 +130,19 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Stochastic Physics Documentation
      - https://stochastic-physics.readthedocs.io/en/latest/
    * - ESMF manual
-     - https://earthsystemmodeling.org/docs/release/latest/ESMF_usrdoc/
+     - https://earthsystemmodeling.org/docs/release/ESMF_8_4_2/ESMF_usrdoc/
    * - Unified Post Processor User's Guide
      - https://upp.readthedocs.io/en/latest/
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
-     - https://unified-workflow.readthedocs.io/en/latest/
+     - https://unified-workflow.readthedocs.io/en/v1.0.0/
    * - METplus User's Guide
-     - https://metplus.readthedocs.io/en/latest/Users_Guide/index.html
+     - https://metplus.readthedocs.io/en/main_v4.1/Users_Guide/index.html
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
      - https://hemco.readthedocs.io/en/stable/
+
+.. COMMENT: Update links for UPP, stochastic_physics, WM, hpc-stack
 
 User Support and Contributions to Development
 ===============================================================
