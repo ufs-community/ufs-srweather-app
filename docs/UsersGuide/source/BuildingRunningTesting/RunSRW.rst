@@ -125,9 +125,9 @@ specifically miniforge, and install the SRW-required environments if the ``conda
 provided. For example, the following command will build all the default SRW components on the hera
 platform using the Intel compiler, and will also install conda and environments:
 
-```
-./devbuild.sh --platform=hera --compiler=intel default conda
-```
+.. code-block:: console
+
+   ./devbuild.sh --platform=hera --compiler=intel default conda
 
 
 
