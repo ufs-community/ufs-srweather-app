@@ -30,7 +30,7 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
@@ -82,7 +82,7 @@ PLATFORM Configuration Parameters
 If non-default parameters are selected for the variables in this section, they should be added to the ``platform:`` section of the ``config.yaml`` file. 
 
 ``WORKFLOW_MANAGER``: (Default: "none")
-   The workflow manager to use (e.g., "rocoto"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "rocoto." If set explicitly to "rocoto" along with the use of the ``MACHINE: "LINUX"`` target, the configuration layer assumes a Slurm batch manager when generating the XML. Valid values: ``"rocoto"`` | ``"none"``
+   The workflow manager to use (e.g., "rocoto"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "rocoto." If set explicitly to "rocoto" along with the use of the ``MACHINE: "LINUX"`` target, the configuration layer assumes a Slurm batch manager when generating the XML. Valid values: ``"rocoto"`` | ``"ecflow"`` | ``"none"``
 
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
@@ -923,7 +923,7 @@ Basic Task Parameters
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
 ``EXTRN_MDL_NAME_ICS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
+   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"`` | ``"UFS-CASE-STUDY"``
 
 ``EXTRN_MDL_ICS_OFFSET_HRS``: (Default: 0)
    Users may wish to start a forecast using forecast data from a previous cycle of an external model. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should start from a 6-hour forecast of the GFS, then ``EXTRN_MDL_ICS_OFFSET_HRS: "6"``.
@@ -977,7 +977,7 @@ Basic Task Parameters
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
+   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"`` | ``"UFS-CASE-STUDY"``
 
 ``LBC_SPEC_INTVL_HRS``: (Default: 6)
    The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary update interval*. Note that the model selected in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
@@ -1655,10 +1655,10 @@ VX Forecast Model Name
    The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
   
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
-   The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored.
+   The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored. Valid values: ``1`` | ``3`` | ``6`` | ``24``
 
 ``VX_ASNOW_ACCUMS_HRS``: (Default: [ 6, 24 ])
-   The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored.
+   The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored. Valid values: ``6`` | ``24``
 
 Verification (VX) Directories
 ------------------------------
