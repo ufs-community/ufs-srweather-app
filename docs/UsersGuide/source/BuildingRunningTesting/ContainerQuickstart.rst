@@ -271,9 +271,9 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 .. code-block:: console
 
    Please do the following to activate conda:
-       > conda activate srw_app
+       > conda activate regional_workflow
 
-then the user should run ``conda activate srw_app``. This will activate the ``srw_app`` conda environment. The command(s) will vary from system to system, but the user should see ``(srw_app)`` in front of the Terminal prompt at this point.
+then the user should run ``conda activate regional_workflow``. This will activate the ``regional_workflow`` conda environment. The command(s) will vary from system to system, but the user should see ``(regional_workflow)`` in front of the Terminal prompt at this point.
 
 .. _SetUpConfigFileC: 
 
