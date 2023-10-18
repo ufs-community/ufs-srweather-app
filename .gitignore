@@ -1,5 +1,4 @@
 bin/
-ecf/
 exec/
 fix/
 sorc/*/
@@ -11,6 +10,6 @@ ush/__pycache__/
 ush/config.yaml
 ush/python_utils/__pycache__/
 ush/*.swp
-
+devbuild.log
 *.swp
 __pycache__
