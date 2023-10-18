@@ -221,8 +221,8 @@ fi
 # Conda environment should have linux utilties to perform these tasks on macos.
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${SRW_DIR}/build"
-INSTALL_DIR=${SRW_DIR}
+BUILD_DIR="${BUILD_DIR:-${SRW_DIR}/build}"
+INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
 CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
 echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
