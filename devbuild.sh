@@ -189,7 +189,6 @@ while :; do
 done
 
 # build conda and conda environments, if requested.
-set -x
 if [ "${BUILD_CONDA}" = "on" ] ; then
   if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
     os=$(uname)
