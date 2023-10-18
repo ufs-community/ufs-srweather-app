@@ -218,7 +218,7 @@ else
   conda activate
 fi
 
-# Conda environment should have linux utilties to perform these tasks on macos.
+# Conda environment should have linux utilities to perform these tasks on macos.
 SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 MACHINE_SETUP=${SRW_DIR}/src/UFS_UTILS/sorc/machine-setup.sh
 BUILD_DIR="${SRW_DIR}/build"
