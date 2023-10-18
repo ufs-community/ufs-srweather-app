@@ -41,6 +41,8 @@ OPTIONS
       installation prefix
   --bin-dir=BIN_DIR
       installation binary directory name ("exec" by default; any name is available)
+  --conda-dir=CONDA_DIR
+      installation location for miniconda (SRW clone conda subdirectory by default)
   --build-type=BUILD_TYPE
       build type; defaults to RELEASE
       (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
@@ -52,9 +54,12 @@ OPTIONS
       build with verbose output
 
 TARGETS
-   default = builds the default list of apps (also not passing any target does the same)
-   all = builds all apps
-   Or any combinations of (ufs, ufs_utils, upp)
+   default = builds the default list of components for the specified application
+            (also not passing any target does the same)
+   all = builds all standard components for ATM
+   conda = installs miniconda
+   conda_only = installs miniconda, but no other 
+   Or any combinations of (ufs, ufs_utils, upp, nexus, aqm_utils, conda)
 
 NOTE: See User's Guide for detailed build instructions
 
@@ -176,6 +181,7 @@ while :; do
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
          BUILD_UFS_UTILS="on"; BUILD_UPP="on";;
     conda) BUILD_CONDA="on";;
+    conda_only) BUILD_CONDA="on"; DEFAULT_BUILD=false;;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
@@ -196,7 +202,7 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
     test $os == Darwin && os=MacOSX
     hardware=$(uname -m)
     installer=Miniforge3-${os}-${hardware}.sh
-    curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/23.3.1-1/download/${installer}"
     bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
     rm ${installer}
   fi
