@@ -1,3 +1,6 @@
+.. role:: raw-html(raw)
+    :format: html
+
 .. _LAMGrids:
 
 =================================================================================
@@ -63,7 +66,7 @@ The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite
 
 .. _RRFS_CONUS_3km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_3km.sphr.native_wrtcmp.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_3km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 3 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write component grid (blue).*
@@ -80,7 +83,7 @@ Predefined SUBCONUS Grid Over Indianapolis
 
 .. _SUBCONUS_Ind_3km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SUBCONUS_Ind_3km.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/SUBCONUS_Ind_3km.png
    :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the SUBCONUS_Ind_3km computational grid (red) and corresponding write component grid (blue).*
@@ -92,9 +95,7 @@ Predefined 13-km CONUS Grid
 
 .. _RRFS_CONUS_13km:
 
-.. COMMENT: Update link once image has been added!
-
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_13km.sphr.native_wrtcmp.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_13km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write component grid (blue).*
@@ -106,19 +107,37 @@ Predefined 13-km North American Grid
 
 .. _RRFS_NA_13km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_NA_13km.sphr.native_wrtcmp.png
-   :alt: Map of the North American 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.sphr.whole.png
+   :alt: Map of the North American 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just outside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_NA_13km computational grid (red) and corresponding write component grid (blue).*
 
 The ``RRFS_NA_13km`` grid (:numref:`Fig. %s <RRFS_NA_13km>`) covers all of North America. This grid was designed to run with the ``FV3_RAP`` physics suite but can also be run with the ``FV3_GFS_v16`` suite. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
+
+Corner plots for the ``RRFS_NA_13km`` grid in :numref:`Table %s <CornerPlots>` show the 4-cell-wide :term:`halo` on the computational grid in orange, which gives an idea of the size of the grid cells.
+
+.. |logo1| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.upper_left_w_halo.png
+
+.. |logo2| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.upper_right_w_halo.png 
+
+.. |logo3| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.lower_right_w_halo.png 
+
+.. |logo4| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.lower_left_w_halo.png  
+
+.. _CornerPlots:
+.. list-table:: Corner Plots for RRFS_NA_13km
+
+   * - |logo1| :raw-html:`<br/><p style="text-align: center;"><i>Upper left w/halo</i></p>`
+     - |logo2| :raw-html:`<br/><p style="text-align: center;"><i>Upper right w/halo</i></p>`
+     - |logo3| :raw-html:`<br/><p style="text-align: center;"><i>Lower right w/halo</i></p>`
+     - |logo4| :raw-html:`<br/><p style="text-align: center;"><i>Lower left w/halo</i></p>`
 
 Predefined 25-km Grid
 ------------------------
 
 .. _RRFS_CONUS_25km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_25km.sphr.native_wrtcmp.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_25km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write component grid (blue).*
@@ -240,7 +259,7 @@ Users will need to determine ``ak`` and ``bk`` values, which are used to define 
 
 The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program can output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_10_0/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/ver-1.10.0/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 
