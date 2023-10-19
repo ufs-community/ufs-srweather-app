@@ -33,7 +33,7 @@ A surface boundary associated with a vorticity maximum over the northern Great P
    * `Storm Prediction Center (SPC) Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/IndySevereWeather18z.gif
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/IndySevereWeather18z.gif
    :alt: Radar animation of severe weather over Indianapolis on June 15, 2019 starting at 18z. The animation shows areas of heavy rain and tornado reports moving from west to east over Indianapolis. 
 
    *Severe Weather Over Indianapolis Starting at 18z*
@@ -172,7 +172,7 @@ In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and 
      EXTRN_MDL_NAME_ICS: FV3GFS
      FV3GFS_FILE_FMT_ICS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v2p2/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_ics:`` variables, see :numref:`Section %s <task_get_extrn_ics>`. 
 
@@ -185,7 +185,7 @@ Similarly, in the ``task_get_extrn_lbcs:`` section, add ``USE_USER_STAGED_EXTRN_
      LBC_SPEC_INTVL_HRS: 6
      FV3GFS_FILE_FMT_LBCS: grib2
      USE_USER_STAGED_EXTRN_FILES: true
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/FV3GFS/grib2/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v2p2/input_model_data/FV3GFS/grib2/${yyyymmddhh}
 
 For a detailed description of the ``task_get_extrn_lbcs:`` variables, see :numref:`Section %s <task_get_extrn_lbcs>`. 
 
@@ -259,10 +259,10 @@ Next, users will need to modify the data parameters in ``task_get_extrn_ics:`` a
 
    task_get_extrn_ics:
      EXTRN_MDL_NAME_ICS: HRRR
-     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/develop/input_model_data/HRRR/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v2p2/input_model_data/HRRR/${yyyymmddhh}
    task_get_extrn_lbcs:
      EXTRN_MDL_NAME_LBCS: RAP
-     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/develop/input_model_data/RAP/${yyyymmddhh}
+     EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v2p2/input_model_data/RAP/${yyyymmddhh}
      EXTRN_MDL_LBCS_OFFSET_HRS: '-0'
 
 HRRR and RAP data are better than FV3GFS data for use with the FV3_RRFS_v1beta physics scheme because these datasets use the same physics :term:`parameterizations` that are in the FV3_RRFS_v1beta suite. They focus on small-scale weather phenomena involved in storm development, so forecasts tend to be more accurate when HRRR/RAP data are paired with FV3_RRFS_v1beta and a high-resolution (e.g., 3-km) grid. Using HRRR/RAP data with FV3_RRFS_v1beta also limits the "spin-up adjustment" that takes place when initializing with model data coming from different physics.
@@ -388,21 +388,21 @@ Sea Level Pressure
 `````````````````````
 In the Sea Level Pressure (SLP) plots, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f000.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f000.png
       :align: center
 
       *Difference Plot for Sea Level Pressure at f000*
 
 As the forecast continues, the results begin to diverge, as evidenced by the spattering of light blue dispersed across the f006 SLP difference plot. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f006.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f006.png
       :align: center
 
       *Difference Plot for Sea Level Pressure at f006*
 
 The predictions diverge further by f012, where a solid section of light blue in the top left corner of the difference plot indicates that to the northwest of Indianapolis, the SLP predictions for the ``control`` forecast were slightly lower than the predictions for the ``test_expt`` forecast. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f012.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f012.png
       :align: center
 
       *Difference Plot for Sea Level Pressure at f012*
@@ -416,7 +416,7 @@ Reflectivity images visually represent the weather based on the energy (measured
 
 At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. The ``test_expt`` plot has significantly more areas with high composite reflectivity values. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f000.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f000.png
       :align: center
 
       *Composite Reflectivity at f000*
@@ -425,14 +425,14 @@ As the forecast progresses, the radar images resemble each other more (see :numr
 
 .. _refc006:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f006.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f006.png
       :align: center
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
 At forecast hour 12, the plots for each forecast show a similar evolution of the storm with both resolving a squall line. The ``test_expt`` plot shows a more intense squall line with discrete cells (areas of high composite reflectivity in dark red), which could lead to severe weather. The ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. It also orients the squall line more northward with less intensity, possibly due to convection from the previous forecast runs cooling the atmosphere. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f012.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f012.png
       :align: center
 
       *Composite Reflectivity at f012*
@@ -468,7 +468,7 @@ In general, the higher the CIN values are (i.e., the closer they are to zero), t
 
 At the 0th forecast hour, the ``test_expt`` plot (below, left) shows lower values of CAPE and higher values of CIN than in the ``control`` plot (below, right). This means that ``test_expt`` is projecting lower potential energy available for a storm but also lower inhibition, which means that less energy would be required for a storm to develop. The difference between the two plots is particularly evident in the southwest corner of the difference plot, which shows a 1000+ J/kg difference between the two plots. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f000.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f000.png
       :width: 1200
       :align: center
 
@@ -476,7 +476,7 @@ At the 0th forecast hour, the ``test_expt`` plot (below, left) shows lower value
 
 At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall. Both plots also predict higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the difference plot indicates where ``test_expt`` predictions are higher than the ``control`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f006.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f006.png
       :width: 1200
       :align: center
 
@@ -484,7 +484,7 @@ At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasti
 
 At the 12th forecast hour, the ``control`` plot indicates that CAPE may be decreasing overall. ``test_expt``, however, shows that areas of high CAPE remain and continue to grow, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f012.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f012.png
       :width: 1200
       :align: center
 
@@ -521,7 +521,7 @@ Cold air damming occurs when cold dense air is topographically trapped along the
    * `Storm Prediction Center (SPC) Storm Report for 20200206 <https://www.spc.noaa.gov/climo/reports/200206_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20200207 <https://www.spc.noaa.gov/climo/reports/200207_rpts.html>`__ 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/ColdAirDamming.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/ColdAirDamming.jpg
    :alt: Radar animation of precipitation resulting from cold air damming in the southern Appalachian mountains. 
 
    *Precipitation Resulting from Cold Air Damming East of the Appalachian Mountains*
@@ -543,7 +543,7 @@ A polar vortex brought arctic air to much of the U.S. and Mexico. A series of co
    
 **Weather Phenomena:** Snow and record-breaking cold temperatures
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SouthernPlainsWinterWeather.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/SouthernPlainsWinterWeather.jpg
    :alt: Radar animation of the Southern Plains Winter Weather Event centered over Oklahoma City. Animation starts on February 14, 2021 at 6h00 UTC and ends on February 17, 2021 at 6h00 UTC. 
 
    *Southern Plains Winter Weather Event Over Oklahoma City*
@@ -569,7 +569,7 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
    * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/HalloweenStorm.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.jpg
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
 
    *Halloween Storm 2019*
@@ -594,7 +594,7 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
    * `Storm Prediction Center (SPC) Storm Report for 20190713 <https://www.spc.noaa.gov/climo/reports/190713_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/HurricaneBarry_Making_Landfall.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HurricaneBarry_Making_Landfall.jpg
    :alt: Radar animation of Hurricane Barry making landfall. 
 
    *Hurricane Barry Making Landfall*
