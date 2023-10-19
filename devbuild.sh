@@ -201,7 +201,7 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
     test $os == Darwin && os=MacOSX
     hardware=$(uname -m)
     installer=Miniforge3-${os}-${hardware}.sh
-    curl -L -O "https://github.com/conda-forge/miniforge/releases/23.3.1-1/download/${installer}"
+    curl -L -O "https://github.com/conda-forge/miniforge/releases/download/23.3.1-1/${installer}"
     bash ./${installer} -bfp "${CONDA_BUILD_DIR}"
     rm ${installer}
   fi
