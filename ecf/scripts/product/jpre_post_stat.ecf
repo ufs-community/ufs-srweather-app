@@ -13,12 +13,11 @@ export cyc="%CYC%"
 %include <envir-p1.h>
 
 export subcyc=0
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 
-export GLOBAL_VAR_DEFNS_FP="/lfs/h2/emc/ptmp/lin.gan/ecflow_aqm/para/output/prod/today/test2/c84/2023101612/var_defns.sh"
-export USHdir="/lfs/h2/emc/ptmp/lin.gan/ecflow_aqm/para/output/prod/today/test1/aqm.v7.0.84/ush"
-JOBSdir="/lfs/h2/emc/ptmp/lin.gan/ecflow_aqm/para/output/prod/today/test1/aqm.v7.0.84/jobs"
-
-. ${USHdir}/load_modules_run_task.sh pre_post_stat "${JOBSdir}/JREGIONAL_PRE_POST_STAT"
+. ${HOMEaqm}/ush/load_modules_run_task.sh pre_post_stat "JREGIONAL_PRE_POST_STAT"
 
 %include <tail.h>
 

@@ -1,6 +1,7 @@
 # envir-p1.h
-
-#### export model_ver="v7.0"
+export job=${job:-$PBS_JOBNAME}
+export jobid=${jobid:-$job.$PBS_JOBID}
+export RUN_ENVIR=nco
 export RUN=%RUN%
 export NET=%NET%
 export envir=%ENVIR%
@@ -24,12 +25,14 @@ if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoam
 
 
 # Developer configuration
+aqm_ver=v7.0
 PTMP=/lfs/h2/emc/ptmp
 PSLOT=ecflow_aqm
 export COMROOT=${PTMP}/${USER}/${PSLOT}/para/com
 export COMPATH=${COMROOT}/aqm
 export COMaqm=$(compath.py aqm/${aqm_ver}) 
 export COMOUT_PREP="$(compath.py obsproc/v1.1.0)"
+export DATAROOT=/lfs/h2/emc/stmp/${USER}/${model}/${PSLOT}
 # End of Developer configuration
 
 #export SENDDBN="NO"

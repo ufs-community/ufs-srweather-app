@@ -45,7 +45,7 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for AQM-MANAGER.
 ========================================================================"
 
-ecflow_sid=prod_aqm
+ecflow_sid=nco_aqm
 
 ##############################################
 # Set variables used in the script
@@ -77,20 +77,20 @@ while [ $h_try -lt 70 ]; do
   # Set release_next_cycle event when 
   #   current cycle fcst restart file exist
   ####################################
-  if [ ${found_required_file_for_next_cycle} = "NO" ] && [ -d "${COMIN}/RESTART" ]; then
-    if [[ "$(ls -A ${COMIN}/RESTART )" && -f ${gefs_check} && -f ${gfs_check} ]]; then
+  if [ ${found_required_file_for_next_cycle} = "NO" ] && [ -d "${COMIN}/${cyc}/RESTART" ]; then
+    if [[ "$(ls -A ${COMIN}/${cyc}/RESTART )" && -f ${gefs_check} && -f ${gfs_check} ]]; then
       ecflow_client --event release_next_cycle
       found_required_file_for_next_cycle=YES
     fi
   fi
   ####################################
   # Requeue previous cycle when
-  #   current forecast job is completed
+  #   current forecast job is completed and release_next_cycle event set 
   ####################################
   if [ ${fcst_job_completed} = "NO" ]; then
     P_state=$(ecflow_client --query state /${ecflow_sid}/primary/${gcyc})
     e_state=$(ecflow_client --query state /${ecflow_sid}/primary/${cyc}/aqm/v1.0/forecast/jforecast)
-    if [[ ${e_state} = "complete" && ${P_state} = "complete" ]]; then
+    if [[ ${e_state} = "complete" && ${P_state} = "complete" && ${found_required_file_for_next_cycle} = "YES" ]]; then
       ecflow_client --event requeue_cycle
       ecflow_client --alter change variable PDY $NEXTDAYPDY /${ecflow_sid}/primary/${gcyc}
       ecflow_client --requeue force /${ecflow_sid}/primary/${gcyc}/aqm

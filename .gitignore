@@ -2,6 +2,7 @@ bin/
 exec/
 fix/
 sorc/*/
+fix
 tests/WE2E/WE2E_tests_*.yaml
 tests/WE2E/*.txt
 tests/WE2E/*.log
@@ -11,5 +12,6 @@ ush/config.yaml
 ush/python_utils/__pycache__/
 ush/*.swp
 devbuild.log
+*TOBEDELETED
 *.swp
 __pycache__
