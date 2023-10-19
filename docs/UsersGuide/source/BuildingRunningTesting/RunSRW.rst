@@ -34,7 +34,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
 .. _AppOverallProc:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_run_process.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_run_process.png
    :alt: Flowchart describing the SRW App workflow steps. 
 
    *Overall Layout of the SRW App Workflow*
@@ -47,26 +47,29 @@ Download and Stage the Data
 The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available in the following locations: 
 
 .. _DataLocations:
-.. table:: Data Locations for Level 1 Systems
+.. list-table:: Data Locations for Level 1 Systems
+   :widths: 20 50
+   :header-rows: 1
 
-   +--------------+------------------------------------------------------------------------------+
-   | Machine      | File location                                                                |
-   +==============+==============================================================================+
-   | Cheyenne     | /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/         |
-   +--------------+------------------------------------------------------------------------------+
-   | Gaea         | /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | Hera         | /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_data/develop/input_model_data/                         |
-   +--------------+------------------------------------------------------------------------------+
-   | Orion        | /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data/       |
-   +--------------+------------------------------------------------------------------------------+
-   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/                |
-   +--------------+------------------------------------------------------------------------------+ 
-    
+   * - Machine
+     - File location
+   * - Derecho
+     - /glade/work/epicufsrt/contrib/UFS_SRW_data/|data|/input_model_data
+   * - Gaea (C3/C4/C5)
+     - /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Hera
+     - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
+   * - Hercules
+     - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Jet
+     - /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
+   * - NOAA Cloud
+     - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
+   * - Orion
+     - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - WCOSS2
+     - /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/
+
 For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
@@ -74,7 +77,7 @@ For Level 2-4 systems, the data must be added to the user's system. Detailed ins
 Grid Configuration
 =======================
 
-The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the four predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
+The SRW App officially supports the five predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the five predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
 
 .. _PredefinedGrids:
 
@@ -91,8 +94,8 @@ The SRW App officially supports the four predefined grids shown in :numref:`Tabl
    +----------------------+-------------------+--------------------------------+
    | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
    +----------------------+-------------------+--------------------------------+
-
-.. COMMENT: Revisit before SRW w/RRFS release
+   | RRFS_NA_13km         | ESG grid          | lambert_conformal              |
+   +----------------------+-------------------+--------------------------------+
 
 .. _GenerateForecast:
 
@@ -126,7 +129,7 @@ The |wflow_env| conda/Python environment has already been set up on Level 1 plat
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh
+   source /path/to/etc/lmod-setup.sh <platform>
    module use /path/to/modulefiles
    module load wflow_<platform>
 
@@ -347,10 +350,10 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -396,10 +399,10 @@ For example, to run the out-of-the-box experiment on Gaea using cron to automate
          CRON_RELAUNCH_INTVL_MNTS: 3
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/2019061518
 
 To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
 
@@ -682,10 +685,10 @@ Users who have already staged the observation data needed for METplus (i.e., the
 .. code-block:: console
 
    platform:
-      CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/nohrsc/proc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
+      CCPA_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/nohrsc/proc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/ndas/proc
 
 .. _GenerateWorkflow: 
 
@@ -716,7 +719,7 @@ The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASED
 
 .. _WorkflowGeneration:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_regional_workflow_gen.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_regional_workflow_gen.png
    :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling uwtools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
 
    *Experiment Generation Description*
@@ -739,7 +742,7 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_wflow_flowchart.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_wflow_flowchart.png
    :alt: Flowchart of the default workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
    *Flowchart of the Default Workflow Tasks*

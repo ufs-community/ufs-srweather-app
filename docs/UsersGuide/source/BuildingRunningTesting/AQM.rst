@@ -22,11 +22,11 @@ Quick Start Guide (SRW-AQM)
 Download the Code
 -------------------
 
-Clone the ``develop`` branch of the authoritative SRW App repository:
+Clone the |branch| branch of the authoritative SRW App repository:
 
 .. code-block:: console
 
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app
+   git clone -b release/public-v2.2.0 https://github.com/ufs-community/ufs-srweather-app
    cd ufs-srweather-app
 
 Checkout Externals
@@ -235,7 +235,7 @@ Structure of SRW-AQM Workflow
 
 .. _FlowProcAQM:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW-AQM_workflow.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW-AQM_workflow.png
    :alt: Flowchart of the SRW-AQM tasks.
 
    *Workflow Structure of SRW-AQM (non-DA)*

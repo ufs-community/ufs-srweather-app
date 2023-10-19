@@ -22,7 +22,7 @@ To build the SRW App, users will complete the following steps:
 
 .. _AppBuildProc:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_build_process.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_build_process.png
    :alt: Flowchart describing the SRW App build process. 
 
    *Overview of the SRW App Build Process*
@@ -35,7 +35,7 @@ Install the Prerequisite Software Stack
 
 Users on any sufficiently up-to-date machine with a UNIX-based operating system should be able to install the prerequisite software stack and run the SRW Application. However, a list of prerequisites is available in :numref:`Section %s <software-prereqs>` for reference. Users should install or update their system as required before attempting to install the software stack. 
 
-Currently, installation of the prerequisite software stack is supported via HPC-Stack. :term:`HPC-Stack` is a :term:`repository` that provides a unified, shell script-based system to build the software stack required for `UFS <https://ufscommunity.org/>`__ applications such as the SRW App. 
+Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`spack-stack` is a :term:`repository` that provides a Spack-based system to build the software stack required for `UFS <https://ufscommunity.org/>`__ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems. 
 
 .. Attention::
    Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ (e.g., Cheyenne, Hera, Orion, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
@@ -60,7 +60,8 @@ Users working on systems that fall under `Support Levels 2-4 <https://github.com
 For a detailed description of installation options, see :ref:`Installing the HPC-Stack <InstallBuildHPCstack>`. 
 
 .. attention::
-   Although HPC-Stack is currently the fully-supported software stack option, UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. The spack-stack is currently used on NOAA Cloud platforms and in containers, while HPC-Stack is still used on other Level 1 systems and is the software stack validated by the UFS Weather Model. Users are encouraged to check out `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ to prepare for the upcoming shift in support from HPC-Stack to spack-stack. 
+   
+   Spack-stack is the fully-supported software stack validated by the UFS Weather Model as of `PR #1707 <https://github.com/ufs-community/ufs-weather-model/pull/1707>`__. UFS applications are gradually shifting to :term:`spack-stack`, which is a :term:`Spack`-based method for installing UFS prerequisite software libraries. As of the |release| release, spack-stack is supported in the SRW App on most Level 1 systems with the exception of Derecho, which uses HPC-Stack. Transition to spack-stack is underway for Derecho. Users on generic MacOS and Linux systems will find HPC-Stack-based modulefiles in the v2.2.0 release but can expect that these will also shift to spack-stack in the ``develop`` branch in the coming months. When all systems have shifted to spack-stack, support for HPC-Stack will be deprecated. Users are encouraged to check out `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ to prepare for this shift in support from HPC-Stack to spack-stack even if their system currently has support for HPC-Stack. 
 
 After completing installation, continue to the :ref:`next section <DownloadSRWApp>` to download the UFS SRW Application Code. 
 
@@ -68,11 +69,11 @@ After completing installation, continue to the :ref:`next section <DownloadSRWAp
 
 Download the UFS SRW Application Code
 ======================================
-The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the ``develop`` branch of the repository:
+The SRW Application source code is publicly available on GitHub. To download the SRW App code, clone the |branch| branch of the repository:
 
 .. code-block:: console
 
-   git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+   git clone -b release/public-v2.2.0 https://github.com/ufs-community/ufs-srweather-app.git
 
 The cloned repository contains the configuration files and sub-directories shown in
 :numref:`Table %s <FilesAndSubDirs>`. The user may set an ``$SRW`` environment variable to point to the location of the new ``ufs-srweather-app`` repository. For example, if ``ufs-srweather-app`` was cloned into the ``$HOME`` directory, the following commands will set an ``$SRW`` environment variable in a bash or csh shell, respectively:
@@ -198,7 +199,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
    ./devbuild.sh --platform=<machine_name>
 
-where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` 
+where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``derecho`` | ``gaea`` | ``hera`` | ``hercules`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion``
 
 .. note::
    Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacLinuxDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
@@ -213,7 +214,7 @@ where valid values are ``intel`` or ``gnu``.
 
 The last line of the console output should be ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If the ``devbuild.sh`` build method does not work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If the application built properly, users may continue to :numref:`Section %s <RunSRW>` to configure and run an experiment. If the ``devbuild.sh`` build method does *not* work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 .. _ExecDescription:
 
