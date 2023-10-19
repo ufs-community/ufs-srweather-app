@@ -91,6 +91,9 @@ rst_prolog = """
 .. |wflow_env| replace:: ``workflow_tools``
 .. |activate| replace:: ``conda activate workflow_tools``
 .. |prompt| replace:: ``(workflow_tools)``
+.. |latestr| replace:: v2.2.0
+.. |branch| replace:: ``release/public-v2.2.0``
+.. |data| replace:: v2p2
 """
 
 # -- Options for HTML output -------------------------------------------------
@@ -216,10 +219,13 @@ epub_exclude_files = ['search.html']
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
    'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
+   'spack-stack': ('https://spack-stack.readthedocs.io/en/1.4.1/', None),
    'met': ('https://met.readthedocs.io/en/latest/', None),
    'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/latest/', None),
 }
+
+# COMMENT: Update hpc-stack ref to release docs! https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/
 
 # -- Options for todo extension ----------------------------------------------
 
