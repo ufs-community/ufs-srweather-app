@@ -128,11 +128,11 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - CCPP Scientific Documentation
      - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
    * - Stochastic Physics Documentation
-     - https://stochastic-physics.readthedocs.io/en/latest/
+     - https://stochastic-physics.readthedocs.io/en/release-public-v3/
    * - ESMF manual
      - https://earthsystemmodeling.org/docs/release/ESMF_8_4_2/ESMF_usrdoc/
    * - Unified Post Processor User's Guide
-     - https://upp.readthedocs.io/en/latest/
+     - https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
@@ -142,7 +142,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
      - https://hemco.readthedocs.io/en/stable/
 
-.. COMMENT: Update links for UPP, stochastic_physics, WM, hpc-stack
+.. COMMENT: Update links for stochastic_physics, WM, CCPP Tech docs, hpc-stack
 
 User Support and Contributions to Development
 ===============================================================
