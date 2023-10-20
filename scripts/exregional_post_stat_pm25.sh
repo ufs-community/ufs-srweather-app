@@ -152,10 +152,10 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUTwmo}
 
     # Distribute Data
-    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
-    fi
+#    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
+#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+#    fi
   done
 fi
 
@@ -278,6 +278,15 @@ EOF1
     cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
     cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUTwmo}
     cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUTwmo}
+
+    ##############################
+    # Distribute Data
+    ##############################
+
+    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+    fi
 
     if [ "$SENDDBN" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2

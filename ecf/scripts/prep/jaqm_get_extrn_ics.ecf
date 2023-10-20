@@ -1,0 +1,26 @@
+#PBS -N aqm_get_extrn_ics_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:45:00
+#PBS -l select=1:mpiprocs=1:ncpus=1:mem=10G
+#PBS -l debug=true
+
+model=aqm
+export cyc="%CYC%"
+%include <head.h>
+%include <envir-p1.h>
+
+export subcyc=0
+export ICS_OR_LBCS=ICS
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+
+. ${HOMEaqm}/ush/load_modules_run_task.sh get_extrn_ics "JREGIONAL_GET_EXTRN_MDL_FILES"
+
+%include <tail.h>
+
+%manual
+%end

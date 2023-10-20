@@ -89,7 +89,7 @@ while [ $h_try -lt 70 ]; do
   ####################################
   if [ ${fcst_job_completed} = "NO" ]; then
     P_state=$(ecflow_client --query state /${ecflow_sid}/primary/${gcyc})
-    e_state=$(ecflow_client --query state /${ecflow_sid}/primary/${cyc}/aqm/v1.0/forecast/jforecast)
+    e_state=$(ecflow_client --query state /${ecflow_sid}/primary/${cyc}/aqm/v1.0/forecast/jaqm_forecast)
     if [[ ${e_state} = "complete" && ${P_state} = "complete" && ${found_required_file_for_next_cycle} = "YES" ]]; then
       ecflow_client --event requeue_cycle
       ecflow_client --alter change variable PDY $NEXTDAYPDY /${ecflow_sid}/primary/${gcyc}
