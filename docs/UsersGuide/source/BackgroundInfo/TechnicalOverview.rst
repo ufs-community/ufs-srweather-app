@@ -43,7 +43,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 * >82 GB disk space
 
    * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * 8 GB for full :term:`HPC-Stack` installation
+   * ~23 GB for full :term:`spack-stack` installation (or ~8 GB :term:`HPC-Stack`)
    * 3 GB for ``ufs-srweather-app`` installation
    * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
@@ -70,13 +70,13 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
    * Only required for retrieving data using ``retrieve_data.py``. If data is prestaged, *wget* is not required. If data is retrieved using other means, *curl* may be used as an alternative. 
 
-The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
+The following software is also required to run the SRW Application, but the :term:`spack-stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
 * CMake v3.20+
 
 * :term:`MPI` (MPICH, OpenMPI, or other implementation)
 
-   * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
+   * Only **MPICH** or **OpenMPI** can be built with spack-stack. Other implementations must be installed separately by the user (if desired). 
 
 For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :doc:`HPC-Stack Documentation: Chapter 3 <hpc-stack:mac-install>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
@@ -130,8 +130,10 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
 
 The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/latest/CodeOverview.html>`__.
 
+.. COMMENT: Update link to release docs!
+
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`HPC-Stack Documentation <hpc-stack:index>` for details on installing the HPC-Stack. 
+   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing the spack-stack. 
 
 
 .. _TopLevelDirStructure:
