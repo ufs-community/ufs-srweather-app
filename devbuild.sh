@@ -57,9 +57,8 @@ TARGETS
    default = builds the default list of components for the specified application
             (also not passing any target does the same)
    all = builds all standard components for ATM
-   conda = installs miniconda
    conda_only = installs miniconda, but no other 
-   Or any combinations of (ufs, ufs_utils, upp, nexus, aqm_utils, conda)
+   Or any combinations of (ufs, ufs_utils, upp, nexus, aqm_utils)
 
 NOTE: See User's Guide for detailed build instructions
 
@@ -119,7 +118,7 @@ VERBOSE=false
 
 # Turn off all apps to build and choose default later
 DEFAULT_BUILD=true
-BUILD_CONDA="off"
+BUILD_CONDA="on"
 BUILD_UFS="off"
 BUILD_UFS_UTILS="off"
 BUILD_UPP="off"
@@ -180,8 +179,7 @@ while :; do
     default) ;;
     all) DEFAULT_BUILD=false; BUILD_UFS="on";
          BUILD_UFS_UTILS="on"; BUILD_UPP="on";;
-    conda) BUILD_CONDA="on";;
-    conda_only) BUILD_CONDA="on"; DEFAULT_BUILD=false;;
+    conda_only) DEFAULT_BUILD=false;;
     ufs) DEFAULT_BUILD=false; BUILD_UFS="on" ;;
     ufs_utils) DEFAULT_BUILD=false; BUILD_UFS_UTILS="on" ;;
     upp) DEFAULT_BUILD=false; BUILD_UPP="on" ;;
@@ -258,9 +256,11 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ "${DEFAULT_BUILD}" = true ]; then
     BUILD_NEXUS="on"
     BUILD_AQM_UTILS="on"
+    BUILD_CONDA="off"
   fi
   if [ "${PLATFORM}" = "wcoss2" ]; then
     BUILD_POST_STAT="on"
+    BUILD_CONDA="off"
   else
     BUILD_POST_STAT="off"
   fi

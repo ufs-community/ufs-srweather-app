@@ -127,7 +127,7 @@ platform using the Intel compiler, and will also install conda and environments:
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=hera --compiler=intel default conda
+   ./devbuild.sh --platform=hera --compiler=intel default
 
 
 

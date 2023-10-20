@@ -196,12 +196,12 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 .. code-block:: console
 
-   ./devbuild.sh --platform=<machine_name> conda
+   ./devbuild.sh --platform=<machine_name>
 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` 
 
-Here, ``conda`` is included as a target, which will also install conda and SRW environments as part
-of the build process. The location defaults to inside the SRW clone in ufs-srweather-app/conda,
+Starting with SRW v2.2.0 will install miniconda and SRW environments as part
+of the build process. The location defaults to inside the SRW clone in ``ufs-srweather-app/conda``,
 however users can set any path on their system using the ``--conda-dir`` flag. If conda is already
 installed in that location, conda installation will be skipped. The following example uses a
 pre-installed conda installation at ``/path/to/conda``
@@ -210,11 +210,8 @@ pre-installed conda installation at ``/path/to/conda``
 
    ./devbuild.sh --platform=<machine_name> --conda-dir /path/to/conda
 
-To install conda in an arbitrary location, use both the ``conda`` target and the ``--conda-dir``
-flag.
-
-Running ``./devbuild.sh`` will show the usage statement for all available flags and targets for this
-script.
+Running ``./devbuild.sh`` without any arguments will show the usage statement for all available
+flags and targets for this script.
 
 .. note::
    Although build modulefiles exist for generic Linux and MacOS machines, users will need to alter these according to the instructions in Sections :numref:`%s <CMakeApproach>` & :numref:`%s <MacLinuxDetails>`. Users on these systems may have more success building the SRW App with the :ref:`CMake Approach <CMakeApproach>` instead. 
