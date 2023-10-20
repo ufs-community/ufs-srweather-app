@@ -154,7 +154,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to the |release| release documentation on :ref:`configuring the SRW App <srw_|release|:UserSpecificConfig>`.
+For additional configuration guidance, refer to the |release| release documentation on :ref:`configuring the SRW App <srw_v2.1.0:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -272,6 +272,8 @@ Point STAT Files
 The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
 The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
+
+.. COMMENT: Update links!
 
 To narrow down the variable field even further, users can focus on these weather variables: 
 

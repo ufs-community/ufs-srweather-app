@@ -27,7 +27,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
 
-         git clone -b develop https://github.com/ufs-community/ufs-srweather-app.git
+         git clone -b release/public-v2.2.0 https://github.com/ufs-community/ufs-srweather-app.git
 
    #. Check out the external repositories:
 
@@ -52,6 +52,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       .. code-block:: console
          
+         source /path/to/etc/lmod-setup.sh <platform>
          module use /path/to/ufs-srweather-app/modulefiles
          module load wflow_<platform>
 

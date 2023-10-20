@@ -410,6 +410,8 @@ To determine whether the ``config.yaml`` file adjustments are valid, users can r
 
    ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
 
+.. COMMENT: Remove this section!!!
+
 A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
 
 .. code-block:: console
