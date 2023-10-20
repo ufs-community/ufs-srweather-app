@@ -2,10 +2,10 @@ platform:
   WORKFLOW_MANAGER: rocoto
   NCORES_PER_NODE: 32
   SCHED: slurm
-  TEST_CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
-  DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/obs_data/ndas/proc
+  DOMAIN_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/FV3LAM_pregen
   QUEUE_DEFAULT: windfall
   QUEUE_FCST: windfall
   QUEUE_HPSS: windfall
@@ -19,25 +19,25 @@ platform:
   SCHED_NATIVE_CMD: --clusters=c4 --export=NONE
   SCHED_NATIVE_CMD_HPSS: --clusters=es --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data
-  TEST_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
-  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
-  FIXaer: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_aer
-  FIXgsm: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_am
-  FIXlut: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_lut
-  FIXorg: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_orog
-  FIXsfc: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
-  FIXshp: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/NaturalEarth
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data
+  TEST_PREGEN_BASEDIR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
+  FIXaer: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/fix/fix_aer
+  FIXgsm: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/fix/fix_am
+  FIXlut: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/fix/fix_lut
+  FIXorg: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/fix/fix_orog
+  FIXsfc: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/fix/fix_sfc_climo
+  FIXshp: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
     FV3GFS:
-      nemsio: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
-      grib2: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
-    RAP: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
-    HRRR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
+      nemsio: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
+    RAP: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/RAP/${yyyymmdd}${hh}
+    HRRR: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/HRRR/${yyyymmdd}${hh}
 rocoto:
   tasks:
     metatask_run_ensemble:
