@@ -18,6 +18,7 @@ load("srw_common")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
 load("ufs-pyenv")
+load("wget")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
