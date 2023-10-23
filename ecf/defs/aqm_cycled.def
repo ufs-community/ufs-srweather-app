@@ -1,10 +1,4 @@
-# NCO replace with operational GFS ecflow node path
-extern /cycled_v16_3/primary/00/gfs/v16.3/gfs/jgfs_forecast
-extern /cycled_v16_3/primary/06/gfs/v16.3/gfs/jgfs_forecast
-extern /cycled_v16_3/primary/12/gfs/v16.3/gfs/jgfs_forecast
-extern /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast
-
-suite nco_aqm
+suite prod_aqm
   family primary
     edit aqm_ver 'v7.0'
     edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
@@ -24,8 +18,7 @@ suite nco_aqm
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
             task jaqm_nexus_gfs_sfc
-              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../18/aqm/v1.0/aqm_manager/jaqm_manager:release_next_cycle
-              # NCO replace with time based trigger
+              trigger :TIME == 0131
             task jaqm_nexus_emission_00
               edit NSPT '00'
               trigger ./jaqm_nexus_gfs_sfc==complete
@@ -105,14 +98,6 @@ suite nco_aqm
               trigger ./jaqm_pre_post_stat==complete
             task jaqm_bias_correction_pm25
               trigger ./jaqm_pre_post_stat==complete
-          endfamily
-          family aqm_manager
-            task jaqm_manager
-              trigger :TIME == 0728 and ../nexus/jaqm_nexus_gfs_sfc==complete
-              event 1 release_next_cycle
-              event 2 requeue_cycle
-            task jaqm_data_cleanup
-              trigger ../forecast==complete
           endfamily
         endfamily  # v1.0
       endfamily    # aqm
@@ -124,8 +109,7 @@ suite nco_aqm
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
             task jaqm_nexus_gfs_sfc
-              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../00/aqm/v1.0/aqm_manager/jaqm_manager:release_next_cycle
-              # NCO replace with time based trigger
+              trigger :TIME == 0731
             task jaqm_nexus_emission_00
               edit NSPT '00'
               trigger ./jaqm_nexus_gfs_sfc==complete
@@ -403,14 +387,6 @@ suite nco_aqm
               trigger ./jaqm_pre_post_stat==complete
             task jaqm_bias_correction_pm25
               trigger ./jaqm_pre_post_stat==complete
-          endfamily
-          family aqm_manager
-            task jaqm_manager
-              trigger :TIME == 1328 and ../nexus/jaqm_nexus_gfs_sfc==complete
-              event 1 release_next_cycle
-              event 2 requeue_cycle
-            task jaqm_data_cleanup
-              trigger ../forecast==complete
           endfamily
         endfamily  # v1.0
       endfamily    # aqm
@@ -422,8 +398,7 @@ suite nco_aqm
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
             task jaqm_nexus_gfs_sfc
-              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../06/aqm/v1.0/aqm_manager/jaqm_manager:release_next_cycle
-              # NCO replace with time based trigger
+              trigger :TIME == 1331
             task jaqm_nexus_emission_00
               edit NSPT '00'
               trigger ./jaqm_nexus_gfs_sfc==complete
@@ -702,14 +677,6 @@ suite nco_aqm
             task jaqm_bias_correction_pm25
               trigger ./jaqm_pre_post_stat==complete
           endfamily
-          family aqm_manager
-            task jaqm_manager
-              trigger :TIME == 2028 and ../nexus/jaqm_nexus_gfs_sfc==complete
-              event 1 release_next_cycle
-              event 2 requeue_cycle
-            task jaqm_data_cleanup
-              trigger ../forecast==complete
-          endfamily
         endfamily  # v1.0
       endfamily    # aqm
     endfamily      # 12
@@ -720,8 +687,7 @@ suite nco_aqm
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
             task jaqm_nexus_gfs_sfc
-              trigger /cycled_v16_3/primary/18/gfs/v16.3/gfs/jgfs_forecast==complete or ../../../../12/aqm/v1.0/aqm_manager/jaqm_manager:release_next_cycle
-              # NCO replace with time based trigger
+              trigger :TIME == 2031
             task jaqm_nexus_emission_00
               edit NSPT '00'
               trigger ./jaqm_nexus_gfs_sfc==complete
@@ -801,14 +767,6 @@ suite nco_aqm
               trigger ./jaqm_pre_post_stat==complete
             task jaqm_bias_correction_pm25
               trigger ./jaqm_pre_post_stat==complete
-          endfamily
-          family aqm_manager
-            task jaqm_manager
-              trigger :TIME == 0228 and ../nexus/jaqm_nexus_gfs_sfc==complete
-              event 1 release_next_cycle
-              event 2 requeue_cycle
-            task jaqm_data_cleanup
-              trigger ../forecast==complete
           endfamily
         endfamily  # v1.0
       endfamily    # aqm

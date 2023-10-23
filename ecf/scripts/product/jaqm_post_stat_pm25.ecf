@@ -9,8 +9,6 @@
 
 model=aqm
 export cyc="%CYC%"
-#### export SENDDBN=NO
-#### export SENDDBN_NTC=NO
 %include <head.h>
 %include <envir-p1.h>
 

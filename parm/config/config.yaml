@@ -29,13 +29,13 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: true
   COLDSTART: false
-  WARMSTART_CYCLE_DIR: /lfs/h2/emc/ptmp/lin.gan/ecflow_aqm/para/com/aqm/v7.0/aqm.20231016/00
+  WARMSTART_CYCLE_DIR: CONFIGURE-BY-NCO
 nco:
   envir_dfv: prod
   NET_dfv: aqm
   model_ver_dfv: v7.0
   RUN_dfv: aqm
-  OPSROOT_dfv: /lfs/h2/emc/ptmp/lin.gan/ecflow_aqm/para
+  OPSROOT_dfv: CONFIGURE-BY-NCO
   KEEPDATA_dfv: false
 workflow_switches:
   RUN_TASK_MAKE_GRID: false

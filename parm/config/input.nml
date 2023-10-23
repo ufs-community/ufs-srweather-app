@@ -314,15 +314,15 @@
     faisl = 99999
     faiss = 99999
     fnacna = ''
-    fnaisc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/CFSR.SEAICE.1982.2012.monthly.clim.grb'
-    fnglac = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/global_glacier.2x2.grb'
-    fnmskh = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/seaice_newland.grb'
-    fnmxic = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/global_maxice.2x2.grb'
-    fnsmcc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/global_soilmgldas.t126.384.190.grb'
+    fnaisc = '${HOMEaqm}/fix/fix_am/CFSR.SEAICE.1982.2012.monthly.clim.grb'
+    fnglac = '${HOMEaqm}/fix/fix_am/global_glacier.2x2.grb'
+    fnmskh = '${HOMEaqm}/fix/fix_am/seaice_newland.grb'
+    fnmxic = '${HOMEaqm}/fix/fix_am/global_maxice.2x2.grb'
+    fnsmcc = '${HOMEaqm}/fix/fix_am/global_soilmgldas.t126.384.190.grb'
     fnsnoa = ''
-    fnsnoc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/global_snoclim.1.875.grb'
+    fnsnoc = '${HOMEaqm}/fix/fix_am/global_snoclim.1.875.grb'
     fntsfa = ''
-    fntsfc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_am/RTGSST.1982.2012.monthly.clim.grb'
+    fntsfc = '${HOMEaqm}/fix/fix_am/RTGSST.1982.2012.monthly.clim.grb'
     fnzorc = 'igbp'
     fsicl = 99999
     fsics = 99999
@@ -341,16 +341,16 @@
 /
 
 &namsfc_dict
-    fnabsc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.maximum_snow_albedo.tileX.nc'
-    fnalbc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.snowfree_albedo.tileX.nc'
-    fnalbc2 = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.facsf.tileX.nc'
-    fnslpc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.slope_type.tileX.nc'
-    fnsotc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.soil_type.tileX.nc'
-    fntg3c = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.substrate_temperature.tileX.nc'
-    fnvegc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
-    fnvetc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.vegetation_type.tileX.nc'
-    fnvmnc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
-    fnvmxc = '/lfs/h2/emc/global/noscrub/lin.gan/git/aqm.v7.0/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
+    fnabsc = '${HOMEaqm}/fix/fix_lam/C793.maximum_snow_albedo.tileX.nc'
+    fnalbc = '${HOMEaqm}/fix/fix_lam/C793.snowfree_albedo.tileX.nc'
+    fnalbc2 = '${HOMEaqm}/fix/fix_lam/C793.facsf.tileX.nc'
+    fnslpc = '${HOMEaqm}/fix/fix_lam/C793.slope_type.tileX.nc'
+    fnsotc = '${HOMEaqm}/fix/fix_lam/C793.soil_type.tileX.nc'
+    fntg3c = '${HOMEaqm}/fix/fix_lam/C793.substrate_temperature.tileX.nc'
+    fnvegc = '${HOMEaqm}/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
+    fnvetc = '${HOMEaqm}/fix/fix_lam/C793.vegetation_type.tileX.nc'
+    fnvmnc = '${HOMEaqm}/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
+    fnvmxc = '${HOMEaqm}/fix/fix_lam/C793.vegetation_greenness.tileX.nc'
 /
 
 &surf_map_nml

@@ -23,34 +23,6 @@ export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
 
-
-# Developer configuration
-aqm_ver=v7.0
-PTMP=/lfs/h2/emc/ptmp
-PSLOT=ecflow_aqm
-export COMROOT=${PTMP}/${USER}/${PSLOT}/para/com
-export COMPATH=${COMROOT}/aqm
-export COMaqm=$(compath.py aqm/${aqm_ver}) 
-export COMOUT_PREP="$(compath.py obsproc/v1.1.0)"
-export DATAROOT=/lfs/h2/emc/stmp/${USER}/${model}/${PSLOT}
-# End of Developer configuration
-
-#export SENDDBN="NO"
-#export SENDDBN_NTC="NO"
-
-#export OPSROOT="${PTMP}/${USER}/${PSLOT}/para"
-#export COMROOT="${OPSROOT}/com"
-#export DATAROOT="${OPSROOT}/tmp"
-#export DCOMROOT="${OPSROOT}/dcom"
-
-#export DCOMINbio: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/aqm/bio
-#export DCOMINdust: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/FENGSHA
-#export DCOMINfire: /lfs/h2/emc/physics/noscrub/kai.wang/RAVE_fire/RAVE_NA_NRT
-#export DCOMINchem_lbcs: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-#export DCOMINgefs: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
-#export DCOMINpt_src: /lfs/h2/emc/physics/noscrub/Youhua.Tang/nei2016v1-pt/v2023-01-PT
-#export DCOMINairnow: /lfs/h1/ops/prod/dcom
-
 if [ -n "%PDY:%" ]; then
   export PDY=${PDY:-%PDY:%}
   export CDATE=${PDY}%CYC:%

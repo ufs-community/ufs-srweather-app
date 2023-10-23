@@ -40,6 +40,7 @@ export envvar_ver=1.0
 
 export gfs_ver=v16.3
 export gefs_ver=v12.3
+export aqm_ver=v7.0
 
 export udunits_ver=2.2.28
 export gsl_ver=2.7
