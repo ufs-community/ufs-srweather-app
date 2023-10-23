@@ -117,20 +117,6 @@ to install the latest version of miniforge and automatically create the environm
 Managed environments will no longer be updated on Tier I platforms for newer versions of SRW.
 
 
-Installing miniconda and creating environments
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In addition to building the SRW App components, the ``devbuild.sh`` script will install miniconda,
-specifically miniforge, and install the SRW-required environments if the ``conda`` target is
-provided. For example, the following command will build all the default SRW components on the hera
-platform using the Intel compiler, and will also install conda and environments:
-
-.. code-block:: console
-
-   ./devbuild.sh --platform=hera --compiler=intel default
-
-
-
 .. _Load-WF-L1:
 
 Loading the Workflow Environment
