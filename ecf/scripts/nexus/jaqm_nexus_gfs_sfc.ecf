@@ -1,4 +1,4 @@
-#PBS -N nexus_gfs_sfc
+#PBS -N aqm_nexus_gfs_sfc_%CYC%
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q %QUEUE%

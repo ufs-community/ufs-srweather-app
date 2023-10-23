@@ -45,7 +45,7 @@ suite nco_aqm
               edit NSPT '05'
               trigger ./jaqm_nexus_gfs_sfc==complete
             task jaqm_nexus_post_split
-              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete
+              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_get_extrn_ics
@@ -108,7 +108,7 @@ suite nco_aqm
           endfamily
           family aqm_manager
             task jaqm_manager
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0728 and ../nexus/jaqm_nexus_gfs_sfc==complete
               event 1 release_next_cycle
               event 2 requeue_cycle
             task jaqm_data_cleanup
@@ -145,7 +145,7 @@ suite nco_aqm
               edit NSPT '05'
               trigger ./jaqm_nexus_gfs_sfc==complete
             task jaqm_nexus_post_split
-              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete
+              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_get_extrn_ics
@@ -406,7 +406,7 @@ suite nco_aqm
           endfamily
           family aqm_manager
             task jaqm_manager
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1328 and ../nexus/jaqm_nexus_gfs_sfc==complete
               event 1 release_next_cycle
               event 2 requeue_cycle
             task jaqm_data_cleanup
@@ -443,7 +443,7 @@ suite nco_aqm
               edit NSPT '05'
               trigger ./jaqm_nexus_gfs_sfc==complete
             task jaqm_nexus_post_split
-              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete
+              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_get_extrn_ics
@@ -704,7 +704,7 @@ suite nco_aqm
           endfamily
           family aqm_manager
             task jaqm_manager
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2028 and ../nexus/jaqm_nexus_gfs_sfc==complete
               event 1 release_next_cycle
               event 2 requeue_cycle
             task jaqm_data_cleanup
@@ -741,7 +741,7 @@ suite nco_aqm
               edit NSPT '05'
               trigger ./jaqm_nexus_gfs_sfc==complete
             task jaqm_nexus_post_split
-              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete
+              trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
             task jaqm_get_extrn_ics
@@ -804,7 +804,7 @@ suite nco_aqm
           endfamily
           family aqm_manager
             task jaqm_manager
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0228 and ../nexus/jaqm_nexus_gfs_sfc==complete
               event 1 release_next_cycle
               event 2 requeue_cycle
             task jaqm_data_cleanup

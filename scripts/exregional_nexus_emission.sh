@@ -89,7 +89,12 @@ mkdir -p "$DATAinput"
 USE_GFS_SFC="FALSE"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+  #### GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+  GFS_SFC_INPUT="${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${share_pid}"
+  if [ ! -d ${GFS_SFC_INPUT} ]; then
+    echo "Fatal error GFS_SFC_INPUT not found in production mode"
+    exit 7
+  fi
 else
   GFS_SFC_INPUT="${COMIN}/GFS_SFC"
 fi
