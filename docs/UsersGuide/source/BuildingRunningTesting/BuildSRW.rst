@@ -38,7 +38,7 @@ Users on any sufficiently up-to-date machine with a UNIX-based operating system 
 Currently, installation of the prerequisite software stack is supported via spack-stack on most systems. :term:`spack-stack` is a :term:`repository` that provides a Spack-based system to build the software stack required for `UFS <https://ufscommunity.org/>`__ applications such as the SRW App. Spack-stack is the software stack validated by the UFS Weather Model (:term:`WM`), and the SRW App has likewise shifted to spack-stack for most Level 1 systems. 
 
 .. Attention::
-   Skip the HPC-Stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ (e.g., Cheyenne, Hera, Orion, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
+   Skip the spack-stack installation if working on a `Level 1 system <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ (e.g., Hera, Jet, Derecho, NOAA Cloud), and :ref:`continue to the next section <DownloadSRWApp>`.
 
 Background
 ----------------
@@ -174,6 +174,17 @@ Run the executable that pulls in SRW App components from external repositories:
    ./manage_externals/checkout_externals
 
 The script should output dialogue indicating that it is retrieving different code repositories. It may take several minutes to download these repositories.
+
+.. hint:: 
+
+   Some systems (e.g., Hercules, Gaea) may have difficulty finding prerequisite software, such as python. If users run into this issue but know that the software exists on their system, they can run ``module load <module_name>`` followed by ``module save``. For example: 
+
+   .. code-block:: console
+
+      /usr/bin/env: ‘python’: No such file or directory
+      hercules-login-1[10] gpetro$ module load python
+      hercules-login-1[11] gpetro$ module save
+      Saved current collection of modules to: "default", for system: "hercules"
 
 To see more options for the ``checkout_externals`` script, users can run ``./manage_externals/checkout_externals -h``. For example:
 
