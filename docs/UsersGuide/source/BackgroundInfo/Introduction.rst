@@ -141,7 +141,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/main_v4.1/Users_Guide/index.html
 
-.. COMMENT: Update links for stochastic_physics, WM, CCPP Tech docs
+.. COMMENT: Update links for stochastic_physics, WM, CCPP Tech docs, UFS_UTILS
 
 
 User Support and Contributions to Development
