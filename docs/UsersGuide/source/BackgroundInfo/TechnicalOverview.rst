@@ -133,7 +133,7 @@ The UFS Weather Model contains a number of sub-repositories, which are documente
 .. COMMENT: Update link to release docs!
 
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `spack-stack <https://github.com/NOAA-EMC/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack. 
+   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack. 
 
 .. _TopLevelDirStructure:
 

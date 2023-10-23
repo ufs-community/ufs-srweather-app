@@ -4,6 +4,10 @@
 Air Quality Modeling (SRW-AQM)
 =====================================
 
+.. attention::
+   
+   AQM capabilities are an unsupported feature of the SRW App. This means that it is available for users to experiment with, but assistance for AQM-related issues is limited. 
+
 The standard SRW App distribution uses the uncoupled version of the UFS Weather Model (atmosphere-only). However, users have the option to use a coupled version of the SRW App that includes the standard distribution (atmospheric model) plus the Air Quality Model (AQM).
 
 The AQM is a UFS Application that dynamically couples the Community Multiscale Air Quality (:term:`CMAQ`) model with the UFS Weather Model (WM) through the :term:`NUOPC` Layer to simulate temporal and spatial variations of atmospheric compositions (e.g., ozone and aerosol compositions). The CMAQ model, treated as a column chemistry model, updates concentrations of chemical species (e.g., ozone and aerosol compositions) at each integration time step. The transport terms (e.g., :term:`advection` and diffusion) of all chemical species are handled by the UFS WM as tracers.
