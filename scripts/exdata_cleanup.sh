@@ -56,24 +56,25 @@ gcyc=$(echo $GDATE | cut -c9-10)
 
 ##############################################
 # Looking for the following directory for cleanup
-#   forecast.${gPDY}${gcyc}
-#   get_extrn_ics.${gPDY}${gcyc}
-#   get_extrn_lbcs.${gPDY}${gcyc}
-#   nexus_gfs_sfc.${gPDY}${gcyc}
+#   ${RUN}_forecast_${cyc}.${gPDY}${gcyc} - Used by forecast RESTART capabiliy.
+#                                           Used by post jobs.
+#   get_extrn_ics.${gPDY}${gcyc}          - Used by make_ics job.
+#   get_extrn_lbcs.${gPDY}${gcyc}         - Used by make_lbcs job.
+#   nexus_gfs_sfc.${gPDY}${gcyc}          - Used by nexus_emission jobs
 ##############################################
-target_for_delete=${DATAROOT}/forecast.${gPDY}${gcyc}
+target_for_delete=${DATAROOT}/${RUN}_forecast_${cyc}.${gPDY}${gcyc}
 echo "Remove DATA from ${target_for_delete}"
 [[ -d $target_for_delete ]] && rm -rf $target_for_delete
 
-target_for_delete=${DATAROOT}/get_extrn_ics.${gPDY}${gcyc}
+target_for_delete=${DATAROOT}/${RUN}_get_extrn_ics_${cyc}.${gPDY}${gcyc}
 echo "Remove DATA from ${target_for_delete}"
 [[ -d $target_for_delete ]] && rm -rf $target_for_delete
 
-target_for_delete=${DATAROOT}/get_extrn_lbcs.${gPDY}${gcyc}
+target_for_delete=${DATAROOT}/${RUN}_get_extrn_lbcs_${cyc}.${gPDY}${gcyc}
 echo "Remove DATA from ${target_for_delete}"
 [[ -d $target_for_delete ]] && rm -rf $target_for_delete
 
-target_for_delete=${DATAROOT}/nexus_gfs_sfc.${gPDY}${gcyc}
+target_for_delete=${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${gPDY}${gcyc}
 echo "Remove DATA from ${target_for_delete}"
 [[ -d $target_for_delete ]] && rm -rf $target_for_delete
 
