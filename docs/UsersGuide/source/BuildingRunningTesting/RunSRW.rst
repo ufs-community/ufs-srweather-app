@@ -404,24 +404,7 @@ For example, to run the out-of-the-box experiment on Gaea using cron to automate
          USE_USER_STAGED_EXTRN_FILES: true
          EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/2019061518
 
-To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
-
-.. code-block:: console
-
-   ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
-
-.. COMMENT: Remove this section!!!
-
-A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
-
-.. code-block:: console
-
-   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-   FAILURE
-
 .. hint::
-
-   * The |wflow_env| environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
    * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
    
@@ -431,7 +414,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 **Next Steps:**
 
-   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
+   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacExptConfig>` for additional required steps. 
    * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
