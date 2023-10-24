@@ -84,8 +84,12 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}"
+    extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_lbcs_${cyc}.${share_pid}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+    if [ ! -d ${extrn_mdl_staging_dir} ]; then
+      echo "Fatal error extrn_mdl_staging_dir not found in production mode"
+      exit 7
+    fi
 else
     extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
     extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"

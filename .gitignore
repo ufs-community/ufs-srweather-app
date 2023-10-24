@@ -1,8 +1,9 @@
 bin/
-ecf/
 exec/
 fix/
 sorc/*/
+fix
+ecf-EMC/
 tests/WE2E/WE2E_tests_*.yaml
 tests/WE2E/*.txt
 tests/WE2E/*.log
@@ -11,6 +12,7 @@ ush/__pycache__/
 ush/config.yaml
 ush/python_utils/__pycache__/
 ush/*.swp
-
+devbuild.log
+*TOBEDELETED
 *.swp
 __pycache__

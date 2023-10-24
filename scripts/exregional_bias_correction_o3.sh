@@ -45,6 +45,10 @@ This is the ex-script for the task that runs BIAS-CORRECTION-O3.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export DBNALERT_TYPE=${DBNALERT_TYPE:-GRIB_HIGH}
+
+#-----------------------------------------------------------------------
 #
 # Set OpenMP variables.
 #

@@ -45,6 +45,9 @@ This is the ex-script for the task that runs BIAS-CORRECTION-PM25.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+export DBNALERT_TYPE=${DBNALERT_TYPE:-GRIB_HIGH}
+#-----------------------------------------------------------------------
 #
 # Set OpenMP variables.
 #
@@ -271,9 +274,9 @@ fi
 POST_STEP
 
 cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
-if [ "$SENDDBN" = "TRUE" ]; then
-  $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
-fi
+#if [ "$SENDDBN" = "TRUE" ]; then
+#  $DBNROOT/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}
+#fi
 
 #-----------------------------------------------------------------------
 # STEP 6: calculating 24-hr ave PM2.5
