@@ -104,7 +104,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
 
 .. _list_of_documentation:
 
-.. list-table::  Centralized List of Documentation
+.. list-table:: Centralized List of Documentation
    :widths: 20 50
    :header-rows: 1
 

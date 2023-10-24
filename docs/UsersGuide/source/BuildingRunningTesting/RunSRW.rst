@@ -947,6 +947,14 @@ To check the experiment progress:
    cd $EXPTDIR
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
+Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. The following message usually means that the experiment is still getting set up:
+
+.. code-block:: console
+
+   08/04/23 17:34:32 UTC :: FV3LAM_wflow.xml :: ERROR: Can not open FV3LAM_wflow.db read-only because it does not exist
+
+After a few (3-5) minutes, ``rocotostat`` should show a status-monitoring table.
+
 After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
 
 .. _Success:
