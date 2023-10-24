@@ -9,9 +9,7 @@ This chapter provides a brief summary of how to build and run the SRW Applicatio
 
 Install the Prerequisite Software Stack
 =========================================
-SRW App users who are **not** working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the prerequisite software stack via :term:`spack-stack` or :term:`HPC-Stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>` or the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `spack-stack Discussions tab <https://github.com/JCSDA/spack-stack/discussions/categories/q-a>`__ (for spack-stack) or in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`__ (for HPC-Stack). 
-
-.. COMMENT: Check whether spack-stack Discussions tab of ufs-community is better. 
+SRW App users who are **not** working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the prerequisite software stack via :term:`spack-stack` or :term:`HPC-Stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>` or the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`__. 
 
 Once spack-stack or HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
@@ -48,7 +46,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 
-   #. Users on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system must download and stage data (both the fix files and the :term:`IC/LBC <IC/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
+   #. Users on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system must download and stage data (both the fix files and the :term:`IC/LBC <ICs/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
 
    #. Load the python environment for the workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
 
@@ -128,4 +126,4 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       The workflow must be relaunched regularly and repeatedly until the log output includes a ``Workflow status: SUCCESS`` message indicating that the experiment has finished. 
 
-Optionally, users may :ref:`configure their own grid <UserDefinedGrid>` or :ref:`vertical levels <VerticalLevels>` instead of using a predefined grid. Users can also :ref:`plot the output <PlotOutput>` of their experiment(s) or run :ref:`verification tasks using METplus <vxconfig>`.
+Optionally, users may :ref:`configure their own grid <UserDefinedGrid>` or :ref:`vertical levels <VerticalLevels>` instead of using a predefined grid. Users can also :ref:`plot the output <PlotOutput>` of their experiment(s) or :ref:`run verification tasks using METplus <vxconfig>`.

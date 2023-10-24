@@ -221,8 +221,13 @@ intersphinx_mapping = {
    'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/', None),
    'spack-stack': ('https://spack-stack.readthedocs.io/en/1.4.1/', None),
    'met': ('https://met.readthedocs.io/en/main_v10.1/', None),
+   'metplus': ('https://metplus.readthedocs.io/en/main_v4.1/', None),
    'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/', None),
+   'upp': ('https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/', None),
+   'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/', None),
+   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/latest/', None),
+   'stochphys': ('https://stochastic-physics.readthedocs.io/en/release-public-v3/', None),
 }
 
 # COMMENT: Update hpc-stack ref to release docs! https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/
