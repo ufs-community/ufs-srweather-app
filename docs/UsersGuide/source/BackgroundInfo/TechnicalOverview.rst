@@ -128,9 +128,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    * - Repository for the Unified Workflow (UW) Toolkit
      - https://github.com/ufs-community/workflow-tools
 
-The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/latest/CodeOverview.html>`__.
-
-.. COMMENT: Update link to release docs!
+The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
 
 .. note::
    The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack. 
@@ -230,7 +228,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
 
 .. _ExptDirStructure:
 
-.. table::  Files and subdirectory initially created in the experiment directory 
+.. table:: Files and subdirectory initially created in the experiment directory 
    :widths: 33 67 
 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -241,7 +239,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | field_table               | :term:`Tracers <tracer>` in the `forecast model                                                              |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/InputsOutputs.html#field-table-file>`__      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -269,8 +267,6 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    |  YYYYMMDDHH               | Cycle directory (empty)                                                                                      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-
-.. COMMENT: Update the UFS-WM links above and in conf.py!
 
 In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories (see :numref:`Table %s <FixDirectories>`) in ``$EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks run. 
 

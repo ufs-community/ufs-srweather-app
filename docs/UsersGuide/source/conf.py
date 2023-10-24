@@ -222,7 +222,7 @@ intersphinx_mapping = {
    'spack-stack': ('https://spack-stack.readthedocs.io/en/1.4.1/', None),
    'met': ('https://met.readthedocs.io/en/main_v10.1/', None),
    'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
-   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/latest/', None),
+   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/', None),
 }
 
 # COMMENT: Update hpc-stack ref to release docs! https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/

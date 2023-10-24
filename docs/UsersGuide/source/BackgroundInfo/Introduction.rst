@@ -115,11 +115,11 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - HPC-Stack Documentation
      - https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/
    * - UFS_UTILS Technical Documentation
-     - https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_10_0/
+     - https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/
    * - UFS_UTILS Scientific Documentation
-     - https://ufs-community.github.io/UFS_UTILS/ver-1.10.0/index.html
+     - https://ufs-community.github.io/UFS_UTILS/ver-1.11.0/index.html
    * - UFS Weather Model User's Guide
-     - https://ufs-weather-model.readthedocs.io/en/latest
+     - https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/
    * - FV3 Technical Documentation
      - https://noaa-emc.github.io/FV3_Dycore_ufs-v2.0.0/html/index.html
    * - FV3 Scientific Documentation
@@ -141,7 +141,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/main_v4.1/Users_Guide/index.html
 
-.. COMMENT: Update links for stochastic_physics, WM, CCPP Tech docs, UFS_UTILS
+.. COMMENT: Update links for stochastic_physics, CCPP Tech docs, UFS_UTILS
 
 
 User Support and Contributions to Development
