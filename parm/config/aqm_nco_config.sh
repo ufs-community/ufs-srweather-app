@@ -10,11 +10,11 @@ set -eux
 File_to_modify_source="var_defns.sh input.nml"
 
 # General parameter example
-  ACCOUNT="AQM-DEV"
-  HOMEaqm="\/lfs\/h1\/ops\/para\/packages\/aqm\.v7\.0"
-  ENVIR_NCO="dev"
-  COMaqm="\/lfs\/h1\/ops\/para\/com\/aqm\/v7\.0"
-  WARMSTART_PDY="20231017"
+#  ACCOUNT="AQM-DEV"
+#  HOMEaqm="\/lfs\/h1\/ops\/para\/packages\/aqm\.v7\.0"
+#  ENVIR_NCO="dev"
+#  COMaqm="\/lfs\/h1\/ops\/para\/com\/aqm\/v7\.0"
+#  WARMSTART_PDY="20231017"
 
 for file_in in ${File_to_modify_source}; do
   cp ${file_in}.nco.static ${file_in}.nco.static-BACKUP
