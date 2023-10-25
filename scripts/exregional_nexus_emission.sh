@@ -357,17 +357,21 @@ fi
 #-----------------------------------------------------------------------
 #
 PREP_STEP
-if [ "${USE_BACKUP_EMISSIONS}" = "TRUE" ]; then
-  cp ${DATAinput}/AQMv7_BACKUP_EMISSIONS/NEXUS_INPUT_${yyyymmdd}_${hh}.nc ${
-eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
-export err=$?
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  err_chk
-else
-  if [ $err -ne 0 ]; then
-    print_err_msg_exit "Call to execute nexus standalone for the FV3LAM failed."
+if [ "${USE_BACKUP_EMISSIONS}" = "FALSE" ]; then
+  eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
+  export err=$?
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+      USE_BACKUP_EMISSIONS="TRUE"
+    else
+      err_chk
+    fi  
+  else
+    if [ $err -ne 0 ]; then
+      print_err_msg_exit "Call to execute nexus standalone for the FV3LAM failed."
+    fi
   fi
-fi
+fi  
 POST_STEP
 
 # 
@@ -377,16 +381,32 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
-  if [ "${RUN_ENVIR}" = "community" ]; then
-    print_err_msg_exit "${message_txt}"
-  else
-    err_exit "${message_txt}"
+if [ "${USE_BACKUP_EMISSIONS}" = "FALSE" ]; then
+  python3 ${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+        USE_BACKUP_EMISSIONS="TRUE"
+      else
+        err_exit "${message_txt}"
+      fi
+    fi
   fi
+#
+#-----------------------------------------------------------------------
+#
+# USE BACKUP EMISSIONS IF TRUE
+#
+#-----------------------------------------------------------------------
+# 
+if [ "${USE_BACKUP_EMISSIONS}" = "TRUE" ]; then
+  cp ${DATAinput}/AQMv7_BACKUP_EMISSIONS/NEXUS_INPUT_${yyyymmdd}_${hh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc
 fi
+
 #
 #-----------------------------------------------------------------------
 #
