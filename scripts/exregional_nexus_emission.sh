@@ -79,6 +79,14 @@ fi
 
 DATAinput="${DATA}/input"
 mkdir -p "$DATAinput"
+
+#-----------------------------------------------------------------------
+#
+# Temporary hard code IF_USE_BACKUP_EMISSION_ON_FAIL=True
+# 
+#-----------------------------------------------------------------------
+IF_USE_BACKUP_EMISSION_ON_FAIL="TRUE"
+USE_BACKUP_EMISSIONS="FALSE"
 #
 #-----------------------------------------------------------------------
 #
@@ -180,6 +188,7 @@ Yuan_XLAI="TRUE"
 GEOS="TRUE"
 AnnualScalar="TRUE"
 OFFLINE_SOILNOX="TRUE"
+BACKUP_EMISSIONS="TRUE"
 
 NEXUS_INPUT_BASE_DIR=${COMINemis}
 ########################################################################
@@ -196,7 +205,11 @@ if [ $err -ne 0 ]; then
   if [ "${RUN_ENVIR}" = "community" ]; then
     print_err_msg_exit "${message_txt}"
   else
-    err_exit "${message_txt}"
+    if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+      USE_BACKUP_EMISSIONS="TRUE"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
 fi
 #
@@ -211,9 +224,14 @@ if [ $err -ne 0 ]; then
   if [ "${RUN_ENVIR}" = "community" ]; then
     print_err_msg_exit "${message_txt}"
   else
-    err_exit "${message_txt}"
+    if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+      USE_BACKUP_EMISSIONS="TRUE"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
 fi
+
 #
 #----------------------------------------------------------------------
 # Get all the files needed (TEMPORARILY JUST COPY FROM THE DIRECTORY)
@@ -229,7 +247,11 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
     if [ "${RUN_ENVIR}" = "community" ]; then
       print_err_msg_exit "${message_txt}"
     else
-      err_exit "${message_txt}"
+      if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+        USE_BACKUP_EMISSIONS="TRUE"
+      else
+        err_exit "${message_txt}"
+      fi
     fi
   fi
 
@@ -240,10 +262,18 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
     if [ "${RUN_ENVIR}" = "community" ]; then
       print_err_msg_exit "${message_txt}"
     else
-      err_exit "${message_txt}"
+      if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+        USE_BACKUP_EMISSIONS="TRUE"
+      else
+        err_exit "${message_txt}"
+      fi
     fi
   fi
 fi
+
+if [ "${AQMv7_BACKUP_EMISSIONS}"= "TRUE" ]; then
+  ln -sf ${NEXUS_INPUT_BASE_DIR}/AQMv7_BACKUP_EMISSIONS ${DATAinput}
+fi  
 
 if [ "${TIMEZONES}" = "TRUE" ]; then # TIME ZONES
   ln -sf ${NEXUS_INPUT_BASE_DIR}/TIMEZONES ${DATAinput}
@@ -327,6 +357,8 @@ fi
 #-----------------------------------------------------------------------
 #
 PREP_STEP
+if [ "${USE_BACKUP_EMISSIONS}" = "TRUE" ]; then
+  cp ${DATAinput}/AQMv7_BACKUP_EMISSIONS/NEXUS_INPUT_${yyyymmdd}_${hh}.nc ${
 eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
 export err=$?
 if [ "${RUN_ENVIR}" = "nco" ]; then
