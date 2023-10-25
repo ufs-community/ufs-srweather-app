@@ -53,6 +53,13 @@ This is the ex-script for the task that runs NEXUS.
 #
 eval ${PRE_TASK_CMDS}
 
+#-----------------------------------------------------------------------
+#
+# Temporary hard code IF_USE_BACKUP_EMISSION_ON_FAIL=True
+# 
+#-----------------------------------------------------------------------
+IF_USE_BACKUP_EMISSION_ON_FAIL="TRUE"
+
 mm="${PDY:4:2}"
 dd="${PDY:6:2}"
 hh="${cyc}"
@@ -79,19 +86,41 @@ cp ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
 cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
-else
-  python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
-  export err=$?
-  if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
-    if [ "${RUN_ENVIR}" = "community" ]; then
-      print_err_msg_exit "${message_txt}"
-    else
-      err_exit "${message_txt}"
+  if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE" ]; then 
+    if [ -f "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc" ]; then
+      cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
     fi
-  fi
-fi    
+  else
+    cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  fi  
+else
+  if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE" ]; then 
+    if [ -f "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc" ]; then
+      cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+    else
+      python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+      export err=$?
+      if [ $err -ne 0 ]; then
+        message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
+        if [ "${RUN_ENVIR}" = "community" ]; then
+          print_err_msg_exit "${message_txt}"
+        else
+          err_exit "${message_txt}"
+        fi
+      fi
+    fi 
+  else
+    python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+    export err=$?
+    if [ $err -ne 0 ]; then
+      message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
+      if [ "${RUN_ENVIR}" = "community" ]; then
+        print_err_msg_exit "${message_txt}"
+      else
+        err_exit "${message_txt}"
+      fi
+    fi
+fi
 #
 #-----------------------------------------------------------------------
 #
