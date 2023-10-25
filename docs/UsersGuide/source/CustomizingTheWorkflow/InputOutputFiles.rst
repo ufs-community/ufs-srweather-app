@@ -348,6 +348,13 @@ AWS S3 Data Buckets:
 * GEFS: https://registry.opendata.aws/noaa-gefs/
 * GDAS: https://registry.opendata.aws/noaa-gfs-bdp-pds/
 * HRRR: https://registry.opendata.aws/noaa-hrrr-pds/ (necessary fields for initializing available for dates 2015 and newer)
+* A list of the NOAA Open Data Dissemination (NODD) datasets can be found here: https://www.noaa.gov/nodd/datasets
+
+NCEI Archive:
+
+* GFS: https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast
+* NAM: https://www.ncei.noaa.gov/products/weather-climate-models/north-american-mesoscale
+* RAP: https://www.ncei.noaa.gov/products/weather-climate-models/rapid-refresh-update
 
 Google Cloud:
 

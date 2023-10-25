@@ -598,7 +598,7 @@ The Python plotting tasks require a path to the directory where the Cartopy Natu
 Task Configuration
 `````````````````````
 
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add the task yaml file to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add the task's ``.yaml`` file to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
 
 .. code-block:: console
 
@@ -667,7 +667,7 @@ To use METplus verification,  MET and METplus modules need to be installed. To t
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to do VX; it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
+:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to do verification (VX); it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
 
 .. _VX-yamls:
 
@@ -711,6 +711,8 @@ Users who have already staged the observation data needed for METplus (i.e., the
       MRMS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/ndas/proc
 
+After adding the VX tasks to the ``rocoto:`` section and the data paths to the ``platform:`` section, users can proceed to generate the experiment, which will perform VX tasks in addition to the default workflow tasks. 
+
 .. _GenerateWorkflow: 
 
 Generate the SRW App Workflow
@@ -726,22 +728,23 @@ The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` script: 
 
-   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads three other configuration scripts in order: 
+   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads four other configuration scripts in order: 
       
       a. ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`)
-      b. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and 
-      c. ``set_predef_grid_params.py``. 
+      b. ``${machine}.yaml`` (the machine configuration file)
+      c. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`) 
+      d. ``valid_param_vals.yaml``
 
    #. Symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). 
    #. Creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. 
    #. Creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
-The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``.
+The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``; these variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these directory paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``.
 
 .. _WorkflowGeneration:
 
 .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_regional_workflow_gen.png
-   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling uwtools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
+   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, fixorg, and FIXsfc variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling workflow-tools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
 
    *Experiment Generation Description*
 
@@ -753,7 +756,7 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``make_grid``, ``make_orog``, and ``make_sfc_climo``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
 
 .. code-block:: console
 
@@ -769,7 +772,7 @@ Description of Workflow Tasks
    *Flowchart of the Default Workflow Tasks*
 
 
-The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``ufs-srweather-app/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
 
 
 .. _WorkflowTasksTable:
@@ -816,7 +819,7 @@ In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksT
    |                      | plotting task                                              |
    +----------------------+------------------------------------------------------------+
    
-METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about Metatasks.
+METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about metatasks.
 
 .. _VXWorkflowTasksTable:
 
@@ -841,19 +844,19 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
      - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (``MRMS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_run_MET_Pb2nc_obs`
      - ``verify_pre.yaml``
-     - Convert files from prepbufr to NetCDF format.
+     - Converts files from prepbufr to NetCDF format.
    * - :bolditalic:`metatask_PcpCombine_obs`
      - ``verify_pre.yaml``
-     - Derive 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
+     - Derives 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_check_post_output_all_mems`
      - ``verify_pre.yaml``
-     - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
+     - Ensures that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
    * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
      - ``verify_pre.yaml``
-     - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
+     - Derives accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems`
      - ``verify_pre.yaml``
-     - Derive accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
+     - Derives accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
@@ -946,7 +949,7 @@ The simplest way to run the Rocoto workflow is to automate the process using a j
    USE_CRON_TO_RELAUNCH: true
    CRON_RELAUNCH_INTVL_MNTS: 3
 
-This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry manually using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry manually using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (usually starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
@@ -957,7 +960,7 @@ where ``/path/to/experiment/directory`` is changed to correspond to the user's `
 .. hint::
 
    * On NOAA Cloud instances, ``*/1 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 1``) is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on non-NOAA Cloud systems. 
+   * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on other Level 1 systems. 
 
 To check the experiment progress:
 
@@ -973,8 +976,6 @@ Users can track the experiment's progress by reissuing the ``rocotostat`` comman
    08/04/23 17:34:32 UTC :: FV3LAM_wflow.xml :: ERROR: Can not open FV3LAM_wflow.db read-only because it does not exist
 
 After a few (3-5) minutes, ``rocotostat`` should show a status-monitoring table.
-
-After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
 
 .. _Success:
 
@@ -1018,13 +1019,15 @@ If users choose to run METplus verification tasks as part of their experiment, t
    201906151800   run_gridstatvx_24h                   30468493       SUCCEEDED        0          1         20.0
    201906151800   run_pointstatvx                      30468423       SUCCEEDED        0          1        670.0
    ...
-   201906151800   run_MET_GridStat_vx_APCP01h_mem000      -                   -                   -         -             -
-   201906151800   run_MET_GridStat_vx_APCP03h_mem000      -                   -                   -         -             -
-   201906151800   run_MET_GridStat_vx_APCP06h_mem000      -                   -                   -         -             -
-   201906151800   run_MET_GridStat_vx_REFC_mem000         -                   -                   -         -             -
-   201906151800   run_MET_GridStat_vx_RETOP_mem000        -                   -                   -         -             -
-   201906151800   run_MET_PointStat_vx_SFC_mem000         -                   -                   -         -             -
-   201906151800   run_MET_PointStat_vx_UPA_mem000         -                   -                   -         -             -
+   201906151800   run_MET_GridStat_vx_APCP01h_mem000          -               -        -          -            -
+   201906151800   run_MET_GridStat_vx_APCP03h_mem000          -               -        -          -            -
+   201906151800   run_MET_GridStat_vx_APCP06h_mem000          -               -        -          -            -
+   201906151800   run_MET_GridStat_vx_REFC_mem000             -               -        -          -            -
+   201906151800   run_MET_GridStat_vx_RETOP_mem000            -               -        -          -            -
+   201906151800   run_MET_PointStat_vx_SFC_mem000             -               -        -          -            -
+   201906151800   run_MET_PointStat_vx_UPA_mem000             -               -        -          -            -
+
+After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
 
 Launch the Rocoto Workflow Using a Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1106,7 +1109,7 @@ Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
 **Run the Rocoto Workflow**
 
-After loading Rocoto, ``cd`` to the experiment directory and call ``rocotorun`` to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
+After loading Rocoto, ``cd`` to the experiment directory and call ``rocotorun`` to launch the workflow tasks. This will start any tasks that are not awaiting completion of a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
 
 .. code-block:: console
 
@@ -1137,7 +1140,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`).
+   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`) after allocating the compute node.
 
 .. note::
    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
@@ -1192,7 +1195,7 @@ Check the batch script output file in your experiment directory for a “SUCCESS
 
 .. table::  List of tasks in the SRW App workflow in the order that they are executed.
             Scripts with the same stage number may be run simultaneously. The number of
-            processors and wall clock time is a good starting point for Cheyenne or Hera 
+            processors and wall clock time is a good starting point for NOAA HPC systems 
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
    +------------+------------------------+----------------+----------------------------+
