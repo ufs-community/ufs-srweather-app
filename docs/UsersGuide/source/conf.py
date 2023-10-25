@@ -109,7 +109,10 @@ html_theme_path = ["_themes", ]
 # documentation.
 #
 # html_theme_options = {}
-html_theme_options = {"body_max_width": "none"}
+html_theme_options = {
+    "body_max_width": "none", 
+    'navigation_depth': 5,
+    }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

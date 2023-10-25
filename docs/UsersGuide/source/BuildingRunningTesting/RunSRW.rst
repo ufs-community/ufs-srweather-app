@@ -70,7 +70,7 @@ The SRW App requires input files to run. These include static datasets, initial 
    * - WCOSS2
      - /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/
 
-For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s: Input Files <Input>` and :numref:`%s: Output Files <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
 
 .. _GridSpecificConfig:
 
@@ -80,23 +80,29 @@ Grid Configuration
 The SRW App officially supports the five predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the five predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
 
 .. _PredefinedGrids:
+.. list-table:: Predefined Grids Supported in the SRW App
+   :widths: 30 30 30
+   :header-rows: 1
 
-.. table::  Predefined Grids Supported in the SRW App
-
-   +----------------------+-------------------+--------------------------------+
-   | **Grid Name**        | **Grid Type**     | **Quilting (write component)** |
-   +======================+===================+================================+
-   | RRFS_CONUS_25km      | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | RRFS_CONUS_13km      | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | RRFS_NA_13km         | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-
+   * - Grid Name
+     - Grid Type
+     - Quilting (write component)
+   * - RRFS_CONUS_25km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_CONUS_13km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_CONUS_3km
+     - ESG grid
+     - lambert_conformal
+   * - SUBCONUS_Ind_3km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_NA_13km
+     - ESG grid
+     - lambert_conformal
+   
 .. _GenerateForecast:
 
 Generate the Forecast Experiment 
@@ -129,8 +135,8 @@ The |wflow_env| conda/Python environment has already been set up on Level 1 plat
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/modulefiles
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
@@ -179,8 +185,7 @@ MacOS requires the installation of a few additional packages and, possibly, an u
    bash --version
    brew install bash       # or: brew upgrade bash
    brew install coreutils
-   brew gsed               # follow directions to update the PATH env variable
-
+   brew install gsed       # follow directions to update the PATH env variable
 
 .. _LinuxMacVEnv: 
 
@@ -207,7 +212,7 @@ In future shells, you can activate and use this environment with:
 .. code-block:: console
 
    source ~/conda/etc/profile.d/conda.sh
-   conda activate uwtools
+   conda activate workflow_tools
 
 See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
@@ -223,8 +228,8 @@ After creating a |wflow_env| environment and making modifications to a ``wflow_<
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/modulefiles
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (i.e., ``linux`` or ``macos``). 
@@ -242,7 +247,7 @@ The ``wflow_<platform>`` modulefile will then output the following instructions:
 After running |activate|, the user will typically see |prompt| in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
 
 .. note::
-   ``conda`` needs to be initialized before running |activate| command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
+   ``conda`` needs to be initialized before running the |activate| command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -256,75 +261,102 @@ Each experiment requires certain basic information to run (e.g., date, grid, phy
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in the ``config_defaults.yaml`` file comments and in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. 
+In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. 
 
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must set the specifics of their experiment configuration in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a basic example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases, and user support is available for running in community mode. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and the Global Systems Laboratory (:term:`GSL`) who are working on pre-implementation testing for the Rapid Refresh Forecast System (:term:`RRFS`). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
+The user must set the specifics of their experiment configuration in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a basic example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases, and user support is available for running in community mode. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and the Global Systems Laboratory (:term:`GSL`) who are working on pre-implementation testing for the Rapid Refresh Forecast System (:term:`RRFS`). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_defaults.yaml``.
 
 .. _ConfigCommunity:
+.. list-table:: Configuration variables specified in the *config.community.yaml* script
+   :widths: 30 30 30
+   :header-rows: 1
 
-.. table::   Configuration variables specified in the config.community.yaml script
-
-   +--------------------------------+-------------------+------------------------------------+
-   | **Parameter**                  | **Default Value** | **config.community.yaml Value**    |
-   +================================+===================+====================================+
-   | RUN_ENVIR                      | "nco"             | "community"                        |
-   +--------------------------------+-------------------+------------------------------------+
-   | MACHINE                        | "BIG_COMPUTER"    | "hera"                             |
-   +--------------------------------+-------------------+------------------------------------+
-   | ACCOUNT                        | ""                | "an_account"                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | CCPA_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | NOHRSC_OBS_DIR                 | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | MRMS_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | NDAS_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | USE_CRON_TO_RELAUNCH           | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXPT_SUBDIR                    | ""                | "test_community"                   |
-   +--------------------------------+-------------------+------------------------------------+
-   | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                      |
-   +--------------------------------+-------------------+------------------------------------+
-   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                  |
-   +--------------------------------+-------------------+------------------------------------+
-   | DATE_FIRST_CYCL                | "YYYYMMDDHH"      | '2019061518'                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | DATE_LAST_CYCL                 | "YYYYMMDDHH"      | '2019061518'                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | FCST_LEN_HRS                   | 24                | 12                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | VERBOSE                        | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | COMPILER                       | "intel"           | "intel"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | LBC_SPEC_INTVL_HRS             | 6                 | 6                                  |
-   +--------------------------------+-------------------+------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | QUILTING                       | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | COMOUT_REF                     | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | DO_ENSEMBLE                    | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | NUM_ENS_MEMBERS                | 1                 | 2                                  |
-   +--------------------------------+-------------------+------------------------------------+
-
+   * - Parameter
+     - Default Value
+     - *config.community.yaml* Value
+   * - RUN_ENVIR
+     - "nco"
+     - "community"
+   * - MACHINE
+     - "BIG_COMPUTER"
+     - "hera"
+   * - ACCOUNT
+     - ""
+     - "an_account"
+   * - CCPA_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
+     - ""
+   * - MRMS_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
+     - ""
+   * - NDAS_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
+     - ""
+   * - USE_CRON_TO_RELAUNCH
+     - false
+     - false
+   * - EXPT_SUBDIR
+     - ""
+     - "test_community"
+   * - CCPP_PHYS_SUITE
+     - "FV3_GFS_v16"
+     - "FV3_GFS_v16"
+   * - PREDEF_GRID_NAME
+     - ""
+     - "RRFS_CONUS_25km"
+   * - DATE_FIRST_CYCL
+     - "YYYYMMDDHH"
+     - '2019061518'
+   * - DATE_LAST_CYCL
+     - "YYYYMMDDHH"
+     - '2019061518'
+   * - FCST_LEN_HRS
+     - 24
+     - 12
+   * - PREEXISTING_DIR_METHOD
+     - "delete"
+     - "rename"
+   * - VERBOSE
+     - true
+     - true
+   * - COMPILER
+     - "intel"
+     - "intel"
+   * - EXTRN_MDL_NAME_ICS
+     - "FV3GFS"
+     - "FV3GFS"
+   * - FV3GFS_FILE_FMT_ICS
+     - "nemsio"
+     - "grib2"
+   * - EXTRN_MDL_NAME_LBCS
+     - "FV3GFS"
+     - "FV3GFS"
+   * - LBC_SPEC_INTVL_HRS
+     - 6
+     - 6
+   * - FV3GFS_FILE_FMT_LBCS
+     - "nemsio"
+     - "grib2"
+   * - QUILTING
+     - true
+     - true
+   * - COMOUT_REF
+     - ""
+     - ""
+   * - DO_ENSEMBLE
+     - false
+     - false
+   * - NUM_ENS_MEMBERS
+     - 1
+     - 2
+   * - VX_FCST_MODEL_NAME
+     - '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+     - FV3_GFS_v16_CONUS_25km
+   
 .. _GeneralConfig:
 
 General Instructions for All Systems
@@ -350,10 +382,10 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -361,13 +393,16 @@ where:
 
    .. hint::
 
-      To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+      * To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+      * Users can also run ``saccount_params``, which provides more information but is not available on all systems.
+
+   .. COMMENT: Check this (above)!
 
    * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
    * ``/path/to/`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>` for data locations on Level 1 systems). 
    * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Section %s <basic-get-extrn-ics>` or :numref:`%s <basic-get-extrn-lbcs>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
+   * ``${yyyymmddhh}`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). Users may hardcode this value or leave it as-is, and the experiment will derive the correct value from ``DATE_FIRST_CYCL`` and related information.
 
 On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
@@ -477,7 +512,7 @@ For a machine with 4 CPUs, the following domain decomposition could be used:
 
 **Configure the Machine File**
 
-Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
+Configure the ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -493,23 +528,24 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app
       RUN_CMD_UTILS: 'mpirun -np 4'
       # Commands to run at the start of each workflow task.
       PRE_TASK_CMDS: '{ ulimit -a; }'
-
-   task_make_orog:
-      # Path to location of static input files used by the make_orog task
-      FIXorg: path/to/FIXorg/files 
-
-   task_make_sfc_climo:
-      # Path to location of static surface climatology input fields used by sfc_climo_gen
-      FIXsfc: path/to/FIXsfc/files 
-
-   task_run_fcst:
       FIXaer: /path/to/FIXaer/files
       FIXgsm: /path/to/FIXgsm/files
       FIXlut: /path/to/FIXlut/files
 
+      # Path to location of static input files used by the make_orog task
+      FIXorg: path/to/FIXorg/files
+
+      # Path to location of static surface climatology input fields used by sfc_climo_gen
+      FIXsfc: path/to/FIXsfc/files
+
+      #Path to location of NaturalEarth shapefiles used for plotting
+      FIXshp: /Users/username/DATA/UFS/NaturalEarth
+
    data:
       # Used by setup.py to set the values of EXTRN_MDL_SOURCE_BASEDIR_ICS and EXTRN_MDL_SOURCE_BASEDIR_LBCS
       FV3GFS: /Users/username/DATA/UFS/FV3GFS 
+
+.. COMMENT: Check this section (above) with Natalie!
 
 The ``data:`` section of the machine file can point to various data sources that the user has pre-staged on disk. For example:
 
