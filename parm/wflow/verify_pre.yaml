@@ -233,7 +233,7 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
           attrs:
             age: 00:00:00:30
           text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: 00:05:00
+      walltime: 00:10:00
 
 metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
   var:
