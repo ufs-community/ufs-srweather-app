@@ -79,7 +79,7 @@ and are shown in :numref:`Table %s <TemplateFiles>`.
    * - README.xml_templating.md
      - Instructions for Rocoto XML templating with Jinja.
 
-Additional information related to ``diag_table.[CCPP]``, ``field_table.[CCPP]``, ``input.nml.FV3``, ``model_configure``, and ``nems.configure`` can be found in the :ref:`UFS Weather Model User's Guide <ufs-wm:model-config-files>`, while information on ``regional_grid.nml`` options can be found in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#regional-esg-grid>`__.
+Additional information related to ``diag_table.[CCPP]``, ``field_table.[CCPP]``, ``input.nml.FV3``, ``model_configure``, and ``nems.configure`` can be found in the :ref:`UFS Weather Model User's Guide <ufs-wm:model-config-files>`, while information on ``regional_grid.nml`` options can be found in the `UFS_UTILS Technical Documentation <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/ufs_utils.html#regional-esg-grid>`__.
 
 Migratory Route of the Input Files in the Workflow
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -144,7 +144,7 @@ where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/InputsOutputs.html#output-files>`__.
 
 For the SRW Application, the Weather Model netCDF output files are written to ``$EXPTDIR/YYYYMMDDHH/postprd`` and have the naming convention (file->linked to):
 
@@ -167,7 +167,7 @@ UPP Product Output Tables for the UFS SRW LAM Grid:
    * :doc:`3D Native Hybrid Level Fields <tables/SRW_NATLEV_table>`
    * :doc:`3D Pressure Level Fields <tables/SRW_PRSLEV_table>`
 
-Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
+Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
 After creating the new flat text file to reflect the changes, users will need to modify their ``config.yaml`` to point the workflow to the new text file. In ``config.yaml``, set the following:
 
@@ -226,9 +226,7 @@ Static files are available in the `"fix" directory <https://noaa-ufs-srw-pds.s3.
    wget https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz
    tar -xzf fix_data.tgz
 
-Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. A list of ``wget`` commands with links is provided :ref:`here <StaticFilesList>` for the release |release| fix file data. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
-
-.. COMMENT: Update release file list above for next SRW release.
+Alternatively, users can download the static files individually from the `"fix" directory <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#fix/>`__ of the SRW Data Bucket using the ``wget`` command for each required file. Users will need to create an appropriate directory structure for the files when downloading them individually. The best solution is to download the files into directories that mirror the structure of the `Data Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__. 
 
 The environment variables ``FIXgsm``, ``FIXorg``, and ``FIXsfc`` indicate the path to the directories where the static files are located. After downloading the experiment data, users must set the paths to the files in ``config.yaml``. Add the following code to the ``task_run_fcst:`` section of the ``config.yaml`` file, and alter the variable paths accordingly:
 
@@ -271,7 +269,7 @@ The paths to ``EXTRN_MDL_SOURCE_BASEDIR_ICS`` and ``EXTRN_MDL_SOURCE_BASEDIR_LBC
 
 The two ``EXTRN_MDL_SOURCE_BASEDIR_*CS`` variables describe where the :term:`IC <ICs>` and :term:`LBC <LBCs>` file directories are located, respectively. For ease of reusing ``config.yaml`` across experiments, it is recommended that users set up the raw :term:`IC/LBC <ICs/LBCs>` file paths to include the model name (e.g., FV3GFS, GEFS, GDAS, NAM, RAP, HRRR), data format (e.g., grib2, nemsio), and date (in ``YYYYMMDDHH`` format). For example: ``/path/to/input_model_data/FV3GFS/grib2/2019061518/``. While there is flexibility to modify these settings, this structure will provide the most reusability for multiple dates when using the SRW Application workflow.
 
-When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like:
+When files are pulled from NOAA :term:`HPSS` (rather than downloaded from the data bucket), the naming convention looks something like this:
 
 * FV3GFS (GRIB2): ``gfs.t{cycle}z.pgrb2.0p25.f{fhr}``
 * FV3GFS (NEMSIO): 
@@ -292,7 +290,7 @@ where:
    * ``{cycle}`` corresponds to the 2-digit hour of the day when the forecast cycle starts, and 
    * ``{fhr}`` corresponds to the 2- or 3-digit nth hour of the forecast (3-digits for FV3GFS/GDAS data and 2 digits for RAP/HRRR data). 
 
-For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a {cycle} value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. 
+For example, a forecast using FV3GFS GRIB2 data that starts at 18h00 UTC would have a ``{cycle}`` value of 18, which is the 000th forecast hour. The LBCS file for 21h00 UTC would be named ``gfs.t18z.pgrb2.0p25.f003``. 
 
 In some cases, it may be necessary to specify values for ``EXTRN_MDL_FILES_*CS`` variables. This is often the case with HRRR and RAP data. An example ``config.yaml`` excerpt using HRRR and RAP data appears below: 
 

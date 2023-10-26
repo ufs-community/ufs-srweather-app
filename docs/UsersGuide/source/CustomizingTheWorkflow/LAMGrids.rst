@@ -262,7 +262,7 @@ Users will need to determine ``ak`` and ``bk`` values, which are used to define 
 
 The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program can output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_10_0/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/ver-1.11.0/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/ver-1.11.0/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 
