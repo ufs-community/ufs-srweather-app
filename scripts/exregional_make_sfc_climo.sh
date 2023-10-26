@@ -58,11 +58,11 @@ export OMP_STACKSIZE=${OMP_STACKSIZE_MAKE_SFC_CLIMO}
 #
 #-----------------------------------------------------------------------
 #
-# Are these machine dependent??
+# machine dependent ulimit commands
 #
 #-----------------------------------------------------------------------
 #
-ulimit -s unlimited
+eval ${PRE_TASK_CMDS}
 #
 #-----------------------------------------------------------------------
 #
