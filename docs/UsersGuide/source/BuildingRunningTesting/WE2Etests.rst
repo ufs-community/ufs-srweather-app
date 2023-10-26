@@ -3,22 +3,38 @@
 =======================
 Testing the SRW App
 =======================
+
+Introduction to Workflow End-to-End (WE2E) Tests
+==================================================
+
 The SRW App contains a set of end-to-end tests that exercise various workflow configurations of the SRW App. These are referred to as workflow end-to-end (WE2E) tests because they all use the Rocoto workflow manager to run their individual workflows from start to finish. The purpose of these tests is to ensure that new changes to the App do not break existing functionality and capabilities. However, these WE2E tests also provide users with additional sample cases and data beyond the basic ``config.community.yaml`` case. 
 
-Note that the WE2E tests are not regression tests---they do not check whether 
-current results are identical to previously established baselines. They also do
-not test the scientific integrity of the results (e.g., they do not check that values 
-of output fields are reasonable). These tests only check that the tasks within each test's workflow complete successfully. They are, in essence, tests of the workflow generation, task execution (:term:`J-jobs`, 
+.. attention::
+
+   * This introductory section provides high-level information on what is and is not tested with WE2E tests. It also provides information on :ref:`WE2E test categories <we2e-categories>` and the :ref:`WE2E test information file <WE2ETestInfoFile>`, which summarizes each test. 
+   * To skip directly to running WE2E tests, go to :numref:`Section %s: Running the WE2E Tests <RunWE2E>`.
+
+What is a WE2E test?
+----------------------
+
+WE2E tests are, in essence, tests of the workflow generation, task execution (:term:`J-jobs`, 
 :term:`ex-scripts`), and other auxiliary scripts to ensure that these scripts function correctly. Tested functions
 include creating and correctly arranging and naming directories and files, ensuring 
-that all input files are available and readable, calling executables with correct namelists and/or options, etc. Currently, it is up to the external repositories that the App clones (:numref:`Section %s <SRWStructure>`) to check that changes to those repositories do not change results, or, if they do, to ensure that the new results are acceptable. (At least two of these external repositories---``UFS_UTILS`` and ``ufs-weather-model``---do have such regression tests.) 
+that all input files are available and readable, calling executables with correct namelists and/or options, etc. 
+
+Note that the WE2E tests are **not** regression tests---they do not check whether 
+current results are identical to previously established baselines. They also do
+not test the scientific integrity of the results (e.g., they do not check that values 
+of output fields are reasonable). These tests only check that the tasks within each test's workflow complete successfully. Currently, it is up to the external repositories that the App clones (see :numref:`Section %s <SRWStructure>`) to check that changes to those repositories do not change results, or, if they do, to ensure that the new results are acceptable. (At least two of these external repositories---``UFS_UTILS`` and ``ufs-weather-model``---do have such regression tests.) 
+
+.. _we2e-categories:
 
 WE2E Test Categories
-======================
+----------------------
 
 WE2E tests are grouped into two categories that are of interest to code developers: ``fundamental`` and ``comprehensive`` tests. "Fundamental" tests are a lightweight but wide-reaching set of tests designed to function as a cheap "`smoke test <https://en.wikipedia.org/wiki/Smoke_testing_(software)>`__" for changes to the UFS SRW App. The fundamental suite of tests runs common combinations of workflow tasks, physical domains, input data, physics suites, etc.
 The comprehensive suite of tests covers a broader range of combinations of capabilities, configurations, and components, ideally including all capabilities that *can* be run on a given platform. Because some capabilities are not available on all platforms (e.g., retrieving data directly from NOAA HPSS), the suite of comprehensive tests varies from machine to machine.
-The list of fundamental and comprehensive tests can be viewed in the ``ufs-srweather-app/tests/WE2E/machine_suites/`` directory and are described in more detail in :doc:`this table <../tables/Tests>`.
+The list of fundamental and comprehensive tests can be viewed in the ``ufs-srweather-app/tests/WE2E/machine_suites/`` directory, and the tests are described in more detail in :doc:`this table <../tables/Tests>`.
 
 .. note::
 
@@ -33,7 +49,7 @@ For convenience, the WE2E tests are currently grouped into the following categor
    This category tests custom grids aside from those specified in ``ufs-srweather-app/ush/predef_grid_params.yaml``. These tests help ensure a wide range of domain sizes, resolutions, and locations will work as expected. These test files can also serve as examples for how to set your own custom domain.
 
 * ``default_configs``
-   This category tests example config files provided for user reference. They are symbolically linked from the ``ufs-srweather-app/ush/`` directory.
+   This category tests example configuration files provided for user reference. They are symbolically linked from the ``ufs-srweather-app/ush/`` directory.
 
 * ``grids_extrn_mdls_suites_community``
    This category of tests ensures that the SRW App workflow running in **community mode** (i.e., with ``RUN_ENVIR`` set to ``"community"``) completes successfully for various combinations of predefined grids, physics suites, and input data from different external models. Note that in community mode, all output from the Application is placed under a single experiment directory.
@@ -67,28 +83,110 @@ For convenience, the WE2E tests are currently grouped into the following categor
 
 Some tests are duplicated among the above categories via symbolic links, both for legacy reasons (when tests for different capabilities were consolidated) and for convenience when a user would like to run all tests for a specific category (e.g., verification tests).
 
+.. _WE2ETestInfoFile:
+
+WE2E Test Information File
+-----------------------------
+
+If users want to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_WE2E_tests.py`` with the ``--print_test_info`` flag.
+
+The rows of the file/sheet represent the full set of available tests (not just the ones to be run). The columns contain the following information (column titles are included in the CSV file):
+
+| **Column 1**
+| The primary test name followed (in parentheses) by the category subdirectory where it is
+  located.
+
+| **Column 2**
+| Any alternate names for the test followed by their category subdirectories
+  (in parentheses).
+
+| **Column 3**
+| The test description.
+
+| **Column 4**
+| The relative cost of running the dynamics in the test. This gives an 
+  idea of how expensive the test is relative to a reference test that runs 
+  a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined grid using 
+  its default time step (``DT_ATMOS: 40``). To calculate the relative cost, the absolute cost (``abs_cost``) is first calculated as follows:
+
+.. code-block::
+
+     abs_cost = nx*ny*num_time_steps*num_fcsts
+
+| Here, ``nx`` and ``ny`` are the number of grid points in the horizontal 
+  (``x`` and ``y``) directions, ``num_time_steps`` is the number of time 
+  steps in one forecast, and ``num_fcsts`` is the number of forecasts the 
+  test runs (see Column 5 below). (Note that this cost calculation does 
+  not (yet) differentiate between different physics suites.)  The relative 
+  cost ``rel_cost`` is then calculated using:
+
+.. code-block::
+
+    rel_cost = abs_cost/abs_cost_ref
+
+| where ``abs_cost_ref`` is the absolute cost of running the reference forecast 
+  described above, i.e., a single (``num_fcsts = 1``) 6-hour forecast 
+  (``FCST_LEN_HRS = 6``) on the ``RRFS_CONUS_25km grid`` (which currently has 
+  ``nx = 219``, ``ny = 131``, and ``DT_ATMOS = 40 sec`` (so that ``num_time_steps 
+  = FCST_LEN_HRS*3600/DT_ATMOS = 6*3600/40 = 540``). Therefore, the absolute cost reference is calculated as:
+
+.. code-block::
+
+    abs_cost_ref = 219*131*540*1 = 15,492,060
+
+| **Column 5**
+| The number of times the forecast model will be run by the test. This 
+  is calculated using quantities such as the number of :term:`cycle` dates (i.e., 
+  forecast model start dates) and the number of ensemble members (which 
+  is greater than 1 if running ensemble forecasts and 1 otherwise). The 
+  number of cycle dates and/or ensemble members is derived from the quantities listed
+  in Columns 6, 7, ....
+
+| **Columns 6, 7, ...**
+| The values of various experiment variables (if defined) in each test's 
+  configuration file. Currently, the following experiment variables are 
+  included:
+
+  |  ``PREDEF_GRID_NAME``
+  |  ``CCPP_PHYS_SUITE``
+  |  ``EXTRN_MDL_NAME_ICS``
+  |  ``EXTRN_MDL_NAME_LBCS``
+  |  ``DATE_FIRST_CYCL``
+  |  ``DATE_LAST_CYCL``
+  |  ``INCR_CYCL_FREQ``
+  |  ``FCST_LEN_HRS``
+  |  ``DT_ATMOS``
+  |  ``LBC_SPEC_INTVL_HRS``
+  |  ``NUM_ENS_MEMBERS``
+
+.. _RunWE2E:
+
 Running the WE2E Tests
 ================================
 
-The Test Script (``run_WE2E_tests.py``)
------------------------------------------
+About the Test Script (``run_WE2E_tests.py``)
+-----------------------------------------------
 
-The script to run the WE2E tests is named ``run_WE2E_tests.py`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml``.) For each test, the ``run_WE2E_tests.py`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls the ``generate_FV3LAM_wflow()`` function, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
+The script to run the WE2E tests is named ``run_WE2E_tests.py`` and is located in the directory ``ufs-srweather-app/tests/WE2E``. Each WE2E test has an associated configuration file named ``config.${test_name}.yaml``, where ``${test_name}`` is the name of the corresponding test. These configuration files are subsets of the full range of ``config.yaml`` experiment configuration options. (See :numref:`Section %s <ConfigWorkflow>` for all configurable options and :numref:`Section %s <UserSpecificConfig>` for information on configuring ``config.yaml`` or any test configuration ``.yaml`` file.) For each test, the ``run_WE2E_tests.py`` script reads in the test configuration file and generates from it a complete ``config.yaml`` file. It then calls the ``generate_FV3LAM_wflow()`` function, which in turn reads in ``config.yaml`` and generates a new experiment for the test. The name of each experiment directory is set to that of the corresponding test, and a copy of ``config.yaml`` for each test is placed in its experiment directory.
 
 .. note::
 
    The full list of WE2E tests is extensive, and some larger, high-resolution tests are computationally expensive. Estimates of walltime and core-hour cost for each test are provided in :doc:`this table <../tables/Tests>`. 
+
+.. COMMENT: Is the list of supported tests up-to-date?
 
 Using the Test Script 
 ----------------------
 
 .. attention::
 
-   These instructions assume that the user has already built the SRW App (as described in :numref:`Section %s <BuildExecutables>`) and loaded the appropriate python environment (as described in :numref:`Section %s <SetUpPythonEnv>`).
+   These instructions assume that the user has already built the SRW App (as described in :numref:`Section %s <BuildExecutables>`).
+
+First, load the appropriate python environment (as described in :numref:`Section %s <SetUpPythonEnv>`).
 
 The test script has three required arguments: machine, account, and tests. 
 
-   * Users must indicate which machine they are on using the ``--machine`` or ``-m`` option. See ``ush/machine`` or :numref:`Section %s <user>` for valid values. 
+   * Users must indicate which machine they are on using the ``--machine`` or ``-m`` option. See :numref:`Section %s <user>` for valid values or check the ``valid_param_vals.yaml`` file. 
    * Users must submit a valid account name using the ``--account`` or ``-a`` option to run submitted jobs. On systems where an account name is not required, users may simply use ``-a none``. 
    * Users must specify the set of tests to run using the ``--tests`` or ``-t`` option. Users may pass (in order of priority): 
 
@@ -119,12 +217,12 @@ Alternatively, to run the entire suite of fundamental tests on Hera, users might
 
    ./run_WE2E_tests.py -t fundamental -m hera -a nems
 
-To run the tests ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` on NOAA Cloud, users would enter the following commands:
+To add ``custom_ESGgrid`` and ``grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16`` to a text file and run the tests in that file on NOAA Cloud, users would enter the following commands:
 
 .. code-block:: console
 
    echo "custom_ESGgrid" > my_tests.txt
-   echo "grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16" >> my_tests.txt
+   echo "grid_RRFS_CONUScompact_25km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16" > my_tests.txt
    ./run_WE2E_tests.py -t my_tests.txt -m noaacloud -a none
 
 By default, the experiment directory for a WE2E test has the same name as the test itself, and it is created in ``${HOMEdir}/../expt_dirs``, where ``HOMEdir`` is the top-level directory for the ``ufs-srweather-app`` repository (usually set to something like ``/path/to/ufs-srweather-app``). Thus, the ``custom_ESGgrid`` experiment directory would be located in ``${HOMEdir}/../expt_dirs/custom_ESGgrid``.
@@ -135,7 +233,7 @@ By default, the experiment directory for a WE2E test has the same name as the te
 
       ./run_WE2E_tests.py -t fundamental -m orion -a gsd-fv3 --expt_basedir "test_set_01" -q -p 2
 
-   * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full path as an argument, which will place experiments in the given location. 
+   * ``--expt_basedir``: Useful for grouping sets of tests. If set to a relative path, the provided path will be appended to the default path. In this case, all of the fundamental tests will reside in ``${HOMEdir}/../expt_dirs/test_set_01/``. It can also take a full (absolute) path as an argument, which will place experiments in the given location. 
    * ``-q``: Suppresses the output from ``generate_FV3LAM_wflow()`` and prints only important messages (warnings and errors) to the screen. The suppressed output will still be available in the ``log.run_WE2E_tests`` file.
    * ``-p 2``: Indicates the number of parallel proceeses to run. By default, job monitoring and submission is serial, using a single task. Therefore, the script may take a long time to return to a given experiment and submit the next job when running large test suites. Depending on the machine settings, running in parallel can substantially reduce the time it takes to run all experiments. However, it should be used with caution on shared resources (such as HPC login nodes) due to the potential to overwhelm machine resources. 
 
@@ -191,7 +289,7 @@ For each specified test, ``run_WE2E_tests.py`` will generate a new experiment di
 
 As the script runs, detailed debug output is written to the file ``log.run_WE2E_tests``. This can be useful for debugging if something goes wrong. Adding the ``-d`` flag will print all this output to the screen during the run, but this can get quite cluttered.
 
-The progress of ``monitor_jobs()`` is tracked in a file ``WE2E_tests_{datetime}.yaml``, where {datetime} is the date and time (in ``yyyymmddhhmmss`` format) that the file was created. The final job summary is written by the ``print_WE2E_summary()``; this prints a short summary of experiments to the screen and prints a more detailed summary of all jobs for all experiments in the indicated ``.txt`` file.
+The progress of ``monitor_jobs()`` is tracked in a file ``WE2E_tests_{datetime}.yaml``, where {datetime} is the date and time (in ``YYYYMMDDHHmmSS`` format) that the file was created. The final job summary is written by the ``print_WE2E_summary()``; this prints a short summary of experiments to the screen and prints a more detailed summary of all jobs for all experiments in the indicated ``.txt`` file.
 
 .. code-block:: console
 
@@ -266,7 +364,8 @@ One might have noticed the line during the experiment run that reads "Use ctrl-c
    ./monitor_jobs.py -y=WE2E_tests_20230418174042.yaml -p=1
 
 Checking Test Status and Summary
-=================================
+----------------------------------
+
 By default, ``./run_WE2E_tests.py`` will actively monitor jobs, printing to console when jobs are complete (either successfully or with a failure), and printing a summary file ``WE2E_summary_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt``.
 However, if the user is using the legacy crontab option (by submitting ``./run_WE2E_tests.py`` with the ``--launch cron`` option), or if the user would like to summarize one or more experiments that either are not complete or were not handled by the WE2E test scripts, this status/summary file can be generated manually using ``WE2E_summary.py``.
 In this example, an experiment was generated using the crontab option and has not yet finished running.
@@ -338,85 +437,7 @@ The "Status" as specified by the above summary is explained below:
    All jobs are status SUCCEEDED; we will monitor for one more cycle in case there are unsubmitted jobs remaining.
 
 * ``COMPLETE``
-   All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle to ensure there are no un-submitted jobs. We will no longer monitor this experiment.
-
-
-.. _WE2ETestInfoFile:
-
-WE2E Test Information File
-==================================
-
-If the user wants to see consolidated test information, they can generate a file that can be imported into a spreadsheet program (Google Sheets, Microsoft Excel, etc.) that summarizes each test. This file, named ``WE2E_test_info.txt`` by default, is delimited by the ``|`` character and can be created either by running the ``./print_test_info.py`` script, or by generating an experiment using ``./run_WE2E_tests.py`` with the ``--print_test_info`` flag.
-
-The rows of the file/sheet represent the full set of available tests (not just the ones to be run). The columns contain the following information (column titles are included in the CSV file):
-
-| **Column 1**
-| The primary test name followed (in parentheses) by the category subdirectory where it is
-  located.
-
-| **Column 2**
-| Any alternate names for the test followed by their category subdirectories
-  (in parentheses).
-
-| **Column 3**
-| The test description.
-
-| **Column 4**
-| The relative cost of running the dynamics in the test. This gives an 
-  idea of how expensive the test is relative to a reference test that runs 
-  a single 6-hour forecast on the ``RRFS_CONUS_25km`` predefined grid using 
-  its default time step (``DT_ATMOS: 40``). To calculate the relative cost, the absolute cost (``abs_cost``) is first calculated as follows:
-
-.. code-block::
-
-     abs_cost = nx*ny*num_time_steps*num_fcsts
-
-| Here, ``nx`` and ``ny`` are the number of grid points in the horizontal 
-  (``x`` and ``y``) directions, ``num_time_steps`` is the number of time 
-  steps in one forecast, and ``num_fcsts`` is the number of forecasts the 
-  test runs (see Column 5 below). (Note that this cost calculation does 
-  not (yet) differentiate between different physics suites.)  The relative 
-  cost ``rel_cost`` is then calculated using:
-
-.. code-block::
-
-    rel_cost = abs_cost/abs_cost_ref
-
-| where ``abs_cost_ref`` is the absolute cost of running the reference forecast 
-  described above, i.e., a single (``num_fcsts = 1``) 6-hour forecast 
-  (``FCST_LEN_HRS = 6``) on the ``RRFS_CONUS_25km grid`` (which currently has 
-  ``nx = 219``, ``ny = 131``, and ``DT_ATMOS = 40 sec`` (so that ``num_time_steps 
-  = FCST_LEN_HRS*3600/DT_ATMOS = 6*3600/40 = 540``). Therefore, the absolute cost reference is calculated as:
-
-.. code-block::
-
-    abs_cost_ref = 219*131*540*1 = 15,492,060
-
-| **Column 5**
-| The number of times the forecast model will be run by the test. This 
-  is calculated using quantities such as the number of :term:`cycle` dates (i.e., 
-  forecast model start dates) and the number of ensemble members (which 
-  is greater than 1 if running ensemble forecasts and 1 otherwise). The 
-  number of cycle dates and/or ensemble members is derived from the quantities listed
-  in Columns 6, 7, ....
-
-| **Columns 6, 7, ...**
-| The values of various experiment variables (if defined) in each test's 
-  configuration file. Currently, the following experiment variables are 
-  included:
-
-  |  ``PREDEF_GRID_NAME``
-  |  ``CCPP_PHYS_SUITE``
-  |  ``EXTRN_MDL_NAME_ICS``
-  |  ``EXTRN_MDL_NAME_LBCS``
-  |  ``DATE_FIRST_CYCL``
-  |  ``DATE_LAST_CYCL``
-  |  ``INCR_CYCL_FREQ``
-  |  ``FCST_LEN_HRS``
-  |  ``DT_ATMOS``
-  |  ``LBC_SPEC_INTVL_HRS``
-  |  ``NUM_ENS_MEMBERS``
-
+   All jobs are status SUCCEEDED, and we have monitored this job for an additional cycle to ensure there are no unsubmitted jobs. We will no longer monitor this experiment.
 
 Modifying the WE2E System
 ============================
