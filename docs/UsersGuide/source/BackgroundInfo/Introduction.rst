@@ -28,8 +28,6 @@ Since the last release, developers have added a variety of features:
    * Air Quality Modeling (AQM) capabilities (unsupported but available; see `PR #613 <https://github.com/ufs-community/ufs-srweather-app/pull/613>`__)
    * Miscellaneous documentation updates to reflect the changes above
 
-.. COMMENT: Add new CCPP updates page
-
 The SRW App v2.2.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
 UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
@@ -125,7 +123,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - FV3 Scientific Documentation
      - https://repository.library.noaa.gov/view/noaa/30725
    * - CCPP Technical Documentation
-     - https://ccpp-techdoc.readthedocs.io/en/latest/
+     - https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/
    * - CCPP Scientific Documentation
      - https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/index.html
    * - Stochastic Physics Documentation
@@ -141,7 +139,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/main_v4.1/Users_Guide/index.html
 
-.. COMMENT: Update links for stochastic_physics, CCPP Tech docs, UFS_UTILS
+.. COMMENT: Check links for stochastic_physics, CCPP Tech docs, UFS_UTILS
 
 
 User Support and Contributions to Development

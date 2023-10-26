@@ -229,11 +229,9 @@ intersphinx_mapping = {
    'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/', None),
    'upp': ('https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/', None),
    'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/', None),
-   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/latest/', None),
+   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/release-public-v3/', None),
 }
-
-# COMMENT: Update hpc-stack ref to release docs! https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/
 
 # -- Options for todo extension ----------------------------------------------
 
