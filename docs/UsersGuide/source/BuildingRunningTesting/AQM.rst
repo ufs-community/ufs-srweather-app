@@ -16,12 +16,12 @@ The AQM is a UFS Application that dynamically couples the Community Multiscale A
 
    Although this chapter is the primary documentation resource for running the AQM configuration, users may need to refer to :numref:`Chapter %s <BuildSRW>` and :numref:`Chapter %s <RunSRW>` for additional information on building and running the SRW App, respectively. 
 
+Quick Start Guide (SRW-AQM)
+=====================================
+
 .. attention::
 
    These instructions should work smoothly on Hera and WCOSS2, but users on other systems may need to make additional adjustments. 
-
-Quick Start Guide (SRW-AQM)
-=====================================
 
 Download the Code
 -------------------
@@ -135,7 +135,7 @@ Users may also wish to change :term:`cron`-related parameters in ``config.yaml``
 
 This means that cron will submit the launch script every 3 minutes. Users may choose not to submit using cron or to submit at a different frequency. Note that users should create a crontab by running ``crontab -e`` the first time they use cron.
 
-When using the basic ``config.aqm.community.yaml`` experiment, the AQM pre-processing tasks are automatically turned because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM post-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
+When using the basic ``config.aqm.community.yaml`` experiment, the AQM pre-processing tasks are automatically turned on because ``"parm/wflow/aqm_prep.yaml"`` appears in the list of workflow files in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml`` (see :numref:`Section %s <TasksPrepAQM>` for task descriptions). To turn on AQM *post*-processing tasks in the workflow, include ``"parm/wflow/aqm_post.yaml"`` in the ``rocoto: tasks: taskgroups:`` section, too (see :numref:`Section %s <TasksPostAQM>` for task descriptions). 
 
 .. attention::
 
@@ -157,10 +157,10 @@ If ``USE_CRON_TO_RELAUNCH`` is set to true in ``config.yaml`` (see :numref:`Sect
 
 .. code-block:: console
 
-   cd <EXPT_BASEDIR>/<EXPT_SUBDIR>
+   cd ${EXPT_BASEDIR}/${EXPT_SUBDIR}
    ./launch_FV3LAM_wflow.sh
 
-Repeat the launch command regularly until a SUCCESS or FAILURE message appears on the terminal window. See :numref:`Section %s <DirParams>` for more on the ``<EXPT_BASEDIR>`` and ``<EXPT_SUBDIR>`` variables. 
+Repeat the launch command regularly until a SUCCESS or FAILURE message appears on the terminal window. See :numref:`Section %s <DirParams>` for more on the ``${EXPT_BASEDIR}`` and ``${EXPT_SUBDIR}`` variables. 
 
 Users may check experiment status from the experiment directory with either of the following commands: 
 
@@ -311,6 +311,7 @@ Add the WE2E test for AQM to the list file:
 
 .. code-block:: console
 
+   cd /path/to/ufs-srweather-app/tests/WE2E
    echo "custom_ESGgrid" > my_tests.txt
    echo "aqm_grid_AQM_NA13km_suite_GFS_v16" >> my_tests.txt
 
