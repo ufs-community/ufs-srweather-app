@@ -59,7 +59,7 @@ eval ${PRE_TASK_CMDS}
 # 
 #-----------------------------------------------------------------------
 IF_USE_BACKUP_EMISSION_ON_FAIL="TRUE"
-
+USE_BACKUP_EMISSIONS="FALSE"
 mm="${PDY:4:2}"
 dd="${PDY:6:2}"
 hh="${cyc}"
@@ -88,6 +88,7 @@ if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
   if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE" ]; then 
     if [ -f "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc" ]; then
+      USE_BACKUP_EMISSIONS="TRUE"
       cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
     fi
   else
@@ -96,6 +97,7 @@ if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
 else
   if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE" ]; then 
     if [ -f "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc" ]; then
+      USE_BACKUP_EMISSIONS="TRUE"
       cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_BACKUP_EMISSIONS.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
     else
       python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
@@ -120,6 +122,7 @@ else
         err_exit "${message_txt}"
       fi
     fi
+  fi
 fi
 #
 #-----------------------------------------------------------------------
@@ -128,15 +131,19 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
-export err=$?
-if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
-  if [ "${RUN_ENVIR}" = "community" ]; then
-    print_err_msg_exit "${message_txt}"
-  else
-    err_exit "${message_txt}"
+if [ "${USE_BACKUP_EMISSIONS}" = "FALSE" ]; then
+  python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
+    if [ "${RUN_ENVIR}" = "community" ]; then
+      print_err_msg_exit "${message_txt}"
+    else
+      err_exit "${message_txt}"
+    fi
   fi
+else
+  cp ${DATA}/NEXUS_Expt_combined.nc ${DATA}/NEXUS_Expt.nc
 fi
 #
 #-----------------------------------------------------------------------
