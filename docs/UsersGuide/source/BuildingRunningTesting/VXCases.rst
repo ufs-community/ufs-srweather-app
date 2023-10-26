@@ -59,7 +59,7 @@ On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file us
 
          wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.2.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <Cartopy>` for more information on plotting. 
+This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :numref:`Section %s <PlotOutput>` for more information on plotting. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -67,12 +67,12 @@ After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods abo
 
    tar xvfz Indy-Severe-Weather.tgz
 
-Record the path to this file output using the ``pwd`` command: 
+Save the path to this file in and ``INDYDATA`` environment variable: 
    
 .. code-block:: console 
 
    cd Indy-Severe-Weather
-   pwd
+   export INDYDATA=$PWD
 
 .. note::
 
@@ -91,7 +91,7 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workf
 
 Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. 
 
 Configure the Verification Sample Case
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -115,22 +115,16 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
    user:
       ACCOUNT: <my_account>
    platform:
-      MODEL: FV3_GFS_v16_SUBCONUS_3km
-      MET_INSTALL_DIR: /path/to/met/x.x.x           # Example: MET_INSTALL_DIR: /contrib/met/10.1.1
-      METPLUS_PATH: /path/to/METplus/METplus-x.x.x  # Example: METPLUS_PATH: /contrib/METplus/METplus-4.1.1
-      # Add MET_BIN_EXEC variable to config.yaml
-      MET_BIN_EXEC: bin
       CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/nohrsc/proc
       MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
+      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
       DATE_FIRST_CYCL: '2019061500'
       DATE_LAST_CYCL: '2019061500'
       FCST_LEN_HRS: 60
-   workflow_switches:
-      RUN_TASK_VX_GRIDSTAT: true
-      RUN_TASK_VX_POINTSTAT: true
    task_get_extrn_ics:
       # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
       EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
@@ -139,9 +133,15 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
       USE_USER_STAGED_EXTRN_FILES: true
-   task_run_fcst:
-      WTIME_RUN_FCST: 05:00:00
-      PREDEF_GRID_NAME: SUBCONUS_Ind_3km
+   verification:
+     VX_FCST_MODEL_NAME: FV3_GFS_v16_SUBCONUS_3km
+   rocoto:
+     tasks:
+       metatask_run_ensemble:
+         task_run_fcst_mem#mem#:
+           walltime: 02:00:00
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+      
 
 .. hint::
    To open the configuration file in the command line, users may run the command: 
