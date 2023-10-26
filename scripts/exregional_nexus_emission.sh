@@ -344,7 +344,11 @@ if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
     if [ "${RUN_ENVIR}" = "community" ]; then
       print_err_msg_exit "${message_txt}"
     else
-      err_exit "${message_txt}"
+      if [ "${IF_USE_BACKUP_EMISSION_ON_FAIL}" = "TRUE"]; then
+        USE_BACKUP_EMISSIONS="TRUE"
+      else
+        err_exit "${message_txt}"
+      fi
     fi
   fi
 fi
