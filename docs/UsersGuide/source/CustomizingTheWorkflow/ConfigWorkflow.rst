@@ -522,7 +522,7 @@ CCPP Parameter
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
 
-   Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users cannot expect full support for these schemes.
+   Other valid values can be found in the ``ush/valid_param_vals.yaml`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/release/public-v2.2.0/ush/valid_param_vals.yaml>`__, but users cannot expect full support for these schemes.
 
 ``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ CCPP_PHYS_SUITE }}.xml'``)
    The name of the suite definition file (SDF) used for the experiment. 
