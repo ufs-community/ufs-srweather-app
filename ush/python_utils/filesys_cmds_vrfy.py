@@ -38,7 +38,8 @@ def rm_vrfy(*args):
 
 
 def ln_vrfy(*args):
-    return cmd_vrfy("ln", *args)
+    cmd_ln = os.getenv("LN_UTIL")
+    return cmd_vrfy(cmd_ln, *args)
 
 
 def mkdir_vrfy(*args):
