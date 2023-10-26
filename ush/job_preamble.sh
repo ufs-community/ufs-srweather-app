@@ -91,7 +91,7 @@ export SENDWEB=$(boolify "${SENDWEB}")
 #
 #-----------------------------------------------------------------------
 #
-if [ $subcyc -eq 0 ]; then
+if [ ${subcyc:-} -eq 0 ]; then
     export cycle="t${cyc}z"
 else
     export cycle="t${cyc}${subcyc}z"
