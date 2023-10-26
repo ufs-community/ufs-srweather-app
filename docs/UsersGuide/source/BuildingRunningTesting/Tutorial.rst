@@ -4,9 +4,9 @@
 Tutorials
 =============
 
-This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
+This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already :ref:`built the SRW App <BuildSRW>` successfully. 
 
-Users can run through the entire set of tutorials or jump to the one that interests them most. The five tutorials address different skills:
+Users can run through the entire set of tutorials or jump to the one that interests them most. The first tutorial is recommended for users who have never run the SRW App before. The five tutorials address different skills:
 
    #. :ref:`Severe Weather Over Indianapolis <fcst1>`: Change physics suites and compare graphics plots. 
    #. :ref:`Cold Air Damming <fcst2>`: Coming soon!
@@ -159,10 +159,6 @@ should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
          task_run_fcst_mem#mem#:
            walltime: 02:00:00
       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-
-
-For more information on how to turn on/off tasks in the worklfow, please
-see :numref:`Section %s <DefineWorkflow>`.
 
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
