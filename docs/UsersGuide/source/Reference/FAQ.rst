@@ -66,60 +66,9 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-The ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+:numref:`Section %s <_ConfigTasks>` provides a full description of how to set which workflow tasks and task groups run. 
 
-.. _task-group-files:
-
-.. list-table:: Task group files
-   :widths: 20 50
-   :header-rows: 1
-
-   * - File
-     - Function
-   * - aqm_post.yaml
-     - SRW-AQM post-processing tasks
-   * - aqm_prep.yaml
-     - SRW-AQM pre-processing tasks
-   * - coldstart.yaml
-     - Tasks required to run a cold-start forecast
-   * - da_data_preproc.yaml
-     - Preprocessing tasks for RRFS `DA <data assimilation>`.
-   * - plot.yaml
-     - Plotting tasks
-   * - post.yaml
-     - Post-processing tasks
-   * - prdgen.yaml
-     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
-   * - prep.yaml
-     - Pre-processing tasks
-   * - verify_det.yaml
-     - Deterministic verification tasks
-   * - verify_ens.yaml
-     - Ensemble verification tasks
-   * - verify_pre.yaml
-     - Verification pre-processing tasks
-
-The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-
-Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars``. 
-
-Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
-       task_post_stat_o3:
-       task_post_stat_pm25:
-       task_bias_correction_o3:
-       task_bias_correction_pm25:
+The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <_ConfigTasks>` to override the default workflow and run the selected tasks and task groups.   
 
 .. _CycleInd:
 
