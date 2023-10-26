@@ -582,6 +582,7 @@ Predefined Grid Parameters
    | ``"RRFS_CONUS_13km"``
    | ``"RRFS_CONUS_3km"``
    | ``"SUBCONUS_Ind_3km"`` 
+   | ``"RRFS_NA_13km"`` 
    
    **Other valid values include:**
 
@@ -594,7 +595,6 @@ Predefined Grid Parameters
    | ``"RRFS_CONUScompact_25km"``
    | ``"RRFS_CONUScompact_13km"``
    | ``"RRFS_CONUScompact_3km"``
-   | ``"RRFS_NA_13km"`` 
    | ``"RRFS_NA_3km"``
    | ``"WoFS_3km"``
 
@@ -1139,6 +1139,8 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 
 ``WRITE_DOPOST``: (Default: false)
    Flag that determines whether to use the inline post option, which calls the Unified Post Processor (:term:`UPP`) from within the UFS Weather Model. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the UFS Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
+
+.. _CompParams:
 
 Computational Parameters
 ----------------------------
