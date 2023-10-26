@@ -140,7 +140,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
        metatask_run_ensemble:
          task_run_fcst_mem#mem#:
            walltime: 02:00:00
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
       
 
 .. hint::
@@ -269,9 +269,7 @@ Point STAT Files
 
 The Point-Stat files contain continuous variables like temperature, pressure, and wind speed. A description of the Point-Stat file can be found :ref:`here <met:point-stat>` in the MET documentation. 
 
-The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html?highlight=csi#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found `here <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#point-stat-output>`__.
-
-.. COMMENT: Update links!
+The Point-Stat files contain a potentially overwhelming amount of information. Therefore, it is recommended that users focus on the CNT MET test, which contains the `RMSE <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#root-mean-squared-error-rmse>`__ and `MBIAS <https://met.readthedocs.io/en/latest/Users_Guide/appendixC.html#multiplicative-bias>`__ statistics. The MET tests are defined in column 24 'LINE_TYPE' of the ``.stat`` file. Look for 'CNT' in this column. Then find column 66-68 for MBIAS and 78-80 for RMSE statistics. A full description of this file can be found :ref:`here <met:point_stat-output>`.
 
 To narrow down the variable field even further, users can focus on these weather variables: 
 
@@ -291,7 +289,7 @@ Grid-Stat Files
 
 The Grid-Stat files contain gridded variables like reflectivity and precipitation. A description of the Grid-Stat file can be found :ref:`here <met:grid-stat>`. 
 
-As with the Point-Stat file, there are several MET tests and statistics available in the Grid-Stat file. To simplify this dataset users can focus on the MET tests and statistics found in :numref:`Table %s <GridStatStatistics>` below. The MET tests are found in column 24 ‘LINE_TYPE’ of the Grid-Stat file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the Grid-Stat files, view the :ref:`MET Grid-Stat Documentation <met:grid-stat>`.
+As with the Point-Stat file, there are several MET tests and statistics available in the Grid-Stat file. To simplify this dataset, users can focus on the MET tests and statistics found in :numref:`Table %s <GridStatStatistics>` below. The MET tests are found in column 24 ‘LINE_TYPE’ of the Grid-Stat file. The table also shows the user the columns for the statistics of interest. For a more detailed description of the Grid-Stat files, view the :ref:`MET Grid-Stat Documentation <met:grid-stat>`.
 
 .. _GridStatStatistics:
 
