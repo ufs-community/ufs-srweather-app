@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -73,6 +73,22 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir -p $DATA
   cd $DATA
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set environment only when RUN_TASK_GET_EXTRN_LBCS is false.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
+  export TIME_OFFSET_HRS=${EXTRN_MDL_LBCS_OFFSET_HRS:-0}
+  export EXTRN_MDL_NAME=${EXTRN_MDL_NAME_LBCS}
+  GFS_FILE_FMT=${FV3GFS_FILE_FMT_LBCS}
+  yyyymmdd=${PDY}
+  hh=${cyc}
+  export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+  export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA}}"
 fi
 #
 #-----------------------------------------------------------------------

@@ -7,8 +7,13 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
+if [ -z "${GLOBAL_VAR_DEFNS_FP}" ]; then
+  . ${HOMEaqm}/parm/config/var_defns.sh
+  . ${HOMEaqm}/ush/source_util_funcs.sh
+else
+  . ${GLOBAL_VAR_DEFNS_FP}
+  . $USHdir/source_util_funcs.sh
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -70,8 +75,11 @@ fi
 #-----------------------------------------------------------------------
 #
 task_name="$1"
-#### jjob_fp="$2"
-jjob_fp="${JOBSdir}/$2"
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  jjob_fp="${JOBSdir}/$2"
+else
+  jjob_fp="$2"
+fi
 #
 #-----------------------------------------------------------------------
 #

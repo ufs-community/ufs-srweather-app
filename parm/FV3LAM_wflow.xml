@@ -588,7 +588,9 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
+{%- if run_task_get_extrn_ics %}
         <taskdep task="&TN_GET_EXTRN_ICS;"/>
+{%- endif %}
         <or>
 <!--          <taskdep task="&TN_MAKE_GRID;"/> -->
           <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
@@ -636,7 +638,9 @@ MODULES_RUN_TASK_FP script.
 
     <dependency>
       <and>
+{%- if run_task_get_extrn_lbcs %}
         <taskdep task="&TN_GET_EXTRN_LBCS;"/>
+{%- endif %}
         <or>
 <!--          <taskdep task="&TN_MAKE_GRID;"/> -->
           <datadep age="00:00:00:05">&EXPTDIR;/grid/&TN_MAKE_GRID;&CMPEXT;</datadep>
