@@ -646,6 +646,8 @@ Forecast Parameters
 
    By setting ``FCST_LEN_HRS: -1``, the experiment will derive the values of ``FCST_LEN_HRS`` (18) and ``LONG_FCST_LEN_HRS`` (48) for each cycle date. 
 
+.. _preexisting-dirs:
+
 Pre-Existing Directory Parameter
 ------------------------------------
 ``PREEXISTING_DIR_METHOD``: (Default: "delete")
@@ -1173,7 +1175,7 @@ Write-Component (Quilting) Parameters
    
    .. math::
       
-      LAYOUT_X * LAYOUT_Y + WRTCMP\_write\_groups * WRTCMP_write_tasks_per_group 
+      LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group 
 
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.

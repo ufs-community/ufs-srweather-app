@@ -66,9 +66,9 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-:numref:`Section %s <_ConfigTasks>` provides a full description of how to set which workflow tasks and task groups run. 
+:numref:`Section %s <ConfigTasks>` provides a full description of how to set which workflow tasks and task groups run. 
 
-The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <_ConfigTasks>` to override the default workflow and run the selected tasks and task groups.   
+The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <ConfigTasks>` to override the default workflow and run the selected tasks and task groups.   
 
 .. _CycleInd:
 

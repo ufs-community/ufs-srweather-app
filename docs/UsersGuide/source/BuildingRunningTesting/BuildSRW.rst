@@ -205,7 +205,13 @@ where valid values are ``intel`` or ``gnu``.
 
 The last few lines of the console output should include ``[100%] Built target ufs-weather-model``, indicating that the UFS Weather Model executable has been built successfully. 
 
-After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If the application built properly, users may continue to :numref:`Section %s <RunSRW>` to configure and run an experiment. If the ``devbuild.sh`` build method does *not* work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
+After running ``devbuild.sh``, the executables listed in :numref:`Table %s <ExecDescription>` should appear in the ``ufs-srweather-app/exec`` directory. If the application built properly, users may configure and run an experiment. Users have a few options: 
+
+#. Proceed to :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. 
+#. Try the :ref:`SRW App Tutorials <Tutorial>` (good for new users!). 
+#. For detailed information on running the SRW App, including optional tasks like plotting and verification, users can refer to :numref:`Section %s: Running the SRW App <RunSRW>`.
+
+If the ``devbuild.sh`` build method did *not* work, or if users are not on a supported machine, they will have to manually set up the environment and build the SRW App binaries with CMake as described in :numref:`Section %s <CMakeApproach>`.
 
 .. _ExecDescription:
 
@@ -383,4 +389,8 @@ Proceed to building the executables using the process outlined in :numref:`Step 
 Run an Experiment
 =====================
 
-To configure and run an experiment, users should proceed to :numref:`Chapter %s <RunSRW>`.
+To configure and run an experiment, users have a few options: 
+
+#. Proceed to :numref:`Section %s: Quick Start Guide <NCQuickstart>` for a quick overview of the workflow steps. 
+#. Try the :ref:`SRW App Tutorials <Tutorial>` (good for new users!). 
+#. For detailed information on running the SRW App, including optional tasks like plotting and verification, users can refer to :numref:`Section %s: Running the SRW App <RunSRW>`.
