@@ -21,6 +21,8 @@ load("hpc-gnu")
 load("hpc-openmpi")
 
 load("srw_common")
+load("nccmp")
+load("nco")
 
 -- Set ARCH environmental variable in a terminal as following before using this module:
 --               export ARCH=$(uname -m) 
