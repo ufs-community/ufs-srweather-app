@@ -7,14 +7,14 @@ METplus Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added ahead of the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. Content has been updated for the v2.2.0 release. In the future, additional sample cases will be provided. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added ahead of the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. Content has been updated for the |latestr| release. In the future, additional sample cases will be provided. 
 
 Each sample case contains model output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables (when plotting tasks are run). These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 
 Prerequisites
 ================
 
-This chapter assumes that users have already (1) built the SRW App v2.2.0 release successfully and (2) installed MET and METplus on their system (e.g., as part of :term:`spack-stack` installation). For instructions on how to build the v2.2.0 release, see :numref:`Section %s <BuildSRW>`. Users will have an easier time if they run through the out-of-the-box case described in :numref:`Section %s <RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
+This chapter assumes that users have already (1) built the SRW App |latestr| release successfully and (2) installed MET and METplus on their system (e.g., as part of :term:`spack-stack` installation). For instructions on how to build the |latestr| release, see :numref:`Section %s <BuildSRW>`. Users will have an easier time if they run through the out-of-the-box case described in :numref:`Section %s <RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
 
 For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, and links to installation instructions and documentation for users on other systems. 
 
@@ -34,7 +34,7 @@ There were many storm reports for this event with the majority of tornadoes and 
 Set Up Verification
 -----------------------
 
-Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.2.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
+Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (|latestr|). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
 
 .. _GetSampleData:
 
@@ -154,7 +154,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to the v2.2.0 release documentation on :ref:`configuring the SRW App <srw_v2.2.0:UserSpecificConfig>`.
+For additional configuration guidance, refer to the |latestr| release documentation on :ref:`configuring the SRW App <srw_v2.2.0:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
