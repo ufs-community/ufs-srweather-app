@@ -99,8 +99,8 @@ else
         cp -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
-        if [ ! -z "${maillist}" ]; then
-          echo "${message_warning}" | mail.py $maillist
+        if [ ! -z "${maillist_group2}" ]; then
+          echo "${message_warning}" | mail.py $maillist_group2
         fi
       fi
     fi

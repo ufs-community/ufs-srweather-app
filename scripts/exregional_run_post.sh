@@ -167,13 +167,17 @@ fi
 # Set the names of the forecast model's write-component output files.
 #
 if [ "${RUN_ENVIR}" = "nco" ]; then
+  if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
     DATAFCST=$DATAROOT/${RUN}_forecast${dot_ensmem/./_}_${cyc}.${share_pid}
     if [ ! -d ${DATAFCST} ]; then
       echo "Fatal error DATAFCST not found in production mode"
       exit 7
     fi
+  else
+    DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
+  fi	  
 else
-    DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
+  DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
 
 if [ "${CPL_AQM}" = "TRUE" ]; then

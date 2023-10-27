@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_nexus_emission" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -89,22 +89,73 @@ mkdir -p "$DATAinput"
 USE_GFS_SFC="FALSE"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
-  GFS_SFC_INPUT="${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${share_pid}"
-  if [ ! -d ${GFS_SFC_INPUT} ]; then
-    echo "Fatal error GFS_SFC_INPUT not found in production mode"
-    exit 7
+  if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
+    GFS_SFC_INPUT="${DATA}/GFS_SFC"
+    mkdir -p "${GFS_SFC_INPUT}"
+    cd ${GFS_SFC_INPUT}
+    yyyymmdd=${GFS_SFC_CDATE:0:8}
+    yyyymm=${GFS_SFC_CDATE:0:6}
+    yyyy=${GFS_SFC_CDATE:0:4}
+    hh=${GFS_SFC_CDATE:8:2}
+    if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+      cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+      CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+      FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+    fi
+    fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
+
+    GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
+    GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
+    GFS_SFC_DATA_INTVL="3"
+
+    gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
+    relative_link_flag="FALSE"
+    gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
+    create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
+                           relative="${relative_link_flag}"
+
+    for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
+      gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
+      if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
+        gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
+        create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
+                             relative="${relative_link_flag}"
+      else
+        message_txt="WARNING: SFC file for nexus emission for \"${cycle}\" does not exist in the directory:
+  GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
+  gfs_sfc_fn = \"${gfs_sfc_fn}\""
+        print_info_msg "${message_txt}"
+        if [ ! -z "${maillist_group1}" ]; then
+          echo "${message_txt}" | mail.py $maillist_group1
+        fi
+      fi
+    done
+
+    USE_GFS_SFC="TRUE"
+    cd ${DATA}
+  else
+    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then	    
+      GFS_SFC_INPUT="${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${share_pid}"
+      if [ ! -d ${GFS_SFC_INPUT} ]; then
+        echo "Fatal error GFS_SFC_INPUT not found in production mode"
+        exit 7
+      fi
+    else
+      GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
+    fi
   fi
 else
   GFS_SFC_INPUT="${COMIN}/GFS_SFC"
 fi
 
-if [ -d "${GFS_SFC_INPUT}" ]; then
-  if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
-    ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
-    USE_GFS_SFC="TRUE"
+if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "TRUE" ]; then
+  if [ -d "${GFS_SFC_INPUT}" ]; then
+    if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
+      ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
+      USE_GFS_SFC="TRUE"
+    fi
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #

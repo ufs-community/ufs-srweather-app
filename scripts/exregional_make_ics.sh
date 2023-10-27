@@ -75,7 +75,100 @@ else
   print_info_msg "$VERBOSE" "
   All executables will be submitted with command \'${RUN_CMD_UTILS}\'."
 fi
+#
+#-----------------------------------------------------------------------
+#
+# Link input data file only when RUN_TASK_GET_EXTRN_ICS is false
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
+  if [ ${TIME_OFFSET_HRS} -eq 0 ] ; then
+    file_set="anl"
+  else
+    file_set="fcst"
+  fi
+  fcst_hrs=${TIME_OFFSET_HRS}
+  file_names=${EXTRN_MDL_FILES_ICS[@]}
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+    file_type=$FV3GFS_FILE_FMT_ICS
+  fi
+  input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_ICS:-$EXTRN_MDL_SYSBASEDIR_ICS}
 
+  data_stores="${EXTRN_MDL_DATA_STORES}"
+
+  yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
+  yyyy=${yyyymmddhh:0:4}
+  yyyymm=${yyyymmddhh:0:6}
+  yyyymmdd=${yyyymmddhh:0:8}
+  mm=${yyyymmddhh:4:2}
+  dd=${yyyymmddhh:6:2}
+  hh=${yyyymmddhh:8:2}
+
+  # Set to use the pre-defined data paths in the machine file (ush/machine/).
+  PDYext=${yyyymmdd}
+  cycext=${hh}
+
+  # Set an empty members directory
+  mem_dir=""
+
+  input_file_path=$(eval echo ${input_file_path})
+  if [[ $input_file_path = *" "* ]]; then
+    input_file_path=$(eval ${input_file_path})
+  fi
+
+  additional_flags=""
+
+  if [ -n "${file_type:-}" ] ; then
+    additional_flags="$additional_flags --file_type ${file_type}"
+  fi
+
+  if [ -n "${file_names:-}" ] ; then
+    additional_flags="$additional_flags --file_templates ${file_names[@]}"
+  fi
+
+  if [ -n "${input_file_path:-}" ] ; then
+    data_stores="disk $data_stores"
+    additional_flags="$additional_flags --input_file_path ${input_file_path}"
+  fi
+
+  if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+    additional_flags="$additional_flags --symlink"
+  fi
+
+  if [ $DO_ENSEMBLE == "TRUE" ] ; then
+    mem_dir="/mem{mem:03d}"
+    member_list=(1 ${NUM_ENS_MEMBERS})
+    additional_flags="$additional_flags --members ${member_list[@]}"
+  fi
+
+  EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+
+  cmd="
+  python3 -u ${USHdir}/retrieve_data.py \
+  --debug \
+  --symlink \
+  --file_set ${file_set} \
+  --config ${PARMdir}/data_locations.yml \
+  --cycle_date ${EXTRN_MDL_CDATE} \
+  --data_stores ${data_stores} \
+  --external_model ${EXTRN_MDL_NAME} \
+  --fcst_hrs ${fcst_hrs[@]} \
+  --ics_or_lbcs "ICS" \
+  --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
+  --summary_file ${EXTRN_DEFNS} \
+  $additional_flags"
+
+  $cmd
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+The command was:
+${cmd}
+"
+    err_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -85,15 +178,23 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_ics_${cyc}.${share_pid}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-    if [ ! -d ${extrn_mdl_staging_dir} ]; then
-      echo "Fatal error extrn_mdl_staging_dir not found in production mode"
-      exit 7
+  if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
+    extrn_mdl_staging_dir="${DATA}"
+  else
+    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then  
+      extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_ics_${cyc}.${share_pid}"
+      if [ ! -d ${extrn_mdl_staging_dir} ]; then
+        echo "Fatal error extrn_mdl_staging_dir not found in production mode"
+        exit 7
+      fi
+    else
+      extrn_mdl_staging_dir="${DATAROOT}/get_extrn_ics.${share_pid}"
     fi
+  fi
+  extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_ICS}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+  extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_ICS}/for_ICS${SLASH_ENSMEM_SUBDIR}"
+  extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
 #

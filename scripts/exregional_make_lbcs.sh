@@ -78,21 +78,126 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# Link input data file only when RUN_TASK_GET_EXTRN_LBCS is false
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
+  file_set="fcst"
+  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS))
+  if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+    cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+    CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+    FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+  fi
+  last_time=$((TIME_OFFSET_HRS + FCST_LEN_HRS))
+  fcst_hrs="${first_time} ${last_time} ${LBC_SPEC_INTVL_HRS}"
+  file_names=${EXTRN_MDL_FILES_LBCS[@]}
+  if [ ${EXTRN_MDL_NAME} = FV3GFS ] || [ "${EXTRN_MDL_NAME}" == "GDAS" ] ; then
+    file_type=$FV3GFS_FILE_FMT_LBCS
+  fi
+  input_file_path=${EXTRN_MDL_SOURCE_BASEDIR_LBCS:-$EXTRN_MDL_SYSBASEDIR_LBCS}
+
+  data_stores="${EXTRN_MDL_DATA_STORES}"
+
+  yyyymmddhh=${EXTRN_MDL_CDATE:0:10}
+  yyyy=${yyyymmddhh:0:4}
+  yyyymm=${yyyymmddhh:0:6}
+  yyyymmdd=${yyyymmddhh:0:8}
+  mm=${yyyymmddhh:4:2}
+  dd=${yyyymmddhh:6:2}
+  hh=${yyyymmddhh:8:2}
+
+  # Set to use the pre-defined data paths in the machine file (ush/machine/).
+  PDYext=${yyyymmdd}
+  cycext=${hh}
+
+  # Set an empty members directory
+  mem_dir=""
+
+  input_file_path=$(eval echo ${input_file_path})
+  if [[ $input_file_path = *" "* ]]; then
+    input_file_path=$(eval ${input_file_path})
+  fi
+
+  additional_flags=""
+
+  if [ -n "${file_type:-}" ] ; then
+    additional_flags="$additional_flags --file_type ${file_type}"
+  fi
+
+  if [ -n "${file_names:-}" ] ; then
+    additional_flags="$additional_flags --file_templates ${file_names[@]}"
+  fi
+
+  if [ -n "${input_file_path:-}" ] ; then
+    data_stores="disk $data_stores"
+    additional_flags="$additional_flags --input_file_path ${input_file_path}"
+  fi
+
+  if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+    additional_flags="$additional_flags --symlink"
+  fi
+
+  if [ $DO_ENSEMBLE == "TRUE" ] ; then
+    mem_dir="/mem{mem:03d}"
+    member_list=(1 ${NUM_ENS_MEMBERS})
+    additional_flags="$additional_flags --members ${member_list[@]}"
+  fi
+
+  EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+
+  cmd="
+  python3 -u ${USHdir}/retrieve_data.py \
+  --debug \
+  --symlink \
+  --file_set ${file_set} \
+  --config ${PARMdir}/data_locations.yml \
+  --cycle_date ${EXTRN_MDL_CDATE} \
+  --data_stores ${data_stores} \
+  --external_model ${EXTRN_MDL_NAME} \
+  --fcst_hrs ${fcst_hrs[@]} \
+  --ics_or_lbcs "LBCS" \
+  --output_path ${EXTRN_MDL_STAGING_DIR}${mem_dir} \
+  --summary_file ${EXTRN_DEFNS} \
+  $additional_flags"
+
+  $cmd
+  export err=$?
+  if [ $err -ne 0 ]; then
+    message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+The command was:
+${cmd}
+"
+    err_exit "${message_txt}"
+  fi
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing definitions of variables associated with the
 # external model for LBCs.
 #
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_lbcs_${cyc}.${share_pid}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-    if [ ! -d ${extrn_mdl_staging_dir} ]; then
-      echo "Fatal error extrn_mdl_staging_dir not found in production mode"
-      exit 7
+  if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
+    extrn_mdl_staging_dir="${DATA}"
+  else
+    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then
+      extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_lbcs_${cyc}.${share_pid}"
+      if [ ! -d ${extrn_mdl_staging_dir} ]; then
+        echo "Fatal error extrn_mdl_staging_dir not found in production mode"
+        exit 7
+      fi
+    else
+      extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}"
     fi
+  fi
+  extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${NET}.${cycle}.${EXTRN_MDL_NAME_LBCS}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else
-    extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
-    extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+  extrn_mdl_staging_dir="${COMIN}/${EXTRN_MDL_NAME_LBCS}/for_LBCS${SLASH_ENSMEM_SUBDIR}"
+  extrn_mdl_var_defns_fp="${extrn_mdl_staging_dir}/${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 fi
 . ${extrn_mdl_var_defns_fp}
 #

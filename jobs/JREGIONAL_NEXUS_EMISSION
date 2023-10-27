@@ -16,7 +16,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_nexus_emission" ${GLOBAL_VAR_DEFNS_FP}
+source_config_for_task "task_run_fcst|cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
@@ -63,9 +63,9 @@ using NEXUS which will output for FV3 (in NetCDF format).
 #-----------------------------------------------------------------------
 #
 if [ $RUN_ENVIR = "nco" ]; then
-    export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}/NEXUS}"
+  export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}/NEXUS}"
 else
-    export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/NEXUS"
+  export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/NEXUS"
 fi
 mkdir -p ${INPUT_DATA}
 #
@@ -80,6 +80,21 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   check_for_preexist_dir_file "$DATA" "delete"
   mkdir -p $DATA
   cd $DATA
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set environment only when RUN_TASK_NEXUS_GFS_SFC is false.
+#
+#-----------------------------------------------------------------------
+#
+if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
+  export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
+  yyyymmdd=${PDY}
+  hh=${cyc}
+  export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+
+  export GFS_SFC_STAGING_DIR="${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
 fi
 #
 #-----------------------------------------------------------------------
