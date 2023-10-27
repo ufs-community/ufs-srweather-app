@@ -180,7 +180,7 @@ else
   DATAFCST="${COMIN}${SLASH_ENSMEM_SUBDIR}"
 fi
 
-if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+if [ "${CPL_AQM}" = "TRUE" ]; then
   dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
   phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
 else
