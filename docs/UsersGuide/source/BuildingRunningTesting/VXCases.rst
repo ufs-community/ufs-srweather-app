@@ -108,7 +108,7 @@ where ``/path/to/ufs-srweather-app/ush`` is replaced by the actual path to the `
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
-   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``MET_INSTALL_DIR``, ``METPLUS_PATH``, ``MET_BIN_EXEC``, ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``.
+   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``.
 
 .. code-block:: console
 
@@ -136,6 +136,9 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       # Add EXTRN_MDL_SOURCE_BASEDIR_LBCS variable to config.yaml
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
       USE_USER_STAGED_EXTRN_FILES: true
+   task_plot_allvars:
+     PLOT_FCST_INC: 6
+     PLOT_DOMAINS: ["regional"]
    verification:
      VX_FCST_MODEL_NAME: FV3_RRFS_v1beta_SUBCONUS_Ind_3km
    rocoto:
@@ -143,7 +146,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
        metatask_run_ensemble:
          task_run_fcst_mem#mem#:
            walltime: 02:00:00
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
 .. hint::
    To open the configuration file in the command line, users may run the command: 
@@ -185,18 +188,6 @@ To check progress, run:
 Users who prefer to automate the workflow via :term:`crontab` or who need guidance for running without the Rocoto workflow manager should refer to :numref:`Section %s <Run>` for these options. 
 
 If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/log`` to determine the problem. Then refer to :numref:`Section %s <RestartTask>` to restart a DEAD task once the problem has been resolved. For troubleshooting assistance, users are encouraged to post questions on the new SRW App `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ Q&A page. 
-
-Generate Plots
-^^^^^^^^^^^^^^^^^
-
-The plots are created by adding the plotting task(s) to the SRW App workflow. Instructions on how to configure these tasks can be found in :numref:`Section %s <PlotOutput>`. If the python environment is already loaded (i.e., |prompt| is visible in the command prompt), users can configure the plotting task in ``config.yaml``:
-
-.. code-block:: console
-
-   task_plot_allvars:
-     COMOUT_REF: ""
-     PLOT_FCST_INC: 6
-     PLOT_DOMAINS: ["regional"]
 
 Compare
 ----------
