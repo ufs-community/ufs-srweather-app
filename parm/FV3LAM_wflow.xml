@@ -879,12 +879,10 @@ MODULES_RUN_TASK_FP script.
         <dependency>
           <or>
             <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
 	    <and>
               <datadep age="05:00">&DYN_DIR;f#fhr#.nc</datadep>
               <datadep age="05:00">&PHY_DIR;f#fhr#.nc</datadep>
 	    </and>
-      {%- endif %}
 	  </or>
         </dependency>
 
