@@ -456,7 +456,7 @@ The ``ufs-srweather-app/parm/wflow`` directory contains several ``YAML`` files t
 
 .. _task-group-files:
 
-.. list-table:: Task group files
+.. list-table:: Task Group Files
    :widths: 20 50
    :header-rows: 1
 

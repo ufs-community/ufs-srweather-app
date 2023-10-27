@@ -49,7 +49,7 @@ model directory to the experiment directory ``$EXPTDIR``. For more information o
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids as of the SRW Application |latestr| release are:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The five supported predefined grids as of the SRW Application |latestr| release are:
 
 .. code-block:: console
    
@@ -57,8 +57,9 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_13km
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
+   RRFS_NA_13km
 
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the v2.1.0 release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the |latestr| release and is provided for informational purposes only. 
 
 .. _SetTasks:
 
@@ -66,7 +67,7 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-:numref:`Section %s <ConfigTasks>` provides a full description of how to set which workflow tasks and task groups run. 
+:numref:`Section %s <ConfigTasks>` provides a full description of how to turn on/off workflow tasks. 
 
 The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <ConfigTasks>` to override the default workflow and run the selected tasks and task groups.   
 
@@ -91,7 +92,7 @@ To skip these tasks, remove ``parm/wflow/prep.yaml`` from the list of task group
      tasks:
        taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 
-Then, add the paths to the previously generated grid, orography, and surface climatology files under the appropariate tasks in ``config.yaml``: 
+Then, add the appropriate tasks and paths to the previously generated grid, orography, and surface climatology files to ``config.yaml``: 
 
 .. code-block:: console
 
@@ -110,7 +111,7 @@ All three sets of files *may* be placed in the same directory location (and woul
 How do I restart a DEAD task?
 =============================
 
-On platforms that utilize Rocoto workflow software (such as NCAR's Cheyenne machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
+On platforms that utilize Rocoto workflow software (such as NCAR's Derecho machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
 
 .. code-block:: console
 
@@ -185,7 +186,7 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
 
 Follow any instructions output by the console (e.g., |activate|). 
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the experiment parameters in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
 .. note:: 
 
