@@ -113,18 +113,21 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
 .. code-block:: console
 
    user:
+      MACHINE: <your_machine_name>
       ACCOUNT: <my_account>
    platform:
       CCPA_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/nohrsc/proc
       MRMS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/mrms/proc
       NDAS_OBS_DIR: /path/to/Indy-Severe-Weather/obs_data/ndas/proc
    workflow:
       EXPT_SUBDIR: <any_name_you_like>
+      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
       PREDEF_GRID_NAME: SUBCONUS_Ind_3km
       DATE_FIRST_CYCL: '2019061500'
       DATE_LAST_CYCL: '2019061500'
       FCST_LEN_HRS: 60
+      # Change to gnu if using a gnu compiler; otherwise, no change
+      COMPILER: intel
    task_get_extrn_ics:
       # Add EXTRN_MDL_SOURCE_BASEDIR_ICS variable to config.yaml
       EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
@@ -134,14 +137,13 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
       EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/Indy-Severe-Weather/input_model_data/FV3GFS/grib2/2019061500
       USE_USER_STAGED_EXTRN_FILES: true
    verification:
-     VX_FCST_MODEL_NAME: FV3_GFS_v16_SUBCONUS_3km
+     VX_FCST_MODEL_NAME: FV3_RRFS_v1beta_SUBCONUS_Ind_3km
    rocoto:
      tasks:
        metatask_run_ensemble:
          task_run_fcst_mem#mem#:
            walltime: 02:00:00
-     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
-      
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
 .. hint::
    To open the configuration file in the command line, users may run the command: 
