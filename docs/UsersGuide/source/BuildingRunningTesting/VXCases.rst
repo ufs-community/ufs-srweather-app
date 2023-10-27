@@ -245,7 +245,7 @@ METplus verification ``.stat`` files provide users the opportunity to compare th
 
 .. code-block:: console
 
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_3km_NDAS_ADPSFC_300000L_20190616_060000V.stat
+   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPSFC_300000L_20190616_060000V.stat
 
 The 30th hour of the forecast occurs at 6am (06Z) on June 16, 2019. The lead time is 30 hours (300000L in HHMMSSL format) because this is the 30th hour of the forecast. The valid time is 06Z (060000V in HHMMSSV format).
 
@@ -254,16 +254,16 @@ The following is the list of METplus output files users can reference during the
 .. code-block:: console 
    
    # Point-Stat Files
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_3km_NDAS_ADPSFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   point_stat_FV3_RRFS_v1beta_SUBCONUS_3km_NDAS_ADPUPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPSFC_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   point_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_NDAS_ADPUPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
 
    # Grid-Stat Files
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_REFC_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_RETOP_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_APCP_01h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_APCP_03h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_APCP_06h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
-   grid_stat_FV3_RRFS_v1beta_SUBCONUS_3km_APCP_24h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_REFC_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_RETOP_MRMS_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_01h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_03h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_06h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
+   grid_stat_FV3_RRFS_v1beta_SUBCONUS_Ind_3km_APCP_24h_CCPA_HHMMSSL_YYYYMMDD_HHMMSSV.stat
 
 
 Point STAT Files
