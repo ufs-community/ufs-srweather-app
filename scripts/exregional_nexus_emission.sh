@@ -106,9 +106,9 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
 
     GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
     GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
+    GFS_SFC_DATA_INTVL="3"
 
     gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
-
     relative_link_flag="FALSE"
     gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
     create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
@@ -130,6 +130,8 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
         fi
       fi
     done
+
+    USE_GFS_SFC="TRUE"
     cd ${DATA}
   else
     if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then	    
