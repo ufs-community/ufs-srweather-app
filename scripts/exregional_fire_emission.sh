@@ -195,7 +195,6 @@ file hsi_log_fn in the DATA directory for details:
 fi
 #
  cd ${FIRE_EMISSION_STAGING_DIR}
- cp ${aqm_fire_file_fn} ${aqm_fire_file_fn}_orig
  mv ${aqm_fire_file_fn}  temp.nc
  ncrename -v PM2.5,PM25 temp.nc temp1.nc
  ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc

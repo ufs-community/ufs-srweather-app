@@ -134,7 +134,7 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
     USE_GFS_SFC="TRUE"
     cd ${DATA}
   else
-    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then	    
+    if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then	    
       GFS_SFC_INPUT="${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${share_pid}"
       if [ ! -d ${GFS_SFC_INPUT} ]; then
         echo "Fatal error GFS_SFC_INPUT not found in production mode"
