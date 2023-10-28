@@ -12,7 +12,6 @@ from python_utils import (
     print_info_msg,
     print_err_msg_exit,
     create_symlink_to_file,
-    define_macos_utilities,
     check_var_valid_value,
     flatten_dict,
     cd_vrfy,

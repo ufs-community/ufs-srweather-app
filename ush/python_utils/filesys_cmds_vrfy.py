@@ -2,6 +2,7 @@
 
 import os
 from .print_msg import print_err_msg_exit
+from .define_macos_utilities import define_macos_utilities
 
 
 def cmd_vrfy(cmd, *args):
@@ -38,6 +39,7 @@ def rm_vrfy(*args):
 
 
 def ln_vrfy(*args):
+    define_macos_utilities()
     cmd_ln = os.getenv("LN_UTIL")
     return cmd_vrfy(cmd_ln, *args)
 
