@@ -138,7 +138,13 @@ mkdir -p "${DATA}/data"
 
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
-    cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+
+    if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
+      cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    else
+      message_warning="WARNING: airnow data missing. skip this date ${cvt_pdy}"
+      print_info_msg "${message_warning}"
+    fi
 
     PREP_STEP
     eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR}
@@ -147,7 +153,8 @@ mkdir -p "${DATA}/data"
       err_chk
     else
       if [ $err -ne 0 ]; then
-        print_err_msg_exit "Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code."
+        message_warning="WARNING: Call to executable to run CONVERT_AIRNOW_CSV returned with nonzero exit code. skip this date ${cvt_pdy}"
+	print_info_msg "${message_warning}"
       fi
     fi
     POST_STEP
