@@ -160,6 +160,7 @@ The script should output dialogue indicating that it is retrieving different cod
    Some systems (e.g., Hercules, Gaea) may have difficulty finding prerequisite software, such as python. If users run into this issue but know that the software exists on their system, they can run ``module load <module_name>`` followed by ``module save``. For example: 
 
    .. code-block:: console
+      
       /usr/bin/env: ‘python’: No such file or directory
       hercules-login-1[10] username$ module load python
       hercules-login-1[11] username$ module save
