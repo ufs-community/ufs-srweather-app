@@ -14,9 +14,9 @@ Each sample case contains model output from a control run; this output includes 
 Prerequisites
 ================
 
-This chapter assumes that users have already (1) built the SRW App v2.1.0 successfully and (2) installed MET and METplus on their system. 
+This chapter assumes that users have already (1) built the SRW App v2.2.0 successfully and (2) installed MET and METplus on their system. 
 
-For instructions on how to build the v2.1.0 release of the SRW App, see the v2.1.0 release documentation on :ref:`Building the SRW App <srw_v2.1.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will have an easier time if they run through the out-of-the-box case described in the v2.1.0 release documentation on :ref:`Running the SRW App <srw_v2.1.0:RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
+For instructions on how to build the |latestr| release of the SRW App, see the |latestr| release documentation on :ref:`Building the SRW App <srw_v2.2.0:DownloadSRWApp>`. The release code is used to provide a consistent point of comparison; the ``develop`` branch code is constantly receiving updates, which makes it unsuited to this purpose. Users will have an easier time if they run through the out-of-the-box case described in the |latestr| release documentation on :ref:`Running the SRW App <srw_v2.2.0:RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
 
 For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, and links to installation instructions and documentation for users on other systems. 
 
@@ -36,7 +36,7 @@ There were many storm reports for this event with the majority of tornadoes and 
 Set Up Verification
 -----------------------
 
-Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (v2.1.0). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
+Follow the instructions below to reproduce a forecast for this event using your own model setup! Make sure to install and build the latest version of the SRW Application (|latestr|). ``develop`` branch code is constantly changing, so it does not provide a consistent baseline for comparison. 
 
 .. _GetSampleData:
 
@@ -47,21 +47,21 @@ On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-P
 
 On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
-   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/.
+   #. Download directly from the S3 bucket using a browser. The data is available at https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.2.0/.
 
    #. Download from a terminal using the AWS command line interface (CLI), if installed:
 
       .. code-block:: console
 
-         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
+         aws s3 cp https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html#sample_cases/release-public-v2.2.0/Indy-Severe-Weather.tgz Indy-Severe-Weather.tgz
    
    #. Download from a terminal using ``wget``: 
 
       .. code-block:: console
 
-         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
+         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.2.0/Indy-Severe-Weather.tgz
 
-This tar file contains :term:`IC/LBC <IC/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Graphics <srw_v2.1.0:Graphics>` chapter of the release documentation for more information. 
+This tar file contains :term:`IC/LBC <ICs/LBCs>` files, observation data, model/forecast output, and MET verification output for the sample forecast. Users who have never run the SRW App on their system before will also need to download (1) the fix files required for SRW App forecasts and (2) the NaturalEarth shapefiles required for plotting. Users can download the fix file data from a browser at https://noaa-ufs-srw-pds.s3.amazonaws.com/current_srw_release_data/fix_data.tgz or visit :numref:`Section %s <StaticFixFiles>` for instructions on how to download the data with ``wget``. NaturalEarth files are available at https://noaa-ufs-srw-pds.s3.amazonaws.com/NaturalEarth/NaturalEarth.tgz. See the :ref:`Plotting Configuration <srw_v2.2.0:PlotOutput>` chapter of the release documentation for more information. 
 
 After downloading ``Indy-Severe-Weather.tgz`` using one of the three methods above, untar the downloaded compressed archive file: 
 
@@ -154,7 +154,7 @@ Then, edit the configuration file (``config.yaml``) to include the variables and
          
    To modify the file, hit the ``i`` key and then make any changes required. To close and save, hit the ``esc`` key and type ``:wq``. Users may opt to use their preferred code editor instead. 
 
-For additional configuration guidance, refer to the v2.1.0 release documentation on :ref:`configuring the SRW App <srw_v2.1.0:UserSpecificConfig>`.
+For additional configuration guidance, refer to the |latestr| release documentation on :ref:`configuring the SRW App <srw_v2.2.0:UserSpecificConfig>`.
 
 Generate the Experiment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -189,7 +189,7 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ^^^^^^^^^^^^^^^^^
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+The plots are created using the graphics generation script that comes with the SRW App |latestr| release. Information on the plots and instructions on how to run the script can be found in the section on :ref:`Plotting Configuration <srw_v2.2.0:PlotOutput>` of the |latestr| release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
 
 .. code-block:: console
 

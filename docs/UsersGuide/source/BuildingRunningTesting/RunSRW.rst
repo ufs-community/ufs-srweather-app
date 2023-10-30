@@ -426,7 +426,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 **Next Steps:**
 
-   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
+   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacExptConfig>` for additional required steps. 
    * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.

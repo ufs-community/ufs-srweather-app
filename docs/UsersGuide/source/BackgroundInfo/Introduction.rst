@@ -109,7 +109,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
 
    * - Documentation
      - Location
-     * - spack-stack Documentation
+   * - spack-stack Documentation
      - https://spack-stack.readthedocs.io/en/latest/
    * - HPC-Stack Documentation
      - https://hpc-stack.readthedocs.io/en/latest/
