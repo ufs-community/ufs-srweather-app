@@ -42,7 +42,6 @@ else
   setenv("FC", "/usr/local/bin/gfortran")
   setenv("CXX", "/usr/local/bin/g++")
 end
- 
 -- Set MPI compilers depending on the MPI libraries built:
 local MPI_CC="mpicc"
 local MPI_CXX="mpicxx"
