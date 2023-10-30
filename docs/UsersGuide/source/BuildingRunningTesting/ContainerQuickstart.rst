@@ -92,8 +92,6 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-srwapp-release-pu
      - /contrib/EPIC/containers
    * - Orion/Hercules
      - /work/noaa/epic/role-epic/contrib/containers
-
-.. COMMENT: Confirm container location on Orion/Hercules! Also check for Cheyenne/Derecho
    
 .. note::
    * On Gaea, Singularity/Apptainer is only available on the C5 partition, and therefore container use is only supported on Gaea C5. 
