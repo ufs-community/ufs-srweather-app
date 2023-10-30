@@ -15,7 +15,7 @@ The Unified Forecast System (:term:`UFS`) Short-Range Weather (SRW) Application 
 
 To build the SRW App, users will complete the following steps:
 
-   #. :ref:`Install prerequisites <HPCstackInfo>`
+   #. :ref:`Install prerequisites <StackInfo>`
    #. :ref:`Clone the SRW App from GitHub <DownloadSRWApp>`
    #. :ref:`Check out the external repositories <CheckoutExternals>`
    #. :ref:`Set up the build environment and build the executables <BuildExecutables>`

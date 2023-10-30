@@ -49,7 +49,7 @@ model directory to the experiment directory ``$EXPTDIR``. For more information o
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids as of the SRW Application v2.1.0 release are:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The five supported predefined grids as of the SRW Application |latestr| release are:
 
 .. code-block:: console
    
@@ -57,8 +57,9 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_13km
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
+   RRFS_NA_13km
 
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the v2.1.0 release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the |latestr| release and is provided for informational purposes only.
 
 .. _SetTasks:
 
@@ -66,60 +67,9 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-The ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+:numref:`Section %s <ConfigTasks>` provides a full description of how to turn on/off workflow tasks.
 
-.. _task-group-files:
-
-.. list-table:: Task group files
-   :widths: 20 50
-   :header-rows: 1
-
-   * - File
-     - Function
-   * - aqm_post.yaml
-     - SRW-AQM post-processing tasks
-   * - aqm_prep.yaml
-     - SRW-AQM pre-processing tasks
-   * - coldstart.yaml
-     - Tasks required to run a cold-start forecast
-   * - da_data_preproc.yaml
-     - Preprocessing tasks for RRFS `DA <data assimilation>`.
-   * - plot.yaml
-     - Plotting tasks
-   * - post.yaml
-     - Post-processing tasks
-   * - prdgen.yaml
-     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
-   * - prep.yaml
-     - Pre-processing tasks
-   * - verify_det.yaml
-     - Deterministic verification tasks
-   * - verify_ens.yaml
-     - Ensemble verification tasks
-   * - verify_pre.yaml
-     - Verification pre-processing tasks
-
-The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-
-Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars``. 
-
-Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
-       task_post_stat_o3:
-       task_post_stat_pm25:
-       task_bias_correction_o3:
-       task_bias_correction_pm25:
+The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <ConfigTasks>` to override the default workflow and run the selected tasks and task groups.
 
 .. _CycleInd:
 
@@ -142,7 +92,7 @@ To skip these tasks, remove ``parm/wflow/prep.yaml`` from the list of task group
      tasks:
        taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 
-Then, add the paths to the previously generated grid, orography, and surface climatology files under the appropariate tasks in ``config.yaml``: 
+Then, add the appropriate tasks and paths to the previously generated grid, orography, and surface climatology files to ``config.yaml``:
 
 .. code-block:: console
 
@@ -161,7 +111,7 @@ All three sets of files *may* be placed in the same directory location (and woul
 How do I restart a DEAD task?
 =============================
 
-On platforms that utilize Rocoto workflow software (such as NCAR's Cheyenne machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
+On platforms that utilize Rocoto workflow software (such as NCAR's Derecho machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
 
 .. code-block:: console
 
@@ -226,7 +176,7 @@ In addition to the options above, many standard terminal commands can be run to 
 How can I run a new experiment?
 ==================================
 
-To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the |wflow_env| environment: 
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the |wflow_env| environment:
 
 .. code-block:: console
    
@@ -234,13 +184,13 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
    module use /path/to/modulefiles
    module load wflow_<platform>
 
-Follow any instructions output by the console (e.g., |activate|). 
+Follow any instructions output by the console (e.g., |activate|).
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the experiment parameters in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
 .. note:: 
 
-   If users have updated their clone of the SRW App (e.g., via ``git pull`` or ``git fetch``/``git merge``) since running their last experiement, and the updates include a change to ``Externals.cfg``, users will need to rerun ``checkout_externals`` (instructions :ref:`here <CheckoutExternals>`) and rebuild the SRW App according to the instructions in :numref:`Section %s <BuildExecutables>`.
+   If users have updated their clone of the SRW App (e.g., via ``git pull`` or ``git fetch``/``git merge``) since running their last experiment, and the updates include a change to ``Externals.cfg``, users will need to rerun ``checkout_externals`` (instructions :ref:`here <CheckoutExternals>`) and rebuild the SRW App according to the instructions in :numref:`Section %s <BuildExecutables>`.
 
 .. _AddPhys:
 

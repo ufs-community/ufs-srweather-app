@@ -79,6 +79,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       For example, a user on Gaea might adjust or add the following fields to run the 12-hr "out-of-the-box" case on Gaea using prestaged system data and :term:`cron` to automate the workflow: 
 
       .. code-block:: console
+         
          user:
            MACHINE: gaea
            ACCOUNT: hfv3gfs
@@ -104,6 +105,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
    #. Run the workflow from the experiment directory (``$EXPTDIR``). By default, the path to this directory is ``${EXPT_BASEDIR}/${EXPT_SUBDIR}`` (see :numref:`Section %s <DirParams>` for more detail). There are several methods for running the workflow, which are discussed in :numref:`Section %s <Run>`. Most require the :ref:`Rocoto Workflow Manager <RocotoInfo>`. For example, if the user automated the workflow using cron, run: 
 
       .. code-block:: console
+         
          cd $EXPTDIR
          rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
    
