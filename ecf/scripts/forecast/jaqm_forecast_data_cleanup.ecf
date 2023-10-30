@@ -1,0 +1,34 @@
+#PBS -N aqm_forecast_data_cleanup_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:10:00
+#PBS -l select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter
+#PBS -l debug=true
+
+model=aqm
+%include <head.h>
+%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+export cyc=%CYC%
+export cycle=t${cyc}z
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEaqm}/jobs/JDATA_CLEANUP
+
+%include <tail.h>
+%manual
+
+%end

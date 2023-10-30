@@ -4,7 +4,6 @@ export envir=para
 export model_ver=v7.0.0
 export dev_fix=/lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix
 export HOMEaqm=/lfs/h1/ops/${envir}/packages/aqm.${model_ver}
-#export HOMEaqm=/lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.v7.0.87c
 
 mkdir -p $HOMEaqm/fix
 cd $HOMEaqm/fix
@@ -15,44 +14,44 @@ done
 
 mkdir -p $HOMEaqm/fix/fix_lam
 cd ${HOMEaqm}/fix/fix_lam
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo6.nc C793_mosaic.halo6.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo4.nc C793_mosaic.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo3.nc C793_mosaic.halo3.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo6.nc C793_mosaic.halo6.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo4.nc C793_mosaic.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_mosaic.halo3.nc C793_mosaic.halo3.nc 
 ln -s  C793_grid.tile7.halo4.nc C793_grid.tile7.nc
-ln -s ${HOMEaqm}/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo6.nc C793_grid.tile7.halo6.nc
-ln -s ${HOMEaqm}/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo4.nc C793_grid.tile7.halo4.nc 
-ln -s ${HOMEaqm}/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo3.nc C793_grid.tile7.halo3.nc 
+ln -s ${HOMEaqm}/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo6.nc C793_grid.tile7.halo6.nc
+ln -s ${HOMEaqm}/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo4.nc C793_grid.tile7.halo4.nc 
+ln -s ${HOMEaqm}/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_grid.tile7.halo3.nc C793_grid.tile7.halo3.nc 
 ln -s C793.vegetation_type.tile7.halo4.nc C793.vegetation_type.tile7.nc
-ln -s ${HOMEaqm}/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_type.tile7.halo4.nc C793.vegetation_type.tile7.halo4.nc 
-ln -s ${HOMEaqm}/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_type.tile7.halo0.nc C793.vegetation_type.tile7.halo0.nc 
+ln -s ${HOMEaqm}/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_type.tile7.halo4.nc C793.vegetation_type.tile7.halo4.nc 
+ln -s ${HOMEaqm}/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_type.tile7.halo0.nc C793.vegetation_type.tile7.halo0.nc 
 ln -s C793.vegetation_type.tile7.halo0.nc  C793.vegetation_type.tile1.nc
 ln -s C793.vegetation_greenness.tile7.halo4.nc C793.vegetation_greenness.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_greenness.tile7.halo4.nc C793.vegetation_greenness.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_greenness.tile7.halo0.nc C793.vegetation_greenness.tile7.halo0.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_greenness.tile7.halo4.nc C793.vegetation_greenness.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.vegetation_greenness.tile7.halo0.nc C793.vegetation_greenness.tile7.halo0.nc
 ln -s  C793.vegetation_greenness.tile7.halo0.nc  C793.vegetation_greenness.tile1.nc
 ln -s  C793.substrate_temperature.tile7.halo4.nc C793.substrate_temperature.tile7.nc 
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.substrate_temperature.tile7.halo4.nc C793.substrate_temperature.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.substrate_temperature.tile7.halo0.nc C793.substrate_temperature.tile7.halo0.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.substrate_temperature.tile7.halo4.nc C793.substrate_temperature.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.substrate_temperature.tile7.halo0.nc C793.substrate_temperature.tile7.halo0.nc 
 ln -s C793.substrate_temperature.tile7.halo0.nc C793.substrate_temperature.tile1.nc
 ln -s C793.soil_type.tile7.halo4.nc C793.soil_type.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.soil_type.tile7.halo4.nc C793.soil_type.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.soil_type.tile7.halo0.nc C793.soil_type.tile7.halo0.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.soil_type.tile7.halo4.nc C793.soil_type.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.soil_type.tile7.halo0.nc C793.soil_type.tile7.halo0.nc
 ln -s C793.soil_type.tile7.halo0.nc C793.soil_type.tile1.nc
 ln -s C793.snowfree_albedo.tile7.halo4.nc C793.snowfree_albedo.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.snowfree_albedo.tile7.halo4.nc C793.snowfree_albedo.tile7.halo4.nc 
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.snowfree_albedo.tile7.halo0.nc C793.snowfree_albedo.tile7.halo0.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.snowfree_albedo.tile7.halo4.nc C793.snowfree_albedo.tile7.halo4.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.snowfree_albedo.tile7.halo0.nc C793.snowfree_albedo.tile7.halo0.nc
 ln -s C793.snowfree_albedo.tile7.halo0.nc C793.snowfree_albedo.tile1.nc
 ln -s C793.slope_type.tile7.halo4.nc C793.slope_type.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.slope_type.tile7.halo4.nc C793.slope_type.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.slope_type.tile7.halo0.nc C793.slope_type.tile7.halo0.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.slope_type.tile7.halo4.nc C793.slope_type.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.slope_type.tile7.halo0.nc C793.slope_type.tile7.halo0.nc 
 ln -s C793.slope_type.tile7.halo0.nc C793.slope_type.tile1.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793_oro_data.tile7.halo4.nc C793_oro_data.tile7.halo4.nc 
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793_oro_data.tile7.halo0.nc C793_oro_data.tile7.halo0.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_oro_data.tile7.halo4.nc C793_oro_data.tile7.halo4.nc 
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793_oro_data.tile7.halo0.nc C793_oro_data.tile7.halo0.nc 
 ln -s C793.maximum_snow_albedo.tile7.halo4.nc C793.maximum_snow_albedo.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.maximum_snow_albedo.tile7.halo4.nc C793.maximum_snow_albedo.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.maximum_snow_albedo.tile7.halo0.nc C793.maximum_snow_albedo.tile7.halo0.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.maximum_snow_albedo.tile7.halo4.nc C793.maximum_snow_albedo.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.maximum_snow_albedo.tile7.halo0.nc C793.maximum_snow_albedo.tile7.halo0.nc
 ln -s C793.maximum_snow_albedo.tile7.halo0.nc C793.maximum_snow_albedo.tile1.nc
 ln -s C793.facsf.tile7.halo4.nc C793.facsf.tile7.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.facsf.tile7.halo4.nc C793.facsf.tile7.halo4.nc
-ln -s $HOMEaqm/aqm/DOMAIN_DATA/AQM_NA_13km/C793.facsf.tile7.halo0.nc C793.facsf.tile7.halo0.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.facsf.tile7.halo4.nc C793.facsf.tile7.halo4.nc
+ln -s $HOMEaqm/fix/aqm/DOMAIN_DATA/AQM_NA_13km/C793.facsf.tile7.halo0.nc C793.facsf.tile7.halo0.nc
 ln -s C793.facsf.tile7.halo0.nc C793.facsf.tile1.nc
