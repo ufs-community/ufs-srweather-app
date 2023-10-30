@@ -20,14 +20,14 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'UFS Short-Range Weather App Users Guide'
+project = 'UFS Short-Range Weather App User\'s Guide'
 copyright = '2020, '
 author = ' '
 
 # The short X.Y version
-version = 'develop'
+version = 'v2.2.0'
 # The full version, including alpha/beta/rc tags
-release = 'Develop Branch Documentation'
+release = 'v2.2.0'
 
 numfig = True
 
@@ -85,6 +85,16 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Documentation-wide substitutions
+
+rst_prolog = """
+.. |wflow_env| replace:: ``workflow_tools``
+.. |activate| replace:: ``conda activate workflow_tools``
+.. |prompt| replace:: ``(workflow_tools)``
+.. |latestr| replace:: v2.2.0
+.. |branch| replace:: ``release/public-v2.2.0``
+.. |data| replace:: v2p2
+"""
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -99,7 +109,10 @@ html_theme_path = ["_themes", ]
 # documentation.
 #
 # html_theme_options = {}
-html_theme_options = {"body_max_width": "none"}
+html_theme_options = {
+    "body_max_width": "none", 
+    'navigation_depth': 6,
+    }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -208,10 +221,16 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-   'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/latest/', None),
-   'met': ('https://met.readthedocs.io/en/latest/', None),
-   'srw_v2.1.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.1.0/', None),
-   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/latest/', None),
+   'hpc-stack': ('https://hpc-stack-epic.readthedocs.io/en/release-srw-public-v2.2.0/', None),
+   'spack-stack': ('https://spack-stack.readthedocs.io/en/1.4.1/', None),
+   'met': ('https://met.readthedocs.io/en/main_v10.1/', None),
+   'metplus': ('https://metplus.readthedocs.io/en/main_v4.1/', None),
+   'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
+   'ufs-wm': ('https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/', None),
+   'upp': ('https://upp.readthedocs.io/en/upp-srw-v2.2.0-docs/', None),
+   'ufs-utils': ('https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/', None),
+   'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
+   'stochphys': ('https://stochastic-physics.readthedocs.io/en/release-public-v3/', None),
 }
 
 # -- Options for todo extension ----------------------------------------------

@@ -4,7 +4,7 @@
 Technical Overview
 ====================
 
-This chapter provides information on SRW App prerequistes, code repositories, and directory structure. 
+This chapter provides information on SRW App prerequistes, component code repositories, and directory structure. 
 
 .. _SRWPrerequisites:
 
@@ -40,10 +40,10 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
 * POSIX-compliant UNIX-style operating system
 
-* >82 GB disk space
+* >97 GB disk space
 
    * 53 GB input data for a standard collection of global data, or "fix" file data (topography, climatology, observational data) for a short 12-hour test forecast on the :term:`CONUS` 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
-   * 8 GB for full :term:`HPC-Stack` installation
+   * ~23 GB for full :term:`spack-stack` installation (or ~8 GB :term:`HPC-Stack`)
    * 3 GB for ``ufs-srweather-app`` installation
    * 1 GB for boundary conditions for a short 12-hour test forecast on the CONUS 25km domain. See data download instructions in :numref:`Section %s <DownloadingStagingInput>`.
    * 17 GB for a 12-hour test forecast on the CONUS 25km domain, with model output saved hourly.
@@ -56,7 +56,7 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
    * gcc v9+, ifort v18+, and clang v9+ (macOS, native Apple clang, LLVM clang, GNU) have been tested
 
-* Python v3.6+, including prerequisite packages ``jinja2``, ``pyyaml``, and ``f90nml``
+* Python v3.7+ (preferably 3.9+), including prerequisite packages ``jinja2``, ``pyyaml``, and ``f90nml``
    
    * Python packages ``scipy``, ``matplotlib``, ``pygrib``, ``cartopy``, and ``pillow`` are required for users who would like to use the provided graphics scripts.
 
@@ -70,13 +70,13 @@ The UFS SRW Application has been designed so that any sufficiently up-to-date ma
 
    * Only required for retrieving data using ``retrieve_data.py``. If data is prestaged, *wget* is not required. If data is retrieved using other means, *curl* may be used as an alternative. 
 
-The following software is also required to run the SRW Application, but the :term:`HPC-Stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
+The following software is also required to run the SRW Application, but the :term:`spack-stack` (which contains the software libraries necessary for building and running the SRW App) can be configured to build these requirements:
 
 * CMake v3.20+
 
 * :term:`MPI` (MPICH, OpenMPI, or other implementation)
 
-   * Only **MPICH** or **OpenMPI** can be built with HPC-Stack. Other implementations must be installed separately by the user (if desired). 
+   * Only **MPICH** or **OpenMPI** can be built with spack-stack. Other implementations must be installed separately by the user (if desired). 
 
 For MacOS systems, some additional software packages are needed. When possible, it is recommended that users install and/or upgrade this software (along with software listed above) using the `Homebrew <https://brew.sh/>`__ package manager for MacOS. See :doc:`HPC-Stack Documentation: Chapter 3 <hpc-stack:mac-install>` and :numref:`Chapter %s <MacMorePackages>` for further guidance on installing these prerequisites on MacOS.
 
@@ -103,7 +103,7 @@ Code Repositories and Directory Structure
 
 Hierarchical Repository Structure
 -----------------------------------
-The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. The SRW Application uses the ``manage_externals`` tool and a configuration file called ``Externals.cfg``, to pull in the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
+The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather-app`` and is available on GitHub at https://github.com/ufs-community/ufs-srweather-app. The SRW Application uses the ``manage_externals`` tool and a configuration file called ``Externals.cfg`` to pull in the appropriate versions of the external repositories associated with the SRW App (see :numref:`Table %s <top_level_repos>`).
 
 .. _top_level_repos:
 
@@ -123,16 +123,15 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
      - https://github.com/NOAA-EMC/UPP
    * - Repository for Air Quality Modeling (AQM) Utilities
      - https://github.com/NOAA-EMC/AQM-utils
-   * - Repository for NEXUS
+   * - Repository for the NOAA Emission and eXchange Unified System (NEXUS)
      - https://github.com/noaa-oar-arl/NEXUS
    * - Repository for the Unified Workflow (UW) Toolkit
      - https://github.com/ufs-community/workflow-tools
 
-The UFS Weather Model contains a number of sub-repositories, which are documented `here <https://ufs-weather-model.readthedocs.io/en/latest/CodeOverview.html>`__.
+The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
 
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `HPC-Stack <https://github.com/NOAA-EMC/hpc-stack>`__ repository assembles these prerequisite libraries. The HPC-Stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`HPC-Stack Documentation <hpc-stack:index>` for details on installing the HPC-Stack. 
-
+   The prerequisite libraries (including NCEP Libraries and external libraries) are not included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack. 
 
 .. _TopLevelDirStructure:
 
@@ -157,6 +156,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │     └── wflow_<platform>.lua
    ├── parm
    │     ├── wflow
+   │     │     └── default_workflow.yaml
    │     └── FV3LAM_wflow.xml
    ├── (share)
    ├── scripts
@@ -179,13 +179,15 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │                ├── atmos_cubed_sphere
    │                └── ccpp
    ├── tests/WE2E
+   │     └── run_WE2E_tests.py 
    ├── ush
-   │     ├── bash_utils
    │     ├── machine
-   │     ├── Python
-   │     ├── python_utils
-   │     ├── test_data
-   │     └── wrappers
+   │     ├── wrappers
+   │     ├── config.community.yaml
+   │     ├── generate_FV3LAM_wflow.py
+   │     ├── launch_FV3LAM_wflow.sh
+   │     ├── setup.py
+   │     └── valid_param_vals.yaml
    └── versions
 
 SRW App SubDirectories
@@ -226,7 +228,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
 
 .. _ExptDirStructure:
 
-.. table::  Files and subdirectory initially created in the experiment directory 
+.. table:: Files and subdirectory initially created in the experiment directory 
    :widths: 33 67 
 
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
@@ -237,12 +239,11 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | data_table                | :term:`Cycle-independent` input file (empty)                                                                 |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | field_table               | :term:`Tracers <tracer>` in the `forecast model                                                              |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__                  |
+   |                           | <https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/InputsOutputs.html#field-table-file>`__      |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | FV3LAM_wflow.xml          | Rocoto XML file to run the workflow                                                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | input.nml                 | :term:`Namelist` for the `UFS Weather Model                                                                  |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#namelist-file-input-nml>`__           | 
+   | input.nml                 | :term:`Namelist` for the :ref:`UFS Weather Model <ufs-wm:InputNML>`                                          |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | launch_FV3LAM_wflow.sh    | Symlink to the ``ufs-srweather-app/ush/launch_FV3LAM_wflow.sh`` shell script,                                |
    |                           | which can be used to (re)launch the Rocoto workflow.                                                         |
@@ -252,8 +253,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    | log.generate_FV3LAM_wflow | Log of the output from the experiment generation script                                                      |
    |                           | (``generate_FV3LAM_wflow.py``)                                                                               |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
-   | nems.configure            | See `NEMS configuration file                                                                                 |
-   |                           | <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#nems-configure-file>`__               |
+   | nems.configure            | See :ref:`NEMS configuration file <ufs-wm:nems-conf>`                                                        |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
    | suite_{CCPP}.xml          | :term:`CCPP` suite definition file (:term:`SDF`) used by the forecast model                                  |
    +---------------------------+--------------------------------------------------------------------------------------------------------------+
