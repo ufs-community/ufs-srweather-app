@@ -93,7 +93,7 @@ if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
   yyyymmdd=${PDY}
   hh=${cyc}
   export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
-
+  SLASH_ENSMEM_SUBDIR=${SLASH_ENSMEM_SUBDIR:-""}
   export GFS_SFC_STAGING_DIR="${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
 fi
 #
