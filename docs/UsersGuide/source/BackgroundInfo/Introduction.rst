@@ -140,9 +140,6 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/main_v4.1/Users_Guide/index.html
 
-.. COMMENT: Check links for stochastic_physics, CCPP Tech docs, UFS_UTILS
-
-
 User Support and Contributions to Development
 ===============================================================
 
@@ -182,12 +179,10 @@ Future Direction
 
 Users can expect to see incremental improvements and additional capabilities in upcoming releases of the SRW Application to enhance research opportunities and support operational forecast implementations. Planned enhancements include:
 
-* Inclusion of data assimilation and forecast restart/cycling capabilities.
+* Inclusion of data assimilation and forecast restart/cycling capabilities via :term:`JEDI`.
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
 * Incorporation of additional `Unified Workflow <https://github.com/ufs-community/workflow-tools>`__ tools. 
-
-.. COMMENT: Anything we should add to this list? Or remove?
 
 .. bibliography:: ../references.bib
 

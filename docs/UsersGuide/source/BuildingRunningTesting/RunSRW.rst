@@ -382,10 +382,10 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: /path/to/UFS_SRW_data/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_App/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: /path/to/UFS_SRW_data/v2p2/input_model_data/<model_type>/<data_type>/${yyyymmddhh}
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -468,8 +468,8 @@ The ``ufs-srweather-app/parm/wflow`` directory contains several ``YAML`` files t
      - SRW-AQM pre-processing tasks
    * - coldstart.yaml
      - Tasks required to run a cold-start forecast
-   * - da_data_preproc.yaml
-     - Preprocessing tasks for RRFS `DA <data assimilation>`.
+   * - default_workflow.yaml
+     - Sets the default workflow (prep.yaml, coldstart.yaml, post.yaml)
    * - plot.yaml
      - Plotting tasks
    * - post.yaml
@@ -766,10 +766,10 @@ Users who have already staged the observation data needed for METplus (i.e., the
 .. code-block:: console
 
    platform:
-      CCPA_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/nohrsc/proc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/UFS_SRW_App/v2p2/obs_data/ndas/proc
+      CCPA_OBS_DIR: /path/to/UFS_SRW_data/v2p2/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/v2p2/obs_data/nohrsc/proc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_data/v2p2/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/UFS_SRW_data/v2p2/obs_data/ndas/proc
 
 After adding the VX tasks to the ``rocoto:`` section and the data paths to the ``platform:`` section, users can proceed to generate the experiment, which will perform VX tasks in addition to the default workflow tasks. 
 
