@@ -3,7 +3,10 @@
 export envir=para
 export model_ver=v7.0.0
 export dev_fix=/lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix
-export HOMEaqm=/lfs/h1/ops/${envir}/packages/aqm.${model_ver}
+#export HOMEaqm=/lfs/h1/ops/${envir}/packages/aqm.${model_ver}
+cd ../
+
+export HOMEaqm=$(pwd)
 
 mkdir -p $HOMEaqm/fix
 cd $HOMEaqm/fix
