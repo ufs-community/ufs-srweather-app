@@ -9,7 +9,7 @@ if mode() == "load" then
    execute{cmd="ulimit -S -s unlimited", modeA={"load"}}
 end
 
--- This path should point to your HPCstack installation directory
+-- This path points to your HPCstack installation's base directory
 local HPCstack="/Users/username/hpc-stack/install"
 
 -- Load HPC stack 
