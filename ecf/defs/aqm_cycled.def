@@ -1,4 +1,4 @@
-suite prod_aqm
+suite nco_aqm
   family primary
     edit aqm_ver 'v7.0'
     edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
@@ -17,38 +17,32 @@ suite prod_aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
-            task jaqm_nexus_gfs_sfc
-              trigger :TIME == 0131
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
-            task jaqm_get_extrn_ics
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
-            task jaqm_get_extrn_lbcs
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
             task jaqm_make_ics
-              trigger ./jaqm_get_extrn_ics==complete
+              trigger :TIME == 0151
             task jaqm_make_lbcs
-              trigger ./jaqm_get_extrn_lbcs==complete
+              trigger :TIME == 0151
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -56,13 +50,15 @@ suite prod_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
             task jaqm_fire_emission
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0151
           endfamily
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_forecast_data_cleanup
+              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -108,38 +104,32 @@ suite prod_aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
-            task jaqm_nexus_gfs_sfc
-              trigger :TIME == 0731
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
-            task jaqm_get_extrn_ics
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
-            task jaqm_get_extrn_lbcs
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
             task jaqm_make_ics
-              trigger ./jaqm_get_extrn_ics==complete
+              trigger :TIME == 0751
             task jaqm_make_lbcs
-              trigger ./jaqm_get_extrn_lbcs==complete
+              trigger :TIME == 0751
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -147,13 +137,15 @@ suite prod_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
             task jaqm_fire_emission
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 0751
           endfamily
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_forecast_data_cleanup
+              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -397,38 +389,32 @@ suite prod_aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
-            task jaqm_nexus_gfs_sfc
-              trigger :TIME == 1331
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
-            task jaqm_get_extrn_ics
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
-            task jaqm_get_extrn_lbcs
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
             task jaqm_make_ics
-              trigger ./jaqm_get_extrn_ics==complete
+              trigger :TIME == 1351
             task jaqm_make_lbcs
-              trigger ./jaqm_get_extrn_lbcs==complete
+              trigger :TIME == 1351
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -436,13 +422,15 @@ suite prod_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
             task jaqm_fire_emission
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 1351
           endfamily
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_forecast_data_cleanup
+              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -686,38 +674,32 @@ suite prod_aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
           family nexus
-            task jaqm_nexus_gfs_sfc
-              trigger :TIME == 2031
             task jaqm_nexus_emission_00
               edit NSPT '00'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_emission_01
               edit NSPT '01'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_emission_02
               edit NSPT '02'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_emission_03
               edit NSPT '03'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_emission_04
               edit NSPT '04'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_emission_05
               edit NSPT '05'
-              trigger ./jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_nexus_post_split
               trigger ./jaqm_nexus_emission_00==complete and ./jaqm_nexus_emission_01==complete and ./jaqm_nexus_emission_02==complete and ./jaqm_nexus_emission_03==complete and ./jaqm_nexus_emission_04==complete and ./jaqm_nexus_emission_05==complete
           endfamily
           family prep
-            task jaqm_get_extrn_ics
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
-            task jaqm_get_extrn_lbcs
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
             task jaqm_make_ics
-              trigger ./jaqm_get_extrn_ics==complete
+              trigger :TIME == 2051
             task jaqm_make_lbcs
-              trigger ./jaqm_get_extrn_lbcs==complete
+              trigger :TIME == 2051
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
@@ -725,13 +707,15 @@ suite prod_aqm
           endfamily
           family pts_fire_emis
             task jaqm_point_source
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
             task jaqm_fire_emission
-              trigger ../nexus/jaqm_nexus_gfs_sfc==active or ../nexus/jaqm_nexus_gfs_sfc==complete
+              trigger :TIME == 2051
           endfamily
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_forecast_data_cleanup
+              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000

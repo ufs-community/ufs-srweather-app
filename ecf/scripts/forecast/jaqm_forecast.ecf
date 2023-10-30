@@ -14,9 +14,6 @@ export cyc="%CYC%"
 %include <envir-p1.h>
 
 export subcyc=0
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 
 . ${HOMEaqm}/ush/load_modules_run_task.sh run_fcst "JREGIONAL_RUN_FCST"
 

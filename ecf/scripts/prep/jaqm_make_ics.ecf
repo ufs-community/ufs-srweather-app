@@ -13,7 +13,10 @@ export cyc="%CYC%"
 %include <head.h>
 %include <envir-p1.h>
 
-export subcyc=0
+export subcyc='00'
+export SLASH_ENSMEM_SUBDIR=''
+export ENSMEM_INDX='##'
+
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}

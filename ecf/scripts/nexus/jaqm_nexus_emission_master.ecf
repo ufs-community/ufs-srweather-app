@@ -15,6 +15,7 @@ export cyc="%CYC%"
 
 export nspt="%NSPT%"
 export subcyc=0
+export SLASH_ENSMEM_SUBDIR=''
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
