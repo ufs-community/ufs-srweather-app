@@ -421,7 +421,7 @@ module list
 if [[ "${PLATFORM}" == "macos" ]]; then
   ARCH=$(uname -m)
   if [[ "${ARCH}" == arm64 ]] || [[ "${ARCH}" == aarch64 ]]; then
-    patch1="patches/patch_macos_arm64_sorc_cmakelists.txt"
+    patch1="sorc/patch_macos_arm64_sorc_cmakelists.txt"
     if patch -p1 -R --dry-run --silent -d ./sorc -N < ${patch1} 1> /dev/null; then
       echo "Patch ${patch1} was already applied";
     else
