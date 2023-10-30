@@ -3,27 +3,34 @@ platform:
   NCORES_PER_NODE: 8
   TASKTHROTTLE: 1
   SCHED: none
-  TEST_CCPA_OBS_DIR: /Users/username/UFS_SRW_data/obs_data/ccpa/proc
-  TEST_MRMS_OBS_DIR: /Users/username/UFS_SRW_data/obs_data/mrms/proc
-  TEST_NDAS_OBS_DIR: /Users/username/UFS_SRW_data/obs_data/ndas/proc
-  DOMAIN_PREGEN_BASEDIR: /Users/username/UFS_SRW_data/FV3LAM_pregen
+  TEST_CCPA_OBS_DIR: /Users/username/UFS_SRW_data/v2p2/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /Users/username/UFS_SRW_data/v2p2/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /Users/username/UFS_SRW_data/v2p2/obs_data/ndas/proc
+  DOMAIN_PREGEN_BASEDIR: /Users/username/UFS_SRW_data/v2p2/FV3LAM_pregen
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
   RUN_CMD_POST: mpirun
   RUN_CMD_PRDGEN: mpirun
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: mpirun
   PRE_TASK_CMDS: '{ ulimit -a; ulimit -S -s unlimited; }'
-  TEST_EXTRN_MDL_SOURCE_BASEDIR: /Users/username/UFS_SRW_data/input_model_data
-  TEST_PREGEN_BASEDIR: /Users/username/UFS_SRW_data/FV3LAM_pregen
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /Users/username/UFS_SRW_data/dummy_FV3GFS_sys_dir
-  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /Users/username/UFS_SRW_data/dummy_FV3GFS_sys_dir
-  FIXaer: /Users/username/UFS_SRW_data/fix/fix_aer
-  FIXgsm: /Users/username/UFS_SRW_data/fix/fix_am
-  FIXlut: /Users/username/UFS_SRW_data/fix/fix_lut
-  FIXorg: /Users/username/UFS_SRW_data/fix/fix_orog
-  FIXsfc: /Users/username/UFS_SRW_data/fix/fix_sfc_climo
-  FIXshp: /Users/username/UFS_SRW_data/NaturalEarth
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /Users/username/UFS_SRW_data/v2p2/input_model_data
+  TEST_PREGEN_BASEDIR: /Users/username/UFS_SRW_data/v2p2/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /Users/username/UFS_SRW_data/v2p2/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /Users/username/UFS_SRW_data/v2p2/dummy_FV3GFS_sys_dir
+  FIXaer: /Users/username/UFS_SRW_data/v2p2/fix/fix_aer
+  FIXgsm: /Users/username/UFS_SRW_data/v2p2/fix/fix_am
+  FIXlut: /Users/username/UFS_SRW_data/v2p2/fix/fix_lut
+  FIXorg: /Users/username/UFS_SRW_data/v2p2/fix/fix_orog
+  FIXsfc: /Users/username/UFS_SRW_data/v2p2/fix/fix_sfc_climo
+  FIXshp: /Users/username/UFS_SRW_data/v2p2/NaturalEarth
   EXTRN_MDL_DATA_STORES: aws nomads
 data:
   ics_lbcs:
-    FV3GFS: /Users/username/UFS_SRW_data/input_model_data/FV3GFS
+    FV3GFS: /Users/username/UFS_SRW_data/v2p2/input_model_data/FV3GFS
+      nemsio: /Users/username/UFS_SRW_data/v2p2/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /Users/username/UFS_SRW_data/v2p2/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh}
+      netcdf: /Users/username/UFS_SRW_data/v2p2/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh}
+    NAM: /Users/username/UFS_SRW_data/v2p2/input_model_data/NAM/${yyyymmdd}${hh}
+    HRRR: /Users/username/UFS_SRW_data/v2p2/input_model_data/HRRR/${yyyymmdd}${hh}
+    RAP: /Users/username/UFS_SRW_data/v2p2/input_model_data/RAP/${yyyymmdd}${hh}
+    GSMGFS: /Users/username/UFS_SRW_data/v2p2/input_model_data/GSMGFS/${yyyymmdd}${hh} 

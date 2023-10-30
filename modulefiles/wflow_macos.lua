@@ -1,5 +1,5 @@
 help([[
-This module set a path needed to activate conda environement for running UFS SRW App on general macOS, following miniconda3 module installation and conda environments
+This module set a path needed to activate conda environement for running UFS SRW App on general macOS, following miniconda3 module and conda environments installations
 ]])
 
 whatis([===[This module activates conda environment for running the UFS SRW App on macOS]===])

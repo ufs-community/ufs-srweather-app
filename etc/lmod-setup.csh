@@ -18,22 +18,23 @@ if ( "$L_MACHINE" != wcoss2 ) then
 endif
    
 if ( "$L_MACHINE" == macos ) then
-   arch=$(uname -m)
-   [[ "$arch" = arm64 ]] && export ENV="/opt/homebrew/opt/lmod/init/csh"
-   [[ "$arch" = x86_64 ]] && export ENV="/usr/local/opt/lmod/init/csh"
-   source $ENV
+   if ( -d /opt/homebrew/opt/lmod ) then
+       source /opt/homebrew/opt/lmod/init/csh
+   else if ( -d /usr/local/opt/lmod ) then
+       source /usr/local/opt/lmod/init/csh
+   else
+       echo "Path for Lmod is unknown, verify whether Lmod is installed"
+   endif
 
    module purge
 
 else if ( "$L_MACHINE" == linux ) then
-   setenv ENV "/usr/share/lmod/lmod/init/csh"
-   source $ENV
+   source /usr/share/lmod/lmod/init/csh
 
    module purge
 
 else if ( "$L_MACHINE" == singularity ) then
-   set ENV="/usr/share/lmod/lmod/init/csh"
-   source $ENV
+   source /usr/share/lmod/lmod/init/csh
 
    module purge
 
