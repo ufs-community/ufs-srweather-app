@@ -1,3 +1,6 @@
+.. role:: raw-html(raw)
+    :format: html
+
 .. _LAMGrids:
 
 =================================================================================
@@ -5,19 +8,20 @@ Limited Area Model (:term:`LAM`) Grids:  Predefined and User-Generated Options
 =================================================================================
 In order to set up the workflow and generate an experiment with the SRW Application, the user
 must choose between various predefined :term:`FV3`-:term:`LAM` grids or generate a user-defined grid.
-At this time, full support is only provided to those using one of the four predefined
-grids supported in the v2.1.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid and/or adjust the number of vertical levels in the grid. Currently, this feature is not fully supported and is "use at your own risk."
+At this time, full support is only provided to those using one of the five predefined
+grids supported in the v2.2.0 release, but other predefined grids are available (see :numref:`Section %s <PredefGrid>` for more detail). Preliminary information is also provided at the end of this chapter describing how users can leverage the SRW App workflow scripts to generate their own user-defined grid and/or to adjust the number of vertical levels in the grid. Currently, these features are not fully supported and are "use at your own risk."
 
 Predefined Grids
 =================
-The SRW App v2.1.0 release includes four predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``workflow:`` section of the ``config.yaml`` script must be set to one of the following four options:
+The SRW App v2.2.0 release includes five predefined limited area model (:term:`LAM`) grids. To select a supported predefined grid, the ``PREDEF_GRID_NAME`` variable within the ``workflow:`` section of the ``config.yaml`` script must be set to one of the following five options:
 
 * ``RRFS_CONUS_3km``
 * ``RRFS_CONUS_13km``
 * ``RRFS_CONUS_25km``
 * ``SUBCONUS_Ind_3km``
+* ``RRFS_NA_13km``
 
-These four options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the five supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suites: ``FV3_GFS_v16`` and ``FV3_RAP``. 
+These five options are provided for flexibility related to compute resources and supported physics options. Other predefined grids are listed :ref:`here <PredefGrid>`. The high-resolution 3-km :term:`CONUS` grid generally requires more compute power and works well with three of the five supported physics suites (see :numref:`Table %s <GridPhysicsCombos>`). Low-resolution grids (i.e., 13-km and 25-km domains) require less compute power and should generally be used with the other supported physics suites: ``FV3_GFS_v16`` and ``FV3_RAP``. 
 
 .. _GridPhysicsCombos:
 
@@ -42,6 +46,10 @@ These four options are provided for flexibility related to compute resources and
    |                   |                  |
    |                   | FV3_RAP          |
    +-------------------+------------------+
+   | RRFS_NA_13km      | FV3_RAP          |
+   |                   |                  |
+   |                   | FV3_GFS_v16      |
+   +-------------------+------------------+
    | RRFS_CONUS_25km   | FV3_GFS_v16      |
    |                   |                  |
    |                   | FV3_RAP          |
@@ -49,7 +57,7 @@ These four options are provided for flexibility related to compute resources and
 
 In theory, it is possible to run any of the supported physics suites with any of the predefined grids, but the results will be more accurate and meaningful with appropriate grid/physics pairings. 
 
-The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the 3-km version of the continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in 2025. All four supported grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`_) domain to allow for use of HRRR data to initialize the SRW App. 
+The predefined :term:`CONUS` grids follow the naming convention (e.g., ``RRFS_CONUS_*km``) of the 3-km version of the continental United States (CONUS) grid being tested for the Rapid Refresh Forecast System (:term:`RRFS`). RRFS will be a convection-allowing, hourly-cycled, :term:`FV3`-:term:`LAM`-based ensemble planned for operational implementation in 2025. Aside from ``RRFS_NA_13km``, the supported predefined grids were created to fit completely within the High Resolution Rapid Refresh (`HRRR <https://rapidrefresh.noaa.gov/hrrr/>`__) domain to allow for use of HRRR data to initialize the SRW App. The ``RRFS_NA_13km`` grid covers all of North America and therefore requires different data to initialize. 
 
 Predefined 3-km CONUS Grid
 -----------------------------
@@ -58,13 +66,13 @@ The 3-km CONUS domain is ideal for running the ``FV3_RRFS_v1beta`` physics suite
 
 .. _RRFS_CONUS_3km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_3km.sphr.native_wrtcmp.png
-   :alt: Map of the continental United States 3 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_3km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 3 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
-   *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write-component grid (blue).*
+   *The boundary of the RRFS_CONUS_3km computational grid (red) and corresponding write component grid (blue).*
 
 
-The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write-component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the :term:`UPP` to read in and correctly process the data.
+The boundary of the ``RRFS_CONUS_3km`` domain is shown in :numref:`Figure %s <RRFS_CONUS_3km>` (in red), and the boundary of the :ref:`write component grid <WriteComp>` sits just inside the computational domain (in blue). This extra grid is required because the post-processing utility (:term:`UPP`) is unable to process data on the native FV3 gnomonic grid (in red). Therefore, model data are interpolated to a Lambert conformal grid (the write component grid) in order for the :term:`UPP` to read in and correctly process the data.
 
 .. note::
    While it is possible to initialize the FV3-LAM with coarser external model data when using the ``RRFS_CONUS_3km`` domain, it is generally advised to use external model data (such as HRRR or RAP data) that has a resolution similar to that of the native FV3-LAM (predefined) grid.
@@ -75,47 +83,81 @@ Predefined SUBCONUS Grid Over Indianapolis
 
 .. _SUBCONUS_Ind_3km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SUBCONUS_Ind_3km.png
-   :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/SUBCONUS_Ind_3km.png
+   :alt: Map of Indiana and portions of the surrounding states. The map shows the boundaries of the continental United States sub-grid centered over Indianapolis. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
-   *The boundary of the SUBCONUS_Ind_3km computational grid (red) and corresponding write-component grid (blue).*
+   *The boundary of the SUBCONUS_Ind_3km computational grid (red) and corresponding write component grid (blue).*
 
 The ``SUBCONUS_Ind_3km`` grid covers only a small section of the :term:`CONUS` centered over Indianapolis. Like the ``RRFS_CONUS_3km`` grid, it is ideally paired with the ``FV3_RRFS_v1beta``, ``FV3_HRRR``, or ``FV3_WoFS`` physics suites, since these are all convection-allowing physics suites designed to work well on high-resolution grids. 
 
-Predefined 13-km Grid
-------------------------
+Predefined 13-km CONUS Grid
+-----------------------------
 
 .. _RRFS_CONUS_13km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_13km.sphr.native_wrtcmp.png
-   :alt: Map of the continental United States 13 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_13km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
-   *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write-component grid (blue).*
+   *The boundary of the RRFS_CONUS_13km computational grid (red) and corresponding write component grid (blue).*
 
 The ``RRFS_CONUS_13km`` grid (:numref:`Fig. %s <RRFS_CONUS_13km>`) covers the full :term:`CONUS`. This grid is meant to be run with the ``FV3_GFS_v16`` or ``FV3_RAP`` physics suites. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
+
+Predefined 13-km North American Grid
+--------------------------------------
+
+.. _RRFS_NA_13km:
+
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.sphr.whole.png
+   :alt: Map of the North American 13 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just outside the computational grid boundaries in blue. 
+
+   *The boundary of the RRFS_NA_13km computational grid (red) and corresponding write component grid (blue).*
+
+The ``RRFS_NA_13km`` grid (:numref:`Fig. %s <RRFS_NA_13km>`) covers all of North America. This grid was designed to run with the ``FV3_RAP`` physics suite but can also be run with the ``FV3_GFS_v16`` suite. These suites use convective :term:`parameterizations`, whereas the other supported suites do not. Convective parameterizations are necessary for low-resolution grids because convection occurs on scales smaller than 25-km and 13-km. 
+
+Corner plots for the ``RRFS_NA_13km`` grid in :numref:`Table %s <CornerPlots>` show the 4-cell-wide :term:`halo` on the computational grid in orange, which gives an idea of the size of the grid cells.
+
+.. |logo1| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.upper_left_w_halo.png
+   :alt: Upper left corner of the RRFS_NA_13km with computational grid and four-cell-wide halo in orange and write component grid outside of the computational grid in blue. 
+
+.. |logo2| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.upper_right_w_halo.png 
+   :alt: Upper right corner of the RRFS_NA_13km with computational grid and four-cell-wide halo in orange and write component grid outside of the computational grid in blue.
+
+.. |logo3| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.lower_right_w_halo.png 
+   :alt: Lower right corner of the RRFS_NA_13km with computational grid and four-cell-wide halo in orange and write component grid outside of the computational grid in blue.
+
+.. |logo4| image:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_NA_13km.lower_left_w_halo.png 
+   :alt: Lower left corner of the RRFS_NA_13km with computational grid and four-cell-wide halo in orange and write component grid outside of the computational grid in blue.
+
+.. _CornerPlots:
+.. list-table:: Corner Plots for the RRFS_NA_13km Grid
+
+   * - |logo1| :raw-html:`<br/><p style="text-align: center;"><i>Upper left w/halo</i></p>`
+     - |logo2| :raw-html:`<br/><p style="text-align: center;"><i>Upper right w/halo</i></p>`
+     - |logo3| :raw-html:`<br/><p style="text-align: center;"><i>Lower right w/halo</i></p>`
+     - |logo4| :raw-html:`<br/><p style="text-align: center;"><i>Lower left w/halo</i></p>`
 
 Predefined 25-km Grid
 ------------------------
 
 .. _RRFS_CONUS_25km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_25km.sphr.native_wrtcmp.png
-   :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write-component grid appears just inside the computational grid boundaries in blue. 
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_25km.sphr.native_wrtcmp.png
+   :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
-   *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write-component grid (blue).*
+   *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write component grid (blue).*
 
 The final predefined :term:`CONUS` grid (:numref:`Fig. %s <RRFS_CONUS_25km>`) uses a 25-km resolution and
 is meant mostly for quick testing to ensure functionality prior to using a higher-resolution domain.
-However, for users who would like to use the 25-km domain for research, the ``FV3_GFS_v16`` :term:`SDF` is recommended for the reasons mentioned :ref:`above <RRFS_CONUS_13km>`. 
+However, if users plan to use the 25-km domain for research, the ``FV3_GFS_v16`` :term:`SDF` is recommended for the reasons mentioned :ref:`above <RRFS_CONUS_13km>`. 
 
-Ultimately, the choice of grid is experiment-dependent and resource-dependent. For example, a user may wish to use the ``FV3_GFS_v16`` physics suite, which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. Users will also have fewer computational constraints when running with the 13-km and 25-km domains, so depending on the resources available, certain grids may be better options than others. 
+Ultimately, the choice of grid is experiment-dependent and resource-dependent. For example, a user may wish to use the ``FV3_GFS_v16`` physics suite, which uses cumulus physics that are not configured to run at the 3-km resolution. In this case, the 13-km or 25-km domain options are better suited to the experiment. Users will also have fewer computational constraints when running with the 13-km and 25-km CONUS domains, so depending on the resources available, certain grids may be better options than others. 
 
 .. _UserDefinedGrid:
 
 Creating User-Generated Grids
 ===============================
 
-While the four supported predefined grids are ideal for users just starting
+While the five supported predefined grids are ideal for users just starting
 out with the SRW App, more advanced users may wish to create their own predefined grid for testing over
 a different region and/or with a different resolution. Creating a user-defined grid requires
 knowledge of how the SRW App workflow functions. In particular, it is important to understand the set of
@@ -131,7 +173,7 @@ The steps to add such a grid to the workflow are as follows:
 
 #. Add NEW_GRID to the array ``valid_vals_PREDEF_GRID_NAME`` in the ``ufs-srweather-app/ush/valid_param_vals.yaml`` file.
 
-#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>`. For descriptions of the variables that need to be set, see Sections :numref:`%s <ESGgrid>` and :numref:`%s <workflow>`.
+#. In ``ufs-srweather-app/ush/predef_grid_params.yaml``, add a stanza describing the parameters for NEW_GRID. An example of such a stanza is given :ref:`below <NewGridExample>`. For descriptions of the variables that need to be set, see Sections :numref:`%s: ESGgrid Settings <ESGgrid>` and :numref:`%s: Forecast Configuration Parameters <FcstConfigParams>`.
 
 To run a forecast experiment on NEW_GRID, start with a workflow configuration file for a successful experiment (e.g., ``config.community.yaml``, located in the ``ufs-srweather-app/ush`` subdirectory), and change the line for ``PREDEF_GRID_NAME`` in the ``workflow:`` section to ``NEW_GRID``:
 
@@ -160,12 +202,11 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
    
    "NEW_GRID":
    
-   #  The method used to generate the grid. This example is specifically for the "ESGgrid" method.
-
+   # The method used to generate the grid. This example is specifically for the "ESGgrid" method.
 
      GRID_GEN_METHOD: "ESGgrid"
    
-   #  ESGgrid parameters:
+   # ESGgrid parameters
 
      ESGgrid_LON_CTR: -97.5
      ESGgrid_LAT_CTR: 38.5
@@ -176,14 +217,14 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
      ESGgrid_PAZI: 0.0
      ESGgrid_WIDE_HALO_WIDTH: 6
 
-   #  Forecast configuration parameters:
+   # Forecast configuration parameters
 
      DT_ATMOS: 40
      LAYOUT_X: 5
      LAYOUT_Y: 2
      BLOCKSIZE: 40
 
-   #  Parameters for the write-component (aka "quilting") grid. 
+   # Parameters for the write component (aka "quilting") grid. 
 
      QUILTING:
        WRTCMP_write_groups: 1
@@ -194,7 +235,7 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
        WRTCMP_lon_lwr_left: -121.12455072
        WRTCMP_lat_lwr_left: 23.89394570
 
-   #  Parameters required for the Lambert conformal grid mapping.
+   # Parameters required for the Lambert conformal grid mapping.
 
        WRTCMP_stdlat1: 38.5
        WRTCMP_stdlat2: 38.5
@@ -204,35 +245,35 @@ The following is an example of a code stanza for "NEW_GRID" to be added to ``pre
        WRTCMP_dy: 25000.0
 
 .. note:: 
-   The process above explains how to create a new *predefined* grid, which can be used more than once. If a user prefers to create a custom grid for one-time use, the variables above can instead be specified in ``config.yaml``, and ``PREDEF_GRID_NAME`` can be set to a null string. In this case, it is not necessary to modify ``valid_param_vals.yaml`` or ``predef_grid_params.yaml``. Users can view an example configuration file for a custom grid `here <https://github.com/ufs-community/ufs-srweather-app/blob/develop/tests/WE2E/test_configs/wflow_features/config.custom_ESGgrid.yaml>`__.
+   The process above explains how to create a new *predefined* grid, which can be used more than once. If a user prefers to create a custom grid for one-time use, the variables above can instead be specified in ``config.yaml``, and ``PREDEF_GRID_NAME`` can be set to a null string. In this case, it is not necessary to modify ``valid_param_vals.yaml`` or ``predef_grid_params.yaml``. Users can view an example configuration file for a custom grid `here <https://github.com/ufs-community/ufs-srweather-app/blob/develop/tests/WE2E/test_configs/custom_grids/config.custom_ESGgrid.yaml>`__.
 
 .. _VerticalLevels:
 
 Changing the Number of Vertical Levels
 ========================================
 
-The four supported predefined grids included with the SRW App are configured to run with 65 levels by default. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
+The five supported predefined grids included with the SRW App are configured to run with 65 levels by default. However, advanced users may wish to vary the number of vertical levels in the grids they are using, whether these be the predefined grids or a user-generated grid. Varying the number of vertical levels requires
 knowledge of how the SRW App interfaces with the UFS Weather Model (:term:`WM <Weather Model>`) and preprocessing utilities. It is also important to note that user-defined vertical levels are not a supported feature at present; information is being provided for the benefit of the FV3-LAM community, but user support for this feature is limited. With those caveats in mind, this section provides instructions for creating a user-defined vertical coordinate distribution on a regional grid. 
 
 Find ``ak``/``bk``
 --------------------
 
-Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS WM uses a hybrid vertical coordinate system, which moves from purely sigma levels near the surface to purely isobaric levels near the top of the atmosphere (TOA). The equation :math:`pk=ak+bk*ps` (where ``ps`` is surface pressure) is used to derive the pressure value at a given level. The ``ak`` values define the contribution from the purely isobaric component of the hybrid vertical coordinate, and the ``bk`` values are the contribution from the sigma component. When ``ak`` and ``bk`` are both zero, it is the TOA (pressure is zero). When ``bk`` is 1 and ak is 0, it is a purely sigma vertical coordinate surface, which is the case near the surface (the first model level).
+Users will need to determine ``ak`` and ``bk`` values, which are used to define the vertical levels. The UFS WM uses a hybrid vertical coordinate system, which moves from purely sigma levels near the surface to purely isobaric levels near the top of the atmosphere (TOA). The equation :math:`pk=ak+bk*ps` (where ``ps`` is surface pressure) is used to derive the pressure value at a given level. The ``ak`` values define the contribution from the purely isobaric component of the hybrid vertical coordinate, and the ``bk`` values are the contribution from the sigma component. When ``ak`` and ``bk`` are both zero, it is the TOA (pressure is zero). When ``bk`` is 1 and ``ak`` is 0, it is a purely sigma vertical coordinate surface, which is the case near the surface (the first model level).
 
 The ``vcoord_gen`` tool from UFS_UTILS can be used to generate ``ak`` and ``bk`` values, although users may choose a different tool if they prefer. The program can output a text file containing ``ak`` and ``bk`` values for each model level, which will be used by ``chgres_cube`` in the ``make_ics_*`` and ``make_lbcs_*`` tasks to generate the initial and lateral boundary conditions from the external data. 
 
-Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/latest/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
+Users can find ``vcoord_gen`` `technical documentation here <https://noaa-emcufs-utils.readthedocs.io/en/ufs_utils_1_11_0/ufs_utils.html#vcoord-gen>`__ and `scientific documentation here <https://ufs-community.github.io/UFS_UTILS/ver-1.11.0/vcoord_gen/vcoord__gen_8f90.html>`__. Since UFS_UTILS is part of the SRW App, users can find and run the UFS_UTILS ``vcoord_gen`` tool in their ``ufs-srweather-app/exec`` directory. To run ``vcoord_gen`` within the SRW App: 
 
 .. code-block:: console 
 
    cd /path/to/ufs-srweather-app/exec
    ./vcoord_gen > /path/to/vcoord_gen_outfile.txt
 
-Users should modify the output file path to save the output file in the desired location. In the SRW App, the default file defining vertical levels is named ``global_hyblev.txt`` and contains the default 65 levels. By convention, users who create a new vertical coodinate distribution file often append this file name with ``LXX`` or ``LXXX`` for their number of levels (e.g., ``global_hyblev.L128.txt``). Configuration files are typically placed in the ``parm`` directory. For example, users might run:
+Users should modify the output file path (``/path/to/vcoord_gen_outfile.txt``) to save the output file in the desired location. In the SRW App, the default file defining vertical levels is named ``global_hyblev.txt`` and contains the default 65 levels. By convention, users who create a new vertical coodinate distribution file often append this file name with ``LXX`` or ``LXXX`` for their number of levels (e.g., ``global_hyblev.L128.txt``). Configuration files are typically placed in the ``parm`` directory. For example, a user (Jane Smith) might run:
 
 .. code-block:: console 
 
-   cd /path/to/ufs-srweather-app/exec
+   cd /Users/Jane.Smith/ufs-srweather-app/exec
    ./vcoord_gen > /Users/Jane.Smith/ufs-srweather-app/parm/global_hyblev.L128.txt
 
 When ``vcoord_gen`` starts, it will print a message telling users to specify certain variables for ``ak``/``bk`` generation: 
@@ -409,7 +450,7 @@ Additionally, check that ``external_eta = .true.``.
 Modify ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory on Level 1 systems, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, set: 
+To use the text file produced by ``vcoord_gen`` in the SRW App, users need to set the ``VCOORD_FILE`` variable in their ``config.yaml`` file. Normally, this file is named ``global_hyblev.l65.txt`` and is located in the ``fix_am`` directory on Level 1 systems, but users should adjust the path and name of the file to suit their system. For example, in ``config.yaml``, a user (Jane Smith) might set: 
 
 .. code-block:: console
 

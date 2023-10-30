@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-UFS Short-Range Weather App Users Guide
-=======================================
+UFS Short-Range Weather App User's Guide (|version|)
+=====================================================
    
 .. toctree::
    :numbered:
