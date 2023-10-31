@@ -1,6 +1,6 @@
 ./manage_externals/checkout_externals
 
-module purge
+module reset 
 
 source versions/build.ver
 

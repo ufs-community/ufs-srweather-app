@@ -943,7 +943,7 @@ nco:
   envir_dfv: "prod"
   NET_dfv: "aqm"
   RUN_dfv: "aqm"
-  model_ver_dfv: "v7.0.0"
+  model_ver_dfv: "v7.0"
   OPSROOT_dfv: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
   COMROOT_dfv: '{{ OPSROOT_dfv }}/com'
   COMIN_BASEDIR: '{{ COMROOT_dfv }}/{{ NET_dfv }}/{{ model_ver_dfv }}'
