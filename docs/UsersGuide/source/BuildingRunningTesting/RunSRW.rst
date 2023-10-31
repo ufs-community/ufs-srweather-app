@@ -192,8 +192,8 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating the |wflow_env| Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python package required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks, |graphics_env|, or when testing the AQM/CMAQ, |cmaq_env|. Python packages in these other environments  that may conflict with those in |wflow_env|. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
-These conda environments could be added to the existing python or conda modules. This is needed for non-Level 1 platforms. 
+On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python package required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks |graphics_env| or when testing the AQM/CMAQ |cmaq_env|. Python packages in these other environments  that may conflict with those in |wflow_env|. The environment can be stored in a local path, which can be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
+These conda environments could be added to the existing python or conda modules.  
 There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use the aarch64 (64-bit ARM) Miniforge for Linux and install into $HOME/conda. Users should adjust as needed for their target system. 
 
 Options include:
@@ -202,79 +202,80 @@ Options include:
 
 3) preparing a miniconda3 module (Lmod) with three conda environments |wflow_env|, |graphics_env|, |cmaq_env|.
 
-1) workfow_tools.yaml for |wflow_env|
+1) Users can add the following environment .yaml files: 
 
-.. code-block:: console
+   a) workflow_tools.yaml for |wflow_env|
 
-   name: workflow_tools
-   channels:
-     - conda-forge
-     - defaults
-   dependencies:
-     - python=3.9*
-     - boto3=1.22*
-     - black
-     - f90nml=1.4*
-     - jinja2=3.0*
-     - numpy=1.21*
-     - pylint
-     - pytest
-     - pyyaml=6.0*
-     - tox  
+   .. code-block:: console
 
+      name: workflow_tools
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9*
+        - boto3=1.22*
+        - black
+        - f90nml=1.4*
+        - jinja2=3.0*
+        - numpy=1.21*
+        - pylint
+        - pytest
+        - pyyaml=6.0*
+        - tox  
 
-regional_workflow.yaml for |graphics_env|
+   b) regional_workflow.yaml for |graphics_env|
 
-.. code-block:: console
+   .. code-block:: console
+   
+      name: regional_workflow
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9.*
+        - f90nml
+        - jinja2
+        - pyyaml
+        - scipy
+        - matplotlib=3.5.2*
+        - pygrib
+        - cartopy
+   
+   c) regional_workflow_cmaq.yaml for |cmaq_env|
+   
+   .. code-block:: console
+   
+      name: regional_workflow_cmaq
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9.12
+        - f90nml=1.4*
+        - jinja2=3.0*
+        - pyyaml=6.0*
+        - scipy
+        - matplotlib
+        - pygrib
+        - cartopy
+        - netcdf4
+        - xarray
 
-   name: regional_workflow
-   channels:
-     - conda-forge
-     - defaults
-   dependencies:
-     - python=3.9.*
-     - f90nml
-     - jinja2
-     - pyyaml
-     - scipy
-     - matplotlib=3.5.2*
-     - pygrib
-     - cartopy
-
-regional_workflow_cmaq.yaml for |cmaq_env|
-
-.. code-block:: console
-
-   name: regional_workflow_cmaq
-   channels:
-     - conda-forge
-     - defaults
-   dependencies:
-     - python=3.9.12
-     - f90nml=1.4*
-     - jinja2=3.0*
-     - pyyaml=6.0*
-     - scipy
-     - matplotlib
-     - pygrib
-     - cartopy
-     - netcdf4
-     - xarray
-
-2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into $HOME/conda. Adjust as necessary for your target system. 
+2) Users can instead install Miniforge. This example uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Users should adjust as needed for their target system.
 
 .. code-block:: console
 
       wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
       bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
       rm Miniforge3-Linux-aarch64.sh
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate
-   conda install -y conda-build conda-verify
-   cd path/to/your/workflow-tools/clone
-   conda build recipe
-   conda create -y -n workflow_tools -c local workflow_tools
-   conda activate workflow_tools
+      source ~/conda/etc/profile.d/conda.sh
+      conda activate
+      conda install -y conda-build conda-verify
+      cd path/to/your/workflow-tools/clone
+      conda build recipe
+      conda create -y -n workflow_tools -c local workflow_tools
+      conda activate workflow_tools
 
 In future shells, you can activate and use this environment with:
 
@@ -285,7 +286,8 @@ In future shells, you can activate and use this environment with:
 
 See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
-3)  Building miniconda3 and creating Lmod modulefile loadable among other modules during the workflow. The module could be added to your <wflow>_platform.lua modulefile, and the environments activated or deactivated as needed for a particular workflow task. A repository with full installation instructions, a modulefile template, and environment configuration files could be accessed from the `NOAA-EPIC/miniconda3 <https://github.com/NOAA-EPIC/miniconda3`__ repository. Full instructions could be viewed  in an online `README.md <https://github.com/NOAA-EPIC/miniconda3/edit/master/README.md>`__ file. 
+3) 3) A third option is to build miniconda3 and create a Lmod modulefile loadable among other modules during the workflow. The module can be added to the user's wflow_<platform>.lua modulefile, and the environments activated or deactivated as needed for a particular workflow task. A repository with full installation instructions, a modulefile template, and environment configuration files can be accessed here: https://github.com/NOAA-EPIC/miniconda3. Full instructions can be viewed in the `README.md file <https://github.com/NOAA-EPIC/miniconda3/edit/master/README.md>`__.
+
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
