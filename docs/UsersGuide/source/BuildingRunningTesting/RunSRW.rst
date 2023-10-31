@@ -277,14 +277,14 @@ Options include:
       conda create -y -n workflow_tools -c local workflow_tools
       conda activate workflow_tools
 
-In future shells, you can activate and use this environment with:
-
-.. code-block:: console
-
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate workflow_tools
-
-See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+   In future shells, you can activate and use this environment with:
+   
+   .. code-block:: console
+   
+      source ~/conda/etc/profile.d/conda.sh
+      conda activate workflow_tools
+   
+   See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
 
 3) A third option is to build miniconda3 and create an Lmod modulefile that can be loaded with other modules during the workflow. The module can be added to the user's ``wflow_<platform>.lua`` modulefile, and the environments can be activated or deactivated as needed for a particular workflow task. A repository with full installation instructions, a modulefile template, and environment configuration files can be accessed in `NOAA-EPIC/miniconda3 repository <https://github.com/NOAA-EPIC/miniconda3>`__. Full instructions can be viewed in the `README.md file <https://github.com/NOAA-EPIC/miniconda3/edit/master/README.md>`__. 
 
