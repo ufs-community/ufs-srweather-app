@@ -262,9 +262,9 @@ regional_workflow.yaml for |graphics_env|
 2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into $HOME/conda. Adjust as necessary for your target system. 
 
 
-   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
-   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
-   rm Miniforge3-Linux-aarch64.sh
+      wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
+      bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
+      rm Miniforge3-Linux-aarch64.sh
    source ~/conda/etc/profile.d/conda.sh
    conda activate
    conda install -y conda-build conda-verify
