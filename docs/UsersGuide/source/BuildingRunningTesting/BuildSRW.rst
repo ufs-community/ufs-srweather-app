@@ -360,7 +360,6 @@ The SRW App can be built on MacOS and generic Linux machines after the prerequis
 
    #. MacBookPro 2019, 2.4 GHz 8-core Intel Core i9 (x86_64), OS Monterey 12.6.1, 32 GB RAM; GNU compiler suite v.12.3.0 (gcc, gfortran, g++); openmpi/4.1.5
    #. MacBookAir 2020, M1 chip (arm64, running natively), 4+4 cores, OS Ventura 13.0.1, 16 GB RAM; GNU compiler suite v.12.3.0 (gcc, gfortran, g++); openmpi/4.1.5
-   #. MacBook Pro 2015, 2.8 GHz Quad-Core Intel Core i7 (x86_64), Catalina OS X 10.15.7, 16 GB RAM;  GNU compiler suite v.12.3.0 (gcc, gfortran, g++); openmpi/4.1.5
 
 Several Linux builds have been tested on systems with x86_64 architectures.
 
