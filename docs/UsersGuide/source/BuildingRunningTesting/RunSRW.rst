@@ -192,9 +192,75 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating the |wflow_env| Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda |wflow_env| environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
+On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python package required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks, |graphics_env|, or when testing the AQM/CMAQ, |cmaq_env|. Python packages in these other environments  that may conflict with those in |wflow_env|. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
+These conda environments could be added to the existing python or conda modules. This is needed for non-Level 1 platforms. 
+Following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
+
+Several options and recipes for building the environments are given below as following:
+
+1) configuration files in *.yaml format that list core packages required for each of the environments; 2) a more general recipe for installation of the Miniforge3 package that then installs packages for the |wflow-env| as listed in repository workflow-tools (https://github.com/ufs-community/workflow-tools); and 
+3) installing a miniconda3 module (Lmod) and creating three environments |wflow_env|, |graphics_env|, |cmaq_env|.
+
+1) workfow_tools.yaml for |wflow_env|
 
 .. code-block:: console
+
+name: workflow_tools
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9*
+  - boto3=1.22*
+  - black
+  - f90nml=1.4*
+  - jinja2=3.0*
+  - numpy=1.21*
+  - pylint
+  - pytest
+  - pyyaml=6.0*
+  - tox  
+
+
+regional_workflow.yaml for |graphics_env|
+
+.. code-block:: console
+
+name: regional_workflow
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.*
+  - f90nml
+  - jinja2
+  - pyyaml
+  - scipy
+  - matplotlib=3.5.2*
+  - pygrib
+  - cartopy
+
+
+.. code-block:: console
+
+name: regional_workflow_cmaq
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.12
+  - f90nml=1.4*
+  - jinja2=3.0*
+  - pyyaml=6.0*
+  - scipy
+  - matplotlib
+  - pygrib
+  - cartopy
+  - netcdf4
+  - xarray
+
+2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into $HOME/conda. Adjust as necessary for your target system. 
+
 
    wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
    bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
@@ -215,6 +281,9 @@ In future shells, you can activate and use this environment with:
    conda activate workflow_tools
 
 See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+
+3)  Building miniconda3 and creating Lmod modulefile loadable among other modules during the workflow. The module could be added to your <wflow>_platform.lua modulefile, and the environments activated or deactivated as needed for a particular workflow task. A repository with full installation instructions, a modulefile template, and environment configuration files could be accessed here: https://github.com/NOAA-EPIC/miniconda3. Full instructions could be viewd  in a README.md file ( https://github.com/NOAA-EPIC/miniconda3/edit/master/README.md )
+
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
