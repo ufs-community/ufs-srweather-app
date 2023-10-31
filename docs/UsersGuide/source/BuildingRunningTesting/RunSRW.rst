@@ -197,7 +197,7 @@ These conda environments can be added to the existing python or conda modules.
 
 There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use the aarch64 (64-bit ARM) Miniforge for Linux and install into ``$HOME/conda``. Users should adjust as needed for their target system. 
 
-Options include:
+**Options:**
 
 
 1) Users can add the following environment .yaml files: 
