@@ -199,7 +199,7 @@ There are several options available for building virtual conda environments on n
 
 Options include:
 
-1) using configuration files in *.yaml format that list core packages required for each of the environments; 2) using a more general recipe for installation of the Miniforge3 package that then installs packages for the |wflow-env| as listed in repository workflow-tools (https://github.com/ufs-community/workflow-tools); and 
+1) using configuration files in ``*.yaml`` format that list core packages required for each of the environments; 2) using a more general recipe for installation of the Miniforge3 package that then installs packages for the |wflow_env| as listed in repository workflow-tools (https://github.com/ufs-community/workflow-tools); and 
 3) installing a miniconda3 module (Lmod) and creating three environments |wflow_env|, |graphics_env|, |cmaq_env|.
 
 1) Users can add the following environment .yaml files: 

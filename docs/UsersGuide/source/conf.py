@@ -89,9 +89,9 @@ pygments_style = 'sphinx'
 
 rst_prolog = """
 .. |wflow_env| replace:: ``workflow_tools``
+.. |graphics_env| replace:: ``regional_workflow``
+.. |cmaq_env| replace:: ``regional_workflow_cmaq``
 .. |activate| replace:: ``conda activate workflow_tools``
-.. |graphic_env| replace:: ``regional_workflow``
-.. |aqm_env| replace:: ``regional_workflow_aqm``
 .. |prompt| replace:: ``(workflow_tools)``
 .. |latestr| replace:: v2.2.0
 .. |branch| replace:: ``release/public-v2.2.0``
