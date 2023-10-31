@@ -1127,13 +1127,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                RUN_TASK_VX_ENSPOINT = \"{run_task_vx_enspoint}\"'''
         )
 
-    # Temporary solution to link fix directory for AQM.v7
-    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
-    homeaqm_fix = os.path.join(homeaqm,"fix")
-    print(homeaqm_fix)
-    if os.path.islink(homeaqm_fix) or os.path.exists(homeaqm_fix):
-        rm_vrfy("-rf", homeaqm_fix)
-    
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
@@ -1143,9 +1136,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-    fixlam = workflow_config["FIXlam"]
-    mkdir_vrfy(f' -p "{fixlam}"')
-
     #
     # Use the pregenerated domain files if the RUN_TASK_MAKE* tasks are
     # turned off. Link the files, and check that they all contain the
@@ -1240,15 +1230,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
-    # Temporary solution to link fix directory for AQM.v7
-    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
-    homeaqm_fix = os.path.join(homeaqm,"fix")
-    if os.path.exists(homeaqm_fix):
-        rm_vrfy("-rf", homeaqm_fix)
-
-    fixaqm_sav = expt_config["platform"].get("FIXaqm_sav")
-    ln_vrfy(f"""-fsn {fixaqm_sav} {homeaqm_fix}""")
-    
     #
     # -----------------------------------------------------------------------
     #
