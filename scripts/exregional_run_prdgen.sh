@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -212,7 +212,7 @@ sed -n -e '1,500p' $DATAprdgen/prslevf${fhr}.txt >& $DATAprdgen/hi_pr_1.txt
 sed -n -e '501,$p' $DATAprdgen/prslevf${fhr}.txt >& $DATAprdgen/hi_pr_2.txt
 
 # Create script to execute production generation tasks in parallel using CFP
-echo "#!/bin/bash" > $DATAprdgen/poescript_${fhr}
+echo "#!/usr/bin/env bash" > $DATAprdgen/poescript_${fhr}
 echo "export DATA=${DATAprdgen}" >> $DATAprdgen/poescript_${fhr}
 echo "export COMOUT=${COMOUT}" >> $DATAprdgen/poescript_${fhr}
 

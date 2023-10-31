@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #SBATCH -e /path/to/exptdir/log/run_make_grid.log # NEED TO SET
 #SBATCH --account=XXXXXXXXX
 #SBATCH --qos=batch

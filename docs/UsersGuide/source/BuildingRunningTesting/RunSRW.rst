@@ -192,29 +192,100 @@ MacOS requires the installation of a few additional packages and, possibly, an u
 Creating the |wflow_env| Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-On generic Mac and Linux systems, users need to create a conda |wflow_env| environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
+On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python packages required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks (|graphics_env|) or when testing the AQM/CMAQ (|cmaq_env|). Python packages in these other environments may conflict with those in |wflow_env|. The environments can be stored in a local path, which can be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
+These conda environments can be added to the existing python or conda modules.
 
-.. code-block:: console
+There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use the aarch64 (64-bit ARM) Miniforge for Linux and install into ``$HOME/conda``. Users should adjust as needed for their target system. 
 
-   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
-   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
-   rm Miniforge3-Linux-aarch64.sh
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate
-   conda install -y conda-build conda-verify
-   cd path/to/your/workflow-tools/clone
-   conda build recipe
-   conda create -y -n workflow_tools -c local workflow_tools
-   conda activate workflow_tools
+**Options:**
 
-In future shells, you can activate and use this environment with:
 
-.. code-block:: console
+1) Users can add the following environment .yaml files: 
 
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate workflow_tools
+   a) workflow_tools.yaml for |wflow_env|
 
-See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+   .. code-block:: console
+
+      name: workflow_tools
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9*
+        - boto3=1.22*
+        - black
+        - f90nml=1.4*
+        - jinja2=3.0*
+        - numpy=1.21*
+        - pylint
+        - pytest
+        - pyyaml=6.0*
+        - tox  
+
+   b) regional_workflow.yaml for |graphics_env|
+
+   .. code-block:: console
+   
+      name: regional_workflow
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9.*
+        - f90nml
+        - jinja2
+        - pyyaml
+        - scipy
+        - matplotlib=3.5.2*
+        - pygrib
+        - cartopy
+   
+   c) regional_workflow_cmaq.yaml for |cmaq_env|
+   
+   .. code-block:: console
+   
+      name: regional_workflow_cmaq
+      channels:
+        - conda-forge
+        - defaults
+      dependencies:
+        - python=3.9.12
+        - f90nml=1.4*
+        - jinja2=3.0*
+        - pyyaml=6.0*
+        - scipy
+        - matplotlib
+        - pygrib
+        - cartopy
+        - netcdf4
+        - xarray
+
+2) Users can instead install Miniforge. This example uses the aarch64 (64-bit ARM) Miniforge for Linux that installs into ``$HOME/conda``. Users should adjust as needed for their target system. 
+
+   .. code-block:: console
+   
+      wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
+      bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
+      rm Miniforge3-Linux-aarch64.sh
+      source ~/conda/etc/profile.d/conda.sh
+      conda activate
+      conda install -y conda-build conda-verify
+      cd path/to/your/workflow-tools/clone
+      conda build recipe
+      conda create -y -n workflow_tools -c local workflow_tools
+      conda activate workflow_tools
+
+   In future shells, you can activate and use this environment with:
+   
+   .. code-block:: console
+   
+      source ~/conda/etc/profile.d/conda.sh
+      conda activate workflow_tools
+   
+   See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+
+3) A third option is to build miniconda3 and create an Lmod modulefile that can be loaded with other modules during the workflow. The module can be added to the user's ``wflow_<platform>.lua`` modulefile, and the environments can be activated or deactivated as needed for a particular workflow task. A repository with full installation instructions, a modulefile template, and environment configuration files can be accessed in `NOAA-EPIC/miniconda3 repository <https://github.com/NOAA-EPIC/miniconda3>`__. Full instructions can be viewed in the `README.md file <https://github.com/NOAA-EPIC/miniconda3/edit/master/README.md>`__. 
+
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
@@ -632,7 +703,7 @@ This can be helpful when conducting multiple experiments with different types of
 Plotting Configuration (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+An optional Python plotting task (plot_allvars) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
 
    * 2-m temperature

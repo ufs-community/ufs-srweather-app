@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #PBS -A XXXXXXXXX
 #PBS -q regular
 #PBS -l select=1:mpiprocs=24:ncpus=24

@@ -56,9 +56,9 @@ if [[ -z ${FUNCNAME[0]} ]]; then
         rc=${3}
     
         # Calculate the elapsed time
-        end_time=$(date +%s)
+        end_time=$(${DATE_UTIL} +%s)
         elapsed_sec=$((end_time - start_time))
-        elapsed=$(date -d@${elapsed_sec} -u +%H:%M:%S)
+        elapsed=$(${DATE_UTIL} -d@${elapsed_sec} -u +%H:%M:%S)
     
         # Announce the script has ended, then pass the error code up
         echo "End ${script} at $(date -u) with error code ${rc:-0} (time elapsed: ${elapsed})"
@@ -66,13 +66,13 @@ if [[ -z ${FUNCNAME[0]} ]]; then
     }
     
     # Record the start time so we can calculate the elapsed time later
-    start_time=$(date +%s)
+    start_time=$(${DATE_UTIL} +%s)
     
     # Get the base name of the calling script
     _calling_script=$(basename ${BASH_SOURCE[1]})
     
     # Announce the script has begun
-    echo "Begin ${_calling_script} at $(date -u)"
+    echo "Begin ${_calling_script} at $(${DATE_UTIL} -u)"
 
     # Place the postamble in a trap so it is always called no matter how the script exits
     trap "postamble ${_calling_script} ${start_time} \$?" EXIT

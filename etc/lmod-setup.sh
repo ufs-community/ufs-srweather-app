@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [ $# = 0 ]; then
    L_MACHINE=${MACHINE}
@@ -26,10 +26,12 @@ fi
 
 if [ "$L_MACHINE" = macos ]; then
    arch=$(uname -m)
-   [[ "$arch" = arm64 ]] && export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
-   [[ "$arch" = x86_64 ]] && export BASH_ENV="/usr/local/opt/lmod/init/bash"
+   if [ "$arch" = arm64 ] || [ "$arch" = aarch64 ]; then
+      export BASH_ENV="/opt/homebrew/opt/lmod/init/bash"
+   else
+      export BASH_ENV="/usr/local/opt/lmod/init/bash"
+   fi
    source $BASH_ENV
-
    module purge
 
 elif [ "$L_MACHINE" = linux ]; then
