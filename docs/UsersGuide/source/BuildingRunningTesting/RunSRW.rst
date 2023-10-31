@@ -632,7 +632,7 @@ This can be helpful when conducting multiple experiments with different types of
 Plotting Configuration (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+An optional Python plotting task (plot_allvars) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
 
    * 2-m temperature

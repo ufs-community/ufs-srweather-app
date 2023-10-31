@@ -1,5 +1,7 @@
 :orphan:
 
+.. _SRW_NATLEV_table:
+
 ************************************************************
 Fields Requested in the UPP Parameter Table for SRW NATLEV
 ************************************************************

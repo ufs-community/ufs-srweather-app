@@ -15,7 +15,7 @@ https://epic.noaa.gov/wp-content/uploads/2022/12/Debugging-Guide.pdf
 
 The SRW App v2.2.0 citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
+UFS Development Team. (2023, Oct. 31). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
 
 [![Python unittests](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml/badge.svg)](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_unittests.yaml)
 [![Python functional tests](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_func_tests.yaml/badge.svg)](https://github.com/ufs-community/ufs-srweather-app/actions/workflows/python_func_tests.yaml)

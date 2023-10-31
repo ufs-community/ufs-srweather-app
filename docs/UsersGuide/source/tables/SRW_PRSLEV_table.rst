@@ -1,5 +1,7 @@
 :orphan:
 
+.. _SRW_PRSLEV_table:
+
 **********************************************************
 Fields Requested in the UPP Parameter Table for SRW PRSLEV
 **********************************************************
