@@ -205,59 +205,59 @@ Several options and recipes for building the environments are given below as fol
 
 .. code-block:: console
 
-name: workflow_tools
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.9*
-  - boto3=1.22*
-  - black
-  - f90nml=1.4*
-  - jinja2=3.0*
-  - numpy=1.21*
-  - pylint
-  - pytest
-  - pyyaml=6.0*
-  - tox  
+   name: workflow_tools
+   channels:
+     - conda-forge
+     - defaults
+   dependencies:
+     - python=3.9*
+     - boto3=1.22*
+     - black
+     - f90nml=1.4*
+     - jinja2=3.0*
+     - numpy=1.21*
+     - pylint
+     - pytest
+     - pyyaml=6.0*
+     - tox  
 
 
 regional_workflow.yaml for |graphics_env|
 
 .. code-block:: console
 
-name: regional_workflow
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.9.*
-  - f90nml
-  - jinja2
-  - pyyaml
-  - scipy
-  - matplotlib=3.5.2*
-  - pygrib
-  - cartopy
+   name: regional_workflow
+   channels:
+     - conda-forge
+     - defaults
+   dependencies:
+     - python=3.9.*
+     - f90nml
+     - jinja2
+     - pyyaml
+     - scipy
+     - matplotlib=3.5.2*
+     - pygrib
+     - cartopy
 
 
 .. code-block:: console
 
-name: regional_workflow_cmaq
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.9.12
-  - f90nml=1.4*
-  - jinja2=3.0*
-  - pyyaml=6.0*
-  - scipy
-  - matplotlib
-  - pygrib
-  - cartopy
-  - netcdf4
-  - xarray
+   name: regional_workflow_cmaq
+   channels:
+     - conda-forge
+     - defaults
+   dependencies:
+     - python=3.9.12
+     - f90nml=1.4*
+     - jinja2=3.0*
+     - pyyaml=6.0*
+     - scipy
+     - matplotlib
+     - pygrib
+     - cartopy
+     - netcdf4
+     - xarray
 
 2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into $HOME/conda. Adjust as necessary for your target system. 
 
