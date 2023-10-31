@@ -193,7 +193,7 @@ Creating the |wflow_env| Environment on Linux and Mac OS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python packages required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks (|graphics_env|) or when testing the AQM/CMAQ (|cmaq_env|). Python packages in these other environments may conflict with those in |wflow_env|. The environments can be stored in a local path, which can be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
-These conda environments could be added to the existing python or conda modules.
+These conda environments can be added to the existing python or conda modules.
 
 There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use the aarch64 (64-bit ARM) Miniforge for Linux and install into ``$HOME/conda``. Users should adjust as needed for their target system. 
 
