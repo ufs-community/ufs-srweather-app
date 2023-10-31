@@ -262,7 +262,7 @@ Options include:
         - netcdf4
         - xarray
 
-2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into $HOME/conda. Adjust as necessary for your target system. 
+2) Installing the Miniforge, as example for the aarch64 (64-bit ARM) Miniforge for Linux that installs into ``$HOME/conda``. Adjust as necessary for your target system. 
 
    .. code-block:: console
    
