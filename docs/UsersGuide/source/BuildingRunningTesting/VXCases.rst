@@ -7,7 +7,7 @@ METplus Verification Sample Cases
 Introduction
 ===============
 
-The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added ahead of the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. Content was updated for the |latestr| release. In the future, additional sample cases will be provided. 
+The goal of these sample cases is to provide the UFS community with datasets that they can modify and run to see if their changes can improve the forecast and/or reduce the model biases. Each case covers an interesting weather event. The case that was added ahead of the v2.1.0 release was a severe weather event over Indianapolis on June 15-16, 2019. Content was updated for the v2.2.0 release. In the future, additional sample cases will be provided. 
 
 Each sample case contains model output from a control run; this output includes ``postprd`` (post-processed) and ``metprd`` (MET verification-processed) directories. Under the ``postprd`` directory, users will find the :term:`UPP` output of the model run along with plots for several forecast variables (when plotting tasks are run). These can be used for a visual/qualitative comparison of forecasts. The ``metprd`` directory contains METplus verification statistics files, which can be used for a quantitative comparison of forecast outputs. 
 

@@ -27,7 +27,7 @@ The data format for these files can be :term:`GRIB2` or :term:`NEMSIO`. More inf
 
 Pre-processing (UFS_UTILS)
 ---------------------------
-When a user generates the SRW App workflow as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS :doc:`Technical Documentation <ufs-utils:index>` and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/ver-1.11.0/index.html>`__.
+When a user generates the SRW App workflow as described in :numref:`Section %s <GenerateWorkflow>`, the workflow generation script links the input data for the pre-processing utilities to the experiment directory. The pre-processing utilities use many different datasets to create grids and to generate model input datasets from the external model files. A detailed description of the input files for the pre-processing utilities can be found in the UFS_UTILS :doc:`Technical Documentation <ufs-utils:index>` and `Scientific Documentation <https://ufs-community.github.io/UFS_UTILS/index.html>`__.
 
 UFS Weather Model
 -----------------
@@ -148,7 +148,9 @@ where ``HHH`` corresponds to the 3-digit forecast hour (e.g., ``dynf006.nc`` for
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html>`__.
+Documentation for the UPP output files can be found in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#output-files>`__.
+
+.. COMMENT: Add crosslink in UPP docs; add ref here. 
 
 For the SRW Application, the Weather Model netCDF output files are written to ``$EXPTDIR/YYYYMMDDHH/postprd`` and have the naming convention (file->linked to):
 
