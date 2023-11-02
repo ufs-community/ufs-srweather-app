@@ -93,9 +93,7 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
    * - Orion/Hercules [#fn]_
      - /work/noaa/epic/role-epic/contrib/containers
 
-.. [#fn]
-
-   \* On these systems, container testing shows inconsistent results. 
+.. [#fn] On these systems, container testing shows inconsistent results. 
 
 .. note::
    * On Gaea, Singularity/Apptainer is only available on the C5 partition, and therefore container use is only supported on Gaea C5. 
