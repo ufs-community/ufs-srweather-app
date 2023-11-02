@@ -80,9 +80,9 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
 
    * - Machine
      - File Location
-   * - Cheyenne/Derecho
+   * - Cheyenne/Derecho [#fn]_
      - /glade/scratch/epicufsrt/containers
-   * - Gaea
+   * - Gaea [#fn]_
      - /lustre/f2/dev/role.epic/containers
    * - Hera
      - /scratch1/NCEPDEV/nems/role.epic/containers
@@ -90,8 +90,12 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
      - /mnt/lfs4/HFIP/hfv3gfs/role.epic/containers
    * - NOAA Cloud
      - /contrib/EPIC/containers
-   * - Orion/Hercules
+   * - Orion/Hercules [#fn]_
      - /work/noaa/epic/role-epic/contrib/containers
+
+.. [#fn]
+
+   \* On these systems, container testing shows inconsistent results. 
 
 .. note::
    * On Gaea, Singularity/Apptainer is only available on the C5 partition, and therefore container use is only supported on Gaea C5. 

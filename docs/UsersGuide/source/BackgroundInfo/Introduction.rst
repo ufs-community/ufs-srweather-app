@@ -31,7 +31,7 @@ Since the last release, developers have added a variety of features:
 
 The SRW App |latestr| citation is as follows and should be used when presenting results based on research conducted with the App:
 
-UFS Development Team. (2023, Oct. 30). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
+UFS Development Team. (2023, Oct. 31). Unified Forecast System (UFS) Short-Range Weather (SRW) Application (Version v2.2.0). Zenodo. https://doi.org/10.5281/zenodo.10015544
 
 User's Guide Organization 
 ============================

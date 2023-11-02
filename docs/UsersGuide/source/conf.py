@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'UFS Short-Range Weather App Users Guide'
+project = 'UFS Short-Range Weather App User\'s Guide'
 copyright = '2020, '
 author = ' '
 
@@ -89,11 +89,13 @@ pygments_style = 'sphinx'
 
 rst_prolog = """
 .. |wflow_env| replace:: ``workflow_tools``
+.. |graphics_env| replace:: ``regional_workflow``
+.. |cmaq_env| replace:: ``regional_workflow_cmaq``
 .. |activate| replace:: ``conda activate workflow_tools``
 .. |prompt| replace:: ``(workflow_tools)``
 .. |latestr| replace:: v2.2.0
-.. |branch| replace:: ``release/public-v2.2.0``
-.. |data| replace:: v2p2
+.. |branch| replace:: ``develop``
+.. |data| replace:: develop
 """
 
 # -- Options for HTML output -------------------------------------------------
