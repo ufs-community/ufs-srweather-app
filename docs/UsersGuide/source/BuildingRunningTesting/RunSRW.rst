@@ -186,7 +186,7 @@ MacOS requires the installation of a few additional packages and, possibly, an u
    bash --version
    brew install bash       # or: brew upgrade bash
    brew install coreutils
-   brew install gsed               # follow directions to update the PATH env variable
+   brew install gsed       # follow directions to update the PATH env variable
 
 
 .. _LinuxMacVEnv: 
@@ -223,7 +223,7 @@ There are several options available for building virtual conda environments on n
            - pyyaml=6.0*
            - tox 
 
-   b. ``regional_workflow.yaml`` for the |graphics_env| graphics environment
+   b. ``regional_workflow.yaml`` for the graphics environment
 
       .. code-block:: console
    
@@ -241,7 +241,7 @@ There are several options available for building virtual conda environments on n
            - pygrib
            - cartopy
    
-   c. ``regional_workflow_cmaq.yaml`` for the |cmaq_env| AQM graphics environment
+   c. ``regional_workflow_cmaq.yaml`` for the AQM graphics environment
 
       .. code-block:: console
    
