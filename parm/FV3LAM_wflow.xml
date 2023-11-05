@@ -215,7 +215,7 @@ we are already sourcing other files in the J-job anyway.
 -->
 <!--
     <command>{ . &LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;";
-               &JOBSdir;/JREGIONAL_MAKE_GRID;
+               &JOBSdir;/JAQM_MAKE_GRID;
              }</command>
 -->
 <!--
@@ -234,7 +234,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_MAKE_GRID;" cycledefs="at_start" maxtries="{{ maxtries_make_grid }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;" "&JOBSdir;/JREGIONAL_MAKE_GRID"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_GRID;" "&JOBSdir;/JAQM_MAKE_GRID"</command>
     <nodes>{{ nnodes_make_grid }}:ppn={{ ppn_make_grid }}</nodes>
     <walltime>{{ wtime_make_grid }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -259,7 +259,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_MAKE_OROG;" cycledefs="at_start" maxtries="{{ maxtries_make_orog }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_OROG;" "&JOBSdir;/JREGIONAL_MAKE_OROG"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_OROG;" "&JOBSdir;/JAQM_MAKE_OROG"</command>
     <nodes>{{ nnodes_make_orog }}:ppn={{ ppn_make_orog }}</nodes>
     <walltime>{{ wtime_make_orog }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -292,7 +292,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_MAKE_SFC_CLIMO;" cycledefs="at_start" maxtries="{{ maxtries_make_sfc_climo }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_SFC_CLIMO;" "&JOBSdir;/JREGIONAL_MAKE_SFC_CLIMO"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_SFC_CLIMO;" "&JOBSdir;/JAQM_MAKE_SFC_CLIMO"</command>
     <nodes>{{ nnodes_make_sfc_climo }}:ppn={{ ppn_make_sfc_climo }}</nodes>
     <walltime>{{ wtime_make_sfc_climo }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -336,7 +336,7 @@ MODULES_RUN_TASK_FP script.
   {%- else %}
     &RSRV_HPSS;
   {%- endif %}
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_GFS_SFC;" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_GFS_SFC;" "&JOBSdir;/JAQM_NEXUS_GFS_SFC"</command>
     <nodes>{{ nnodes_nexus_gfs_sfc }}:ppn={{ ppn_nexus_gfs_sfc }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     {%- if not do_real_time %}   
@@ -370,7 +370,7 @@ MODULES_RUN_TASK_FP script.
     <var name="nspt">{% for h in range(0, num_split_nexus) %}{{ " %02d" % h }}{% endfor %}</var>
       <task name="&TN_NEXUS_EMISSION;_#nspt#" cycledefs="forecast" maxtries="{{ maxtries_nexus_emission }}">
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_EMISSION;" "&JOBSdir;/JREGIONAL_NEXUS_EMISSION"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_EMISSION;" "&JOBSdir;/JAQM_NEXUS_EMISSION"</command>
         {%- if machine in ["HERA"]  %}
         <nodes>{{ nnodes_nexus_emission }}:ppn={{ ppn_nexus_emission }}</nodes>
         <native>{{ native_nexus_emission }}</native>
@@ -403,7 +403,7 @@ MODULES_RUN_TASK_FP script.
   </metatask>      
   <task name="&TN_NEXUS_POST_SPLIT;" cycledefs="forecast" maxtries="{{ maxtries_nexus_post_split }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_POST_SPLIT;" "&JOBSdir;/JREGIONAL_NEXUS_POST_SPLIT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_NEXUS_POST_SPLIT;" "&JOBSdir;/JAQM_NEXUS_POST_SPLIT"</command>
     <nodes>{{ nnodes_nexus_post_split }}:ppn={{ ppn_nexus_post_split }}</nodes>
     <walltime>{{ wtime_nexus_post_split }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -436,7 +436,7 @@ MODULES_RUN_TASK_FP script.
   {%- else %}
     &RSRV_DEFAULT;
   {%- endif %}
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_FIRE_EMISSION;" "&JOBSdir;/JREGIONAL_FIRE_EMISSION"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_FIRE_EMISSION;" "&JOBSdir;/JAQM_FIRE_EMISSION"</command>
     <nodes>{{ nnodes_fire_emission }}:ppn={{ ppn_fire_emission }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
   {%- if not do_real_time %}
@@ -468,7 +468,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_POINT_SOURCE;" cycledefs="forecast" maxtries="{{ maxtries_point_source }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POINT_SOURCE;" "&JOBSdir;/JREGIONAL_POINT_SOURCE"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POINT_SOURCE;" "&JOBSdir;/JAQM_POINT_SOURCE"</command>
     <nodes>{{ nnodes_point_source }}:ppn={{ ppn_point_source }}</nodes>    
     <walltime>{{ wtime_point_source }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -501,7 +501,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_GET_EXTRN_ICS;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_ics }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_ICS;" "&JOBSdir;/JAQM_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_ics }}:ppn={{ ppn_get_extrn_ics }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_ics }}</memory>
@@ -531,7 +531,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_GET_EXTRN_LBCS;" cycledefs="forecast" maxtries="{{ maxtries_get_extrn_lbcs }}">
 
     &RSRV_HPSS;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_GET_EXTRN_LBCS;" "&JOBSdir;/JAQM_GET_EXTRN_MDL_FILES"</command>
     <nodes>{{ nnodes_get_extrn_lbcs }}:ppn={{ ppn_get_extrn_lbcs }}</nodes>
   {%- if machine not in ["GAEA", "NOAACLOUD"]  %}
     <memory>{{ mem_get_extrn_lbcs }}</memory>
@@ -569,7 +569,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_MAKE_ICS;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS;" "&JOBSdir;/JREGIONAL_MAKE_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_ICS;" "&JOBSdir;/JAQM_MAKE_ICS"</command>
     <nodes>{{ nnodes_make_ics }}:ppn={{ ppn_make_ics }}</nodes>
     <walltime>{{ wtime_make_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -619,7 +619,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_MAKE_LBCS;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_make_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_LBCS;" "&JOBSdir;/JREGIONAL_MAKE_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_MAKE_LBCS;" "&JOBSdir;/JAQM_MAKE_LBCS"</command>
     <nodes>{{ nnodes_make_lbcs }}:ppn={{ ppn_make_lbcs }}</nodes>
     <walltime>{{ wtime_make_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -670,7 +670,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_EXTRN_ICS;" cycledefs="at_start" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_AQM_ICS"</command>
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -705,7 +705,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_ICS;" cycledefs="cycled" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JREGIONAL_AQM_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_AQM_ICS"</command>
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -741,7 +741,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_LBCS;" cycledefs="forecast" maxtries="{{ maxtries_aqm_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_LBCS;" "&JOBSdir;/JREGIONAL_AQM_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_LBCS;" "&JOBSdir;/JAQM_AQM_LBCS"</command>
     <nodes>{{ nnodes_aqm_lbcs }}:ppn={{ ppn_aqm_lbcs }}</nodes>
     <walltime>{{ wtime_aqm_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -773,7 +773,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_RUN_FCST;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSdir;/JREGIONAL_RUN_FCST"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSdir;/JAQM_RUN_FCST"</command>
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
@@ -851,7 +851,7 @@ MODULES_RUN_TASK_FP script.
       <task name="&TN_RUN_POST_CYC4;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="cyc_4th" maxtries="{{ maxtries_run_post }}">
       {%- endif %}
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -915,7 +915,7 @@ later below for other output times.
     <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -974,7 +974,7 @@ for other output times.
       <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1038,7 +1038,7 @@ always zero).
   {%- endif %}
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1111,7 +1111,7 @@ the <task> tag to be identical to the ones above for other output times.
     <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JREGIONAL_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1155,7 +1155,7 @@ the <task> tag to be identical to the ones above for other output times.
 -->
   <task name="&TN_PRE_POST_STAT;" cycledefs="forecast" maxtries="{{ maxtries_pre_post_stat }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_PRE_POST_STAT;" "&JOBSdir;/JREGIONAL_PRE_POST_STAT"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_PRE_POST_STAT;" "&JOBSdir;/JAQM_PRE_POST_STAT"</command>
     <nodes>{{ nnodes_pre_post_stat }}:ppn={{ ppn_pre_post_stat }}</nodes>
     <walltime>{{ wtime_pre_post_stat }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1182,7 +1182,7 @@ the <task> tag to be identical to the ones above for other output times.
 -->
   <task name="&TN_POST_STAT_O3;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_o3 }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_O3;" "&JOBSdir;/JREGIONAL_POST_STAT_O3"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_O3;" "&JOBSdir;/JAQM_POST_STAT_O3"</command>
     <nodes>{{ nnodes_post_stat_o3 }}:ppn={{ ppn_post_stat_o3 }}</nodes>
 {%- if machine not in ["GAEA"]  %}
     <memory>{{ mem_post_stat_o3 }}</memory>
@@ -1213,7 +1213,7 @@ the <task> tag to be identical to the ones above for other output times.
 -->
   <task name="&TN_POST_STAT_PM25;" cycledefs="forecast" maxtries="{{ maxtries_post_stat_pm25 }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_PM25;" "&JOBSdir;/JREGIONAL_POST_STAT_PM25"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_POST_STAT_PM25;" "&JOBSdir;/JAQM_POST_STAT_PM25"</command>
     <nodes>{{ nnodes_post_stat_pm25 }}:ppn={{ ppn_post_stat_pm25 }}</nodes>
 {%- if machine not in ["GAEA"]  %}
     <memory>{{ mem_post_stat_pm25 }}</memory>
@@ -1244,7 +1244,7 @@ the <task> tag to be identical to the ones above for other output times.
 -->
   <task name="&TN_BIAS_CORRECTION_O3;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_o3 }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_O3;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_O3"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_O3;" "&JOBSdir;/JAQM_BIAS_CORRECTION_O3"</command>
 {%- if machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_bias_correction_o3 }}:ppn={{ ppn_bias_correction_o3 }}:tpp={{ omp_num_threads_bias_correction_o3 }}</nodes>
 {%- else %}
@@ -1279,7 +1279,7 @@ the <task> tag to be identical to the ones above for other output times.
 -->
   <task name="&TN_BIAS_CORRECTION_PM25;" cycledefs="forecast" maxtries="{{ maxtries_bias_correction_pm25 }}">
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_PM25;" "&JOBSdir;/JREGIONAL_BIAS_CORRECTION_PM25"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_BIAS_CORRECTION_PM25;" "&JOBSdir;/JAQM_BIAS_CORRECTION_PM25"</command>
 {%- if machine in ["WCOSS2"]  %}
     <nodes>{{ nnodes_bias_correction_pm25 }}:ppn={{ ppn_bias_correction_pm25 }}:tpp={{ omp_num_threads_bias_correction_pm25 }}</nodes>
 {%- else %}

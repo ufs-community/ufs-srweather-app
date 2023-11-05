@@ -1,0 +1,3 @@
+source ../versions/run.ver.wcoss2
+module use ../modulefiles
+module load wflow_wcoss2
