@@ -101,10 +101,10 @@ usage_error () {
 
 # default settings
 LCL_PID=$$
-SRW_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
-MACHINE_SETUP=${SRW_DIR}/sorc/UFS_UTILS/sorc/machine-setup.sh
-BUILD_DIR="${SRW_DIR}/sorc/build"
-INSTALL_DIR="${SRW_DIR}/sorc/build"
+SORC_DIR=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
+SRW_DIR="${SORC_DIR}/.."
+BUILD_DIR="${SORC_DIR}/build"
+INSTALL_DIR="${SORC_DIR}/build"
 BIN_DIR="exec"
 COMPILER=""
 APPLICATION=""
@@ -359,7 +359,7 @@ if [ "${VERBOSE}" = true ]; then
 fi
 
 # Before we go on load modules, we first need to activate Lmod for some systems
-source ${SRW_DIR}/etc/lmod-setup.sh $MACHINE
+source ${SRW_DIR}/ush/etc/lmod-setup.sh $MACHINE
 
 # source the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
@@ -452,7 +452,7 @@ if [ "${CLEAN}" = true ]; then
     fi
 else
     printf "... Generate CMAKE configuration ...\n"
-    cmake ${SRW_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
+    cmake ${SORC_DIR} ${CMAKE_SETTINGS} 2>&1 | tee log.cmake
 
     printf "... Compile and install executables in build directory ...\n"
     make ${MAKE_SETTINGS} install 2>&1 | tee log.make
