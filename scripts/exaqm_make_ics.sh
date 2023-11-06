@@ -105,7 +105,7 @@ if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
   dd=${yyyymmddhh:6:2}
   hh=${yyyymmddhh:8:2}
 
-  # Set to use the pre-defined data paths in the machine file (ush/machine/).
+  # Set to use the pre-defined data paths in the machine file (parm/machine/).
   PDYext=${yyyymmdd}
   cycext=${hh}
 

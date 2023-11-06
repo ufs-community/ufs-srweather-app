@@ -109,7 +109,7 @@ def load_config_for_setup(ushdir, default_config, user_config):
     machine = uppercase(cfg_u.get("user").get("MACHINE"))
     cfg_u["user"]["MACHINE"] = uppercase(machine)
 
-    machine_file = os.path.join(ushdir, "machine", f"{lowercase(machine)}.yaml")
+    machine_file = os.path.join(ushdir, os.pardir, "parm", "machine", f"{lowercase(machine)}.yaml")
 
     if not os.path.exists(machine_file):
         raise FileNotFoundError(
@@ -235,7 +235,7 @@ def set_srw_paths(ushdir, expt_config):
     homeaqm = expt_config.get("user", {}).get("HOMEaqm")
 
     # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(homeaqm, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(homeaqm, "sorc", "Externals.cfg")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
@@ -257,7 +257,7 @@ def set_srw_paths(ushdir, expt_config):
         raise Exception(errmsg) from None
 
     # Check that the model code has been downloaded
-    ufs_wthr_mdl_dir = os.path.join(homeaqm, ufs_wthr_mdl_dir)
+    ufs_wthr_mdl_dir = os.path.join(homeaqm, "sorc", ufs_wthr_mdl_dir)
     if not os.path.exists(ufs_wthr_mdl_dir):
         raise FileNotFoundError(
             dedent(
@@ -1118,6 +1118,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                RUN_TASK_VX_ENSPOINT = \"{run_task_vx_enspoint}\"'''
         )
 
+    # Temporary solution to link fix directory for rocoto in AQM.v7
+    #homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    #homeaqm_fix = os.path.join(homeaqm,"fix")
+    #if os.path.islink(homeaqm_fix) or os.path.exists(homeaqm_fix):
+    #    rm_vrfy("-rf", homeaqm_fix)
+    #fixlam = workflow_config["FIXlam"]
+    #mkdir_vrfy(f' -p "{fixlam}"')
+
     #
     # -----------------------------------------------------------------------
     # NOTE: currently this is executed no matter what, should it be dependent on the logic described below??
@@ -1220,6 +1228,14 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
 
     workflow_config["RES_IN_FIXLAM_FILENAMES"] = res_in_fixlam_filenames
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
+
+    # Temporary solution to link fix directory for rocoto in AQM.v7
+    #homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    #homeaqm_fix = os.path.join(homeaqm,"fix")
+    #if os.path.exists(homeaqm_fix):
+    #    rm_vrfy("-rf", homeaqm_fix)
+    #fixaqm_sav = expt_config["platform"].get("FIXaqm_sav")
+    #ln_vrfy(f"""-fsn {fixaqm_sav} {homeaqm_fix}""")
 
     #
     # -----------------------------------------------------------------------
