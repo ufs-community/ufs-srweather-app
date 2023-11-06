@@ -2,6 +2,7 @@ bin/
 exec/
 fix/
 sorc/*/
+!sorc/manage_externals/
 sorc/*.log
 fix
 ush/__pycache__/
