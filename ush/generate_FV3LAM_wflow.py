@@ -605,13 +605,6 @@ def generate_FV3LAM_wflow(ushdir, logfile: str = "log.generate_FV3LAM_wflow", de
         fp = '""'
         if FIXam_fn:
             fp = os.path.join(FIXam, FIXam_fn)
-            #
-            # If not in NCO mode, for portability and brevity, change fp so that it
-            # is a relative path (relative to any cycle directory immediately under
-            # the experiment directory).
-            #
-            if RUN_ENVIR == "community":
-                fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
         #
         # Add a line to the variable "settings" that specifies (in a yaml-compliant
         # format) the name of the current namelist variable and the value it should

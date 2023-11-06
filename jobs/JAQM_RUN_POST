@@ -90,9 +90,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "community" ]; then
-  export COMOUT="${DATA}/postprd"
-fi
 mkdir -p ${COMOUT}
 
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then

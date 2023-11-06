@@ -1,7 +1,6 @@
 #
 # Define valid values for various global experiment/workflow variables.
 #
-valid_vals_RUN_ENVIR: ["nco", "community"]
 valid_vals_VERBOSE: [True, False]
 valid_vals_DEBUG: [True, False]
 valid_vals_MACHINE: ["HERA", "WCOSS2", "ORION", "JET", "ODIN", "CHEYENNE", "STAMPEDE", "LINUX", "MACOS", "NOAACLOUD", "SINGULARITY", "GAEA"]

@@ -77,8 +77,6 @@ def set_FV3nml_sfc_climo_filenames():
         check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
 
         fp = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
-        if RUN_ENVIR == "community":
-            fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
 
         namsfc_dict[nml_var_name] = fp
 
@@ -170,5 +168,4 @@ class Testing(unittest.TestCase):
         set_env_var("FIXlam", FIXlam)
         set_env_var("DO_ENSEMBLE", False)
         set_env_var("CRES", "C3357")
-        set_env_var("RUN_ENVIR", "nco")
         set_env_var("FV3_NML_FP", os.path.join(EXPTDIR, "input.nml"))

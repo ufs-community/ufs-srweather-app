@@ -61,11 +61,6 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_O3}"
-if [ "${RUN_ENVIR}" = "community" ]; then
-  check_for_preexist_dir_file "$DATA" "delete"
-  mkdir -p $DATA
-  cd $DATA
-fi
 
 mkdir -p ${COMOUTwmo}
 

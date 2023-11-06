@@ -43,19 +43,11 @@ export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
 export MAILTO="${MAILTO:-${MAILTO_dfv}}"
 export MAILCC="${MAILCC:-${MAILCC_dfv}}"
 
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
-    export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
-    export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-  
-    export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-    export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
-
-else
-    export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
-fi
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 
 export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
@@ -100,7 +92,7 @@ if [ $subcyc -eq 0 ]; then
 else
     export cycle="t${cyc}${subcyc}z"
 fi
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else
     export dot_ensmem=
@@ -113,11 +105,9 @@ fi
 #-----------------------------------------------------------------------
 #
 export DATA=
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    export DATA=${DATAROOT}/${jobid}
-    mkdir -p $DATA
-    cd $DATA
-fi
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -125,18 +115,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    if [ ! -z $(command -v setpdy.sh) ]; then
-        COMROOT=$COMROOT setpdy.sh
-        . ./PDY
-    fi
-    export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
-    export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
-else
-    export PDYm1=$( $DATE_UTIL --date "${PDY} -1 day" "+%Y%m%d" )
-    export PDYm2=$( $DATE_UTIL --date "${PDY} -2 day" "+%Y%m%d" )
-    export PDYm3=$( $DATE_UTIL --date "${PDY} -3 day" "+%Y%m%d" )
+if [ ! -z $(command -v setpdy.sh) ]; then
+    COMROOT=$COMROOT setpdy.sh
+    . ./PDY
 fi
+export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
 export CDATE=${PDY}${cyc}
 #
 #-----------------------------------------------------------------------
@@ -145,54 +129,41 @@ export CDATE=${PDY}${cyc}
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ]; then
-    export pgmout="${DATA}/OUTPUT.$$"
-    export pgmerr="${DATA}/errfile"
-    export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
-    export pgmout_lines=1
-    export pgmerr_lines=1
+export pgmout="${DATA}/OUTPUT.$$"
+export pgmerr="${DATA}/errfile"
+export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
+export pgmout_lines=1
+export pgmerr_lines=1
 
-    function PREP_STEP() {
-        export pgm="$(basename ${0})"
-        if [ ! -z $(command -v prep_step) ]; then
-            . prep_step
-        else
-            # Append header
-            if [ -n "$pgm" ] && [ -n "$pgmout" ]; then
-              echo "$pgm" >> $pgmout
-            fi
-            # Remove error file
-            if [ -f $pgmerr ]; then
-              rm $pgmerr
-            fi
+function PREP_STEP() {
+    export pgm="$(basename ${0})"
+    if [ ! -z $(command -v prep_step) ]; then
+        . prep_step
+    else
+        # Append header
+        if [ -n "$pgm" ] && [ -n "$pgmout" ]; then
+          echo "$pgm" >> $pgmout
         fi
-    }
-    function POST_STEP() {
-        if [ -f $pgmout ]; then
-            tail -n +${pgmout_lines} $pgmout
-            pgmout_line=$( wc -l $pgmout )
-            pgmout_lines=$((pgmout_lines + 1))
-        fi
+        # Remove error file
         if [ -f $pgmerr ]; then
-            tail -n +${pgmerr_lines} $pgmerr
-            pgmerr_line=$( wc -l $pgmerr )
-            pgmerr_lines=$((pgmerr_lines + 1))
+          rm $pgmerr
         fi
-    }
-else
-    export pgmout=
-    export pgmerr=
-    export REDIRECT_OUT_ERR=
-    function PREP_STEP() {
-        :
-    }
-    function POST_STEP() {
-        :
-    }
-fi
+    fi
+}
+function POST_STEP() {
+    if [ -f $pgmout ]; then
+        tail -n +${pgmout_lines} $pgmout
+        pgmout_line=$( wc -l $pgmout )
+        pgmout_lines=$((pgmout_lines + 1))
+    fi
+    if [ -f $pgmerr ]; then
+        tail -n +${pgmerr_lines} $pgmerr
+        pgmerr_line=$( wc -l $pgmerr )
+        pgmerr_lines=$((pgmerr_lines + 1))
+    fi
+}
 export -f PREP_STEP
 export -f POST_STEP
-
 #
 #-----------------------------------------------------------------------
 #
@@ -201,7 +172,7 @@ export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
     __EXPTLOG=${EXPTDIR}/log
     mkdir -p ${__EXPTLOG}
     for i in ${LOGDIR}/*.${WORKFLOW_ID}.log; do
@@ -219,7 +190,7 @@ fi
 function job_postamble() {
 
     # Remove temp directory
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${KEEPDATA}" = "FALSE" ]; then
+    if [ "${KEEPDATA}" = "FALSE" ]; then
 	cd ${DATAROOT}
 	# Remove current data directory
 	if [ $# -eq 0 ]; then

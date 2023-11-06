@@ -1,7 +1,6 @@
 metadata:
   description: config for Online-CMAQ, AQM_NA_13km, real-time, NCO mode on WCOSS2
 user:
-  RUN_ENVIR: nco
   MACHINE: wcoss2
   ACCOUNT: AQM-DEV
 platform:

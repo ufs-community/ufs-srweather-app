@@ -40,7 +40,6 @@ def set_gridparams_GFDLgrid(
     jend_of_t7_on_t6g,
     verbose,
     nh4,
-    run_envir,
 ):
     """Sets the parameters for a grid that is to be generated using the "GFDLgrid"
     grid generation method (i.e. GRID_GEN_METHOD set to "ESGgrid").
@@ -57,7 +56,6 @@ def set_gridparams_GFDLgrid(
          jend_of_t7_on_t6g
          verbose
          nh4
-         run_envir
     Returns:
         Tuple of inputs and outputs (see return statement)
     """
@@ -92,52 +90,30 @@ def set_gridparams_GFDLgrid(
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if run_envir == "community":
-        if num_left_margin_cells_on_t6g != num_right_margin_cells_on_t6g:
-            print_err_msg_exit(
-                f"""
-                In order for tile 7 to be centered in the x direction on tile 6, the x-
-                direction tile 6 cell indices at which tile 7 starts and ends (given by
-                istart_of_t7_on_t6g and iend_of_t7_on_t6g, respectively) must be set
-                such that the number of tile 6 cells in the margin between the left
-                boundaries of tiles 6 and 7 (given by num_left_margin_cells_on_t6g) is
-                equal to that in the margin between their right boundaries (given by
-                num_right_margin_cells_on_t6g):
-                  istart_of_t7_on_t6g = {istart_of_t7_on_t6g}
-                  iend_of_t7_on_t6g = {iend_of_t7_on_t6g}
-                  num_left_margin_cells_on_t6g = {num_left_margin_cells_on_t6g}
-                  num_right_margin_cells_on_t6g = {num_right_margin_cells_on_t6g}
-                Note that the total number of cells in the x-direction on tile 6 is gi-
-                ven by:
-                  nx_of_t6_on_t6g = {nx_of_t6_on_t6g}
-                Please reset istart_of_t7_on_t6g and iend_of_t7_on_t6g and rerun."""
-            )
-
     num_bot_margin_cells_on_t6g = jstart_of_t7_on_t6g - 1
     num_top_margin_cells_on_t6g = ny_of_t6_on_t6g - jend_of_t7_on_t6g
 
     # This if-statement can hopefully be removed once EMC agrees to make their
     # GFDLgrid type grids (tile 7) symmetric about tile 6.
-    if run_envir == "nco":
-        if num_bot_margin_cells_on_t6g != num_top_margin_cells_on_t6g:
-            print_err_msg_exit(
-                f"""
-                In order for tile 7 to be centered in the y direction on tile 6, the y-
-                direction tile 6 cell indices at which tile 7 starts and ends (given by
-                jstart_of_t7_on_t6g and jend_of_t7_on_t6g, respectively) must be set
-                such that the number of tile 6 cells in the margin between the left
-                boundaries of tiles 6 and 7 (given by num_left_margin_cells_on_t6g) is
-                equal to that in the margin between their right boundaries (given by
-                num_right_margin_cells_on_t6g):
-                  jstart_of_t7_on_t6g = {jstart_of_t7_on_t6g}
-                  jend_of_t7_on_t6g = {jend_of_t7_on_t6g}
-                  num_bot_margin_cells_on_t6g = {num_bot_margin_cells_on_t6g}
-                  num_top_margin_cells_on_t6g = {num_top_margin_cells_on_t6g}
-                Note that the total number of cells in the y-direction on tile 6 is gi-
-                ven by:
-                  ny_of_t6_on_t6g = {ny_of_t6_on_t6g}
-                Please reset jstart_of_t7_on_t6g and jend_of_t7_on_t6g and rerun."""
-            )
+    if num_bot_margin_cells_on_t6g != num_top_margin_cells_on_t6g:
+        print_err_msg_exit(
+            f"""
+            In order for tile 7 to be centered in the y direction on tile 6, the y-
+            direction tile 6 cell indices at which tile 7 starts and ends (given by
+            jstart_of_t7_on_t6g and jend_of_t7_on_t6g, respectively) must be set
+            such that the number of tile 6 cells in the margin between the left
+            boundaries of tiles 6 and 7 (given by num_left_margin_cells_on_t6g) is
+            equal to that in the margin between their right boundaries (given by
+            num_right_margin_cells_on_t6g):
+              jstart_of_t7_on_t6g = {jstart_of_t7_on_t6g}
+              jend_of_t7_on_t6g = {jend_of_t7_on_t6g}
+              num_bot_margin_cells_on_t6g = {num_bot_margin_cells_on_t6g}
+              num_top_margin_cells_on_t6g = {num_top_margin_cells_on_t6g}
+            Note that the total number of cells in the y-direction on tile 6 is gi-
+            ven by:
+              ny_of_t6_on_t6g = {ny_of_t6_on_t6g}
+              Please reset jstart_of_t7_on_t6g and jend_of_t7_on_t6g and rerun."""
+        )
 
     lon_of_t7_ctr = lon_of_t6_ctr
     lat_of_t7_ctr = lat_of_t6_ctr
@@ -491,7 +467,6 @@ class Testing(unittest.TestCase):
             iend_of_t7_on_t6g=84,
             jstart_of_t7_on_t6g=17,
             jend_of_t7_on_t6g=80,
-            run_envir="community",
             verbose=True,
             nh4=4,
         )

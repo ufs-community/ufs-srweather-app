@@ -579,8 +579,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             else:
                 grid_config[param] = value
 
-    run_envir = expt_config["user"].get("RUN_ENVIR", "")
-
     # set varying forecast lengths only when fcst_len_hrs=-1
 
     fcst_len_hrs = workflow_config.get("FCST_LEN_HRS")
@@ -654,7 +652,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             jend_of_t7_on_t6g=grid_config["GFDLgrid_JEND_OF_RGNL_DOM_ON_T6G"],
             verbose=verbose,
             nh4=expt_config["constants"]["NH4"],
-            run_envir=run_envir,
         )
     elif grid_gen_method == "ESGgrid":
         grid_params = set_gridparams_ESGgrid(
@@ -985,16 +982,10 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     ]
 
     nco_config = expt_config["nco"]
-    if run_envir == "community":
-        # Put the variables in config dict.
-        for nco_var in nco_vars:
-            nco_config[nco_var.upper()] = exptdir
-
-        nco_config["LOGBASEDIR_dfv"] = os.path.join(exptdir, "log")
 
     # Use env variables for NCO variables and create NCO directories
     workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
-    if run_envir == "nco" and workflow_manager == "rocoto":
+    if workflow_manager == "rocoto":
         for nco_var in nco_vars:
             envar = os.environ.get(nco_var)
             if envar is not None:

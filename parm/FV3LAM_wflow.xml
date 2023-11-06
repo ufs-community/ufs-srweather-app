@@ -105,8 +105,6 @@ Directories and files.
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "{{ load_modules_run_task_fp }}">
 <!ENTITY EXPTDIR                  "{{ exptdir }}">
 
-
-{%- if run_envir == "nco"  %}
 {%- if do_ensemble %}
 <!ENTITY DYN_DIR  "{{ dataroot_dfv }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/dyn">
 <!ENTITY PHY_DIR  "{{ dataroot_dfv }}/run_fcst_{{ ensmem_indx_name }}#{{ ensmem_indx_name }}#.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
@@ -115,19 +113,9 @@ Directories and files.
 <!ENTITY PHY_DIR  "{{ dataroot_dfv }}/run_fcst.{{ workflow_id }}_<cyclestr>@Y@m@d@H</cyclestr>/phy">
 {%- endif %}
 <!ENTITY COMIN_DIR "{{ comin_basedir }}/{{ run_dfv }}.@Y@m@d/@H">
-{%- else %}
-<!ENTITY DYN_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/dyn">
-<!ENTITY PHY_DIR  "{{ comout_basedir }}/<cyclestr>@Y@m@d@H</cyclestr>{{ slash_ensmem_subdir }}/phy">
-<!ENTITY COMIN_DIR "{{ comin_basedir }}/@Y@m@d@H{{ slash_ensmem_subdir }}">
-{%- endif %}
 
-{%- if run_envir == "nco"  %}
 <!ENTITY LOGDIR                   "{{ logbasedir_dfv }}/<cyclestr>@Y@m@d</cyclestr>">
 <!ENTITY LOGEXT                   ".{{ workflow_id }}.log" >
-{%- else %}
-<!ENTITY LOGDIR                   "{{ logbasedir_dfv }}">
-<!ENTITY LOGEXT                   ".log" >
-{%- endif %}
 <!ENTITY CMPEXT                   "_task_complete.txt">
 
 <!ENTITY MET_INSTALL_DIR "{{ met_install_dir }}">
@@ -192,11 +180,7 @@ tasks; and the "FCST" type is used for the TN_RUN_FCST task.
   {%- endif %}
 {%- endif %}
   <log>
-  {%- if run_envir == "nco"  %}
     &LOGDIR;/FV3LAM_wflow.{{ workflow_id }}.log
-  {%- else %}
-    &LOGDIR;/FV3LAM_wflow.log
-  {%- endif %}
   </log>
 
 <!-- 

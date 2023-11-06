@@ -13,28 +13,14 @@ user:
   #
   #-----------------------------------------------------------------------
   #
-  # Set the RUN_ENVIR variable that is listed and described in the WCOSS
-  # Implementation Standards document:
+  # WCOSS Implementation Standards document:
   #
   #   NCEP Central Operations
   #   WCOSS Implementation Standards
   #   April 19, 2022
   #   Version 11.0.0
   #
-  # RUN_ENVIR is described in this document as follows:
-  #
-  #   Set to "nco" if running in NCO's production environment. Used to 
-  #   distinguish between organizations.
-  #
-  # Valid values are "nco" and "community".  Here, we use it to generate
-  # and run the experiment either in NCO mode (if RUN_ENVIR is set to "nco")
-  # or in community mode (if RUN_ENVIR is set to "community").  This has 
-  # implications on the experiment variables that need to be set and the
-  # the directory structure used.
-  #
-  #-----------------------------------------------------------------------
-  #
-  RUN_ENVIR: "nco"
+  #----------------------------------------------------------------------
   #
   #-----------------------------------------------------------------------
   #
@@ -904,8 +890,7 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  # Set variables that are only used in NCO mode (i.e. when RUN_ENVIR is 
-  # set to "nco"). All variables have the suffix _dfv meaning the default value.
+  # All variables have the suffix _dfv meaning the default value.
   # This is bacuase they are used as the default values for the production using ecFlow.
   #
   # Definitions:

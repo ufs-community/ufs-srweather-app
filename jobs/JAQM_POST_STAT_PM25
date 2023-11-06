@@ -61,11 +61,6 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POST_STAT_PM25}"
-if [ "${RUN_ENVIR}" = "community" ]; then
-  check_for_preexist_dir_file "$DATA" "delete"
-  mkdir -p $DATA
-  cd $DATA
-fi
 
 mkdir -p ${COMOUTwmo}
 
