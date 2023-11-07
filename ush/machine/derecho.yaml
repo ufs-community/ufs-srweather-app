@@ -41,5 +41,3 @@ data:
     HRRR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
-global:
-  CRTM_DIR: /glade/work/epicufsrt/contrib/derecho/hpc-stack/intel-classic-2023.0.0/intel-classic-2023.0.0/cray-mpich-8.1.25/crtm/2.4.0/fix

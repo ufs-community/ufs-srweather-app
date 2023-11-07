@@ -42,5 +42,3 @@ data:
     HRRR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
-global:
-  CRTM_DIR: /work/noaa/epic/role-epic/contrib/orion/hpc-stack/intel-2022.1.2_ncdf492/intel-2022.1.2/impi-2022.1.2/crtm/2.4.0/fix

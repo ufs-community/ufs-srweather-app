@@ -95,7 +95,7 @@ else
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
-    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam_rrfs.txt"
+    post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
   fi
   print_info_msg "
 ====================================================================
