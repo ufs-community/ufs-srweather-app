@@ -22,4 +22,4 @@ if (mode() == "unload") then
   unload(pathJoin("met", met_ver))
   unload(pathJoin("metplus",metplus_ver))
 end
-load("python/3.10.8")
+load("ufs-pyenv")
