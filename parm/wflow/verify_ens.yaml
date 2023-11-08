@@ -125,7 +125,7 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
 
 metatask_GenEnsProd_EnsembleStat_NDAS:
   var:
-    VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+    VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
   task_run_MET_GenEnsProd_vx_#VAR#: &task_GenEnsProd_NDAS
     <<: *default_task_verify_ens
     command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GENENSPROD_OR_ENSEMBLESTAT"'
@@ -226,7 +226,7 @@ metatask_PointStat_NDAS_ensmeanprob:
     statlc: mean prob
   metatask_PointStat_NDAS_ens#statlc#:
     var:
-      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_PointStat_vx_ens#statlc#_#VAR#:
       <<: *default_task_verify_ens
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX_ENS#stat#"'

@@ -79,7 +79,7 @@ task_run_MET_Pb2nc_obs:
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
-    VAR: SFC
+    VAR: ADPSFC
     ACCUM_HH: '01'
     obs_or_fcst: obs
     OBTYPE: NDAS
