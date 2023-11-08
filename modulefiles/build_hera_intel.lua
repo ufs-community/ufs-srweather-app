@@ -27,7 +27,6 @@ load("srw_common")
 
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
-load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
