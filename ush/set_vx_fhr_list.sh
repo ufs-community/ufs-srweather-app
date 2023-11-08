@@ -122,11 +122,11 @@ function set_vx_fhr_list() {
       fhr_min="00"
       fhr_int="01"
       ;;
-    "SFC")
+    "ADPSFC")
       fhr_min="00"
       fhr_int="01"
       ;;
-    "UPA")
+    "ADPUPA")
       fhr_min="00"
       fhr_int="06"
       ;;
