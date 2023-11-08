@@ -195,7 +195,7 @@ elif [ "${grid_or_point}" = "point" ]; then
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
   OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
+  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 
 fi
 
@@ -284,6 +284,8 @@ fi
 #
 if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
   metplus_config_tmpl_fn="APCPgt01h"
+elif [ "${VAR}" = "ASNOW" ]; then
+  metplus_config_tmpl_fn="${VAR}"
 else
   metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi

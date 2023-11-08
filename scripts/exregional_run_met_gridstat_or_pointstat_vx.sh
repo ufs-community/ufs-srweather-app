@@ -144,7 +144,7 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
       ;;
-    "ASNOW")
+    "ASNOW"*)
       FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
       ;;
     "REFC")
@@ -218,7 +218,7 @@ if [ "${grid_or_point}" = "grid" ]; then
         FCST_INPUT_DIR="${vx_fcst_input_basedir}"
         FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
         ;;
-      "ASNOW")
+      "ASNOW"*)
         OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
         FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}/metprd/PcpCombine_fcst"
         FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
@@ -322,6 +322,8 @@ fi
 #
 if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
   metplus_config_tmpl_fn="APCPgt01h"
+elif [ "${VAR}" = "ASNOW" ]; then
+  metplus_config_tmpl_fn="${VAR}"
 else
   metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 fi
