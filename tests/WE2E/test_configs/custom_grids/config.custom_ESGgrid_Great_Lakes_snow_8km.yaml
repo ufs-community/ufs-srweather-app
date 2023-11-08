@@ -56,7 +56,7 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Michigan_Ontario
 verification:
   VX_FCST_MODEL_NAME: Michigan_Ontario_snow_8km
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA", "ASNOW" ]
 platform:
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'

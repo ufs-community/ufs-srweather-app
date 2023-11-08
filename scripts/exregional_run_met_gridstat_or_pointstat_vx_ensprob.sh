@@ -149,7 +149,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
   FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 

@@ -110,7 +110,7 @@ set_vx_params \
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 
 OBS_INPUT_DIR="${OBS_DIR}"
-OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"

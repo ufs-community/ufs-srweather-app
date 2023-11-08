@@ -240,7 +240,7 @@ if [ "${grid_or_point}" = "grid" ]; then
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_METPROC_TEMPLATE} )
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
   FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 
