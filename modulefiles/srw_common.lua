@@ -17,7 +17,6 @@ load("sp/2.3.3")
 load("w3emc/2.10.0")
 
 load_any("gftl-shared/v1.5.0","gftl-shared/1.5.0")
--- load_any("yafyaml/v0.5.1","yafyaml/0.5.1")
 load("mapl/2.35.2-esmf-8.4.2")
 
 load_any("nemsio/2.5.2","nemsio/2.5.4")
