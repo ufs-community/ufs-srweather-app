@@ -1138,6 +1138,9 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 ``WRITE_DOPOST``: (Default: false)
    Flag that determines whether to use the inline post option, which calls the Unified Post Processor (:term:`UPP`) from within the UFS Weather Model. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the UFS Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
+``ITASKS``: (Default: 1)
+   Variable denoting the number of write tasks in the i direction in the current group.  Used for inline post 2d decomposition.  Setting this variable to a value greater than 1 will enable 2d decomposition.
+
 Computational Parameters
 ----------------------------
 
@@ -1277,10 +1280,10 @@ Customized Post Configuration Parameters
 
 Set parameters for customizing the :term:`UPP`.
 
-``USE_CUSTOM_POST_CONFIG_FILE``: (Default: false)
+``USE_CUSTOM_POST_CONFIG_FILE``: (Default: true)
    Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to true, then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used. Valid values: ``True`` | ``False``
 
-``CUSTOM_POST_CONFIG_FP``: (Default: "")
+``CUSTOM_POST_CONFIG_FP``: (Default: ``'{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt'``)
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to true.
 
 ``POST_OUTPUT_DOMAIN_NAME``: (Default: ``'{{ workflow.PREDEF_GRID_NAME }}'``)
@@ -1294,6 +1297,9 @@ Set parameters for customizing the :term:`UPP`.
 
 ``TESTBED_FIELDS_FN``: (Default: "")
    The file that lists grib2 fields to be extracted for testbed files. An empty string means no need to generate testbed files.
+
+``NUMX``: (Default: 1)
+   The number of i regions in a 2D decomposition.  Each i row is distibuted to numx ranks.  Set NUMX to a value greater than 1 to enable 2D decomposition.
 
 RUN_PRDGEN Configuration Parameters
 =====================================
