@@ -228,6 +228,13 @@ def run_we2e_tests(homedir, args) -> None:
             test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
             test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
 
+        if args.compiler == "gnu":
+            # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
+            if 'task_run_post' in test_cfg:
+                test_cfg['task_run_post'].update({"NUMX": 1})
+            if 'task_run_fcst' in test_cfg:
+                test_cfg['task_run_fcst'].update({"ITASKS": 1})
+
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
         logging.debug(cfg_to_yaml_str(test_cfg))
