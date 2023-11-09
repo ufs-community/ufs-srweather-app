@@ -61,9 +61,10 @@ def create_nems_configure_file(run_dir,cfg):
         ATM_diag_line = ''
         FIRE_petlist_bounds = f'{fire_start} {fire_end}'
         runseq = [ f"  @{cfg['DT_ATMOS']}\n",
-                   "    ATM -> FIRE\n",
                    "    ATM\n",
+                   "    ATM -> FIRE\n",
                    "    FIRE\n",
+                   "    FIRE -> ATM\n",
                    "  @" ]
     else:
         EARTH_component_list = 'ATM'

@@ -1566,10 +1566,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         if fire_conf["FIRE_NUM_TASKS"] < 1:
             raise ValueError("FIRE_NUM_TASKS must be > 0")
 
-        # Only one-way coupling supported for now
-        if fire_conf["FIRE_ATM_FEEDBACK"] > 0.0:
-            raise ValueError("Two-way coupling not supported; FIRE_ATM_FEEDBACK cannot be > 0.0")
-
         if fire_conf["FIRE_UPWINDING"] == 0 and fire_conf["FIRE_VISCOSITY"] == 0.0:
             raise ValueError("FIRE_VISCOSITY must be > 0.0 if FIRE_UPWINDING == 0")
 

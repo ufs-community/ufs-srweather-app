@@ -436,6 +436,14 @@ def generate_FV3LAM_wflow(
                 "vsvoo1:0.0", "vsvoo2:0.0", "vsvoo3:0.0", "vsvpo1:0.0", "vsvpo2:0.0",
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
+
+    # If UFS_FIRE, activate appropriate flags
+    if expt_config['fire'].get('UFS_FIRE'):
+        gfs_physics_nml_dict.update({
+            "cpl_fire": True,
+            "rrfs_sd": True
+        })
+
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
     # Update levp in external_ic_nml; this should be the only variable that needs changing
