@@ -37,7 +37,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
         ACCUM_HH: '#ACCUM_HH#'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
@@ -67,7 +67,7 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBS_DIR: '&NOHRSC_OBS_DIR;'
         VAR: ASNOW
         ACCUM_HH: '#ACCUM_HH#'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
@@ -91,7 +91,7 @@ metatask_GridStat_MRMS_all_mems:
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
         ACCUM_HH: '01'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
@@ -124,7 +124,7 @@ metatask_PointStat_NDAS_all_mems:
         <<: *default_vars
         OBS_DIR: '&NDAS_OBS_DIR;'
         VAR: '#VAR#'
-        MET_TOOL: 'POINTSTAT'
+        METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"

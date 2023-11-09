@@ -2385,7 +2385,12 @@ global:
 # verification (vx) parameters
 #-----------------------------
 verification:
-  #-----------------------------------------------------------------------
+  #
+  # METPLUS_VERBOSITY_LEVEL: 
+  # Logging verbosity level used by METplus verification tools.  0 to 5,
+  # with 0 quiet and 5 loud.  
+  # 
+  METPLUS_VERBOSITY_LEVEL: 2
   #
   # Templates for CCPA, MRMS, and NDAS observation files.
   # 

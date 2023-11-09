@@ -84,7 +84,7 @@ task_run_MET_Pb2nc_obs:
     obs_or_fcst: obs
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
-    MET_TOOL: 'PB2NC'
+    METPLUSTOOLNAME: 'PB2NC'
   dependency:
     and:
       datadep:
@@ -114,7 +114,7 @@ metatask_PcpCombine_obs:
       obs_or_fcst: obs
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
-      MET_TOOL: 'PCPCOMBINE'
+      METPLUSTOOLNAME: 'PCPCOMBINE'
       ENSMEM_INDX: ''
     dependency:
       and:
@@ -226,7 +226,7 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
         obs_or_fcst: fcst
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
-        MET_TOOL: 'PCPCOMBINE'
+        METPLUSTOOLNAME: 'PCPCOMBINE'
         ENSMEM_INDX: "#mem#"
       dependency:
         datadep:
@@ -254,7 +254,7 @@ metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
         obs_or_fcst: fcst
         OBTYPE: NOHRSC
         OBS_DIR: '&NOHRSC_OBS_DIR;'
-        MET_TOOL: 'PCPCOMBINE'
+        METPLUSTOOLNAME: 'PCPCOMBINE'
         ENSMEM_INDX: "#mem#"
       dependency:
         datadep:
