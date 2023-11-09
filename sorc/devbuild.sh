@@ -205,7 +205,10 @@ if [ "${BUILD}" = false ] && [ "${MOVE}" = true ]; then
   if [[ ! ${SRW_DIR} -ef ${INSTALL_DIR} ]]; then
     printf "... Moving pre-compiled executables to designated location ...\n"
     mkdir -p ${SRW_DIR}/${BIN_DIR}
-    mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
+    cd "${INSTALL_DIR}/${BIN_DIR}"
+    for file in *; do
+      [ -x "${file}" ] && mv "${file}" "${SRW_DIR}/${BIN_DIR}"
+    done
   fi
   exit 0
 fi
@@ -266,14 +269,10 @@ if [ "${VERBOSE}" = true ] ; then
 fi
 
 # source version file only if it is specified in versions directory
-BUILD_VERSION_FILE="${SRW_DIR}/versions/build.ver.${PLATFORM}"
+BUILD_VERSION_FILE="${SRW_DIR}/versions/build.ver"
 if [ -f ${BUILD_VERSION_FILE} ]; then
   . ${BUILD_VERSION_FILE}
 fi
-RUN_VERSION_FILE="${SRW_DIR}/versions/run.ver.${PLATFORM}"
-if [ -f ${RUN_VERSION_FILE} ]; then
-  . ${RUN_VERSION_FILE}
-fi 
 
 # set MODULE_FILE for this platform/compiler combination
 MODULE_FILE="build_${PLATFORM}_${COMPILER}"
@@ -464,7 +463,10 @@ else
        [[ "${BUILD}" = true && "${MOVE}" = true ]]; then
       printf "... Moving pre-compiled executables to designated location ...\n"
       mkdir -p ${SRW_DIR}/${BIN_DIR}
-      mv ${INSTALL_DIR}/${BIN_DIR}/* ${SRW_DIR}/${BIN_DIR}
+      cd "${INSTALL_DIR}/${BIN_DIR}"
+      for file in *; do
+        [ -x "${file}" ] && mv "${file}" "${SRW_DIR}/${BIN_DIR}"
+      done
     fi
 fi
 
