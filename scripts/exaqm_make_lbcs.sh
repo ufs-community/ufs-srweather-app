@@ -229,24 +229,6 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
     ;;
-#
-  "FV3_RRFS_v1beta" | \
-  "FV3_GFS_v15_thompson_mynn_lam3km" | \
-  "FV3_GFS_v17_p8" | \
-  "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
-    if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
-    elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GEFS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GDAS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
-      varmap_file="GFSphys_var_map.txt"
-    fi
-    ;;
-#
   *)
   message_txt="The variable \"varmap_file\" has not yet been specified 
 for this physics suite (CCPP_PHYS_SUITE):
@@ -364,9 +346,7 @@ tracers="\"\""
 #-----------------------------------------------------------------------
 #
 thomp_mp_climo_file=""
-if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
-     "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+if  [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -378,13 +358,6 @@ fi
 #-----------------------------------------------------------------------
 #
 case "${EXTRN_MDL_NAME_LBCS}" in
-
-"GSMGFS")
-  external_model="GSMGFS"
-  input_type="gfs_gaussian_nemsio" # For spectral GFS Gaussian grid in nemsio format.
-  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
-  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
-  ;;
 
 "FV3GFS")
   if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
@@ -411,28 +384,6 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
-
-"GEFS")
-  external_model="GFS"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-  ;;
-
-"RAP")
-  external_model="RAP"
-  input_type="grib2"
-  ;;
-
-"HRRR")
-  external_model="HRRR"
-  input_type="grib2"
-  ;;
-
-"NAM")
-  external_model="NAM"
-  input_type="grib2"
-  ;;
-
 *)
   message_txt="External-model-dependent namelist variables have not yet been 
 specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
@@ -495,15 +446,6 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_atm="${EXTRN_MDL_FNS[0][$i]}"
     ;;
   "GEFS")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "RAP")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "HRRR")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "NAM")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)

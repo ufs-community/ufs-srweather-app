@@ -210,24 +210,6 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
     ;;
-#
-  "FV3_RRFS_v1beta" | \
-  "FV3_GFS_v15_thompson_mynn_lam3km" | \
-  "FV3_GFS_v17_p8" | \
-  "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
-    if [ "${EXTRN_MDL_NAME_ICS}" = "RAP" ] || \
-       [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
-    elif [ "${EXTRN_MDL_NAME_ICS}" = "NAM" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "FV3GFS" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "GEFS" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "GDAS" ] || \
-         [ "${EXTRN_MDL_NAME_ICS}" = "GSMGFS" ]; then
-      varmap_file="GFSphys_var_map.txt"
-    fi
-    ;;
-#
   *)
     message_txt="The variable \"varmap_file\" has not yet been specified for 
 this physics suite (CCPP_PHYS_SUITE):
@@ -399,11 +381,6 @@ convert_nst=""
 #-----------------------------------------------------------------------
 #
 nsoill_out="4"
-if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
-     "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
-   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
-  nsoill_out="9"
-fi
 #
 #-----------------------------------------------------------------------
 #
@@ -419,9 +396,7 @@ fi
 #-----------------------------------------------------------------------
 #
 thomp_mp_climo_file=""
-if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
-     "${EXTRN_MDL_NAME_ICS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+if   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -433,22 +408,6 @@ fi
 #-----------------------------------------------------------------------
 #
 case "${EXTRN_MDL_NAME_ICS}" in
-
-"GSMGFS")
-  external_model="GSMGFS"
-  fn_atm="${EXTRN_MDL_FNS[0]}"
-  fn_sfc="${EXTRN_MDL_FNS[1]}"
-  input_type="gfs_gaussian_nemsio" # For spectral GFS Gaussian grid in nemsio format.
-  convert_nst=False
-  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
-  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
-  vgtyp_from_climo=True
-  sotyp_from_climo=True
-  vgfrc_from_climo=True
-  minmax_vgfrc_from_climo=True
-  lai_from_climo=True
-  tg3_from_soil=False
-  ;;
 
 "FV3GFS")
   if [ "${FV3GFS_FILE_FMT_ICS}" = "nemsio" ]; then
@@ -495,68 +454,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   minmax_vgfrc_from_climo=True
   lai_from_climo=True
   tg3_from_soil=True
-  ;;
-
-"GEFS")
-  external_model="GFS"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-  convert_nst=False
-  vgtyp_from_climo=True
-  sotyp_from_climo=True
-  vgfrc_from_climo=True
-  minmax_vgfrc_from_climo=True
-  lai_from_climo=True
-  tg3_from_soil=False
-  ;;
-
-"HRRR")
-  external_model="HRRR"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-#
-# Path to the HRRRX geogrid file.
-#
-  geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_HRRRX"
-# Note that vgfrc, shdmin/shdmax (minmax_vgfrc), and lai fields are only available in HRRRX
-# files after mid-July 2019, and only so long as the record order didn't change afterward
-  vgtyp_from_climo=True
-  sotyp_from_climo=True
-  vgfrc_from_climo=True
-  minmax_vgfrc_from_climo=True
-  lai_from_climo=True
-  tg3_from_soil=True
-  convert_nst=False
-  ;;
-
-"RAP")
-  external_model="RAP"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-#
-# Path to the RAPX geogrid file.
-#
-  geogrid_file_input_grid="${FIXgsm}/geo_em.d01.nc_RAPX"
-  vgtyp_from_climo=True
-  sotyp_from_climo=True
-  vgfrc_from_climo=True
-  minmax_vgfrc_from_climo=True
-  lai_from_climo=True
-  tg3_from_soil=True
-  convert_nst=False
-  ;;
-
-"NAM")
-  external_model="NAM"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-  vgtyp_from_climo=True
-  sotyp_from_climo=True
-  vgfrc_from_climo=True
-  minmax_vgfrc_from_climo=True
-  lai_from_climo=True
-  tg3_from_soil=False
-  convert_nst=False
   ;;
 
 *)
@@ -715,55 +612,6 @@ mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
 
 mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 #
-#-----------------------------------------------------------------------
-#
-# Process FVCOM Data
-#
-#-----------------------------------------------------------------------
-#
-if [ "${USE_FVCOM}" = "TRUE" ]; then
-
-#Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
-  fvcom_exec_fn="fvcom_to_FV3"
-  fvcom_exec_fp="$EXECdir/${fvcom_exec_fn}"
-  fvcom_time="${DATE_FIRST_CYCL:0:4}-${DATE_FIRST_CYCL:4:2}-${DATE_FIRST_CYCL:6:2}T${DATE_FIRST_CYCL:8:2}:00:00.000000"
-  if [ ! -f "${fvcom_exec_fp}" ]; then
-    message_txt="The executable (fvcom_exec_fp) for processing FVCOM data 
-onto FV3-LAM native grid does not exist:
-  fvcom_exec_fp = \"${fvcom_exec_fp}\"
-Please ensure that you've built this executable."
-      err_exit "${message_txt}"
-  fi
-  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
-  fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
-  if [ ! -f "${fvcom_data_fp}" ]; then
-    message_txt="The file or path (fvcom_data_fp) does not exist:
-  fvcom_data_fp = \"${fvcom_data_fp}\"
-Please check the following user defined variables:
-  FVCOM_DIR = \"${FVCOM_DIR}\"
-  FVCOM_FILE= \"${FVCOM_FILE}\" "
-      err_exit "${message_txt}"
-  fi
-
-  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd ${INPUT_DATA}
-  PREP_STEP
-  eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
-       ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
-       ${REDIRECT_OUT_ERR} || print_err_msg_exit "\
-Call to executable (fvcom_exe) to modify sfc fields for FV3-LAM failed:
-  fvcom_exe = \"${fvcom_exe}\"
-The following variables were being used:
-  FVCOM_DIR = \"${FVCOM_DIR}\"
-  FVCOM_FILE = \"${FVCOM_FILE}\"
-  fvcom_time = \"${fvcom_time}\"
-  FVCOM_WCSTART = \"${FVCOM_WCSTART}\"
-  INPUT_DATA = \"${INPUT_DATA}\"
-  fvcom_exe_dir = \"${fvcom_exe_dir}\"
-  fvcom_exe = \"${fvcom_exe}\""
-  POST_STEP
-fi
-
 #-----------------------------------------------------------------------
 #
 # Set up the RESTART folder for AQM runs
