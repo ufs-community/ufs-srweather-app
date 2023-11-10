@@ -1283,7 +1283,7 @@ Set parameters for customizing the :term:`UPP`.
 ``USE_CUSTOM_POST_CONFIG_FILE``: (Default: true)
    Flag that determines whether a user-provided custom configuration file should be used for post-processing the model data. If this is set to true, then the workflow will use the custom post-processing (:term:`UPP`) configuration file specified in ``CUSTOM_POST_CONFIG_FP``. Otherwise, a default configuration file provided in the UPP repository will be used. Valid values: ``True`` | ``False``
 
-``CUSTOM_POST_CONFIG_FP``: (Default: ``'{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt'``)
+``CUSTOM_POST_CONFIG_FP``: (Default: ``"{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"``)
    The full path to the custom post flat file, including filename, to be used for post-processing. This is only used if ``CUSTOM_POST_CONFIG_FILE`` is set to true.
 
 ``POST_OUTPUT_DOMAIN_NAME``: (Default: ``'{{ workflow.PREDEF_GRID_NAME }}'``)
