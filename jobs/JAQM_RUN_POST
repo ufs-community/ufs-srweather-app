@@ -1,15 +1,9 @@
 #!/bin/bash
 
-#
-#-----------------------------------------------------------------------
-#
-# This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3-LAM model.
-#
-#-----------------------------------------------------------------------
-#
+date
+export PS4=' $SECONDS + '
+set -x
 
-#
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -18,23 +12,47 @@
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_run_post|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+
+export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+mkdir -p ${DATA}
+cd ${DATA}
+
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. ./PDY
+
 . $USHdir/job_preamble.sh
+
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-NO}
+
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
+export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
+
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 #
 #-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
-#
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
-#
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
-#
 #-----------------------------------------------------------------------
 #
 scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
@@ -42,9 +60,7 @@ scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
-#
 # Print message indicating entry into script.
-#
 #-----------------------------------------------------------------------
 #
 print_info_msg "
@@ -57,9 +73,7 @@ on the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-#
 # Set the run directory.
-#
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/${cyc}}"
@@ -71,24 +85,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/${cyc}}"
 if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
   export fmn="00"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# If it doesn't already exist, create the directory (COMOUT) in which 
-# to store post-processing output.  (Note that COMOUT may have already 
-# been created by this post-processing script for a different output time 
-# from the same forecast start time and/or ensemble member.)  Also, create 
-# a temporary work directory (DATA_FHR) for the current output time.  This
-# will be deleted later after the processing for the current output time
-# is complete.  Then change location to DATA_FHR.
-#
-# Note that there may be a preexisting version of DATA_FHR from previous 
-# runs of this script for the current forecast hour (and current forecast
-# start time), e.g. from the workflow task that runs this script failing 
-# and then being called again.  Thus, we first make sure preexisting 
-# versions are deleted.
-#
-#-----------------------------------------------------------------------
 #
 mkdir -p ${COMOUT}
 
@@ -102,9 +98,7 @@ mkdir -p ${DATA_FHR}
 cd ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
-#
 # Make sure that fhr is a non-empty string consisting of only digits.  
-#
 #-----------------------------------------------------------------------
 #
 export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
@@ -116,10 +110,8 @@ digits:
 fi
 #
 #-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
-#
 #-----------------------------------------------------------------------
 #
 $SCRIPTSdir/exaqm_run_post.sh || \
@@ -127,11 +119,9 @@ print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
-#
 # Create a flag file to make rocoto aware that the run_post task has
 # successfully completed. This flag is necessary for varying forecast
 # hours (FCST_LEN_HRS: -1)
-#
 #-----------------------------------------------------------------------
 #
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
@@ -148,9 +138,7 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
 fi
 #
 #-----------------------------------------------------------------------
-#
 # Run job postamble.
-#
 #-----------------------------------------------------------------------
 #
 fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
@@ -161,10 +149,8 @@ else
 fi
 #
 #-----------------------------------------------------------------------
-#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
-#
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1

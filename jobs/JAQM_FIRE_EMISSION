@@ -1,39 +1,51 @@
 #!/bin/bash
 
-#
+date
+export PS4=' $SECONDS + '
+set -x
+
 #-----------------------------------------------------------------------
-#
-# This script gets fire emission data files from disk or HPSS
-#
+# Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
-#
+. $USHdir/source_util_funcs.sh
+source_config_for_task "cpl_aqm_parm|task_fire_emission" ${GLOBAL_VAR_DEFNS_FP}
+
+export DATAROOT=${DATAROOT:-${DATAROOT_dfv}}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+mkdir -p ${DATA}
+cd ${DATA}
+
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. ./PDY
+
+. $USHdir/job_preamble.sh
+
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
+export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
+
+export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
+export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
+export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
 #
 #-----------------------------------------------------------------------
-#
-# Source the variable definitions file and the bash utility functions.
-#
-#-----------------------------------------------------------------------
-#
-. $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_fire_emission" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
-#
-#-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
-#
 #-----------------------------------------------------------------------
 #
 { save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
-#
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
-#
 #-----------------------------------------------------------------------
 #
 scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
@@ -41,9 +53,7 @@ scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #
 #-----------------------------------------------------------------------
-#
 # Print message indicating entry into script.
-#
 #-----------------------------------------------------------------------
 #
 print_info_msg "
@@ -56,9 +66,7 @@ emission data files from disk, or HPSS.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-#
 # Set the external model start time
-#
 #-----------------------------------------------------------------------
 #
 export TIME_OFFSET_HRS=${AQM_FIRE_FILE_OFFSET_HRS:-0}
@@ -68,10 +76,8 @@ export FIRE_FILE_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIM
 
 #
 #-----------------------------------------------------------------------
-#
 # Check whether FIRE EMISSION data files are available on the specified 
 # cycle date and time on HPSS (FIRE_FILE_CDATE).
-#
 #-----------------------------------------------------------------------
 #
 CDATE_min="2022101500"
@@ -85,26 +91,20 @@ CDATE_min:    \"${CDATE_min}\"
 fi
 #
 #-----------------------------------------------------------------------
-#
 # Set the run directory
-#
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_FIRE_EMISSION}"
 #
 #-----------------------------------------------------------------------
-#
 # Create the directory where the RAVE fire emission files should be stored
-#
 #-----------------------------------------------------------------------
 #
 export FIRE_EMISSION_STAGING_DIR="${FIRE_EMISSION_STAGING_DIR:-${COMIN}/$cyc/FIRE_EMISSION}"
 mkdir -p ${FIRE_EMISSION_STAGING_DIR}
 #
 #-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary variables.
-#
 #-----------------------------------------------------------------------
 #
 $SCRIPTSdir/exaqm_fire_emission.sh || \
@@ -112,17 +112,13 @@ print_err_msg_exit "\
 Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 #-----------------------------------------------------------------------
-#
 # Run job postamble.
-#
 #-----------------------------------------------------------------------
 #
 job_postamble
 #
 #-----------------------------------------------------------------------
-#
 # Restore the shell options saved at the beginning of this script/function.
-#
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
