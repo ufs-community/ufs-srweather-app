@@ -134,9 +134,12 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge6.350, ge12.700, ge25.400"
       ;;
-    "ASNOW")                                                                                                                                             
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"                                                                                         
-      ;;    
+    "ASNOW06h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
+    "ASNOW24h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
     "REFC")
       FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
       ;;
@@ -174,41 +177,37 @@ fi
 
 if [ "${grid_or_point}" = "grid" ]; then
 
-  OBS_INPUT_FN_TEMPLATE=""
-  if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
-    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-    FCST_INPUT_DIR="${vx_output_basedir}"
-  else
-    OBS_INPUT_DIR="${OBS_DIR}"
-    case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
-      "APCP01h")
-        OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
-        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-        ;;
-      "ASNOW")
-        OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
-        FCST_INPUT_DIR="${vx_output_basedir}"
-        ;;
-      "REFC")
-        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
-        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-        ;;
-      "RETOP")
-        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
-        FCST_INPUT_DIR="${vx_fcst_input_basedir}"
-        ;;
-    esac
-    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
-  fi
+  case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
+    "APCP"*)
+      OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+      OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
+      FCST_INPUT_DIR="${vx_output_basedir}"
+      ;;
+    "ASNOW"*)
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+      FCST_INPUT_DIR="${vx_output_basedir}"
+      ;;
+    "REFC")
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+      FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+      ;;
+    "RETOP")
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+      FCST_INPUT_DIR="${vx_fcst_input_basedir}"
+      ;;
+  esac
 
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_METPROC_TEMPLATE} )
+  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   FCST_INPUT_DIR="${vx_fcst_input_basedir}"
 
 fi
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
 #
 # Construct variable that contains a METplus template of the paths to
 # the files that the PcpCombine tool has generated (in previous workflow
@@ -229,8 +228,11 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
-  if [ "${field_is_APCPgt01h}" = "TRUE" ] || [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
-    template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_METPROC_TEMPLATE}"
+  #if [ "${field_is_APCPgt01h}" = "TRUE" ] || [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
+  #if [ "${FIELDNAME_IN_FCST_INPUT}" = "APCP" ] || \
+  #   [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
+  if [ "${VAR}" = "APCP" ] || [ "${VAR}" = "ASNOW" ]; then
+    template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
   else
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi

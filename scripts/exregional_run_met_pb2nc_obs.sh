@@ -115,7 +115,7 @@ OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${vx_output_basedir}"
 OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
+OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
 STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------

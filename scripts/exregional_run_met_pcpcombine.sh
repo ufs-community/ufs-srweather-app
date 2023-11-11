@@ -172,11 +172,11 @@ FCST_INPUT_FN_TEMPLATE=""
 if [ "${obs_or_fcst}" = "obs" ]; then
 
   OBS_INPUT_DIR="${OBS_DIR}"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP01h_FN_TEMPLATE} )
+  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE} )
 
   OUTPUT_BASE="${vx_output_basedir}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
+  OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 elif [ "${obs_or_fcst}" = "fcst" ]; then
@@ -186,7 +186,7 @@ elif [ "${obs_or_fcst}" = "fcst" ]; then
 
   OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}/${slash_ensmem_subdir_or_null}"
   OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_fcst"
-  OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_METPROC_TEMPLATE} )
+  OUTPUT_FN_TEMPLATE=$( eval echo ${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT} )
   STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 
 fi
