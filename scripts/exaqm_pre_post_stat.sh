@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#
+set -xe 
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.

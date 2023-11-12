@@ -1,8 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash 
 
 date
 export PS4=' $SECONDS + '
-set -x
+set -xue
 
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.

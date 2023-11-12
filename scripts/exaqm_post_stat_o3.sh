@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#
+set -xe
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -156,7 +156,7 @@ for grid in 227 196 198;do
     done
     for var in 1ho3 8ho3;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
+      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${PCOM}
     done
     for var in awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
@@ -267,10 +267,10 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${PCOM}
     if [ "${SENDDBN_NTC}" = "TRUE" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi

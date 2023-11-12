@@ -12,4 +12,6 @@ module list
 
 cd sorc
 
+./devbuild.sh -p=wcoss2 --clean
+
 ./devbuild.sh -p=wcoss2 -a=ATMAQ  |& tee buildup.log

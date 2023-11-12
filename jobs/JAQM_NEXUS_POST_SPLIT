@@ -2,7 +2,7 @@
 
 date
 export PS4=' $SECONDS + '
-set -ax
+set -xue
 
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.

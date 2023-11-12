@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#
+set -xe
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -142,13 +142,13 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
-    # Post Files to COMOUTwmo
-    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUTwmo}
+    # Post Files to PCOM
+    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${PCOM}
 
     # Distribute Data
 #    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
-#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
 #    fi
   done
 fi
@@ -264,21 +264,21 @@ EOF1
     
     cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
     cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
-    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUTwmo}
-    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${PCOM}
+    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${PCOM}
 
     ##############################
     # Distribute Data
     ##############################
 
     if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
 
     if [ "$SENDDBN" = "TRUE" ]; then
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
   done
 fi

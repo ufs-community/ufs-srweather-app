@@ -2,7 +2,7 @@
 
 date
 export PS4=' $SECONDS + '
-set -x
+set -xue
 
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.
@@ -27,8 +27,9 @@ export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
-
 export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
+
+export DCOMROOT=${DCOMROOT:-/lfs/h1/ops/prod/dcom}
 export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
 export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
 export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"

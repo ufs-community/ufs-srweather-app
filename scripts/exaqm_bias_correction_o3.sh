@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#
+set -xe
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -376,13 +376,13 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
     done
    
-    # Post Files to COMOUTwmo
-    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUTwmo}
+    # Post Files to PCOM
+    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${PCOM}
 
     # Distribute Data
     if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
     fi
   fi
 fi
@@ -474,14 +474,14 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
-    # Post Files to COMOUTwmo
-    cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUTwmo}
-    cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUTwmo}
+    # Post Files to PCOM
+    cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${PCOM}
+    cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${PCOM}
 
     # Distribute Data
     if [ "${SENDDBN}" = "TRUE" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     fi
   done
 fi

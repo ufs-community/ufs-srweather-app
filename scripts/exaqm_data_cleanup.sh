@@ -1,6 +1,6 @@
 #! /bin/bash
-set -x
 
+set -xe
 ##############################################
 # Clean up the DATA directory from previous cycle if found
 ##############################################

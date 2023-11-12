@@ -2,7 +2,7 @@
 
 date
 export PS4=' $SECONDS + '
-set -x
+set -xue
 
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.
@@ -39,9 +39,7 @@ export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}
 export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
 export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
-export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMROOT}}"
-export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+export PCOM=${PCOM:-${COMOUT}/wmo}
 export DCOMINairnow="${DCOMINairnow:-${DCOMROOT}}"
 
 export COMINbicor=${COMINbicor:-$(compath.py ${NET}/${model_ver}})}
@@ -82,7 +80,7 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_O3}"
 
-mkdir -p ${COMOUTwmo}
+mkdir -p ${PCOM}
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 

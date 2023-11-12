@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#
+set -xe
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -423,16 +423,16 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT51=awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
   tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
-  # Post Files to COMOUTwmo
-  cp awpaqm.${cycle}.1hpm25-bc.227.grib2             ${COMOUTwmo}
-  cp awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2 ${COMOUTwmo}
-  cp awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${COMOUTwmo}
+  # Post Files to PCOM
+  cp awpaqm.${cycle}.1hpm25-bc.227.grib2             ${PCOM}
+  cp awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2 ${PCOM}
+  cp awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2      ${PCOM}
 
   # Distribute Data
   if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25-bc.227.grib2
-    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
-    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
+    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25-bc.227.grib2
+    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
+    ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
   fi
 fi
 

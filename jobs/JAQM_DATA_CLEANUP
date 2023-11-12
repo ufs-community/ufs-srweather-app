@@ -1,8 +1,8 @@
 #!/bin/bash
-set -x
 
-export PS4='$SECONDS + '
 date
+export PS4='$SECONDS + '
+set -xue
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
