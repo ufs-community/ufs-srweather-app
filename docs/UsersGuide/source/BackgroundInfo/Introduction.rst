@@ -186,10 +186,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
-* * Incorporation of additional `Unified Workflow <https://github.com/ufs-community/workflow-tools>`__ tools.
+* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/workflow-tools>`__ tools.
 
 
 .. bibliography:: ../references.bib
-
-
-
