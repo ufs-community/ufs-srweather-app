@@ -1119,12 +1119,12 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
         )
 
     # Temporary solution to link fix directory for rocoto in AQM.v7
-    #homeaqm = expt_config.get("user", {}).get("HOMEaqm")
-    #homeaqm_fix = os.path.join(homeaqm,"fix")
-    #if os.path.islink(homeaqm_fix) or os.path.exists(homeaqm_fix):
-    #    rm_vrfy("-rf", homeaqm_fix)
-    #fixlam = workflow_config["FIXlam"]
-    #mkdir_vrfy(f' -p "{fixlam}"')
+    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    homeaqm_fix = os.path.join(homeaqm,"fix")
+    if os.path.islink(homeaqm_fix) or os.path.exists(homeaqm_fix):
+        rm_vrfy("-rf", homeaqm_fix)
+    fixlam = workflow_config["FIXlam"]
+    mkdir_vrfy(f' -p "{fixlam}"')
 
     #
     # -----------------------------------------------------------------------
@@ -1230,12 +1230,12 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     workflow_config["CRES"] = f"C{res_in_fixlam_filenames}"
 
     # Temporary solution to link fix directory for rocoto in AQM.v7
-    #homeaqm = expt_config.get("user", {}).get("HOMEaqm")
-    #homeaqm_fix = os.path.join(homeaqm,"fix")
-    #if os.path.exists(homeaqm_fix):
-    #    rm_vrfy("-rf", homeaqm_fix)
-    #fixaqm_sav = expt_config["platform"].get("FIXaqm_sav")
-    #ln_vrfy(f"""-fsn {fixaqm_sav} {homeaqm_fix}""")
+    homeaqm = expt_config.get("user", {}).get("HOMEaqm")
+    homeaqm_fix = os.path.join(homeaqm,"fix")
+    if os.path.exists(homeaqm_fix):
+        rm_vrfy("-rf", homeaqm_fix)
+    fixaqm_sav = expt_config["platform"].get("FIXaqm_sav")
+    ln_vrfy(f"""-fsn {fixaqm_sav} {homeaqm_fix}""")
 
     #
     # -----------------------------------------------------------------------
