@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+
+export pgm=aqm_bias_correction_pm25
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -144,11 +150,9 @@ mkdir -p "${DATA}/data"
       print_info_msg "${message_warning}"
     fi
 
-    PREP_STEP
-    eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR}
-    export err=$?
-      err_chk
-    POST_STEP
+    startmsg
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+    export err=$?; err_chk
   done
 
 #-----------------------------------------------------------------------------
@@ -193,11 +197,9 @@ cp ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/d
 cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cp ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$? err_chk
 
 cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
@@ -220,11 +222,8 @@ cp ${PARMaqm_utils}/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z 
 cp ${PARMaqm_utils}/bias_correction/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
 cp ${PARMaqm_utils}/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 cp $DATA/out/pm2.5.corrected* ${COMOUT}
 
@@ -248,11 +247,9 @@ id_gribdomain=${id_domain}
 /
 EOF1
 
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+startmsg 
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
 
@@ -313,11 +310,9 @@ EOF1
     #-------------------------------------------------
     # write out grib2 format 
     #-------------------------------------------------
-    PREP_STEP
-    eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
-    export err=$?
-      err_chk
-    POST_STEP
+    startmsg
+    eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+    export err=$?; err_chk
 
     # split into two files: one for 24hr_ave and one for 1h_max
     wgrib2 aqm-pm25_bc.${id_domain}.grib2  |grep  "PMTF"   | ${WGRIB2} -i  aqm-pm25_bc.${id_domain}.grib2  -grib aqm.t${cyc}z.ave_24hr_pm25_bc.793.grib2 

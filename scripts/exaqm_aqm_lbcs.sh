@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+
+export pgm=aqm_make_lbcs
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -278,12 +284,10 @@ Please ensure that you've built this executable."
 #
 #----------------------------------------------------------------------
 #
-  PREP_STEP
+  startmsg
   sync
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+  export err=$?; err_chk
 
   cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 

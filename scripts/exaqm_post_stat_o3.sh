@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_post_stat_o3
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -100,11 +106,9 @@ id_gribdomain=${id_domain}
 EOF1
 
 # convert from netcdf to grib2 format
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
-export err=$?
- err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
@@ -224,11 +228,9 @@ EOF1
     fi
   fi
 
-  PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
+  startmsg 
+  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
+  export err=$?; err_chk
 
   # split into max_1h and max_8h files and copy to grib227
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2

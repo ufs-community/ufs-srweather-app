@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_fire_emission
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.

@@ -1,6 +1,11 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_make_ics
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -582,18 +587,19 @@ fi
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-PREP_STEP
-eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-  print_err_msg_exit "\
-Call to executable (exec_fp) to generate surface and initial conditions
-(ICs) files for the FV3-LAM failed:
-  exec_fp = \"${exec_fp}\"
-The external model from which the ICs files are to be generated is:
-  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-The external model files that are inputs to the executable (exec_fp) are
-located in the following directory:
-  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
-POST_STEP
+startmsg
+eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile 
+export err=$?; err_chk
+#eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
+#  print_err_msg_exit "\
+#Call to executable (exec_fp) to generate surface and initial conditions
+#(ICs) files for the FV3-LAM failed:
+#  exec_fp = \"${exec_fp}\"
+#The external model from which the ICs files are to be generated is:
+#  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
+#The external model files that are inputs to the executable (exec_fp) are
+#located in the following directory:
+#  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
 #
 #-----------------------------------------------------------------------
 #

@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe 
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_pre_post_stat
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.

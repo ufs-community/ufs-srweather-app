@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_nexus_emissions
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -353,11 +359,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-PREP_STEP
-eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 # 
 #-----------------------------------------------------------------------

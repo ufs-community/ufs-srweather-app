@@ -85,7 +85,8 @@ export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 
 TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}
-#
+
+env
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.

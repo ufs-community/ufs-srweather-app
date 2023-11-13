@@ -21,6 +21,7 @@ export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
+env
 ##############################################
 # Set variables used in the script
 ##############################################

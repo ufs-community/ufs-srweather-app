@@ -54,35 +54,6 @@ export REDIRECT_OUT_ERR=">>${pgmout} 2>${pgmerr}"
 export pgmout_lines=1
 export pgmerr_lines=1
 
-function PREP_STEP() {
-    export pgm="$(basename ${0})"
-    if [ ! -z $(command -v prep_step) ]; then
-        . prep_step
-    else
-        # Append header
-        if [ -n "$pgm" ] && [ -n "$pgmout" ]; then
-          echo "$pgm" >> $pgmout
-        fi
-        # Remove error file
-        if [ -f $pgmerr ]; then
-          rm $pgmerr
-        fi
-    fi
-}
-function POST_STEP() {
-    if [ -f $pgmout ]; then
-        tail -n +${pgmout_lines} $pgmout
-        pgmout_line=$( wc -l $pgmout )
-        pgmout_lines=$((pgmout_lines + 1))
-    fi
-    if [ -f $pgmerr ]; then
-        tail -n +${pgmerr_lines} $pgmerr
-        pgmerr_line=$( wc -l $pgmerr )
-        pgmerr_lines=$((pgmerr_lines + 1))
-    fi
-}
-export -f PREP_STEP
-export -f POST_STEP
 #
 #-----------------------------------------------------------------------
 # Create symlinks to log files in the experiment directory. Makes viewing

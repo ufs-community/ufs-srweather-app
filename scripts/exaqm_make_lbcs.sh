@@ -1,11 +1,14 @@
 #!/bin/bash
 
 set -xe
-#
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_make_lbcs
+
 #-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
-#
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
@@ -431,9 +434,6 @@ for (( i=0; i<${num_fhrs}; i++ )); do
   fn_grib2=""
 
   case "${EXTRN_MDL_NAME_LBCS}" in
-  "GSMGFS")
-    fn_atm="${EXTRN_MDL_FNS[$i]}"
-    ;;
   "FV3GFS")
     if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
       fn_atm="${EXTRN_MDL_FNS[$i]}"
@@ -553,11 +553,9 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-  PREP_STEP
-  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
+  startmsg
+  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
+  export err=$?; err_chk
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name

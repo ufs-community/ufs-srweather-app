@@ -1,6 +1,12 @@
 #!/bin/bash
 
 set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_run_post
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -226,11 +232,9 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-PREP_STEP
-eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR}
-export err=$?
- err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #
