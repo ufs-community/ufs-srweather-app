@@ -99,14 +99,10 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
       message_txt="SFC file for nexus emission for \"${cycle}\" does not exist in the directory:
   GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
   gfs_sfc_fn = \"${gfs_sfc_fn}\""
-      if [ "${RUN_ENVIR}" = "community" ]; then
-        print_err_msg_exit "${message_txt}"
-      else
-        message_warning="WARNING: ${message_txt}"
-        print_info_msg "${message_warning}"
-        if [ ! -z "${maillist}" ]; then
-          echo "${message_warning}" | mail.py $maillist
-        fi
+      message_warning="WARNING: ${message_txt}"
+      print_info_msg "${message_warning}"
+      if [ ! -z "${maillist}" ]; then
+        echo "${message_warning}" | mail.py $maillist
       fi
     fi	    
   done
@@ -146,11 +142,7 @@ else
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="htar file reading operation (\"htar -xvf ...\") failed."
-    if [ "${RUN_ENVIR}" = "community" ]; then
-      print_err_msg_exit "${message_txt}"
-    else
-      err_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
   fi
   POST_STEP
 
@@ -170,11 +162,7 @@ else
     export err=$?
     if [ $err -ne 0 ]; then
       message_txt="htar file reading operation (\"htar -xvf ...\") failed."
-      if [ "${RUN_ENVIR}" = "community" ]; then
-        print_err_msg_exit "${message_txt}"
-      else
-        err_exit "${message_txt}"
-      fi
+      err_exit "${message_txt}"
     fi
     POST_STEP
   fi

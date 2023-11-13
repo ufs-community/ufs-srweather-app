@@ -158,11 +158,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ $RUN_ENVIR = "nco" ]; then
-    EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-else
-    EXTRN_DEFNS="${EXTRN_MDL_VAR_DEFNS_FN}.sh"
-fi
+EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
+
 cmd="
 python3 -u ${USHdir}/retrieve_data.py \
   --debug \
@@ -184,11 +181,7 @@ if [ $err -ne 0 ]; then
 The command was:
 ${cmd}
 "
-  if [ "${RUN_ENVIR}" = "community" ]; then
-    print_err_msg_exit "${message_txt}"
-  else
-    err_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
