@@ -1,17 +1,4 @@
-./manage_externals/checkout_externals
 
-cd ..
+./app_build.sh -p=wcoss2 --clean
 
-module reset 
-
-source versions/build.ver
-
-module use $(realpath modulefiles)
-
-module list
-
-cd sorc
-
-./devbuild.sh -p=wcoss2 --clean
-
-./devbuild.sh -p=wcoss2 -a=ATMAQ  |& tee buildup.log
+./app_build.sh -p=wcoss2 -a=ATMAQ  --extrn |& tee buildup.log
