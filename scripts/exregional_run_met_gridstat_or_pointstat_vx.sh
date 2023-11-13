@@ -317,11 +317,12 @@ fi
 #
 # First, set the base file names.
 #
-if [ "${VAR}" = "APCP" ] || [ "${VAR}" = "ASNOW" ]; then
-  metplus_config_tmpl_fn="${VAR}"
-else
-  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-fi
+#if [ "${VAR}" = "APCP" ] || [ "${VAR}" = "ASNOW" ]; then
+#  metplus_config_tmpl_fn="${VAR}"
+#else
+#  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+#fi
+metplus_config_tmpl_fn="${VAR}"
 metplus_config_tmpl_fn="${MetplusToolName}_${metplus_config_tmpl_fn}"
 metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
 metplus_log_fn="${metplus_config_fn}"
