@@ -126,4 +126,4 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       The workflow must be relaunched regularly and repeatedly until the log output includes a ``Workflow status: SUCCESS`` message indicating that the experiment has finished.
 
-Optionally, users may :ref:`configure their own grid <UserDefinedGrid>` or :ref:`vertical levels <VerticalLevels>` instead of using a predefined grid and vertical levels. Users can also :ref:`plot the output <PlotOutput>` of their experiment(s) or :ref:`run verification tasks using METplus <vxconfig>`.
+Optionally, users may :ref:`configure their own grid <UserDefinedGrid>` or :ref:`vertical levels <VerticalLevels>` instead of using a predefined grid and default set of vertical levels. Users can also :ref:`plot the output <PlotOutput>` of their experiment(s) or :ref:`run verification tasks using METplus <vxconfig>`.

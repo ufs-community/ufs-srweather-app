@@ -12,7 +12,7 @@ General Updates
 =================
 
 * Added RAP suite (``FV3_RAP``) as a new supported suite (documentation `here <https://dtcenter.ucar.edu/GMTB/UFS_SRW_App_v2.2.0/sci_doc/rap_suite_page.html>`__)
-* Added the Community Land Model (CLM) Lake model in the HRRR suite (``FV3_HRRR``)
+* Added the Community Land Model (CLM) lake model in the HRRR suite (``FV3_HRRR``)
 
 Thompson Microphysics Scheme
 ==============================
@@ -92,4 +92,4 @@ Unified Gravity Wave Physics Scheme
 
 .. attention:: 
    
-   The improvements in Thompson cloud microphysics, NoahMP land surface model, GFS TKE-EDMF and cumulus schemes were tested in UFS global configuration, so results in the UFS limited-area configuration (SRW) may vary. 
+   The improvements in Thompson cloud microphysics, NoahMP land surface model, GFS TKE-EDMF and cumulus schemes were tested in the UFS global configuration, so results in the UFS limited-area configuration (SRW) may vary. 

@@ -197,7 +197,7 @@ Creating the |wflow_env| Environment on Linux and Mac OS
 On generic Mac and Linux systems, users need to create a conda |wflow_env| environment that contains python packages required for running the workflow. Other conda environments may need to be activated for running graphics generation tasks (|graphics_env|) or when testing the AQM/CMAQ (|cmaq_env|). Python packages in these other environments may conflict with those in |wflow_env|. The environments can be stored in a local path, which can be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) 
 These conda environments can be added to the existing python or conda modules.
 
-There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use the aarch64 (64-bit ARM) Miniforge for Linux and install into ``$HOME/conda``. Users should adjust as needed for their target system.
+There are several options available for building virtual conda environments on non-Level 1 platforms. The examples in this section use aarch64 (64-bit ARM) Miniforge for Linux and install into ``$HOME/conda``. Users should adjust as needed for their target system.
 
 **Options:**
 
@@ -813,7 +813,7 @@ To use METplus verification,  MET and METplus modules need to be installed. To t
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to do verification (VX); it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
+:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to run verification (VX); it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
 
 .. _VX-yamls:
 
@@ -1282,7 +1282,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`) after allocating the compute node.
+   When working on an HPC system, users should allocate compute nodes prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`) after allocating compute nodes.
 
 .. note::
    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 

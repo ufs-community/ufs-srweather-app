@@ -6,11 +6,11 @@ SRW Application Components
 
 The SRW Application assembles a variety of components, including:
 
-* UFS Utilities
-* UFS Weather Forecast Model
+* UFS utilities
+* UFS Weather Model
 * Unified Post Processor
-* METplus Verification Suite
-* Unified Workflow Tools
+* METplus verification suite
+* Unified Workflow tools
 * Build system and workflow
 
 These components are documented within this User's Guide and supported through the `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ forum. 

@@ -268,7 +268,7 @@ Glossary
    Weather Model
       A prognostic model that can be used for short- and medium-range research and
       operational forecasts. It can be an atmosphere-only model or an atmospheric
-      model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the `UFS Weather Model <https://epic.noaa.gov/get-code/ufs-weather-model/>`__.
+      model coupled with one or more additional components, such as a wave or ocean model. The SRW App uses the `UFS Weather Model <https://github.com/ufs-community/ufs-weather-model/wiki>`__.
 
    Workflow
       The sequence of steps required to run an experiment from start to finish.

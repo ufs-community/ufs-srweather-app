@@ -135,7 +135,7 @@ The UFS Weather Model contains a number of sub-repositories, which are documente
 
 .. _TopLevelDirStructure:
 
-Directory Structure
+Repository Structure
 ----------------------
 The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in :term:`NCEP` Central Operations (NCO) WCOSS `Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
 
@@ -169,10 +169,8 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
    │     ├── (UFS_UTILS)
    │     │     ├── sorc
    │     │     │    ├── chgres_cube.fd
-   │     │     │    ├── fre-nctools.fd
-   │     │     │    ├── grid_tools.fd
-   │     │     │    ├── orog_mask_tools.fd
-   │     │     │    └── sfc_climo_gen.fd
+   │     │     │    ├── sfc_climo_gen.fd
+   │     │     │    └── vcoord_gen.fd
    │     │     └── ush
    │     └── (ufs-weather-model)
    │	         └── FV3
