@@ -39,5 +39,5 @@ cpl_aqm_parm:
   COMINemis: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/emissions
   COMINemispt: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/emissions/nei2016v1-pt
   DCOMINfire: /lfs/h1/ops/prod/dcom 
-  COMINbicor: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/bias_correction/aqmv7.0.88b
-  COMOUTbicor: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/bias_correction/aqmv7.0.88b
+  COMINbicor: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/bias_correction/aqmv7.0.88f
+  COMOUTbicor: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/bias_correction/aqmv7.0.88f
