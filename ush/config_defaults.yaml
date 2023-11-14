@@ -1792,6 +1792,8 @@ task_run_fcst:
   # current group.  Used for inline post 2d decomposition.  Setting this
   # variable to a value greater than 1 will enable 2d decomposition.
   # Default setting is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
   #
   #-----------------------------------------------------------------------
   #
@@ -2077,6 +2079,8 @@ task_run_post:
   # NUMX:
   # The number of i regions in a 2D decomposition.  Each i row is 
   # distibuted to numx ranks. Default value of numx is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
   #
   #-----------------------------------------------------------------------
   #
