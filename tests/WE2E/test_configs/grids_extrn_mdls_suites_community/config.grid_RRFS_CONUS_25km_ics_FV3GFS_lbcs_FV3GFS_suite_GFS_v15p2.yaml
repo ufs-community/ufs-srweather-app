@@ -3,8 +3,8 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUS_25km grid using the GFS_v15p2
     physics suite with ICs and LBCs derived from the FV3GFS.
-    In addition, this tests the "inline post" option (WRITE_DOPOST: true).
-    Enables UPP inline 2d decomposition.
+    In addition, this tests the "inline post" option (WRITE_DOPOST: true)
+    and enables UPP inline 2D decomposition.
 user:
   RUN_ENVIR: community
 workflow:
