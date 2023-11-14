@@ -1139,7 +1139,7 @@ These parameters set values in the Weather Model's ``model_configure`` file.
    Flag that determines whether to use the inline post option, which calls the Unified Post Processor (:term:`UPP`) from within the UFS Weather Model. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the UFS Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
 ``ITASKS``: (Default: 1)
-   Variable denoting the number of write tasks in the i direction in the current group.  Used for inline post 2d decomposition.  Setting this variable to a value greater than 1 will enable 2d decomposition.
+   Variable denoting the number of write tasks in the ``i`` direction in the current group. Used for inline post 2D decomposition. Setting this variable to a value greater than 1 will enable 2D decomposition.
 
 Computational Parameters
 ----------------------------
