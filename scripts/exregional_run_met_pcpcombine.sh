@@ -350,24 +350,25 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
-# Store the settings in a temporary file
+#
+# Store the settings in a temporary file to use as input in the call to
+# the METplus configuration generator script below.
+#
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-
 #
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
 python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
-  -c ${tmpfile} \
-  -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} || \
+  -c "${tmpfile}" \
+  -i "${metplus_config_tmpl_fp}" \
+  -o "${metplus_config_fp}" || \
 print_err_msg_exit "\
-Call to workflow-tools templater.py to generate a METplus
-configuration file from a jinja template failed.  Parameters passed
-to this script are:
+Call to workflow-tools templater.py to generate a METplus configuration
+file from a jinja template failed.  Parameters passed to this script are:
   Full path to template METplus configuration file:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:

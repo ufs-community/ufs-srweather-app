@@ -375,7 +375,7 @@ settings="\
 # Ensemble and member-specific information.
 #
   'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'ensmem_indx': '${ENSMEM_INDX:-}'
+  'ensmem_name': '${ensmem_name:-}'
   'time_lag': '${time_lag:-}'
 #
 # Field information.
@@ -389,8 +389,10 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
-
-# Store the settings in a temporary file
+#
+# Store the settings in a temporary file to use as input in the call to
+# the METplus configuration generator script below.
+#
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
@@ -401,12 +403,11 @@ EOF
 #
 python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
   -c "${tmpfile}" \
-  -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} || \
+  -i "${metplus_config_tmpl_fp}" \
+  -o "${metplus_config_fp}" || \
 print_err_msg_exit "\
-Call to workflow-tools templater to generate a METplus
-configuration file from a jinja template failed.  Parameters passed
-to this script are:
+Call to workflow-tools templater.py to generate a METplus configuration
+file from a jinja template failed.  Parameters passed to this script are:
   Full path to template METplus configuration file:
     metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
   Full path to output METplus configuration file:
