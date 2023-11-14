@@ -1140,6 +1140,7 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 
 ``ITASKS``: (Default: 1)
    Variable denoting the number of write tasks in the ``i`` direction in the current group. Used for inline post 2D decomposition. Setting this variable to a value greater than 1 will enable 2D decomposition.
+   Note that 2D decomposition does not yet work with GNU compilers, so this value will be reset to 1 automatically when using GNU compilers (i.e., when ``COMPILER: gnu``).
 
 Computational Parameters
 ----------------------------
