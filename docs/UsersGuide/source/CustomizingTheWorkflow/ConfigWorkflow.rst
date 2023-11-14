@@ -1300,6 +1300,7 @@ Set parameters for customizing the :term:`UPP`.
 
 ``NUMX``: (Default: 1)
    The number of ``i`` regions in a 2D decomposition. Each ``i`` row is distributed to ``NUMX`` ranks. Set ``NUMX`` to a value greater than 1 to enable 2D decomposition.
+   Note that 2D decomposition does not yet work with GNU compilers, so this value will be reset to 1 automatically when using GNU compilers (i.e., when ``COMPILER: gnu``).
 
 RUN_PRDGEN Configuration Parameters
 =====================================
