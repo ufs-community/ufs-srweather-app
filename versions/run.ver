@@ -49,7 +49,7 @@ export nco_ver=4.9.7
 export wgrib2_ver=2.0.8_wmo
 export grib_util_ver=1.2.4
 
-export maillist="nco.spa@noaa.gov,jianping.huang@noaa.gov"
-export maillist_group1="nco.spa@noaa.gov,jianping.huang@noaa.gov,youhua.tang@noaa.gov"
-export maillist_group2="nco.spa@noaa.gov,jianping.huang@noaa.gov,kai.wang@noaa.gov"
+export maillist=""
+export maillist_group1=""
+export maillist_group2=""
 

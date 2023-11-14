@@ -180,7 +180,7 @@ fi
 if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
    extrn_mdl_staging_dir="${DATA}"
 else
-   if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then  
+   if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then  
      extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_ics_${cyc}.${share_pid}"
      if [ ! -d ${extrn_mdl_staging_dir} ]; then
        echo "Fatal error extrn_mdl_staging_dir not found in production mode"

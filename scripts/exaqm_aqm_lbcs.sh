@@ -222,8 +222,8 @@ check_file_with_recheck() {
 	echo "File exists after recheck: $AQM_MOFILE_FHR_FP"
        else
         # File not found even after rechecks
-        echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
-
+        message_warning="File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+        echo "${message_warning}"
         if [ ! -z "${maillist_group1}" ]; then
           echo "${message_warning}" | mail.py $maillist_group1
         fi

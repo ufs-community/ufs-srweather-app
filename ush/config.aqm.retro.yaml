@@ -11,8 +11,8 @@ workflow:
   EXPT_SUBDIR: aqm_retro_aqmna13km
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023101500'
-  DATE_LAST_CYCL: '2023101600'
+  DATE_FIRST_CYCL: '2023111000'
+  DATE_LAST_CYCL: '2023111100'
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 12
   FCST_LEN_CYCL:
@@ -24,7 +24,7 @@ workflow:
   COMPILER: intel
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
-  DO_REAL_TIME: true
+  DO_REAL_TIME: false
   COLDSTART: true
 #  WARMSTART_CYCLE_DIR: /path/to/restart/dir
 nco:
@@ -87,7 +87,7 @@ task_run_post:
 task_aqm_lbcs:
   WTIME_AQM_LBCS: 01:00:00
 task_nexus_gfs_sfc:
-  NEXUS_GFS_SFC_OFFSET_HRS: 6
+  NEXUS_GFS_SFC_OFFSET_HRS: 0
 global:
   DO_ENSEMBLE: false
   NUM_ENS_MEMBERS: 2
@@ -110,6 +110,7 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_SUFFIX: _h72.nc
   AQM_RC_FIRE_FREQUENCY: hourly
   AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
+  COMINgefs: /lfs/h2/emc/lam/noscrub/RRFS_CMAQ/GEFS_DATA
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 6
 
