@@ -275,13 +275,7 @@ fi
 #
 # First, set the base file names.
 #
-if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-  metplus_config_tmpl_fn="APCPgt01h"
-elif [ "${VAR}" = "ASNOW" ]; then
-  metplus_config_tmpl_fn="${VAR}"
-else
-  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-fi
+metplus_config_tmpl_fn="${VAR}"
 metplus_config_tmpl_fn="${MetplusToolName}_ensmean_${metplus_config_tmpl_fn}"
 metplus_config_fn="${MetplusToolName}_ensmean_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}"
