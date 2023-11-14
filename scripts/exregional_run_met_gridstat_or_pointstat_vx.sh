@@ -144,7 +144,10 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
       ;;
-    "ASNOW"*)
+    "ASNOW06h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
+    "ASNOW24h")
       FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
       ;;
     "REFC")
