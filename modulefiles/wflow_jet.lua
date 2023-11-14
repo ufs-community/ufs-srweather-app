@@ -6,6 +6,7 @@ the NOAA RDHPC machine Jet
 whatis([===[Loads libraries needed for running the UFS SRW App on Jet ]===])
 
 load("rocoto")
+unload("python")
 load("set_pythonpath")
 
 prepend_path("MODULEPATH","/mnt/lfs4/HFIP/hfv3gfs/role.epic/miniconda3/modulefiles")
