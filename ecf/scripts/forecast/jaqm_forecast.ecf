@@ -43,6 +43,7 @@ module load prod_util/${prod_util_ver}
 module list
 
 export subcyc=0
+export USHdir=${HOMEaqm}/ush
 
 ############################################################
 # CALL executable job script here

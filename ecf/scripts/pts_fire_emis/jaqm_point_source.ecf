@@ -29,6 +29,7 @@ export subcyc=0
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export USHdir=${HOMEaqm}/ush
 
 ############################################################
 # CALL executable job script here

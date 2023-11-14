@@ -38,6 +38,7 @@ export SLASH_ENSMEM_SUBDIR=''
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export USHdir=${HOMEaqm}/ush
 
 ############################################################
 # CALL executable job script here

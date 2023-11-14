@@ -34,6 +34,7 @@ export subcyc=0
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export USHdir=${HOMEaqm}/ush
 
 #SDATE=$($NDATE -6 ${PDY}${cyc})
 #PDYS_P1=$(echo $SDATE | cut -c1-8)
