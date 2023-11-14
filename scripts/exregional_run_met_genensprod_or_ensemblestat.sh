@@ -107,7 +107,6 @@ set_vx_params \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
-  outvarname_field_is_APCPgt01h="field_is_APCPgt01h" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
   outvarname_fieldname_in_fcst_input="FIELDNAME_IN_FCST_INPUT" \
   outvarname_fieldname_in_MET_output="FIELDNAME_IN_MET_OUTPUT" \
@@ -228,9 +227,6 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 
-  #if [ "${field_is_APCPgt01h}" = "TRUE" ] || [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
-  #if [ "${FIELDNAME_IN_FCST_INPUT}" = "APCP" ] || \
-  #   [ "${FIELDNAME_IN_MET_FILEDIR_NAMES}" = "ASNOW" ]; then
   if [ "${VAR}" = "APCP" ] || [ "${VAR}" = "ASNOW" ]; then
     template="${cdate_ensmem_subdir_or_null:+${cdate_ensmem_subdir_or_null}/}metprd/PcpCombine_fcst/${FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
   else

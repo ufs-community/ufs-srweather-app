@@ -95,7 +95,6 @@ set_vx_params \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
-  outvarname_field_is_APCPgt01h="field_is_APCPgt01h" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
   outvarname_fieldname_in_fcst_input="FIELDNAME_IN_FCST_INPUT" \
   outvarname_fieldname_in_MET_output="FIELDNAME_IN_MET_OUTPUT" \
