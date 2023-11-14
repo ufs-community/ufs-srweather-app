@@ -1299,7 +1299,7 @@ Set parameters for customizing the :term:`UPP`.
    The file that lists grib2 fields to be extracted for testbed files. An empty string means no need to generate testbed files.
 
 ``NUMX``: (Default: 1)
-   The number of i regions in a 2D decomposition.  Each i row is distibuted to numx ranks.  Set NUMX to a value greater than 1 to enable 2D decomposition.
+   The number of ``i`` regions in a 2D decomposition. Each ``i`` row is distributed to ``NUMX`` ranks. Set ``NUMX`` to a value greater than 1 to enable 2D decomposition.
 
 RUN_PRDGEN Configuration Parameters
 =====================================
