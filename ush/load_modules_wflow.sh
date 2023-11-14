@@ -41,7 +41,7 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 HOMEaqm=$( dirname "${scrfunc_dir}" )
 
 # source version file (run) only if it is specified in versions directory
-RUN_VER_FN="run.ver.${machine}"
+RUN_VER_FN="run.ver"
 VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
 if [ -f ${VERSION_FILE} ]; then
   . ${VERSION_FILE}
