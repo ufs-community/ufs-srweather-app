@@ -7,7 +7,9 @@ set -xue
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
-. $USHdir/source_util_funcs.sh
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_post_split" ${GLOBAL_VAR_DEFNS_FP}
 
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
@@ -17,10 +19,12 @@ mkdir -p ${DATA}
 cd ${DATA}
 
 export cycle=${cycle:-t${cyc}z}
+export CDATE=${PDY}${cyc}
+
 setpdy.sh
 . ./PDY
 
-. $USHdir/job_preamble.sh
+. $USHaqm/job_preamble.sh
 
 export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
 export FIXaqmbio="${FIXaqmbio:-${HOMEaqm}/fix/bio}"
@@ -28,6 +32,11 @@ export FIXaqmdust="${FIXaqmdust:-${HOMEaqm}/fix/dust}"
 export FIXaqmcanopy="${FIXaqmcanopy:-${HOMEaqm}/fix/canopy}"
 export FIXaqmnexus="${FIXaqmnexus:-${HOMEaqm}/fix/nexus}"
 export FIXaqmnexus_gfs_sfc="${FIXaqmnexus:-${HOMEaqm}/fix/gfs}"
+
+export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
+export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINemis="${COMINemis:-${COMIN}/emission}"
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
@@ -42,7 +51,7 @@ export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc
 # for this script/function.
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
@@ -88,15 +97,20 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_POST_SPLIT}"
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exaqm_nexus_post_split.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+startmsg
+${HOMEaqm}/scripts/exaqm_nexus_post_split.sh
+export err=$?; err_chk
 #
-#-----------------------------------------------------------------------
-# Run job postamble.
-#-----------------------------------------------------------------------
-#
-job_postamble
+if [ "${KEEPDATA}" = "FALSE" ]; then
+   cd ${DATAROOT}
+   rm -rf $DATA
+fi
+# Print exit message
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 # Restore the shell options saved at the beginning of this script/func-

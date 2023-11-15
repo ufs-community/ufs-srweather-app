@@ -5,7 +5,7 @@ set -xe
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
 
-export pgm=aqm_make_ics
+export pgm=aqm_ics
 
 #-----------------------------------------------------------------------
 #
@@ -13,7 +13,7 @@ export pgm=aqm_make_ics
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -23,7 +23,7 @@ source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

@@ -5,7 +5,7 @@ set -xe
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
 
-export pgm=aqm_make_lbcs
+export pgm=aqm_lbcs
 
 #-----------------------------------------------------------------------
 #
@@ -13,7 +13,7 @@ export pgm=aqm_make_lbcs
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -23,7 +23,7 @@ source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aq
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -270,7 +270,7 @@ Species converting Factor
 EOF
 
   exec_fn="gefs2lbc_para"
-  exec_fp="$EXECdir/${exec_fn}"
+  exec_fp="$EXECaqm/${exec_fn}"
   if [ ! -f "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for GEFS LBCs does not exist:

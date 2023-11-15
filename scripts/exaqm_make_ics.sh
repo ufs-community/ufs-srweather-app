@@ -12,7 +12,7 @@ export pgm=aqm_make_ics
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -22,7 +22,7 @@ source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -150,7 +150,7 @@ if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
   EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.ICS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 
   cmd="
-  python3 -u ${USHdir}/retrieve_data.py \
+  python3 -u ${USHaqm}/retrieve_data.py \
   --debug \
   --symlink \
   --file_set ${file_set} \
@@ -487,7 +487,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube"
-exec_fp="$EXECdir/${exec_fn}"
+exec_fp="$EXECaqm/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   message_txt="The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
@@ -559,7 +559,7 @@ settings="
 # Call the python script to create the namelist file.
 #
 nml_fn="fort.41"
-${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+${USHaqm}/set_namelist.py -q -u "$settings" -o ${nml_fn}
 err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script set_namelist.py to set the variables 

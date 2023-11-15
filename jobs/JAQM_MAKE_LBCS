@@ -8,8 +8,9 @@ set -xue
 #-----------------------------------------------------------------------
 # Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
-#
-. $USHdir/source_util_funcs.sh
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
@@ -19,12 +20,14 @@ mkdir -p ${DATA}
 cd ${DATA}
 
 export cycle=${cycle:-t${cyc}z}
+
 setpdy.sh
 . ./PDY
 
-. $USHdir/job_preamble.sh
+export CDATE=${PDY}${cyc}
 
-export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+. $USHaqm/job_preamble.sh
+
 export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
@@ -44,7 +47,7 @@ export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
@@ -107,15 +110,20 @@ fi
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exaqm_make_lbcs.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+startmsg
+${HOMEaqm}/scripts/exaqm_make_lbcs.sh 
+export err=$?; err_chk
 #
-#-----------------------------------------------------------------------
-# Run job postamble.
-#-----------------------------------------------------------------------
-#
-job_postamble
+if [ "${KEEPDATA}" = "FALSE" ]; then
+   cd ${DATAROOT}
+   rm -rf $DATA
+fi
+# Print exit message
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 # Restore the shell options saved at the beginning of this script/function.

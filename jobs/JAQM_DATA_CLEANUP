@@ -18,6 +18,8 @@ cd $DATA
 # Run setpdy and initialize PDY variables
 ##############################################
 export cycle="t${cyc}z"
+export CDATE=${PDY}${cyc}
+
 setpdy.sh
 . ./PDY
 

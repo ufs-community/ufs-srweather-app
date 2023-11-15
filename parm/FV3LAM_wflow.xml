@@ -654,7 +654,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_EXTRN_ICS;" cycledefs="at_start" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_AQM_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_ICS"</command>
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -689,7 +689,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_ICS;" cycledefs="cycled" maxtries="{{ maxtries_aqm_ics }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_AQM_ICS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_ICS"</command>
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -725,7 +725,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_AQM_LBCS;" cycledefs="forecast" maxtries="{{ maxtries_aqm_lbcs }}">
 
     &RSRV_DEFAULT;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_LBCS;" "&JOBSdir;/JAQM_AQM_LBCS"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_LBCS;" "&JOBSdir;/JAQM_LBCS"</command>
     <nodes>{{ nnodes_aqm_lbcs }}:ppn={{ ppn_aqm_lbcs }}</nodes>
     <walltime>{{ wtime_aqm_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -757,7 +757,7 @@ MODULES_RUN_TASK_FP script.
   <task name="&TN_RUN_FCST;{{ uscore_ensmem_name }}" cycledefs="forecast" maxtries="{{ maxtries_run_fcst }}">
 
     &RSRV_FCST;
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSdir;/JAQM_RUN_FCST"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_FCST;" "&JOBSdir;/JAQM_FORECAST"</command>
   {%- if machine in ["JET", "HERA", "LINUX"]  %}
     <cores>{{ ncores_run_fcst }}</cores>
     <native>{{ native_run_fcst }}</native>
@@ -835,7 +835,7 @@ MODULES_RUN_TASK_FP script.
       <task name="&TN_RUN_POST_CYC4;{{ uscore_ensmem_name }}_f#fhr#" cycledefs="cyc_4th" maxtries="{{ maxtries_run_post }}">
       {%- endif %}
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -899,7 +899,7 @@ later below for other output times.
     <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -958,7 +958,7 @@ for other output times.
       <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1022,7 +1022,7 @@ always zero).
   {%- endif %}
 
         &RSRV_DEFAULT;
-        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
+        <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_POST"</command>
         <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
         <walltime>{{ wtime_run_post }}</walltime>
         <nodesize>&NCORES_PER_NODE;</nodesize>
@@ -1095,7 +1095,7 @@ the <task> tag to be identical to the ones above for other output times.
     <task name="&TN_RUN_POST;{{ uscore_ensmem_name }}_f#fhr##fmn#" cycledefs="forecast" maxtries="{{ maxtries_run_post }}">
 
       &RSRV_DEFAULT;
-      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_RUN_POST"</command>
+      <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_RUN_POST;" "&JOBSdir;/JAQM_POST"</command>
       <nodes>{{ nnodes_run_post }}:ppn={{ ppn_run_post }}</nodes>
       <walltime>{{ wtime_run_post }}</walltime>
       <nodesize>&NCORES_PER_NODE;</nodesize>

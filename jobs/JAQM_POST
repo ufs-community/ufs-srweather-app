@@ -5,25 +5,34 @@ export PS4=' $SECONDS + '
 set -xue
 
 #-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
+#
 #-----------------------------------------------------------------------
-. $USHdir/source_util_funcs.sh
-source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+
+. $USHaqm/source_util_funcs.sh
+source_config_for_task "task_run_post|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
 
+mkdir -p ${DATA}
 cd ${DATA}
 
 export cycle=${cycle:-t${cyc}z}
+export CDATE=${PDY}${cyc}
+
 setpdy.sh
 . ./PDY
 
-. $USHdir/job_preamble.sh
+. $USHaqm/job_preamble.sh
 
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-NO}
 
-export USHaqm=${USHaqm:-${HOMEaqm}/ush}
 export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
@@ -34,13 +43,13 @@ export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
 export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
 export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
 export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-
+#
 #-----------------------------------------------------------------------
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
@@ -62,41 +71,99 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies/fetches to a local 
-directory (either from disk or HPSS) the aqm boundary conditions from 
-which the model needs.
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-# Set the name of and create the directory in which the output from this
-# script will be placed (if it doesn't already exist).
+# Set the run directory.
 #-----------------------------------------------------------------------
 #
-export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}}"
-mkdir -p ${INPUT_DATA}
+DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/${cyc}}"
+#
+# If SUB_HOURLY_POST is not set to "TRUE", ensure that the forecast 
+# minutes (fmn) are set to "00".  This is necessary in order to pass
+# "fmn" into the post ex-script for the calculation of post_time.
+#
+if [ "${SUB_HOURLY_POST}" != "TRUE" ]; then
+  export fmn="00"
+fi
+#
+mkdir -p ${COMOUT}
+
+if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
+else
+  export DATA_FHR="${DATA:-$COMOUT}/$fhr"
+fi
+check_for_preexist_dir_file "${DATA_FHR}" "delete"
+mkdir -p ${DATA_FHR}
+cd ${DATA_FHR}
 #
 #-----------------------------------------------------------------------
-# Set the run directory
+# Make sure that fhr is a non-empty string consisting of only digits.  
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_AQM_ICS}"
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only 
+digits:
+  fhr = \"${fhr}\""
+fi
 #
 #-----------------------------------------------------------------------
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exaqm_aqm_ics.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+startmsg
+${HOMEaqm}/scripts/exaqm_post.sh 
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
-# Run job postamble.
+# Create a flag file to make rocoto aware that the run_post task has
+# successfully completed. This flag is necessary for varying forecast
+# hours (FCST_LEN_HRS: -1)
 #-----------------------------------------------------------------------
 #
-job_postamble
+if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
+  cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
+  CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
+  FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
+fi
+
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then 
+  fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" ) 
+  if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+    touch "${COMIN}/${cyc}/post_${PDY}${cyc}_task_complete.txt"
+  fi
+fi
+#
+fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
+if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+   if [ "${KEEPDATA}" = "FALSE" ]; then
+      cd ${DATAROOT}
+      rm -rf $DATA
+      share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
+      rm -rf *${share_pid}
+   fi
+else
+   if [ "${KEEPDATA}" = "FALSE" ]; then
+      cd ${DATAROOT}
+      rm -rf $DATA
+   fi
+fi
+# Print exit message
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
-# Restore the shell options saved at the beginning of this script/function.
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1

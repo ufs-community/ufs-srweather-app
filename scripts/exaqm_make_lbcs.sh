@@ -11,7 +11,7 @@ export pgm=aqm_make_lbcs
 # Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -21,7 +21,7 @@ source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_F
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -152,7 +152,7 @@ if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
   EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 
   cmd="
-  python3 -u ${USHdir}/retrieve_data.py \
+  python3 -u ${USHaqm}/retrieve_data.py \
   --debug \
   --symlink \
   --file_set ${file_set} \
@@ -404,7 +404,7 @@ esac
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube"
-exec_fp="$EXECdir/${exec_fn}"
+exec_fp="$EXECaqm/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   message_txt="The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
@@ -525,7 +525,7 @@ settings="
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  ${USHaqm}/set_namelist.py -q -u "$settings" -o ${nml_fn}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script set_namelist.py to set the variables 
