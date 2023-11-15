@@ -89,9 +89,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POINT_SOURCE}"
 startmsg
 ${HOMEaqm}/scripts/exaqm_point_source.sh
 export err=$?; err_chk
-#$SCRIPTSdir/exaqm_point_source.sh || \
-#print_err_msg_exit "\
-#Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 if [ "${KEEPDATA}" = "FALSE" ]; then
    cd ${DATAROOT}
