@@ -49,7 +49,7 @@ fi
 
 # Source modulefile for this machine
 WFLOW_MOD_FN="wflow_${machine}"
-source "${HOMEaqm}/ush/etc/lmod-setup.sh" ${machine}
+module reset
 module use "${HOMEaqm}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || { echo "ERROR:
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
