@@ -106,7 +106,7 @@ function set_vx_fhr_list() {
       fhr_int="${accum_hh}"
       ;;
     "ASNOW")
-      if [ ${accum_hh} = "24" ] ; then
+      if [ "${accum_hh}" = "24" ]; then
         fhr_min="24"
         fhr_int="12"
       else
