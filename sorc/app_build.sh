@@ -307,7 +307,7 @@ fi
 
 # source version file only if it is specified in versions directory
 BUILD_VERSION_FILE="${SRW_DIR}/versions/build.ver"
-if [ -f ${BUILD_VERSION_FILE} ]; then
+if [ "${PLATFORM}" = "wcoss2" ] && [ -f ${BUILD_VERSION_FILE} ]; then
   . ${BUILD_VERSION_FILE}
 fi
 

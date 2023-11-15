@@ -162,7 +162,7 @@ module use "${modules_dir}" || print_err_msg_exit "\
   Call to \"module use\" command failed."
 	
 # source version file (run) only if it is specified in versions directory
-if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
+if [ "${WORKFLOW_MANAGER}" != "ecflow" ] && [ "${machine}" = "wcoss2" ]; then
   VERSION_FILE="${HOMEaqm}/versions/${RUN_VER_FN}"
   if [ -f ${VERSION_FILE} ]; then
     . ${VERSION_FILE}

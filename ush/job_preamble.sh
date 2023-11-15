@@ -44,11 +44,19 @@ export MAILTO="${MAILTO:-${MAILTO_dfv}}"
 export MAILCC="${MAILCC:-${MAILCC_dfv}}"
 
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
-export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
-export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
-export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
-export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+  export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+  export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+  export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
+  export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+else
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}}"
+  export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
+  export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
+  mkdir -p ${COMIN}
+  mkdir -p ${COMOUT}
+fi
 
 export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
 export FIXaqmbio="${FIXaqmbio:-${HOMEaqm}/fix/bio}"
@@ -58,8 +66,6 @@ export FIXaqmchem_lbcs="${FIXaqmchem_lbcs:-${HOMEaqm}/fix/chem_lbcs}"
 export FIXaqmnexus="${FIXaqmnexus:-${HOMEaqm}/fix/nexus}"
 export FIXaqmnexus_gfs_sfc="${FIXaqmnexus:-${HOMEaqm}/fix/gfs}"
 export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
-export COMINgefs="${COMINgefs:-${COMROOT}/gefs/${gefs_ver})}"
-export COMINgfs="${COMINgfs:-$(compath.py  ${envir}/gfs/${gfs_ver})}"
 export COMINemispt="${COMINemispt:-${COMIN}/emission/pt}"
 export COMINemis="${COMINemis:-${COMIN}/emission}"
 export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
@@ -119,8 +125,13 @@ if [ ! -z $(command -v setpdy.sh) ]; then
     COMROOT=$COMROOT setpdy.sh
     . ./PDY
 fi
-export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
-export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+  export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
+else
+  export COMINm1="${COMINm1:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDYm1}}"
+  export COMINm2="${COMINm1:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDYm2}}"
+fi
 export CDATE=${PDY}${cyc}
 #
 #-----------------------------------------------------------------------
