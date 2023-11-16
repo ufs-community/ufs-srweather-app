@@ -65,9 +65,6 @@ task_get_extrn_lbcs:
   FV3GFS_FILE_FMT_LBCS: netcdf
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   WTIME_GET_EXTRN_LBCS: 02:00:00
-task_make_lbcs:
-  NNODES_MAKE_LBCS: 1
-  PPN_MAKE_LBCS: 128
 task_run_fcst:
   DT_ATMOS: 180
   LAYOUT_X: 50
@@ -82,6 +79,7 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: 793
   USE_CUSTOM_POST_CONFIG_FILE: false
 task_aqm_lbcs:
+  PPN_AQM_LBCS: 24
   WTIME_AQM_LBCS: 01:00:00
 task_nexus_gfs_sfc:
   NEXUS_GFS_SFC_OFFSET_HRS: 0

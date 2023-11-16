@@ -1,1 +1,2 @@
-load("miniconda_regional_workflow")
+load("miniconda_online-cmaq")
+
