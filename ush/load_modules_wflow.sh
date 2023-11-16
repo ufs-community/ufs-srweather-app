@@ -47,13 +47,11 @@ if [ "${machine}" = "wcoss2" ]; then
   if [ -f ${VERSION_FILE} ]; then
     . ${VERSION_FILE}
   fi
-  module reset
-else
-  module purge
 fi
 
 # Load modulefile for this machine
 WFLOW_MOD_FN="wflow_${machine}"
+source "${HOMEaqm}/ush/lmod-setup.sh" ${machine}
 module use "${HOMEaqm}/modulefiles"
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || { echo "ERROR:
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
