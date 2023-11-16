@@ -394,10 +394,13 @@ if [ "${VERBOSE}" = true ]; then
   MAKE_SETTINGS="${MAKE_SETTINGS} VERBOSE=1"
 fi
 
-# Before we go on load modules, we first need to activate Lmod for some systems
-source ${SRW_DIR}/ush/etc/lmod-setup.sh $MACHINE
+if [ "${PLATFORM}" = "wcoss2" ]; then
+  module reset
+else
+  module purge
+fi
 
-# source the module file for this platform/compiler combination, then build the code
+# load the module file for this platform/compiler combination, then build the code
 printf "... Load MODULE_FILE and create BUILD directory ...\n"
 
 if [ $USE_SUB_MODULES = true ]; then

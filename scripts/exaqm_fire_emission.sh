@@ -53,6 +53,7 @@ data files.
 #
 #-----------------------------------------------------------------------
 #
+set -x
 yyyymmdd=${FIRE_FILE_CDATE:0:8}
 hh=${FIRE_FILE_CDATE:8:2}
 
@@ -71,7 +72,7 @@ aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUF
 
 # Check if the fire file exists in the designated directory
 if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
-  cp "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+  cp "${DCOMINfire}/${aqm_fire_file_fn}" "${DATA}"
 else
   # Copy raw data 
   for ihr in {0..23}; do
@@ -93,12 +94,12 @@ else
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
-        cp -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
-        message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
-        print_info_msg "${message_warning}"
-        if [ ! -z "${maillist_group2}" ]; then
-          echo "${message_warning}" | mail.py $maillist_group2
-        fi
+      cp -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
+      message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
+      print_info_msg "${message_warning}"
+      if [ ! -z "${maillist_group2}" ]; then
+        echo "${message_warning}" | mail.py $maillist_group2
+      fi
     fi
   done  
 
@@ -106,7 +107,7 @@ else
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to NCKS returned with nonzero exit code."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 
   mv temp.nc Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
@@ -115,7 +116,7 @@ else
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to NCRCAT returned with nonzero exit code."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 
   input_fire="${DATA}/Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc"
@@ -125,14 +126,14 @@ else
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 
   ncks --mk_rec_dmn Time Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc -o Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to NCKS returned with nonzero exit code."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 
   cp Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc 
@@ -143,11 +144,8 @@ else
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to NCRCAT returned with nonzero exit code."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
-
-  # Copy the final fire emission file to STAGING_DIR 
-  cp "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 
   # Archive the final fire emission file to disk and HPSS
   if [ "${DO_AQM_SAVE_FIRE}" = "TRUE" ]; then
@@ -161,22 +159,21 @@ else
 file hsi_log_fn in the DATA directory for details:
   DATA = \"${DATA}\"
   hsi_log_fn = \"${hsi_log_fn}\""
-        err_exit "${message_txt}"
+      err_exit "${message_txt}"
     fi
   fi
 fi
+
+mv ${aqm_fire_file_fn}  temp.nc
+ncrename -v PM2.5,PM25 temp.nc temp1.nc
+ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
+ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
+ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
+ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
+ncrename -v PM25,PM2.5 temp5.nc temp6.nc
+mv temp6.nc ${aqm_fire_file_fn}
+cp "${DATA}/${aqm_fire_file_fn}" ${FIRE_EMISSION_STAGING_DIR}
 #
- cd ${FIRE_EMISSION_STAGING_DIR}
- mv ${aqm_fire_file_fn}  temp.nc
- ncrename -v PM2.5,PM25 temp.nc temp1.nc
- ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
- ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
- ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
- ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
- ncrename -v PM25,PM2.5 temp5.nc temp6.nc
- mv temp6.nc ${aqm_fire_file_fn}
- rm -rf temp*nc
-     #
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/function.

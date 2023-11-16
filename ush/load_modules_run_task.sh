@@ -109,7 +109,11 @@ set -u
 #
 machine=$(echo_lowercase $MACHINE)
 if [ "${WORKFLOW_MANAGER}" != "ecflow" ]; then
-  source "${USHdir}/etc/lmod-setup.sh" ${machine}
+  if [ "${machine}" = "wcoss2" ]; then
+    module reset
+  else
+    module purge
+  fi
 fi
 if [ "${machine}" != "wcoss2" ]; then
   module use "${HOMEaqm}/modulefiles"
