@@ -82,7 +82,12 @@ PLATFORM Configuration Parameters
 If non-default parameters are selected for the variables in this section, they should be added to the ``platform:`` section of the ``config.yaml`` file. 
 
 ``WORKFLOW_MANAGER``: (Default: "none")
-   The workflow manager to use (e.g., "rocoto"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "rocoto." If set explicitly to "rocoto" along with the use of the ``MACHINE: "LINUX"`` target, the configuration layer assumes a Slurm batch manager when generating the XML. Valid values: ``"rocoto"`` | ``"ecflow"`` | ``"none"``
+   The workflow manager to use (e.g., "rocoto"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "rocoto." If set explicitly to "rocoto" along with the use of the ``MACHINE: "LINUX"`` target, the configuration layer assumes a Slurm batch manager when generating the XML. Valid values: ``"rocoto"`` | ``"none"``
+
+   .. note:: 
+
+      The ability to generate an ``ecflow`` workflow is not yet available in the SRW App. Although ``ecflow`` has been added to ``ush/valid_param_vals.yaml`` as a valid option, setting this option will fail to produce a functioning workflow. 
+      Without the necessary ``ecf`` directory, it is impossible to generate ``ecflow`` workflows at this time. The addition of this functionality is planned but not yet completed. 
 
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
