@@ -1,9 +1,9 @@
 help([[
-This module loads libraries for building the RRFS workflow on
+This module loads libraries for building the SRW workflow on
 the NOAA RDHPC machine Hera using Intel-2022.1.2
 ]])
 
-whatis([===[Loads libraries needed for building the RRFS workflow on Hera ]===])
+whatis([===[Loads libraries needed for building the SRW workflow on Hera ]===])
 
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-noavx512/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")

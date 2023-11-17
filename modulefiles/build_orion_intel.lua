@@ -1,9 +1,8 @@
 help([[
-This module loads libraries for building the RRFS workflow on
-the NOAA RDHPC machine Hera using Intel-2022.1.2
+This module loads libraries for building the SRW workflow on Orion
 ]])
 
-whatis([===[Loads libraries needed for building the RRFS workflow on Hera ]===])
+whatis([===[Loads libraries needed for building the SRW workflow on Orion ]===])
 
 prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.0/envs/unified-env/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
@@ -12,7 +11,7 @@ load(pathJoin("stack-intel", "2022.0.2"))
 load(pathJoin("stack-intel-oneapi-mpi", "2021.5.1"))
 load(pathJoin("stack-python", "3.10.8"))
 
-load(pathJoin("cmake", "3.20.1"))
+load(pathJoin("cmake", "3.22.1"))
 
 load(pathJoin("hdf5", "1.14.0"))
 load(pathJoin("netcdf-c", "4.9.2"))
