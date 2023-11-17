@@ -49,7 +49,6 @@ load(pathJoin("w3emc", "2.10.0"))
 load(pathJoin("w3nco", "2.4.1"))
 load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("wgrib2", "2.0.8"))
-load(pathJoin("yafyaml", "0.5.1"))
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
