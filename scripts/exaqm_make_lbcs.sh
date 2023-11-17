@@ -1,13 +1,17 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_make_lbcs
+
 #-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
-#
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +21,7 @@ source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_F
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -148,7 +152,7 @@ if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
   EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 
   cmd="
-  python3 -u ${USHdir}/retrieve_data.py \
+  python3 -u ${USHaqm}/retrieve_data.py \
   --debug \
   --symlink \
   --file_set ${file_set} \
@@ -229,24 +233,6 @@ case "${CCPP_PHYS_SUITE}" in
   "FV3_GFS_v15p2" )
     varmap_file="GFSphys_var_map.txt"
     ;;
-#
-  "FV3_RRFS_v1beta" | \
-  "FV3_GFS_v15_thompson_mynn_lam3km" | \
-  "FV3_GFS_v17_p8" | \
-  "FV3_WoFS_v0" | \
-  "FV3_HRRR" )
-    if [ "${EXTRN_MDL_NAME_LBCS}" = "RAP" ] || \
-       [ "${EXTRN_MDL_NAME_LBCS}" = "HRRR" ]; then
-      varmap_file="GSDphys_var_map.txt"
-    elif [ "${EXTRN_MDL_NAME_LBCS}" = "NAM" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "FV3GFS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GEFS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GDAS" ] || \
-         [ "${EXTRN_MDL_NAME_LBCS}" = "GSMGFS" ]; then
-      varmap_file="GFSphys_var_map.txt"
-    fi
-    ;;
-#
   *)
   message_txt="The variable \"varmap_file\" has not yet been specified 
 for this physics suite (CCPP_PHYS_SUITE):
@@ -364,9 +350,7 @@ tracers="\"\""
 #-----------------------------------------------------------------------
 #
 thomp_mp_climo_file=""
-if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
-     "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+if  [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -378,13 +362,6 @@ fi
 #-----------------------------------------------------------------------
 #
 case "${EXTRN_MDL_NAME_LBCS}" in
-
-"GSMGFS")
-  external_model="GSMGFS"
-  input_type="gfs_gaussian_nemsio" # For spectral GFS Gaussian grid in nemsio format.
-  tracers_input="[\"spfh\",\"clwmr\",\"o3mr\"]"
-  tracers="[\"sphum\",\"liq_wat\",\"o3mr\"]"
-  ;;
 
 "FV3GFS")
   if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
@@ -411,28 +388,6 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   input_type="gaussian_netcdf"
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
-
-"GEFS")
-  external_model="GFS"
-  fn_grib2="${EXTRN_MDL_FNS[0]}"
-  input_type="grib2"
-  ;;
-
-"RAP")
-  external_model="RAP"
-  input_type="grib2"
-  ;;
-
-"HRRR")
-  external_model="HRRR"
-  input_type="grib2"
-  ;;
-
-"NAM")
-  external_model="NAM"
-  input_type="grib2"
-  ;;
-
 *)
   message_txt="External-model-dependent namelist variables have not yet been 
 specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
@@ -449,7 +404,7 @@ esac
 #-----------------------------------------------------------------------
 #
 exec_fn="chgres_cube"
-exec_fp="$EXECdir/${exec_fn}"
+exec_fp="$EXECaqm/${exec_fn}"
 if [ ! -f "${exec_fp}" ]; then
   message_txt="The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
@@ -479,9 +434,6 @@ for (( i=0; i<${num_fhrs}; i++ )); do
   fn_grib2=""
 
   case "${EXTRN_MDL_NAME_LBCS}" in
-  "GSMGFS")
-    fn_atm="${EXTRN_MDL_FNS[$i]}"
-    ;;
   "FV3GFS")
     if [ "${FV3GFS_FILE_FMT_LBCS}" = "nemsio" ]; then
       fn_atm="${EXTRN_MDL_FNS[$i]}"
@@ -495,15 +447,6 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_atm="${EXTRN_MDL_FNS[0][$i]}"
     ;;
   "GEFS")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "RAP")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "HRRR")
-    fn_grib2="${EXTRN_MDL_FNS[$i]}"
-    ;;
-  "NAM")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
@@ -582,7 +525,7 @@ settings="
 # Call the python script to create the namelist file.
 #
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  ${USHaqm}/set_namelist.py -q -u "$settings" -o ${nml_fn}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script set_namelist.py to set the variables 
@@ -610,11 +553,9 @@ $settings"
 # exit code of chgres_cube is nonzero.  A similar thing happens in the
 # forecast task.
 #
-  PREP_STEP
-  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
+  startmsg
+  eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
+  export err=$?; err_chk
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name

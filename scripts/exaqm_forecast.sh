@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_fcst
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -451,7 +457,7 @@ fi
 #
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-   $USHdir/set_FV3nml_ens_stoch_seeds.py \
+   $USHaqm/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE"
   export err=$?
@@ -484,7 +490,7 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
   flag_fcst_restart="TRUE"
 
   # Update FV3 input.nml for restart
-   $USHdir/update_input_nml.py \
+   $USHaqm/update_input_nml.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
     --restart
@@ -554,7 +560,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  $USHdir/create_aqm_rc_file.py \
+  $USHaqm/create_aqm_rc_file.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
@@ -576,7 +582,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_model_configure_file.py \
+ $USHaqm/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
@@ -601,7 +607,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_diag_table_file.py \
+ $USHaqm/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -631,7 +637,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_nems_configure_file.py \
+ $USHaqm/create_nems_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -652,11 +658,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-PREP_STEP
-eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #

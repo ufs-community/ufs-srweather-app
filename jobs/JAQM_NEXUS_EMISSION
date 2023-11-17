@@ -1,49 +1,71 @@
 #!/bin/bash
 
-#
+date
+export PS4=' $SECONDS + '
+set -xue
+
 #-----------------------------------------------------------------------
-#
-# This script generate NEXUS emission netcdf file.
-#
+# Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
-#
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+
+. $USHaqm/source_util_funcs.sh
+source_config_for_task "task_run_fcst|cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
+
+export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+mkdir -p ${DATA}
+cd ${DATA}
+
+export cycle=${cycle:-t${cyc}z}
+export CDATE=${PDY}${cyc}
+
+setpdy.sh
+. ./PDY
+
+. $USHaqm/job_preamble.sh
+
+export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
+export FIXaqmbio="${FIXaqmbio:-${HOMEaqm}/fix/bio}"
+export FIXaqmdust="${FIXaqmdust:-${HOMEaqm}/fix/dust}"
+export FIXaqmcanopy="${FIXaqmcanopy:-${HOMEaqm}/fix/canopy}"
+export FIXaqmnexus="${FIXaqmnexus:-${HOMEaqm}/fix/nexus}"
+export FIXaqmnexus_gfs_sfc="${FIXaqmnexus:-${HOMEaqm}/fix/gfs}"
+
+export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
+export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
+
+export COMINemis="${COMINemis:-${COMIN}/emission}"
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
 #
 #-----------------------------------------------------------------------
-#
-# Source the variable definitions file and the bash utility functions.
-#
-#-----------------------------------------------------------------------
-#
-. $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
-#
-#-----------------------------------------------------------------------
-#
 # Save current shell options (in a global array).  Then set new options
 # for this script/function.
-#
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
-#
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
-#
 #-----------------------------------------------------------------------
 #
 scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
-#
+
+env
 #-----------------------------------------------------------------------
-#
 # Print message indicating entry into script.
-#
 #-----------------------------------------------------------------------
 #
 print_info_msg "
@@ -56,27 +78,21 @@ using NEXUS which will output for FV3 (in NetCDF format).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-#
 # Set the name of and create the directory in which the output from this
 # script will be placed (if it doesn't already exist).
-#
 #-----------------------------------------------------------------------
 #
 export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}/NEXUS}"
 mkdir -p ${INPUT_DATA}
 #
 #-----------------------------------------------------------------------
-#
 # Set the run directory
-#
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_EMISSION_${nspt}}"
 #
 #-----------------------------------------------------------------------
-#
 # Set environment only when RUN_TASK_NEXUS_GFS_SFC is false.
-#
 #-----------------------------------------------------------------------
 #
 if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
@@ -89,23 +105,23 @@ if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
 fi
 #
 #-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job.
-#
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exaqm_nexus_emission.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+startmsg
+${HOMEaqm}/scripts/exaqm_nexus_emission.sh
+export err=$?; err_chk
 #
-#-----------------------------------------------------------------------
-#
-# Run job postamble.
-#
-#-----------------------------------------------------------------------
-#
-job_postamble
-#
+if [ "${KEEPDATA}" = "FALSE" ]; then
+   cd ${DATAROOT}
+   rm -rf $DATA
+fi
+# Print exit message
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #-----------------------------------------------------------------------
 #
 # Restore the shell options saved at the beginning of this script/func-

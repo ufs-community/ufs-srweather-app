@@ -1,8 +1,8 @@
 #!/bin/bash
-set -x
 
-export PS4='$SECONDS + '
 date
+export PS4='$SECONDS + '
+set -xue
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
@@ -18,9 +18,12 @@ cd $DATA
 # Run setpdy and initialize PDY variables
 ##############################################
 export cycle="t${cyc}z"
+export CDATE=${PDY}${cyc}
+
 setpdy.sh
 . ./PDY
 
+env
 ##############################################
 # Set variables used in the script
 ##############################################

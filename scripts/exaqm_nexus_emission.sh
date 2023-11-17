@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_nexus_emissions
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${G
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -159,7 +165,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp ${EXECdir}/nexus ${DATA}
+cp ${EXECaqm}/nexus ${DATA}
 
 cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
@@ -353,11 +359,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-PREP_STEP
-eval ${RUN_CMD_AQM} ${EXECdir}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_AQM} ${EXECaqm}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 # 
 #-----------------------------------------------------------------------

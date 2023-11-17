@@ -1,13 +1,18 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_point_source
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +22,7 @@ source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #

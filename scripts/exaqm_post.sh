@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_post
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -226,11 +232,9 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-PREP_STEP
-eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR}
-export err=$?
- err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_POST} ${EXECaqm}/upp.x < itag ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 #
 #-----------------------------------------------------------------------
 #

@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_post_stat_o3
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -100,11 +106,9 @@ id_gribdomain=${id_domain}
 EOF1
 
 # convert from netcdf to grib2 format
-PREP_STEP
-eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
-export err=$?
- err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
@@ -156,7 +160,7 @@ for grid in 227 196 198;do
     done
     for var in 1ho3 8ho3;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
+      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${PCOM}
     done
     for var in awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
@@ -224,11 +228,9 @@ EOF1
     fi
   fi
 
-  PREP_STEP
-  eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
+  startmsg 
+  eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
+  export err=$?; err_chk
 
   # split into max_1h and max_8h files and copy to grib227
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2
@@ -267,10 +269,10 @@ EOF1
       tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${PCOM}
     if [ "${SENDDBN_NTC}" = "TRUE" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi
