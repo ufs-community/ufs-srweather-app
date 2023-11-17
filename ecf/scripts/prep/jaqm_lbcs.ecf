@@ -52,7 +52,7 @@ export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_AQM_LBCS
+${HOMEaqm}/jobs/JAQM_LBCS
 
 %include <tail.h>
 

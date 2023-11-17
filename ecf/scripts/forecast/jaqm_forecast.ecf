@@ -49,7 +49,7 @@ export subcyc=0
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_RUN_FCST
+${HOMEaqm}/jobs/JAQM_FORECAST
 
 %include <tail.h>
 

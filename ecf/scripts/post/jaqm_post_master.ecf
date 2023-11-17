@@ -40,7 +40,7 @@ export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_RUN_POST
+${HOMEaqm}/jobs/JAQM_POST
 
 %include <tail.h>
 

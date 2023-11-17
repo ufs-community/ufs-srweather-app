@@ -28,7 +28,7 @@ export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JDATA_CLEANUP
+${HOMEaqm}/jobs/JAQM_DATA_CLEANUP
 
 %include <tail.h>
 %manual
