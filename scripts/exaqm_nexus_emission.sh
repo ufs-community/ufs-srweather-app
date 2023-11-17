@@ -240,7 +240,7 @@ ${ARL_NEXUS_DIR}/utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"nexus_time_parser.py\" failed."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
 #
 #---------------------------------------------------------------------
@@ -251,7 +251,7 @@ ${ARL_NEXUS_DIR}/utils/python/nexus_root_parser.py -f ${DATA}/NEXUS_Config.rc -d
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"nexus_root_parser.py\" failed."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
 #
 #----------------------------------------------------------------------
@@ -265,14 +265,14 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"nexus_nei2016_linker.py\" failed."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 
   ${ARL_NEXUS_DIR}/utils/python/nexus_nei2016_control_tilefix.py -f ${DATA}/NEXUS_Config.rc -t ${DATA}/HEMCO_sa_Time.rc # -d ${yyyymmdd}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"nexus_nei2016_control_tilefix.py\" failed."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 fi
 
@@ -342,7 +342,7 @@ if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"nexus_gfs_bio.py\" failed."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 fi
 
@@ -366,12 +366,14 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
+${ARL_NEXUS_DIR}/utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
+
+cp "${DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc" ${INPUT_DATA}
 #
 #-----------------------------------------------------------------------
 #
