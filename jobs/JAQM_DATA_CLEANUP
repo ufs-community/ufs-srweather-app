@@ -7,10 +7,17 @@ set -xue
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+
+export cycle=t${cyc}z
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+
+. ${PARMaqm}/config/var_defns.sh
+. ${USHaqm}/source_util_funcs.sh
+
 mkdir -p $DATA
 cd $DATA
 

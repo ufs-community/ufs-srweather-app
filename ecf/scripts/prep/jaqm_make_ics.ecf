@@ -27,7 +27,6 @@ module load netcdf/${netcdf_ver}
 module load bacio/${bacio_ver}
 module load nemsio/${nemsio_ver}
 module load w3emc/${w3emc_ver}
-module load w3nco/${w3nco_ver}
 module load udunits/${udunits_ver}
 module load gsl/${gsl_ver}
 module load nco/${nco_ver}
@@ -36,20 +35,16 @@ module load prod_util/${prod_util_ver}
 
 module list
 
-export subcyc='00'
-export SLASH_ENSMEM_SUBDIR=''
-export ENSMEM_INDX='##'
-
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
-
 ############################################################
 # CALL executable job script here
 ############################################################
 ${HOMEaqm}/jobs/JAQM_MAKE_ICS
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
 
 %include <tail.h>
 

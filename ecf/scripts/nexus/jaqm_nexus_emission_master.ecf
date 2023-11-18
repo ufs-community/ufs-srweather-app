@@ -33,13 +33,13 @@ module load nco/${nco_ver}
 module list
 
 export nspt="%NSPT%"
-export subcyc=0
-export SLASH_ENSMEM_SUBDIR=''
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
+#export subcyc=0
+#export SLASH_ENSMEM_SUBDIR=''
+#export pid=${pid:-$$}
+#export outid=${outid:-"LL$job"}
+#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+#. ${HOMEaqm}/parm/config/var_defns.sh
+#. ${HOMEaqm}/ush/source_util_funcs.sh
 
 ############################################################
 # CALL executable job script here

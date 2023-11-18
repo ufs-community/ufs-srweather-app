@@ -27,7 +27,6 @@ module load netcdf/${netcdf_ver}
 module load bacio/${bacio_ver}
 module load nemsio/${nemsio_ver}
 module load w3emc/${w3emc_ver}
-module load w3nco/${w3nco_ver}
 module load udunits/${udunits_ver}
 module load gsl/${gsl_ver}
 module load nco/${nco_ver}
@@ -35,15 +34,6 @@ module load python/${python_ver}
 module load prod_util/${prod_util_ver}
 
 module list
-
-export subcyc='00'
-export SLASH_ENSMEM_SUBDIR=''
-export ENSMEM_INDX='##'
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
 
 ############################################################
 # CALL executable job script here

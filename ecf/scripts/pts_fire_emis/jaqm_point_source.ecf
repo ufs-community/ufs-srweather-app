@@ -25,12 +25,12 @@ module load prod_util/${prod_util_ver}
 
 module list
 
-export subcyc=0
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
+#export subcyc=0
+#export pid=${pid:-$$}
+#export outid=${outid:-"LL$job"}
+#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+#. ${HOMEaqm}/parm/config/var_defns.sh
+#. ${HOMEaqm}/ush/source_util_funcs.sh
 
 ############################################################
 # CALL executable job script here

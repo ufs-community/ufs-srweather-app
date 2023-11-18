@@ -10,7 +10,13 @@ set -xue
 #
 #-----------------------------------------------------------------------
 export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 
+export subcyc=0
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+. ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_post|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
 

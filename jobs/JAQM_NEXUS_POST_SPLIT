@@ -8,6 +8,14 @@ set -xue
 # Source the variable definitions file and the bash utility functions.
 #-----------------------------------------------------------------------
 export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+
+export subcyc=0
+export SLASH_ENSMEM_SUBDIR=''
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+. ${PARMaqm}/config/var_defns.sh
 
 . $USHaqm/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_post_split" ${GLOBAL_VAR_DEFNS_FP}
