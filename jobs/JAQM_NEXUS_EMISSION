@@ -19,8 +19,6 @@ export outid=${outid:-"LL$job"}
 
 . $USHaqm/source_util_funcs.sh
 
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_nexus_emission|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 

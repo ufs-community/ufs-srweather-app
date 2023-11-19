@@ -26,7 +26,6 @@ module load udunits/${udunits_ver}
 module load gsl/${gsl_ver}
 module load nco/${nco_ver}
 module load python/${python_ver}
-module load prod_util/${prod_util_ver}
 
 module list
 

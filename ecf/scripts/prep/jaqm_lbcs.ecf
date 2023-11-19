@@ -21,23 +21,14 @@ module load craype/${craype_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load jasper/${jasper_ver}
-module load zlib/${zlib_ver}
-module load libpng/${libpng_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load bacio/${bacio_ver}
-module load bufr/${bufr_ver}
-module load g2/${g2_ver}
 module load nemsio/${nemsio_ver}
-module load nemsiogfs/${nemsiogfs_ver}
-module load sigio/${sigio_ver}
-module load wgrib2/${wgrib2_ver}
-module load w3emc/${w3emc_ver}
+#module load nemsiogfs/${nemsiogfs_ver}
 module load udunits/${udunits_ver}
 module load gsl/${gsl_ver}
 module load nco/${nco_ver}
 module load python/${python_ver}
-module load prod_util/${prod_util_ver}
 
 module list
 

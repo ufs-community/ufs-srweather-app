@@ -25,7 +25,6 @@ module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load libjpeg/${libjpeg_ver}
 module load python/${python_ver}
-module load prod_util/${prod_util_ver}
 
 module list
 

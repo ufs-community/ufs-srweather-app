@@ -20,7 +20,6 @@ export outid=${outid:-"LL$job"}
 
 . ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
-source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
