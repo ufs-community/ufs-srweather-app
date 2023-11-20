@@ -192,6 +192,27 @@ while :; do
   shift
 done
 
+# Ensure uppercase / lowercase ============================================
+APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
+PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
+COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
+
+# check if PLATFORM is set
+if [ -z $PLATFORM ] ; then
+  printf "\nERROR: Please set PLATFORM.\n\n"
+  usage
+  exit 0
+fi
+# set PLATFORM (MACHINE)
+MACHINE="${PLATFORM}"
+printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
+
+
+# Conda is not used on WCOSS2
+if [ "${PLATFORM}" = "wcoss2" ]; then
+    BUILD_CONDA="off"
+fi
+
 # build conda and conda environments, if requested.
 if [ "${BUILD_CONDA}" = "on" ] ; then
   if [ ! -d "${CONDA_BUILD_DIR}" ] ; then
@@ -216,6 +237,12 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   if ! conda env list | grep -q "^srw_graphics\s" ; then
     mamba env create -n srw_graphics --file graphics_environment.yml
   fi
+  if [ "${APPLICATION}" = "ATMAQ" ]; then
+    if ! conda env list | grep -q "^srw_graphics\s" ; then
+      mamba env create -n srw_aqm --file aqm_environment.yml
+    fi
+  fi
+
 else
   source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
   conda activate
@@ -229,21 +256,6 @@ INSTALL_DIR=${INSTALL_DIR:-$SRW_DIR}
 CONDA_BUILD_DIR="$(readlink -f "${CONDA_BUILD_DIR}")"
 echo ${CONDA_BUILD_DIR} > ${SRW_DIR}/conda_loc
 
-# Ensure uppercase / lowercase ============================================
-APPLICATION=$(echo ${APPLICATION} | tr '[a-z]' '[A-Z]')
-PLATFORM=$(echo ${PLATFORM} | tr '[A-Z]' '[a-z]')
-COMPILER=$(echo ${COMPILER} | tr '[A-Z]' '[a-z]')
-
-# check if PLATFORM is set
-if [ -z $PLATFORM ] ; then
-  printf "\nERROR: Please set PLATFORM.\n\n"
-  usage
-  exit 0
-fi
-# set PLATFORM (MACHINE)
-MACHINE="${PLATFORM}"
-printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
-
 # choose default apps to build
 if [ "${DEFAULT_BUILD}" = true ]; then
   BUILD_UFS="on"
@@ -256,11 +268,9 @@ if [ "${APPLICATION}" = "ATMAQ" ]; then
   if [ "${DEFAULT_BUILD}" = true ]; then
     BUILD_NEXUS="on"
     BUILD_AQM_UTILS="on"
-    BUILD_CONDA="off"
   fi
   if [ "${PLATFORM}" = "wcoss2" ]; then
     BUILD_POST_STAT="on"
-    BUILD_CONDA="off"
   else
     BUILD_POST_STAT="off"
   fi
