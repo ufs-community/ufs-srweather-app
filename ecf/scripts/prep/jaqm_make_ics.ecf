@@ -33,12 +33,6 @@ module list
 ############################################################
 ${HOMEaqm}/jobs/JAQM_MAKE_ICS
 
-if [ $? -ne 0 ]; then
-   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
-   ecflow_client --abort
-   exit
-fi
-
 %include <tail.h>
 
 %manual
