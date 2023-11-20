@@ -152,7 +152,7 @@ if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
   EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.LBCS.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 
   cmd="
-  python3 -u ${USHaqm}/retrieve_data.py \
+  ${USHaqm}/retrieve_data.py \
   --debug \
   --symlink \
   --file_set ${file_set} \

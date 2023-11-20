@@ -24,7 +24,6 @@ module load jasper/${jasper_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load nemsio/${nemsio_ver}
-#module load nemsiogfs/${nemsiogfs_ver}
 module load udunits/${udunits_ver}
 module load gsl/${gsl_ver}
 module load nco/${nco_ver}
