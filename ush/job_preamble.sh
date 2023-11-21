@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -ax
 #
 #-----------------------------------------------------------------------
 # If requested to share data with next task, override jobid

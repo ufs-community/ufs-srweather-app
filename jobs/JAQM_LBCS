@@ -102,10 +102,7 @@ startmsg
 ${HOMEaqm}/scripts/exaqm_lbcs.sh
 export err=$?; err_chk
 #
-if [ "${KEEPDATA}" = "FALSE" ]; then
-   cd ${DATAROOT}
-   rm -rf $DATA
-fi
+
 # Print exit message
 print_info_msg "
 ========================================================================

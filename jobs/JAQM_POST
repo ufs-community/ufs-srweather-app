@@ -146,19 +146,19 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
 fi
 #
 fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" )
-if [ "${fhr}" = "${fcst_len_hrs}" ]; then
-   if [ "${KEEPDATA}" = "FALSE" ]; then
-      cd ${DATAROOT}
-      rm -rf $DATA
-      share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
-      rm -rf *${share_pid}
-   fi
-else
-   if [ "${KEEPDATA}" = "FALSE" ]; then
-      cd ${DATAROOT}
-      rm -rf $DATA
-   fi
-fi
+#if [ "${fhr}" = "${fcst_len_hrs}" ]; then
+#   if [ "${KEEPDATA}" = "FALSE" ]; then
+#      cd ${DATAROOT}
+#      rm -rf $DATA
+#      share_pid="${WORKFLOW_ID}_${PDY}${cyc}"
+#      rm -rf *${share_pid}
+#   fi
+#else
+#   if [ "${KEEPDATA}" = "FALSE" ]; then
+#      cd ${DATAROOT}
+#      rm -rf $DATA
+#   fi
+#fi
 # Print exit message
 print_info_msg "
 ========================================================================

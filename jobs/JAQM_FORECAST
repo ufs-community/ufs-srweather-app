@@ -94,9 +94,7 @@ startmsg
 ${HOMEaqm}/scripts/exaqm_forecast.sh
 export err=$?; err_chk
 #
-if [ "${KEEPDATA}" = "FALSE" ]; then
-   cd ${DATAROOT}
-fi
+
 # Print exit message
 print_info_msg "
 ========================================================================
