@@ -44,8 +44,8 @@ OPTIONS
   --bin-dir=BIN_DIR
       installation binary directory name ("exec" by default; any name is available)
   --build-type=BUILD_TYPE
-      build type; defaults to RELEASE
-      (e.g. DEBUG | RELEASE | RELWITHDEBINFO)
+      build type; defaults to Release
+      (e.g. Debug | Release | RelWithDebInfo)
   --build-jobs=BUILD_JOBS
       number of build jobs; defaults to 4
   --use-sub-modules
@@ -114,7 +114,7 @@ APPLICATION=""
 CCPP_SUITES=""
 ENABLE_OPTIONS=""
 DISABLE_OPTIONS=""
-BUILD_TYPE="RELEASE"
+BUILD_TYPE="Release"
 BUILD_JOBS=4
 EXTRN=false
 REMOVE=false
@@ -407,7 +407,7 @@ if [ $USE_SUB_MODULES = true ]; then
         set +e
         #try most specialized modulefile first
         MODF="$1${PLATFORM}.${COMPILER}"
-        if [ $BUILD_TYPE != "RELEASE" ]; then
+        if [ $BUILD_TYPE != "Release" ]; then
             MODF="${MODF}.debug"
         else
             MODF="${MODF}.release"
