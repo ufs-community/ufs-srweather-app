@@ -87,7 +87,11 @@ This is the J-job script for the task that runs BIAS-CORRECTION-PM25.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_PM25}"
 
-mkdir -p ${PCOM}
+if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+  if [ ! -d "${PCOM}" ]; then 
+      mkdir -p "${PCOM}"
+  fi
+fi
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 
