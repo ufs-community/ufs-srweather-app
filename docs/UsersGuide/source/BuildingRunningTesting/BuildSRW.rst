@@ -200,7 +200,7 @@ On Level 1 systems for which a modulefile is provided under the ``modulefiles`` 
 
 where ``<machine_name>`` is replaced with the name of the platform the user is working on. Valid values include: ``cheyenne`` | ``gaea`` | ``hera`` | ``jet`` | ``linux`` | ``macos`` | ``noaacloud`` | ``orion`` 
 
-Starting with SRW v2.2.0 will install miniconda and SRW environments as part
+Directly following the release of SRW v2.2.0, the App will install miniconda and SRW environments as part
 of the build process. The location defaults to inside the SRW clone in ``ufs-srweather-app/conda``,
 however users can set any path on their system using the ``--conda-dir`` flag. If conda is already
 installed in that location, conda installation will be skipped. The following example uses a

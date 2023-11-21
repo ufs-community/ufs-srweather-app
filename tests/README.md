@@ -47,7 +47,7 @@ The unit tests in the test_python/ directory test various parts of the workflow 
 ### Set PYTHONPATH
 
 First, you will need to set the PYTHONPATH environment variable to include the ush/ directory and
-the a few of the workflow-toools subdirectories. From the top level of the ufs-srweather-app clone
+a few of the workflow-tools subdirectories. From the top level of the ufs-srweather-app clone
 run the following command:
 
 ```
