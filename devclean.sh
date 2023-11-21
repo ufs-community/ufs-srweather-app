@@ -80,6 +80,7 @@ if [[ ("$1" == "--help") || ("$1" == "-h") ]]; then
   usage
   exit 0
 fi
+
 # process optional arguments
 while :; do
   case $1 in
@@ -104,7 +105,7 @@ while :; do
     default) ALL_CLEAN=false ;;
     # unknown
     -?*|?*) usage_error "Unknown option $1" ;;
-    *) usage; break ;;
+    *) break ;;
   esac
   shift
 done
@@ -137,7 +138,7 @@ elif [ "${CLEAN}" = true ]; then
     "${SRW_DIR}/manage_externals/manic" \
   )
   for directory in $directories; do
-    [[ -d directory ]] && rm -rf $directory && print '%s\n' "rm -rf $directory"
+    [[ -d $directory ]] && rm -rfv $directory
   done
   echo " "
 fi
@@ -156,7 +157,7 @@ fi
 #
 
 # Clean conda if requested
-if [ ${REMOVE_CONDA} == true ] ; then
+if [ "${REMOVE_CONDA}" = true ] ; then
   printf '%s\n' "Removing conda location file"
   rm -rf ${SRW_DIR}/conda_loc
   printf '%s\n' "Removing conda installation"

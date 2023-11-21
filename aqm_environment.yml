@@ -1,6 +1,7 @@
 name: srw_aqm
 channels:
   - conda-forge
+  - ufs-community
 dependencies:
   - esmpy
   - netcdf4=1.6.*

@@ -10,7 +10,6 @@ prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/spack-stack/modulefiles")
 
 load("stack-intel/2021.5.0")
 load("stack-intel-oneapi-mpi/2021.5.1")
-load("stack-python/3.9.12")
 load("cmake/3.23.1")
 
 load("srw_common")
@@ -18,7 +17,6 @@ load("srw_common")
 load("prod-util/1.2.2")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
-load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
