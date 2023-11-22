@@ -131,16 +131,6 @@ symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-## Symlink to halo-3 grid file with "halo3" stripped from name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
-#if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
-#   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-#   [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "FALSE" ]; then
-#  symlink="C${GFDLgrid_NUM_CELLS}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#else
-#  symlink="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#fi
-
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
@@ -155,7 +145,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # If this link is not created, then the code hangs with an error message
 # like this:
 #
-#   check netcdf status=           2
+#  check netcdf status=           2
 #  NetCDF error No such file or directory
 # Stopped
 #
@@ -707,7 +697,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
 
       # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
+      if [ $SENDDBN = "YES" ]; then
         $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
       fi
     done

@@ -49,7 +49,7 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-  . ${bashutils_dir}/define_macos_utilities.sh
+   . ${bashutils_dir}/define_macos_utilities.sh
 #
 #-----------------------------------------------------------------------
 #

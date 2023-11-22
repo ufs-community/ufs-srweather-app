@@ -15,9 +15,14 @@ export subcyc=0
 . ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
 
+
+export job=JAQM_FORECAST
+export share_pid=${share_pid:-${PDY}${cyc}}
+export pid=$share_pid
+export jobid=${job}.${pid}
+
 export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-
 mkdir -p ${DATA}
 cd ${DATA}
 
@@ -79,7 +84,7 @@ the specified cycle.
 # Create the INPUT and RESTART directories under the run directory.
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
+
 mkdir -p ${DATA}/INPUT
 mkdir -p ${DATA}/RESTART
 

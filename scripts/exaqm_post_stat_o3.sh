@@ -130,7 +130,6 @@ while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
 done
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-#grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
 grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
 grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
@@ -246,7 +245,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
     cp ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
-    if [ "$SENDDBN" = "TRUE" ]; then
+    if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     fi
@@ -270,7 +269,7 @@ EOF1
     done
 
     cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${PCOM}
-    if [ "${SENDDBN_NTC}" = "TRUE" ]; then
+    if [ "${SENDDBN_NTC}" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi

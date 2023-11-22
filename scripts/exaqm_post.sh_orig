@@ -169,10 +169,26 @@ if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
     mnts_secs_str=":${fmn}:00"
   fi
 fi
+#
+# Set the names of the forecast model's write-component output files.
+#
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
+  DATAFCST=$DATAROOT/${RUN}_forecast${dot_ensmem/./_}_${cyc}.${share_pid}
+  if [ ! -d ${DATAFCST} ]; then
+    echo "Fatal error DATAFCST not found in production mode"
+    exit 7
+  fi
+else
+  DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
+fi	  
 
+if [ "${CPL_AQM}" = "TRUE" ]; then
   dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
   phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
-
+else
+  dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
+  phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
+fi
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
@@ -277,7 +293,7 @@ for fid in "${fids[@]}"; do
   mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   
   # DBN alert
-  if [ $SENDDBN = "YES" ]; then
+  if [ $SENDDBN = "TRUE" ]; then
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done

@@ -149,11 +149,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     # Post Files to PCOM
     cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${PCOM}
 
-    # Distribute Data
-#    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
-#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
-#      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
-#    fi
   done
 fi
 
@@ -272,12 +267,12 @@ EOF1
     # Distribute Data
     ##############################
 
-    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
+    if [ "${SENDDBN_NTC}" = "YES" ] ; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
 
-    if [ "$SENDDBN" = "TRUE" ]; then
+    if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi

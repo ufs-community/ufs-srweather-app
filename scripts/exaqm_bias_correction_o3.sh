@@ -348,7 +348,7 @@ EOF1
 
     cp ${DATA}/${NET}.${cycle}.max_*hr_o3_bc.*.grib2 ${COMOUT}
    
-    if [ "$SENDDBN" = "TRUE" ]; then
+    if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3_bc.227.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3_bc.227.grib2
     fi
@@ -376,7 +376,7 @@ EOF1
     cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${PCOM}
 
     # Distribute Data
-    if [ "${SENDDBN_NTC}" = "TRUE" ] ; then
+    if [ "${SENDDBN_NTC}" = "YES" ] ; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
     fi
@@ -423,7 +423,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp ${NET}.${cycle}.ave_8hr_o3_bc.227.grib2 ${COMOUT}
 fi
 
-if [ "${SENDDBN}" = "TRUE" ] ; then
+if [ "${SENDDBN}" = "YES" ] ; then
    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3_bc.227.grib2
   if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_8hr_o3_bc.227.grib2
@@ -475,7 +475,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${PCOM}
 
     # Distribute Data
-    if [ "${SENDDBN}" = "TRUE" ]; then
+    if [ "${SENDDBN}" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     fi
