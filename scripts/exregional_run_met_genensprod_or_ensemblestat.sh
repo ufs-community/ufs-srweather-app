@@ -235,11 +235,11 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
 
   slash_ensmem_subdir_or_null="/${ensmem_name}"           
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
-    FCST_INPUT_FN_TEMPLATE="  $(eval echo ${template})"
+    FCST_INPUT_FN_TEMPLATE="$(eval echo ${template})"
   else
     FCST_INPUT_FN_TEMPLATE="\
 ${FCST_INPUT_FN_TEMPLATE},
-  $(eval echo ${template})"
+$(eval echo ${template})"
   fi
 
 done
