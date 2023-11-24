@@ -20,7 +20,6 @@ export outid=${outid:-"LL$job"}
 . ${PARMaqm}/config/var_defns.sh
 . ${USHaqm}/source_util_funcs.sh
 
-export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 
 mkdir -p ${DATA}
@@ -40,10 +39,10 @@ export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
-export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
-export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
-export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
+export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
+export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
