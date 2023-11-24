@@ -85,7 +85,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
+CDATE_MOD=`$NDATE -${EXTRN_MDL_LBCS_OFFSET_HRS} ${PDY}${cyc}`
 yyyymmdd=${CDATE_MOD:0:8}
 mm="${CDATE_MOD:4:2}"
 hh="${CDATE_MOD:8:2}"

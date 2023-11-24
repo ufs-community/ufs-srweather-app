@@ -17,7 +17,6 @@ export cyc="%CYC%"
 ############################################################
 module load intel/${intel_ver}
 module load craype/${craype_ver}
-module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}

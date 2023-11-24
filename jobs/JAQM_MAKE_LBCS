@@ -49,15 +49,6 @@ export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
 export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
 #-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
@@ -110,7 +101,7 @@ if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
   GFS_FILE_FMT=${FV3GFS_FILE_FMT_LBCS}
   yyyymmdd=${PDY}
   hh=${cyc}
-  export EXTRN_MDL_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+  export EXTRN_MDL_CDATE=`$NDATE  -${TIME_OFFSET_HRS} $PDY$cyc`
   export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA}}"
 fi
 #

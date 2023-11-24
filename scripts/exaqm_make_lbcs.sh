@@ -466,7 +466,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
   dd="${EXTRN_MDL_CDATE:6:2}"
   hh="${EXTRN_MDL_CDATE:8:2}"
 
-  cdate_crnt_fhr=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours" "+%Y%m%d%H" )
+  cdate_crnt_fhr=`$NDATE +${fhr} ${yyyymmdd}${hh}`
 #
 # Get the month, day, and hour corresponding to the current forecast time
 # of the the external model.

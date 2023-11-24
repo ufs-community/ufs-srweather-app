@@ -501,7 +501,8 @@ for the current cycle's (cdate) run directory (DATA) failed:
   num_restart_hrs=${#restart_hrs[*]}
   
   for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
-    cdate_restart_hr=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${restart_hrs[ih_rst]} hours" "+%Y%m%d%H" )
+    #jp cdate_restart_hr=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${restart_hrs[ih_rst]} hours" "+%Y%m%d%H" )
+    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}` 
     rst_yyyymmdd="${cdate_restart_hr:0:8}"
     rst_hh="${cdate_restart_hr:8:2}"
 
@@ -651,59 +652,6 @@ fi
 startmsg
 eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-#
-#-----------------------------------------------------------------------
-#
-# If doing inline post, create the directory in which the post-processing 
-# output will be stored (postprd_dir).
-#
-#-----------------------------------------------------------------------
-#
-if [ ${WRITE_DOPOST} = "TRUE" ]; then
-	
-  yyyymmdd=${PDY}
-  hh=${cyc}
-  fmn="00"
-
-  mkdir -p "${COMOUT}"
-
-  cd ${COMOUT}
-
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-
-    if [ ${fhr:0:1} = "0" ]; then
-      fhr_d=${fhr:1:2}
-    else
-      fhr_d=${fhr}
-    fi
-
-    post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
-    post_mn=${post_time:10:2}
-    post_mn_or_null=""
-    post_fn_suffix="GrbF${fhr_d}"
-    post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
-
-    if [ "${CPL_AQM}" = "TRUE" ]; then
-      fids=( "cmaq" )
-    else
-      fids=( "prslev" "natlev" )
-    fi
-
-    for fid in "${fids[@]}"; do
-      FID=$(echo_uppercase $fid)
-      post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
- 
-      mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
-
-      # DBN alert
-      if [ $SENDDBN = "YES" ]; then
-        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-      fi
-    done
-  done
-
-fi
 #
 #-----------------------------------------------------------------------
 #

@@ -52,14 +52,6 @@ export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}
 export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
 export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
-#
-#-----------------------------------------------------------------------
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
-#
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
@@ -106,7 +98,7 @@ if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
   export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
   yyyymmdd=${PDY}
   hh=${cyc}
-  export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+  export GFS_SFC_CDATE=`$NDATE  -${TIME_OFFSET_HRS} $PDY$cyc`
   SLASH_ENSMEM_SUBDIR=${SLASH_ENSMEM_SUBDIR:-""}
   export GFS_SFC_STAGING_DIR="${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
 fi

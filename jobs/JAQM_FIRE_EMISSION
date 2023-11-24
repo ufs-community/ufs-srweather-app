@@ -43,14 +43,6 @@ export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
 export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
 export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
-#
-#-----------------------------------------------------------------------
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
-#
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
@@ -82,23 +74,8 @@ emission data files from disk, or HPSS.
 export TIME_OFFSET_HRS=${AQM_FIRE_FILE_OFFSET_HRS:-0}
 yyyymmdd=${PDY}
 hh=${cyc}
-export FIRE_FILE_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+export FIRE_FILE_CDATE=`$NDATE  -${TIME_OFFSET_HRS} $PDY$cyc`
 
-#
-#-----------------------------------------------------------------------
-# Check whether FIRE EMISSION data files are available on the specified 
-# cycle date and time on HPSS (FIRE_FILE_CDATE).
-#-----------------------------------------------------------------------
-#
-CDATE_min="2022101500"
-if [ "$FIRE_FILE_CDATE" -lt "$CDATE_min" ]; then
-  print_info_msg "
-========================================================================  
-RAVE fire emission data are not available on HPSS for this date.
-CDATE:  \"${FIRE_FILE_CDATE}\"
-CDATE_min:    \"${CDATE_min}\"
-========================================================================"
-fi
 #
 #-----------------------------------------------------------------------
 # Set the run directory

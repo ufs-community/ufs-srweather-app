@@ -51,14 +51,7 @@ export PCOM=${PCOM:-${COMOUT}/wmo}
 
 export COMINbicor=${COMINbicor:-$(compath.py ${NET}/${model_ver}})}
 export COMOUTbicor=${COMOUTbicor:-$(compath.py -o ${NET}/${aqm_ver}})}
-#
-#-----------------------------------------------------------------------
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
-#
+
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in

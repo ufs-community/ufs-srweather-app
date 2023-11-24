@@ -195,20 +195,21 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
 fi
 
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
-  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
-  end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+  start_date=${yyyymmdd}${hh}
+  end_date=`$NDATE +${FCST_LEN_HRS} ${yyyymmdd}${hh}`
 else
   len_per_split=$(( FCST_LEN_HRS / NUM_SPLIT_NEXUS  ))
   nsptp=$(( nspt+1 ))
 
   # Compute start and end dates for nexus split option
   start_del_hr=$(( len_per_split * nspt ))
-  start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${start_del_hr} hours " "+%Y%m%d%H" )
+  start_date=`$NDATE +${start_del_hr} ${yyyymmdd}${hh}`
   if [ "${nsptp}" = "${NUM_SPLIT_NEXUS}" ];then
-    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + $(expr $FCST_LEN_HRS + 1) hours" "+%Y%m%d%H" )
+    end_date=`$NDATE +$(expr $FCST_LEN_HRS + 1) ${yyyymmdd}${hh}` 
   else
     end_del_hr=$(( len_per_split * nsptp ))
-    end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + $(expr $end_del_hr + 1) hours" "+%Y%m%d%H" )
+    end_del_hr1=$(( $end_del_hr + 1 ))
+    end_date=`$NDATE +${end_del_hr1} ${yyyymmdd}${hh}` 
   fi
 fi
 #

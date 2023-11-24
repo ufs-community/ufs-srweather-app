@@ -50,13 +50,7 @@ export DCOMINairnow="${DCOMINairnow:-${DCOMROOT}}"
 
 export COMINbicor=${COMINbicor:-$(compath.py ${NET}/${model_ver}})}
 export COMOUTbicor=${COMOUTbicor:-$(compath.py -o ${NET}/${aqm_ver}})}
-#
-#-----------------------------------------------------------------------
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
+
 #
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
@@ -99,10 +93,8 @@ TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}
 #
 #-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
-#
 #-----------------------------------------------------------------------
 #
 startmsg

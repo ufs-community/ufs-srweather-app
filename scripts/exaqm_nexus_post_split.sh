@@ -70,8 +70,8 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
-end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
+start_date=${yyyymmdd}${hh}
+end_date=`$NDATE +${FCST_LEN_HRS} ${yyyymmdd}${hh}`
 
 #
 #-----------------------------------------------------------------------

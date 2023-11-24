@@ -162,27 +162,22 @@ hh=${cyc}
 # must be set to a null string.
 #
 mnts_secs_str=""
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  if [ ${fhr}${fmn} = "00000" ]; then
-    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
-  else
-    mnts_secs_str=":${fmn}:00"
-  fi
-fi
 
-  dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-  phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
 
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
 #
-post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
+fmn='00'
+post_time=`$NDATE +${fhr} ${yyyymmdd}${hh}`$fmn
 post_yyyy=${post_time:0:4}
 post_mm=${post_time:4:2}
 post_dd=${post_time:6:2}
 post_hh=${post_time:8:2}
 post_mn=${post_time:10:2}
+
 #
 # Create the input namelist file to the post-processor executable.
 #
@@ -263,7 +258,7 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 # rename, and create symlinks to them.
 #
 cd "${COMOUT}"
-basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
+basetime=$yyyymmdd$hh
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 if [ "${CPL_AQM}" = "TRUE" ]; then
   fids=( "cmaq" )
