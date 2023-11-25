@@ -71,8 +71,6 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POST_STAT_PM25}"
 
-mkdir -p ${PCOM}
-
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export PCOM=${PCOM:-${COMOUT}/wmo}
   if [ ! -d "${PCOM}" ]; then 
