@@ -14,7 +14,6 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 
 . ${PARMaqm}/config/var_defns.sh
-
 . $USHaqm/source_util_funcs.sh
 
 export DATA=${DATA:-${DATAROOT}/${jobid}}

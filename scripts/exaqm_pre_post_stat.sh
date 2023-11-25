@@ -63,9 +63,6 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
-  if [ "${WORKFLOW_MANAGER}" = "rocoto" ] && [ "${RUN_TASK_RUN_POST}" = "TRUE" ]; then
-    rm -f "${COMIN}/${cyc}/${TN_RUN_POST}_${PDY}${cyc}_task_complete.txt"
-  fi
 fi
 
 ist=1

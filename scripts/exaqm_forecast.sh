@@ -356,12 +356,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If running this cycle/ensemble member combination more than once (e.g.
-# using rocotoboot), remove any time stamp file that may exist from the
-# previous attempt.
-#
-#-----------------------------------------------------------------------
-#
 cd ${DATA}
 rm -f time_stamp.out
 #
@@ -501,7 +495,6 @@ for the current cycle's (cdate) run directory (DATA) failed:
   num_restart_hrs=${#restart_hrs[*]}
   
   for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
-    #jp cdate_restart_hr=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${restart_hrs[ih_rst]} hours" "+%Y%m%d%H" )
     cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}` 
     rst_yyyymmdd="${cdate_restart_hr:0:8}"
     rst_hh="${cdate_restart_hr:8:2}"

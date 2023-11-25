@@ -13,7 +13,6 @@ export subcyc=0
 . ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
 
-
 export job=JAQM_FORECAST
 export share_pid=${share_pid:-${PDY}${cyc}}
 export pid=$share_pid

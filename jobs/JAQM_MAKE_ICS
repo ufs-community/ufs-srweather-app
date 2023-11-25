@@ -68,19 +68,15 @@ for the FV3 (in NetCDF format).
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-#
 # Set the name of and create the directory in which the output from this
 # script will be placed (if that directory doesn't already exist).
-#
 #-----------------------------------------------------------------------
 #
 export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}}"
 mkdir -p ${INPUT_DATA}
 #
 #-----------------------------------------------------------------------
-#
 # Set the run directory
-#
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_MAKE_ICS}"
