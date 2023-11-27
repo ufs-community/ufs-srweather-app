@@ -927,12 +927,10 @@ names in the dependencies.
       <dependency>
         <or>
           <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
 	  <and>
             <datadep age="05:00">&DYN_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
             <datadep age="05:00">&PHY_DIR;f{{ first_fv3_file_tstr }}.nc</datadep>
           </and>
-      {%- endif %}
         </or>
       </dependency>
 
@@ -980,12 +978,10 @@ for other output times.
         <dependency>
           <or>
             <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
             <and>
               <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
               <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
             </and>
-      {%- endif %}
           </or>
         </dependency>
 
@@ -1053,7 +1049,6 @@ always zero).
         <dependency>
           <or>
             <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
             <and>
             {%- if sub_hourly_post %}
               <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
@@ -1063,7 +1058,6 @@ always zero).
               <datadep age="05:00">&PHY_DIR;f#fhr#.nc</datadep>
             {%- endif %}
             </and>
-      {%- endif %}
           </or>
         </dependency>
 
@@ -1117,12 +1111,10 @@ the <task> tag to be identical to the ones above for other output times.
       <dependency>
         <or>
           <taskdep task="&TN_RUN_FCST;{{ uscore_ensmem_name }}"/>
-      {%- if not cpl_aqm %}
           <and>
             <datadep age="05:00">&DYN_DIR;f#fhr#:#fmn#:00.nc</datadep>
             <datadep age="05:00">&PHY_DIR;f#fhr#:#fmn#:00.nc</datadep>
           </and>
-      {%- endif %}
         </or>
       </dependency>
 

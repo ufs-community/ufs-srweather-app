@@ -176,7 +176,7 @@ else
   DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
 fi	  
 
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
   dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
   phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
 else
