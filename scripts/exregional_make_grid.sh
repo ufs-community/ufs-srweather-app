@@ -278,7 +278,6 @@ generation executable (exec_fp):
 #
 # Call the python script to create the namelist file.
 #
-echo PYTHON: $(which python)
   ${USHdir}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
     print_err_msg_exit "\
 Call to python script set_namelist.py to set the variables in the
