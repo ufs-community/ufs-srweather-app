@@ -300,16 +300,10 @@ static) files in the FIXam directory:
   FIXam = \"${FIXam}\"
   DATA = \"${DATA}\""
 #
-# For experiments that are run in "community" mode, the FIXam directory
-# is an actual directory (i.e. not a symlink) located under the experiment 
-# directory containing actual files (i.e. not symlinks).  In this case,
-# we use relative paths for the symlinks in order to keep the experiment
-# directory more portable and the symlinks more readable.  However, for
-# experiments that are run in "nco" mode, the FIXam directory is a symlink
-# under the experiment directory that points to an arbitrary (user specified)
-# location outside the experiment directory.  Thus, in this case, there 
-# isn't really an advantage to using relative symlinks, so we use symlinks 
-# with absolute paths.
+# FIXam directory is a symlink under the experiment directory that points 
+# to an arbitrary (user specified) location outside the experiment directory.  
+# Thus, in this case, there isn't really an advantage to using relative 
+# symlinks, so we use symlinks with absolute paths.
 #
 if [ "${SYMLINK_FIX_FILES}" == "FALSE" ]; then
   relative_link_flag="TRUE"
@@ -331,7 +325,6 @@ for (( i=0; i<${num_symlinks}; i++ )); do
   target="$FIXam/$target"
   create_symlink_to_file target="$target" symlink="$symlink" \
                          relative="${relative_link_flag}"
-
 done
 #
 #-----------------------------------------------------------------------
