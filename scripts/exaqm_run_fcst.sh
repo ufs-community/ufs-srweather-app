@@ -626,17 +626,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Call the function that creates the NEMS configuration file within each
-# cycle directory.
+# Call the function that creates the UFS run-time configuration file 
+# within each cycle directory.
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_nems_configure_file.py \
+ $USHdir/create_ufs_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to function to create a NEMS configuration file for 
+  message_txt="Call to function to create a UFS configuration file for 
 the current cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
   err_exit "${message_txt}"

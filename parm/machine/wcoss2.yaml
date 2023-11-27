@@ -19,12 +19,12 @@ platform:
   RUN_CMD_AQMLBC: mpiexec -n ${NUMTS}
   SCHED_NATIVE_CMD: -l place=excl
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
-  FIXaer: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/fix_aer
-  FIXgsm: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/fix_am 
-  FIXlut: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/fix_lut
-  FIXorg: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/fix_orog
-  FIXsfc: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/fix_sfc_climo
-  FIXshp: /lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix/ufs/NaturalEarth
+  FIXaer: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/fix_aer
+  FIXgsm: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/fix_am 
+  FIXlut: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/fix_lut
+  FIXorg: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/fix_orog
+  FIXsfc: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/fix_sfc_climo
+  FIXshp: /lfs/h2/emc/lam/noscrub/UFS_SRW_App/aqm.v7/fix/ufs/NaturalEarth
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 data:
   ics_lbcs:

@@ -1012,7 +1012,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #   (3) The field table file
     #   (4) The FV3 namelist file
     #   (5) The model configuration file
-    #   (6) The NEMS configuration file
+    #   (6) The UFS configuration file
     #   (7) The CCPP physics suite definition file
     #
     # The workflow contains templates for the first six of these files.

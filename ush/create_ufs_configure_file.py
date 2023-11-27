@@ -22,8 +22,8 @@ from python_utils import (
 
 from fill_jinja_template import fill_jinja_template
 
-def create_nems_configure_file(run_dir):
-    """ Creates a nems configuration file in the specified
+def create_ufs_configure_file(run_dir):
+    """ Creates a UFS configuration file in the specified
     run directory
 
     Args:
@@ -40,25 +40,25 @@ def create_nems_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    # Create a NEMS configuration file in the specified run directory.
+    # Create a UFS configuration file in the specified run directory.
     #
     #-----------------------------------------------------------------------
     #
     print_info_msg(f'''
-        Creating a nems.configure file (\"{NEMS_CONFIG_FN}\") in the specified 
+        Creating a ufs.configure file (\"{UFS_CONFIG_FN}\") in the specified 
         run directory (run_dir):
           run_dir = \"{run_dir}\"''', verbose=VERBOSE)
     #
     # Set output file path
     #
-    nems_config_fp = os.path.join(run_dir, NEMS_CONFIG_FN)
+    ufs_config_fp = os.path.join(run_dir, UFS_CONFIG_FN)
     pe_member01_m1 = str(int(PE_MEMBER01)-1)
     #
     #-----------------------------------------------------------------------
     #
     # Create a multiline variable that consists of a yaml-compliant string
     # specifying the values that the jinja variables in the template 
-    # model_configure file should be set to.
+    # UFS configure file should be set to.
     #
     #-----------------------------------------------------------------------
     #
@@ -74,7 +74,7 @@ def create_nems_configure_file(run_dir):
     print_info_msg(
         dedent(
             f"""
-            The variable \"settings\" specifying values to be used in the \"{NEMS_CONFIG_FN}\"
+            The variable \"settings\" specifying values to be used in the \"{UFS_CONFIG_FN}\"
             file has been set as follows:\n
             settings =\n\n"""
         ) 
@@ -84,23 +84,23 @@ def create_nems_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    # Call a python script to generate the experiment's actual NEMS_CONFIG_FN
+    # Call a python script to generate the experiment's actual UFS_CONFIG_FN
     # file from the template file.
     #
     #-----------------------------------------------------------------------
     #
     try:
-        fill_jinja_template(["-q", "-u", settings_str, "-t", NEMS_CONFIG_TMPL_FP, "-o", nems_config_fp])
+        fill_jinja_template(["-q", "-u", settings_str, "-t", UFS_CONFIG_TMPL_FP, "-o", ufs_config_fp])
     except:
         print_err_msg_exit(
             dedent(
                 f"""
-            Call to python script fill_jinja_template.py to create the nems.configure
+            Call to python script fill_jinja_template.py to create the ufs.configure
             file from a jinja2 template failed.  Parameters passed to this script are:
-              Full path to template nems.configure file:
-                NEMS_CONFIG_TMPL_FP = \"{NEMS_CONFIG_TMPL_FP}\"
-              Full path to output nems.configure file:
-                nems_config_fp = \"{nems_config_fp}\"
+              Full path to template ufs.configure file:
+                UFS_CONFIG_TMPL_FP = \"{UFS_CONFIG_TMPL_FP}\"
+              Full path to output ufs.configure file:
+                ufs_config_fp = \"{ufs_config_fp}\"
               Namelist settings specified on command line:\n
                 settings =\n\n"""
             )
@@ -113,7 +113,7 @@ def create_nems_configure_file(run_dir):
 def parse_args(argv):
     """ Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description='Creates NEMS configuration file.'
+        description='Creates UFS configuration file.'
     )
 
     parser.add_argument("-r", "--run-dir",
@@ -133,8 +133,7 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    create_nems_configure_file(
+    create_ufs_configure_file(
         run_dir=args.run_dir, 
     )
-
 
