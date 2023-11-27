@@ -5,7 +5,7 @@ get_ics, get_lbcs, make_grid, make_ics, make_lbcs, make_orog, make_sfc_climo,
 run_fcst and run_post.
 
 Some machines have slightly different commands and differences are 
-inclueded inside each job card sample.
+included inside each job card sample.
 
 When using Rocoto workflow, you can find printout of your particular
 job card in log files. For that print make sure to use -v option when
