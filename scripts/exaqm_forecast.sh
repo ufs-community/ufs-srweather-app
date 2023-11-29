@@ -396,7 +396,7 @@ create_symlink_to_file target="${FIELD_DICT_FP}" \
                        relative="${relative_link_flag}"
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
-  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cpreq ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -414,9 +414,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
   fi
-  cp ${post_config_fp} ./postxconfig-NT_FH00.txt
-  cp ${post_config_fp} ./postxconfig-NT.txt
-  cp ${PARMdir}/upp/params_grib2_tbl_new .
+  cpreq ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cpreq ${post_config_fp} ./postxconfig-NT.txt
+  cpreq ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
@@ -453,7 +453,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
       err_exit "${message_txt}"
   fi
 else
-  cp "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
+  cpreq "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -464,12 +464,7 @@ fi
 #-----------------------------------------------------------------------
 #
 flag_fcst_restart="FALSE"
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp input.nml input.nml_orig
-  cp model_configure model_configure_orig
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp aqm.rc aqm.rc_orig
-  fi
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${COMOUT}/RESTART/*.coupler.res)" ]; then
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
@@ -501,7 +496,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
 
     num_rst_files=0
     for file_id in "${file_ids[@]}"; do
-      if [ -e "${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
+      if [ -e "${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
         (( num_rst_files=num_rst_files+1 ))
       fi
     done
@@ -517,7 +512,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     if [ -e "${file_id}" ]; then
       rm -f "${file_id}"
     fi
-    target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
+    target="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
@@ -604,18 +599,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlink to forecast RESTART in DATA for early start of 
-# the next cycle
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  # create an intermediate symlink to RESTART
-  ln -sf "${DATA}/RESTART" "${COMOUT}/RESTART"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the function that creates the NEMS configuration file within each
 # cycle directory.
 #
@@ -634,6 +617,61 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# make symbolic links to write forecast files directly in COMOUT
+#
+#-----------------------------------------------------------------------
+#
+fhr_ct=0
+fhr=0
+NLN=${NLN:-"/bin/ln -sf"}
+while [ $fhr -le ${FCST_LEN_HRS} ]; do
+  fhr_ct=$(printf "%03d" $fhr)
+  source_dyn="dynf${fhr_ct}.nc"
+  source_phy="phyf${fhr_ct}.nc"
+  target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+  target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+  eval $NLN ${target_dyn} ${source_dyn}
+  eval $NLN ${target_phy} ${source_phy}
+  (( fhr=fhr+1 ))
+done
+eval $NLN ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN} ${AQM_RC_PRODUCT_FN}
+#
+#-----------------------------------------------------------------------
+#
+# make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p ${COMOUT}/RESTART
+cd ${DATA}/RESTART
+file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+num_file_ids=${#file_ids[*]}
+read -a restart_hrs <<< "${RESTART_INTERVAL}"
+num_restart_hrs=${#restart_hrs[*]}
+# 06Z and 12Z
+if [ $cyc = 06 -o $cyc = 12 ]; then
+  # 06Z and 12Z
+  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
+    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
+    rst_yyyymmdd="${cdate_restart_hr:0:8}"
+    rst_hh="${cdate_restart_hr:8:2}"
+    for file_id in "${file_ids[@]}"; do
+      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
+    done
+  done
+else
+  # 00Z and 18Z
+  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
+  rst_yyyymmdd="${cdate_restart_hr:0:8}"
+  rst_hh="${cdate_restart_hr:8:2}"
+  for file_id in "${file_ids[@]}"; do
+    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
+  done
+fi
+cd ${DATA}
+#
+#-----------------------------------------------------------------------
+#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -645,37 +683,8 @@ fi
 startmsg
 eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-#
-#-----------------------------------------------------------------------
-#
-# Copy RESTART directory to COMIN only for NCO mode and AQM.
-# Copy AQM output product file to COMOUT only for NCO mode.
-# Copy dyn and phy files to COMIN only for AQM.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CPL_AQM}" = "TRUE" ]; then
-    if [ -d "${COMOUT}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
-      rm -rf "${COMOUT}/RESTART"
-    fi
-    if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp -Rp ${DATA}/RESTART ${COMOUT}
-    fi
-
-  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
-
-  fhr_ct=0
-  fhr=0
-  while [ $fhr -le ${FCST_LEN_HRS} ]; do
-    fhr_ct=$(printf "%03d" $fhr)
-    source_dyn="${DATA}/dynf${fhr_ct}.nc"
-    source_phy="${DATA}/phyf${fhr_ct}.nc"
-    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
-    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
-    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
-    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
-    (( fhr=fhr+1 ))
-  done                 
+if [ -e "$pgmout" ]; then
+   cat $pgmout
 fi
 #
 #-----------------------------------------------------------------------

@@ -166,7 +166,7 @@ if (BUILD_UFS)
 
   if(NOT CCPP_SUITES)
     if(CPL_AQM)
-      set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8")
+      set(CCPP_SUITES "FV3_GFS_v16")
     else()
       set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
     endif()

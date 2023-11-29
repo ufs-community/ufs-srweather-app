@@ -9,14 +9,11 @@ export USHaqm=${USHaqm:-${HOMEaqm}/ush}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 
 export subcyc=0
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
 
 . ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
-
-export job=JAQM_FORECAST
-export share_pid=${share_pid:-${PDY}${cyc}}
-export pid=$share_pid
-export jobid=${job}.${pid}
 
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p ${DATA}
