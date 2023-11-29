@@ -62,7 +62,7 @@ task failed:
 $has_mu && set +u
 
 if [ ! -z $(command -v conda) ]; then
-    conda activate workflow_tools
+    conda activate srw_app
 fi
 
 $has_mu && set -u
