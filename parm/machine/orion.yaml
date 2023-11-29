@@ -41,3 +41,5 @@ cpl_aqm_parm:
   COMINemis: /work2/noaa/naqfc/bbaker/emissions/nexus
   COMINemispt: /work2/noaa/naqfc/bbaker/emissions/nexus/NEI2016v1/v2023-01-PT
   DCOMINfire: /work/noaa/fv3-cam/RRFS_CMAQ/RAVE_fire
+  FIXaqmnexus_gfs_sfc: /work/noaa/fv3-cam/RRFS_CMAQ/input_model_data
+

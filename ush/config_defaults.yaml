@@ -3045,6 +3045,7 @@ cpl_aqm_parm:
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
   NEXUS_GFS_SFC_ARCHV_DIR: "/NCEPPROD/hpssprod/runhistory"
+  GFS_SFC_DATA_INTVL: 3
 
   COMINemispt: "/path/to/point/source/base/directory"
 

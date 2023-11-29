@@ -78,8 +78,6 @@ else
   GFS_SFC_LOCAL_DIR="${FIXaqmnexus_gfs_sfc}/${GFS_SFC_TAR_SUB_DIR}"
 fi	
 
-GFS_SFC_DATA_INTVL="3"
-
 # copy files from local directory
 if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
@@ -101,7 +99,7 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn = \"${gfs_sfc_fn}\""
       message_warning="WARNING: ${message_txt}"
       print_info_msg "${message_warning}"
-      if [ ! -z "${maillist}" ]; then
+      if [ ! -z "${maillist}" ] && [ "${MACHINE}" = "WCOSS2" ]; then
         echo "${message_warning}" | mail.py $maillist
       fi
     fi	    

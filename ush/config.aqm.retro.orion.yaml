@@ -61,7 +61,7 @@ task_get_extrn_ics:
   FV3GFS_FILE_FMT_ICS: netcdf
   EXTRN_MDL_ICS_OFFSET_HRS: 0
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/fv3-cam/RRFS_CMAQ/input_model_data/FV3GFS/netcdf/${yyyymmddhh}
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: /work/noaa/fv3-cam/RRFS_CMAQ/input_model_data/${yyyymmddhh}
   EXTRN_MDL_FILES_ICS: []
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: FV3GFS
@@ -70,7 +70,7 @@ task_get_extrn_lbcs:
   EXTRN_MDL_LBCS_OFFSET_HRS: 0
   WTIME_GET_EXTRN_LBCS: 01:00:00
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/fv3-cam/RRFS_CMAQ/input_model_data/FV3GFS/netcdf/${yyyymmddhh}
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: /work/noaa/fv3-cam/RRFS_CMAQ/input_model_data/${yyyymmddhh}
   EXTRN_MDL_FILES_LBCS: []
 task_run_fcst:
   DT_ATMOS: 180
@@ -114,4 +114,4 @@ cpl_aqm_parm:
   AQM_LBCS_FILES: am4_bndy.c793.2019<MM>.v1.nc
   NEXUS_GRID_FN: grid_spec_793.nc
   NUM_SPLIT_NEXUS: 6
-
+  GFS_SFC_DATA_INTVL: 3
