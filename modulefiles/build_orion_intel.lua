@@ -46,8 +46,11 @@ load(pathJoin("sigio", "2.3.2"))
 load(pathJoin("sfcio", "1.4.1"))
 load(pathJoin("w3emc", "2.10.0"))
 load(pathJoin("w3nco", "2.4.1"))
-load(pathJoin("prod_util", "1.2.2"))
+--load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("wgrib2", "2.0.8"))
+
+prepend_path("MODULEPATH", "/work/noaa/rtrr/gge/prod_util/lua")
+load("prod_util/2.0.15")
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
