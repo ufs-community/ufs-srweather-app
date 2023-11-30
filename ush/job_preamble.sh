@@ -26,7 +26,6 @@ export NET="${NET:-${NET_dfv}}"
 export RUN="${RUN:-${RUN_dfv}}"
 export model_ver="${model_ver:-${model_ver_dfv}}"
 export COMROOT="${COMROOT:-${COMROOT_dfv}}"
-#export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_dfv}}"
 
 export KEEPDATA="${KEEPDATA:-${KEEPDATA_dfv}}"
 export MAILTO="${MAILTO:-${MAILTO_dfv}}"

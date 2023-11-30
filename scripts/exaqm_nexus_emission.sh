@@ -363,7 +363,9 @@ fi
 startmsg
 eval ${RUN_CMD_AQM} ${EXECaqm}/nexus -c NEXUS_Config.rc -r grid_spec.nc -o NEXUS_Expt_split.nc ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 # 
 #-----------------------------------------------------------------------
 #

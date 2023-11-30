@@ -89,6 +89,9 @@ if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
 else
   ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"  >> $pgmout 2>errfile
   export err=$?
+  if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+  fi
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
       err_exit "${message_txt}"

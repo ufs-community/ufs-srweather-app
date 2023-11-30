@@ -590,16 +590,9 @@ fi
 startmsg
 eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile 
 export err=$?; err_chk
-#eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR} || \
-#  print_err_msg_exit "\
-#Call to executable (exec_fp) to generate surface and initial conditions
-#(ICs) files for the FV3-LAM failed:
-#  exec_fp = \"${exec_fp}\"
-#The external model from which the ICs files are to be generated is:
-#  EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\"
-#The external model files that are inputs to the executable (exec_fp) are
-#located in the following directory:
-#  extrn_mdl_staging_dir = \"${extrn_mdl_staging_dir}\""
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 #
 #-----------------------------------------------------------------------
 #

@@ -112,7 +112,9 @@ EOF1
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.1hpm25.${id_domain}.grib2
 
 export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
@@ -210,6 +212,9 @@ EOF1
   startmsg
   eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
   export err=$?; err_chk
+  if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+  fi
 
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PMTF" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PDMAX1" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2

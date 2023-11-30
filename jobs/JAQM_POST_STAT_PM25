@@ -94,10 +94,6 @@ export err=$?; err_chk
 msg="JOB ${job} HAS COMPLETED NORMALLY."
 postmsg "${msg}"
 
-if [ -e "${pgmout}" ]; then
-   cat ${pgmout}
-fi
-
 if [ "${KEEPDATA}" != "YES" ]; then
    rm -rf ${DATA}
 fi

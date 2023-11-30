@@ -288,7 +288,9 @@ Please ensure that you've built this executable."
   sync
   eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
   export err=$?; err_chk
-
+  if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+  fi
   cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "

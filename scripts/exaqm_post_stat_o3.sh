@@ -109,6 +109,9 @@ EOF1
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
+f [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
@@ -230,6 +233,9 @@ EOF1
   startmsg 
   eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
   export err=$?; err_chk
+  if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+  fi
 
   # split into max_1h and max_8h files and copy to grib227
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2

@@ -83,7 +83,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Remove any files from previous runs and stage necessary files in the 
-# temporary work directory specified by DATA_FHR.
+# temporary work directory specified by DATA.
 #
 #-----------------------------------------------------------------------
 #
@@ -94,9 +94,9 @@ if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the user-defined post flat file specified by CUSTOM_POST_CONFIG_FP
-to the temporary work directory (DATA_FHR):
+to the temporary work directory (DATA):
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 else
   if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -107,9 +107,9 @@ else
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
-temporary work directory (DATA_FHR):
+temporary work directory (DATA):
   post_config_fp = \"${post_config_fp}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 fi
 cp ${post_config_fp} ./postxconfig-NT.txt
@@ -127,9 +127,9 @@ if [ ${USE_CRTM} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
-work directory (DATA_FHR):
+work directory (DATA):
   CRTM_DIR = \"${CRTM_DIR}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 fi
 #
@@ -203,7 +203,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Run the UPP executable in the temporary directory (DATA_FHR) for this
+# Run the UPP executable in the temporary directory (DATA) for this
 # output time.
 #
 #-----------------------------------------------------------------------
@@ -214,6 +214,9 @@ Starting post-processing for fhr = $fhr hr..."
 startmsg
 eval ${RUN_CMD_POST} ${EXECaqm}/upp.x < itag ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -258,8 +261,6 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 # rename, and create symlinks to them.
 #
 cd "${COMOUT}"
-basetime=$yyyymmdd$hh
-symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 if [ "${CPL_AQM}" = "TRUE" ]; then
   fids=( "cmaq" )
 else
@@ -269,7 +270,7 @@ for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+  mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
   
   # DBN alert
   if [ $SENDDBN = "YES" ]; then

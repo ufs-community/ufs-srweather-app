@@ -155,6 +155,9 @@ mkdir -p "${DATA}/data"
     startmsg
     eval ${RUN_CMD_SERIAL} ${EXECaqm}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
     export err=$?; err_chk
+    if [ -e "${pgmout}" ]; then
+      cat ${pgmout}
+    fi
   done     
 
 #-----------------------------------------------------------------------------
@@ -202,7 +205,9 @@ cp ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cy
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
@@ -245,7 +250,9 @@ cp ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z 
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp ${DATA}/out/ozone.corrected* ${COMOUT}
 
 if [ "${cyc}" = "12" ]; then
@@ -272,7 +279,9 @@ EOF1
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 
 #-----------------------------------------------------------------------------
@@ -336,7 +345,9 @@ EOF1
     startmsg
     eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
     export err=$?; err_chk
-
+    if [ -e "${pgmout}" ]; then
+      cat ${pgmout}
+    fi
     # split into max_1h and max_8h files and copy to grib227
     wgrib2 aqm-maxi_bc.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi_bc.${id_domain}.grib2 -grib  ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2
     wgrib2 aqm-maxi_bc.${id_domain}.grib2 |grep "OZMAX8" | wgrib2 -i aqm-maxi_bc.${id_domain}.grib2 -grib  ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2

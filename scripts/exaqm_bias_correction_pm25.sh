@@ -153,6 +153,9 @@ mkdir -p "${DATA}/data"
     startmsg
     eval ${RUN_CMD_SERIAL} ${EXECaqm}/convert_airnow_csv ${cvt_input_fp} ${cvt_output_fp} ${cvt_pdy} ${cvt_pdy} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
     export err=$?; err_chk
+    if [ -e "${pgmout}" ]; then
+      cat ${pgmout}
+    fi
   done
 
 #-----------------------------------------------------------------------------
@@ -200,7 +203,9 @@ cp ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cy
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$? err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
@@ -224,7 +229,9 @@ cp ${PARMaqm_utils}/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt
 
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp $DATA/out/pm2.5.corrected* ${COMOUT}
 
 if [ "${cyc}" = "12" ]; then
@@ -250,7 +257,9 @@ EOF1
 startmsg 
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_bias_cor_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
 
 #-----------------------------------------------------------------------
@@ -313,7 +322,9 @@ EOF1
     startmsg
     eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_maxi_bias_cor_grib2  ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
     export err=$?; err_chk
-
+    if [ -e "${pgmout}" ]; then
+      cat ${pgmout}
+    fi
     # split into two files: one for 24hr_ave and one for 1h_max
     wgrib2 aqm-pm25_bc.${id_domain}.grib2  |grep  "PMTF"   | ${WGRIB2} -i  aqm-pm25_bc.${id_domain}.grib2  -grib aqm.t${cyc}z.ave_24hr_pm25_bc.793.grib2 
     wgrib2 aqm-pm25_bc.${id_domain}.grib2  |grep  "PDMAX1" | ${WGRIB2} -i  aqm-pm25_bc.${id_domain}.grib2  -grib aqm.t${cyc}z.max_1hr_pm25_bc.793.grib2 
