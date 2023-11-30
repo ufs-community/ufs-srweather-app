@@ -691,6 +691,9 @@ MODULES_RUN_TASK_FP script.
     &RSRV_DEFAULT;
     <command>&LOAD_MODULES_RUN_TASK_FP; "&TN_AQM_ICS;" "&JOBSdir;/JAQM_AQM_ICS"</command>
     <nodes>{{ nnodes_aqm_ics }}:ppn={{ ppn_aqm_ics }}</nodes>
+{%- if machine in ["ORION"]  %}
+    <memory>120G</memory>
+{%- endif %}
     <walltime>{{ wtime_aqm_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TN_AQM_ICS;</jobname>
