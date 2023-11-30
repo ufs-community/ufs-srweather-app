@@ -1,7 +1,3 @@
---unload("python")
---prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/C5/miniconda3/modulefiles")
---load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
---setenv("SRW_ENV", "workflow_tools")
 unload("miniconda3")
 load("conda")
 setenv("SRW_ENV", "srw_app")
