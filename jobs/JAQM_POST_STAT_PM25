@@ -90,7 +90,18 @@ startmsg
 ${HOMEaqm}/scripts/exaqm_post_stat_pm25.sh
 export err=$?; err_chk
 #
+======================================================================
+msg="JOB ${job} HAS COMPLETED NORMALLY."
+postmsg "${msg}"
 
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
+
+if [ "${KEEPDATA}" != "YES" ]; then
+   rm -rf ${DATA}
+fi
+=======================================================================
 # Print exit message
 print_info_msg "
 ========================================================================
@@ -105,3 +116,4 @@ In directory:    \"${scrfunc_dir}\"
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
+date
