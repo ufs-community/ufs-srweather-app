@@ -111,23 +111,23 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named ``workflow_tools``. On Level 1 systems, a ``workflow_tools`` environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+The SRW App workflow requires a variety of Python packages. To manage the packages, the App relies
+on conda as a package manager and virtual environment manager. At build time users have the option
+to install the latest version of miniforge and automatically create the environments needed by SRW.
+Managed environments will no longer be updated on Tier I platforms for newer versions of SRW.
+
 
 .. _Load-WF-L1:
 
-Loading the Workflow Environment on Level 1 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Loading the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. attention:: 
-
-   Users on a Level 2-4 system should skip to the :ref:`next section <Load-WF-L234>` for instructions.
-
-The ``workflow_tools`` conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The ``srw_app`` conda/Python environment can be activated in the following way:
 
 .. code-block:: console
 
    source /path/to/etc/lmod-setup.sh
-   module use /path/to/modulefiles
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
@@ -140,106 +140,21 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 .. code-block:: console
 
    Please do the following to activate conda:
-       > conda activate workflow_tools
+       > conda activate srw_app
 
-then the user should run ``conda activate workflow_tools``. This activates the ``workflow_tools`` conda environment, and the user typically sees ``(workflow_tools)`` in front of the Terminal prompt at this point.
-
-After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
-
-.. _Load-WF-L234:
-
-Loading the Workflow Environment on Level 2-4 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users on non-Level 1 systems will need to create a conda workflow environment, modify a ``wflow_*`` file to reflect the location of required modules, and load the workflow modules using the modified ``wflow_*`` file. 
-
-Create a *conda* Workflow Environment
-```````````````````````````````````````
+then the user should run ``conda activate srw_app``. This activates the ``srw_app`` conda environment, and the user typically sees ``(srw_app)`` in front of the Terminal prompt at this point.
 
 .. note::
-    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+   If users do not use the wflow module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
 
-.. _MacMorePackages:
-
-MacOS ONLY: Install/Upgrade Mac-Specific Packages
-"""""""""""""""""""""""""""""""""""""""""""""""""""
-
-.. attention:: 
-
-   This subsection is for Mac OS users only. Users on Linux systems can skip to :ref:`Creating the workflow_tools Environment on Linux and Mac OS <LinuxMacVEnv>` for instructions.
-
-
-MacOS requires the installation of a few additional packages and, possibly, an upgrade to bash. Users running on MacOS should execute the following commands:
-
-.. code-block:: console
-
-   bash --version
-   brew install bash       # or: brew upgrade bash
-   brew install coreutils
-   brew gsed               # follow directions to update the PATH env variable
-
-
-.. _LinuxMacVEnv: 
-
-Creating the ``workflow_tools`` Environment on Linux and Mac OS
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-On generic Mac and Linux systems, users need to create a conda ``workflow_tools`` environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
-
-.. code-block:: console
-
-   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
-   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
-   rm Miniforge3-Linux-aarch64.sh
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate
-   conda install -y conda-build conda-verify
-   cd path/to/your/workflow-tools/clone
-   conda build recipe
-   conda create -y -n workflow_tools -c local workflow_tools
-   conda activate workflow_tools
-
-In future shells, you can activate and use this environment with:
-
-.. code-block:: console
-
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate uwtools
-
-See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
 
-Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Users must modify the files to provide paths for python, miniconda modules, module loads, conda initialization, and the user's ``workflow_tools`` conda environment. 
+Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Since conda environments are installed with the SRW App build, the existing modulefiles will be able to automatically find those environments. No need to edit any of the information in those files for Python purposes.
 
-Load the Workflow Environment
-```````````````````````````````
 
-After creating a ``workflow_tools`` environment and making modifications to a ``wflow_<platform>`` file, users can run the commands below to activate the workflow environment:
-
-.. code-block:: console
-
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` refers to a valid machine name (i.e., ``linux`` or ``macos``). 
-
-.. note::
-   If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
-
-The ``wflow_<platform>`` modulefile will then output the following instructions: 
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > conda activate workflow_tools
-
-After running ``conda activate workflow_tools``, the user will typically see ``(workflow_tools)`` in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
-
-.. note::
-   ``conda`` needs to be initialized before running ``conda activate workflow_tools`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
 
 .. _ExptConfig:
 
@@ -416,7 +331,7 @@ A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yam
 
 .. hint::
 
-   * The ``workflow_tools`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
+   * The ``srw_app`` environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
 
    * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
    

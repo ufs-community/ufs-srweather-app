@@ -18,8 +18,11 @@ setenv("METPLUS_VERSION", metplus_ver)
 setenv("METPLUS_ROOT",    base_metplus)
 setenv("METPLUS_PATH",    base_metplus)
 
+
 if (mode() == "unload") then
   unload(pathJoin("met", met_ver))
   unload(pathJoin("metplus",metplus_ver))
 end
-load("ufs-pyenv")
+--load("ufs-pyenv")
+load("stack-python/3.10.8")
+load("python_srw")
