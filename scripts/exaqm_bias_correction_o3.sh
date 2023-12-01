@@ -191,9 +191,9 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/ozone/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
-cp ${PARMaqm_utils}/bias_correction/sites.valid.ozone.20230331.12z.list ${DATA}/data/site-lists.interp
-cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-cp ${PARMaqm_utils}/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/sites.valid.ozone.20230331.12z.list ${DATA}/data/site-lists.interp
+cp ${PARMdir}/aqm_utils/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp ${PARMdir}/aqm_utils/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.ozone.7-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR}
@@ -238,7 +238,7 @@ rm -rf ${DATA}/data/bcdata*
 ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
-cp ${PARMaqm_utils}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp ${PARMdir}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR}
@@ -365,7 +365,7 @@ EOF1
       export FORT12="filesize"
       export FORT31=
       export FORT51=${NET}-${hr}hro3-maxi.227.grib2.temp
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
    
       echo `ls -l ${NET}-${hr}hro3-maxi.227.grib2.temp | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
@@ -373,7 +373,7 @@ EOF1
       export FORT12="filesize"
       export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
     done
    
     # Post Files to COMOUTwmo
@@ -447,7 +447,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=grib2.${cycle}.awpcsozcon_aqm_${hr}-bc.temp
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
 
     echo `ls -l grib2.${cycle}.awpcsozcon_aqm_${hr}-bc.temp  | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
@@ -455,7 +455,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.${hr}ho3-bc.227.grib2
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
 
     # Create AWIPS GRIB data for dailly 1-hr and 8hr max ozone
     echo 0 > filesize
@@ -464,7 +464,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=${NET}.${cycle}.max_${hr}hr_o3-bc.227.grib2.temp
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
     echo `ls -l  ${NET}.${cycle}.max_${hr}hr_o3-bc.227.grib2.temp | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
@@ -472,7 +472,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
     # Post Files to COMOUTwmo
     cp awpaqm.${cycle}.${hr}ho3-bc.227.grib2 ${COMOUTwmo}

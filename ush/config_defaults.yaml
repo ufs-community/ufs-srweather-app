@@ -55,7 +55,6 @@ user:
   METPLUS_CONF: '{{ [PARMdir, "metplus"]|path_join }}'
   MET_CONFIG: '{{ [PARMdir, "met"]|path_join }}'
   UFS_WTHR_MDL_DIR: '{{ user.UFS_WTHR_MDL_DIR }}'
-  ARL_NEXUS_DIR: '{{ [SORCdir, "arl_nexus"]|path_join }}'
  
 #----------------------------
 # PLATFORM config parameters

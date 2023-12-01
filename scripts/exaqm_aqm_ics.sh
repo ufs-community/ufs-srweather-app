@@ -112,18 +112,18 @@ print_info_msg "
     FV3 IC file: \"${gfs_ic_file}\""
 
 cp ${gfs_ic_file} ${wrk_ic_file}
-${HOMEaqm}/sorc/AQM-utils/python_utils/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
+${USHdir}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"add_aqm_ics.py\" failed."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
 
 ncatted -a checksum,,d,s, tmp1.nc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to NCATTED returned with nonzero exit code."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
 
 mv tmp1.nc ${gfs_ic_file}

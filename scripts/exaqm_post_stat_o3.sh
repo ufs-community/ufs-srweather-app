@@ -144,7 +144,7 @@ for grid in 227 196 198;do
       export FORT12="filesize"
       export FORT31=
       export FORT51=grib2.${cycle}.${hr}awpcsozcon.${grid}.temp
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
 
       echo `ls -l grib2.${cycle}.${hr}awpcsozcon.${grid}.temp  | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
@@ -152,7 +152,7 @@ for grid in 227 196 198;do
       export FORT12="filesize"
       export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
     for var in 1ho3 8ho3;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
@@ -257,14 +257,14 @@ EOF1
       export FORT12="filesize"
       export FORT31=
       export FORT51=aqm-${hr}hro3-maxi.${grid}.grib2.temp
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
       echo `ls -l  aqm-${hr}hro3-maxi.${grid}.grib2.temp | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=aqm-${hr}hro3-maxi.${grid}.grib2.temp
       export FORT12="filesize"
       export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3-max.${grid}.grib2
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
     cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}

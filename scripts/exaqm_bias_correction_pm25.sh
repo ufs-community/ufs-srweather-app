@@ -189,9 +189,9 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/pm25/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-cp ${PARMaqm_utils}/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/data/site-lists.interp
-cp ${PARMaqm_utils}/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
-cp ${PARMaqm_utils}/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/data/site-lists.interp
+cp ${PARMdir}/aqm_utils/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
+cp ${PARMdir}/aqm_utils/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_interpolate config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${cyc}z ${PDY} ${PDY} ${REDIRECT_OUT_ERR}
@@ -216,9 +216,9 @@ ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 
-cp ${PARMaqm_utils}/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
-cp ${PARMaqm_utils}/bias_correction/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
-cp ${PARMaqm_utils}/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/site_blocking.pm2.5.2021.0427.2-sites.txt ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/bias_thresholds.pm2.5.2015.1030.32-sites.txt ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.pm2.5.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR}
@@ -377,7 +377,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=${NET}.${cycle}.grib2_pm25_bc.227.temp
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_pm25_bc.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_pm25_bc.${cycle}.227
 
   echo `ls -l ${NET}.${cycle}.grib2_pm25_bc.227.temp  | awk '{print $5} '` > filesize
   export XLFRTEOPTS="unit_vars=yes"
@@ -385,7 +385,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=awpaqm.${cycle}.1hpm25-bc.227.grib2
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_pm25_bc.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_pm25_bc.${cycle}.227
 
   ####################################################
   rm -f filesize
@@ -395,7 +395,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2.temp
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
 
   echo `ls -l  ${NET}.${cycle}.max_1hr_pm25_bc.227.grib2.temp | awk '{print $5} '` > filesize
   export XLFRTEOPTS="unit_vars=yes"
@@ -403,7 +403,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
 
   rm -f filesize
   # daily_24hr_ave_PM2.5
@@ -413,7 +413,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
   echo `ls -l  ${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp | awk '{print $5} '` > filesize
   export XLFRTEOPTS="unit_vars=yes"
@@ -421,7 +421,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export FORT12="filesize"
   export FORT31=
   export FORT51=awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
-  tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
+  tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
   # Post Files to COMOUTwmo
   cp awpaqm.${cycle}.1hpm25-bc.227.grib2             ${COMOUTwmo}

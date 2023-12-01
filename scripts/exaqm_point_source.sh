@@ -77,11 +77,11 @@ PT_SRC_PRECOMB="${COMINemispt}"
 #-----------------------------------------------------------------------
 #
 if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  ${HOMEaqm}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
+  ${USHdir}/aqm_utils_python/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"stack-pt-merge.py\" failed."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 fi
 

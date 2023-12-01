@@ -132,7 +132,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=${NET}.${cycle}.1hpm25.${grid}.grib2.temp
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 				
     echo `ls -l ${NET}.${cycle}.grib2_pm25.${grid}.temp  | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
@@ -140,7 +140,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
     # Post Files to COMOUTwmo
     cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUTwmo}
@@ -235,7 +235,7 @@ EOF1
     export FORT12="filesize"
     export FORT31=
     export FORT51=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2.temp
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
     echo `ls -l  ${NET}.${cycle}.max_1hr_pm25.${grid}.grib2.temp | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
@@ -243,7 +243,7 @@ EOF1
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
     rm -f filesize
     echo 0 > filesize
@@ -252,7 +252,7 @@ EOF1
     export FORT12="filesize"
     export FORT31=
     export FORT51=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2.temp
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
 
     echo `ls -l  ${NET}.${cycle}.24hrpm25-ave.${grid}.grib2.temp | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
@@ -260,7 +260,7 @@ EOF1
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
-    tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
+    tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
     
     cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
     cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
