@@ -238,7 +238,7 @@ rm -rf ${DATA}/data/bcdata*
 ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
-cp ${PARMdir}/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
+cp ${PARMdir}/aqm_utils/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
 
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_bias_correct config.ozone.bias_corr_${id_domain}.${cyc}z ${cyc}z ${BC_STDAY} ${PDY} ${REDIRECT_OUT_ERR}
