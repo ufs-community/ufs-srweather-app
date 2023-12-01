@@ -80,21 +80,21 @@ end_date=`$NDATE +${FCST_LEN_HRS} ${yyyymmdd}${hh}`
 #
 #-----------------------------------------------------------------------
 #
-cp ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
+cp ${PARMaqm}/nexus_config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
 
 cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
   cp ${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
-  ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"  >> $pgmout 2>errfile
+  ${USHaqm}/nexus_utils/python/concatenate_nexus_post_split.py "${COMIN}/${cyc}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"  >> $pgmout 2>errfile
   export err=$?
   if [ -e "${pgmout}" ]; then
    cat ${pgmout}
   fi
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
-      err_exit "${message_txt}"
+    err_exit "${message_txt}"
   fi
 fi    
 #
@@ -104,11 +104,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
+${USHaqm}/nexus_utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
-    err_exit "${message_txt}"
+  err_exit "${message_txt}"
 fi
 #
 #-----------------------------------------------------------------------
