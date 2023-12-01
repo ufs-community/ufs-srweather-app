@@ -109,7 +109,7 @@ EOF1
 startmsg
 eval ${RUN_CMD_SERIAL} ${EXECaqm}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
 export err=$?; err_chk
-f [ -e "${pgmout}" ]; then
+if [ -e "${pgmout}" ]; then
    cat ${pgmout}
 fi
 
