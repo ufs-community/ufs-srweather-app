@@ -15,27 +15,14 @@ export cyc="%CYC%"
 ############################################################
 # Load modules
 ############################################################
-module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load intel/${intel_ver}
 module load craype/${craype_ver}
-module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load python/${python_ver}
-module load prod_util/${prod_util_ver}
-module load udunits/${udunits_ver}
-module load gsl/${gsl_ver}
-module load nco/${nco_ver}
 
 module list
-
-export subcyc=0
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
 
 ############################################################
 # CALL executable job script here

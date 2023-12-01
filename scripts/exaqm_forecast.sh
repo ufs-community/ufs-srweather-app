@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_fcst
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "task_run_fcst|task_run_post|task_get_extrn_ics|task_get_
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -125,16 +131,6 @@ symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"
 
-## Symlink to halo-3 grid file with "halo3" stripped from name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH3}.nc"
-#if [ "${RUN_TASK_MAKE_SFC_CLIMO}" = "TRUE" ] && \
-#   [ "${GRID_GEN_METHOD}" = "GFDLgrid" ] && \
-#   [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "FALSE" ]; then
-#  symlink="C${GFDLgrid_NUM_CELLS}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#else
-#  symlink="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.nc"
-#fi
-
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
 grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
@@ -149,7 +145,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 # If this link is not created, then the code hangs with an error message
 # like this:
 #
-#   check netcdf status=           2
+#  check netcdf status=           2
 #  NetCDF error No such file or directory
 # Stopped
 #
@@ -360,12 +356,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# If running this cycle/ensemble member combination more than once (e.g.
-# using rocotoboot), remove any time stamp file that may exist from the
-# previous attempt.
-#
-#-----------------------------------------------------------------------
-#
 cd ${DATA}
 rm -f time_stamp.out
 #
@@ -406,7 +396,7 @@ create_symlink_to_file target="${FIELD_DICT_FP}" \
                        relative="${relative_link_flag}"
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
-  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cpreq ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -424,9 +414,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
   fi
-  cp ${post_config_fp} ./postxconfig-NT_FH00.txt
-  cp ${post_config_fp} ./postxconfig-NT.txt
-  cp ${PARMdir}/upp/params_grib2_tbl_new .
+  cpreq ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cpreq ${post_config_fp} ./postxconfig-NT.txt
+  cpreq ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
@@ -451,7 +441,7 @@ fi
 #
 if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TRUE ] || [ "${DO_SHUM}" = TRUE ] || \
    [ "${DO_SKEB}" = TRUE ] || [ "${DO_LSM_SPP}" =  TRUE ]); then
-   $USHdir/set_FV3nml_ens_stoch_seeds.py \
+   $USHaqm/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE"
   export err=$?
@@ -463,7 +453,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
       err_exit "${message_txt}"
   fi
 else
-  cp "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
+  cpreq "${FV3_NML_FP}" "${DATA}/${FV3_NML_FN}"
 fi
 #
 #-----------------------------------------------------------------------
@@ -474,17 +464,12 @@ fi
 #-----------------------------------------------------------------------
 #
 flag_fcst_restart="FALSE"
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp input.nml input.nml_orig
-  cp model_configure model_configure_orig
-  if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp aqm.rc aqm.rc_orig
-  fi
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${COMOUT}/RESTART/*.coupler.res)" ]; then
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
   # Update FV3 input.nml for restart
-   $USHdir/update_input_nml.py \
+   $USHaqm/update_input_nml.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --run_dir "${DATA}" \
     --restart
@@ -505,13 +490,13 @@ for the current cycle's (cdate) run directory (DATA) failed:
   num_restart_hrs=${#restart_hrs[*]}
   
   for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
-    cdate_restart_hr=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${restart_hrs[ih_rst]} hours" "+%Y%m%d%H" )
+    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}` 
     rst_yyyymmdd="${cdate_restart_hr:0:8}"
     rst_hh="${cdate_restart_hr:8:2}"
 
     num_rst_files=0
     for file_id in "${file_ids[@]}"; do
-      if [ -e "${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
+      if [ -e "${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
         (( num_rst_files=num_rst_files+1 ))
       fi
     done
@@ -527,7 +512,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     if [ -e "${file_id}" ]; then
       rm -f "${file_id}"
     fi
-    target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
+    target="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
@@ -554,7 +539,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
 #
 #-----------------------------------------------------------------------
 #
-  $USHdir/create_aqm_rc_file.py \
+  $USHaqm/create_aqm_rc_file.py \
     --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     --cdate "$CDATE" \
     --run-dir "${DATA}" \
@@ -576,7 +561,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_model_configure_file.py \
+ $USHaqm/create_model_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --cdate "$CDATE" \
   --fcst_len_hrs "${FCST_LEN_HRS}" \
@@ -601,7 +586,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_diag_table_file.py \
+ $USHaqm/create_diag_table_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -614,24 +599,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Pre-generate symlink to forecast RESTART in DATA for early start of 
-# the next cycle
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  # create an intermediate symlink to RESTART
-  ln -sf "${DATA}/RESTART" "${COMOUT}/RESTART"
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the function that creates the NEMS configuration file within each
 # cycle directory.
 #
 #-----------------------------------------------------------------------
 #
- $USHdir/create_nems_configure_file.py \
+ $USHaqm/create_nems_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -644,6 +617,61 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+# make symbolic links to write forecast files directly in COMOUT
+#
+#-----------------------------------------------------------------------
+#
+fhr_ct=0
+fhr=0
+NLN=${NLN:-"/bin/ln -sf"}
+while [ $fhr -le ${FCST_LEN_HRS} ]; do
+  fhr_ct=$(printf "%03d" $fhr)
+  source_dyn="dynf${fhr_ct}.nc"
+  source_phy="phyf${fhr_ct}.nc"
+  target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+  target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+  eval $NLN ${target_dyn} ${source_dyn}
+  eval $NLN ${target_phy} ${source_phy}
+  (( fhr=fhr+1 ))
+done
+eval $NLN ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN} ${AQM_RC_PRODUCT_FN}
+#
+#-----------------------------------------------------------------------
+#
+# make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
+#
+#-----------------------------------------------------------------------
+#
+mkdir -p ${COMOUT}/RESTART
+cd ${DATA}/RESTART
+file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+num_file_ids=${#file_ids[*]}
+read -a restart_hrs <<< "${RESTART_INTERVAL}"
+num_restart_hrs=${#restart_hrs[*]}
+# 06Z and 12Z
+if [ $cyc = 06 -o $cyc = 12 ]; then
+  # 06Z and 12Z
+  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
+    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
+    rst_yyyymmdd="${cdate_restart_hr:0:8}"
+    rst_hh="${cdate_restart_hr:8:2}"
+    for file_id in "${file_ids[@]}"; do
+      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
+    done
+  done
+else
+  # 00Z and 18Z
+  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
+  rst_yyyymmdd="${cdate_restart_hr:0:8}"
+  rst_hh="${cdate_restart_hr:8:2}"
+  for file_id in "${file_ids[@]}"; do
+    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
+  done
+fi
+cd ${DATA}
+#
+#-----------------------------------------------------------------------
+#
 # Run the FV3-LAM model.  Note that we have to launch the forecast from
 # the current cycle's directory because the FV3 executable will look for
 # input files in the current directory.  Since those files have been
@@ -652,95 +680,11 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-PREP_STEP
-eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR}
-export err=$?
-  err_chk
-POST_STEP
-#
-#-----------------------------------------------------------------------
-#
-# If doing inline post, create the directory in which the post-processing 
-# output will be stored (postprd_dir).
-#
-#-----------------------------------------------------------------------
-#
-if [ ${WRITE_DOPOST} = "TRUE" ]; then
-	
-  yyyymmdd=${PDY}
-  hh=${cyc}
-  fmn="00"
-
-  mkdir -p "${COMOUT}"
-
-  cd ${COMOUT}
-
-  for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
-
-    if [ ${fhr:0:1} = "0" ]; then
-      fhr_d=${fhr:1:2}
-    else
-      fhr_d=${fhr}
-    fi
-
-    post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr_d} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
-    post_mn=${post_time:10:2}
-    post_mn_or_null=""
-    post_fn_suffix="GrbF${fhr_d}"
-    post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.grib2"
-
-    if [ "${CPL_AQM}" = "TRUE" ]; then
-      fids=( "cmaq" )
-    else
-      fids=( "prslev" "natlev" )
-    fi
-
-    for fid in "${fids[@]}"; do
-      FID=$(echo_uppercase $fid)
-      post_orig_fn="${FID}.${post_fn_suffix}"
-      post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
- 
-      mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
-
-      # DBN alert
-      if [ $SENDDBN = "TRUE" ]; then
-        $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-      fi
-    done
-  done
-
-fi
-#
-#-----------------------------------------------------------------------
-#
-# Copy RESTART directory to COMIN only for NCO mode and AQM.
-# Copy AQM output product file to COMOUT only for NCO mode.
-# Copy dyn and phy files to COMIN only for AQM.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${CPL_AQM}" = "TRUE" ]; then
-    if [ -d "${COMOUT}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
-      rm -rf "${COMOUT}/RESTART"
-    fi
-    if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp -Rp ${DATA}/RESTART ${COMOUT}
-    fi
-
-  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
-
-  fhr_ct=0
-  fhr=0
-  while [ $fhr -le ${FCST_LEN_HRS} ]; do
-    fhr_ct=$(printf "%03d" $fhr)
-    source_dyn="${DATA}/dynf${fhr_ct}.nc"
-    source_phy="${DATA}/phyf${fhr_ct}.nc"
-    target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
-    target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
-    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
-    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
-    (( fhr=fhr+1 ))
-  done                 
+startmsg
+eval ${RUN_CMD_FCST} ${FV3_EXEC_FP} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
+if [ -e "$pgmout" ]; then
+   cat $pgmout
 fi
 #
 #-----------------------------------------------------------------------

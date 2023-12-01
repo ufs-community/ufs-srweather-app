@@ -1,49 +1,59 @@
 #!/bin/bash
 
-#
-#-----------------------------------------------------------------------
-#
-# This script runs POST-STAT-O3.
-#
-#-----------------------------------------------------------------------
-#
+date
+export PS4=' $SECONDS + '
+set -xue
 
-#
+export USHaqm=${USHaqm:-${HOMEaqm}/ush}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+
+export subcyc=0
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+. ${PARMaqm}/config/var_defns.sh
+. $USHaqm/source_util_funcs.sh
+
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+mkdir -p ${DATA}
+cd ${DATA}
+
+export cycle=${cycle:-t${cyc}z}
+
+setpdy.sh
+. ./PDY
+
+. $USHaqm/job_preamble.sh
+
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-NO}
+
+export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
+export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
+export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
+export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
+
+export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
+export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
+export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
+
 #-----------------------------------------------------------------------
-#
-# Source the variable definitions file and the bash utility functions.
-#
-#-----------------------------------------------------------------------
-#
-. $USHdir/source_util_funcs.sh
-source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
-#
 #-----------------------------------------------------------------------
 #
 scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
 scrfunc_fn=$( basename "${scrfunc_fp}" )
 scrfunc_dir=$( dirname "${scrfunc_fp}" )
-#
+
+env
 #-----------------------------------------------------------------------
-#
 # Print message indicating entry into script.
-#
 #-----------------------------------------------------------------------
 #
 print_info_msg "
@@ -55,42 +65,49 @@ This is the J-job script for the task that runs POST-STAT-O3.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-#
 # Set the run directory.
-#
 #-----------------------------------------------------------------------
 #
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POST_STAT_O3}"
 
-mkdir -p ${COMOUTwmo}
+if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+  export PCOM=${PCOM:-${COMOUT}/wmo}
+  if [ ! -d "${PCOM}" ]; then
+     mkdir -p "${PCOM}"
+  fi
+fi
 
 export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 #
 #-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
-#
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exaqm_post_stat_o3.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+startmsg
+${HOMEaqm}/scripts/exaqm_post_stat_o3.sh
+export err=$?; err_chk
+#
+#======================================================================
+msg="JOB ${job} HAS COMPLETED NORMALLY."
+postmsg "${msg}"
+
+if [ "${KEEPDATA}" != "YES" ]; then
+   rm -rf ${DATA}
+fi
+#=======================================================================
+# Print exit message
+print_info_msg "
+========================================================================
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
-#
-# Run job postamble.
-#
-#-----------------------------------------------------------------------
-#
-job_postamble
-#
-#-----------------------------------------------------------------------
-#
 # Restore the shell options saved at the beginning of this script/func-
 # tion.
-#
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
+date

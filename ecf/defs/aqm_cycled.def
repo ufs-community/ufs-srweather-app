@@ -1,6 +1,6 @@
 suite nco_aqm
   family primary
-    edit aqm_ver 'v7.0.0'
+    edit aqm_ver 'v7.0.1'
     edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
     edit NET 'aqm'
     edit RUN 'aqm'
@@ -13,6 +13,9 @@ suite nco_aqm
     edit OUTPUTDIR '/lfs/h2/emc/ptmp/%EMC_USER%/ecflow_aqm/para/output/prod/today'
     family 00
       edit CYC '00'
+      task cycle_end
+        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        cron 23:00
       family aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
@@ -57,8 +60,6 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
-            task jaqm_forecast_data_cleanup
-              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -100,6 +101,9 @@ suite nco_aqm
     endfamily      # 00
     family 06
       edit CYC '06'
+      task cycle_end
+        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        cron 05:00
       family aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
@@ -144,8 +148,6 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
-            task jaqm_forecast_data_cleanup
-              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -385,6 +387,9 @@ suite nco_aqm
     endfamily      # 06
     family 12
       edit CYC '12'
+      task cycle_end
+        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        cron 11:00
       family aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
@@ -429,8 +434,6 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
-            task jaqm_forecast_data_cleanup
-              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -670,6 +673,9 @@ suite nco_aqm
     endfamily      # 12
     family 18
       edit CYC '18'
+      task cycle_end
+        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
+        cron 17:00
       family aqm
         family v1.0
           edit ECF_FILES '%PACKAGEHOME%/ecf/scripts'
@@ -714,8 +720,6 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
-            task jaqm_forecast_data_cleanup
-              trigger ./jaqm_forecast==complete
           endfamily
           family post
             task jaqm_post_f000

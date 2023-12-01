@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+
+export pgm=aqm_lbcs
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aq
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -79,7 +85,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
+CDATE_MOD=`$NDATE -${EXTRN_MDL_LBCS_OFFSET_HRS} ${PDY}${cyc}`
 yyyymmdd=${CDATE_MOD:0:8}
 mm="${CDATE_MOD:4:2}"
 hh="${CDATE_MOD:8:2}"
@@ -264,7 +270,7 @@ Species converting Factor
 EOF
 
   exec_fn="gefs2lbc_para"
-  exec_fp="$EXECdir/${exec_fn}"
+  exec_fp="$EXECaqm/${exec_fn}"
   if [ ! -f "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for GEFS LBCs does not exist:
@@ -278,13 +284,13 @@ Please ensure that you've built this executable."
 #
 #----------------------------------------------------------------------
 #
-  PREP_STEP
+  startmsg
   sync
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR}
-  export err=$?
-    err_chk
-  POST_STEP
-
+  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+  export err=$?; err_chk
+  if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+  fi
   cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "

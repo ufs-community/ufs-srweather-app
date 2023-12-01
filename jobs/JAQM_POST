@@ -28,11 +28,17 @@ setpdy.sh
 
 . $USHaqm/job_preamble.sh
 
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-NO}
+
 export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
 export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
@@ -58,14 +64,27 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs POST-UPP-STAT.
+This is the J-job script for the task that runs the post-processor (UPP)
+on the output files corresponding to a specified forecast hour.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 # Set the run directory.
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
+mkdir -p ${COMOUT}
+#
+#-----------------------------------------------------------------------
+# Make sure that fhr is a non-empty string consisting of only digits.  
+#-----------------------------------------------------------------------
+#
+export fhr=$( printf "%s" "${fhr}" | $SED -n -r -e "s/^([0-9]+)$/\1/p" )
+if [ -z "$fhr" ]; then
+  print_err_msg_exit "\
+The forecast hour (fhr) must be a non-empty string consisting of only 
+digits:
+  fhr = \"${fhr}\""
+fi
 #
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
@@ -73,10 +92,10 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
 #-----------------------------------------------------------------------
 #
 startmsg
-${HOMEaqm}/scripts/exaqm_pre_post_stat.sh
+${HOMEaqm}/scripts/exaqm_post.sh 
 export err=$?; err_chk
 #
-#======================================================================
+#-----------------------------------------------------------------------
 msg="JOB ${job} HAS COMPLETED NORMALLY."
 postmsg "${msg}"
 
@@ -98,4 +117,3 @@ In directory:    \"${scrfunc_dir}\"
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
-date

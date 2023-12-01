@@ -1,13 +1,19 @@
 #!/bin/bash
 
-#
+set -xe
+
+msg="JOB $job HAS BEGUN"
+postmsg "$msg"
+   
+export pgm=aqm_post
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. $USHaqm/source_util_funcs.sh
 source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +23,7 @@ source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -77,7 +83,7 @@ fi
 #-----------------------------------------------------------------------
 #
 # Remove any files from previous runs and stage necessary files in the 
-# temporary work directory specified by DATA_FHR.
+# temporary work directory specified by DATA.
 #
 #-----------------------------------------------------------------------
 #
@@ -88,9 +94,9 @@ if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the user-defined post flat file specified by CUSTOM_POST_CONFIG_FP
-to the temporary work directory (DATA_FHR):
+to the temporary work directory (DATA):
   CUSTOM_POST_CONFIG_FP = \"${CUSTOM_POST_CONFIG_FP}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 else
   if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -101,9 +107,9 @@ else
   print_info_msg "
 ====================================================================
 Copying the default post flat file specified by post_config_fp to the 
-temporary work directory (DATA_FHR):
+temporary work directory (DATA):
   post_config_fp = \"${post_config_fp}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 fi
 cp ${post_config_fp} ./postxconfig-NT.txt
@@ -121,9 +127,9 @@ if [ ${USE_CRTM} = "TRUE" ]; then
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
-work directory (DATA_FHR):
+work directory (DATA):
   CRTM_DIR = \"${CRTM_DIR}\"
-  DATA_FHR = \"${DATA_FHR}\"
+  DATA = \"${DATA}\"
 ===================================================================="
 fi
 #
@@ -156,43 +162,22 @@ hh=${cyc}
 # must be set to a null string.
 #
 mnts_secs_str=""
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
-  if [ ${fhr}${fmn} = "00000" ]; then
-    mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
-  else
-    mnts_secs_str=":${fmn}:00"
-  fi
-fi
-#
-# Set the names of the forecast model's write-component output files.
-#
-if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
-  DATAFCST=$DATAROOT/${RUN}_forecast${dot_ensmem/./_}_${cyc}.${share_pid}
-  if [ ! -d ${DATAFCST} ]; then
-    echo "Fatal error DATAFCST not found in production mode"
-    exit 7
-  fi
-else
-  DATAFCST=$DATAROOT/run_fcst${dot_ensmem/./_}.${share_pid}
-fi	  
 
-if [ "${CPL_AQM}" = "TRUE" ]; then
-  dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
-  phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
-else
-  dyn_file="${DATAFCST}/dynf${fhr}${mnts_secs_str}.nc"
-  phy_file="${DATAFCST}/phyf${fhr}${mnts_secs_str}.nc"
-fi
+dyn_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}${mnts_secs_str}.nc"
+phy_file="${COMIN}/${cyc}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}${mnts_secs_str}.nc"
+
 #
 # Set parameters that specify the actual time (not forecast time) of the
 # output.
 #
-post_time=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${fhr} hours + ${fmn} minutes" "+%Y%m%d%H%M" )
+fmn='00'
+post_time=`$NDATE +${fhr} ${yyyymmdd}${hh}`$fmn
 post_yyyy=${post_time:0:4}
 post_mm=${post_time:4:2}
 post_dd=${post_time:6:2}
 post_hh=${post_time:8:2}
 post_mn=${post_time:10:2}
+
 #
 # Create the input namelist file to the post-processor executable.
 #
@@ -218,7 +203,7 @@ EOF
 #
 #-----------------------------------------------------------------------
 #
-# Run the UPP executable in the temporary directory (DATA_FHR) for this
+# Run the UPP executable in the temporary directory (DATA) for this
 # output time.
 #
 #-----------------------------------------------------------------------
@@ -226,11 +211,12 @@ EOF
 print_info_msg "$VERBOSE" "
 Starting post-processing for fhr = $fhr hr..."
 
-PREP_STEP
-eval ${RUN_CMD_POST} ${EXECdir}/upp.x < itag ${REDIRECT_OUT_ERR}
-export err=$?
- err_chk
-POST_STEP
+startmsg
+eval ${RUN_CMD_POST} ${EXECaqm}/upp.x < itag ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+export err=$?; err_chk
+if [ -e "${pgmout}" ]; then
+   cat ${pgmout}
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -275,8 +261,6 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 # rename, and create symlinks to them.
 #
 cd "${COMOUT}"
-basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
-symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 if [ "${CPL_AQM}" = "TRUE" ]; then
   fids=( "cmaq" )
 else
@@ -286,15 +270,13 @@ for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+  mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
   
   # DBN alert
-  if [ $SENDDBN = "TRUE" ]; then
+  if [ $SENDDBN = "YES" ]; then
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done
-
-rm -rf ${DATA_FHR}
 
 #
 #-----------------------------------------------------------------------

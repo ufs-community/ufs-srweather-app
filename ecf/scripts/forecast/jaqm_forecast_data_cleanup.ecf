@@ -18,17 +18,11 @@ model=aqm
 module list
 
 export cyc=%CYC%
-export cycle=t${cyc}z
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-. ${HOMEaqm}/parm/config/var_defns.sh
-. ${HOMEaqm}/ush/source_util_funcs.sh
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JDATA_CLEANUP
+${HOMEaqm}/jobs/JAQM_DATA_CLEANUP
 
 %include <tail.h>
 %manual
