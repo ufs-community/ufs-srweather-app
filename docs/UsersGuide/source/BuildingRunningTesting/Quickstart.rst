@@ -60,9 +60,9 @@ For a detailed explanation of how to build and run the SRW App on any supported 
       .. code-block:: console
 
          Please do the following to activate conda:
-            > conda activate workflow_tools
+            > conda activate srw_app
       
-      then the user should run ``conda activate workflow_tools`` to activate the workflow environment. 
+      then the user should run ``conda activate srw_app`` to activate the workflow environment. 
 
    #. Configure the experiment: 
 

@@ -10,8 +10,7 @@ load("rocoto")
 load("set_pythonpath")
 
 
-prepend_path("MODULEPATH","/contrib/EPIC/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+load("conda")
 
 setenv("PROJ_LIB","/contrib/EPIC/miniconda3/4.12.0/envs/regional_workflow/share/proj")
 setenv("OPT","/contrib/EPIC/hpc-modules")
@@ -20,6 +19,6 @@ prepend_path("PATH","/contrib/EPIC/bin")
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
-       > conda activate workflow_tools
+       > conda activate srw_app
 ]===])
 end

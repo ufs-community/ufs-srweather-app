@@ -93,7 +93,7 @@ First, navigate to the ``ufs-srweather-app/ush`` directory. Then, load the workf
 
 Users running a csh/tcsh shell would run ``source /path/to/etc/lmod-setup.csh <platform>`` in place of the first command above. 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate regional_workflow``. 
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate srw_app``.
 
 Configure the Verification Sample Case
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -189,7 +189,7 @@ If a problem occurs and a task goes DEAD, view the task log files in ``$EXPTDIR/
 Generate Plots
 ^^^^^^^^^^^^^^^^^
 
-The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(regional_workflow)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
+The plots are created using the graphics generation script that comes with the SRW App v2.1.0 release. Information on the plots and instructions on how to run the script can be found in :doc:`Chapter 12 <srw_v2.1.0:Graphics>` of the v2.1.0 release documentation. If the python environment is already loaded (i.e., ``(srw_graphics)`` is visible in the command prompt), users can navigate to the directory with the plotting scripts and run ``plot_allvars.py``:
 
 .. code-block:: console
 

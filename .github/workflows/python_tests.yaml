@@ -1,0 +1,58 @@
+name: Python Tests
+on:
+  push:
+    branches:
+      - develop
+      - 'release/*'
+  pull_request:
+    branches:
+      - develop
+      - 'release/*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
+jobs:
+  srw_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Micromamba and srw_app environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
+          environment-name: srw_app
+          init-shell: bash
+          cache-downloads: true
+          cache-environment: true
+
+      - name: Checkout externals
+        run: |
+          ./manage_externals/checkout_externals ufs-weather-model workflow-tools
+
+      - name: Lint the python code
+        run: |
+          micromamba activate srw_app
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          pylint --ignore-imports=yes tests/test_python/
+          pylint ush/create_*.py
+          pylint ush/generate_FV3LAM_wflow.py
+
+      - name: Run python unittests
+        run: |
+          # exclude test_retrieve_data that is tested in functional test
+          micromamba activate srw_app
+          export UNIT_TEST=True
+          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          python -m unittest -b tests/test_python/*.py
+
+      - name: Run python functional tests
+        run: |
+          micromamba activate srw_app
+          export CI=true
+          export PYTHONPATH=${PWD}/ush
+          python3 -m unittest -b tests/test_python/test_retrieve_data.py
