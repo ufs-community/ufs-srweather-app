@@ -42,7 +42,7 @@ export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMINemis="${COMINemis:-${COMaqm}/emissions}"
+export COMINemis="${COMINemis:-${COMaqm}/emission}"
 
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
