@@ -91,7 +91,6 @@ fi
 # bles.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_post.sh 
 export err=$?; err_chk
 #

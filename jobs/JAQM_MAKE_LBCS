@@ -102,7 +102,6 @@ fi
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_make_lbcs.sh 
 export err=$?; err_chk
 #

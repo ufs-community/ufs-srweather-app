@@ -93,7 +93,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_POST_SPLIT}"
 #
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_nexus_post_split.sh
 export err=$?; err_chk
 #

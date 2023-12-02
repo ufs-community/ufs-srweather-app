@@ -82,7 +82,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POINT_SOURCE}"
 # Call the ex-script for this J-job.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_point_source.sh
 export err=$?; err_chk
 #

@@ -72,7 +72,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
 # bles.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_pre_post_stat.sh
 export err=$?; err_chk
 #

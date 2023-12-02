@@ -104,7 +104,6 @@ fi
 # Call the ex-script for this J-job.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_nexus_emission.sh
 export err=$?; err_chk
 #

@@ -77,13 +77,15 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
       mkdir -p "${PCOM}"
   fi
 fi
+
+
+export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
 #
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_post_stat_pm25.sh
 export err=$?; err_chk
 #
