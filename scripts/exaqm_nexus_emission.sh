@@ -146,7 +146,7 @@ fi
 
 if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "TRUE" ]; then
   if [ -d "${GFS_SFC_INPUT}" ]; then
-    if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
+    if [ "$(ls -A ${GFS_SFC_INPUT}/gfs*.nc)" ]; then    #change to specificly look for gfs files
       ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
       USE_GFS_SFC="TRUE"
     fi
