@@ -12,7 +12,7 @@
 
 # Prepared for Hera mchine
 
-#--- for propper work, make sure of placement of your job card relative to var_defns.sh file ---#
+#--- For this to work properly, make sure the location of your working directory is correct relative to the var_defns.sh file ---#
 export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
 export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
 export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
