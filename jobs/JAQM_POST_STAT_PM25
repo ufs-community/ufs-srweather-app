@@ -79,7 +79,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 fi
 
 
-export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/sorc/AQM-utils/parm}"
+export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/parm/aqm_utils}"
 #
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
