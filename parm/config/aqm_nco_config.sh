@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -eux
 
 # This utility is to replace configuration temperate with production setting before running ecflow workflow

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # [metadata]
 description='config for Online-CMAQ, AQM_NA_13km, real-time, NCO mode on WCOSS2'
 version='1.0'
