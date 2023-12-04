@@ -251,10 +251,10 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
         if not test_cfg['workflow']['USE_CRON_TO_RELAUNCH']:
             logging.debug(f'Creating entry for job {test_name} in job monitoring dict')
-            monitor_yaml[test_name] = dict()
-            monitor_yaml[test_name].update({"expt_dir": expt_dir})
-            monitor_yaml[test_name].update({"status": "CREATED"})
-            monitor_yaml[test_name].update({"start_time": starttime_string})
+            monitor_yaml[f'{test_name}_{starttime_string}'] = dict()
+            monitor_yaml[f'{test_name}_{starttime_string}'].update({"expt_dir": expt_dir})
+            monitor_yaml[f'{test_name}_{starttime_string}'].update({"status": "CREATED"})
+            monitor_yaml[f'{test_name}_{starttime_string}'].update({"start_time": starttime_string})
 
     if args.launch != "cron":
         monitor_file = f'WE2E_tests_{starttime_string}.yaml'
