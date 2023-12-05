@@ -4,12 +4,7 @@
 #   parm/input.nml.FV3
 #
 # to obtain the namelist for each physics suite that the SRW App can 
-# run with.  To build a namelist for one of these configurations, use 
-# the Python helper script 
-#
-#   ush/set_namelist.py
-#
-# and provide this file and the desired section via the -c option.
+# run with.
 
 
 FV3_RRFS_v1beta:

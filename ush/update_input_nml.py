@@ -16,8 +16,6 @@ from python_utils import (
     flatten_dict,
 )
 
-from set_namelist import set_namelist
-
 
 def update_input_nml(run_dir):
     """Update the FV3 input.nml file in the specified run directory
@@ -101,29 +99,32 @@ def update_input_nml(run_dir):
     fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN)
 
     try:
-        set_namelist(
-            [
-                "-q",
-                "-n",
+        with tempfile.NamedTemporaryFile(
+                dir="./",
+                mode="w+t",
+                prefix="fv3_settings",
+                suffix=".yaml") as tmpfile:
+
+            tmpfile.write(settings_str)
+            tmpfile.seek(0)
+            subprocess.run(['uw config realize',
+                "-i",
                 fv3_input_nml_fp,
-                "-u",
-                settings_str,
+                "--input-format",
+                "nml",
                 "-o",
                 fv3_input_nml_fp,
-            ]
-        )
+                "-v",
+                "--values-file",
+                tmpfile,
+                ]
+            )
     except:
         logging.exception(
             dedent(
                 f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Full path to output namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
+                Call to generate an FV3 namelist file failed.
+                """
             )
             + settings_str
         )

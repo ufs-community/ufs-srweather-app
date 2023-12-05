@@ -23,7 +23,6 @@ from python_utils import (
     flatten_dict,
 )
 
-from set_namelist import set_namelist
 
 
 def set_FV3nml_ens_stoch_seeds(cdate):
@@ -110,22 +109,28 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     )
 
     try:
-        set_namelist(
-            ["-q", "-n", fv3_nml_ensmem_fp, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
-        )
+        with tempfile.NamedTemporaryFile(
+            dir="./",
+            mode="w+t",
+            prefix="namelist_settings",
+            suffix=".yaml") as tmpfile:
+            tmpfile.write(cfg_to_yaml_str(settings))
+            tmpfile.seek(0)
+            subprocess.run(["uw config realize",
+                "-i", fv3_nml_ensmem_fp,
+                "-o", fv3_nml_ensmem_fp,
+                "-v",
+                "--values-file", tmpfile,
+                ]
+            )
     except:
         print_err_msg_exit(
             dedent(
                 f"""
-                Call to python script set_namelist.py to set the variables in the FV3
-                namelist file that specify the paths to the surface climatology files
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Full path to output namelist file:
-                    fv3_nml_ensmem_fp = '{fv3_nml_ensmem_fp}'
-                  Namelist settings specified on command line (these have highest precedence):\n
-                    settings =\n\n"""
+                Updating the FV3 namelist with stochastic seed parameters
+                failed.
+                    Values to be updated:
+                """
             )
             + settings_str
         )

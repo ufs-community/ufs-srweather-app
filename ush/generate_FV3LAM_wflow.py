@@ -19,6 +19,7 @@ from python_utils import (
     export_vars,
     cp_vrfy,
     ln_vrfy,
+    load_config_file,
     mkdir_vrfy,
     mv_vrfy,
     create_symlink_to_file,
@@ -31,7 +32,6 @@ from python_utils import (
 from setup import setup
 from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from set_namelist import set_namelist
 from check_python_version import check_python_version
 
 # These come from ush/python_utils/workflow-tools
@@ -495,24 +495,28 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Call the set_namelist.py script to create a new FV3 namelist file (full
-    # path specified by FV3_NML_FP) using the file FV3_NML_BASE_SUITE_FP as
-    # the base (i.e. starting) namelist file, with physics-suite-dependent
-    # modifications to the base file specified in the yaml configuration file
-    # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
-    # and with additional physics-suite-independent modifications specified
-    # in the variable "settings" set above.
+    # Create a new FV3 namelist file
     #
     # -----------------------------------------------------------------------
     #
-    args=[ "-n", FV3_NML_BASE_SUITE_FP,
-           "-c", FV3_NML_YAML_CONFIG_FP, CCPP_PHYS_SUITE,
-           "-u", settings_str,
-           "-o", FV3_NML_FP,
-          ]
-    if not debug:
-        args.append("-q")
-    set_namelist(args)
+
+    physics_cfg = load_config_file(FV3_NML_YAML_CONFIG_FP)[CCPP_PHYS_SUITE]
+    update_dict(settings, physics_cfg)
+
+    with tempfile.NamedTemporaryFile(
+        dir="./",
+        mode="w+t",
+        prefix="namelist_settings",
+        suffix=".yaml") as tmpfile:
+        tmpfile.write(cfg_to_yaml_str(physics_cfg))
+        tmpfile.seek(0)
+        subprocess.run(["uw config realize",
+            "-i", FV3_NML_BASE_SUITE_FP,
+            "-o", FV3_NML_FP,
+            "-v",
+            "--values-file", tmpfile,
+            ]
+        )
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -642,13 +646,20 @@ def generate_FV3LAM_wflow(
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
 
-        args=[ "-n", FV3_NML_FP,
-               "-u", settings_str,
-               "-o", FV3_NML_STOCH_FP,
-              ]
-        if not debug:
-            args.append("-q")
-        set_namelist(args)
+        with tempfile.NamedTemporaryFile(
+            dir="./",
+            mode="w+t",
+            prefix="namelist_settings",
+            suffix=".yaml") as tmpfile:
+            tmpfile.write(cfg_to_yaml_str(settings))
+            tmpfile.seek(0)
+            subprocess.run(["uw config realize",
+                "-i", FV3_NML_FP,
+                "-o", FV3_NML_STOCH_FP,
+                "-v",
+                "--values-file", tmpfile,
+                ]
+            )
 
     #
     # -----------------------------------------------------------------------

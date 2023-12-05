@@ -24,7 +24,6 @@ from python_utils import (
     cfg_to_yaml_str,
 )
 
-from set_namelist import set_namelist
 
 
 def set_FV3nml_sfc_climo_filenames(debug=False):
@@ -95,32 +94,33 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
         verbose=debug,
     )
 
-    # Rename the FV3 namelist and call set_namelist
-    fv3_nml_base_fp = f"{FV3_NML_FP}.base"
-    mv_vrfy(f"{FV3_NML_FP} {fv3_nml_base_fp}")
-
+    # Update the namelist file
     try:
-        set_namelist(
-            ["-q", "-n", fv3_nml_base_fp, "-u", settings_str, "-o", FV3_NML_FP]
-        )
+        with tempfile.NamedTemporaryFile(
+            dir="./",
+            mode="w+t",
+            prefix="namelist_settings",
+            suffix=".yaml") as tmpfile:
+            tmpfile.write(cfg_to_yaml_str(settings))
+            tmpfile.seek(0)
+            subprocess.run(["uw config realize",
+                "-i", FV3_NML_FP,
+                "-o", FV3_NML_FP,
+                "-v",
+                "--values-file", tmpfile,
+                ]
+            )
     except:
         print_err_msg_exit(
             dedent(
                 f"""
-                Call to python script set_namelist.py to set the variables in the FV3
-                namelist file that specify the paths to the surface climatology files
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    fv3_nml_base_fp = '{fv3_nml_base_fp}'
-                  Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Namelist settings specified on command line (these have highest precedence):\n
-                    settings =\n\n"""
+                Updating the FV3 namelist with paths to the surface climatology
+                files failed.
+                    Values to be updated:\n\n"""
             )
             + settings_str
         )
 
-    rm_vrfy(f"{fv3_nml_base_fp}")
 
 
 def parse_args(argv):
