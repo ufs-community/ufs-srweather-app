@@ -102,7 +102,7 @@ cd ${workspace}
 
 cd ${EXPTDIR}
 pwd
-cp ${workspace}/ush/wrappers/* .
+cp ${workspace}/ush/wrappers/*.sh .
 
 # Set parameters that the task scripts require ...
 export JOBSdir=${workspace}/jobs

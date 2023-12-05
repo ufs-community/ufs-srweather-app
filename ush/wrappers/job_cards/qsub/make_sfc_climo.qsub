@@ -1,0 +1,17 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=2:mpiprocs=24:ncpus=24
+#PBS -q main
+#PBS -l walltime=00:20:00
+#PBS -j oe -o make_sfc_climo.log
+#PBS -N make_sfc_climo
+
+#--- For this to work properly, make sure the location of your working directory is correct relative to the var_defns.sh file ---#
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export nprocs='48'
+
+$USHdir/load_modules_run_task.sh "make_sfc_climo" $JOBSdir/JREGIONAL_MAKE_SFC_CLIMO
+
+# for Cheyenne replace main with regular
