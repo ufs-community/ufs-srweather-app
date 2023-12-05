@@ -476,7 +476,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 # to remove it from the namelist!  Which is better to use??
 #
 settings="
-'config': {
+'config':
  'fix_dir_target_grid': ${FIXlam},
  'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
  'orog_dir_target_grid': ${FIXlam},
@@ -498,23 +498,27 @@ settings="
  'tracers_input': ${tracers_input},
  'tracers': ${tracers},
  'thomp_mp_climo_file': ${thomp_mp_climo_file},
-}
 "
-#
-# Call the python script to create the namelist file.
-#
+
+  # Store the settings in a temporary file
+  tmpfile=$( $READLINK -f "$(mktemp ./namelist_settings.XXXXXX.yaml)")
+  cat > $tmpfile << EOF
+$settings
+EOF
+
   nml_fn="fort.41"
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+  uw config realize \
+    -i ${tmpfile} \
+    -o ${nml_fn} \
+    -v \
+    --values-file ${tmpfile}
+
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script set_namelist.py to set the variables 
-in the namelist file read in by the ${exec_fn} executable failed. Parameters 
-passed to this script are:
-  Name of output namelist file:
-    nml_fn = \"${nml_fn}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
+    message_txt="Error creating namelist read by ${exec_fn} failed.
+       Contents of input are:
 $settings"
+    rm $tmpfile
     if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
       err_exit "${message_txt}"
     else

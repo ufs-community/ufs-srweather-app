@@ -265,29 +265,36 @@ generation executable (exec_fp):
 # namelist file.
 #
   settings="
-'regional_grid_nml': {
-    'plon': ${LON_CTR},
-    'plat': ${LAT_CTR},
-    'delx': ${DEL_ANGLE_X_SG},
-    'dely': ${DEL_ANGLE_Y_SG},
-    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
-    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
-    'pazi': ${PAZI},
- }
+'regional_grid_nml':
+    'plon': ${LON_CTR}
+    'plat': ${LAT_CTR}
+    'delx': ${DEL_ANGLE_X_SG}
+    'dely': ${DEL_ANGLE_Y_SG}
+    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
+    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
+    'pazi': ${PAZI}
 "
-#
-# Call the python script to create the namelist file.
-#
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
-    print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the
-regional_esg_grid namelist file failed.  Parameters passed to this script
-are:
-  Full path to output namelist file:
-    rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
-$settings"
+
+  # Store the settings in a temporary file
+  tmpfile=$( $READLINK -f "$(mktemp ./namelist_settings.XXXXXX.yaml)")
+  cat > $tmpfile << EOF
+$settings
+EOF
+
+  uw config realize \
+    -i ${tmpfile} \
+    -o ${rgnl_grid_nml_fp} \
+    -v \
+    --values-file ${tmpfile}
+
+  err=$?
+  if [ $err -ne 0 ]; then
+      rm $tmpfile
+      print_err_msg_exit "\
+  Error creating regional_esg_grid namelist.
+      Contents of input are:
+  $settings"
+ fi
 #
 # Call the executable that generates the grid file.
 #

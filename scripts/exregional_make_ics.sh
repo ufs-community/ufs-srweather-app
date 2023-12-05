@@ -555,62 +555,68 @@ fi
 # to remove it from the namelist!  Which is better to use??
 #
 settings="
-'config': {
- 'fix_dir_target_grid': ${FIXlam},
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXlam},
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${VCOORD_FILE},
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
- 'data_dir_input_grid': ${extrn_mdl_staging_dir},
- 'atm_files_input_grid': ${fn_atm},
- 'sfc_files_input_grid': ${fn_sfc},
- 'grib2_file_input_grid': \"${fn_grib2}\",
- 'cycle_mon': $((10#${mm})),
- 'cycle_day': $((10#${dd})),
- 'cycle_hour': $((10#${hh})),
- 'convert_atm': True,
- 'convert_sfc': True,
- 'convert_nst': ${convert_nst},
- 'regional': 1,
- 'halo_bndy': $((10#${NH4})),
- 'halo_blend': $((10#${HALO_BLEND})),
- 'input_type': ${input_type},
- 'external_model': ${external_model},
- 'tracers_input': ${tracers_input},
- 'tracers': ${tracers},
- 'nsoill_out': $((10#${nsoill_out})),
- 'geogrid_file_input_grid': ${geogrid_file_input_grid},
- 'vgtyp_from_climo': ${vgtyp_from_climo},
- 'sotyp_from_climo': ${sotyp_from_climo},
- 'vgfrc_from_climo': ${vgfrc_from_climo},
- 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo},
- 'lai_from_climo': ${lai_from_climo},
- 'tg3_from_soil': ${tg3_from_soil},
- 'thomp_mp_climo_file': ${thomp_mp_climo_file},
-}
+'config':
+ 'fix_dir_target_grid': ${FIXlam}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'vcoord_file_target_grid': ${VCOORD_FILE}
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'atm_files_input_grid': ${fn_atm}
+ 'sfc_files_input_grid': ${fn_sfc}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'cycle_mon': $((10#${mm}))
+ 'cycle_day': $((10#${dd}))
+ 'cycle_hour': $((10#${hh}))
+ 'convert_atm': True
+ 'convert_sfc': True
+ 'convert_nst': ${convert_nst}
+ 'regional': 1
+ 'halo_bndy': $((10#${NH4}))
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'input_type': ${input_type}
+ 'external_model': ${external_model}
+ 'tracers_input': ${tracers_input}
+ 'tracers': ${tracers}
+ 'nsoill_out': $((10#${nsoill_out}))
+ 'geogrid_file_input_grid': ${geogrid_file_input_grid}
+ 'vgtyp_from_climo': ${vgtyp_from_climo}
+ 'sotyp_from_climo': ${sotyp_from_climo}
+ 'vgfrc_from_climo': ${vgfrc_from_climo}
+ 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
+ 'lai_from_climo': ${lai_from_climo}
+ 'tg3_from_soil': ${tg3_from_soil}
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
-#
-# Call the python script to create the namelist file.
-#
+
+# Store the settings in a temporary file
+tmpfile=$( $READLINK -f "$(mktemp ./namelist_settings.XXXXXX.yaml)")
+cat > $tmpfile << EOF
+$settings
+EOF
+
+
 nml_fn="fort.41"
-${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+uw config realize \
+  -i ${tmpfile} \
+  -o ${nml_fn} \
+  -v \
+  --values-file "${tmpfile}"
+
 err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script set_namelist.py to set the variables 
-in the namelist file read in by the ${exec_fn} executable failed. Parameters 
-passed to this script are:
-  Name of output namelist file:
-    nml_fn = \"${nml_fn}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
+  message_txt="Error creating namelist read by ${exec_fn} failed.
+     Contents of input are:
 $settings"
+  rm $tmpfile
   if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
     err_exit "${message_txt}"
   else
     print_err_msg_exit "${message_txt}"
   fi
 fi
+
 #
 #-----------------------------------------------------------------------
 #
