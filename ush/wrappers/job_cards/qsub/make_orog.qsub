@@ -1,0 +1,17 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=24:ncpus=24
+#PBS -q main
+#PBS -l walltime=00:20:00
+#PBS -j oe -o make_orog.log
+#PBS -N make_orog
+
+#--- For this to work properly, make sure the location of your working directory is correct relative to the var_defns.sh file ---#
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export nprocs='24'
+
+$USHdir/load_modules_run_task.sh "make_orog" $JOBSdir/JREGIONAL_MAKE_OROG
+
+# for Cheyenne replace main with regular

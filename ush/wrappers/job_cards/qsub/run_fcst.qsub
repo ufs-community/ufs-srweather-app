@@ -1,0 +1,21 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -l select=1:mpiprocs=36:ncpus=36
+#PBS -q main
+#PBS -l walltime=00:30:00
+#PBS -j oe -o run_fcst.log
+#PBS -N run_fcst
+
+#--- For this to work properly, make sure the location of your working directory is correct relative to the var_defns.sh file ---#
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export PDY=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c1-8`
+export cyc=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c9-10`
+export subcyc='00'
+export ENSMEM_INDX='000'
+export SLASH_ENSMEM_SUBDIR='/'
+
+$USHdir/load_modules_run_task.sh "run_fcst" $JOBSdir/JREGIONAL_RUN_FCST
+
+# for Cheyenne replace main with regular
