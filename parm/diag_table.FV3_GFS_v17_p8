@@ -4,8 +4,8 @@
 #output files
 "grid_spec",              -1,  "months",   1, "days",  "time"
 "atmos_static",           -1,  "hours",    1, "hours", "time"
-"fv3_history",             3,  "hours",    1, "hours", "time"
-"fv3_history2d",           3,  "hours",    1, "hours", "time"
+"fv3_history",             0,  "hours",    1, "hours", "time"
+"fv3_history2d",           0,  "hours",    1, "hours", "time"
 
 #
 #=======================
