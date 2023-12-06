@@ -464,7 +464,12 @@ fi
 #-----------------------------------------------------------------------
 #
 flag_fcst_restart="FALSE"
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${COMOUT}/RESTART/*.coupler.res)" ]; then
+coupler_res_ct=0
+if [ -d ${COMOUT}/RESTART ]; then
+  coupler_res_ct=$(eval ls -A ${COMOUT}/RESTART/*.coupler.res|wc -l)
+fi
+
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ]; then
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
@@ -518,6 +523,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
   done
   cd ${DATA}   
 fi
+
 #
 #-----------------------------------------------------------------------
 #
