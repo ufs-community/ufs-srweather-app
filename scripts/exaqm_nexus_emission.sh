@@ -235,7 +235,7 @@ GEOS="TRUE"
 AnnualScalar="TRUE"
 OFFLINE_SOILNOX="TRUE"
 
-NEXUS_INPUT_BASE_DIR=${COMINemis}
+NEXUS_INPUT_BASE_DIR=${FIXemis}
 ########################################################################
 
 #
