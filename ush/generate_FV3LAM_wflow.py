@@ -366,10 +366,7 @@ def generate_FV3LAM_wflow(
         "layout": [LAYOUT_X, LAYOUT_Y],
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
     })
-    if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
-                           "FV3_GFS_2017_gfdlmp_regional",
-                           "FV3_GFS_v15p2",
-                           ):
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
         if CPL_AQM:
             fv_core_nml_dict.update({
                 "dnats": 5
