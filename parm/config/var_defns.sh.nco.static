@@ -55,11 +55,6 @@ TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS=''
 TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS=''
 TEST_VX_FCST_INPUT_BASEDIR=''
 FIXgsm='@HOMEaqm@/fix/fix_am'
-FIXaer='@HOMEaqm@/fix/fix_aer'
-FIXlut='@HOMEaqm@/fix/fix_lut'
-FIXorg='@HOMEaqm@/fix/fix_orog'
-FIXsfc='@HOMEaqm@/fix/fix_sfc_climo'
-FIXshp='@HOMEaqm@/fix/ufs/NaturalEarth'
 EXTRN_MDL_DATA_STORES='hpss aws nomads'
 
 # [workflow]
