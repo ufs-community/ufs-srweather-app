@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
-import argparse
-from textwrap import dedent
 from datetime import datetime
+from subprocess import STDOUT, CalledProcessError, check_output
+from textwrap import dedent
 
 from python_utils import (
     print_input_args,
@@ -108,32 +109,35 @@ def set_FV3nml_ens_stoch_seeds(cdate):
         verbose=VERBOSE,
     )
 
-    try:
-        with tempfile.NamedTemporaryFile(
-            dir="./",
-            mode="w+t",
-            prefix="namelist_settings",
-            suffix=".yaml") as tmpfile:
-            tmpfile.write(cfg_to_yaml_str(settings))
-            tmpfile.seek(0)
-            subprocess.run(["uw config realize",
-                "-i", fv3_nml_ensmem_fp,
-                "-o", fv3_nml_ensmem_fp,
-                "-v",
-                "--values-file", tmpfile,
-                ]
-            )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Updating the FV3 namelist with stochastic seed parameters
-                failed.
-                    Values to be updated:
-                """
-            )
-            + settings_str
+    with tempfile.NamedTemporaryFile(
+        dir="./",
+        mode="w+t",
+        prefix="namelist_settings",
+        suffix=".yaml") as tmpfile:
+        tmpfile.write(cfg_to_yaml_str(settings))
+        tmpfile.seek(0)
+        cmd = " ".join(["uw config realize",
+            "-i", fv3_nml_ensmem_fp,
+            "-o", fv3_nml_ensmem_fp,
+            "-v",
+            "--values-file", tmpfile,
+            ]
         )
+        indent = "  "
+        try:
+            logfunc = logging.info
+            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception("Failed with status: %s", indent, e.returncode)
+            sys.exit(1)
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
+
 
 
 def parse_args(argv):

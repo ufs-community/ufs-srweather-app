@@ -8,10 +8,12 @@ user-defined config.yaml file.
 # pylint: disable=invalid-name
 
 import argparse
-import os
 import logging
-from textwrap import dedent
+import os
 import sys
+from subprocess import STDOUT, CalledProcessError, check_output
+from textwrap import dedent
+
 
 from python_utils import (
     log_info,
@@ -510,13 +512,28 @@ def generate_FV3LAM_wflow(
         suffix=".yaml") as tmpfile:
         tmpfile.write(cfg_to_yaml_str(physics_cfg))
         tmpfile.seek(0)
-        subprocess.run(["uw config realize",
+        cmd = " ".join(["uw config realize",
             "-i", FV3_NML_BASE_SUITE_FP,
             "-o", FV3_NML_FP,
             "-v",
             "--values-file", tmpfile,
-            ]
-        )
+            ])
+
+        indent = "  "
+        try:
+            logfunc = logging.info
+            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception("Failed with status: %s", indent, e.returncode)
+            sys.exit(1)
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
+
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -653,13 +670,27 @@ def generate_FV3LAM_wflow(
             suffix=".yaml") as tmpfile:
             tmpfile.write(cfg_to_yaml_str(settings))
             tmpfile.seek(0)
-            subprocess.run(["uw config realize",
+            cmd = " ".join(["uw config realize",
                 "-i", FV3_NML_FP,
                 "-o", FV3_NML_STOCH_FP,
                 "-v",
                 "--values-file", tmpfile,
-                ]
-            )
+                ])
+
+            indent = "  "
+            try:
+                logfunc = logging.info
+                output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                        stderr=STDOUT, text=True)
+            except CalledProcessError as e:
+                logfunc = logging.error
+                output = e.output
+                logging.exception("Failed with status: %s", indent, e.returncode)
+                sys.exit(1)
+            finally:
+                logfunc("Output:")
+                for line in output.split("\n"):
+                    logfunc("%s%s", indent * 2, line)
 
     #
     # -----------------------------------------------------------------------

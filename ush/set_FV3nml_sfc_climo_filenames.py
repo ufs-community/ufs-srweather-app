@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
-import argparse
+from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
 from python_utils import (
