@@ -38,8 +38,8 @@ export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
-export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
+export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
 export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
@@ -99,7 +99,6 @@ fi
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_make_ics.sh 
 export err=$?; err_chk
 #

@@ -34,8 +34,8 @@ export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
-export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
+export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
 export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
@@ -72,7 +72,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
 # bles.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_pre_post_stat.sh
 export err=$?; err_chk
 #

@@ -38,7 +38,8 @@ export DCOMROOT=${DCOMROOT:-/lfs/h1/ops/prod/dcom}
 export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
 
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
+export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
+export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
 export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
@@ -92,7 +93,6 @@ mkdir -p ${FIRE_EMISSION_STAGING_DIR}
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_fire_emission.sh
 export err=$?; err_chk
 #

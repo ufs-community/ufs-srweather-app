@@ -42,11 +42,12 @@ export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMINemis="${COMINemis:-${COMaqm}/emissions}"
+export FIXemis="${FIXemis:-${FIXaqm}/emission}"
+
 
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
-export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
+export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
 export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
@@ -93,7 +94,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_POST_SPLIT}"
 #
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_nexus_post_split.sh
 export err=$?; err_chk
 #

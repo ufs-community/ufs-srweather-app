@@ -34,11 +34,11 @@ export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMINemispt="${COMINemispt:-${COMaqm}/emissions/nei2016v1-pt}"
+export FIXemispt="${FIXemispt:-${FIXaqm}/emission/nei2016v1-pt}"
 
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMIN:-${COMaqm}/${RUN}.${PDYm1}}"
-export COMINm2="${COMIN:-${COMaqm}/${RUN}.${PDYm2}}"
+export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
+export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
 export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
 
 #-----------------------------------------------------------------------
@@ -82,7 +82,6 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_POINT_SOURCE}"
 # Call the ex-script for this J-job.
 #-----------------------------------------------------------------------
 #
-startmsg
 ${HOMEaqm}/scripts/exaqm_point_source.sh
 export err=$?; err_chk
 #
