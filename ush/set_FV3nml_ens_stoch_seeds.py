@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import tempfile
 from datetime import datetime
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
@@ -120,13 +121,13 @@ def set_FV3nml_ens_stoch_seeds(cdate):
             "-i", fv3_nml_ensmem_fp,
             "-o", fv3_nml_ensmem_fp,
             "-v",
-            "--values-file", tmpfile,
+            "--values-file", tmpfile.name,
             ]
         )
         indent = "  "
         try:
             logfunc = logging.info
-            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+            output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error

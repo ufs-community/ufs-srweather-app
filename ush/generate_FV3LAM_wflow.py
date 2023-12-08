@@ -11,6 +11,7 @@ import argparse
 import logging
 import os
 import sys
+import tempfile
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
@@ -29,6 +30,7 @@ from python_utils import (
     cfg_to_yaml_str,
     find_pattern_in_str,
     flatten_dict,
+    update_dict,
 )
 
 from setup import setup
@@ -516,13 +518,14 @@ def generate_FV3LAM_wflow(
             "-i", FV3_NML_BASE_SUITE_FP,
             "-o", FV3_NML_FP,
             "-v",
-            "--values-file", tmpfile,
+            "--values-file", tmpfile.name,
             ])
 
         indent = "  "
+        output = ""
         try:
             logfunc = logging.info
-            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+            output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error
@@ -674,13 +677,13 @@ def generate_FV3LAM_wflow(
                 "-i", FV3_NML_FP,
                 "-o", FV3_NML_STOCH_FP,
                 "-v",
-                "--values-file", tmpfile,
+                "--values-file", tmpfile.name,
                 ])
 
             indent = "  "
             try:
                 logfunc = logging.info
-                output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                output = check_output(cmd, encoding="utf=8", shell=True,
                         stderr=STDOUT, text=True)
             except CalledProcessError as e:
                 logfunc = logging.error

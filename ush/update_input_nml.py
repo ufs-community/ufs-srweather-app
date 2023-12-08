@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+import tempfile
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 

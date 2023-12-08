@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import tempfile
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
@@ -107,7 +108,7 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
             "-i", FV3_NML_FP,
             "-o", FV3_NML_FP,
             "-v",
-            "--values-file", tmpfile,
+            "--values-file", tmpfile.name,
             ]
         )
     indent = "  "
