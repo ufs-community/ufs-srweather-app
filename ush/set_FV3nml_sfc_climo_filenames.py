@@ -96,33 +96,34 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
     )
 
     # Update the namelist file
-    try:
-        with tempfile.NamedTemporaryFile(
-            dir="./",
-            mode="w+t",
-            prefix="namelist_settings",
-            suffix=".yaml") as tmpfile:
-            tmpfile.write(cfg_to_yaml_str(settings))
-            tmpfile.seek(0)
-            subprocess.run(["uw config realize",
-                "-i", FV3_NML_FP,
-                "-o", FV3_NML_FP,
-                "-v",
-                "--values-file", tmpfile,
-                ]
-            )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Updating the FV3 namelist with paths to the surface climatology
-                files failed.
-                    Values to be updated:\n\n"""
-            )
-            + settings_str
+    with tempfile.NamedTemporaryFile(
+        dir="./",
+        mode="w+t",
+        prefix="namelist_settings",
+        suffix=".yaml") as tmpfile:
+        tmpfile.write(cfg_to_yaml_str(settings))
+        tmpfile.seek(0)
+        cmd = " ".join(["uw config realize",
+            "-i", FV3_NML_FP,
+            "-o", FV3_NML_FP,
+            "-v",
+            "--values-file", tmpfile,
+            ]
         )
-
-
+    indent = "  "
+        try:
+            logfunc = logging.info
+            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception("Failed with status: %s", indent, e.returncode)
+            sys.exit(1)
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
 
 def parse_args(argv):
     """Parse command line arguments"""

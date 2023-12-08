@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import os
-import sys
 import argparse
 import logging
+import os
+import sys
+from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
 from python_utils import (
@@ -98,39 +99,43 @@ def update_input_nml(run_dir):
     #
     fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN)
 
-    try:
-        with tempfile.NamedTemporaryFile(
-                dir="./",
-                mode="w+t",
-                prefix="fv3_settings",
-                suffix=".yaml") as tmpfile:
+    with tempfile.NamedTemporaryFile(
+            dir="./",
+            mode="w+t",
+            prefix="fv3_settings",
+            suffix=".yaml") as tmpfile:
 
-            tmpfile.write(settings_str)
-            tmpfile.seek(0)
-            subprocess.run(['uw config realize',
-                "-i",
-                fv3_input_nml_fp,
-                "--input-format",
-                "nml",
-                "-o",
-                fv3_input_nml_fp,
-                "-v",
-                "--values-file",
-                tmpfile,
-                ]
-            )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to generate an FV3 namelist file failed.
-                """
-            )
-            + settings_str
+        tmpfile.write(settings_str)
+        tmpfile.seek(0)
+        cmd = " ".join(['uw config realize',
+            "-i",
+            fv3_input_nml_fp,
+            "--input-format",
+            "nml",
+            "-o",
+            fv3_input_nml_fp,
+            "-v",
+            "--values-file",
+            tmpfile,
+            ]
         )
-        return False
 
-    return True
+        indent = "  "
+        try:
+            logfunc = logging.info
+            output = check_output(cmd, encoding="utf=8", env=env, shell=True,
+                    stderr=STDOUT, text=True)
+            ret = True
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception("Failed with status: %s", indent, e.returncode)
+            ret = False
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
+    return ret
 
 
 def parse_args(argv):
