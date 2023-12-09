@@ -437,12 +437,19 @@ def generate_FV3LAM_wflow(
                 "vsvpo3:0.0", "xopn:0.0", "xylmn:0.0", "*:0.2" ]
         })
 
-    # If UFS_FIRE, activate appropriate flags
+    # If UFS_FIRE, activate appropriate flags and update FIELD_TABLE
     if expt_config['fire'].get('UFS_FIRE'):
         gfs_physics_nml_dict.update({
             "cpl_fire": True,
-            "rrfs_sd": True
         })
+        field_table_append = """# smoke tracer for UFS_FIRE
+ "TRACER", "atmos_mod", "fsmoke"
+           "longname",     "fire smoke"
+           "units",        "kg/kg"
+       "profile_type", "fixed", "surface_value=0.0" /\n"""
+
+        with open(FIELD_TABLE_FP, "a+") as file:
+            file.write(field_table_append)
 
     settings["gfs_physics_nml"] = gfs_physics_nml_dict
 
@@ -702,8 +709,8 @@ def generate_FV3LAM_wflow(
                "-u", settings_str,
                "-o", FIRE_NML_FP,
               ]
-#        if not debug:
-#            args.append("-q")
+        if not debug:
+            args.append("-q")
         set_namelist(args)
 
     #
