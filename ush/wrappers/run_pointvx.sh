@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Stand-alone script to run grid-to-point verification
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.sh"

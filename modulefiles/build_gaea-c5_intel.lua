@@ -20,6 +20,9 @@ load(pathJoin("cmake", cmake_ver))
 
 load("srw_common")
 
+unload("darshan-runtime/3.4.0")
+unload("cray-pmi/6.1.10")
+
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
 
