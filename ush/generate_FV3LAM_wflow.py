@@ -705,9 +705,9 @@ def generate_FV3LAM_wflow(
 
         settings_str = cfg_to_yaml_str(fire_nml_dict)
 
-        args=[ "-n", FIRE_NML_BASE_FP,
+        args=[ "-n", expt_config['workflow']['FIRE_NML_BASE_FP'],
                "-u", settings_str,
-               "-o", FIRE_NML_FP,
+               "-o", expt_config['workflow']['FIRE_NML_FP'],
               ]
         if not debug:
             args.append("-q")
