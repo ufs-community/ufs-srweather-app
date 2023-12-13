@@ -12,7 +12,7 @@ from textwrap import dedent
 
 from python_utils import (
     cfg_to_yaml_str,
-    flatten_dict
+    flatten_dict,
     import_vars,
     load_shell_config,
     print_info_msg,
