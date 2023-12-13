@@ -13,6 +13,7 @@ FAQ
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
 * :ref:`How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App? <AddPhys>`
+* :ref:`How can I configure the computational parameters to use more compute power? <CompPower>`
 * :ref:`How can I troubleshoot issues related to ICS/LBCS generation for a predefined 3-km grid? <IC-LBC-gen-issue>`
 
 .. _DefineExptName:
@@ -215,6 +216,30 @@ Regardless, users will need to modify the suite definition file (:term:`SDF`) an
 Depending on the scheme, additional changes to the SDF (e.g., to add, remove, or change interstitial schemes) and to the namelist (to include scheme-specific tuning parameters) may be required. Users are encouraged to reach out on GitHub Discussions to find out more from subject matter experts about recommendations for the specific scheme they want to implement. Users can post on the `SRW App Discussions page <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ or ask their questions directly to the developers of `ccpp-physics <https://github.com/NCAR/ccpp-physics/discussions>`__ and `ccpp-framework <https://github.com/NCAR/ccpp-framework/discussions>`__, which also handle support through GitHub Discussions.
 
 After making appropriate changes to the SDF and namelist files, users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
+
+.. _CompPower:
+
+==============================================================================
+How can I configure the computational parameters to use more compute power? 
+==============================================================================
+
+In general, there are two options for using more compute power: (1) increase the number of PEs or (2) enable more threads.
+
+**Increase Number of PEs**
+
+PEs are processing elements, which correspond to the number of :term:`MPI` processes/tasks. In the SRW App, ``PE_MEMBER01`` is the number of MPI processes required by the forecast. It is calculated by: :math:`LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group` when ``QUILTING`` is true. Since these variables are connected, it is recommended that users consider how many processors they want to use to run the forecast model and work backwards to determine the other values.
+
+For simplicity, it is often best to set ``WRTCMP_write_groups`` to 1. It may be necessary to increase this number in cases where a single write group cannot finish writing its output before the model is ready to write again. This occurs when the model produces output at very short time intervals.
+
+The ``WRTCMP_write_tasks_per_group`` value will depend on domain (i.e., grid) size. This means that a larger domain would require a higher value, while a smaller domain would likely require less than 5 tasks per group.
+
+The ``LAYOUT_X`` and ``LAYOUT_Y`` variables are the number of MPI tasks to use in the horizontal x and y directions of the regional grid when running the forecast model. Note that the ``LAYOUT_X`` and ``LAYOUT_Y`` variables only affect the number of MPI tasks used to compute the forecast, not resolution of the grid. The larger these values are, the more work is involved when generating a forecast. That work can be spread out over more MPI processes to increase the speed, but this requires more computational resources. There is a limit where adding more MPI processes will no longer increase the speed at which the forecast completes, but the UFS scales well into the thousands of MPI processes.
+
+Users can take a look at the `SRW App predefined grids <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/predef_grid_params.yaml>`__ to get a better sense of what values to use for different types of grids. The :ref:`Computational Parameters <CompParams>` and :ref:`Write Component Parameters <WriteComp>` sections of the SRW App User's Guide define these variables.
+
+**Enable More Threads**
+
+In general, enabling more threads offers less increase in performance than doubling the number of PEs. However, it uses less memory and still improves performance. To enable more threading, set ``OMP_NUM_THREADS_RUN_FCST`` to a higher number (e.g., 2 or 4). When increasing the value, it must be a factor of the number of cores/CPUs (``number of MPI tasks * OMP threads`` cannot exceed the number of cores per node). Typically, it is best not to raise this value higher than 4 or 5 because there is a limit to the improvement possible via OpenMP parallelization (compared to MPI parallelization, which is significantly more efficient).
 
 .. _IC-LBC-gen-issue:
 

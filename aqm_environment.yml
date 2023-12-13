@@ -1,0 +1,13 @@
+name: srw_aqm
+channels:
+  - conda-forge
+  - ufs-community
+dependencies:
+  - esmpy
+  - netcdf4=1.6.*
+  - numpy=1.23.*
+  - pylint=2.17*
+  - pytest=7.2*
+  - scipy=1.10.*
+  - uwtools=1.0.0
+  - xarray=2022.11.*

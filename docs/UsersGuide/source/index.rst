@@ -10,7 +10,6 @@ UFS Short-Range Weather App User's Guide (|version|)
    :numbered:
    :maxdepth: 3
    
-
    BackgroundInfo/index
    BuildingRunningTesting/index
    CustomizingTheWorkflow/index

@@ -88,11 +88,11 @@ pygments_style = 'sphinx'
 # Documentation-wide substitutions
 
 rst_prolog = """
-.. |wflow_env| replace:: ``workflow_tools``
+.. |wflow_env| replace:: ``srw_app``
 .. |graphics_env| replace:: ``regional_workflow``
 .. |cmaq_env| replace:: ``regional_workflow_cmaq``
-.. |activate| replace:: ``conda activate workflow_tools``
-.. |prompt| replace:: ``(workflow_tools)``
+.. |activate| replace:: ``conda activate srw_app``
+.. |prompt| replace:: ``(srw_app)``
 .. |latestr| replace:: v2.2.0
 .. |branch| replace:: ``develop``
 .. |data| replace:: develop

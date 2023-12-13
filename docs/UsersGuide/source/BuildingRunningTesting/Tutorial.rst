@@ -72,7 +72,7 @@ After loading the workflow, users should follow the instructions printed to the 
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
    module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
    module load wflow_hera
-   conda activate workflow_tools
+   conda activate srw_app
 
 Configuration
 -------------------------
@@ -280,8 +280,9 @@ Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the
            walltime: 02:00:00
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
        metatask_run_ens_post:
-         run_fcst_mem#mem#:
-           walltime: 00:20:00
+         metatask_run_post_mem#mem#_all_fhrs:
+           task_run_post_mem#mem#_f#fhr#:
+             walltime: 00:20:00
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). ``COMOUT_REF`` should provide the path to the ``control`` experiment forecast output using single quotes as shown below:
 

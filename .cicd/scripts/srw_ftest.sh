@@ -85,7 +85,7 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate workflow_tools
+conda activate srw_app
 set -e -u
 
 export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools:${workspace}/ush/python_utils/workflow-tools/src
@@ -102,7 +102,7 @@ cd ${workspace}
 
 cd ${EXPTDIR}
 pwd
-cp ${workspace}/ush/wrappers/* .
+cp ${workspace}/ush/wrappers/*.sh .
 
 # Set parameters that the task scripts require ...
 export JOBSdir=${workspace}/jobs
