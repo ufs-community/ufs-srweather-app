@@ -111,7 +111,7 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
             "--values-file", tmpfile.name,
             ]
         )
-    indent = "  "
+        indent = "  "
         try:
             logfunc = logging.info
             output = check_output(cmd, encoding="utf=8", env=env, shell=True,
