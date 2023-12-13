@@ -12,12 +12,12 @@ from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
 from python_utils import (
-    import_vars,
-    print_input_args,
-    print_info_msg,
     cfg_to_yaml_str,
-    load_shell_config,
     flatten_dict,
+    import_vars,
+    load_shell_config,
+    print_info_msg,
+    print_input_args,
 )
 
 

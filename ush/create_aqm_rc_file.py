@@ -11,13 +11,13 @@ from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict
     import_vars,
+    load_shell_config,
+    print_info_msg,
     print_input_args,
     str_to_type,
-    print_info_msg,
-    cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict
 )
 
 def create_aqm_rc_file(cdate, run_dir, init_concentrations):

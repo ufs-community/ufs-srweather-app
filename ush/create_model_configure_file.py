@@ -11,14 +11,14 @@ from textwrap import dedent
 from subprocess import STDOUT, CalledProcessError, check_output
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict,
     import_vars,
+    load_shell_config,
+    lowercase,
+    print_info_msg,
     print_input_args,
     str_to_type,
-    print_info_msg,
-    lowercase,
-    cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
 
 
