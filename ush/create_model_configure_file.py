@@ -232,19 +232,20 @@ def create_model_configure_file(
         )
         indent = "  "
         output = ""
+        logfunc = logging.info
         try:
-            logfunc = logging.info
             output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error
             output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
+            logging.exception("Failed with status: %s", e.returncode)
             raise
         finally:
             logfunc("Output:")
             for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)turn True
+                logfunc("%s%s", indent * 2, line)
+    return True
 
 
 def parse_args(argv):

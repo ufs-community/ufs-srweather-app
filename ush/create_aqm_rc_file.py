@@ -146,14 +146,14 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
         )
         indent = "  "
         output = ""
+        logfunc = logging.info
         try:
-            logfunc = logging.info
             output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error
             output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
+            logging.exception("Failed with status: %s", e.returncode)
             raise
         finally:
             logfunc("Output:")

@@ -100,7 +100,7 @@ def create_nems_configure_file(run_dir):
 
         cmd = " ".join(["uw template render",
             "-i", NEMS_CONFIG_TMPL_FP,
-            "-o", nems_config_fp
+            "-o", nems_config_fp,
             "-v",
             "--values-file", tmpfile.name,
             ]
@@ -108,14 +108,14 @@ def create_nems_configure_file(run_dir):
 
         indent = "  "
         output = ""
+        logfunc = logging.info
         try:
-            logfunc = logging.info
             output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error
             output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
+            logging.exception("Failed with status: %s", e.returncode)
             raise
         finally:
             logfunc("Output:")

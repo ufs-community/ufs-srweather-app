@@ -82,21 +82,21 @@ def create_diag_table_file(run_dir):
         tmpfile.seek(0)
         cmd = " ".join(["uw template render",
             "-i", DIAG_TABLE_TMPL_FP,
-            "-o", diag_table_fp
+            "-o", diag_table_fp,
             "-v",
             "--values-file", tmpfile.name,
             ]
         )
         indent = "  "
         output = ""
+        logfunc = logging.info
         try:
-            logfunc = logging.info
             output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             logfunc = logging.error
             output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
+            logging.exception("Failed with status: %s", e.returncode)
             raise
         finally:
             logfunc("Output:")
