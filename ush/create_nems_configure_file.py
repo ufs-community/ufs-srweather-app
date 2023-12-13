@@ -108,19 +108,17 @@ def create_nems_configure_file(run_dir):
 
         indent = "  "
         output = ""
-        logfunc = logging.info
         try:
             output = check_output(cmd, encoding="utf=8", shell=True,
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
-            logfunc = logging.error
             output = e.output
-            logging.exception("Failed with status: %s", e.returncode)
-            raise
+            print("Failed with status: %s" % e.returncode)
+            sys.exit(1)
         finally:
-            logfunc("Output:")
+            print("Output:")
             for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)
+                print("%s%s" % (indent * 2, line))
     return True
 
 def parse_args(argv):

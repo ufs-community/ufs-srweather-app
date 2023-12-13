@@ -402,11 +402,11 @@ uw template render \
   --values-file "${tmpfile}"
 
 err=$?
+rm $tmpfile
 if [ $err -ne 0 ]; then
   message_txt="Error rendering template for METPlus config.
      Contents of input are:
 $settings"
-  rm $tmpfile
   if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
     err_exit "${message_txt}"
   else
