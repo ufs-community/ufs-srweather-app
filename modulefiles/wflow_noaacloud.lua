@@ -7,7 +7,7 @@ whatis([===[Loads libraries needed for running the UFS SRW App on NOAA cloud ]==
 
 prepend_path("MODULEPATH","/apps/modules/modulefiles")
 load("rocoto")
-load("set_pythonpath")
+
 
 
 load("conda")
