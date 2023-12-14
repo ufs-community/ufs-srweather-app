@@ -335,23 +335,23 @@ When running with GNU compilers (i.e., if the modulefile used to set up the buil
 
    On ``JET``, users should add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file.
 
-For example, to run the out-of-the-box experiment on Gaea using cron to automate job submission, users can add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` according to the following example (unmodified variables are not shown here): 
+For example, to run the out-of-the-box experiment on Derecho using cron to automate job submission, users can add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` according to the following example (unmodified variables are not shown here): 
 
    .. code-block::
       
       user:
-         MACHINE: gaea
-         ACCOUNT: hfv3gfs
+         MACHINE: derecho
+         ACCOUNT: NRAL0000
       workflow:
          EXPT_SUBDIR: run_basic_srw
          USE_CRON_TO_RELAUNCH: true
          CRON_RELAUNCH_INTVL_MNTS: 3
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
 
 .. hint::
 
