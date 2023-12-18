@@ -52,10 +52,7 @@ file_ids=( "fv_tracer.res.tile1.nc" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_
 read -a restart_hrs <<< "${RESTART_INTERVAL}"
 num_restart_hrs=${#restart_hrs[*]}
 
-while [ ! -e "${DATAROOT}/aqm_forecast_${cyc}."* ]; do
-   echo "Waiting for files matching ${DATAROOT}/aqm_forecast_${cyc}.* to be available..."
-  sleep  20
-done
+sleep  300
 
 DATA_FORECAST=$(/bin/ls -1rtd ${DATAROOT}/aqm_forecast_${cyc}.* | tail -n 1)
 
@@ -66,13 +63,13 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   while [ $ic -lt 600 ]
   do 
     if [ -s ${DATA_FORECAST}/dynf${hst}.nc ] && [ $(stat -c %s `ls ${DATA_FORECAST}/dynf${hst}.nc`) -gt 1170900000 ]; then	
-    cp ${DATA_FORECAST}/dynf${hst}.nc  ${COMOUT}/aqm.t${cyc}z.dyn.f${hst}.nc
-    cp ${DATA_FORECAST}/phyf${hst}.nc  ${COMOUT}/aqm.t${cyc}z.phy.f${hst}.nc
-    cp ${DATA_FORECAST}/aqm.prod.nc    ${COMOUT}/aqm.t${cyc}z.prod.nc
-    sleep 20
-    break
+     sleep 60	    
+     cpreq ${DATA_FORECAST}/dynf${hst}.nc  ${COMOUT}/aqm.t${cyc}z.dyn.f${hst}.nc
+     cpreq ${DATA_FORECAST}/phyf${hst}.nc  ${COMOUT}/aqm.t${cyc}z.phy.f${hst}.nc
+     cpreq ${DATA_FORECAST}/aqm.prod.nc    ${COMOUT}/aqm.t${cyc}z.prod.nc
+     break
    else
-    sleep 10
+    sleep 20
     (( ic=ic+1 ))
    fi 
   done
@@ -92,6 +89,7 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 	     if [ ! -d "${COMOUT}/RESTART" ]; then
 	        mkdir -p "${COMOUT}/RESTART"
 	     fi
+	     sleep 30
            for file_id in "${file_ids[@]}"; do
 	       source_file="${DATA_FORECAST}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
 	       destination_dir="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
@@ -99,12 +97,13 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 	          echo "Waiting for ${source_file} to exist..."
 	          sleep 10  
                done
-              cp -rp $source_file  $destination_dir 
+	      sleep 10
+              cpreq $source_file  $destination_dir 
            done
 	   sleep 20
 	   break
 	  else
-	   sleep 10
+	   sleep 20
            (( ic1=ic1+1 ))
           fi
         done
@@ -116,21 +115,23 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
           ic2=0
           while [ $ic2 -lt 240 ]; do
             if [ -s ${DATA_FORECAST}/RESTART/fv_tracer.res.tile1.nc ] && [ $(stat -c %s `ls ${DATA_FORECAST}/RESTART/fv_tracer.res.tile1.nc`) -gt 21836600000 ]; then
+	      sleep 30	    
 	     if [ ! -d "${COMOUT}/RESTART" ]; then
 	        mkdir -p "${COMOUT}/RESTART"
 	     fi
              for file_id in "${file_ids[@]}"; do
 		 source_file="${DATA_FORECAST}/RESTART/${file_id}"
 		 destination_dir="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
-		  while [ ! -e "${source_file}" ]; do
-		     echo "Waiting for ${source_file} to exist..."
-		     sleep 10  
-                  done
-              cp -rp $source_file  $destination_dir 
+		 while [ ! -e "${source_file}" ]; do
+		    echo "Waiting for ${source_file} to exist..."
+		    sleep 10  
+                 done
+	         sleep 20
+                 cpreq $source_file  $destination_dir 
              done
 	     break
 	    else
-	     sleep 10
+	     sleep 20
              (( ic2=ic2+1 ))
             fi
           done
