@@ -153,7 +153,7 @@ fi
 if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "TRUE" ]; then
   if [ -d "${GFS_SFC_INPUT}" ]; then
     if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
-      ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
+      cp -rp "${GFS_SFC_INPUT}" "GFS_SFC"
       USE_GFS_SFC="TRUE"
     fi
   fi
@@ -335,9 +335,9 @@ if [ "${AnnualScalar}" = "TRUE" ]; then #ANNUAL_SCALAR
   ln -sf ${NEXUS_INPUT_BASE_DIR}/AnnualScalar ${DATAinput}
 fi
 
-if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
-  ln -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
-fi
+#if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
+#  cp -rp ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
+#fi
 
 if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
   ln -sf ${NEXUS_INPUT_BASE_DIR}/OFFLINE_SOILNOX ${DATAinput}

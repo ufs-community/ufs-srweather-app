@@ -1,7 +1,7 @@
 suite nco_aqm
   family primary
     edit aqm_ver 'v7.0.1'
-    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
+    edit PACKAGEHOME '/lfs/h2/emc/physics/noscrub/jianping.huang/nwdev/packages/aqm.%aqm_ver%'
     edit NET 'aqm'
     edit RUN 'aqm'
     edit PROJ 'AQM'
@@ -59,6 +59,8 @@ suite nco_aqm
           endfamily
           family forecast
             task jaqm_forecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_output
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
           endfamily
           family post
@@ -147,6 +149,8 @@ suite nco_aqm
           endfamily
           family forecast
             task jaqm_forecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_output
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
           endfamily
           family post
@@ -434,6 +438,8 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_output
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
           endfamily
           family post
             task jaqm_post_f000
@@ -719,6 +725,8 @@ suite nco_aqm
           endfamily
           family forecast
             task jaqm_forecast
+              trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+            task jaqm_output
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
           endfamily
           family post

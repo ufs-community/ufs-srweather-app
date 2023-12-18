@@ -215,7 +215,7 @@ check_file_with_recheck() {
     hr_mod=$(( hr + EXTRN_MDL_LBCS_OFFSET_HRS ))
     fhr=$( printf "%03d" "${hr_mod}" )
     AQM_MOFILE_FHR_FP="${AQM_MOFILE_FP}${fhr}.nemsio"
-    ln -s ${AQM_MOFILE_FHR_FP}  .
+    ln -sf ${AQM_MOFILE_FHR_FP}  .
     if [ -e "${AQM_MOFILE_FHR_FP}" ]; then
       # File exists, perform "ls" or "touch" action
       ls "$AQM_MOFILE_FHR_FP"    # Replace this with your desired action

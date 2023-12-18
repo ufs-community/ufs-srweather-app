@@ -97,7 +97,7 @@ fi
 # aqm_pm25_post
 #---------------------------------------------------------------
 
-ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
+cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
 
 cat >aqm_post.ini <<EOF1
 &control
@@ -159,7 +159,7 @@ fi
 #---------------------------------------------------------------
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 
-  ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
+  cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
 
   export chk=1
   export chk1=1
@@ -178,9 +178,9 @@ EOF1
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cp  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -190,9 +190,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cp ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
+      cp ${COMINm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -200,9 +200,9 @@ EOF1
 
     # 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln -sf ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
+      cp ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no

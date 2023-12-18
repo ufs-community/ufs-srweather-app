@@ -125,7 +125,6 @@ else
 fi
 
 # Symlink to mosaic file with a completely different name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
@@ -209,20 +208,6 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
                            relative="${relative_link_flag}"
   done
 fi
-#
-#-----------------------------------------------------------------------
-#
-# The FV3 model looks for the following files in the INPUT subdirectory
-# of the run directory:
-#
-#   gfs_data.nc
-#   sfc_data.nc
-#   gfs_bndy*.nc
-#   gfs_ctrl.nc
-#
-# Some of these files (gfs_ctrl.nc, gfs_bndy*.nc) already exist, but
-# others do not.  Thus, create links with these names to the appropriate
-# files (in this case the initial condition and surface files only).
 #
 #-----------------------------------------------------------------------
 #
@@ -630,22 +615,9 @@ fi
 fhr_ct=0
 fhr=0
 NLN=${NLN:-"/bin/ln -sf"}
-while [ $fhr -le ${FCST_LEN_HRS} ]; do
-  fhr_ct=$(printf "%03d" $fhr)
-  source_dyn="dynf${fhr_ct}.nc"
-  source_phy="phyf${fhr_ct}.nc"
-  target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
-  target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
-  eval $NLN ${target_dyn} ${source_dyn}
-  eval $NLN ${target_phy} ${source_phy}
-  (( fhr=fhr+1 ))
-done
-eval $NLN ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN} ${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
-#
 # make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
-#
 #-----------------------------------------------------------------------
 #
 mkdir -p ${COMOUT}/RESTART
@@ -655,25 +627,25 @@ num_file_ids=${#file_ids[*]}
 read -a restart_hrs <<< "${RESTART_INTERVAL}"
 num_restart_hrs=${#restart_hrs[*]}
 # 06Z and 12Z
-if [ $cyc = 06 -o $cyc = 12 ]; then
-  # 06Z and 12Z
-  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
-    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
-    rst_yyyymmdd="${cdate_restart_hr:0:8}"
-    rst_hh="${cdate_restart_hr:8:2}"
-    for file_id in "${file_ids[@]}"; do
-      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
-    done
-  done
-else
-  # 00Z and 18Z
-  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
-  rst_yyyymmdd="${cdate_restart_hr:0:8}"
-  rst_hh="${cdate_restart_hr:8:2}"
-  for file_id in "${file_ids[@]}"; do
-    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
-  done
-fi
+#if [ $cyc = 06 -o $cyc = 12 ]; then
+#  # 06Z and 12Z
+#  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
+#    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
+#    rst_yyyymmdd="${cdate_restart_hr:0:8}"
+#    rst_hh="${cdate_restart_hr:8:2}"
+#    for file_id in "${file_ids[@]}"; do
+#      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
+#    done
+#  done
+#else
+#  # 00Z and 18Z
+#  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
+#  rst_yyyymmdd="${cdate_restart_hr:0:8}"
+#  rst_hh="${cdate_restart_hr:8:2}"
+#  for file_id in "${file_ids[@]}"; do
+#    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
+#  done
+#fi
 cd ${DATA}
 #
 #-----------------------------------------------------------------------
