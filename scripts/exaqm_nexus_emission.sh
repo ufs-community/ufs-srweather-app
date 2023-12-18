@@ -228,7 +228,7 @@ NOAAGMD="TRUE"
 SOA="TRUE"
 EDGAR="TRUE"
 MEGAN="TRUE"
-MODIS_XLAI="TRUE"
+MODIS_XLAI="FALSE"
 OLSON_MAP="TRUE"
 Yuan_XLAI="TRUE"
 GEOS="TRUE"
@@ -335,9 +335,9 @@ if [ "${AnnualScalar}" = "TRUE" ]; then #ANNUAL_SCALAR
   ln -sf ${NEXUS_INPUT_BASE_DIR}/AnnualScalar ${DATAinput}
 fi
 
-#if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
-#  cp -rp ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
-#fi
+if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
+  ln -sf ${NEXUS_INPUT_BASE_DIR}/MODIS_XLAI ${DATAinput}
+fi
 
 if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
   ln -sf ${NEXUS_INPUT_BASE_DIR}/OFFLINE_SOILNOX ${DATAinput}
