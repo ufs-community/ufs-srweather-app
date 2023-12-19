@@ -52,11 +52,43 @@ file_ids=( "fv_tracer.res.tile1.nc" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_
 read -a restart_hrs <<< "${RESTART_INTERVAL}"
 num_restart_hrs=${#restart_hrs[*]}
 
-sleep  300
+sleep  200
 
 DATA_FORECAST=$(/bin/ls -1rtd ${DATAROOT}/aqm_forecast_${cyc}.* | tail -n 1)
 
-ist=0
+#-----------------------------------------------------------------------
+# Get the total file number of aqm.t${cyc}z.dyn*nc at $COMOUT
+# total_files=$(ls -1 "$COMOUT"/aqm.t${cyc}z.dyn*nc | wc -l)
+
+ files_exist=false
+
+ shopt -s nullglob
+ files=("$COMOUT"/aqm.t${cyc}z.dyn*nc)
+ if [ ${#files[@]} -gt 0 ]; then
+      files_exist=true
+      total_files=${#files[@]}
+ fi
+#-----------------------------------------------------------------------
+# Check the conditions and set ist accordingly
+ if [ "$files_exist" = true ]; then
+   for ((i=0; i<num_restart_hrs; i++)); do
+     if ((total_files >= restart_hrs[i] && total_files < restart_hrs[i+1])); then
+       ist=$((restart_hrs[i] + 1))
+       break
+     fi
+   done
+
+# If total_files is greater than or equal to the last value in RESTART_INTERVAL
+   if ((total_files >= restart_hrs[num_restart_hrs-1])); then
+      ist=$((restart_hrs[num_restart_hrs-1] + 1))
+   elif ((total_files < restart_hrs[0])); then
+      ist=0
+   fi
+ else 
+   ist=0
+ fi 
+#                             
+#-----------------------------------------------------------------------
 while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   hst=$( printf "%03d" "${ist}" )
   ic=0
@@ -75,6 +107,7 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   done
 
 #
+#-----------------------------------------------------------------------
 # Copy restart files at the prescribed-resart forecast hours
   for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
    hst_rst=$( printf "%03d" "${restart_hrs[ih_rst]}" )

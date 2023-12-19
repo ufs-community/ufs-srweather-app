@@ -612,20 +612,20 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-fhr_ct=0
-fhr=0
-NLN=${NLN:-"/bin/ln -sf"}
+#fhr_ct=0
+#fhr=0
+#NLN=${NLN:-"/bin/ln -sf"}
 #
 #-----------------------------------------------------------------------
 # make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
 #-----------------------------------------------------------------------
 #
-mkdir -p ${COMOUT}/RESTART
-cd ${DATA}/RESTART
-file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
-num_file_ids=${#file_ids[*]}
-read -a restart_hrs <<< "${RESTART_INTERVAL}"
-num_restart_hrs=${#restart_hrs[*]}
+#mkdir -p ${COMOUT}/RESTART
+#cd ${DATA}/RESTART
+#file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+#num_file_ids=${#file_ids[*]}
+#read -a restart_hrs <<< "${RESTART_INTERVAL}"
+#num_restart_hrs=${#restart_hrs[*]}
 # 06Z and 12Z
 #if [ $cyc = 06 -o $cyc = 12 ]; then
 #  # 06Z and 12Z
