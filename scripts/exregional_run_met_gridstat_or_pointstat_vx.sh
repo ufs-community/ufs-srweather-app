@@ -389,7 +389,7 @@ settings="\
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 
-# Render the template to create a METPlus configuration file
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
@@ -404,7 +404,7 @@ uw template render \
 err=$?
 rm $tmpfile
 if [ $err -ne 0 ]; then
-  message_txt="Error rendering template for METPlus config.
+  message_txt="Error rendering template for METplus config.
      Contents of input are:
 $settings"
   if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then

@@ -151,12 +151,12 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
                     stderr=STDOUT, text=True)
         except CalledProcessError as e:
             output = e.output
-            print("Failed with status: %s" % e.returncode)
+            print(f"Failed with status: {e.returncode}")
             sys.exit(1)
         finally:
             print("Output:")
             for line in output.split("\n"):
-                print("%s%s" % (indent * 2, line))
+                print(f"{indent * 2}{line}")
     return True
 
 def parse_args(argv):
