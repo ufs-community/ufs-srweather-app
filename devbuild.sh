@@ -212,6 +212,11 @@ printf "PLATFORM(MACHINE)=${PLATFORM}\n" >&2
 if [ "${PLATFORM}" = "wcoss2" ]; then
     BUILD_CONDA="off"
 fi
+# Conda is not used on Gaea-c5 F2 filesystem 
+# it needs to be reevaluated when moved to F2 filesystem
+if [ "${PLATFORM}" = "gaea-c5" ]; then
+    BUILD_CONDA="off"
+fi
 
 # build conda and conda environments, if requested.
 if [ "${BUILD_CONDA}" = "on" ] ; then
@@ -244,8 +249,10 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   fi
 
 else
-  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
-  conda activate
+  if [ -d "${CONDA_BUILD_DIR}" ] ; then
+    source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+    conda activate
+  fi
 fi
 
 # Conda environment should have linux utilities to perform these tasks on macos.
