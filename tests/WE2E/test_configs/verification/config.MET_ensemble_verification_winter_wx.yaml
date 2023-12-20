@@ -5,18 +5,13 @@ metadata:
     checking ensemble snowfall verification statistics.
 user:
   RUN_ENVIR: community
-  MACHINE: hera
-  ACCOUNT: fv3lam
 workflow:
-  EXPT_SUBDIR: test_community
   CCPP_PHYS_SUITE: FV3_GFS_v17_p8
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
   DATE_FIRST_CYCL: '2022020300'
   DATE_LAST_CYCL: '2022020300'
   FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
-  USE_CRON_TO_RELAUNCH: true
-  CRON_RELAUNCH_INTVL_MNTS: 1
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
@@ -24,9 +19,11 @@ rocoto:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
 task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
 task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_NAME_LBCS: FV3GFS
   FV3GFS_FILE_FMT_LBCS: netcdf
   LBC_SPEC_INTVL_HRS: 3
@@ -36,7 +33,7 @@ global:
 verification:
   VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]
 platform:
-  CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
-  MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'
-  NDAS_OBS_DIR: '{{ workflow.EXPTDIR }}/NDAS_obs'
-  NOHRSC_OBS_DIR: '{{ workflow.EXPTDIR }}/NOHRSC_obs'
+  CCPA_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/ccpa'
+  MRMS_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/mrms'
+  NDAS_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/ndas'
+  NOHRSC_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/nohrsc'
