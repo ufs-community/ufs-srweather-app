@@ -6,6 +6,7 @@ platform:
   TEST_CCPA_OBS_DIR: /Users/username/DATA/UFS/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /Users/username/DATA/UFS/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /Users/username/DATA/UFS/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /Users/username/DATA/UFS/obs_data/nohrsc/proc
   DOMAIN_PREGEN_BASEDIR: /Users/username/DATA/UFS/FV3LAM_pregen
   RUN_CMD_FCST: mpirun -n ${PE_MEMBER01}
   RUN_CMD_POST: mpirun
