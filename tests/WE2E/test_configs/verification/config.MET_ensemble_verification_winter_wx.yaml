@@ -32,8 +32,3 @@ global:
   NUM_ENS_MEMBERS: 10
 verification:
   VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]
-platform:
-  CCPA_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/ccpa'
-  MRMS_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/mrms'
-  NDAS_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/ndas'
-  NOHRSC_OBS_DIR: '/glade/derecho/scratch/kavulich/UFS/workdir/issue_966/stage/nohrsc'
