@@ -676,9 +676,6 @@ if [ "${UFS_FIRE}" = "TRUE" ]; then
     settings =
 $settings"
 
-  ## TEMPORARY LINK namelist.fire to namelist.input
-  ln -sf namelist.fire namelist.input
-
   # Link fire input file
   create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
                          symlink="geo_em.d01.nc" \

@@ -2768,19 +2768,12 @@ fire:
   # FIRE_ATM_FEEDBACK
   # Multiplier for heat fluxes. Use 1.0 for normal two-way coupling. Use 0.0 for one-way coupling.
   # Intermediate values will vary the amount of forcing provided from the fire to the dynamical core
-  # NOTE: ONLY ONE-WAY COUPLING IS CURRENTLY SUPPORTED
   #
-  # FIRE_GROWS_ONLY
-  # If >0, level set function cannot increase = fire can only grow
-  # 
   # FIRE_VISCOSITY
   # Artificial viscosity in level set method. Maximum 1, required for FIRE_UPWINDING=0
   # 
   # FIRE_UPWINDING = 9
   # 0=NONE, 1=STANDARD, 2=GODUNOV, 3=ENO, 4=SETHIAN
-  #
-  # FIRE_LFN_EXT_UP
-  # 0.=extend level set function at boundary by reflection, 1.=always up
   #
   # FIRE_LSM_ZCOUPLING
   #
@@ -2806,10 +2799,8 @@ fire:
   FIRE_WIND_HEIGHT: 5.0
   FIRE_PRINT_MSG: 0
   FIRE_ATM_FEEDBACK: 0.0
-  FIRE_GROWS_ONLY: 1
   FIRE_VISCOSITY: 0.4
   FIRE_UPWINDING: 9
-  FIRE_LFN_EXT_UP: 1.0
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
   FIRE_NUM_TASKS: 0
