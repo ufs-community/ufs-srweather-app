@@ -3,7 +3,7 @@ metadata:
     Sample fire config
 user:
   RUN_ENVIR: community
-  MACHINE: cheyenne
+  MACHINE: derecho
   ACCOUNT: ACCOUNT_NUMBER
 platform:
   DOMAIN_PREGEN_BASEDIR: "/glade/work/frediani/Projects/UFS-fire/UFS/pregen_dir"
@@ -20,14 +20,14 @@ workflow:
   COMPILER: intel
 task_get_extrn_ics:
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_ICS: "/glade/scratch/frediani/WRF-Fire/input/HRRR"
+  EXTRN_MDL_SOURCE_BASEDIR_ICS: "/glade/derecho/scratch/kavulich/FIRE/2024/test_data/HRRR"
   EXTRN_MDL_NAME_ICS: HRRR
   FV3GFS_FILE_FMT_ICS: grib2
   EXTRN_MDL_FILES_ICS:
     - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
 task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
-  EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/scratch/frediani/WRF-Fire/input/HRRR"
+  EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/glade/derecho/scratch/kavulich/FIRE/2024/test_data/HRRR"
   EXTRN_MDL_FILES_LBCS:
     - '{yyyy}{mm}{dd}.hrrr.t{hh}z.wrfprsf00.grib2'
   EXTRN_MDL_NAME_LBCS: HRRR
@@ -42,7 +42,7 @@ task_plot_allvars:
 fire:
   UFS_FIRE: True
   FIRE_NUM_TASKS: 1
-  FIRE_INPUT_DIR: /glade/scratch/kavulich/FIRE/esmf_fork/ufs-srweather-app/fire_data
+  FIRE_INPUT_DIR: /glade/derecho/scratch/kavulich/FIRE/2024/test_data
   DT_FIRE: 0.5
   OUTPUT_DT_FIRE: 300
   FIRE_NUM_IGNITIONS: 1
@@ -55,12 +55,10 @@ fire:
   FIRE_IGNITION_START_TIME1: 6480
   FIRE_IGNITION_END_TIME1: 7000
   FIRE_WIND_HEIGHT: 5.0
-  FIRE_PRINT_MSG: 1
+  FIRE_PRINT_MSG: 0
   FIRE_ATM_FEEDBACK: 1.0
-  FIRE_GROWS_ONLY: 1
   FIRE_VISCOSITY: 0.4
   FIRE_UPWINDING: 9
-  FIRE_LFN_EXT_UP: 1.0
   FIRE_LSM_ZCOUPLING: False
   FIRE_LSM_ZCOUPLING_REF: 60.0
 rocoto:
