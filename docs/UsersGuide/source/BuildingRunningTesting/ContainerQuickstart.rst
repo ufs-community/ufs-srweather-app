@@ -81,7 +81,7 @@ On most Level 1 systems, a container named ``ubuntu20.04-intel-ue-1.4.1-srw-dev.
    * - Machine
      - File Location
    * - Cheyenne/Derecho [#fn]_
-     - /glade/scratch/epicufsrt/containers
+     - /glade/work/epicufsrt/contrib/containers
    * - Gaea [#fn]_
      - /lustre/f2/dev/role.epic/containers
    * - Hera
