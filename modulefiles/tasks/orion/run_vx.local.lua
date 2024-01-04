@@ -1,6 +1,8 @@
 --[[
 Compiler-specific modules are used for met and metplus libraries
 --]]
+load("build_orion_intel")
+
 local met_ver = (os.getenv("met_ver") or "11.1.0")
 local metplus_ver = (os.getenv("metplus_ver") or "5.1.0")
 if (mode() == "load") then
