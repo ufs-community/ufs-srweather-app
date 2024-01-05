@@ -7,14 +7,18 @@
 #
 #  General settings
 #
-ae_matrix_nml: {{ aqm_config_dir }}/AE_cb6r3_ae6_aq.nml
-gc_matrix_nml: {{ aqm_config_dir }}/GC_cb6r3_ae6_aq.nml
-nr_matrix_nml: {{ aqm_config_dir }}/NR_cb6r3_ae6_aq.nml
+ae_matrix_nml: {{ aqm_config_dir }}/AE_cb6r5_ae7_aq.nml
+gc_matrix_nml: {{ aqm_config_dir }}/GC_cb6r5_ae7_aq.nml
+nr_matrix_nml: {{ aqm_config_dir }}/NR_cb6r5_ae7_aq.nml
 tr_matrix_nml: {{ aqm_config_dir }}/Species_Table_TR_0.nml
 
-csqy_data:   {{ aqm_config_dir }}/CSQY_DATA_cb6r3_ae6_aq
+csqy_data:   {{ aqm_config_dir }}/CSQY_DATA_cb6r5_ae7_aq
 optics_data: {{ aqm_config_dir }}/PHOT_OPTICS.dat
 omi_data:    {{ aqm_config_dir }}/omi_cmaq_2015_361X179.dat
+
+desid_chem_ctrl: {{ aqm_config_dir }}/CMAQ_Control_DESID_cb6r5_ae7_aq.nml
+desid_ctrl: {{ aqm_config_dir }}/CMAQ_Control_DESID.nml
+misc_ctrl:  {{ aqm_config_dir }}/CMAQ_Control_Misc.nml
 
 init_concentrations: {{ init_concentrations | lower }}
 
