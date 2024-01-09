@@ -46,10 +46,12 @@ The unit tests in the test_python/ directory test various parts of the workflow 
 
 ### Set PYTHONPATH
 
-First, you will need to set the PYTHONPATH environment variable to include the ush/ directory:
+First, you will need to set the PYTHONPATH environment variable to include the ush/ directory and
+a few of the workflow-tools subdirectories. From the top level of the ufs-srweather-app clone
+run the following command:
 
 ```
-export PYTHONPATH=/path/to/ufs-srweather-app/ush:${PYTHONPATH}
+export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
 ```
 
 ### Set up HPSS tests

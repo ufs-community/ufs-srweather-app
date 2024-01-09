@@ -65,14 +65,14 @@ To load the workflow environment, source the lmod-setup file. Then load the work
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate workflow_tools``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate srw_app``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
 .. code-block:: console
    
    source /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/etc/lmod-setup.sh hera
    module use /scratch1/NCEPDEV/nems/User.Name/ufs-srweather-app/modulefiles
    module load wflow_hera
-   conda activate workflow_tools
+   conda activate srw_app
 
 Configuration
 -------------------------

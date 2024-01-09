@@ -15,11 +15,9 @@ prepend_path("MODULEPATH", "/lustre/f2/pdata/esrl/gsd/spack-stack/modulefiles")
 
 load("stack-intel/2022.0.2")
 load("stack-cray-mpich/7.7.20")
-load("stack-python/3.9.12")
 load("cmake/3.23.1")
 
 load("srw_common")
-load("ufs-pyenv")
 -- Need at runtime
 load("alps")
 

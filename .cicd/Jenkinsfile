@@ -137,16 +137,6 @@ pipeline {
                         }
                     }
 
-                    // Run the unittest functional tests that require an HPC platform
-                    stage('Functional UnitTests') {
-                        steps {
-                            dir ("${env.SRW_PLATFORM}") {
-                            echo "Running unittest on retrieve_data.py"
-                            sh 'bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_unittest.sh"'
-                            }
-                        }
-                    }
-                    
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
                         steps {
@@ -164,6 +154,16 @@ pipeline {
                         }
                     }
 
+                    // Run the unittest functional tests that require an HPC platform
+                    stage('Functional UnitTests') {
+                        steps {
+                            dir ("${env.SRW_PLATFORM}") {
+                            echo "Running unittest on retrieve_data.py"
+                            sh 'bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/srw_unittest.sh"'
+                            }
+                        }
+                    }
+                    
                     // Try a few Workflow Task scripts to make sure E2E tests can be launched in a follow-on 'Test' stage
                     stage('Functional WorkflowTaskTests') {
                         steps {

@@ -10,14 +10,12 @@ prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
 load("stack-intel/2021.7.1")
 load("stack-intel-oneapi-mpi/2021.7.1")
-load("stack-python/3.9.14")
 load("cmake/3.26.3")
 
 load("srw_common")
 
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
-load("ufs-pyenv")
 
 setenv("CFLAGS","-diag-disable=10441")
 setenv("FFLAGS","-diag-disable=10441")
