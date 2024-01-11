@@ -8,10 +8,11 @@ user-defined config.yaml file.
 # pylint: disable=invalid-name
 
 import argparse
-import os
 import logging
-from textwrap import dedent
+import os
 import sys
+from subprocess import STDOUT, CalledProcessError, check_output
+from textwrap import dedent
 
 from python_utils import (
     log_info,
@@ -33,9 +34,6 @@ from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from set_namelist import set_namelist
 from check_python_version import check_python_version
-
-# These come from ush/python_utils/workflow-tools
-from scripts.templater import set_template
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
@@ -113,13 +111,29 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        args = ["-o", wflow_xml_fp,
-                "-i", template_xml_fp,
-                "-c", rocoto_yaml_fp,
-                ]
-        if not debug:
-            args.append("-q")
-        set_template(args)
+        cmd = " ".join(["uw template render",
+            "-i", template_xml_fp,
+            "-o", wflow_xml_fp,
+            "-v",
+            "--values-file", rocoto_yaml_fp,
+            ]
+        )
+
+        indent = "  "
+        output = ""
+        logfunc = logging.info
+        try:
+            output = check_output(cmd, encoding="utf=8", shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception(("Failed with status: %s", e.returncode))
+            raise
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
     #
     # -----------------------------------------------------------------------
     #

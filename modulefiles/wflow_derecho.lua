@@ -13,7 +13,7 @@ load("rocoto")
 unload("python")
 
 load("conda")
-load("set_pythonpath")
+
 
 if mode() == "load" then
    LmodMsgRaw([===[Please do the following to activate conda:
