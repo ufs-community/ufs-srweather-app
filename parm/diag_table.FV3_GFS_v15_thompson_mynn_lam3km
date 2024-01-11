@@ -145,6 +145,7 @@
 "gfs_phys",    "t02min",     "t02min",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "rh02max",    "rh02max",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "rh02min",    "rh02min",    "fv3_history2d",  "all",  .false.,  "none",  2
+# Reflectivity from Thompson microphysics
 "gfs_phys",    "refl_10cm",  "refl_10cm",  "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "cldfra",     "cldfra",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "pratemax",   "pratemax",   "fv3_history2d",  "all",  .false.,  "none",  2

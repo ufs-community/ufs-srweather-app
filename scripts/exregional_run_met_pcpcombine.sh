@@ -137,29 +137,32 @@ fi
 #
 vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
-ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "${ENSMEM_INDX}")
-ensmem_name="mem${ensmem_indx}"
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  slash_cdate_or_null=""
-  slash_ensmem_subdir_or_null=""
-else
-  slash_cdate_or_null="/${CDATE}"
-#
-# Since other aspects of a deterministic run use the "mem000" string (e.g.
-# in rocoto workflow task names, in log file names), it seems reasonable
-# that a deterministic run create a "mem000" subdirectory under the $CDATE
-# directory.  But since that is currently not the case in in the run_fcst
-# task, we need the following if-statement.  If and when such a modification
-# is made for the run_fcst task, we would remove this if-statement and
-# simply set 
-#   slash_ensmem_subdir_or_null="/${ensmem_name}"
-# or, better, just remove this variale and code "/${ensmem_name}" where
-# slash_ensmem_subdir_or_null currently appears below.
-#
-  if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-    slash_ensmem_subdir_or_null="/${ensmem_name}"
-  else
+if [ "${obs_or_fcst}" = "fcst" ]; then
+  ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
+  ensmem_name="mem${ensmem_indx}"
+
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    slash_cdate_or_null=""
     slash_ensmem_subdir_or_null=""
+  else
+    slash_cdate_or_null="/${CDATE}"
+  #
+  # Since other aspects of a deterministic run use the "mem000" string (e.g.
+  # in rocoto workflow task names, in log file names), it seems reasonable
+  # that a deterministic run create a "mem000" subdirectory under the $CDATE
+  # directory.  But since that is currently not the case in in the run_fcst
+  # task, we need the following if-statement.  If and when such a modification
+  # is made for the run_fcst task, we would remove this if-statement and
+  # simply set 
+  #   slash_ensmem_subdir_or_null="/${ensmem_name}"
+  # or, better, just remove this variale and code "/${ensmem_name}" where
+  # slash_ensmem_subdir_or_null currently appears below.
+  #
+    if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+      slash_ensmem_subdir_or_null="/${ensmem_name}"
+    else
+      slash_ensmem_subdir_or_null=""
+    fi
   fi
 fi
 
