@@ -113,8 +113,6 @@ for the workflow task specified by task_name failed:
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
 fi
 
-module load set_pythonpath || print_err_msg_exit "\
-  Loading the module to set PYTHONPATH for workflow-tools failed."
 #
 #-----------------------------------------------------------------------
 #

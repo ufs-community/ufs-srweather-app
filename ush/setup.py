@@ -238,7 +238,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
-        "EXPT_SUBDIR",
         "NCORES_PER_NODE",
         "FIXgsm",
         "FIXaer",

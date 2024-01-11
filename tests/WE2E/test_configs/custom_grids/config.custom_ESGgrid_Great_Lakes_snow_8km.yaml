@@ -2,8 +2,8 @@ metadata:
   description: |-
     This test checks the capability of the workflow to run verification tasks
     on a user-specified grid. This also serves as a winter snowstorm case for
-    checking snowfall verification statistics, and a test for custom domains
-    with staged netCDF data.
+    checking snowfall verification statistics using observations retrieved from
+    HPSS, and a test for custom domains with RAP data retrieved from HPSS
 user:
   RUN_ENVIR: community
 workflow:

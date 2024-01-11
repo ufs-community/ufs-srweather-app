@@ -82,9 +82,13 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       <<: *envars_GenEnsProd_NOHRSC
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
     dependency:
-      taskdep_genensprod:
-        attrs:
-          task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
+      and:
+        taskdep:
+          attrs:
+            task: get_obs_nohrsc
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_ASNOW#ACCUM_HH#h
 
 metatask_GenEnsProd_EnsembleStat_MRMS:
   var:
@@ -101,14 +105,9 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
       OBTYPE: 'MRMS'
     dependency:
       and:
-        or_get_obs: # Ensure get_obs task is complete if it's turned on
-          not:
-            taskvalid:
-              attrs:
-                task: get_obs_mrms
-          taskdep:
-            attrs:
-              task: get_obs_mrms
+        taskdep:
+          attrs:
+            task: get_obs_mrms
         metataskdep_post_files_exist: &post_files_exist
           attrs:
             metatask: check_post_output_all_mems

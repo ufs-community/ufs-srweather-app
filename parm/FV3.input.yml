@@ -524,7 +524,6 @@ FV3_GFS_v17_p8:
     doGP_cldoptics_LUT: False
     doGP_lwscat: False
     dt_inner: 150
-    fhzero: 6
     frac_grid: True
     gwd_opt: 2
     hybedmf: False

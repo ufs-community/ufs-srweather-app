@@ -137,29 +137,32 @@ fi
 #
 vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
-ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "${ENSMEM_INDX}")
-ensmem_name="mem${ensmem_indx}"
-if [ "${RUN_ENVIR}" = "nco" ]; then
-  slash_cdate_or_null=""
-  slash_ensmem_subdir_or_null=""
-else
-  slash_cdate_or_null="/${CDATE}"
-#
-# Since other aspects of a deterministic run use the "mem000" string (e.g.
-# in rocoto workflow task names, in log file names), it seems reasonable
-# that a deterministic run create a "mem000" subdirectory under the $CDATE
-# directory.  But since that is currently not the case in in the run_fcst
-# task, we need the following if-statement.  If and when such a modification
-# is made for the run_fcst task, we would remove this if-statement and
-# simply set 
-#   slash_ensmem_subdir_or_null="/${ensmem_name}"
-# or, better, just remove this variale and code "/${ensmem_name}" where
-# slash_ensmem_subdir_or_null currently appears below.
-#
-  if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
-    slash_ensmem_subdir_or_null="/${ensmem_name}"
-  else
+if [ "${obs_or_fcst}" = "fcst" ]; then
+  ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
+  ensmem_name="mem${ensmem_indx}"
+
+  if [ "${RUN_ENVIR}" = "nco" ]; then
+    slash_cdate_or_null=""
     slash_ensmem_subdir_or_null=""
+  else
+    slash_cdate_or_null="/${CDATE}"
+  #
+  # Since other aspects of a deterministic run use the "mem000" string (e.g.
+  # in rocoto workflow task names, in log file names), it seems reasonable
+  # that a deterministic run create a "mem000" subdirectory under the $CDATE
+  # directory.  But since that is currently not the case in in the run_fcst
+  # task, we need the following if-statement.  If and when such a modification
+  # is made for the run_fcst task, we would remove this if-statement and
+  # simply set 
+  #   slash_ensmem_subdir_or_null="/${ensmem_name}"
+  # or, better, just remove this variale and code "/${ensmem_name}" where
+  # slash_ensmem_subdir_or_null currently appears below.
+  #
+    if [ "${DO_ENSEMBLE}" = "TRUE" ]; then
+      slash_ensmem_subdir_or_null="/${ensmem_name}"
+    else
+      slash_ensmem_subdir_or_null=""
+    fi
   fi
 fi
 
@@ -350,33 +353,30 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
-#
-# Store the settings in a temporary file to use as input in the call to
-# the METplus configuration generator script below.
-#
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-#
-# Call the python script to generate the METplus configuration file from
-# the jinja template.
-#
-python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
-  -c "${tmpfile}" \
-  -i "${metplus_config_tmpl_fp}" \
-  -o "${metplus_config_fp}" || \
-print_err_msg_exit "\
-Call to workflow-tools templater.py to generate a METplus configuration
-file from a jinja template failed.  Parameters passed to this script are:
-  Full path to template METplus configuration file:
-    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
-  Full path to output METplus configuration file:
-    metplus_config_fp = \"${metplus_config_fp}\"
-  Full path to configuration file:
-    ${tmpfile}
-"
+
+uw template render \
+  -i ${metplus_config_tmpl_fp} \
+  -o ${metplus_config_fp} \
+  -v \
+  --values-file "${tmpfile}"
+
+err=$?
 rm $tmpfile
+if [ $err -ne 0 ]; then
+  message_txt="Error rendering template for METplus config.
+     Contents of input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
 #
 #-----------------------------------------------------------------------
 #
