@@ -127,10 +127,8 @@ experiment directory (``$EXPTDIR/YYYYMMDDHH/INPUT``) and consist of the followin
 * ``tmp_ICS``
 * ``tmp_LBCS``
 
-These output files are used as inputs for the UFS Weather Model and are described in the `UFS Weather Model User's Guide 
-<https://ufs-weather-model.readthedocs.io/en/ufs-srw-v2.2.0-doc/InputsOutputs.html#grid-description-and-initial-condition-files>`__. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where ``HHH`` is the 3-digit hour of the forecast. 
-
-.. COMMENT: Add crosslink in WM docs; then update docs here. 
+These output files are used as inputs for the UFS Weather Model and are described in the :ref:`UFS Weather Model User's Guide 
+<ufs-wm:atm-grid-ic-files>`. ``gfs_bndy.tile7.HHH.nc`` refers to a series of IC/LBC files where ``HHH`` is the 3-digit hour of the forecast. 
 
 UFS Weather Model
 ------------------

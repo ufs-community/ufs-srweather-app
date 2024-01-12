@@ -239,7 +239,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    * - data_table
      - :term:`Cycle-independent` input file (empty)
    * - field_table
-     - :term:`Tracers <tracer>` in the `forecast model <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#field-table-file>`__
+     - :term:`Tracers <tracer>` in the :ref:`forecast model <ufs-wm:field_tableFile>`
    * - FV3LAM_wflow.xml
      - Rocoto XML file to run the workflow
    * - input.nml
@@ -251,7 +251,7 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
    * - log.generate_FV3LAM_wflow
      - Log of the output from the experiment generation script (``generate_FV3LAM_wflow.py``)
    * - nems.configure
-     - See :ref:`NEMS configuration file <ufs-wm:nems-conf>`
+     - See :ref:`NEMS configuration file <ufs-wm:ufs-conf>`
    * - suite_{CCPP}.xml
      - :term:`CCPP` suite definition file (:term:`SDF`) used by the forecast model
    * - var_defns.sh
@@ -262,8 +262,6 @@ When the user generates an experiment using the ``generate_FV3LAM_wflow.py`` scr
        order to make all the experiment variables available to these scripts. 
    * - YYYYMMDDHH
      - Cycle directory (empty)
-   
-.. COMMENT: Add ref to WM docs field table section for crosslink.    
 
 In addition, running the SRW App in *community* mode creates the ``fix_am`` and ``fix_lam`` directories (see :numref:`Table %s <FixDirectories>`) in ``$EXPTDIR``. The ``fix_lam`` directory is initially empty but will contain some *fix* (time-independent) files after the grid, orography, and/or surface climatology generation tasks run. 
 
