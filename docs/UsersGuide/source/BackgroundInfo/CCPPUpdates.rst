@@ -46,7 +46,6 @@ RUC Land Surface Model
 * Changes in the computation of a flag for sea ice: set to true only if ``flag_cice=.false`` (atmosphere uncoupled from the sea ice model).
 * Separate variables for sea ice, for example: ``snowfallac`` is replaced with ``snowfallac_ice``
 * Solar angle dependence of albedo for snow-free land
-* Stochastic physics perturbations (SPP) introduced for emissivity, albedo and vegetation fraction
 * Coefficient in soil resistance formulation (Sakaguchi and Zeng, 2009) raised from 0.7 to 1.0 to increase soil resistance to evaporation
 * Computation of snow cover fraction and snow thermal conductivity updated
 
