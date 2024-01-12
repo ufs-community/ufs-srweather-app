@@ -88,8 +88,6 @@ module load wflow_${platform,,}
 conda activate srw_app
 set -e -u
 
-export PYTHONPATH=${workspace}/ush/python_utils/workflow-tools:${workspace}/ush/python_utils/workflow-tools/src
-
 # Adjust for strict limitation of stack size 
 sed "s|ulimit -s unlimited;|ulimit -S -s unlimited;|" -i ${workspace}/ush/machine/hera.yaml
 

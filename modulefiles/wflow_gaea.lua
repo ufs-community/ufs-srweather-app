@@ -6,7 +6,7 @@ the NOAA RDHPC machine Gaea
 whatis([===[Loads libraries needed for running the UFS SRW App on gaea ]===])
 
 unload("python")
-load("set_pythonpath")
+
 load("conda")
 prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/rocoto/modulefiles")
 load("rocoto")

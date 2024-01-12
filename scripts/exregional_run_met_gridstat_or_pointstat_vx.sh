@@ -176,7 +176,7 @@ fi
 #
 vx_fcst_input_basedir=$( eval echo "${VX_FCST_INPUT_BASEDIR}" )
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
-ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "${ENSMEM_INDX}")
+ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
 ensmem_name="mem${ensmem_indx}"
 if [ "${RUN_ENVIR}" = "nco" ]; then
   slash_cdate_or_null=""
@@ -389,31 +389,31 @@ settings="\
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 
-# Store the settings in a temporary file
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-#
-# Call the python script to generate the METplus configuration file from
-# the jinja template.
-#
-python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
-  -c "${tmpfile}" \
+
+uw template render \
   -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} || \
-print_err_msg_exit "\
-Call to workflow-tools templater to generate a METplus
-configuration file from a jinja template failed.  Parameters passed
-to this script are:
-  Full path to template METplus configuration file:
-    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
-  Full path to output METplus configuration file:
-    metplus_config_fp = \"${metplus_config_fp}\"
-  Full path to configuration file:
-    ${tmpfile}
-"
+  -o ${metplus_config_fp} \
+  -v \
+  --values-file "${tmpfile}"
+
+err=$?
 rm $tmpfile
+if [ $err -ne 0 ]; then
+  message_txt="Error rendering template for METplus config.
+     Contents of input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
+
 #
 #-----------------------------------------------------------------------
 #
