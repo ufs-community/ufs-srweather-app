@@ -32,12 +32,12 @@ jobs:
 
       - name: Checkout externals
         run: |
-          ./manage_externals/checkout_externals ufs-weather-model workflow-tools
+          ./manage_externals/checkout_externals ufs-weather-model
 
       - name: Lint the python code
         run: |
           micromamba activate srw_app
-          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          export PYTHONPATH=$(pwd)/ush
           pylint --ignore-imports=yes tests/test_python/
           pylint ush/create_*.py
           pylint ush/generate_FV3LAM_wflow.py
@@ -47,7 +47,7 @@ jobs:
           # exclude test_retrieve_data that is tested in functional test
           micromamba activate srw_app
           export UNIT_TEST=True
-          export PYTHONPATH=$(pwd)/ush:$(pwd)/ush/python_utils/workflow-tools:$(pwd)/ush/python_utils/workflow-tools/src
+          export PYTHONPATH=$(pwd)/ush
           python -m unittest -b tests/test_python/*.py
 
       - name: Run python functional tests

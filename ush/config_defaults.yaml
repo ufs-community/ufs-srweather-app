@@ -510,22 +510,22 @@ workflow:
   # path will be appended to the default value ${HOMEdir}/../expt_dirs 
   #
   # EXPT_SUBDIR:
-  # The name that the experiment directory (without the full path) will
-  # have.  The full path to the experiment directory, which will be contained
-  # in the variable EXPTDIR, will be:
-  #
-  #   EXPTDIR: "${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-  #
-  # This cannot be empty.  If set to a null string here, it must be set to
-  # a (non-empty) value in the user-defined experiment configuration file.
+  # If EXPTDIR is not specified, this represents the experiment directory 
+  # (not the full path)
   #
   # EXEC_SUBDIR:
   # The name of the subdirectory of ufs-srweather-app where executables are
   # installed.
+  #
+  # EXPTDIR:
+  # The full path to the experiment directory. Can be user-specified, but by
+  # default will point to:
+  #
+  #   EXPTDIR: "${EXPT_BASEDIR}/${EXPT_SUBDIR}"
   #-----------------------------------------------------------------------
   #
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
-  EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
+  EXPT_SUBDIR: 'experiment'
   EXEC_SUBDIR: "exec"
   EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
   #
@@ -805,7 +805,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -1027,7 +1027,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  PREEXISTING_DIR_METHOD: "delete"
+  PREEXISTING_DIR_METHOD: "quit"
   #
   #-----------------------------------------------------------------------
   #

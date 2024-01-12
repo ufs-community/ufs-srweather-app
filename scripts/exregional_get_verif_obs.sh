@@ -34,7 +34,7 @@ set -x
 # bugs in the way data is organized; see in-line comments for details.
 #
 #
-# CCPA
+# CCPA (Climatology-Calibrated Precipitation Analysis) precipitation accumulation obs
 # ----------
 # If data is available on disk, it must be in the following 
 # directory structure and file name conventions expected by verification
@@ -57,7 +57,7 @@ set -x
 # for. See in-line comments below for details.
 #
 #
-# MRMS
+# MRMS (Multi-Radar Multi-Sensor) radar observations
 # ----------
 # If data is available on disk, it must be in the following 
 # directory structure and file name conventions expected by verification
@@ -75,7 +75,7 @@ set -x
 # this script.
 #
 #
-# NDAS
+# NDAS (NAM Data Assimilation System) conventional observations
 # ----------
 # If data is available on disk, it must be in the following 
 # directory structure and file name conventions expected by verification
@@ -93,7 +93,7 @@ set -x
 # this script.
 #
 #
-# NOHRSC
+# NOHRSC  snow accumulation observations
 # ----------
 # If data is available on disk, it must be in the following 
 # directory structure and file name conventions expected by verification
@@ -128,18 +128,18 @@ unix_init_DATE="${iyyyy}-${imm}-${idd} ${ihh}:00:00"
 
 # This awk expression gets the last item of the list $FHR
 fcst_length=$(echo ${FHR}  | awk '{ print $NF }')
+# Make sure fcst_length isn't octal (leading zero)
+fcst_length=$((10#${fcst_length}))
 
-current_fcst=01
+current_fcst=0
 while [[ ${current_fcst} -le ${fcst_length} ]]; do
-  #remove leading zero from current_fcst because bash treats numbers with leading zeros as octal *sigh*
-  current_fcst=$((10#${current_fcst}))
   # Calculate valid date info using date utility  
   vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" +%Y%m%d%H)
   unix_vdate=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours" "+%Y-%m-%d %H:00:00")
   vyyyymmdd=$(echo ${vdate} | cut -c1-8)
   vhh=$(echo ${vdate} | cut -c9-10)
 
-  # Calculate valid date + 1 day; this is needed because (for some ungodly reason) CCPA files for 19-23z
+  # Calculate valid date + 1 day; this is needed because some obs files
   # are stored in the *next* day's 00h directory
   vdate_p1=$($DATE_UTIL -d "${unix_init_DATE} ${current_fcst} hours 1 day" +%Y%m%d%H)
   vyyyymmdd_p1=$(echo ${vdate_p1} | cut -c1-8)
@@ -149,6 +149,12 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
   # Retrieve CCPA observations
   if [[ ${OBTYPE} == "CCPA" ]]; then
+
+    #CCPA is accumulation observations, so none to retrieve for hour zero
+    if [[ ${current_fcst} -eq 0 ]]; then
+      current_fcst=$((${current_fcst} + 1))
+      continue
+    fi
 
     # Staging location for raw CCPA data from HPSS
     ccpa_raw=${OBS_DIR}/raw
@@ -161,8 +167,14 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 
     # Check if file exists on disk; if not, pull it.
     ccpa_file="$ccpa_proc/${vyyyymmdd}/ccpa.t${vhh}z.${accum}h.hrap.conus.gb2"
-    echo "CCPA FILE:${ccpa_file}"
-    if [[ ! -f "${ccpa_file}" ]]; then 
+    if [[ -f "${ccpa_file}" ]]; then 
+      echo "${OBTYPE} file exists on disk:"
+      echo "${ccpa_file}"
+    else
+      echo "${OBTYPE} file does not exist on disk:"
+      echo "${ccpa_file}"
+      echo "Will attempt to retrieve from remote locations"
+
       # Create necessary raw and prop directories
       if [[ ! -d "$ccpa_raw/${vyyyymmdd}" ]]; then
         mkdir -p $ccpa_raw/${vyyyymmdd}
@@ -240,8 +252,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
         fi
       fi
 
-    else
-      echo "File already exists on disk; will not retrieve"
     fi
   # Retrieve MRMS observations
   elif [[ ${OBTYPE} == "MRMS" ]]; then
@@ -270,9 +280,12 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
       fi
 
       mrms_file="$mrms_proc/${vyyyymmdd}/${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2"
-      echo "For field ${field}, looking for MRMS FILE: ${mrms_file}"
 
-      if [[ ! -f "${mrms_file}" ]]; then
+      if [[ -f "${mrms_file}" ]]; then
+        echo "${OBTYPE} file exists on disk for field ${field}:\n${mrms_file}"
+      else
+        echo "${OBTYPE} file does not exist on disk for field ${field}:\n${mrms_file}"
+        echo "Will attempt to retrieve from remote locations"
         # Create directories if necessary
         if [[ ! -d "$mrms_raw/${vyyyymmdd}" ]]; then
           mkdir -p $mrms_raw/${vyyyymmdd}
@@ -311,8 +324,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
           hour=$((${hour} + 1)) # hourly increment
         done
 
-      else
-        echo "mrms_file exists: \"$mrms_proc/${vyyyymmdd}/${field_base_name}${level}${vyyyymmdd}-${vhh}0000.grib2\" No work to be done."
       fi
     done
 
@@ -324,13 +335,36 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     # Reorganized NDAS location
     ndas_proc=${OBS_DIR}
 
-    # Check if file exists on disk; NDAS data is available in 6-hourly combined prepbufr files
-    # If forecast ends on an off-hour (i.e., not 00z, 06z, 12z, or 18z), the last few hours of data may not be retrieved
-    if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
-      ndas_file="$ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}"
-      echo "NDAS PB FILE:${ndas_file}"
+    # Check if file exists on disk
+    ndas_file="$ndas_proc/prepbufr.ndas.${vyyyymmdd}${vhh}"
+    if [[ -f "${ndas_file}" ]]; then
+      echo "${OBTYPE} file exists on disk:"
+      echo "${ndas_file}"
+    else
+      echo "${OBTYPE} file does not exist on disk:"
+      echo "${ndas_file}"
+      echo "Will attempt to retrieve from remote locations"
+      # NDAS data is available in 6-hourly combined tar files, each with 7 1-hour prepbufr files:
+      # nam.tHHz.prepbufr.tm00.nr, nam.tHHz.prepbufr.tm01.nr, ... , nam.tHHz.prepbufr.tm06.nr
+      #
+      # The "tm" here means "time minus", so nam.t12z.prepbufr.tm00.nr is valid for 12z, 
+      # nam.t00z.prepbufr.tm03.nr is valid for 21z the previous day, etc.
+      # This means that every six hours we have to obs files valid for the same time:
+      # nam.tHHz.prepbufr.tm00.nr and nam.t[HH+6]z.prepbufr.tm06.nr
+      # We want to use the tm06 file because it contains more/better obs (confirmed with EMC: even
+      # though the earlier files are larger, this is because the time window is larger)
 
-      if [[ ! -f "${ndas_file}" ]]; then
+      # The current logic of this script will likely stage more files than you need, but will never
+      # pull more HPSS tarballs than necessary
+
+      if [[ ${current_fcst} -eq 0 && ${current_fcst} -ne ${fcst_length} ]]; then
+        # If at forecast hour zero, skip to next hour. 
+        current_fcst=$((${current_fcst} + 1))
+        continue
+      fi
+
+      if [[ ${vhh_noZero} -eq 0 || ${vhh_noZero} -eq 6 || ${vhh_noZero} -eq 12 || ${vhh_noZero} -eq 18 ]]; then
+
         if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
           mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
         fi
@@ -360,21 +394,80 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
           mkdir -p $ndas_proc
         fi
 
-        # copy files from the previous 6 hours
-        for tm in $(seq 0 5); do
+        # copy files from the previous 6 hours ("tm" means "time minus")
+        # The tm06 files contain more/better observations than tm00 for the equivalent time
+        for tm in $(seq 1 6); do
           vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_vdate} ${tm} hours ago" +%Y%m%d%H)
           tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
 
           cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
         done
-      else
-        echo "NDAS file exists: ${ndas_file}"
-        echo "Will not retrieve from HPSS"
+
       fi
+
+      # If at last forecast hour, make sure we're getting the last observations
+      if [[ ${current_fcst} -eq ${fcst_length} ]]; then
+        echo "Retrieving NDAS obs for final forecast hour"
+        vhh_noZero=$((vhh_noZero + 6 - (vhh_noZero % 6)))
+        if [[ ${vhh_noZero} -eq 24 ]]; then
+          vyyyymmdd=${vyyyymmdd_p1}
+          vhh=00
+        elif [[ ${vhh_noZero} -eq 6 ]]; then
+          vhh=06
+        else
+          vhh=${vhh_noZero}
+        fi
+
+        if [[ ! -d "$ndas_raw/${vyyyymmdd}${vhh}" ]]; then
+          mkdir -p $ndas_raw/${vyyyymmdd}${vhh}
+        fi
+
+        # Pull NDAS data from HPSS
+        cmd="
+        python3 -u ${USHdir}/retrieve_data.py \
+          --debug \
+          --file_set obs \
+          --config ${PARMdir}/data_locations.yml \
+          --cycle_date ${vyyyymmdd}${vhh} \
+          --data_stores hpss \
+          --data_type NDAS_obs \
+          --output_path $ndas_raw/${vyyyymmdd}${vhh} \
+          --summary_file ${logfile}"
+
+        echo "CALLING: ${cmd}"
+
+        $cmd || print_err_msg_exit "\
+        Could not retrieve NDAS data from HPSS
+
+        The following command exited with a non-zero exit status:
+        ${cmd}
+"
+
+        if [[ ! -d "$ndas_proc" ]]; then
+          mkdir -p $ndas_proc
+        fi
+
+        for tm in $(seq 1 6); do
+          last_fhr=$((fcst_length + 6 - (vhh_noZero % 6)))
+          unix_fdate=$($DATE_UTIL -d "${unix_init_DATE} ${last_fhr} hours" "+%Y-%m-%d %H:00:00")
+          vyyyymmddhh_tm=$($DATE_UTIL -d "${unix_fdate} ${tm} hours ago" +%Y%m%d%H)
+          tm2=$(echo $tm | awk '{printf "%02d\n", $0;}')
+
+          cp $ndas_raw/${vyyyymmdd}${vhh}/nam.t${vhh}z.prepbufr.tm${tm2}.nr $ndas_proc/prepbufr.ndas.${vyyyymmddhh_tm}
+        done
+
+      fi
+
     fi
 
   # Retrieve NOHRSC observations
   elif [[ ${OBTYPE} == "NOHRSC" ]]; then
+
+    #NOHRSC is accumulation observations, so none to retrieve for hour zero
+    if [[ ${current_fcst} -eq 0 ]]; then
+      current_fcst=$((${current_fcst} + 1))
+      continue
+    fi
 
     # Reorganized NOHRSC location (no need for raw data dir)
     nohrsc_proc=${OBS_DIR}
@@ -385,17 +478,26 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
     # If 24-hour files should be available (at 00z and 12z) then look for both files
     # Otherwise just look for 6hr file
     if (( ${current_fcst} % 12 == 0 )) && (( ${current_fcst} >= 24 )) ; then
-      if [ ! -f "${nohrsc06h_file}" ] || [ ! -f "${nohrsc24h_file}" ] ; then 
+      if [[ ! -f "${nohrsc06h_file}" || ! -f "${nohrsc24h_file}" ]] ; then 
         retrieve=1
+        echo "${OBTYPE} files do not exist on disk:"
+        echo "${nohrsc06h_file}"
+        echo "${nohrsc24h_file}"
+        echo "Will attempt to retrieve from remote locations"
       else
-        echo "NOHRSC 6h accumulation file exists: ${nohrsc06h_file}"
-        echo "NOHRSC 24h accumulation file exists: ${nohrsc24h_file}"
+        echo "${OBTYPE} files exist on disk:"
+        echo "${nohrsc06h_file}"
+        echo "${nohrsc24h_file}"
       fi
     elif (( ${current_fcst} % 6 == 0 )) ; then
-      if [ ! -f "${nohrsc06h_file}" ]; then
+      if [[ ! -f "${nohrsc06h_file}" ]]; then
         retrieve=1
+        echo "${OBTYPE} file does not exist on disk:"
+        echo "${nohrsc06h_file}"
+        echo "Will attempt to retrieve from remote locations"
       else
-        echo "NOHRSC 6h accumulation file exists: ${nohrsc06h_file}"
+        echo "${OBTYPE} file exists on disk:"
+        echo "${nohrsc06h_file}"
       fi
     fi
     if [ $retrieve == 1 ]; then
@@ -425,8 +527,6 @@ while [[ ${current_fcst} -le ${fcst_length} ]]; do
 "
       # 6-hour forecast needs to be renamed
       mv $nohrsc_proc/${vyyyymmdd}/sfav2_CONUS_6h_${vyyyymmdd}${vhh}_grid184.grb2 ${nohrsc06h_file}
-    else
-      echo "Will not retrieve from HPSS"
     fi
 
   else

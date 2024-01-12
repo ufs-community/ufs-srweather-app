@@ -89,7 +89,7 @@ For more information on NEXUS, visit the GitHub repository at https://github.com
 Unified Workflow Tools
 ========================
 
-The Unified Workflow (UW) is a set of tools intended to unify the workflow for various UFS applications under one framework. The UW toolkit currently includes templater and config tools, which have been incorporated into the SRW App workflow and will soon be incorporated into other UFS repositories. Additional tools are under development. More details about the UW can be found in the `workflow-tools <https://github.com/ufs-community/workflow-tools>`__ GitHub repository and in the `UW Documentation <https://unified-workflow.readthedocs.io/en/latest/>`__.
+The Unified Workflow (UW) is a set of tools intended to unify the workflow for various UFS applications under one framework. The UW toolkit currently includes template and config tools, which have been incorporated into the SRW App workflow and will soon be incorporated into other UFS repositories. Additional tools are under development. More details about the UW can be found in the `workflow-tools <https://github.com/ufs-community/workflow-tools>`__ GitHub repository and in the `UW Documentation <https://unified-workflow.readthedocs.io/en/latest/>`__.
 
 Build System and Workflow
 =========================
