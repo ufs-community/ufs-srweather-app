@@ -81,7 +81,7 @@ Grell-Freitas Scale and Aerosol Aware Convection Scheme
 * Update for aerosol-awareness (experimental)
 * Scale-awareness turned off when explicit microphysics is not active anywhere in the column
 * Convection is completely suppressed at grid points where the MYNN PBL scheme produces shallow convection
-* Radar reflectivity considers mass flux PDF as well as whether scale-awareness is turned on at the grid point in equation
+* Radar reflectivity considers mass flux PDF as well as whether scale-awareness is turned on at the grid point in question
 
 Unified Gravity Wave Physics Scheme
 =====================================
