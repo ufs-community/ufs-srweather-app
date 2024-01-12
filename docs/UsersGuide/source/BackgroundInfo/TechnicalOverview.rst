@@ -127,7 +127,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
    * - Repository for the NOAA Emission and eXchange Unified System (NEXUS)
      - https://github.com/noaa-oar-arl/NEXUS
    * - Repository for the Unified Workflow (UW) Toolkit
-     - https://github.com/ufs-community/workflow-tools
+     - https://github.com/ufs-community/uwtools
 
 The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
 

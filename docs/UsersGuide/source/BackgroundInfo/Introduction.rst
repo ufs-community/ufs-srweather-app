@@ -136,7 +136,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
-     - https://unified-workflow.readthedocs.io/en/latest/
+     - https://uwtools.readthedocs.io/en/develop/
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/latest/Users_Guide/index.html
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
@@ -186,7 +186,7 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Inclusion of data assimilation and forecast restart/cycling capabilities.
 * A more extensive set of supported developmental physics suites.
 * A larger number of pre-defined domains/resolutions and a *fully supported* capability to create a user-defined domain.
-* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/workflow-tools>`__ tools.
+* Incorporation of additional `Unified Workflow <https://github.com/ufs-community/uwtools>`__ tools.
 
 
 .. bibliography:: ../references.bib
