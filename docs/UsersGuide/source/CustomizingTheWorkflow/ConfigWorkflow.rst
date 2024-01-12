@@ -30,7 +30,7 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
@@ -83,6 +83,11 @@ If non-default parameters are selected for the variables in this section, they s
 
 ``WORKFLOW_MANAGER``: (Default: "none")
    The workflow manager to use (e.g., "rocoto"). This is set to "none" by default, but if the machine name is set to a platform that supports Rocoto, this will be overwritten and set to "rocoto." If set explicitly to "rocoto" along with the use of the ``MACHINE: "LINUX"`` target, the configuration layer assumes a Slurm batch manager when generating the XML. Valid values: ``"rocoto"`` | ``"none"``
+
+   .. note:: 
+
+      The ability to generate an ``ecflow`` workflow is not yet available in the SRW App. Although ``ecflow`` has been added to ``ush/valid_param_vals.yaml`` as a valid option, setting this option will fail to produce a functioning workflow. 
+      Without the necessary ``ecf`` directory, it is impossible to generate ``ecflow`` workflows at this time. The addition of this functionality is planned but not yet completed. 
 
 ``NCORES_PER_NODE``: (Default: "")
    The number of cores available per node on the compute platform. Set for supported platforms in ``setup.py``, but it is now also configurable for all platforms.
@@ -370,7 +375,7 @@ Set File Name Parameters
    Prefix for the name of the file that specifies the output fields of the forecast model. 
 
 ``FIELD_TABLE_FN``: ( Default: "field_table")
-   Prefix for the name of the file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. 
+   Prefix for the name of the file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <ICs/LBCs>` files.
 
 .. _tmpl-fn-warning:
 
@@ -382,7 +387,7 @@ Set File Name Parameters
    Name of a template file that specifies the output fields of the forecast model. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{DIAG_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``FIELD_TABLE_TMPL_FN``: (Default: ``'field_table.{{ CCPP_PHYS_SUITE }}'``)
-   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <IC/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
+   Name of a template file that specifies the :term:`tracers <tracer>` that the forecast model will read in from the :term:`IC/LBC <ICs/LBCs>` files. The selected physics suite is appended to this file name in ``setup.py``, taking the form ``{FIELD_TABLE_TMPL_FN}.{CCPP_PHYS_SUITE}``. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
 
 ``MODEL_CONFIG_FN``: (Default: "model_configure")
    Name of a file that contains settings and configurations for the :term:`NUOPC`/:term:`ESMF` main component. In general, users should not set this variable in their configuration file (see :ref:`note <tmpl-fn-warning>`).
@@ -522,7 +527,7 @@ CCPP Parameter
    | ``"FV3_WoFS_v0"``
    | ``"FV3_RAP"``
 
-   Other valid values can be found in the ``ush/valid_param_vals.yaml`` file, but users cannot expect full support for these schemes.
+   Other valid values can be found in the ``ush/valid_param_vals.yaml`` `file <https://github.com/ufs-community/ufs-srweather-app/blob/release/public-v2.2.0/ush/valid_param_vals.yaml>`__, but users cannot expect full support for these schemes.
 
 ``CCPP_PHYS_SUITE_FN``: (Default: ``'suite_{{ CCPP_PHYS_SUITE }}.xml'``)
    The name of the suite definition file (SDF) used for the experiment. 
@@ -581,7 +586,8 @@ Predefined Grid Parameters
    | ``"RRFS_CONUS_25km"``
    | ``"RRFS_CONUS_13km"``
    | ``"RRFS_CONUS_3km"``
-   | ``"SUBCONUS_Ind_3km"`` 
+   | ``"SUBCONUS_Ind_3km"``
+   | ``"RRFS_NA_13km"``
    
    **Other valid values include:**
 
@@ -594,7 +600,6 @@ Predefined Grid Parameters
    | ``"RRFS_CONUScompact_25km"``
    | ``"RRFS_CONUScompact_13km"``
    | ``"RRFS_CONUScompact_3km"``
-   | ``"RRFS_NA_13km"`` 
    | ``"RRFS_NA_3km"``
    | ``"WoFS_3km"``
 
@@ -645,6 +650,8 @@ Forecast Parameters
            - 18
 
    By setting ``FCST_LEN_HRS: -1``, the experiment will derive the values of ``FCST_LEN_HRS`` (18) and ``LONG_FCST_LEN_HRS`` (48) for each cycle date. 
+
+.. _preexisting-dirs:
 
 Pre-Existing Directory Parameter
 ------------------------------------
@@ -923,7 +930,7 @@ Basic Task Parameters
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
 ``EXTRN_MDL_NAME_ICS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
+   The name of the external model that will provide fields from which initial condition (IC) files, surface files, and 0-th hour boundary condition files will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"`` | ``"UFS-CASE-STUDY"``
 
 ``EXTRN_MDL_ICS_OFFSET_HRS``: (Default: 0)
    Users may wish to start a forecast using forecast data from a previous cycle of an external model. This variable indicates how many hours earlier the external model started than the FV3 forecast configured here. For example, if the forecast should start from a 6-hour forecast of the GFS, then ``EXTRN_MDL_ICS_OFFSET_HRS: "6"``.
@@ -977,7 +984,7 @@ Basic Task Parameters
 For each workflow task, certain parameter values must be passed to the job scheduler (e.g., Slurm), which submits a job for the task. 
 
 ``EXTRN_MDL_NAME_LBCS``: (Default: "FV3GFS")
-   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"``
+   The name of the external model that will provide fields from which lateral boundary condition (LBC) files (except for the 0-th hour LBC file) will be generated for input into the forecast model. Valid values: ``"GSMGFS"`` | ``"FV3GFS"`` | ``"GEFS"`` | ``"GDAS"`` | ``"RAP"`` | ``"HRRR"`` | ``"NAM"`` | ``"UFS-CASE-STUDY"``
 
 ``LBC_SPEC_INTVL_HRS``: (Default: 6)
    The interval (in integer hours) at which LBC files will be generated. This is also referred to as the *boundary update interval*. Note that the model selected in ``EXTRN_MDL_NAME_LBCS`` must have data available at a frequency greater than or equal to that implied by ``LBC_SPEC_INTVL_HRS``. For example, if ``LBC_SPEC_INTVL_HRS`` is set to "6", then the model must have data available at least every 6 hours. It is up to the user to ensure that this is the case.
@@ -1138,6 +1145,8 @@ These parameters set values in the Weather Model's ``model_configure`` file.
 ``WRITE_DOPOST``: (Default: false)
    Flag that determines whether to use the inline post option, which calls the Unified Post Processor (:term:`UPP`) from within the UFS Weather Model. The default ``WRITE_DOPOST: false`` does not use the inline post functionality, and the ``run_post`` tasks are called from outside of the UFS Weather Model. If ``WRITE_DOPOST: true``, the ``WRITE_DOPOST`` flag in the ``model_configure`` file will be set to true, and the post-processing (:term:`UPP`) tasks will be called from within the Weather Model. This means that the post-processed files (in :term:`grib2` format) are output by the Weather Model at the same time that it outputs the ``dynf###.nc`` and ``phyf###.nc`` files. Setting ``WRITE_DOPOST: true`` turns off the separate ``run_post`` task in ``setup.py`` to avoid unnecessary computations. Valid values: ``True`` | ``False``
 
+.. _CompParams:
+
 Computational Parameters
 ----------------------------
 
@@ -1156,7 +1165,7 @@ Write-Component (Quilting) Parameters
 -----------------------------------------
 
 .. note::
-   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in `Section 4.2.3 <https://ufs-weather-model.readthedocs.io/en/latest/InputsOutputs.html#model-configure-file>`__ of the UFS Weather Model documentation. 
+   The :term:`UPP` (called by the ``run_post`` task) cannot process output on the native grid types ("GFDLgrid" and "ESGgrid"), so output fields are interpolated to a **write component grid** before writing them to an output file. The output files written by the UFS Weather Model use an Earth System Modeling Framework (:term:`ESMF`) component, referred to as the **write component**. This model component is configured with settings in the ``model_configure`` file, as described in :ref:`Section 4.2.3 <ufs-wm:model_configureFile>` of the UFS Weather Model documentation. 
 
 ``QUILTING``: (Default: true)
 
@@ -1173,7 +1182,7 @@ Write-Component (Quilting) Parameters
    
    .. math::
       
-      LAYOUT_X * LAYOUT_Y + WRTCMP\_write\_groups * WRTCMP_write_tasks_per_group 
+      LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group 
 
 ``WRTCMP_write_groups``: (Default: "")
    The number of write groups (i.e., groups of :term:`MPI` tasks) to use in the write component. Each write group will write to one set of output files (a ``dynf${fhr}.nc`` and a ``phyf${fhr}.nc`` file, where ``${fhr}`` is the forecast hour). Each write group contains ``WRTCMP_write_tasks_per_group`` tasks. Usually, one write group is sufficient. This may need to be increased if the forecast is proceeding so quickly that a single write group cannot complete writing to its set of files before there is a need/request to start writing the next set of files at the next output time.
@@ -1445,7 +1454,7 @@ Set parameters associated with running ensembles.
 Stochastic Physics Parameters
 ----------------------------------
 
-Set default ad-hoc stochastic physics options. For the most updated and detailed documentation of these parameters, see the `UFS Stochastic Physics Documentation <https://stochastic-physics.readthedocs.io/en/latest/namelist_options.html>`__.
+Set default ad-hoc stochastic physics options. For the most updated and detailed documentation of these parameters, see the :doc:`UFS Stochastic Physics Documentation <stochphys:namelist_options>`.
 
 ``NEW_LSCALE``: (Default: true) 
    Use correct formula for converting a spatial length scale into spectral space. 
@@ -1655,10 +1664,10 @@ VX Forecast Model Name
    The fields or groups of fields for which verification tasks will run. Because ``ASNOW`` is often not of interest in cases outside of winter, and because observation files are not located for retrospective cases on NOAA HPSS before March 2020, ``ASNOW`` is not included by default. ``"ASNOW"`` may be added to this list in order to include the related verification tasks in the workflow. Valid values: ``"APCP"`` | ``"REFC"`` | ``"RETOP"`` | ``"SFC"`` | ``"UPA"`` | ``"ASNOW"``
   
 ``VX_APCP_ACCUMS_HRS``: (Default: [ 1, 3, 6, 24 ])
-   The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored.
+   The accumulation periods (in hours) to consider for accumulated precipitation (APCP). If ``VX_FIELDS`` contains ``"APCP"``, then ``VX_APCP_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"APCP"``, ``VX_APCP_ACCUMS_HRS`` will be ignored. Valid values: ``1`` | ``3`` | ``6`` | ``24``
 
 ``VX_ASNOW_ACCUMS_HRS``: (Default: [ 6, 24 ])
-   The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored.
+   The accumulation periods (in hours) to consider for ``ASNOW`` (accumulated snowfall). If ``VX_FIELDS`` contains ``"ASNOW"``, then ``VX_ASNOW_ACCUMS_HRS`` must contain at least one element. If ``VX_FIELDS`` does not contain ``"ASNOW"``, ``VX_ASNOW_ACCUMS_HRS`` will be ignored. Valid values: ``6`` | ``24``
 
 Verification (VX) Directories
 ------------------------------

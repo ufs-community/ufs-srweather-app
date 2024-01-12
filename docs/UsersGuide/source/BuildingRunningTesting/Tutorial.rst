@@ -4,9 +4,9 @@
 Tutorials
 =============
 
-This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already (1) :ref:`built the SRW App <BuildSRW>` successfully and (2) run the out-of-the-box case contained in ``config.community.yaml`` (and copied to ``config.yaml`` in :numref:`Step %s <QuickBuildRun>` or :numref:`Step %s <UserSpecificConfig>`) to completion. 
+This chapter walks users through experiment configuration options for various severe weather events. It assumes that users have already :ref:`built the SRW App <BuildSRW>` successfully. 
 
-Users can run through the entire set of tutorials or jump to the one that interests them most. The five tutorials address different skills:
+Users can run through the entire set of tutorials or jump to the one that interests them most. The first tutorial is recommended for users who have never run the SRW App before. The five tutorials address different skills:
 
    #. :ref:`Severe Weather Over Indianapolis <fcst1>`: Change physics suites and compare graphics plots. 
    #. :ref:`Cold Air Damming <fcst2>`: Coming soon!
@@ -33,7 +33,7 @@ A surface boundary associated with a vorticity maximum over the northern Great P
    * `Storm Prediction Center (SPC) Storm Report for 20190615 <https://www.spc.noaa.gov/climo/reports/190615_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190616 <https://www.spc.noaa.gov/climo/reports/190616_rpts.html>`__
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/IndySevereWeather18z.gif
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/IndySevereWeather18z.gif
    :alt: Radar animation of severe weather over Indianapolis on June 15, 2019 starting at 18z. The animation shows areas of heavy rain and tornado reports moving from west to east over Indianapolis. 
 
    *Severe Weather Over Indianapolis Starting at 18z*
@@ -65,7 +65,7 @@ To load the workflow environment, source the lmod-setup file. Then load the work
 
 where ``<platform>`` is a valid, lowercased machine name (see ``MACHINE`` in :numref:`Section %s <user>` for valid values). 
 
-After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run ``conda activate srw_app``. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
+After loading the workflow, users should follow the instructions printed to the console. Usually, the instructions will tell the user to run |activate|. For example, a user on Hera with permissions on the ``nems`` project may issue the following commands to load the workflow (replacing ``User.Name`` with their actual username):
 
 .. code-block:: console
    
@@ -161,8 +161,8 @@ should be included in the ``rocoto:tasks:taskgroups:`` section, like this:
       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
 
 
-For more information on how to turn on/off tasks in the worklfow, please
-see :numref:`Section %s <DefineWorkflow>`.
+For more information on how to turn on/off tasks in the workflow, please
+see :numref:`Section %s <ConfigTasks>`.
 
 In the ``task_get_extrn_ics:`` section, add ``USE_USER_STAGED_EXTRN_FILES`` and ``EXTRN_MDL_SOURCE_BASEDIR_ICS``. Users will need to adjust the file path to reflect the location of data on their system (see :numref:`Section %s <Data>` for locations on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems). 
 
@@ -243,7 +243,7 @@ Once the control case is running, users can return to the ``config.yaml`` file (
      EXPT_SUBDIR: test_expt
      CCPP_PHYS_SUITE: FV3_RRFS_v1beta
 
-``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be overwritten. ``test_expt`` is used here, but the user may select a different name if desired. 
+``EXPT_SUBDIR:`` This name must be different than the ``EXPT_SUBDIR`` name used in the previous forecast experiment. Otherwise, the first forecast experiment will be renamed, and the new experiment will take its place (see :numref:`Section %s <preexisting-dirs>` for details). To avoid this issue, this tutorial uses ``test_expt`` as the second experiment's name, but the user may select a different name if desired.
 
 ``CCPP_PHYS_SUITE:`` The FV3_RRFS_v1beta physics suite was specifically created for convection-allowing scales and is the precursor to the operational physics suite that will be used in the Rapid Refresh Forecast System (:term:`RRFS`). 
 
@@ -280,8 +280,9 @@ Under ``rocoto:tasks:``, add a section to increase the maximum wall time for the
            walltime: 02:00:00
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
        metatask_run_ens_post:
-         run_fcst_mem#mem#:
-           walltime: 00:20:00
+         metatask_run_post_mem#mem#_all_fhrs:
+           task_run_post_mem#mem#_f#fhr#:
+             walltime: 00:20:00
 
 Lastly, users must set the ``COMOUT_REF`` variable in the ``task_plot_allvars:`` section to create difference plots that compare output from the two experiments. ``COMOUT_REF`` is a template variable, so it references other workflow variables within it (see :numref:`Section %s <TemplateVars>` for details on template variables). ``COMOUT_REF`` should provide the path to the ``control`` experiment forecast output using single quotes as shown below:
 
@@ -325,7 +326,7 @@ Users should substitute ``/path/to/expt_dirs/test_expt`` with the actual path on
 Compare and Analyze Results
 -----------------------------
 
-Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-processed data generated by the :term:`UPP` from the forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables including 2-m temperature, 2-m dew point temperature, 10-m winds, accumulated precipitation, composite reflectivity, and surface-based CAPE/CIN. Plots with a ``_diff`` label in the file name are plots that compare the ``control`` forecast and the ``test_expt`` forecast. 
+Navigate to ``test_expt/2019061518/postprd``. This directory contains the post-processed data generated by the :term:`UPP` from the ``test_expt`` forecast. After the ``plot_allvars`` task completes, this directory will contain ``.png`` images for several forecast variables including 2-m temperature, 2-m dew point temperature, 10-m winds, accumulated precipitation, composite reflectivity, and surface-based CAPE/CIN. Plots with a ``_diff`` label in the file name are plots that compare the ``control`` forecast and the ``test_expt`` forecast.
 
 Copy ``.png`` Files onto Local System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -388,22 +389,25 @@ Sea Level Pressure
 `````````````````````
 In the Sea Level Pressure (SLP) plots, the ``control`` and ``test_expt`` plots are nearly identical at forecast hour f000, so the difference plot is entirely white. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f000.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f000.png
       :align: center
+      :width: 75%
 
       *Difference Plot for Sea Level Pressure at f000*
 
 As the forecast continues, the results begin to diverge, as evidenced by the spattering of light blue dispersed across the f006 SLP difference plot. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f006.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f006.png
       :align: center
+      :width: 75%
 
       *Difference Plot for Sea Level Pressure at f006*
 
 The predictions diverge further by f012, where a solid section of light blue in the top left corner of the difference plot indicates that to the northwest of Indianapolis, the SLP predictions for the ``control`` forecast were slightly lower than the predictions for the ``test_expt`` forecast. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/slp_diff_regional_f012.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/slp_diff_regional_f012.png
       :align: center
+      :width: 75%
 
       *Difference Plot for Sea Level Pressure at f012*
 
@@ -416,8 +420,9 @@ Reflectivity images visually represent the weather based on the energy (measured
 
 At f000, the ``test_expt`` plot (top left) is showing more severe weather than the ``control`` plot (top right). The ``test_expt`` plot shows a vast swathe of the Indianapolis region covered in yellow with spots of orange, corresponding to composite reflectivity values of 35+ dBZ. The ``control`` plot radar image covers a smaller area of the grid, and with the exception of a few yellow spots, composite reflectivity values are <35 dBZ. The difference plot (bottom) shows areas where the ``test_expt`` plot (red) and the ``control`` plot (blue) have reflectivity values greater than 20 dBZ. The ``test_expt`` plot has significantly more areas with high composite reflectivity values. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f000.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f000.png
       :align: center
+      :width: 75%
 
       *Composite Reflectivity at f000*
 
@@ -425,15 +430,17 @@ As the forecast progresses, the radar images resemble each other more (see :numr
 
 .. _refc006:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f006.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f006.png
       :align: center
+      :width: 75%
 
       *Composite reflectivity at f006 shows storm gathering strength*
 
 At forecast hour 12, the plots for each forecast show a similar evolution of the storm with both resolving a squall line. The ``test_expt`` plot shows a more intense squall line with discrete cells (areas of high composite reflectivity in dark red), which could lead to severe weather. The ``control`` plot shows an overall decrease in composite reflectivity values compared to f006. It also orients the squall line more northward with less intensity, possibly due to convection from the previous forecast runs cooling the atmosphere. In short, ``test_expt`` suggests that the storm will still be going strong at 06z on June 15, 2019, whereas the ``control`` suggests that the storm will begin to let up. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/refc_diff_regional_f012.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/refc_diff_regional_f012.png
       :align: center
+      :width: 75%
 
       *Composite Reflectivity at f012*
 
@@ -445,7 +452,7 @@ Surface-Based CAPE/CIN
 Background
 """"""""""""
 
-The National Weather Service (:term:`NWS`) defines Surface-Based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS, What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
+The National Weather Service (:term:`NWS`) defines Surface-Based Convective Available Potential Energy (CAPE) as "the amount of fuel available to a developing thunderstorm." According to NWS, CAPE "describes the instabilily of the atmosphere and provides an approximation of updraft strength within a thunderstorm. A higher value of CAPE means the atmosphere is more unstable and would therefore produce a stronger updraft" (see `NWS: What is CAPE? <https://www.weather.gov/ilx/swop-severetopics-CAPE>`__ for further explanation). 
 
 According to the NWS `Storm Prediction Center <https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html>`__, Convective Inhibition (CIN) "represents the 'negative' area on a sounding that must be overcome for storm initiation." In effect, it measures negative buoyancy (-B) --- the opposite of CAPE, which measures positive buoyancy (B or B+) of an air parcel. 
 
@@ -468,24 +475,24 @@ In general, the higher the CIN values are (i.e., the closer they are to zero), t
 
 At the 0th forecast hour, the ``test_expt`` plot (below, left) shows lower values of CAPE and higher values of CIN than in the ``control`` plot (below, right). This means that ``test_expt`` is projecting lower potential energy available for a storm but also lower inhibition, which means that less energy would be required for a storm to develop. The difference between the two plots is particularly evident in the southwest corner of the difference plot, which shows a 1000+ J/kg difference between the two plots. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f000.png
-      :width: 1200
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f000.png
+      :width: 75%
       :align: center
 
       *CAPE/CIN Difference Plot at f000*
 
 At the 6th forecast hour, both ``test_expt`` and ``control`` plots are forecasting higher CAPE values overall. Both plots also predict higher CAPE values to the southwest of Indianapolis than to the northeast. This makes sense because the storm was passing from west to east. However, the difference plot shows that the ``control`` forecast is predicting higher CAPE values primarily to the southwest of Indianapolis, whereas ``test_expt`` is projecting a rise in CAPE values throughout the region. The blue region of the difference plot indicates where ``test_expt`` predictions are higher than the ``control`` predictions; the red/orange region shows places where ``control`` predicts significantly higher CAPE values than ``test_expt`` does. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f006.png
-      :width: 1200
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f006.png
+      :width: 75%
       :align: center
 
       *CAPE/CIN Difference Plot at f006*
 
 At the 12th forecast hour, the ``control`` plot indicates that CAPE may be decreasing overall. ``test_expt``, however, shows that areas of high CAPE remain and continue to grow, particularly to the east. The blue areas of the difference plot indicate that ``test_expt`` is predicting higher CAPE than ``control`` everywhere but in the center of the plot. 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/fcst1_plots/sfcape_diff_regional_f012.png
-      :width: 1200
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/fcst1_plots/sfcape_diff_regional_f012.png
+      :width: 75%
       :align: center
 
       *CAPE/CIN Difference Plot at f012*
@@ -521,7 +528,7 @@ Cold air damming occurs when cold dense air is topographically trapped along the
    * `Storm Prediction Center (SPC) Storm Report for 20200206 <https://www.spc.noaa.gov/climo/reports/200206_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20200207 <https://www.spc.noaa.gov/climo/reports/200207_rpts.html>`__ 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/ColdAirDamming.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/ColdAirDamming.jpg
    :alt: Radar animation of precipitation resulting from cold air damming in the southern Appalachian mountains. 
 
    *Precipitation Resulting from Cold Air Damming East of the Appalachian Mountains*
@@ -543,7 +550,7 @@ A polar vortex brought arctic air to much of the U.S. and Mexico. A series of co
    
 **Weather Phenomena:** Snow and record-breaking cold temperatures
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SouthernPlainsWinterWeather.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/SouthernPlainsWinterWeather.jpg
    :alt: Radar animation of the Southern Plains Winter Weather Event centered over Oklahoma City. Animation starts on February 14, 2021 at 6h00 UTC and ends on February 17, 2021 at 6h00 UTC. 
 
    *Southern Plains Winter Weather Event Over Oklahoma City*
@@ -569,7 +576,7 @@ A line of severe storms brought strong winds, flash flooding, and tornadoes to t
 
    * `Storm Prediction Center (SPC) Storm Report for 20191031 <https://www.spc.noaa.gov/climo/reports/191031_rpts.html>`__ 
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/HalloweenStorm.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HalloweenStorm.jpg
    :alt: Radar animation of the Halloween Storm that swept across the Eastern United States in 2019. 
 
    *Halloween Storm 2019*
@@ -594,7 +601,7 @@ Hurricane Barry made landfall in Louisiana on July 11, 2019 as a Category 1 hurr
    * `Storm Prediction Center (SPC) Storm Report for 20190713 <https://www.spc.noaa.gov/climo/reports/190713_rpts.html>`__ 
    * `Storm Prediction Center (SPC) Storm Report for 20190714 <https://www.spc.noaa.gov/climo/reports/190714_rpts.html>`__
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/HurricaneBarry_Making_Landfall.jpg
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/Tutorial/HurricaneBarry_Making_Landfall.jpg
    :alt: Radar animation of Hurricane Barry making landfall. 
 
    *Hurricane Barry Making Landfall*
