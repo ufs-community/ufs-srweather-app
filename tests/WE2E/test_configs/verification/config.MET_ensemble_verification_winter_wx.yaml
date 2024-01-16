@@ -31,4 +31,4 @@ global:
   DO_ENSEMBLE: true
   NUM_ENS_MEMBERS: 10
 verification:
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]
+  VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
