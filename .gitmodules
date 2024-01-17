@@ -1,0 +1,15 @@
+[submodule "sorc/UFS_UTILS"]
+	path = sorc/UFS_UTILS
+	url = https://github.com/ufs-community/UFS_UTILS
+[submodule "sorc/ufs-weather-model"]
+	path = sorc/ufs-weather-model
+	url = https://github.com/ufs-community/ufs-weather-model
+[submodule "sorc/UPP"]
+	path = sorc/UPP
+	url = https://github.com/NOAA-EMC/UPP
+[submodule "sorc/arl_nexus"]
+	path = sorc/arl_nexus
+	url = https://github.com/noaa-oar-arl/NEXUS
+[submodule "sorc/AQM-utils"]
+	path = sorc/AQM-utils
+	url = https://github.com/NOAA-EMC/AQM-utils
