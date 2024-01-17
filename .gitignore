@@ -5,6 +5,7 @@ fix/
 include/
 lib/
 share/
+sorc/*/
 tests/WE2E/WE2E_tests_*.yaml
 tests/WE2E/*.txt
 tests/WE2E/*.log
