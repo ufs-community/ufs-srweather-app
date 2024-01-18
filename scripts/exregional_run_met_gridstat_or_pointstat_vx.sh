@@ -125,53 +125,6 @@ time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set additional field-dependent verification parameters.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${grid_or_point}" = "grid" ]; then
-
-  case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
-    "APCP01h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54"
-      ;;
-    "APCP03h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350"
-      ;;
-    "APCP06h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700"
-      ;;
-    "APCP24h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
-      ;;
-    "ASNOW06h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "ASNOW24h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "REFC")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    "RETOP")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    *)
-      print_err_msg_exit "\
-Verification parameters have not been defined for this field
-(FIELDNAME_IN_MET_FILEDIR_NAMES):
-  FIELDNAME_IN_MET_FILEDIR_NAMES = \"${FIELDNAME_IN_MET_FILEDIR_NAMES}\""
-      ;;
-  esac
-
-elif [ "${grid_or_point}" = "point" ]; then
-
-  FIELD_THRESHOLDS=""
-
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set paths and file templates for input to and output from the MET/
 # METplus tool to be run as well as other file/directory parameters.
 #
@@ -252,6 +205,9 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #-----------------------------------------------------------------------
 #
 # Set the array of forecast hours for which to run the MET/METplus tool.
+# This is done by starting with the full list of forecast hours for which
+# there is forecast output and then removing from that list any forecast
+# hours for which there is no corresponding observation data.
 #
 #-----------------------------------------------------------------------
 #
@@ -319,8 +275,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${VAR}"
-metplus_config_tmpl_fn="${MetplusToolName}_${metplus_config_tmpl_fn}"
+metplus_config_tmpl_fn="GridOrPointStat.from_${MetplusToolName}"
 metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
 metplus_log_fn="${metplus_config_fn}"
 #
@@ -329,6 +284,16 @@ metplus_log_fn="${metplus_config_fn}"
 metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
 metplus_config_fn="${metplus_config_fn}.conf"
 metplus_log_fn="metplus.log.${metplus_log_fn}"
+#
+#-----------------------------------------------------------------------
+#
+# Load the yaml-like file containing the configuration for deterministic
+# verification.
+#
+#-----------------------------------------------------------------------
+#
+python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens det
+vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_det_dict.split_fcst_obs.txt")
 #
 #-----------------------------------------------------------------------
 #
@@ -388,8 +353,13 @@ settings="\
   'obtype': '${OBTYPE}'
   'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
+  'metplus_templates_dir': '${METPLUS_CONF:-}'
+  'input_field_group': '${VAR:-}'
+  'input_level_fcst': '${FCST_LEVEL:-}'
+  'input_thresh_fcst': '${FCST_THRESH:-}'
+  'vx_config_dict': ${vx_config_dict:-}
 "
+echo "AAAAAAAAAAAAAAA"
 
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
@@ -397,6 +367,7 @@ cat > $tmpfile << EOF
 $settings
 EOF
 
+echo "BBBBBBBBBBBBBBB"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
@@ -404,6 +375,7 @@ uw template render \
   --values-file "${tmpfile}"
 
 err=$?
+echo "CCCCCCCCCCCCC"
 rm $tmpfile
 if [ $err -ne 0 ]; then
   message_txt="Error rendering template for METplus config.
@@ -415,7 +387,7 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
-
+echo "DDDDDDDDDDDDDD"
 #
 #-----------------------------------------------------------------------
 #
