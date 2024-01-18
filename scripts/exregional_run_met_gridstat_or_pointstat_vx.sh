@@ -359,35 +359,49 @@ settings="\
   'input_thresh_fcst': '${FCST_THRESH:-}'
   'vx_config_dict': ${vx_config_dict:-}
 "
-echo "AAAAAAAAAAAAAAA"
-
-# Render the template to create a METplus configuration file
+## Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-
-echo "BBBBBBBBBBBBBBB"
-uw template render \
-  -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} \
-  -v \
-  --values-file "${tmpfile}"
-
-err=$?
-echo "CCCCCCCCCCCCC"
+#
+#uw template render \
+#  -i ${metplus_config_tmpl_fp} \
+#  -o ${metplus_config_fp} \
+#  -v \
+#  --values-file "${tmpfile}"
+#
+#err=$?
+#rm $tmpfile
+#if [ $err -ne 0 ]; then
+#  message_txt="Error rendering template for METplus config.
+#     Contents of input are:
+#$settings"
+#  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+#    err_exit "${message_txt}"
+#  else
+#    print_err_msg_exit "${message_txt}"
+#  fi
+#fi
+#
+# Call the python script to generate the METplus configuration file from
+# the jinja template.
+#
+python3 ${METPLUS_CONF}/templater.py \
+  -c "${tmpfile}" \
+  -i "${metplus_config_tmpl_fp}" \
+  -o "${metplus_config_fp}" || \
+print_err_msg_exit "\
+Call to workflow-tools templater.py to generate a METplus configuration
+file from a jinja template failed.  Parameters passed to this script are:
+  Full path to template METplus configuration file:
+    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
+  Full path to output METplus configuration file:
+    metplus_config_fp = \"${metplus_config_fp}\"
+  Full path to configuration file:
+    ${tmpfile}
+"
 rm $tmpfile
-if [ $err -ne 0 ]; then
-  message_txt="Error rendering template for METplus config.
-     Contents of input are:
-$settings"
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
-fi
-echo "DDDDDDDDDDDDDD"
 #
 #-----------------------------------------------------------------------
 #

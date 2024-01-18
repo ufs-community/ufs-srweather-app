@@ -41,6 +41,8 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
@@ -71,6 +73,8 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
@@ -99,12 +103,19 @@ metatask_GridStat_MRMS_all_mems:
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'L0'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep:
-            attrs:
-              task: get_obs_mrms
+          or_get_obs: # Ensure get_obs task is complete if it's turned on
+            not:
+              taskvalid:
+                attrs:
+                  task: get_obs_mrms
+            taskdep:
+              attrs:
+                task: get_obs_mrms
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
@@ -128,6 +139,8 @@ metatask_PointStat_NDAS_all_mems:
         ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'all'
+        FCST_THRESH: 'all'
       walltime: 01:00:00
       dependency:
         and:
