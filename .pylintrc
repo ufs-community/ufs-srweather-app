@@ -182,6 +182,7 @@ function-naming-style=snake_case
 good-names=i,
            j,
            k,
+           e,
            ex,
            Run,
            _
@@ -422,7 +423,9 @@ disable=raw-checker-failed,
         useless-suppression,
         deprecated-pragma,
         use-symbolic-message-instead,
-        logging-fstring-interpolation
+        logging-fstring-interpolation,
+        too-many-locals,
+        similarities
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

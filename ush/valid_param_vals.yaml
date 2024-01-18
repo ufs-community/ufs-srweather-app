@@ -27,8 +27,6 @@ valid_vals_PREDEF_GRID_NAME: [
 "WoFS_3km"
 ]
 valid_vals_CCPP_PHYS_SUITE: [
-"FV3_GFS_2017_gfdlmp",
-"FV3_GFS_2017_gfdlmp_regional",
 "FV3_GFS_v15p2",
 "FV3_GFS_v15_thompson_mynn_lam3km",
 "FV3_GFS_v16",
@@ -78,6 +76,6 @@ valid_vals_DO_AQM_CHEM_LBCS: [True, False]
 valid_vals_DO_AQM_GEFS_LBCS: [True, False]
 valid_vals_DO_AQM_SAVE_AIRNOW_HIST: [True, False]
 valid_vals_COLDSTART: [True, False]
-valid_vals_VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "SFC", "UPA" ]
+valid_vals_VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
 valid_vals_VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
 valid_vals_VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]

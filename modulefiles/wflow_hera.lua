@@ -6,7 +6,7 @@ the NOAA RDHPC machine Hera
 whatis([===[Loads libraries needed for running the UFS SRW App on Hera ]===])
 
 load("rocoto")
-load("set_pythonpath")
+
 load("conda")
 
 if mode() == "load" then
