@@ -4,24 +4,21 @@
 Function to create a diag_table file for the FV3 model using a
 template.
 """
+import argparse
 import os
 import sys
-import argparse
-from textwrap import dedent
 import tempfile
-
+from subprocess import STDOUT, CalledProcessError, check_output
+from textwrap import dedent
 
 from python_utils import (
-    import_vars,
-    print_input_args,
-    print_info_msg,
     cfg_to_yaml_str,
-    load_shell_config,
     flatten_dict,
+    import_vars,
+    load_shell_config,
+    print_info_msg,
+    print_input_args,
 )
-
-# These come from ush/python_utils/workflow-tools
-from scripts.templater import set_template
 
 
 def create_diag_table_file(run_dir):
@@ -83,10 +80,26 @@ def create_diag_table_file(run_dir):
                                      suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        # set_template does its own error handling
-        set_template(
-            ["-c", tmpfile.name, "-i", DIAG_TABLE_TMPL_FP, "-o", diag_table_fp]
+        cmd = " ".join(["uw template render",
+            "-i", DIAG_TABLE_TMPL_FP,
+            "-o", diag_table_fp,
+            "-v",
+            "--values-file", tmpfile.name,
+            ]
         )
+        indent = "  "
+        output = ""
+        try:
+            output = check_output(cmd, encoding="utf=8", shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            output = e.output
+            print(f"Failed with status: {e.returncode}")
+            sys.exit(1)
+        finally:
+            print("Output:")
+            for line in output.split("\n"):
+                print(f"{indent * 2}{line}")
     return True
 
 

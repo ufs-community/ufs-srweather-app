@@ -215,7 +215,7 @@ def run_we2e_tests(homedir, args) -> None:
             # This section checks if we are doing verification on a machine with staged verification
             # obs. If so, and if the config file does not explicitly set the observation locations,
             # fill these in with defaults from the machine files
-            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR']
+            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR']
             if 'platform' not in test_cfg:
                 test_cfg['platform'] = {}
             for obvar in obs_vars:
@@ -260,10 +260,13 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
         if not test_cfg['workflow']['USE_CRON_TO_RELAUNCH']:
             logging.debug(f'Creating entry for job {test_name} in job monitoring dict')
-            monitor_yaml[test_name] = dict()
-            monitor_yaml[test_name].update({"expt_dir": expt_dir})
-            monitor_yaml[test_name].update({"status": "CREATED"})
-            monitor_yaml[test_name].update({"start_time": starttime_string})
+            workflow_id = f'{test_name}_{starttime_string}'
+            monitor_yaml[workflow_id] = dict()
+            monitor_yaml[workflow_id].update({"expt_dir": expt_dir})
+            monitor_yaml[workflow_id].update({"status": "CREATED"})
+            monitor_yaml[workflow_id].update({"start_time": starttime_string})
+            # Make WORKFLOW_ID actually mean something
+            test_cfg['workflow'].update({"WORKFLOW_ID": workflow_id})
 
     if args.launch != "cron":
         monitor_file = f'WE2E_tests_{starttime_string}.yaml'

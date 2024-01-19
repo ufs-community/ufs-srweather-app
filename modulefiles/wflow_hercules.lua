@@ -7,7 +7,7 @@ whatis([===[Loads libraries needed for running SRW on Hercules ]===])
 
 load("contrib")
 load("rocoto")
-load("set_pythonpath")
+
 
 unload("python")
 load("conda")

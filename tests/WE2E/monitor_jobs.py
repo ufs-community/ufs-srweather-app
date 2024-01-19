@@ -45,6 +45,16 @@ def monitor_jobs(expts_dict: dict, monitor_file: str = '', procs: int = 1,
     # Perform initial setup for each experiment
     logging.info("Checking tests available for monitoring...")
 
+    # Check that there are no duplicate directories; this avoids weird failures if someone
+    # cats multiple yaml files that have one or more duplicate run directories
+    logging.debug("Checking for duplicate working directories")
+    dirlist = []
+    for expt in expts_dict:
+         if expts_dict[expt]['expt_dir'] in dirlist:
+             raise ValueError(f"Found duplicate experiment directory \n    {expts_dict[expt]['expt_dir']}\nin experiments yaml file {monitor_file}; experiments can not share a working directory!")
+         else:
+             dirlist.append(expts_dict[expt]['expt_dir'])
+
     if procs > 1:
         print(f'Starting experiments in parallel with {procs} processes')
         expts_dict = update_expt_status_parallel(expts_dict, procs, True, debug)

@@ -5,6 +5,7 @@ platform:
   TEST_CCPA_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/obs_data/nohrsc/proc
   DOMAIN_PREGEN_BASEDIR: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/FV3LAM_pregen
   QUEUE_DEFAULT: regular
   QUEUE_FCST: regular
