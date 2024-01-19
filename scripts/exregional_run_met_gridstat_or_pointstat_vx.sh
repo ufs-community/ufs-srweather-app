@@ -275,7 +275,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="GridOrPointStat.from_${MetplusToolName}"
+metplus_config_tmpl_fn="GridStat_or_PointStat"
 metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
 metplus_log_fn="${metplus_config_fn}"
 #
