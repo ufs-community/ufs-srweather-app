@@ -108,14 +108,9 @@ metatask_GridStat_MRMS_all_mems:
       walltime: 02:00:00
       dependency:
         and:
-          or_get_obs: # Ensure get_obs task is complete if it's turned on
-            not:
-              taskvalid:
-                attrs:
-                  task: get_obs_mrms
-            taskdep:
-              attrs:
-                task: get_obs_mrms
+          taskdep:
+            attrs:
+              task: get_obs_mrms
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
