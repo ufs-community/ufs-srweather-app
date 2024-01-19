@@ -233,13 +233,10 @@ for (( i=0; i<${NUM_ENS_MEMBERS}; i++ )); do
     template="${FCST_SUBDIR_TEMPLATE}/${FCST_FN_TEMPLATE}"
   fi
 
-  slash_ensmem_subdir_or_null="/${ensmem_name}"           
   if [ -z "${FCST_INPUT_FN_TEMPLATE}" ]; then
     FCST_INPUT_FN_TEMPLATE="$(eval echo ${template})"
   else
-    FCST_INPUT_FN_TEMPLATE="\
-${FCST_INPUT_FN_TEMPLATE},
-$(eval echo ${template})"
+    FCST_INPUT_FN_TEMPLATE="${FCST_INPUT_FN_TEMPLATE}, $(eval echo ${template})"
   fi
 
 done
@@ -251,6 +248,16 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #-----------------------------------------------------------------------
 #
 # Set the array of forecast hours for which to run the MET/METplus tool.
+# This is done by starting with the full list of forecast hours for which
+# there is forecast output and then removing from that list any forecast
+# hours for which there is no corresponding observation data.
+#
+# Note that strictly speaking, this does not need to be done if the MET/
+# METplus tool being called is GenEnsProd (because this tool only operates
+# on forecasts), but we run the check anyway in this case in order to
+# keep the code here simpler and because the output of GenEnsProd for
+# forecast hours with missing observations will not be used anyway in
+# downstream verification tasks.
 #
 #-----------------------------------------------------------------------
 #
@@ -318,8 +325,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${VAR}"
-metplus_config_tmpl_fn="${MetplusToolName}_${metplus_config_tmpl_fn}"
+metplus_config_tmpl_fn="${MetplusToolName}"
 metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}"
 #
@@ -328,6 +334,16 @@ metplus_log_fn="${metplus_config_fn}"
 metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
 metplus_config_fn="${metplus_config_fn}.conf"
 metplus_log_fn="metplus.log.${metplus_log_fn}"
+#
+#-----------------------------------------------------------------------
+#
+# Load the yaml-like file containing the configuration for ensemble 
+# verification.
+#
+#-----------------------------------------------------------------------
+#
+python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens ens
+vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_ens_dict.split_fcst_obs.txt")
 #
 #-----------------------------------------------------------------------
 #
@@ -387,7 +403,11 @@ settings="\
   'obtype': '${OBTYPE}'
   'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
+  'metplus_templates_dir': '${METPLUS_CONF:-}'
+  'input_field_group': '${VAR:-}'
+  'input_level_fcst': '${FCST_LEVEL:-}'
+  'input_thresh_fcst': '${FCST_THRESH:-}'
+  'vx_config_dict': ${vx_config_dict:-}
 "
 
 # Render the template to create a METplus configuration file
@@ -396,24 +416,43 @@ cat > $tmpfile << EOF
 $settings
 EOF
 
-uw template render \
-  -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} \
-  -v \
-  --values-file "${tmpfile}"
-
-err=$?
+#uw template render \
+#  -i ${metplus_config_tmpl_fp} \
+#  -o ${metplus_config_fp} \
+#  -v \
+#  --values-file "${tmpfile}"
+#
+#err=$?
+#rm $tmpfile
+#if [ $err -ne 0 ]; then
+#  message_txt="Error rendering template for METplus config.
+#     Contents of input are:
+#$settings"
+#  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+#    err_exit "${message_txt}"
+#  else
+#    print_err_msg_exit "${message_txt}"
+#  fi
+#fi
+#
+# Call the python script to generate the METplus configuration file from
+# the jinja template.
+#
+python3 ${METPLUS_CONF}/templater.py \
+  -c "${tmpfile}" \
+  -i "${metplus_config_tmpl_fp}" \
+  -o "${metplus_config_fp}" || \
+print_err_msg_exit "\
+Call to workflow-tools templater.py to generate a METplus configuration
+file from a jinja template failed.  Parameters passed to this script are:
+  Full path to template METplus configuration file:
+    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
+  Full path to output METplus configuration file:
+    metplus_config_fp = \"${metplus_config_fp}\"
+  Full path to configuration file:
+    ${tmpfile}
+"
 rm $tmpfile
-if [ $err -ne 0 ]; then
-  message_txt="Error rendering template for METplus config.
-     Contents of input are:
-$settings"
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
-fi
 #
 #-----------------------------------------------------------------------
 #

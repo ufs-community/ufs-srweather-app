@@ -153,6 +153,9 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensprob"
 #-----------------------------------------------------------------------
 #
 # Set the array of forecast hours for which to run the MET/METplus tool.
+# This is done by starting with the full list of forecast hours for which
+# there is forecast output and then removing from that list any forecast
+# hours for which there is no corresponding observation data.
 #
 #-----------------------------------------------------------------------
 #
@@ -229,8 +232,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${VAR}"
-metplus_config_tmpl_fn="${MetplusToolName}_ensprob_${metplus_config_tmpl_fn}"
+metplus_config_tmpl_fn="${MetplusToolName}_ensprob"
 metplus_config_fn="${MetplusToolName}_ensprob_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}"
 #
@@ -239,6 +241,16 @@ metplus_log_fn="${metplus_config_fn}"
 metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
 metplus_config_fn="${metplus_config_fn}.conf"
 metplus_log_fn="metplus.log.${metplus_log_fn}"
+#
+#-----------------------------------------------------------------------
+#
+# Load the yaml-like file containing the configuration for ensemble 
+# verification.
+#
+#-----------------------------------------------------------------------
+#
+python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens ens
+vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_ens_dict.split_fcst_obs.txt")
 #
 #-----------------------------------------------------------------------
 #
@@ -298,7 +310,11 @@ settings="\
   'obtype': '${OBTYPE}'
   'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
+  'metplus_templates_dir': '${METPLUS_CONF:-}'
+  'input_field_group': '${VAR:-}'
+  'input_level_fcst': '${FCST_LEVEL:-}'
+  'input_thresh_fcst': '${FCST_THRESH:-}'
+  'vx_config_dict': ${vx_config_dict:-}
 "
 
 # Render the template to create a METplus configuration file
@@ -307,26 +323,43 @@ cat > $tmpfile << EOF
 $settings
 EOF
 
-uw template render \
-  -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} \
-  -v \
-  --values-file "${tmpfile}"
-
-err=$?
+#uw template render \
+#  -i ${metplus_config_tmpl_fp} \
+#  -o ${metplus_config_fp} \
+#  -v \
+#  --values-file "${tmpfile}"
+#
+#err=$?
+#rm $tmpfile
+#if [ $err -ne 0 ]; then
+#  message_txt="Error rendering template for METplus config.
+#     Contents of input are:
+#$settings"
+#  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+#    err_exit "${message_txt}"
+#  else
+#    print_err_msg_exit "${message_txt}"
+#  fi
+#fi
+#
+# Call the python script to generate the METplus configuration file from
+# the jinja template.
+#
+python3 ${METPLUS_CONF}/templater.py \
+  -c "${tmpfile}" \
+  -i "${metplus_config_tmpl_fp}" \
+  -o "${metplus_config_fp}" || \
+print_err_msg_exit "\
+Call to workflow-tools templater.py to generate a METplus configuration
+file from a jinja template failed.  Parameters passed to this script are:
+  Full path to template METplus configuration file:
+    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
+  Full path to output METplus configuration file:
+    metplus_config_fp = \"${metplus_config_fp}\"
+  Full path to configuration file:
+    ${tmpfile}
+"
 rm $tmpfile
-if [ $err -ne 0 ]; then
-  message_txt="Error rendering template for METplus config.
-     Contents of input are:
-$settings"
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
-fi
-
-
 #
 #-----------------------------------------------------------------------
 #

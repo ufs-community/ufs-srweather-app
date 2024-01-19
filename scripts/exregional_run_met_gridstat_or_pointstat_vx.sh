@@ -359,12 +359,13 @@ settings="\
   'input_thresh_fcst': '${FCST_THRESH:-}'
   'vx_config_dict': ${vx_config_dict:-}
 "
-## Render the template to create a METplus configuration file
+
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-#
+
 #uw template render \
 #  -i ${metplus_config_tmpl_fp} \
 #  -o ${metplus_config_fp} \
