@@ -71,6 +71,8 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
       VAR: ASNOW
       METPLUSTOOLNAME: 'GENENSPROD'
       OBTYPE: 'NOHRSC'
+      FCST_LEVEL: 'A#ACCUM_HH#'
+      FCST_THRESH: 'all'
     dependency:
       and:
         # The PcpCombine task for obs must be complete because this GenEnsProd
@@ -84,6 +86,7 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
     envars:
       <<: *envars_GenEnsProd_NOHRSC
       METPLUSTOOLNAME: 'ENSEMBLESTAT'
+      FCST_THRESH: 'none'
     dependency:
       and:
         taskdep:
@@ -207,6 +210,8 @@ metatask_GridStat_NOHRSC_ensmeanprob_all_accums:
         METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ACCUM_HH: '#ACCUM_HH#'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       dependency:
         taskdep:
           attrs:
