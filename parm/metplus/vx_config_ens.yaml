@@ -4,6 +4,9 @@ APCP:
         A3: ['gt0.0', 'ge0.508', 'ge2.54', 'ge6.350']
         A6: ['gt0.0', 'ge2.54', 'ge6.350', 'ge12.700']
         A24: ['gt0.0', 'ge6.350', 'ge12.700', 'ge25.400']
+ASNOW:
+    ASNOW:
+        A6: ['gt0.0', 'ge2.54', 'ge5.08', 'ge10.16', 'ge20.32']
 REFC:
     REFC|MergedReflectivityQCComposite:
         L0|Z500: ['ge20', 'ge30', 'ge40', 'ge50']
