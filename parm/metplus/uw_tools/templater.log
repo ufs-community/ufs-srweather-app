@@ -1,0 +1,14 @@
+Running set_template with args: 
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+        outfile: /scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_nep_nmep/expt_dirs/MET_ensemble_verification_only_vx/2019061500/metprd/EnsembleStat/EnsembleStat_RETOP.conf
+ input_template: /scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_nep_nmep/ufs-srweather-app/parm/metplus/EnsembleStat.conf
+    config_file: /scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_nep_nmep/expt_dirs/MET_ensemble_verification_only_vx/met_plus_settings.wZQlZD.yaml
+   config_items: []
+        dry_run: False
+  values_needed: False
+        verbose: False
+          quiet: False
+       log_file: /scratch2/BMC/det/Gerard.Ketefian/UFS_CAM/PR_nep_nmep/ufs-srweather-app/parm/metplus/uw_tools/templater.log
+----------------------------------------------------------------------
+----------------------------------------------------------------------

@@ -438,7 +438,7 @@ EOF
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
 #
-python3 ${METPLUS_CONF}/templater.py \
+python3 ${METPLUS_CONF}/uw_tools/templater.py \
   -c "${tmpfile}" \
   -i "${metplus_config_tmpl_fp}" \
   -o "${metplus_config_fp}" || \
