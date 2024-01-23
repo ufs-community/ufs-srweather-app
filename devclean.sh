@@ -135,7 +135,6 @@ elif [ "${CLEAN}" = true ]; then
     "${INSTALL_DIR}/include" \
     "${INSTALL_DIR}/lib" \
     "${INSTALL_DIR}/lib64" \
-    "${SRW_DIR}/manage_externals/manic" \
   )
   if [ ${#directories[@]} -ge 1 ]; then
     for dir in ${directories[@]}; do 
