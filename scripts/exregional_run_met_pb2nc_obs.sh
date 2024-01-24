@@ -276,9 +276,7 @@ settings="\
 
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
-cat > $tmpfile << EOF
-$settings
-EOF
+printf "%s" "$settings" > "$tmpfile"
 
 uw template render \
   -i ${metplus_config_tmpl_fp} \
