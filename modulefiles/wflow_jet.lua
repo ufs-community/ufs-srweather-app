@@ -6,8 +6,6 @@ the NOAA RDHPC machine Jet
 whatis([===[Loads libraries needed for running the UFS SRW App on Jet ]===])
 
 load("rocoto")
-unload("python")
-load("set_pythonpath")
 
 load("conda")
 
