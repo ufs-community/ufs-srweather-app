@@ -272,7 +272,6 @@ settings="\
   'obtype': '${OBTYPE}'
   'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 
 # Render the template to create a METplus configuration file

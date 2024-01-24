@@ -114,53 +114,6 @@ set_vx_params \
 #
 #-----------------------------------------------------------------------
 #
-# Set additional field-dependent verification parameters.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${grid_or_point}" = "grid" ]; then
-
-  case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
-    "APCP01h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge2.54"
-      ;;
-    "APCP03h")
-      FIELD_THRESHOLDS="gt0.0, ge0.508, ge2.54, ge6.350"
-      ;;
-    "APCP06h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge6.350, ge12.700"
-      ;;
-    "APCP24h")
-      FIELD_THRESHOLDS="gt0.0, ge6.350, ge12.700, ge25.400"
-      ;;
-    "ASNOW06h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "ASNOW24h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "REFC")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    "RETOP")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    *)
-      print_err_msg_exit "\
-Verification parameters have not been defined for this field
-(FIELDNAME_IN_MET_FILEDIR_NAMES):
-  FIELDNAME_IN_MET_FILEDIR_NAMES = \"${FIELDNAME_IN_MET_FILEDIR_NAMES}\""
-      ;;
-  esac
-
-elif [ "${grid_or_point}" = "point" ]; then
-
-  FIELD_THRESHOLDS=""
-
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set paths and file templates for input to and output from the MET/
 # METplus tool to be run as well as other file/directory parameters.
 #
