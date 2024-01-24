@@ -1,7 +1,6 @@
 --[[
 Compiler-specific modules are used for met and metplus libraries
 --]]
---load("build_derecho_intel")
 
 local met_ver = (os.getenv("met_ver") or "11.1.0")
 local metplus_ver = (os.getenv("metplus_ver") or "5.1.0")
@@ -25,5 +24,5 @@ if (mode() == "unload") then
   unload(pathJoin("metplus",metplus_ver))
 end
 load("ufs-pyenv")
---load("stack-python/3.10.8")
---load("python_srw")
+load("conda")
+setenv("SRW_ENV", "srw_app")
