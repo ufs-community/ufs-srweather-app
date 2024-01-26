@@ -68,13 +68,6 @@ In directory:     \"${scrfunc_dir}\"
 
 This is the J-job script for the task that runs POST-UPP-STAT.
 ========================================================================"
-#
-#-----------------------------------------------------------------------
-# Set the run directory.
-#-----------------------------------------------------------------------
-#
-#DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
-#
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.
@@ -83,11 +76,6 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 startmsg
 ${HOMEaqm}/scripts/exaqm_forecast_manager.sh
 export err=$?; err_chk
-#
-if [ "${KEEPDATA}" != "YES" ]; then
-   cd ${DATAROOT}
-   rm -rf $DATA
-fi
 # Print exit message
 print_info_msg "
 ========================================================================
