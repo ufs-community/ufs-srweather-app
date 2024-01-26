@@ -81,10 +81,10 @@ This is the J-job script for the task that runs POST-UPP-STAT.
 #-----------------------------------------------------------------------
 #
 startmsg
-${HOMEaqm}/scripts/exaqm_output.sh
+${HOMEaqm}/scripts/exaqm_forecast_manager.sh
 export err=$?; err_chk
 #
-if [ "${KEEPDATA}" = "FALSE" ]; then
+if [ "${KEEPDATA}" != "YES" ]; then
    cd ${DATAROOT}
    rm -rf $DATA
 fi

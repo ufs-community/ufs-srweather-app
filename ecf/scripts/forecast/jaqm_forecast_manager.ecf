@@ -1,4 +1,4 @@
-#PBS -N aqm_output_%CYC%
+#PBS -N aqm_forecast_manager_%CYC%
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
@@ -28,7 +28,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_OUTPUT
+${HOMEaqm}/jobs/JAQM_FORECAST_MANAGER
 
 %include <tail.h>
 

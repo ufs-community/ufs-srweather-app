@@ -15,7 +15,8 @@ export outid=${outid:-"LL$job"}
 . ${PARMaqm}/config/var_defns.sh
 . $USHaqm/source_util_funcs.sh
 
-export DATA=${DATA:-${DATAROOT}/${jobid}}
+export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${PDY}_${cyc}_${aqm_ver}
+export DATA=${DATA:-${umbrella_forecast_data}/${jobid}}
 mkdir -p ${DATA}
 cd ${DATA}
 
