@@ -204,7 +204,7 @@ fi
 #  Deleting DATA and shared RESTART/output directories 
 #-----------------------------------------------------------------------
 if [ "${KEEPDATA}" != "YES" ]; then
-   rm -rf ${DATA} ${shared_restart_data} ${shared_output_data}
+   rm -rf ${umbrella_forecast_data}
 fi
 #
 #-----------------------------------------------------------------------

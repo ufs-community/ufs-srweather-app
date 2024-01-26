@@ -450,7 +450,6 @@ fi
 #
 flag_fcst_restart="FALSE"
 coupler_res_ct=0
-# if [ -d ${COMOUT}/RESTART ]; then
 if [ -d ${umbrella_forecast_data}/RESTART ]; then
   set +eu
   coupler_res_ct=$(eval ls -A ${umbrella_forecast_data}/RESTART/*.coupler.res|wc -l)
@@ -488,7 +487,6 @@ for the current cycle's (cdate) run directory (DATA) failed:
 
     num_rst_files=0
     for file_id in "${file_ids[@]}"; do
-####      if [ -e "${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
       if [ -e "${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
         (( num_rst_files=num_rst_files+1 ))
       fi
@@ -505,7 +503,6 @@ for the current cycle's (cdate) run directory (DATA) failed:
     if [ -e "${file_id}" ]; then
       rm -f "${file_id}"
     fi
-####    target="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     target="${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
@@ -617,7 +614,6 @@ fi
 #-----------------------------------------------------------------------
 #
 shared_output_data=${umbrella_forecast_data}/output
-#### [[ -d ${shared_output_data} ]] && rm -rf ${shared_output_data}
 mkdir -p ${shared_output_data}
 fhr_ct=0
 fhr=0
@@ -635,7 +631,6 @@ while [ $fhr -le ${FCST_LEN_HRS} ]; do
   eval $NLN ${target_log} ${source_log}
   (( fhr=fhr+1 ))
 done
-#### eval cpreq ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN} ${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
 # make symbolic links to write forecast RESTART files directly to shared forecast RESTART location
@@ -643,7 +638,6 @@ done
 #-----------------------------------------------------------------------
 #
 shared_restart_data=${umbrella_forecast_data}/RESTART
-#### [[ -d ${shared_restart_data} ]] && rm -rf ${shared_restart_data}
 mkdir -p ${shared_restart_data}
 cd ${DATA}/RESTART
 file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
@@ -671,7 +665,6 @@ else
   done
 fi
 
-#### [[ "${flag_fcst_restart}" = "FALSE" ]] &&  ecflow_client --event release_manager
 ecflow_client --event release_manager
 cd ${DATA}
 #
