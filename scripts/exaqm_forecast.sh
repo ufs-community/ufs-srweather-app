@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -70,7 +70,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Load modules.
+# Checking fcst CMD.
 #
 #-----------------------------------------------------------------------
 #
@@ -450,11 +450,12 @@ fi
 #
 flag_fcst_restart="FALSE"
 coupler_res_ct=0
-if [ -d ${COMOUT}/RESTART ]; then
-  coupler_res_ct=$(eval ls -A ${COMOUT}/RESTART/*.coupler.res|wc -l)
+if [ -d ${umbrella_forecast_data}/RESTART ]; then
+  set +eu
+  coupler_res_ct=$(eval ls -A ${umbrella_forecast_data}/RESTART/*.coupler.res|wc -l)
 fi
 
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ]; then
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ] && [ $FCST_LEN_HRS -gt 6 ]; then
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
@@ -486,7 +487,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
 
     num_rst_files=0
     for file_id in "${file_ids[@]}"; do
-      if [ -e "${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
+      if [ -e "${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
         (( num_rst_files=num_rst_files+1 ))
       fi
     done
@@ -502,7 +503,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     if [ -e "${file_id}" ]; then
       rm -f "${file_id}"
     fi
-    target="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
+    target="${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
@@ -608,44 +609,63 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# make symbolic links to write forecast files directly in COMOUT
-#
+# make symbolic links to write forecast files directly in shared forecast output location
+#   $DATAROOT/$RUN_forecast_$PDY_$cyc_$aqm_ver/output
 #-----------------------------------------------------------------------
 #
-#fhr_ct=0
-#fhr=0
-#NLN=${NLN:-"/bin/ln -sf"}
+shared_output_data=${umbrella_forecast_data}/output
+mkdir -p ${shared_output_data}
+fhr_ct=0
+fhr=0
+NLN=${NLN:-"/bin/ln -sf"}
+while [ $fhr -le ${FCST_LEN_HRS} ]; do
+  fhr_ct=$(printf "%03d" $fhr)
+  source_dyn="dynf${fhr_ct}.nc"
+  source_phy="phyf${fhr_ct}.nc"
+  source_log="logf${fhr_ct}"
+  target_dyn="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+  target_phy="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+  target_log="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.logf${fhr_ct}"
+  eval $NLN ${target_dyn} ${source_dyn}
+  eval $NLN ${target_phy} ${source_phy}
+  eval $NLN ${target_log} ${source_log}
+  (( fhr=fhr+1 ))
+done
 #
 #-----------------------------------------------------------------------
-# make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
+# make symbolic links to write forecast RESTART files directly to shared forecast RESTART location
+#   $DATAROOT/$RUN_forecast_$PDY_$cyc_$aqm_ver/RESTART
 #-----------------------------------------------------------------------
 #
-#mkdir -p ${COMOUT}/RESTART
-#cd ${DATA}/RESTART
-#file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
-#num_file_ids=${#file_ids[*]}
-#read -a restart_hrs <<< "${RESTART_INTERVAL}"
-#num_restart_hrs=${#restart_hrs[*]}
+shared_restart_data=${umbrella_forecast_data}/RESTART
+mkdir -p ${shared_restart_data}
+cd ${DATA}/RESTART
+file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
+num_file_ids=${#file_ids[*]}
+read -a restart_hrs <<< "${RESTART_INTERVAL}"
+num_restart_hrs=${#restart_hrs[*]}
 # 06Z and 12Z
-#if [ $cyc = 06 -o $cyc = 12 ]; then
-#  # 06Z and 12Z
-#  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
-#    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
-#    rst_yyyymmdd="${cdate_restart_hr:0:8}"
-#    rst_hh="${cdate_restart_hr:8:2}"
-#    for file_id in "${file_ids[@]}"; do
-#      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
-#    done
-#  done
-#else
-#  # 00Z and 18Z
-#  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
-#  rst_yyyymmdd="${cdate_restart_hr:0:8}"
-#  rst_hh="${cdate_restart_hr:8:2}"
-#  for file_id in "${file_ids[@]}"; do
-#    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
-#  done
-#fi
+if [ $cyc = 06 -o $cyc = 12 ]; then
+  # 06Z and 12Z
+  for (( ih_rst=${num_restart_hrs}-1; ih_rst>=0; ih_rst-- )); do
+    cdate_restart_hr=`$NDATE +${restart_hrs[ih_rst]} ${PDY}${cyc}`
+    rst_yyyymmdd="${cdate_restart_hr:0:8}"
+    rst_hh="${cdate_restart_hr:8:2}"
+    for file_id in "${file_ids[@]}"; do
+      eval $NLN ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
+    done
+  done
+else
+  # 00Z and 18Z
+  cdate_restart_hr=`$NDATE +6 ${PDY}${cyc}`
+  rst_yyyymmdd="${cdate_restart_hr:0:8}"
+  rst_hh="${cdate_restart_hr:8:2}"
+  for file_id in "${file_ids[@]}"; do
+    eval $NLN ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
+  done
+fi
+
+ecflow_client --event release_manager
 cd ${DATA}
 #
 #-----------------------------------------------------------------------
@@ -664,6 +684,9 @@ export err=$?; err_chk
 if [ -e "$pgmout" ]; then
    cat $pgmout
 fi
+
+
+eval cp -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
 #
