@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 # pylint: disable=logging-fstring-interpolation
 """
-retrieve_data.py
-====================================
 This script helps users pull data from known data streams, including
 URLS and HPSS (only on supported NOAA platforms), or from user-supplied
 data locations on disk.
 
 Several supported data streams are included in
-parm/data_locations.yml, which provides locations and naming
+``parm/data_locations.yml``, which provides locations and naming
 conventions for files commonly used with the SRW App. Provide the file
-to this tool via the --config flag. Users are welcome to provide their
+to this tool via the ``--config`` flag. Users are welcome to provide their
 own file with alternative locations and naming conventions.
 
 When using this script to pull from disk, the user is required to
 provide the path to the data location, which can include Python
-templates. The file names follow those included in the --config file by
-default, or can be user-supplied via the --file_name flag. That flag
+templates. The file names follow those included in the ``--config`` file by
+default, or can be user-supplied via the ``--file_name`` flag. That flag
 takes a YAML-formatted string that follows the same conventions outlined
-in the parm/data_locations.yml file for naming files.
+in the ``parm/data_locations.yml`` file for naming files.
 
 To see usage for this script:
 
+  .. code-block::
+  
     python retrieve_data.py -h
 
-Also see the parse_args function below.
+Also see the ``parse_args`` function below.
 """
 
 import argparse
@@ -125,9 +125,9 @@ def download_file(url):
     on disk.
 
     Arguments:
-      url          url to file to be downloaded
+      url: url to file to be downloaded
 
-    Return:
+    Returns:
       boolean value reflecting state of download.
     """
 
@@ -185,20 +185,20 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     and return the resulting string.
 
     Arguments:
-      template_str    a string containing Python templates
-      cycle_date      a datetime object that will be used to fill in
+      template_str: a string containing Python templates
+      cycle_date: a datetime object that will be used to fill in
                       date and time information
-      templates_only  boolean value. When True, this function will only
+      templates_only: boolean value. When True, this function will only
                       return the templates available.
 
-    Keyword Args:
-      ens_group       a number associated with a bin where ensemble
+    Keyword Arguments:
+      ens_group: a number associated with a bin where ensemble
                       members are stored in archive files
-      fcst_hr         an integer forecast hour. string formatting should
+      fcst_hr: an integer forecast hour. string formatting should
                       be included in the template_str
-      mem             a single ensemble member. should be a positive integer value
+      mem: a single ensemble member. should be a positive integer value
 
-    Return:
+    Returns:
       filled template string
     """
  
@@ -298,14 +298,14 @@ def get_file_templates(cla, known_data_info, data_store, use_cla_tmpl=False):
 
     Arguments:
 
-       cla              command line arguments Namespace object
-       known_data_info  dict from data_locations yaml file
-       data_store       string corresponding to a key in the
+       cla: command line arguments Namespace object
+       known_data_info: dict from data_locations yaml file
+       data_store: string corresponding to a key in the
                         known_data_info dict
-       use_cla_tmpl     boolean on whether to check cla for templates
+       use_cla_tmpl: boolean on whether to check cla for templates
 
     Returns:
-       file_templates   a list of file templates
+       file_templates: a list of file templates
     """
 
     file_templates = known_data_info.get(data_store, {}).get("file_names")
@@ -345,18 +345,17 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
     writeable.
 
     Arguments:
+      cla: Namespace object containing command line arguments
+      file_templates: a list of file templates
+      input_locs: A string containing a single data location, either a url or disk path, or a list of paths/urls.
+      method: Choice of disk or download to indicate protocol for retrieval
 
-    cla            Namespace object containing command line arguments
-    file_templates a list of file templates
-    input_locs      A string containing a single data location, either a url or disk path, or a list of paths/urls.
-    method         Choice of disk or download to indicate protocol for retrieval
-
-    Keyword args:
-    members        a list integers corresponding to the ensemble members
-    check_all      boolean flag that indicates all urls should be checked for all files
+    Keyword Arguments:
+      members: a list integers corresponding to the ensemble members
+      check_all: boolean flag that indicates all urls should be checked for all files
 
     Returns:
-    unavailable  a list of locations/files that were unretrievable
+      unavailable  a list of locations/files that were unretrievable
     """
 
     members = kwargs.get("members", "")
@@ -447,8 +446,8 @@ def hsi_single_file(file_path, mode="ls"):
     whether the file_path was found.
 
     Arguments:
-        file_path    path on HPSS
-        mode         the hsi command to run. ls is default. may also
+        file_path: path on HPSS
+        mode: the hsi command to run. ls is default. may also
                      pass "get" to retrieve the file path
 
     """
