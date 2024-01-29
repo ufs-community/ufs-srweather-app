@@ -1,0 +1,25 @@
+.red { color: red; }
+.bolditalic {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.underline {
+   text-decoration: underline;
+}
+
+.bolditalic {
+   font-weight: bold;
+   font-style: italic;
+}
+
+table.align-default {
+   margin-left: 0px;
+   margin-right: auto;
+}
+
+table.align-center {
+   margin-left: 0px;
+   margin-right: auto;
+}
