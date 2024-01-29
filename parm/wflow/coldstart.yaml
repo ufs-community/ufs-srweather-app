@@ -14,7 +14,6 @@ default_task: &default_task
     ENSMEM_INDX: '#mem#'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nodes: '{{ nnodes }}:ppn={{ ppn }}'
-  nodesize: "&NCORES_PER_NODE;"
   partition: '{% if platform.get("PARTITION_DEFAULT") %}&PARTITION_DEFAULT;{% else %}None{% endif %}'
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
@@ -22,6 +21,9 @@ default_task: &default_task
 task_get_extrn_ics:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_ics" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
   envars:
     <<: *default_vars
     ICS_OR_LBCS: ICS
@@ -32,7 +34,7 @@ task_get_extrn_ics:
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   ppn: 1
   queue: '&QUEUE_HPSS;'
-  walltime: 00:45:00
+  walltime: 01:30:00
   dependency:
     or:
       and:
@@ -50,6 +52,9 @@ task_get_extrn_ics:
 task_get_extrn_lbcs:
   <<: *default_task
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_extrn_lbcs" "&JOBSdir;/JREGIONAL_GET_EXTRN_MDL_FILES"'
+  attrs:
+    cycledefs: forecast
+    maxtries: '2'
   envars:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
@@ -60,7 +65,7 @@ task_get_extrn_lbcs:
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   ppn: 1
   queue: '&QUEUE_HPSS;'
-  walltime: 00:45:00
+  walltime: 01:30:00
   dependency:
     or:
       and:
@@ -84,7 +89,6 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
     nnodes: 4
     ppn: 12
@@ -124,7 +128,6 @@ metatask_run_ensemble:
     envars:
       <<: *default_vars
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
-      NWGES_DIR: !cycstr '&NWGES_BASEDIR;/@Y@m@d@H'
       bcgrp: '00'
       bcgrpnum: '1'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
@@ -145,7 +148,6 @@ metatask_run_ensemble:
       SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
       nprocs:
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nodesize: '&NCORES_PER_NODE;'
     nnodes: '{{ task_run_fcst.NNODES_RUN_FCST // 1 }}'
     partition: '{% if platform.get("PARTITION_FCST") %}&PARTITION_FCST;{% else %}None{% endif %}'
     ppn: '{{ task_run_fcst.PPN_RUN_FCST // 1 }}'

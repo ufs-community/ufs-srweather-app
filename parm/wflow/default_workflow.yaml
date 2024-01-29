@@ -17,6 +17,7 @@ rocoto:
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
     NET: '{{ nco.NET_default }}'
+    NOHRSC_OBS_DIR: '{{ platform.NOHRSC_OBS_DIR }}'
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
     PARTITION_HPSS: '{{ platform.get("PARTITION_HPSS") }}'
@@ -30,8 +31,6 @@ rocoto:
     COLDSTART: '{{ workflow.COLDSTART }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
-    # rrfs
-    NWGES_BASEDIR: '{{ nco.NWGES_BASEDIR }}' 
   attrs:
     cyclethrottle: "200"
     realtime: "F"

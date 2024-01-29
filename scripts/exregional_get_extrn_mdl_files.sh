@@ -78,15 +78,7 @@ elif [ "${ICS_OR_LBCS}" = "LBCS" ]; then
     FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
   fi
   end_hr=$FCST_LEN_HRS
-  if [ $BOUNDARY_LEN_HRS -gt $end_hr ]; then
-     end_hr=$BOUNDARY_LEN_HRS
-  fi
-  # Download 0th hour lbcs if requested for it, mostly for DA
-  if [ ${NEED_ALL_LBCS} = "TRUE" ]; then
-    first_time=$((TIME_OFFSET_HRS))
-  else
-    first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
-  fi
+  first_time=$((TIME_OFFSET_HRS + LBC_SPEC_INTVL_HRS ))
   last_time=$((TIME_OFFSET_HRS + end_hr))
 
 
@@ -173,6 +165,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+
+mkdir -p ${EXTRN_MDL_STAGING_DIR}${mem_dir}
+
 if [ $RUN_ENVIR = "nco" ]; then
     EXTRN_DEFNS="${NET}.${cycle}.${EXTRN_MDL_NAME}.${ICS_OR_LBCS}.${EXTRN_MDL_VAR_DEFNS_FN}.sh"
 else

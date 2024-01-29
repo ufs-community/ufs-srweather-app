@@ -437,6 +437,18 @@ EOF
 fi
 
 #
+#----------------------------------------------------------------------
+#
+# NOAHMP table copied from CCPP physics directory into $DATA directory.
+# This is a temporary solution that will need to be changed once NOAHMP
+# is included as a submodule in the weather model.
+#
+#----------------------------------------------------------------------
+#
+
+cp_vrfy ${CCPP_PHYS_DIR}/noahmptable.tbl .
+
+#
 #-----------------------------------------------------------------------
 #
 # Choose namelist file to use
@@ -444,12 +456,12 @@ fi
 #-----------------------------------------------------------------------
 #
 STOCH="FALSE"
-if [ "${DO_ENSEMBLE}" = "TRUE" ] && ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
+if ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "TRUE" ] || \
    [ "${DO_SKEB}" = "TRUE" ] || [ "${DO_LSM_SPP}" =  "TRUE" ]); then
      STOCH="TRUE"
 fi
 if [ "${STOCH}" == "TRUE" ]; then
-  ln_vrfy -sf ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+  cp_vrfy ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
   ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
@@ -461,8 +473,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "$STOCH" == "TRUE" ]; then
-  cp_vrfy ${DATA}/${FV3_NML_FN} ${DATA}/${FV3_NML_FN}_base
+if ([ "$STOCH" == "TRUE" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]); then
   python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\

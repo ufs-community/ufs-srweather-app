@@ -1,5 +1,5 @@
-UFS Short-Range Weather App Documentation
-===========================================
+UFS Short-Range Weather (SRW) Application (|version|)
+======================================================
 
 .. toctree::
    :maxdepth: 3

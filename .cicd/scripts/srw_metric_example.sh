@@ -18,8 +18,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)
 # Get repository root from Jenkins WORKSPACE variable if set, otherwise, set
 # relative to script directory.
 declare workspace
-if [[ -n "${WORKSPACE}" ]]; then
-    workspace="${WORKSPACE}"
+if [[ -n "${WORKSPACE}/${SRW_PLATFORM}" ]]; then
+    workspace="${WORKSPACE}/${SRW_PLATFORM}"
 else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
 fi
@@ -35,7 +35,7 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/../expt_dirs/metric_test"
 we2e_test_dir="${workspace}/tests/WE2E"
-we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16"
+we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
 
 pwd
 
@@ -46,32 +46,33 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate regional_workflow
+conda activate workflow_tools
 set -e -u
 
 # build srw
-cd ${WORKSPACE}/tests
+cd ${workspace}/tests
 ./build.sh ${platform,,} ${SRW_COMPILER}
-cd ${WORKSPACE}
+cd ${workspace}
 
 # run test
 [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
-cd ${WORKSPACE}/tests/WE2E
+cd ${workspace}/tests/WE2E
 ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${SRW_PROJECT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
-cd ${WORKSPACE}
+cd ${workspace}
 
 # run skill-score check
-# first load MET env variables
-source ${we2e_experiment_base_dir}/${we2e_test_name}/var_defns.sh
 [[ ! -f Indy-Severe-Weather.tgz ]] && wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
 [[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
 [[ -f skill-score.out ]] && rm skill-score.out
 # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
 # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
-# In this example, skill score index is a weighted average of 16 skill scores of RMSE statistics for wind speed, dew point temperature, 
-# temperature, and pressure at lowest level in the atmosphere over 48 hour lead time.
-cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/mem000/metprd/PointStat/*.stat ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat/
-${MET_INSTALL_DIR}/${MET_BIN_EXEC}/stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${WORKSPACE}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
+# In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
+# temperature, and pressure at lowest level in the atmosphere over 6 hour lead time.
+cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
+# load met and metplus
+module use modulefiles/tasks/${platform,,}
+module load run_vx.local 
+stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
 # check skill-score.out
 cat skill-score.out

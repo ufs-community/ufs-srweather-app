@@ -113,8 +113,6 @@ for the workflow task specified by task_name failed:
   BUILD_MOD_FN = \"${BUILD_MOD_FN}\""
 fi
 
-module load set_pythonpath || print_err_msg_exit "\
-  Loading the module to set PYTHONPATH for workflow-tools failed."
 #
 #-----------------------------------------------------------------------
 #
@@ -172,11 +170,11 @@ specified task (task_name) failed:
   task_name = \"${task_name}\"
   modulefile_local = \"${modulefile_local}\"
   modules_dir = \"${modules_dir}\""
-elif [ -f ${modules_dir}/python_srw.lua ] ; then
+elif [ -f ${default_modules_dir}/python_srw.lua ] ; then
   module load python_srw || print_err_msg_exit "\
   Loading SRW common python module failed. Expected python_srw.lua
   in the modules directory here:
-  modules_dir = \"${modules_dir}\""
+  modules_dir = \"${default_modules_dir}\""
 fi
 
 module list
@@ -188,13 +186,8 @@ module list
 
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
+  conda deactivate
   conda activate ${SRW_ENV}
-  set -u
-fi
-
-if [ -n "${AQM_ENV:-}" ] ; then
-  set +u
-  source "${AQM_ENV_FP}/${AQM_ENV}/bin/activate"
   set -u
 fi
 

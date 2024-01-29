@@ -11,7 +11,6 @@ local HPCstack="/home/username/hpc-stack/install"
 -- Load HPC stack 
 prepend_path("MODULEPATH", pathJoin(HPCstack, "modulefiles/stack"))
 load("hpc")
-load("hpc-python")
 
 load("hpc-gnu")
 load("hpc-openmpi")

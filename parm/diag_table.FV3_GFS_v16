@@ -277,6 +277,8 @@
 "gfs_phys",    "nbdsf_ave",    "nbdsf_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "nddsf_ave",    "nddsf_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "trans_ave",    "trans_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
+# Reflectivity from GFDL microphysics
+"gfs_phys",    "refl_10cm",    "refl_10cm",     "fv3_history2d",  "all",  .false.,  "none",  2
 # Stochastic physics
 "gfs_phys",    "sppt_wts",      "sppt_wts",      "fv3_history",  "all", .false., "none", 2
 "gfs_phys",    "skebu_wts",     "skebu_wts",     "fv3_history",  "all", .false., "none", 2

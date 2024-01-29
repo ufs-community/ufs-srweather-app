@@ -5,8 +5,10 @@ metadata:
     LBCs will be derived.
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: hpss
 workflow:
-  CCPP_PHYS_SUITE: FV3_GFS_2017_gfdlmp
+  CCPP_PHYS_SUITE: FV3_GFS_v15p2
   PREDEF_GRID_NAME: RRFS_CONUS_25km
   DATE_FIRST_CYCL: '2019052000'
   DATE_LAST_CYCL: '2019052000'

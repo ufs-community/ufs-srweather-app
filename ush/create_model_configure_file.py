@@ -3,25 +3,23 @@
 Create a model_configure file for the FV3 forecast model from a
 template.
 """
+import argparse
 import os
 import sys
-import argparse
-from textwrap import dedent
 import tempfile
+from textwrap import dedent
+from subprocess import STDOUT, CalledProcessError, check_output
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict,
     import_vars,
+    load_shell_config,
+    lowercase,
+    print_info_msg,
     print_input_args,
     str_to_type,
-    print_info_msg,
-    lowercase,
-    cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
-
-# These come from ush/python_utils/workflow-tools
-from scripts.templater import set_template
 
 
 def create_model_configure_file(
@@ -135,6 +133,31 @@ def create_model_configure_file(
                 }
             )
     #
+    # If not using the write-component (aka quilting), set those variables
+    # needed for quilting to None so that it gets rendered in the template appropriately.
+    #
+    else:
+        settings.update(
+            {
+                "write_groups": None,
+                "write_tasks_per_group": None,
+                "cen_lon": None,
+                "cen_lat": None,
+                "lon1": None,
+                "lat1": None,
+                "stdlat1": None,
+                "stdlat2": None,
+                "nx": None,
+                "ny": None,
+                "dx": None,
+                "dy": None,
+                "lon2": None,
+                "lat2": None,
+                "dlon": None,
+                "dlat": None,
+            }
+        )
+    #
     # If sub_hourly_post is set to "TRUE", then the forecast model must be
     # directed to generate output files on a sub-hourly interval.  Do this
     # by specifying the output interval in the model configuration file
@@ -200,18 +223,26 @@ def create_model_configure_file(
                                      prefix="model_config_settings.") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        # set_template does its own error handling
-        set_template(
-            [
-                "-c",
-                tmpfile.name,
-                "-i",
-                MODEL_CONFIG_TMPL_FP,
-                "-o",
-                model_config_fp,
+        cmd = " ".join(["uw template render",
+            "-i", MODEL_CONFIG_TMPL_FP,
+            "-o", model_config_fp,
+            "-v",
+            "--values-file", tmpfile.name,
             ]
         )
-
+        indent = "  "
+        output = ""
+        try:
+            output = check_output(cmd, encoding="utf=8", shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            output = e.output
+            print(f"Failed with status: {e.returncode}")
+            sys.exit(1)
+        finally:
+            print("Output:")
+            for line in output.split("\n"):
+                print(f"{indent * 2}{line}")
     return True
 
 

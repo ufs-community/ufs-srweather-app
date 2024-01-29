@@ -1,0 +1,25 @@
+#! /bin/sh
+#PBS -A epic
+#PBS -j oe -o run_post.log
+#PBS -l select=2:mpiprocs=24:ncpus=24
+#PBS -q main
+#PBS -l walltime=00:15:00
+#PBS -N run_post
+
+#--- For this to work properly, make sure the location of your working directory is correct relative to the var_defns.sh file ---#
+export GLOBAL_VAR_DEFNS_FP=$PWD'/../var_defns.sh'
+export USHdir=`grep USHdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export JOBSdir=`grep JOBSdir $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2`
+export PDY=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c1-8`
+export cyc=`grep DATE_FIRST_CYCL $GLOBAL_VAR_DEFNS_FP | cut -d\' -f2 | cut -c9-10`
+export SLASH_ENSMEM_SUBDIR='/'
+export ENSMEM_INDX='000'
+export nprocs='48'
+
+num_fcst_hrs=${FCST_LEN_HRS}
+for (( i=0; i<=$((num_fcst_hrs)); i++ )); do
+  export fhr=`printf "%03i" ${i}`
+$USHdir/load_modules_run_task.sh "run_post" $JOBSdir/JREGIONAL_RUN_POST
+done
+
+# for Cheyenne replace main with regular

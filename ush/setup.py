@@ -33,6 +33,8 @@ from python_utils import (
     get_ini_value,
     str_to_list,
     extend_yaml,
+    has_tag_with_value,
+    load_xml_file,
 )
 
 from set_cycle_dates import set_cycle_dates
@@ -41,8 +43,6 @@ from set_ozone_param import set_ozone_param
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
-from check_ruc_lsm import check_ruc_lsm
-from set_thompson_mp_fix_files import set_thompson_mp_fix_files
 
 def load_config_for_setup(ushdir, default_config, user_config):
     """Load in the default, machine, and user configuration files into
@@ -238,7 +238,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
-        "EXPT_SUBDIR",
         "NCORES_PER_NODE",
         "FIXgsm",
         "FIXaer",
@@ -551,18 +550,25 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     vx_metatasks_all = {}
 
     vx_fields_all["CCPA"] = ["APCP"]
-    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs", 
-                                "metatask_PcpCombine_fcst_all_accums_all_mems", 
+    vx_metatasks_all["CCPA"] = ["metatask_PcpCombine_obs",
+                                "metatask_PcpCombine_fcst_APCP_all_accums_all_mems",
                                 "metatask_GridStat_CCPA_all_accums_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_CCPA",
                                 "metatask_GridStat_CCPA_ensmeanprob_all_accums"]
+
+    vx_fields_all["NOHRSC"] = ["ASNOW"]
+    vx_metatasks_all["NOHRSC"] = ["task_get_obs_nohrsc",
+                                "metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems",
+                                "metatask_GridStat_NOHRSC_all_accums_all_mems",
+                                "metatask_GenEnsProd_EnsembleStat_NOHRSC",
+                                "metatask_GridStat_NOHRSC_ensmeanprob_all_accums"]
 
     vx_fields_all["MRMS"] = ["REFC", "RETOP"]
     vx_metatasks_all["MRMS"] = ["metatask_GridStat_MRMS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_MRMS",
                                 "metatask_GridStat_MRMS_ensprob"]
 
-    vx_fields_all["NDAS"] = ["SFC", "UPA"]
+    vx_fields_all["NDAS"] = ["ADPSFC", "ADPUPA"]
     vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
                                 "metatask_PointStat_NDAS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",
@@ -735,7 +741,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 else:
                     fcst_config[param] = value
             elif param.startswith("WRTCMP"):
-                fcst_config[param] = value
+                if fcst_config.get(param) == "":
+                    fcst_config[param] = value
             elif param == "GRID_GEN_METHOD":
                 workflow_config[param] = value
             else:
@@ -1483,72 +1490,47 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                 f"""
                 SUB_HOURLY_POST is NOT available with Inline Post yet."""
             )
+
     #
     # -----------------------------------------------------------------------
     #
-    # Call the function that checks whether the RUC land surface model (LSM)
-    # is being called by the physics suite and sets the workflow variable
-    # SDF_USES_RUC_LSM to True or False accordingly.
-    #
-    # -----------------------------------------------------------------------
-    #
-    workflow_config["SDF_USES_RUC_LSM"] = check_ruc_lsm(
-        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp
-    )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Check if the Thompson microphysics parameterization is being
-    # called by the physics suite and modify certain workflow arrays to
-    # ensure that fixed files needed by this parameterization are copied
-    # to the FIXam directory and appropriate symlinks to them are
-    # created in the run directories. Set the boolean flag
-    # SDF_USES_THOMPSON_MP to indicates whether Thompson MP is called by
-    # the physics suite.
+    # Read CCPP suite definition file and perform actions based on its
+    # contents as necessary
     #
     # -----------------------------------------------------------------------
     #
 
-    link_thompson_climo = (
-        get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"]
-    ) or (get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"])
-    use_thompson, mapping, fix_files = set_thompson_mp_fix_files(
-        ccpp_phys_suite_fp=ccpp_phys_suite_in_ccpp_fp,
-        thompson_mp_climo_fn=workflow_config["THOMPSON_MP_CLIMO_FN"],
-        link_thompson_climo=link_thompson_climo,
-    )
+    ccpp_suite_xml = load_xml_file(workflow_config["CCPP_PHYS_SUITE_IN_CCPP_FP"])
 
-    workflow_config["SDF_USES_THOMPSON_MP"] = use_thompson
+    # Need to track if we are using RUC LSM for the make_ics step
+    workflow_config["SDF_USES_RUC_LSM"] = has_tag_with_value(ccpp_suite_xml, "scheme", "lsm_ruc")
 
-    if use_thompson:
-        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].extend(mapping)
-        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fix_files)
+    # Thompson microphysics needs additional input files and namelist settings
+    workflow_config["SDF_USES_THOMPSON_MP"] = has_tag_with_value(ccpp_suite_xml, "scheme", "mp_thompson")
 
-        log_info(
-            f"""
-            Since the Thompson microphysics parameterization is being used by this
-            physics suite (CCPP_PHYS_SUITE), the names of the fixed files needed by
-            this scheme have been appended to the array FIXgsm_FILES_TO_COPY_TO_FIXam,
-            and the mappings between these files and the symlinks that need to be
-            created in the cycle directories have been appended to the array
-            CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING.  After these modifications, the
-            values of these parameters are as follows:
+    if workflow_config["SDF_USES_THOMPSON_MP"]:
+    
+        logging.debug(f'Selected CCPP suite ({workflow_config["CCPP_PHYS_SUITE"]}) uses Thompson MP')
+        logging.debug(f'Setting up links for additional fix files')
 
-            CCPP_PHYS_SUITE = \"{workflow_config["CCPP_PHYS_SUITE"]}\"
-            """
-        )
-        log_info(
-            f"""
-                FIXgsm_FILES_TO_COPY_TO_FIXam =
-                {list_to_str(fixed_files['FIXgsm_FILES_TO_COPY_TO_FIXam'])}
-            """
-        )
-        log_info(
-            f"""
-                CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING =
-                {list_to_str(fixed_files['CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING'])}
-            """
-        )
+        # If the model ICs or BCs are not from RAP or HRRR, they will not contain aerosol
+        # climatology data needed by the Thompson scheme, so we need to provide a separate file
+        if (get_extrn_ics["EXTRN_MDL_NAME_ICS"] not in ["HRRR", "RAP"] or
+           get_extrn_lbcs["EXTRN_MDL_NAME_LBCS"] not in ["HRRR", "RAP"]):
+            fixed_files["THOMPSON_FIX_FILES"].append(workflow_config["THOMPSON_MP_CLIMO_FN"])
+
+        # Add thompson-specific fix files to CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING and
+        # FIXgsm_FILES_TO_COPY_TO_FIXam; see parm/fixed_files_mapping.yaml for more info on these variables
+
+        fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"].extend(fixed_files["THOMPSON_FIX_FILES"])
+
+        for fix_file in fixed_files["THOMPSON_FIX_FILES"]:
+            fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"].append(f"{fix_file} | {fix_file}")
+
+        logging.debug(f'New fix file list:\n{fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"]=}')
+        logging.debug(f'New fix file mapping:\n{fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"]=}')
+
+
     #
     # -----------------------------------------------------------------------
     #
@@ -1630,7 +1612,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     return expt_config
 
 def clean_rocoto_dict(rocotodict):
-    """Removes any invalid entries from rocoto_dict. Examples of invalid entries are:
+    """Removes any invalid entries from rocotodict. Examples of invalid entries are:
 
     1. A task dictionary containing no "command" key
     2. A metatask dictionary containing no task dictionaries"""

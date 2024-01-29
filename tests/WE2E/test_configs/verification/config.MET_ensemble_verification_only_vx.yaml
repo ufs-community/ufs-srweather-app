@@ -1,12 +1,15 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    can successfully run the MET ensemble verification tasks but using
+    can successfully run the MET ensemble verification tasks using
     staged observation and forecast files (i.e. with other tasks such as
     pre-processing, forecast, and post-processing deactivated).
 
 user:
   RUN_ENVIR: community
+
+nco:
+  NET_default: rrfs
 
 workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_25km
@@ -18,9 +21,6 @@ workflow:
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml"]|include }}'
-    task_get_obs_ccpa:
-    task_get_obs_mrms:
-    task_get_obs_ndas:
 
 global:
   DO_ENSEMBLE: true

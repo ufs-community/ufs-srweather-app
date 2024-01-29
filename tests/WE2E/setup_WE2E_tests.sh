@@ -45,7 +45,7 @@ function usage {
 
 }
 
-machines=( hera jet cheyenne orion wcoss2 gaea odin singularity macos noaacloud )
+machines=( hera jet cheyenne derecho orion wcoss2 gaea gaea-c5 odin singularity macos noaacloud )
 
 if [ "$1" = "-h" ] ; then usage ; fi
 [[ $# -le 2 ]] && usage
@@ -65,9 +65,6 @@ if [[ "$*" != *"debug"* ]]; then
 fi
 if [[ "$*" != *"verbose"* ]]; then
    opts="${opts} --verbose"
-fi
-if [[ "$*" != *"cron_relaunch_intvl_mnts"* ]]; then
-   opts="${opts} --cron_relaunch_intvl_mnts=4"
 fi
 if [[ "$*" != *"exec_subdir"* ]]; then
    opts="${opts} --exec_subdir=install_${compiler}/exec"

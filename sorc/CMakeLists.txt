@@ -4,14 +4,10 @@ include(ExternalProject)
 option(BUILD_UFS "Build UFS weather model" ON)
 option(BUILD_UFS_UTILS "Build UFS utilities" ON)
 option(BUILD_UPP "Build UPP" ON)
-option(BUILD_GSI "Build GSI" OFF)
-option(BUILD_RRFS_UTILS "Build RRFS utilities" OFF)
 
 message(STATUS "BUILD_UFS ............... ${BUILD_UFS}")
 message(STATUS "BUILD_UFS_UTILS ......... ${BUILD_UFS_UTILS}")
-message(STATUS "BUILD_GSI ............... ${BUILD_GSI}")
 message(STATUS "BUILD_UPP ............... ${BUILD_UPP}")
-message(STATUS "BUILD_RRFS_UTILS ........ ${BUILD_RRFS_UTILS}")
 message(STATUS "BUILD_NEXUS ............. ${BUILD_NEXUS}")
 message(STATUS "BUILD_AQM_UTILS ......... ${BUILD_AQM_UTILS}")
 
@@ -34,7 +30,7 @@ if (BUILD_UFS)
     if(CPL_AQM)
       set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8")
     else()
-      set(CCPP_SUITES "FV3_GFS_2017_gfdlmp,FV3_GFS_2017_gfdlmp_regional,FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_RAP,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
+      set(CCPP_SUITES "FV3_GFS_v15p2,FV3_GFS_v16,FV3_GFS_v17_p8,FV3_RRFS_v1beta,FV3_HRRR,FV3_RAP,FV3_GFS_v15_thompson_mynn_lam3km,FV3_WoFS_v0")
     endif()
   endif()
   
@@ -123,35 +119,6 @@ if (BUILD_UPP)
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -Dexec_dir=${CMAKE_INSTALL_BINDIR}
     BUILD_ALWAYS TRUE
     STEP_TARGETS build
-    )
-endif()
-
-# Build GSI
-if (BUILD_GSI)
-  list(APPEND TARGET_LIST GSI)
-
-  ExternalProject_Add(GSI
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/GSI
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gsi
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR} -DGSI_MODE=Regional -DENKF_MODE=FV3REG
-    BUILD_ALWAYS TRUE
-    STEP_TARGETS build
-    )
-endif()
-
-# Build rrfs_utl
-if (BUILD_RRFS_UTILS)
-  list(APPEND TARGET_LIST RRFS_UTILS)
-
-  ExternalProject_Add(RRFS_UTILS
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rrfs_utl
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rrfs_utl
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_INSTALL_BINDIR=${CMAKE_INSTALL_BINDIR}
-    BUILD_ALWAYS TRUE
-    STEP_TARGETS build
-    DEPENDS GSI
     )
 endif()
 

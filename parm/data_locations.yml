@@ -295,29 +295,30 @@ UFS-CASE-STUDY:
 ##########################
 ##########################
 
-GFS_obs:
+CCPA_obs:
   hpss:
     protocol: htar
-    archive_format: zip
+    archive_format: tar
     archive_path:
-      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/gfs/prepbufr
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_internal_dir:
+      - "./00"
+      - "./06"
+      - "./12"
+      - "./18"
     archive_file_names:
-      prepbufr:
-        obs:
-          - "{yyyymmdd}0000.zip"
-      tcvitals:
-        obs: 
-          - "{yyyymmdd}0000.zip"
+      - "com2_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "gpfs_dell1_nco_ops_com_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "com_ccpa_prod_ccpa.{yyyy}{mm}{dd}.tar"
+      - "com_ccpa_v4.2_ccpa.{yyyy}{mm}{dd}.tar"
     file_names:
-      prepbufr:
-        obs:
-          - "{yy}{jjj}{hh}00.gfs.t{hh}z.prepbufr.nr"
-      tcvitals:
-        obs:
-          - "{yy}{jjj}{hh}00.gfs.t{hh}z.syndata.tcvitals.tm00"
+      obs:
+        - "ccpa.t{hh}z.01h.hrap.conus.gb2"
 
-NSSL_mrms:
-
+MRMS_obs:
   hpss:
     protocol: htar
     archive_format: tar
@@ -327,7 +328,10 @@ NSSL_mrms:
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
       - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyymm}/{yyyymmdd}
     archive_internal_dir:
-      - ./upperair/mrms/conus/MergedReflectivityQC
+      - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/MergedReflectivityQCComposite
+      - /dcom/us007003/ldmdata/obs/upperair/mrms/conus/EchoTop
+      - ./upperair/mrms/conus/MergedReflectivityQCComposite
+      - ./upperair/mrms/conus/EchoTop
     archive_file_names:
       - dcom_ldmdata_obs.tar
       - dcom_prod_ldmdata_obs.tar
@@ -335,106 +339,39 @@ NSSL_mrms:
       - ldmdata.gyre.{yyyymmdd}.tar
     file_names:
       obs:
-        - "*MergedReflectivityQC_*_{yyyymmdd}-{hh}{min}*.grib2*"
+        - "MergedReflectivityQCComposite_00.50_{yyyymmdd}-*.grib2.gz"
+        - "EchoTop_18_00.50_{yyyymmdd}-*.grib2.gz"
 
-
-RAP_obs:
+NDAS_obs:
   hpss:
     protocol: htar
-    archive_format: zip
+    archive_format: tar
     archive_path:
-      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/obs
-      - /BMC/fdr/Permanent/{yyyy}/{mm}/{dd}/data/grids/rap/prepbufr
-    archive_internal_dir:
-      - ""
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
     archive_file_names:
-      - "{yyyymmddhh}00.zip"
-      - "{yyyymmddhh}00.zip"
+      - "com2_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "gpfs_dell1_nco_ops_com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_nam_prod_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
+      - "com_obsproc_v1.1_nam.{yyyy}{mm}{dd}{hh}.bufr.tar"
     file_names:
       obs:
-        - "{yyyymmddhh}.rap.t{hh}z.prepbufr.tm00"
-        - "{yyyymmddhh}.rap.t{hh}z.1bamua.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.1bhrs4.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.1bmhs.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.amsr2.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ascatt.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ascatw.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.atms.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.atmsdb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.crisf4.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.crsfdb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esamua.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esatms.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.eshrs3.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esiasi.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.esmhs.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gpsipw.tm00.bufr_d.nr"
-        - "{yyyymmddhh}.rap.t{hh}z.gsrasr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.gsrcsr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.iasidb.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.lghtng.tm00.bufr_d.nr"
-        - "{yyyymmddhh}.rap.t{hh}z.lgycld.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.mtiasi.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.nexrad.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.rassda.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.satwnd.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.sevasr.tm00.bufr_d"
-        - "{yyyymmddhh}.rap.t{hh}z.ssmisu.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.prepbufr.tm00"
-        - "{yyyymmddhh}.rap_e.t{hh}z.1bamua.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.1bhrs4.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.1bmhs.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.lgycld.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.nexrad.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.satwnd.tm00.bufr_d"
-        - "{yyyymmddhh}.rap_e.t{hh}z.lghtng.tm00.bufr_d"
-  aws:
-    protocol: download
-    url: https://noaa-rap-pds.s3.amazonaws.com/rap.{yyyymmdd}
-    file_names:
-      obs: 
-        - rap.t{hh}z.prepbufr.tm00.nr
-        - rap.t{hh}z.1bamua.tm00.bufr_d
-        - rap.t{hh}z.1bhrs4.tm00.bufr_d
-        - rap.t{hh}z.1bmhs.tm00.bufr_d
-        - rap.t{hh}z.amsr2.tm00.bufr_d
-        - rap.t{hh}z.ascatt.tm00.bufr_d
-        - rap.t{hh}z.ascatw.tm00.bufr_d
-        - rap.t{hh}z.atms.tm00.bufr_d
-        - rap.t{hh}z.atmsdb.tm00.bufr_d
-        - rap.t{hh}z.crisf4.tm00.bufr_d
-        - rap.t{hh}z.crsfdb.tm00.bufr_d
-        - rap.t{hh}z.esamua.tm00.bufr_d
-        - rap.t{hh}z.esatms.tm00.bufr_d
-        - rap.t{hh}z.eshrs3.tm00.bufr_d
-        - rap.t{hh}z.esiasi.tm00.bufr_d
-        - rap.t{hh}z.esmhs.tm00.bufr_d
-        - rap.t{hh}z.gpsipw.tm00.bufr_d
-        - rap.t{hh}z.gpsipw.tm00.bufr_d.nr
-        - rap.t{hh}z.gsrasr.tm00.bufr_d
-        - rap.t{hh}z.gsrcsr.tm00.bufr_d
-        - rap.t{hh}z.iasidb.tm00.bufr_d
-        - rap.t{hh}z.lghtng.tm00.bufr_d
-        - rap.t{hh}z.lghtng.tm00.bufr_d.nr
-        - rap.t{hh}z.lgycld.tm00.bufr_d
-        - rap.t{hh}z.mtiasi.tm00.bufr_d
-        - rap.t{hh}z.nexrad.tm00.bufr_d
-        - rap.t{hh}z.rassda.tm00.bufr_d
-        - rap.t{hh}z.satwnd.tm00.bufr_d
-        - rap.t{hh}z.sevasr.tm00.bufr_d
-        - rap.t{hh}z.ssmisu.tm00.bufr_d
+        - "./nam.t{hh}z.prepbufr.tm*.nr"
 
-###########################
-###########################
-####### Fix Files #########
-###########################
-###########################
-
-GSI-FIX:
-  remote:
-    protocol: download
-    url: https://epic-sandbox-srw.s3.amazonaws.com
+NOHRSC_obs:
+  hpss:
+    protocol: htar
+    archive_format: tar
+    archive_path:
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+      - /NCEPPROD/hpssprod/runhistory/rh{yyyy}/{yyyy}{mm}/{yyyy}{mm}{dd}
+    archive_file_names:
+      - "dcom_prod_{yyyy}{mm}{dd}.tar"
+      - "dcom_{yyyy}{mm}{dd}.tar"
     file_names:
-      - gsi-fix.22.07.27.tar.gz
+      obs:
+        - "sfav2_CONUS_*h_{yyyy}{mm}{dd}{hh}_grid184.grb2"
+    archive_internal_dir:
+      - ./wgrbbul/nohrsc_snowfall/
