@@ -146,7 +146,7 @@ def setup(app):
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'UFS-SR-Weather-App'
+htmlhelp_basename = 'UFS-SRWeather-App'
 
 
 # -- Options for LaTeX output ------------------------------------------------

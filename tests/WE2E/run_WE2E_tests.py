@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=logging-fstring-interpolation
 
 """
 run_WE2E_tests.py
@@ -6,7 +7,6 @@ run_WE2E_tests.py
 Runs the user's WE2E tests.
 """
 
-# pylint: disable=logging-fstring-interpolation
 import os
 import sys
 import glob
