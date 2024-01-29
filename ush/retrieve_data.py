@@ -348,12 +348,15 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
 
     cla            Namespace object containing command line arguments
     file_templates a list of file templates
-    input_locs      A string containing a single data location, either a url or disk path, or a list of paths/urls.
-    method         Choice of disk or download to indicate protocol for retrieval
+    input_locs      A string containing a single data location, either a url
+                   or disk path, or a list of paths/urls.
+    method         Choice of disk or download to indicate protocol for
+                   retrieval
 
     Keyword args:
     members        a list integers corresponding to the ensemble members
-    check_all      boolean flag that indicates all urls should be checked for all files
+    check_all      boolean flag that indicates all urls should be
+                   checked for all files
 
     Returns:
     unavailable  a list of locations/files that were unretrievable
@@ -661,8 +664,10 @@ def pair_locs_with_files(input_locs, file_templates, check_all):
 
     The different possibilities:
     1. Get one or more files from a single path/url
-    2. Get multiple files from multiple corresponding paths/urls
-    3. Check all paths for all file templates until files are found
+    2. Get multiple files from multiple corresponding
+       paths/urls
+    3. Check all paths for all file templates until files are
+       found
 
     The default will be to handle #1 and #2. #3 will be
     indicated by a flag in the yaml: "check_all: True"
