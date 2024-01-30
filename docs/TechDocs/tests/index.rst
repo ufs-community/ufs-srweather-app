@@ -2,6 +2,6 @@
 =======================================
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 3
    
    WE2E/index

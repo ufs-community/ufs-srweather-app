@@ -1,11 +1,8 @@
 ``WE2E``
 =========
 
-.. automodule:: tests.WE2E
-    :members:
-
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 3
 
    WE2E_summary
    monitor_jobs

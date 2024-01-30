@@ -2,7 +2,7 @@ Technical Documentation
 =======================================
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 3
    
    tests/index
    ush/index
