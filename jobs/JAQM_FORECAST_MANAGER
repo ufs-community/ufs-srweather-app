@@ -16,9 +16,7 @@ export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p ${DATA}
 cd ${DATA}
 
-$USHaqm/aqm_nco_config.sh
-
-. ${DATA}/var_defns.sh
+. $USHaqm/aqm_nco_config.sh
 
 . $USHaqm/source_util_funcs.sh
 
