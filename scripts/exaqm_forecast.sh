@@ -105,6 +105,9 @@ Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
 # Create links to fix files in the FIXlam directory.
+cd $DATA
+ln -s $FIXaqm  .
+
 cd ${DATA}/INPUT
 
 #

@@ -91,12 +91,7 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
         fi
         output_fhr_ending=$((${restart_hrs[$restart_interval_group_ct]}))
         fhr_ct=0
-        ## fhr=0
         fhr=$output_fhr_begin
-        # copy RESTART files
-        for file_id_source in "${file_ids[@]}"; do
-          eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id_source} ${COMOUT}/RESTART
-        done
         # copy forecast output
         while [ $fhr -le ${output_fhr_ending} ]; do
           fhr_ct=$(printf "%03d" $fhr)
@@ -139,6 +134,10 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
             fi
           done
         fi
+        # copy RESTART files
+        for file_id_source in "${file_ids[@]}"; do
+          eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id_source} ${COMOUT}/RESTART
+        done
         ecflow_client --event restart_gp${restart_group}_rdy
       else
         # Only wait if restart is not already found
@@ -168,12 +167,7 @@ else
       fi
     fi
     if [ $proceed_copy = "YES" ]; then
-      #### copy forecast restart
       [ ! -d ${COMOUT}/RESTART ] && mkdir -p ${COMOUT}/RESTART
-      for file_id in "${file_ids[@]}"; do
-        eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${COMOUT}/RESTART
-      done
-      ecflow_client --alter change event restart_gp${restart_group}_rdy set ${ECF_NAME}
       #### copy forecast output
       fhr_ct=0
       fhr=0
@@ -188,6 +182,11 @@ else
         ecflow_client --alter change event ${fhr_ct}_rdy set ${ECF_NAME}
         (( fhr=fhr+1 ))
       done
+      #### copy forecast restart
+      for file_id in "${file_ids[@]}"; do
+        eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${COMOUT}/RESTART
+      done
+      ecflow_client --alter change event restart_gp${restart_group}_rdy set ${ECF_NAME}
     else
       sleep 60
       (( icnt=icnt+1 ))
