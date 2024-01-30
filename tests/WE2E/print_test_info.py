@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+Script for parsing all test files in the test_configs directory and printing a pipe-delimited summary file of the details of each test.
+The script calls utils.print_test_info().
+"""
+
 import argparse
 import sys
 

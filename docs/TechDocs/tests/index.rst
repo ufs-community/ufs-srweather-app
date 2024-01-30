@@ -1,8 +1,7 @@
-Technical Documentation
+``tests``
 =======================================
 
 .. toctree::
    :maxdepth: 6
    
-   tests/index
-   ush/index
+   WE2E/index

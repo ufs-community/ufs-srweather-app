@@ -16,7 +16,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'UFS Short-Range Weather App User\'s Guide'
@@ -56,7 +55,8 @@ extensions = [
 
 # Autodoc configuration:
 autodoc_mock_imports = ["python_utils", "setup", "set_FV3nml_sfc_climo_filenames", 
-   "get_crontab_contents", "fill_jinja_template", "set_namelist", "check_python_version"]
+   "get_crontab_contents", "fill_jinja_template", "set_namelist", "check_python_version", "utils", 
+   "calculate_cost", "generate_FV3LAM_wflow", "monitor_jobs"]
 
 
 bibtex_bibfiles = ['references.bib']

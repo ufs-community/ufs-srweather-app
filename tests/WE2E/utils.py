@@ -218,7 +218,8 @@ def update_expt_status(expt: dict, name: str, refresh: bool = False, debug: bool
     into a useful "status" for the whole experiment, and returns the updated experiment dictionary.
 
     Experiment "status" levels explained:
-    CREATED: The experiments have been created, but the monitor script has not yet processed them.
+
+    CREATED: The experiments have been created, but the monitor script has not yet processed them. 
              This is immediately overwritten at the beginning of the "monitor_jobs" function, so we
              should never see this status in this function. Including just for completeness sake.
     SUBMITTING: All jobs are in status SUBMITTING or SUCCEEDED. This is a normal state; we will
