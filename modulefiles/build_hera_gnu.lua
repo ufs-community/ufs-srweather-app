@@ -10,7 +10,6 @@ prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulef
 
 load("stack-gcc/9.2.0")
 load("stack-openmpi/4.1.5")
-load("stack-python/3.9.12")
 load("cmake/3.23.1")
 
 load("srw_common")
@@ -18,7 +17,6 @@ load("srw_common")
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
 load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 load(pathJoin("openblas", os.getenv("openblas_ver") or "0.3.19"))
-load("ufs-pyenv")
 
 setenv("CMAKE_C_COMPILER","mpicc")
 setenv("CMAKE_CXX_COMPILER","mpicxx")

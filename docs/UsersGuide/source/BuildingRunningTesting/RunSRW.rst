@@ -34,7 +34,7 @@ The overall procedure for generating an experiment is shown in :numref:`Figure %
 
 .. _AppOverallProc:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_run_process.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_run_process.png
    :alt: Flowchart describing the SRW App workflow steps. 
 
    *Overall Layout of the SRW App Workflow*
@@ -47,52 +47,62 @@ Download and Stage the Data
 The SRW App requires input files to run. These include static datasets, initial and boundary conditions files, and model configuration files. On Level 1 systems, the data required to run SRW App tests are already available in the following locations: 
 
 .. _DataLocations:
-.. table:: Data Locations for Level 1 Systems
+.. list-table:: Data Locations for Level 1 Systems
+   :widths: 20 50
+   :header-rows: 1
 
-   +--------------+------------------------------------------------------------------------------+
-   | Machine      | File location                                                                |
-   +==============+==============================================================================+
-   | Cheyenne     | /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/         |
-   +--------------+------------------------------------------------------------------------------+
-   | Gaea         | /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | Hera         | /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | Jet          | /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/input_model_data/      |
-   +--------------+------------------------------------------------------------------------------+
-   | NOAA Cloud   | /contrib/EPIC/UFS_SRW_data/develop/input_model_data/                         |
-   +--------------+------------------------------------------------------------------------------+
-   | Orion        | /work/noaa/epic-ps/role-epic-ps/UFS_SRW_data/develop/input_model_data/       |
-   +--------------+------------------------------------------------------------------------------+
-   | WCOSS2       | /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/                |
-   +--------------+------------------------------------------------------------------------------+ 
-    
-For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s <Input>` and :numref:`%s <OutputFiles>` contain useful background information on the input and output files used in the SRW App. 
+   * - Machine
+     - File location
+   * - Derecho
+     - /glade/work/epicufsrt/contrib/UFS_SRW_data/|data|/input_model_data
+   * - Gaea (C3/C4/C5)
+     - /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Hera
+     - /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/|data|/input_model_data/
+   * - Hercules
+     - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - Jet
+     - /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/|data|/input_model_data/
+   * - NOAA Cloud
+     - /contrib/EPIC/UFS_SRW_data/|data|/input_model_data/
+   * - Orion
+     - /work/noaa/epic/role-epic/contrib/UFS_SRW_data/|data|/input_model_data/
+   * - WCOSS2
+     - /lfs/h2/emc/lam/noscrub/UFS_SRW_App/develop/input_model_data/
+
+For Level 2-4 systems, the data must be added to the user's system. Detailed instructions on how to add the data can be found in :numref:`Section %s: Downloading and Staging Input Data <DownloadingStagingInput>`. Sections :numref:`%s: Input Files <Input>` and :numref:`%s: Output Files <OutputFiles>` contain useful background information on the input and output files used in the SRW App.
 
 .. _GridSpecificConfig:
 
 Grid Configuration
 =======================
 
-The SRW App officially supports the four predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the four predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
+The SRW App officially supports the five predefined grids shown in :numref:`Table %s <PredefinedGrids>`. The out-of-the-box SRW App case uses the ``RRFS_CONUS_25km`` predefined grid option. More information on the predefined and user-generated grid options can be found in :numref:`Section %s: Limited Area Model (LAM) Grids <LAMGrids>`. Users who plan to utilize one of the five predefined domain (grid) options may continue to the next step (:numref:`Step %s: Generate the Forecast Experiment <GenerateForecast>`). Users who plan to create a new custom predefined grid should refer to the instructions in :numref:`Section %s: Creating User-Generated Grids <UserDefinedGrid>`. At a minimum, these users will need to add the new grid name to the ``valid_param_vals.yaml`` file and add the corresponding grid-specific parameters in the ``predef_grid_params.yaml`` file.
 
 .. _PredefinedGrids:
 
-.. table::  Predefined Grids Supported in the SRW App
+.. list-table:: Predefined Grids Supported in the SRW App
+   :widths: 30 30 30
+   :header-rows: 1
 
-   +----------------------+-------------------+--------------------------------+
-   | **Grid Name**        | **Grid Type**     | **Quilting (write component)** |
-   +======================+===================+================================+
-   | RRFS_CONUS_25km      | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | RRFS_CONUS_13km      | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | RRFS_CONUS_3km       | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-   | SUBCONUS_Ind_3km     | ESG grid          | lambert_conformal              |
-   +----------------------+-------------------+--------------------------------+
-
-.. COMMENT: Revisit before SRW w/RRFS release
+   * - Grid Name
+     - Grid Type
+     - Quilting (write component)
+   * - RRFS_CONUS_25km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_CONUS_13km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_CONUS_3km
+     - ESG grid
+     - lambert_conformal
+   * - SUBCONUS_Ind_3km
+     - ESG grid
+     - lambert_conformal
+   * - RRFS_NA_13km
+     - ESG grid
+     - lambert_conformal
 
 .. _GenerateForecast:
 
@@ -111,23 +121,23 @@ The first two steps depend on the platform being used and are described here for
 Load the Conda/Python Environment
 ------------------------------------
 
-The SRW App workflow is often referred to as the *regional workflow* because it runs experiments on a regional scale (unlike the *global workflow* used in other applications). The SRW App workflow requires installation of Python3 using conda; it also requires additional packages built in a separate conda evironment named |wflow_env|. On Level 1 systems, a |wflow_env| environment already exists, and users merely need to load the environment. On Level 2-4 systems, users must create and then load the environment. The process for each is described in detail below.  
+The SRW App workflow requires a variety of Python packages. To manage the packages, the App relies
+on conda as a package manager and virtual environment manager. At build time, users have the option
+to install the latest version of miniforge and automatically create the environments needed by the SRW App.
+Managed environments will no longer be updated on Level 1 platforms for newer versions of the SRW App.
+
 
 .. _Load-WF-L1:
 
-Loading the Workflow Environment on Level 1 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Loading the Workflow Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. attention:: 
-
-   Users on a Level 2-4 system should skip to the :ref:`next section <Load-WF-L234>` for instructions.
-
-The |wflow_env| conda/Python environment has already been set up on Level 1 platforms and can be activated in the following way:
+The |wflow_env| conda/Python environment can be activated in the following way:
 
 .. code-block:: console
 
-   source /path/to/etc/lmod-setup.sh
-   module use /path/to/modulefiles
+   source /path/to/ufs-srweather-app/etc/lmod-setup.sh <platform>
+   module use /path/to/ufs-srweather-app/modulefiles
    module load wflow_<platform>
 
 where ``<platform>`` refers to a valid machine name (see :numref:`Section %s <user>` for ``MACHINE`` options). In a csh shell environment, users should replace ``lmod-setup.sh`` with ``lmod-setup.csh``. 
@@ -140,106 +150,19 @@ The ``wflow_<platform>`` modulefile will then output instructions to activate th
 .. code-block:: console
 
    Please do the following to activate conda:
-       > conda activate workflow_tools
+       > conda activate srw_app
 
 then the user should run |activate|. This activates the |wflow_env| conda environment, and the user typically sees |prompt| in front of the Terminal prompt at this point.
 
-After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
-
-.. _Load-WF-L234:
-
-Loading the Workflow Environment on Level 2-4 Systems
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Users on non-Level 1 systems will need to create a conda workflow environment, modify a ``wflow_*`` file to reflect the location of required modules, and load the workflow modules using the modified ``wflow_*`` file. 
-
-Create a *conda* Workflow Environment
-```````````````````````````````````````
-
 .. note::
-    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
+   If users do not use the wflow module to load conda, ``conda`` will need to be initialized before running ``conda activate srw_app`` command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory and by default will be the full path to ``ufs-srweather-app/conda``.
 
-.. _MacMorePackages:
-
-MacOS ONLY: Install/Upgrade Mac-Specific Packages
-"""""""""""""""""""""""""""""""""""""""""""""""""""
-
-.. attention:: 
-
-   This subsection is for Mac OS users only. Users on Linux systems can skip to :ref:`Creating the workflow_tools Environment on Linux and Mac OS <LinuxMacVEnv>` for instructions.
-
-
-MacOS requires the installation of a few additional packages and, possibly, an upgrade to bash. Users running on MacOS should execute the following commands:
-
-.. code-block:: console
-
-   bash --version
-   brew install bash       # or: brew upgrade bash
-   brew install coreutils
-   brew gsed               # follow directions to update the PATH env variable
-
-
-.. _LinuxMacVEnv: 
-
-Creating the |wflow_env| Environment on Linux and Mac OS
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-On generic Mac and Linux systems, users need to create a conda |wflow_env| environment. The environment can be stored in a local path, which could be a default location or a user-specified location (e.g., ``$HOME/condaenv/venvs/`` directory). (To determine the default location, use the ``conda info`` command, and look for the ``envs directories`` list.) The following is a brief recipe for creating a virtual conda environment on non-Level 1 platforms. It uses the aarch64 (64-bit ARM) Miniforge for Linux and installs into $HOME/conda. Adjust as necessary for your target system.
-
-.. code-block:: console
-
-   wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
-   bash Miniforge3-Linux-aarch64.sh -bfp ~/conda
-   rm Miniforge3-Linux-aarch64.sh
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate
-   conda install -y conda-build conda-verify
-   cd path/to/your/workflow-tools/clone
-   conda build recipe
-   conda create -y -n workflow_tools -c local workflow_tools
-   conda activate workflow_tools
-
-In future shells, you can activate and use this environment with:
-
-.. code-block:: console
-
-   source ~/conda/etc/profile.d/conda.sh
-   conda activate uwtools
-
-See the `workflow-tools repository <https://github.com/ufs-community/workflow-tools>`__ for additional documentation. 
+After loading the workflow environment, users may continue to :numref:`Section %s <ExptConfig>` for instructions on setting the experiment configuration parameters.
 
 Modify a ``wflow_<platform>`` File
 ``````````````````````````````````````
 
-Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Users must modify the files to provide paths for python, miniconda modules, module loads, conda initialization, and the user's |wflow_env| conda environment. 
-
-Load the Workflow Environment
-```````````````````````````````
-
-After creating a |wflow_env| environment and making modifications to a ``wflow_<platform>`` file, users can run the commands below to activate the workflow environment:
-
-.. code-block:: console
-
-   source /path/to/etc/lmod-setup.sh <platform>
-   module use /path/to/modulefiles
-   module load wflow_<platform>
-
-where ``<platform>`` refers to a valid machine name (i.e., ``linux`` or ``macos``). 
-
-.. note::
-   If users source the lmod-setup file on a system that doesn't need it, it will not cause any problems (it will simply do a ``module purge``).
-
-The ``wflow_<platform>`` modulefile will then output the following instructions: 
-
-.. code-block:: console
-
-   Please do the following to activate conda:
-       > conda activate workflow_tools
-
-After running |activate|, the user will typically see |prompt| in front of the Terminal prompt. This indicates that the workflow environment has been loaded successfully. 
-
-.. note::
-   ``conda`` needs to be initialized before running |activate| command. Depending on the user's system and login setup, this may be accomplished in a variety of ways. Conda initialization usually involves the following command: ``source <conda_basedir>/etc/profile.d/conda.sh``, where ``<conda_basedir>`` is the base conda installation directory.
+Users can copy one of the provided ``wflow_<platform>`` files from the ``modulefiles`` directory and use it as a template to create a ``wflow_<platform>`` file that functions on their system. The ``wflow_macos`` and ``wflow_linux`` template modulefiles are provided as a starting point, but any ``wflow_<platform>`` file could be used. Since conda environments are installed with the SRW App build, the existing modulefiles will be able to automatically find those environments. No need to edit any of the information in those files for Python purposes.
 
 .. _ExptConfig:
 
@@ -253,74 +176,102 @@ Each experiment requires certain basic information to run (e.g., date, grid, phy
 Default configuration: ``config_defaults.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in the ``config_defaults.yaml`` file comments and in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>`. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``. 
+In general, ``config_defaults.yaml`` is split into sections by category (e.g., ``user:``, ``platform:``, ``workflow:``, ``task_make_grid:``). Users can view a full list of categories and configuration parameters in the :doc:`Table of Variables in config_defaults.yaml <DefaultVarsTable>`. Definitions and default values of each of the variables can be found in :numref:`Section %s: Workflow Parameters <ConfigWorkflow>` and in the ``config_defaults.yaml`` file comments. Some of these default values are intentionally invalid in order to ensure that the user assigns valid values in their ``config.yaml`` file. There is usually no need for a user to modify ``config_defaults.yaml`` because any settings provided in ``config.yaml`` will override the settings in ``config_defaults.yaml``.
 
 .. _UserSpecificConfig:
 
 User-specific configuration: ``config.yaml``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The user must set the specifics of their experiment configuration in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a basic example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases, and user support is available for running in community mode. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and the Global Systems Laboratory (:term:`GSL`) who are working on pre-implementation testing for the Rapid Refresh Forecast System (:term:`RRFS`). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_default.yaml``.
+The user must set the specifics of their experiment configuration in a ``config.yaml`` file located in the ``ufs-srweather-app/ush`` directory. Two example templates are provided in that directory: ``config.community.yaml`` and ``config.nco.yaml``. The first file is a basic example for creating and running an experiment in *community* mode (with ``RUN_ENVIR`` set to ``community``). The second is an example for creating and running an experiment in the *NCO* (operational) mode (with ``RUN_ENVIR`` set to ``nco``). The *community* mode is recommended in most cases, and user support is available for running in community mode. The operational/NCO mode is typically used by developers at the Environmental Modeling Center (:term:`EMC`) and the Global Systems Laboratory (:term:`GSL`) who are working on pre-implementation testing for the Rapid Refresh Forecast System (:term:`RRFS`). :numref:`Table %s <ConfigCommunity>` compares the configuration variables that appear in the ``config.community.yaml`` with their default values in ``config_defaults.yaml``.
 
 .. _ConfigCommunity:
 
-.. table::   Configuration variables specified in the config.community.yaml script
+.. list-table:: Configuration variables specified in the *config.community.yaml* script
+   :widths: 30 30 30
+   :header-rows: 1
 
-   +--------------------------------+-------------------+------------------------------------+
-   | **Parameter**                  | **Default Value** | **config.community.yaml Value**    |
-   +================================+===================+====================================+
-   | RUN_ENVIR                      | "nco"             | "community"                        |
-   +--------------------------------+-------------------+------------------------------------+
-   | MACHINE                        | "BIG_COMPUTER"    | "hera"                             |
-   +--------------------------------+-------------------+------------------------------------+
-   | ACCOUNT                        | ""                | "an_account"                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | CCPA_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | NOHRSC_OBS_DIR                 | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | MRMS_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | NDAS_OBS_DIR                   | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | USE_CRON_TO_RELAUNCH           | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXPT_SUBDIR                    | ""                | "test_community"                   |
-   +--------------------------------+-------------------+------------------------------------+
-   | CCPP_PHYS_SUITE                | "FV3_GFS_v16"     | "FV3_GFS_v16"                      |
-   +--------------------------------+-------------------+------------------------------------+
-   | PREDEF_GRID_NAME               | ""                | "RRFS_CONUS_25km"                  |
-   +--------------------------------+-------------------+------------------------------------+
-   | DATE_FIRST_CYCL                | "YYYYMMDDHH"      | '2019061518'                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | DATE_LAST_CYCL                 | "YYYYMMDDHH"      | '2019061518'                       |
-   +--------------------------------+-------------------+------------------------------------+
-   | FCST_LEN_HRS                   | 24                | 12                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | PREEXISTING_DIR_METHOD         | "delete"          | "rename"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | VERBOSE                        | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | COMPILER                       | "intel"           | "intel"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXTRN_MDL_NAME_ICS             | "FV3GFS"          | "FV3GFS"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | FV3GFS_FILE_FMT_ICS            | "nemsio"          | "grib2"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | EXTRN_MDL_NAME_LBCS            | "FV3GFS"          | "FV3GFS"                           |
-   +--------------------------------+-------------------+------------------------------------+
-   | LBC_SPEC_INTVL_HRS             | 6                 | 6                                  |
-   +--------------------------------+-------------------+------------------------------------+
-   | FV3GFS_FILE_FMT_LBCS           | "nemsio"          | "grib2"                            |
-   +--------------------------------+-------------------+------------------------------------+
-   | QUILTING                       | true              | true                               |
-   +--------------------------------+-------------------+------------------------------------+
-   | COMOUT_REF                     | ""                | ""                                 |
-   +--------------------------------+-------------------+------------------------------------+
-   | DO_ENSEMBLE                    | false             | false                              |
-   +--------------------------------+-------------------+------------------------------------+
-   | NUM_ENS_MEMBERS                | 1                 | 2                                  |
-   +--------------------------------+-------------------+------------------------------------+
+   * - Parameter
+     - Default Value
+     - *config.community.yaml* Value
+   * - RUN_ENVIR
+     - "nco"
+     - "community"
+   * - MACHINE
+     - "BIG_COMPUTER"
+     - "hera"
+   * - ACCOUNT
+     - ""
+     - "an_account"
+   * - CCPA_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/ccpa/proc"
+     - ""
+   * - MRMS_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/mrms/proc"
+     - ""
+   * - NDAS_OBS_DIR
+     - "{{ workflow.EXPTDIR }}/obs_data/ndas/proc"
+     - ""
+   * - USE_CRON_TO_RELAUNCH
+     - false
+     - false
+   * - EXPT_SUBDIR
+     - ""
+     - "test_community"
+   * - CCPP_PHYS_SUITE
+     - "FV3_GFS_v16"
+     - "FV3_GFS_v16"
+   * - PREDEF_GRID_NAME
+     - ""
+     - "RRFS_CONUS_25km"
+   * - DATE_FIRST_CYCL
+     - "YYYYMMDDHH"
+     - '2019061518'
+   * - DATE_LAST_CYCL
+     - "YYYYMMDDHH"
+     - '2019061518'
+   * - FCST_LEN_HRS
+     - 24
+     - 12
+   * - PREEXISTING_DIR_METHOD
+     - "delete"
+     - "rename"
+   * - VERBOSE
+     - true
+     - true
+   * - COMPILER
+     - "intel"
+     - "intel"
+   * - EXTRN_MDL_NAME_ICS
+     - "FV3GFS"
+     - "FV3GFS"
+   * - FV3GFS_FILE_FMT_ICS
+     - "nemsio"
+     - "grib2"
+   * - EXTRN_MDL_NAME_LBCS
+     - "FV3GFS"
+     - "FV3GFS"
+   * - LBC_SPEC_INTVL_HRS
+     - 6
+     - 6
+   * - FV3GFS_FILE_FMT_LBCS
+     - "nemsio"
+     - "grib2"
+   * - QUILTING
+     - true
+     - true
+   * - COMOUT_REF
+     - ""
+     - ""
+   * - DO_ENSEMBLE
+     - false
+     - false
+   * - NUM_ENS_MEMBERS
+     - 1
+     - 2
+   * - VX_FCST_MODEL_NAME
+     - '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
+     - FV3_GFS_v16_CONUS_25km
 
 .. _GeneralConfig:
 
@@ -347,10 +298,10 @@ Next, users should edit the new ``config.yaml`` file to customize it for their m
       EXPT_SUBDIR: test_community
    task_get_extrn_ics:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_ICS: "/path/to/UFS_SRW_data/develop/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
    task_get_extrn_lbcs:
       USE_USER_STAGED_EXTRN_FILES: true
-      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_App/develop/input_model_data/<model_type>/<data_type>/<YYYYMMDDHH>"
+      EXTRN_MDL_SOURCE_BASEDIR_LBCS: "/path/to/UFS_SRW_data/develop/input_model_data/<model_type>/<data_type>/${yyyymmddhh}"
 
 where: 
    * ``MACHINE`` refers to a valid machine name (see :numref:`Section %s <user>` for options).
@@ -358,13 +309,14 @@ where:
 
    .. hint::
 
-      To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+      * To determine an appropriate ACCOUNT field for Level 1 systems, run ``groups``, and it will return a list of projects you have permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. 
+      * Users can also try running ``saccount_params``, which provides more information but is not available on all systems.
 
    * ``EXPT_SUBDIR`` is changed to an experiment name of the user's choice.
    * ``/path/to/`` is the path to the SRW App data on the user's machine (see :numref:`Section %s <Data>` for data locations on Level 1 systems). 
    * ``<model_type>`` refers to a subdirectory containing the experiment data from a particular model. Valid values on Level 1 systems correspond to the valid values for ``EXTRN_MDL_NAME_ICS`` and ``EXTRN_MDL_NAME_LBCS`` (see :numref:`Section %s <basic-get-extrn-ics>` or :numref:`%s <basic-get-extrn-lbcs>` for options). 
    * ``<data_type>`` refers to one of 3 possible data formats: ``grib2``, ``nemsio``, or ``netcdf``. 
-   * ``<YYYYMMDDHH>`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). 
+   * ``${yyyymmddhh}`` refers to a subdirectory containing data for the :term:`cycle` date (in YYYYMMDDHH format). Users may hardcode this value or leave it as-is, and the experiment will derive the correct value from ``DATE_FIRST_CYCL`` and related information.
 
 On platforms where Rocoto and :term:`cron` are available, users can automate resubmission of their experiment workflow by adding the following lines to the ``workflow:`` section of the ``config.yaml`` file:
 
@@ -383,50 +335,109 @@ When running with GNU compilers (i.e., if the modulefile used to set up the buil
 
    On ``JET``, users should add ``PARTITION_DEFAULT: xjet`` and ``PARTITION_FCST: xjet`` to the ``platform:`` section of the ``config.yaml`` file.
 
-For example, to run the out-of-the-box experiment on Gaea using cron to automate job submission, users can add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` according to the following example (unmodified variables are not shown here): 
+For example, to run the out-of-the-box experiment on Derecho using cron to automate job submission, users can add or modify variables in the ``user``, ``workflow``, ``task_get_extrn_ics``, and ``task_get_extrn_lbcs`` sections of ``config.yaml`` according to the following example (unmodified variables are not shown here): 
 
    .. code-block::
       
       user:
-         MACHINE: gaea
-         ACCOUNT: hfv3gfs
+         MACHINE: derecho
+         ACCOUNT: NRAL0000
       workflow:
          EXPT_SUBDIR: run_basic_srw
          USE_CRON_TO_RELAUNCH: true
          CRON_RELAUNCH_INTVL_MNTS: 3
       task_get_extrn_ics:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_ICS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
+         EXTRN_MDL_SOURCE_BASEDIR_ICS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
       task_get_extrn_lbcs:
          USE_USER_STAGED_EXTRN_FILES: true
-         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /lustre/f2/dev/role.epic/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
-
-To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
-
-.. code-block:: console
-
-   ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
-
-A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
-
-.. code-block:: console
-
-   INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
-   FAILURE
+         EXTRN_MDL_SOURCE_BASEDIR_LBCS: /glade/work/epicufsrt/contrib/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/2019061518
 
 .. hint::
 
-   * The |wflow_env| environment must be loaded for the ``config_utils.py`` script to validate the ``config.yaml`` file. 
-
    * Valid values for configuration variables should be consistent with those in the ``ush/valid_param_vals.yaml`` script. 
-   
+
    * Various sample configuration files can be found within the subdirectories of ``tests/WE2E/test_configs``.
 
    * Users can find detailed information on configuration parameter options in :numref:`Section %s: Configuring the Workflow <ConfigWorkflow>`. 
 
+.. COMMENT: Add back if script is fixed: 
+   To determine whether the ``config.yaml`` file adjustments are valid, users can run the following script from the ``ush`` directory:
+
+   .. code-block:: console
+
+      ./config_utils.py -c config.yaml -v config_defaults.yaml -k "(?\!rocoto\b)"
+
+   A correct ``config.yaml`` file will output a ``SUCCESS`` message. A ``config.yaml`` file with problems will output a ``FAILURE`` message describing the problem. For example:
+
+   .. code-block:: console
+
+      INVALID ENTRY: EXTRN_MDL_FILES_ICS=[]
+      FAILURE
+
+.. _ConfigTasks:
+
+Turning On/Off Workflow Tasks
+````````````````````````````````
+
+The ``ufs-srweather-app/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+
+.. _task-group-files:
+
+.. list-table:: Task Group Files
+   :widths: 20 50
+   :header-rows: 1
+
+   * - File
+     - Function
+   * - aqm_post.yaml
+     - SRW-AQM post-processing tasks
+   * - aqm_prep.yaml
+     - SRW-AQM pre-processing tasks
+   * - coldstart.yaml
+     - Tasks required to run a cold-start forecast
+   * - default_workflow.yaml
+     - Sets the default workflow (prep.yaml, coldstart.yaml, post.yaml)
+   * - plot.yaml
+     - Plotting tasks
+   * - post.yaml
+     - Post-processing tasks
+   * - prdgen.yaml
+     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
+   * - prep.yaml
+     - Pre-processing tasks
+   * - verify_det.yaml
+     - Deterministic verification tasks
+   * - verify_ens.yaml
+     - Ensemble verification tasks
+   * - verify_pre.yaml
+     - Verification pre-processing tasks
+
+The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. To turn on/off tasks in the workflow, users must alter the list of task groups in the ``rocoto: tasks: taskgroups:`` section of ``config.yaml``. The list in ``config.yaml`` will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+
+Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars`` (see :numref:`Section %s <PlotOutput>` on plotting). 
+
+Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
+
+.. code-block:: console
+
+   rocoto:
+     tasks:
+       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
+       task_post_stat_o3:
+       task_post_stat_pm25:
+       task_bias_correction_o3:
+       task_bias_correction_pm25:
+
 **Next Steps:**
 
-   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacEnvConfig>` for additional required steps. 
+   * To configure an experiment for a general Linux or Mac system, see the :ref:`next section <LinuxMacExptConfig>` for additional required steps. 
    * To add the graphics plotting tasks to the experiment workflow, go to section :numref:`Section %s: Plotting Configuration <PlotOutput>`. 
    * To configure an experiment to run METplus verification tasks, see :numref:`Section %s <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
@@ -489,7 +500,7 @@ For a machine with 4 CPUs, the following domain decomposition could be used:
 
 **Configure the Machine File**
 
-Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
+Configure the ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app/ush/machine`` based on the number of CPUs (``NCORES_PER_NODE``) in the system (usually 8 or 4 in MacOS; varies on Linux systems). Job scheduler (``SCHED``) options can be viewed :ref:`here <sched>`. Users must also set the path to the fix file directories. 
 
 .. code-block:: console
 
@@ -505,14 +516,18 @@ Configure a ``macos.yaml`` or ``linux.yaml`` machine file in ``ufs-srweather-app
       RUN_CMD_UTILS: 'mpirun -np 4'
       # Commands to run at the start of each workflow task.
       PRE_TASK_CMDS: '{ ulimit -a; }'
+      FIXaer: /path/to/FIXaer/files
+      FIXgsm: /path/to/FIXgsm/files
+      FIXlut: /path/to/FIXlut/files
 
-   task_make_orog:
       # Path to location of static input files used by the make_orog task
       FIXorg: path/to/FIXorg/files 
 
-   task_make_sfc_climo:
       # Path to location of static surface climatology input fields used by sfc_climo_gen
       FIXsfc: path/to/FIXsfc/files 
+
+      #Path to location of NaturalEarth shapefiles used for plotting
+      FIXshp: /Users/username/DATA/UFS/NaturalEarth
 
    task_run_fcst:
       FIXaer: /path/to/FIXaer/files
@@ -548,7 +563,7 @@ This can be helpful when conducting multiple experiments with different types of
 Plotting Configuration (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An optional Python plotting task (PLOT_ALLVARS) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
+An optional Python plotting task (plot_allvars) can be activated in the workflow to generate plots for the :term:`FV3`-:term:`LAM` post-processed :term:`GRIB2`
 output over the :term:`CONUS`. It generates graphics plots for a number of variables, including:
 
    * 2-m temperature
@@ -574,7 +589,7 @@ The Python plotting tasks require a path to the directory where the Cartopy Natu
 Task Configuration
 `````````````````````
 
-Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add the task yaml file to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
+Users will need to add or modify certain variables in ``config.yaml`` to run the plotting task(s). At a minimum, to activate the ``plot_allvars`` tasks, users must add the task's ``.yaml`` file to the default list of ``taskgroups`` under the ``rocoto: tasks:`` section.
 
 .. code-block:: console
 
@@ -618,7 +633,6 @@ The output files (in ``.png`` format) will be located in the ``postprd`` directo
    * To configure an experiment to run METplus verification tasks, see the :ref:`next section <VXConfig>`. 
    * Otherwise, skip to :numref:`Section %s <GenerateWorkflow>` to generate the workflow.
 
-
 .. _VXConfig:
 
 Configure METplus Verification Suite (Optional)
@@ -643,7 +657,7 @@ To use METplus verification,  MET and METplus modules need to be installed. To t
      tasks:
        taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
 
-:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to do VX; it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
+:numref:`Table %s <VX-yamls>` indicates which functions each ``verify_*.yaml`` file configures. Users must add ``verify_pre.yaml`` anytime they want to run verification (VX); it runs preprocessing tasks that are necessary for both deterministic and ensemble VX. Then users can add ``verify_det.yaml`` for deterministic VX or ``verify_ens.yaml`` for ensemble VX (or both). Note that ensemble VX requires the user to be running an ensemble forecast or to stage ensemble forecast files in an appropriate location.
 
 .. _VX-yamls:
 
@@ -682,10 +696,12 @@ Users who have already staged the observation data needed for METplus (i.e., the
 .. code-block:: console
 
    platform:
-      CCPA_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ccpa/proc
-      NOHRSC_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/nohrsc/proc
-      MRMS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/mrms/proc
-      NDAS_OBS_DIR: /path/to/UFS_SRW_App/develop/obs_data/ndas/proc
+      CCPA_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ccpa/proc
+      NOHRSC_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/nohrsc/proc
+      MRMS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/mrms/proc
+      NDAS_OBS_DIR: /path/to/UFS_SRW_data/develop/obs_data/ndas/proc
+
+After adding the VX tasks to the ``rocoto:`` section and the data paths to the ``platform:`` section, users can proceed to generate the experiment, which will perform VX tasks in addition to the default workflow tasks.
 
 .. _GenerateWorkflow: 
 
@@ -702,22 +718,23 @@ The last line of output from this script, starting with ``*/1 * * * *`` or ``*/3
 
 This workflow generation script creates an experiment directory and populates it with all the data needed to run through the workflow. The flowchart in :numref:`Figure %s <WorkflowGeneration>` describes the experiment generation process. The ``generate_FV3LAM_wflow.py`` script: 
 
-   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads three other configuration scripts in order: 
+   #. Runs the ``setup.py`` script to set the configuration parameters. This script reads four other configuration scripts in order:
       
       a. ``config_defaults.yaml`` (:numref:`Section %s <DefaultConfigSection>`)
-      b. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`), and 
-      c. ``set_predef_grid_params.py``. 
+      b. ``${machine}.yaml`` (the machine configuration file)
+      c. ``config.yaml`` (:numref:`Section %s <UserSpecificConfig>`) 
+      d. ``valid_param_vals.yaml``
 
    #. Symlinks the time-independent (fix) files and other necessary data input files from their location to the experiment directory (``$EXPTDIR``). 
    #. Creates the input namelist file ``input.nml`` based on the ``input.nml.FV3`` file in the ``parm`` directory. 
    #. Creates the workflow XML file ``FV3LAM_wflow.xml`` that is executed when running the experiment with the Rocoto workflow manager.
 
-The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``. These variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``.
+The generated workflow will appear in ``$EXPTDIR``, where ``EXPTDIR=${EXPT_BASEDIR}/${EXPT_SUBDIR}``; these variables were specified in ``config_defaults.yaml`` and ``config.yaml`` in :numref:`Step %s <ExptConfig>`. The settings for these directory paths can also be viewed in the console output from the ``./generate_FV3LAM_wflow.py`` script or in the ``log.generate_FV3LAM_wflow`` file, which can be found in ``$EXPTDIR``.
 
 .. _WorkflowGeneration:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_regional_workflow_gen.png
-   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, TOPO_DIR, and SFC_CLIMO_INPUT_DIR variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling uwtools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_regional_workflow_gen.png
+   :alt: Flowchart of the workflow generation process. Scripts are called in the following order: source_util_funcs.sh (which calls bash_utils), then set_FV3nml_sfc_climo_filenames.py, set_FV3nml_ens_stoch_seeds.py, create_diag_table_file.py, and setup.py. setup.py reads several yaml configuration files (config_defaults.yaml, config.yaml, {machine_config}.yaml, valid_param_vals.yaml, and others) and calls several scripts: set_cycle_dates.py, set_grid_params_GFDLgrid.py, set_grid_params_ESGgrid.py, link_fix.py, and set_ozone_param.py. Then, it sets a number of variables, including FIXgsm, fixorg, and FIXsfc variables. Next, set_predef_grid_params.py is called, and the FIXam and FIXLAM directories are set, along with the forecast input files. The setup script also calls set_extrn_mdl_params.py, sets the GRID_GEN_METHOD with HALO, checks various parameters, and generates shell scripts. Then, the workflow generation script produces a YAML configuration file and generates the actual Rocoto workflow XML file from the template file (by calling workflow-tools set_template). The workflow generation script checks the crontab file and, if applicable, copies certain fix files to the experiment directory. Then, it copies templates of various input files to the experiment directory and sets parameters for the input.nml file. Finally, it generates the workflow. Additional information on each step appears in comments within each script.
 
    *Experiment Generation Description*
 
@@ -729,7 +746,7 @@ Description of Workflow Tasks
 .. note::
    This section gives a general overview of workflow tasks. To begin running the workflow, skip to :numref:`Step %s <Run>`
 
-:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``MAKE_GRID``, ``MAKE_OROG``, and ``MAKE_SFC_CLIMO``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script: 
+:numref:`Figure %s <WorkflowTasksFig>` illustrates the overall workflow. Individual tasks that make up the workflow are detailed in the ``FV3LAM_wflow.xml`` file. :numref:`Table %s <WorkflowTasksTable>` describes the function of each baseline task. The first three pre-processing tasks; ``make_grid``, ``make_orog``, and ``make_sfc_climo``; are optional. If the user stages pre-generated grid, orography, and surface climatology fix files, these three tasks can be skipped by removing the ``prep.yaml`` file from the default ``taskgroups`` entry in the ``config.yaml`` file before running the ``generate_FV3LAM_wflow.py`` script:
 
 .. code-block:: console
 
@@ -739,60 +756,56 @@ Description of Workflow Tasks
 
 .. _WorkflowTasksFig:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/SRW_wflow_flowchart.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW_wflow_flowchart.png
    :alt: Flowchart of the default workflow tasks. If the make_grid, make_orog, and make_sfc_climo tasks are toggled off, they will not be run. If toggled on, make_grid, make_orog, and make_sfc_climo will run consecutively by calling the corresponding exregional script in the scripts directory. The get_ics, get_lbcs, make_ics, make_lbcs, and run_fcst tasks call their respective exregional scripts. The run_post task will run, and if METplus verification tasks have been configured, those will run during post-processing by calling their exregional scripts. 
 
    *Flowchart of the Default Workflow Tasks*
 
 
-The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task. 
+The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_[task name]``) in the prescribed order when the experiment is launched via the ``launch_FV3LAM_wflow.sh`` script or the ``rocotorun`` command. Each j-job task has its own source script (or "ex-script") named ``exregional_[task name].sh`` in the ``ufs-srweather-app/scripts`` directory. Two database files named ``FV3LAM_wflow.db`` and ``FV3LAM_wflow_lock.db`` are generated and updated by the Rocoto calls. There is usually no need for users to modify these files. To relaunch the workflow from scratch, delete these two ``*.db`` files and then call the launch script repeatedly for each task.
 
 
 .. _WorkflowTasksTable:
 
-.. table::  Baseline Workflow Tasks in the SRW App
+.. list-table:: Baseline Workflow Tasks in the SRW App
+   :widths: 20 50
+   :header-rows: 1
 
-   +----------------------+------------------------------------------------------------+
-   | **Workflow Task**    | **Task Description**                                       |
-   +======================+============================================================+
-   | make_grid            | Pre-processing task to generate regional grid files. Only  |
-   |                      | needs to be run once per experiment.                       |
-   +----------------------+------------------------------------------------------------+
-   | make_orog            | Pre-processing task to generate orography files. Only      |
-   |                      | needs to be run once per experiment.                       |
-   +----------------------+------------------------------------------------------------+
-   | make_sfc_climo       | Pre-processing task to generate surface climatology files. |
-   |                      | Only needs to be run once per experiment.                  |
-   +----------------------+------------------------------------------------------------+
-   | get_extrn_ics        | Cycle-specific task to obtain external data for the        |
-   |                      | initial conditions (ICs)                                   |
-   +----------------------+------------------------------------------------------------+
-   | get_extrn_lbcs       | Cycle-specific task to obtain external data for the        |
-   |                      | lateral boundary conditions (LBCs)                         |
-   +----------------------+------------------------------------------------------------+
-   | make_ics_*           | Generate ICs from the external data                        |
-   +----------------------+------------------------------------------------------------+
-   | make_lbcs_*          | Generate LBCs from the external data                       |
-   +----------------------+------------------------------------------------------------+
-   | run_fcst_*           | Run the forecast model (UFS Weather Model)                 |
-   +----------------------+------------------------------------------------------------+
-   | run_post_*           | Run the post-processing tool (UPP)                         |
-   +----------------------+------------------------------------------------------------+
-
+   * - Workflow Task
+     - Task Description
+   * - make_grid
+     - Pre-processing task to generate regional grid files. Only needs to be run once per experiment.
+   * - make_orog
+     - Pre-processing task to generate orography files. Only needs to be run once per experiment.
+   * - make_sfc_climo
+     - Pre-processing task to generate surface climatology files. Only needs to be run once per experiment.
+   * - get_extrn_ics
+     - Cycle-specific task to obtain external data for the initial conditions (ICs)
+   * - get_extrn_lbcs
+     - Cycle-specific task to obtain external data for the lateral boundary conditions (LBCs)
+   * - make_ics_*
+     - Generate ICs from the external data
+   * - make_lbcs_*
+     - Generate LBCs from the external data
+   * - run_fcst_*
+     - Run the forecast model (UFS Weather Model)
+   * - run_post_*
+     - Run the post-processing tool (UPP)
+   
 In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run a variety of optional tasks, including plotting and verification tasks. 
 
 .. _PlottingTaskTable:
 
-.. table::  Plotting Task in the SRW App
+.. list-table:: Plotting Task in the SRW App
+   :widths: 20 50
+   :header-rows: 1
 
-   +----------------------+------------------------------------------------------------+
-   | **Workflow Task**    | **Task Description**                                       |
-   +======================+============================================================+
-   | plot_allvars         | Run the plotting task and, optionally, the difference      |
-   |                      | plotting task                                              |
-   +----------------------+------------------------------------------------------------+
+   * - Workflow Task
+     - Task Description
+   * - plot_allvars
+     - Run the plotting task and, optionally, the difference plotting task
    
-METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about Metatasks.
+METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTable>` below. The column "taskgroup" indicates the taskgroup file that must be included in the user's ``config.yaml`` file under ``rocoto: tasks: taskgroups:`` (see :numref:`Section %s <DefineWorkflow>` for more details). For each task, ``mem###`` refers to either ``mem000`` (if running a deterministic forecast) or a specific forecast member number (if running an ensemble forecast). "Metatasks" indicate task definitions that will become more than one workflow task based on different variables, number of hours, etc., as described in the Task Description column. See :numref:`Section %s <defining_metatasks>` for more details about metatasks.
 
 .. _VXWorkflowTasksTable:
 
@@ -817,19 +830,19 @@ METplus verification tasks are described in :numref:`Table %s <VXWorkflowTasksTa
      - If user has staged :term:`MRMS` data for verification, checks to ensure that data exists in the specified location (``MRMS_OBS_DIR``). If data does not exist, attempts to retrieve that data from NOAA HPSS.
    * - :bolditalic:`task_run_MET_Pb2nc_obs`
      - ``verify_pre.yaml``
-     - Convert files from prepbufr to NetCDF format.
+     - Converts files from prepbufr to NetCDF format.
    * - :bolditalic:`metatask_PcpCombine_obs`
      - ``verify_pre.yaml``
-     - Derive 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
+     - Derives 3-hr, 6-hr, and 24-hr accumulated precipitation observations from the 1-hr observation files. In log files, tasks will be named like ``MET_PcpCombine_obs_APCP##h``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_check_post_output_all_mems`
      - ``verify_pre.yaml``
-     - Ensure that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
+     - Ensures that required post-processing tasks have completed and that the output exists in the correct form and location for each forecast member. In log files, tasks will be named like ``check_post_output_mem###``.
    * - :bolditalic:`metatask_PcpCombine_fcst_APCP_all_accums_all_mems`
      - ``verify_pre.yaml``
-     - Derive accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
+     - Derives accumulated precipitation forecast for 3-hr, 6-hr, and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_APCP##h_mem###``, where ``##h`` is 03h, 06h, or 24h.
    * - :bolditalic:`metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems`
      - ``verify_pre.yaml``
-     - Derive accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
+     - Derives accumulated snow forecast for 6-hr and 24-hr windows for all forecast members based on 1-hr precipitation forecast values. In log files, tasks will be named like ``MET_PcpCombine_fcst_ASNOW##h_mem###``, where ``##h`` is 06h or 24h.
    * - :bolditalic:`metatask_GridStat_CCPA_all_accums_all_mems` 
      - ``verify_det.yaml``
      - Runs METplus grid-to-grid verification for 1-h, 3-h, 6-h, and 24-h (i.e., daily) accumulated precipitation. In log files, tasks will be named like ``run_MET_GridStat_vx_APCP##h_mem###``.
@@ -922,7 +935,7 @@ The simplest way to run the Rocoto workflow is to automate the process using a j
    USE_CRON_TO_RELAUNCH: true
    CRON_RELAUNCH_INTVL_MNTS: 3
 
-This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry manually using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
+This will automatically add an appropriate entry to the user's :term:`cron table` and launch the workflow. Alternatively, the user can add a crontab entry manually using the ``crontab -e`` command. As mentioned in :numref:`Section %s <GenerateWorkflow>`, the last line of output from ``./generate_FV3LAM_wflow.py`` (usually starting with ``*/3 * * * *``), can be pasted into the crontab file. It can also be found in the ``$EXPTDIR/log.generate_FV3LAM_wflow`` file. The crontab entry should resemble the following: 
 
 .. code-block:: console
 
@@ -933,7 +946,7 @@ where ``/path/to/experiment/directory`` is changed to correspond to the user's `
 .. hint::
 
    * On NOAA Cloud instances, ``*/1 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 1``) is the preferred option for cron jobs because compute nodes will shut down if they remain idle too long. If the compute node shuts down, it can take 15-20 minutes to start up a new one. 
-   * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on non-NOAA Cloud systems. 
+   * On other NOAA HPC systems, administrators discourage using ``*/1 * * * *`` due to load problems. ``*/3 * * * *`` (or ``CRON_RELAUNCH_INTVL_MNTS: 3``) is the preferred option for cron jobs on other Level 1 systems.
 
 To check the experiment progress:
 
@@ -942,7 +955,13 @@ To check the experiment progress:
    cd $EXPTDIR
    rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10
 
-After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry. 
+Users can track the experiment's progress by reissuing the ``rocotostat`` command above every so often until the experiment runs to completion. The following message usually means that the experiment is still getting set up:
+
+.. code-block:: console
+   
+   08/04/23 17:34:32 UTC :: FV3LAM_wflow.xml :: ERROR: Can not open FV3LAM_wflow.db read-only because it does not exist
+
+After a few (3-5) minutes, ``rocotostat`` should show a status-monitoring table.
 
 .. _Success:
 
@@ -993,6 +1012,8 @@ If users choose to run METplus verification tasks as part of their experiment, t
    201906151800   run_MET_GridStat_vx_RETOP_mem000        -                   -                   -         -             -
    201906151800   run_MET_PointStat_vx_SFC_mem000         -                   -                   -         -             -
    201906151800   run_MET_PointStat_vx_UPA_mem000         -                   -                   -         -             -
+
+After finishing the experiment, open the crontab using ``crontab -e`` and delete the crontab entry.
 
 Launch the Rocoto Workflow Using a Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1074,7 +1095,7 @@ Some systems may require a version number (e.g., ``module load rocoto/1.3.3``)
 
 **Run the Rocoto Workflow**
 
-After loading Rocoto, ``cd`` to the experiment directory and call ``rocotorun`` to launch the workflow tasks. This will start any tasks that do not have a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress: 
+After loading Rocoto, ``cd`` to the experiment directory and call ``rocotorun`` to launch the workflow tasks. This will start any tasks that are not awaiting completion of a dependency. As the workflow progresses through its stages, ``rocotostat`` will show the state of each task and allow users to monitor progress:
 
 .. code-block:: console
 
@@ -1105,7 +1126,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
 
 .. attention:: 
 
-   When working on an HPC system, users should allocate a compute node prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`).
+   When working on an HPC system, users should allocate compute nodes prior to running their experiment. The proper command will depend on the system's resource manager, but some guidance is offered in :numref:`Section %s <WorkOnHPC>`. It may be necessary to reload the ``build_<platform>_<compiler>`` scripts (see :numref:`Section %s <CMakeApproach>`) and the workflow environment (see :numref:`Section %s <SetUpPythonEnv>`) after allocating compute nodes.
 
 .. note::
    Examples in this subsection presume that the user is running in the Terminal with a bash shell environment. If this is not the case, users will need to adjust the commands to fit their command line application and shell environment. 
@@ -1160,7 +1181,7 @@ Check the batch script output file in your experiment directory for a “SUCCESS
 
 .. table::  List of tasks in the SRW App workflow in the order that they are executed.
             Scripts with the same stage number may be run simultaneously. The number of
-            processors and wall clock time is a good starting point for Cheyenne or Hera 
+            processors and wall clock time is a good starting point for NOAA HPC systems
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
    +------------+------------------------+----------------+----------------------------+

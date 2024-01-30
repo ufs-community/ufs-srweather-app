@@ -13,6 +13,7 @@ FAQ
 * :ref:`How can I clean up the SRW App code if something went wrong? <CleanUp>`
 * :ref:`How do I run a new experiment? <NewExpt>`
 * :ref:`How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App? <AddPhys>`
+* :ref:`How can I configure the computational parameters to use more compute power? <CompPower>`
 * :ref:`How can I troubleshoot issues related to ICS/LBCS generation for a predefined 3-km grid? <IC-LBC-gen-issue>`
 
 .. _DefineExptName:
@@ -49,7 +50,7 @@ model directory to the experiment directory ``$EXPTDIR``. For more information o
 How do I change the grid?
 ===========================
 
-To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The four supported predefined grids as of the SRW Application v2.1.0 release are:
+To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the ``task_run_fcst:`` section of the ``config.yaml`` script (see :numref:`Section %s <UserSpecificConfig>` for details on creating and modifying the ``config.yaml`` file). The five supported predefined grids as of the SRW Application |latestr| release are:
 
 .. code-block:: console
    
@@ -57,8 +58,9 @@ To change the predefined grid, modify the ``PREDEF_GRID_NAME`` variable in the `
    RRFS_CONUS_13km
    RRFS_CONUS_25km
    SUBCONUS_Ind_3km
+   RRFS_NA_13km
 
-However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the v2.1.0 release and is provided for informational purposes only. 
+However, users can choose from a variety of predefined grids listed in :numref:`Section %s <PredefGrid>`. An option also exists to create a user-defined grid, with information available in :numref:`Section %s <UserDefinedGrid>`. However, the user-defined grid option is not fully supported as of the |latestr| release and is provided for informational purposes only.
 
 .. _SetTasks:
 
@@ -66,60 +68,9 @@ However, users can choose from a variety of predefined grids listed in :numref:`
 How can I select which workflow tasks to run? 
 ===============================================
 
-The ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each task group file contains a number of tasks that are typically run together. :numref:`Table %s <task-group-files>` describes each of the task groups. 
+:numref:`Section %s <ConfigTasks>` provides a full description of how to turn on/off workflow tasks.
 
-.. _task-group-files:
-
-.. list-table:: Task group files
-   :widths: 20 50
-   :header-rows: 1
-
-   * - File
-     - Function
-   * - aqm_post.yaml
-     - SRW-AQM post-processing tasks
-   * - aqm_prep.yaml
-     - SRW-AQM pre-processing tasks
-   * - coldstart.yaml
-     - Tasks required to run a cold-start forecast
-   * - da_data_preproc.yaml
-     - Preprocessing tasks for RRFS `DA <data assimilation>`.
-   * - plot.yaml
-     - Plotting tasks
-   * - post.yaml
-     - Post-processing tasks
-   * - prdgen.yaml
-     - Horizontal map projection processor that creates smaller domain products from the larger domain created by the UPP. 
-   * - prep.yaml
-     - Pre-processing tasks
-   * - verify_det.yaml
-     - Deterministic verification tasks
-   * - verify_ens.yaml
-     - Ensemble verification tasks
-   * - verify_pre.yaml
-     - Verification pre-processing tasks
-
-The default workflow task groups are set in ``parm/wflow/default_workflow.yaml`` and include ``prep.yaml``, ``coldstart.yaml``, and ``post.yaml``. Changing this list of task groups in the user configuration file (``config.yaml``) will override the default and run only the task groups listed. For example, to omit :term:`cycle-independent` tasks and run plotting tasks, users would delete ``prep.yaml`` from the list of tasks and add ``plot.yaml``:
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
-
-Users may need to make additional adjustments to ``config.yaml`` depending on which task groups they add or remove. For example, when plotting, the user should add the plotting increment (``PLOT_FCST_INC``) for the plotting tasks in ``task_plot_allvars``. 
-
-Users can omit specific tasks from a task group by including them under the list of tasks as an empty entry. For example, if a user wanted to run only ``task_pre_post_stat`` from ``aqm_post.yaml``, the taskgroups list would include ``aqm_post.yaml``, and the tasks that the user wanted to omit would be listed with no value: 
-
-.. code-block:: console
-
-   rocoto:
-     tasks:
-       taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/aqm_post.yaml"]|include }}'
-       task_post_stat_o3:
-       task_post_stat_pm25:
-       task_bias_correction_o3:
-       task_bias_correction_pm25:
+The default workflow tasks are defined in ``ufs-srweather-app/parm/wflow/default_workflow.yaml``. However, the ``/parm/wflow`` directory contains several ``YAML`` files that configure different workflow task groups. Each file contains a number of tasks that are typically run together (see :numref:`Table %s <task-group-files>` for a description of each task group). To add or remove workflow tasks, users will need to alter the user configuration file (``config.yaml``) as described in :numref:`Section %s <ConfigTasks>` to override the default workflow and run the selected tasks and task groups.
 
 .. _CycleInd:
 
@@ -142,7 +93,7 @@ To skip these tasks, remove ``parm/wflow/prep.yaml`` from the list of task group
      tasks:
        taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
 
-Then, add the paths to the previously generated grid, orography, and surface climatology files under the appropariate tasks in ``config.yaml``: 
+Then, add the appropriate tasks and paths to the previously generated grid, orography, and surface climatology files to ``config.yaml``:
 
 .. code-block:: console
 
@@ -161,7 +112,7 @@ All three sets of files *may* be placed in the same directory location (and woul
 How do I restart a DEAD task?
 =============================
 
-On platforms that utilize Rocoto workflow software (such as NCAR's Cheyenne machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
+On platforms that utilize Rocoto workflow software (such as NCAR's Derecho machine), if something goes wrong with the workflow, a task may end up in the DEAD state:
 
 .. code-block:: console
 
@@ -226,7 +177,7 @@ In addition to the options above, many standard terminal commands can be run to 
 How can I run a new experiment?
 ==================================
 
-To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the |wflow_env| environment: 
+To run a new experiment at a later time, users need to rerun the commands in :numref:`Section %s <SetUpPythonEnv>` that reactivate the |wflow_env| environment:
 
 .. code-block:: console
    
@@ -234,13 +185,13 @@ To run a new experiment at a later time, users need to rerun the commands in :nu
    module use /path/to/modulefiles
    module load wflow_<platform>
 
-Follow any instructions output by the console (e.g., |activate|). 
+Follow any instructions output by the console (e.g., |activate|).
 
-Then, users can configure a new experiment by updating the environment variables in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
+Then, users can configure a new experiment by updating the experiment parameters in ``config.yaml`` to reflect the desired experiment configuration. Detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. Parameters and valid values are listed in :numref:`Section %s <ConfigWorkflow>`. After adjusting the configuration file, generate the new experiment by running ``./generate_FV3LAM_wflow.py``. Check progress by navigating to the ``$EXPTDIR`` and running ``rocotostat -w FV3LAM_wflow.xml -d FV3LAM_wflow.db -v 10``.
 
 .. note:: 
 
-   If users have updated their clone of the SRW App (e.g., via ``git pull`` or ``git fetch``/``git merge``) since running their last experiement, and the updates include a change to ``Externals.cfg``, users will need to rerun ``checkout_externals`` (instructions :ref:`here <CheckoutExternals>`) and rebuild the SRW App according to the instructions in :numref:`Section %s <BuildExecutables>`.
+   If users have updated their clone of the SRW App (e.g., via ``git pull`` or ``git fetch``/``git merge``) since running their last experiment, and the updates include a change to ``Externals.cfg``, users will need to rerun ``checkout_externals`` (instructions :ref:`here <CheckoutExternals>`) and rebuild the SRW App according to the instructions in :numref:`Section %s <BuildExecutables>`.
 
 .. _AddPhys:
 
@@ -265,6 +216,30 @@ Regardless, users will need to modify the suite definition file (:term:`SDF`) an
 Depending on the scheme, additional changes to the SDF (e.g., to add, remove, or change interstitial schemes) and to the namelist (to include scheme-specific tuning parameters) may be required. Users are encouraged to reach out on GitHub Discussions to find out more from subject matter experts about recommendations for the specific scheme they want to implement. Users can post on the `SRW App Discussions page <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ or ask their questions directly to the developers of `ccpp-physics <https://github.com/NCAR/ccpp-physics/discussions>`__ and `ccpp-framework <https://github.com/NCAR/ccpp-framework/discussions>`__, which also handle support through GitHub Discussions.
 
 After making appropriate changes to the SDF and namelist files, users must ensure that they are using the same physics suite in their ``config.yaml`` file as the one they modified in ``FV3.input.yml``. Then, the user can run the ``generate_FV3LAM_wflow.py`` script to generate an experiment and navigate to the experiment directory. They should see ``do_ysu = .true.`` in the namelist file (or a similar statement, depending on the physics scheme selected), which indicates that the YSU PBL scheme is enabled.
+
+.. _CompPower:
+
+==============================================================================
+How can I configure the computational parameters to use more compute power? 
+==============================================================================
+
+In general, there are two options for using more compute power: (1) increase the number of PEs or (2) enable more threads.
+
+**Increase Number of PEs**
+
+PEs are processing elements, which correspond to the number of :term:`MPI` processes/tasks. In the SRW App, ``PE_MEMBER01`` is the number of MPI processes required by the forecast. It is calculated by: :math:`LAYOUT\_X * LAYOUT\_Y + WRTCMP\_write\_groups * WRTCMP\_write\_tasks\_per\_group` when ``QUILTING`` is true. Since these variables are connected, it is recommended that users consider how many processors they want to use to run the forecast model and work backwards to determine the other values.
+
+For simplicity, it is often best to set ``WRTCMP_write_groups`` to 1. It may be necessary to increase this number in cases where a single write group cannot finish writing its output before the model is ready to write again. This occurs when the model produces output at very short time intervals.
+
+The ``WRTCMP_write_tasks_per_group`` value will depend on domain (i.e., grid) size. This means that a larger domain would require a higher value, while a smaller domain would likely require less than 5 tasks per group.
+
+The ``LAYOUT_X`` and ``LAYOUT_Y`` variables are the number of MPI tasks to use in the horizontal x and y directions of the regional grid when running the forecast model. Note that the ``LAYOUT_X`` and ``LAYOUT_Y`` variables only affect the number of MPI tasks used to compute the forecast, not resolution of the grid. The larger these values are, the more work is involved when generating a forecast. That work can be spread out over more MPI processes to increase the speed, but this requires more computational resources. There is a limit where adding more MPI processes will no longer increase the speed at which the forecast completes, but the UFS scales well into the thousands of MPI processes.
+
+Users can take a look at the `SRW App predefined grids <https://github.com/ufs-community/ufs-srweather-app/blob/develop/ush/predef_grid_params.yaml>`__ to get a better sense of what values to use for different types of grids. The :ref:`Computational Parameters <CompParams>` and :ref:`Write Component Parameters <WriteComp>` sections of the SRW App User's Guide define these variables.
+
+**Enable More Threads**
+
+In general, enabling more threads offers less increase in performance than doubling the number of PEs. However, it uses less memory and still improves performance. To enable more threading, set ``OMP_NUM_THREADS_RUN_FCST`` to a higher number (e.g., 2 or 4). When increasing the value, it must be a factor of the number of cores/CPUs (``number of MPI tasks * OMP threads`` cannot exceed the number of cores per node). Typically, it is best not to raise this value higher than 4 or 5 because there is a limit to the improvement possible via OpenMP parallelization (compared to MPI parallelization, which is significantly more efficient).
 
 .. _IC-LBC-gen-issue:
 

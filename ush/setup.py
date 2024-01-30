@@ -238,7 +238,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
-        "EXPT_SUBDIR",
         "NCORES_PER_NODE",
         "FIXgsm",
         "FIXaer",
@@ -569,7 +568,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                                 "metatask_GenEnsProd_EnsembleStat_MRMS",
                                 "metatask_GridStat_MRMS_ensprob"]
 
-    vx_fields_all["NDAS"] = ["SFC", "UPA"]
+    vx_fields_all["NDAS"] = ["ADPSFC", "ADPUPA"]
     vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
                                 "metatask_PointStat_NDAS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",

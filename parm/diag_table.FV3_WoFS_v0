@@ -125,6 +125,7 @@
 "gfs_dyn",     "ccn_nc",      "ccn",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "ps",          "pressfc",   "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",    "fv3_history",    "all",  .false.,  "none",  2
+# Reflectivity from NSSL microphysics
 "gfs_phys",    "refl_10cm"    "refl_10cm"  "fv3_history",    "all",  .false.,  "none",  2
 #"gfs_phys",    "cldfra",      "cldfra",    "fv3_history",    "all",  .false.,  "none",  2
 
