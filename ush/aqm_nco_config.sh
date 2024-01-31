@@ -35,6 +35,7 @@ HOMEaqm=$(printf '%q' "$HOMEaqm")
 COMROOT=$(printf '%q' "$COMROOT")
 COMaqm=$(printf '%q' "$COMaqm")
 COMINgefs=$(printf '%q' "$COMINgefs")
+DATA=$(printf '%q' "$DATA")
 #
 # Dynamically generate target files
 cd "$DATA" || { echo "Failed to change directory to $DATA"; exit 1; }
@@ -49,6 +50,7 @@ for file_in in ${File_to_modify_source}; do
   sed -i -e "s|@WARMSTART_PDY@|${WARMSTART_PDY}|g" "$file_tmp"
   sed -i -e "s|@OPSROOT@|${OPSROOT}|g"             "$file_tmp"
   sed -i -e "s|@COMINgefs@|${COMINgefs}|g"         "$file_tmp"
+  sed -i -e "s|@DATA@|${DATA}|g"                   "$file_tmp"
 #
   mv "$file_tmp" "$file_in" || { echo "Failed to move $file_tmp to $file_in"; exit 1; }
 done
