@@ -3,6 +3,7 @@
 """
 This file provides utilities for processing different configuration file formats.
 Supported formats include:
+
     a) YAML
     b) JSON
     c) SHELL
@@ -10,7 +11,7 @@ Supported formats include:
     e) XML
 
 Typical usage involves first loading the config file, then using the dictionary
-returnded by load_config to make queries.
+returned by load_config to make queries.
 
 """
 

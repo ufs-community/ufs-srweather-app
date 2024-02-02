@@ -266,15 +266,13 @@ def update_dict(dest, newdict, quiet=False):
 
     """
     Overwrites all values in dest dictionary with values from newdict. Turn off
-    print statements with queit=True.
+    print statements with quiet=True.
 
     Input:
 
-        dest      A dict that is to be updated.
-        newdict   A dict containing sections and keys corresponding to
-                  those in dest and potentially additional ones, that will be used to
-                  update the dest dict.
-        quiet     An optional boolean flag to turn off output.
+        dest:     A dict that is to be updated.
+        newdict:  A dict containing sections and keys corresponding to those in dest and potentially additional ones, that will be used to update the dest dict.
+        quiet:    An optional boolean flag to turn off output.
 
     Output:
 

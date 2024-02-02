@@ -4,7 +4,9 @@
 Interface to configuration file management utilities.
 To see what it can do:
 
-    ./config_utils --help
+.. code-block:: console
+    
+   ./config_utils --help
 
 """
 

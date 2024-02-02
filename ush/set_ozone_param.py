@@ -16,6 +16,7 @@ from python_utils import (
 
 def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
     """Function that does the following:
+    
     (1) Determines the ozone parameterization being used by checking in the
         CCPP physics suite XML.
 
@@ -27,14 +28,12 @@ def set_ozone_param(ccpp_phys_suite_fp, link_mappings):
 
     Args:
         ccpp_phys_suite_fp: full path to CCPP physics suite
-        link_mappings: list of mappings between symlinks and their
-                       target files for this experiment
+        link_mappings: list of mappings between symlinks and their target files for this experiment
+    
     Returns:
         ozone_param: a string
-        fixgsm_ozone_fn: a path to a fix file that should be used with
-                        this experiment
-        ozone_link_mappings: a list of mappings for the files needed for
-                             this experiment
+        fixgsm_ozone_fn: a path to a fix file that should be used with this experiment
+        ozone_link_mappings: a list of mappings for the files needed for this experiment
 
     """
 

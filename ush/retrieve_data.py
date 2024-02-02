@@ -185,8 +185,8 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
     and return the resulting string.
 
     Arguments:
-      template_str: a string containing Python templates
-      cycle_date: a datetime object that will be used to fill in
+      template_str:   a string containing Python templates
+      cycle_date:     a datetime object that will be used to fill in
                       date and time information
       templates_only: boolean value. When True, this function will only
                       return the templates available.
