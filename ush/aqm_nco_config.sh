@@ -10,8 +10,8 @@ set -eux
 #
 # General parameters must be modified by NCEP/NCO/SPA
 #   Remove the remark and modify with running environment
-OPSROOT="/lfs/h2/emc/ptmp/jianping.huang/ecflow_aqm/para"
-COMROOT="/lfs/h2/emc/ptmp/jianping.huang/ecflow_aqm/para/com"
+## OPSROOT="/lfs/h2/emc/ptmp/jianping.huang/ecflow_aqm/para"
+## COMROOT="/lfs/h2/emc/ptmp/jianping.huang/ecflow_aqm/para/com"
 WARMSTART_PDY="20240128"
 #
 #####################################################################################
@@ -25,7 +25,8 @@ File_to_modify_source="var_defns.sh"
 source "$HOMEaqm/versions/run.ver" || { echo "Failed to source run.ver"; exit 1; }
 #
 # Assign COMaqm using production utility
-COMROOT=${COMROOT:-"${OPSROOT}/com"}
+## COMROOT=${COMROOT:-"${OPSROOT}/com"}
+OPSROOT=$(realpath ${COMROOT}/..)
 COMaqm=$(compath.py -o "aqm/${aqm_ver}") || { echo "Failed to assign COMaqm"; exit 1; }
 COMINgefs=$(compath.py "gefs/${gefs_ver}") || { echo "Failed to assign COMINgefs"; exit 1; }
 #

@@ -37,6 +37,7 @@ export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
 export DCOMROOT=${DCOMROOT:-/lfs/h1/ops/prod/dcom}
 export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
 
+export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
 export COMINm2="${COMaqm}/${RUN}.${PDYm2}"

@@ -11,8 +11,8 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export subcyc=0
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-
-export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${PDY}_${cyc}_${aqm_ver}
+export RUN="${RUN:-${RUN_dfv}}"
+export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 export DATA=${DATA:-${umbrella_forecast_data}/${jobid}}
 mkdir -p ${DATA}
 cd ${DATA}
@@ -40,6 +40,7 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
+export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
 export COMINm2="${COMaqm}/${RUN}.${PDYm2}"

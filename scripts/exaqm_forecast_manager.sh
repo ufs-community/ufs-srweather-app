@@ -42,7 +42,7 @@ In directory:     \"${scrfunc_dir}\"
 This is the ex-script for the task that copy AQM forecast and RESTART file to COMOUT
 ========================================================================"
 #
-umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${PDY}_${cyc}_${aqm_ver}
+umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 shared_output_data=${umbrella_forecast_data}/output
 shared_restart_data=${umbrella_forecast_data}/RESTART
 NCP="cp -p"

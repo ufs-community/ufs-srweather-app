@@ -13,7 +13,7 @@ export pgm=aqm_make_ics
 #-----------------------------------------------------------------------
 #
 . $USHaqm/source_util_funcs.sh
-source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
+ source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #

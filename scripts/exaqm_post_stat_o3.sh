@@ -124,10 +124,10 @@ while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
   fhr3d=$( printf "%03d" "${fhr}" )
 
   if [ "${fhr3d}" -le "07" ]; then
-    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 >> ${NET}.${cycle}.1ho3.${id_domain}.grib2
+    cat ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 >> ${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2
   else
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.1ho3.${id_domain}.grib2
-    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.8ho3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 1 -append -grib ${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2
+    wgrib2 ${DATA}/${NET}.${cycle}.awpozcon.f${fhr3d}.${id_domain}.grib2 -d 2 -append -grib ${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2
   fi
   (( fhr=fhr+1 ))
 done
@@ -138,15 +138,15 @@ grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198;do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.1ho3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1ho3.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_1hr_o3.${grid}.grib2
 
   if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-    wgrib2 ${NET}.${cycle}.8ho3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.8ho3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_8hr_o3.${grid}.grib2
 
     for hr in 1 8; do
       echo 0 > filesize
       export XLFRTEOPTS="unit_vars=yes"
-      export FORT11=${NET}.${cycle}.${hr}ho3.${grid}.grib2
+      export FORT11=${NET}.${cycle}.ave_${hr}hr_o3.${grid}.grib2
       export FORT12="filesize"
       export FORT31=
       export FORT51=grib2.${cycle}.${hr}awpcsozcon.${grid}.temp
@@ -160,15 +160,17 @@ for grid in 227 196 198;do
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
-    for var in 1ho3 8ho3;do
-      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${PCOM}
-    done
+
+    cp ${DATA}/${NET}.${cycle}.ave_1hr_o3*grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.ave_8hr_o3*grib2 ${COMOUT}
+    cp ${DATA}/awpaqm.${cycle}.1ho3*grib2 ${PCOM}
+    cp ${DATA}/awpaqm.${cycle}.8ho3*grib2 ${PCOM}
+
     for var in awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   else
-    for var in 1ho3 awpozcon;do
+    for var in ave_1hr_o3 awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   fi

@@ -37,6 +37,7 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
+export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
 export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
