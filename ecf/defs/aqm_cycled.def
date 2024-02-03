@@ -49,7 +49,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -148,7 +148,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -894,7 +894,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
