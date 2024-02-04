@@ -18,8 +18,6 @@ export FIXaqm='@HOMEaqm@/fix'
 export MODULESdir='@HOMEaqm@/modulefiles'
 export EXECdir='@HOMEaqm@/exec'
 VX_CONFIG_DIR='@HOMEaqm@/parm'
-#METPLUS_CONF='@HOMEaqm@/parm/metplus'
-#MET_CONFIG='@HOMEaqm@/parm/met'
 UFS_WTHR_MDL_DIR='@HOMEaqm@/sorc/ufs-weather-model'
 ARL_NEXUS_DIR='@HOMEaqm@/sorc/arl_nexus'
 
