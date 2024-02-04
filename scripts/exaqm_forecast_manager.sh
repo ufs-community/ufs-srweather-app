@@ -107,6 +107,12 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
             ecflow_client --event ${fhr_ct}_rdy
           fi
         done
+        # copy RESTART files
+        for file_id_source in "${file_ids[@]}"; do
+          eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id_source} ${COMOUT}/RESTART
+        done 
+        ecflow_client --event restart_gp${restart_group}_rdy
+        # last sector
         restart_interval_group_ct=$(($restart_interval_group_ct+1))
         if [ ${restart_interval_group_ct} -eq ${num_restart_hrs} ]; then
           fhr=$((${output_fhr_ending}+1))
@@ -134,11 +140,6 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
             fi
           done
         fi
-        # copy RESTART files
-        for file_id_source in "${file_ids[@]}"; do
-          eval $NCP ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id_source} ${COMOUT}/RESTART
-        done
-        ecflow_client --event restart_gp${restart_group}_rdy
       else
         # Only wait if restart is not already found
         if [ $rst_exist = "NO" ]; then
