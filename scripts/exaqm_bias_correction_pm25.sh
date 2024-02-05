@@ -184,8 +184,8 @@ if [ -d "${DATA_grid}/${cyc}z/${PDY}" ]; then
 fi
 
 mkdir -p "${DATA_grid}/${cyc}z/${PDY}"
-ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
-ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
+cp ${COMIN}/${cyc}/${NET}.${cycle}.met_sfc.*.nc ${DATA_grid}/${cyc}z/${PDY}
 
 #-----------------------------------------------------------------------
 # STEP 3:  Intepolating CMAQ PM2.5 into AIRNow sites
@@ -242,7 +242,7 @@ fi
 # STEP 5:  converting netcdf to grib format
 #------------------------------------------------------------------------
 
-ln -sf ${COMIN}/${cyc}/pm2.5.corrected.${PDY}.${cyc}z.nc .
+cp ${COMIN}/${cyc}/pm2.5.corrected.${PDY}.${cyc}z.nc .
 
 # convert from netcdf to grib2 format
 cat >bias_cor.ini <<EOF1
@@ -267,7 +267,7 @@ cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
 #------------------------------------------------------------------------
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  ln -sf ${COMOUT}/pm2.5.corrected.${PDY}.${cyc}z.nc  a.nc 
+  cp ${COMOUT}/pm2.5.corrected.${PDY}.${cyc}z.nc  a.nc 
 
   chk=1 
   chk1=1 
@@ -285,9 +285,9 @@ EOF1
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc ]; then
-      ln -sf ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc 
+      cp ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc 
     elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
+      cp ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else 
       flag_run_bicor_max=no
@@ -297,9 +297,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
     if [ -s ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc ]; then
-      ln -sf ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc
+      cp ${COMIN}/00/pm2.5.corrected.${PDY}.00z.nc  b.nc
     elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
+      cp ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -307,9 +307,9 @@ EOF1
 
     # 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN}/06/pm2.5.corrected.${PDY}.06z.nc ]; then
-      ln -sf ${COMIN}/06/pm2.5.corrected.${PDY}.06z.nc c.nc
+      cp ${COMIN}/06/pm2.5.corrected.${PDY}.06z.nc c.nc
     elif [ -s ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc ]; then
-      ln -sf ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  c.nc
+      cp ${COMINm1}/12/pm2.5.corrected.${PDYm1}.12z.nc  c.nc
       chk1=0
     else
       flag_run_bicor_max=no

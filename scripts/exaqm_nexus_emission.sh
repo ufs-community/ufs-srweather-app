@@ -153,7 +153,7 @@ fi
 if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "TRUE" ]; then
   if [ -d "${GFS_SFC_INPUT}" ]; then
     if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
-      ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"
+      cp -rp "${GFS_SFC_INPUT}" "GFS_SFC"
       USE_GFS_SFC="TRUE"
     fi
   fi
@@ -228,7 +228,7 @@ NOAAGMD="TRUE"
 SOA="TRUE"
 EDGAR="TRUE"
 MEGAN="TRUE"
-MODIS_XLAI="TRUE"
+MODIS_XLAI="FALSE"
 OLSON_MAP="TRUE"
 Yuan_XLAI="TRUE"
 GEOS="TRUE"

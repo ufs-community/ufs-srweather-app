@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -70,7 +70,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Load modules.
+# Checking fcst CMD.
 #
 #-----------------------------------------------------------------------
 #
@@ -105,6 +105,9 @@ Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
 # Create links to fix files in the FIXlam directory.
+cd $DATA
+ln -s $FIXaqm  .
+
 cd ${DATA}/INPUT
 
 #
@@ -125,7 +128,6 @@ else
 fi
 
 # Symlink to mosaic file with a completely different name.
-#target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
 create_symlink_to_file target="$target" symlink="$symlink" \
@@ -209,20 +211,6 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
                            relative="${relative_link_flag}"
   done
 fi
-#
-#-----------------------------------------------------------------------
-#
-# The FV3 model looks for the following files in the INPUT subdirectory
-# of the run directory:
-#
-#   gfs_data.nc
-#   sfc_data.nc
-#   gfs_bndy*.nc
-#   gfs_ctrl.nc
-#
-# Some of these files (gfs_ctrl.nc, gfs_bndy*.nc) already exist, but
-# others do not.  Thus, create links with these names to the appropriate
-# files (in this case the initial condition and surface files only).
 #
 #-----------------------------------------------------------------------
 #
@@ -465,11 +453,12 @@ fi
 #
 flag_fcst_restart="FALSE"
 coupler_res_ct=0
-if [ -d ${COMOUT}/RESTART ]; then
-  coupler_res_ct=$(eval ls -A ${COMOUT}/RESTART/*.coupler.res|wc -l)
+if [ -d ${umbrella_forecast_data}/RESTART ]; then
+  set +eu
+  coupler_res_ct=$(eval ls -A ${umbrella_forecast_data}/RESTART/*.coupler.res|wc -l)
 fi
 
-if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ]; then
+if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ] && [ $FCST_LEN_HRS -gt 6 ]; then
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
 
@@ -501,7 +490,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
 
     num_rst_files=0
     for file_id in "${file_ids[@]}"; do
-      if [ -e "${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
+      if [ -e "${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}" ]; then
         (( num_rst_files=num_rst_files+1 ))
       fi
     done
@@ -517,7 +506,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     if [ -e "${file_id}" ]; then
       rm -f "${file_id}"
     fi
-    target="${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
+    target="${umbrella_forecast_data}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   done
@@ -623,10 +612,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# make symbolic links to write forecast files directly in COMOUT
-#
+# make symbolic links to write forecast files directly in shared forecast output location
+#   $DATAROOT/$RUN_forecast_$PDY_$cyc_$aqm_ver/output
 #-----------------------------------------------------------------------
 #
+shared_output_data=${umbrella_forecast_data}/output
+mkdir -p ${shared_output_data}
 fhr_ct=0
 fhr=0
 NLN=${NLN:-"/bin/ln -sf"}
@@ -634,21 +625,23 @@ while [ $fhr -le ${FCST_LEN_HRS} ]; do
   fhr_ct=$(printf "%03d" $fhr)
   source_dyn="dynf${fhr_ct}.nc"
   source_phy="phyf${fhr_ct}.nc"
-  target_dyn="${COMOUT}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
-  target_phy="${COMOUT}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+  source_log="logf${fhr_ct}"
+  target_dyn="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
+  target_phy="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
+  target_log="${shared_output_data}/${NET}.${cycle}${dot_ensmem}.logf${fhr_ct}"
   eval $NLN ${target_dyn} ${source_dyn}
   eval $NLN ${target_phy} ${source_phy}
+  eval $NLN ${target_log} ${source_log}
   (( fhr=fhr+1 ))
 done
-eval $NLN ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN} ${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
-#
-# make symbolic links to write forecast RESTART files directly in COMOUT/RESTART
-#
+# make symbolic links to write forecast RESTART files directly to shared forecast RESTART location
+#   $DATAROOT/$RUN_forecast_$PDY_$cyc_$aqm_ver/RESTART
 #-----------------------------------------------------------------------
 #
-mkdir -p ${COMOUT}/RESTART
+shared_restart_data=${umbrella_forecast_data}/RESTART
+mkdir -p ${shared_restart_data}
 cd ${DATA}/RESTART
 file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
 num_file_ids=${#file_ids[*]}
@@ -662,7 +655,7 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
     rst_yyyymmdd="${cdate_restart_hr:0:8}"
     rst_hh="${cdate_restart_hr:8:2}"
     for file_id in "${file_ids[@]}"; do
-      eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
+      eval $NLN ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${rst_yyyymmdd}.${rst_hh}0000.${file_id}
     done
   done
 else
@@ -671,9 +664,11 @@ else
   rst_yyyymmdd="${cdate_restart_hr:0:8}"
   rst_hh="${cdate_restart_hr:8:2}"
   for file_id in "${file_ids[@]}"; do
-    eval $NLN ${COMOUT}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
+    eval $NLN ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.${file_id} ${file_id}
   done
 fi
+
+ecflow_client --event release_manager
 cd ${DATA}
 #
 #-----------------------------------------------------------------------
@@ -692,6 +687,9 @@ export err=$?; err_chk
 if [ -e "$pgmout" ]; then
    cat $pgmout
 fi
+
+
+eval cp -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
 #

@@ -5,18 +5,18 @@ export PS4=' $SECONDS + '
 set -xue
 
 #-----------------------------------------------------------------------
+# Source the variable definitions file and the bash utility functions.
+#-----------------------------------------------------------------------
 export USHaqm=${USHaqm:-${HOMEaqm}/ush}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 
-export subcyc=0
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-
+export DATAROOT="${DATAROOT:-${DATAROOT_dfv}}"
 export DATA=${DATA:-${DATAROOT}/${jobid}}
+
 mkdir -p ${DATA}
 cd ${DATA}
 
-. $USHaqm/aqm_nco_config.sh 
+. $USHaqm/aqm_nco_config.sh
 
 . $USHaqm/source_util_funcs.sh
 
@@ -32,17 +32,20 @@ export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
-export FIXaqmfire="${FIXaqmfire:-${HOMEaqm}/fix/fire}"
 
-export DCOMROOT=${DCOMROOT:-/lfs/h1/ops/prod/dcom}
-export DCOMINfire="${DCOMINfire:-${DCOMROOT}/${PDY}/rave}"
+export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
+export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
+export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
 
-export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
-export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
-export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
-export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
-export COMOUT="${COMOUT:-${COMaqm}/${RUN}.${PDY}/${cyc}}"
-
+#-----------------------------------------------------------------------
+# Save current shell options (in a global array).  Then set new options
+# for this script/function.
+#-----------------------------------------------------------------------
+#
+{ save_shell_opts; . $USHaqm/preamble.sh; } > /dev/null 2>&1
+#
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
@@ -63,48 +66,16 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that copies or fetches RAVE fire
-emission data files from disk, or HPSS.
+This is the J-job script for the task that runs POST-UPP-STAT.
 ========================================================================"
-#
 #-----------------------------------------------------------------------
-# Set the external model start time
-#-----------------------------------------------------------------------
-#
-export TIME_OFFSET_HRS=${AQM_FIRE_FILE_OFFSET_HRS:-0}
-yyyymmdd=${PDY}
-hh=${cyc}
-export FIRE_FILE_CDATE=`$NDATE  -${TIME_OFFSET_HRS} $PDY$cyc`
-
-#
-#-----------------------------------------------------------------------
-# Set the run directory
+# Call the ex-script for this J-job and pass to it the necessary varia-
+# bles.
 #-----------------------------------------------------------------------
 #
-DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_FIRE_EMISSION}"
-#
-#-----------------------------------------------------------------------
-# Create the directory where the RAVE fire emission files should be stored
-#-----------------------------------------------------------------------
-#
-export FIRE_EMISSION_STAGING_DIR="${FIRE_EMISSION_STAGING_DIR:-${COMIN}/$cyc/FIRE_EMISSION}"
-mkdir -p ${FIRE_EMISSION_STAGING_DIR}
-#
-#-----------------------------------------------------------------------
-# Call the ex-script for this J-job and pass to it the necessary variables.
-#-----------------------------------------------------------------------
-#
-${HOMEaqm}/scripts/exaqm_fire_emission.sh
+startmsg
+${HOMEaqm}/scripts/exaqm_forecast_manager.sh
 export err=$?; err_chk
-#
-#======================================================================
-msg="JOB ${job} HAS COMPLETED NORMALLY."
-postmsg "${msg}"
-
-if [ "${KEEPDATA}" != "YES" ]; then
-   rm -rf ${DATA}
-fi
-#=======================================================================
 # Print exit message
 print_info_msg "
 ========================================================================
@@ -113,9 +84,9 @@ In directory:    \"${scrfunc_dir}\"
 ========================================================================"
 #
 #-----------------------------------------------------------------------
-# Restore the shell options saved at the beginning of this script/function.
+# Restore the shell options saved at the beginning of this script/func-
+# tion.
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
 
-date

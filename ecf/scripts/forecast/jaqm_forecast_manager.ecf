@@ -1,30 +1,36 @@
-#PBS -N aqm_forecast_data_cleanup_%CYC%
+#PBS -N aqm_forecast_manager_%CYC%
 #PBS -j oe
+#PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:10:00
-#PBS -l select=1:ncpus=1:mem=1GB
-#PBS -l place=vscatter
+#PBS -l walltime=04:00:00
+#PBS -l select=1:mpiprocs=1:ncpus=1
 #PBS -l debug=true
 
 model=aqm
+export cyc="%CYC%"
 %include <head.h>
 %include <envir-p1.h>
 
 ############################################################
 # Load modules
 ############################################################
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load python/${python_ver}
 
 module list
-
-export cyc=%CYC%
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_DATA_CLEANUP
+${HOMEaqm}/jobs/JAQM_FORECAST_MANAGER
 
 %include <tail.h>
-%manual
 
+%manual
 %end

@@ -13,20 +13,20 @@ export SLASH_ENSMEM_SUBDIR=''
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 
-. ${PARMaqm}/config/var_defns.sh
-. $USHaqm/source_util_funcs.sh
-
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-
 mkdir -p ${DATA}
 cd ${DATA}
 
+. $USHaqm/aqm_nco_config.sh
+
+. $USHaqm/source_util_funcs.sh
+
 export cycle=${cycle:-t${cyc}z}
-export CDATE=${PDY}${cyc}
 
 setpdy.sh
 . ./PDY
 
+export CDATE=${PDY}${cyc}
 . $USHaqm/job_preamble.sh
 
 export FIXaqmconfig="${FIXaqmbio:-${HOMEaqm}/fix/aqm/epa/data}"
@@ -44,7 +44,7 @@ export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
 export FIXemis="${FIXemis:-${FIXaqm}/emission}"
 
-
+export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
 export COMINm2="${COMaqm}/${RUN}.${PDYm2}"

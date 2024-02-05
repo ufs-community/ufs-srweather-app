@@ -97,7 +97,7 @@ fi
 # aqm_pm25_post
 #---------------------------------------------------------------
 
-ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
+cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
 
 cat >aqm_post.ini <<EOF1
 &control
@@ -115,7 +115,7 @@ export err=$?; err_chk
 if [ -e "${pgmout}" ]; then
    cat ${pgmout}
 fi
-cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.1hpm25.${id_domain}.grib2
+cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2
 
 export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 #export grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
@@ -124,7 +124,7 @@ export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198; do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.1hpm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
 done
 
 cp ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
@@ -134,15 +134,15 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   for grid in 227 198 196; do
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
-    export FORT11=${NET}.${cycle}.1hpm25.${grid}.grib2
+    export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
     export FORT12="filesize"
     export FORT31=
-    export FORT51=${NET}.${cycle}.1hpm25.${grid}.grib2.temp
+    export FORT51=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 				
     echo `ls -l ${NET}.${cycle}.grib2_pm25.${grid}.temp  | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
-    export FORT11=${NET}.${cycle}.1hpm25.${grid}.grib2.temp
+    export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
@@ -159,7 +159,7 @@ fi
 #---------------------------------------------------------------
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 
-  ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
+  cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
 
   export chk=1
   export chk1=1
@@ -178,9 +178,9 @@ EOF1
   # 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cp  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -190,9 +190,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     # 12z needs b.nc to find current day output from 04Z to 06Z
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      ln -sf ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cp ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
+      cp ${COMINm1}/12/${NET}.${PDYm1}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -200,9 +200,9 @@ EOF1
 
     # 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN}/06/${NET}.t06z.chem_sfc.nc ]; then
-      ln -sf ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
+      cp ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln -sf ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -225,14 +225,16 @@ EOF1
 
   for grid in 227 196 198; do
     gg="grid${grid}"
-    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.24hrpm25-ave.${grid}.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.1hpm25-max.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
 
+    cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2 ${COMOUT}
     # Add WMO header for daily 1h PM2.5 and 24hr_ave PM2.5
     rm -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
-    export FORT11=${NET}.${cycle}.1hpm25-max.${grid}.grib2
+    export FORT11=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
     export FORT12="filesize"
     export FORT31=
     export FORT51=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2.temp
@@ -249,15 +251,15 @@ EOF1
     rm -f filesize
     echo 0 > filesize
     export XLFRTEOPTS="unit_vars=yes"
-    export FORT11=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2
+    export FORT11=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
     export FORT12="filesize"
     export FORT31=
-    export FORT51=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2.temp
+    export FORT51=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
 
-    echo `ls -l  ${NET}.${cycle}.24hrpm25-ave.${grid}.grib2.temp | awk '{print $5} '` > filesize
+    echo `ls -l  ${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2.temp | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
-    export FORT11=${NET}.${cycle}.24hrpm25-ave.${grid}.grib2.temp
+    export FORT11=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
     export FORT31=
     export FORT51=awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2

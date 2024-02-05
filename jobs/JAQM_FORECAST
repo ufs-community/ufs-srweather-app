@@ -11,13 +11,20 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export subcyc=0
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
+export RUN="${RUN:-${RUN_dfv}}"
+export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
+# exception handling for retro case
+if [ -d ${umbrella_forecast_data}/RESTART_ORG ]; then
+  mv ${umbrella_forecast_data} ${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}-BAK
+fi
 
-. ${PARMaqm}/config/var_defns.sh
-. $USHaqm/source_util_funcs.sh
-
-export DATA=${DATA:-${DATAROOT}/${jobid}}
+export DATA=${DATA:-${umbrella_forecast_data}/${jobid}}
 mkdir -p ${DATA}
 cd ${DATA}
+
+. $USHaqm/aqm_nco_config.sh
+
+. $USHaqm/source_util_funcs.sh
 
 export cycle=${cycle:-t${cyc}z}
 
@@ -38,6 +45,7 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
+export COMaqm=${COMaqm:-$(compath.py ${envir}/aqm/${aqm_ver})}
 export COMIN="${COMIN:-${COMaqm}/${RUN}.${PDY}}"
 export COMINm1="${COMaqm}/${RUN}.${PDYm1}"
 export COMINm2="${COMaqm}/${RUN}.${PDYm2}"
@@ -71,7 +79,6 @@ the specified cycle.
 # Create the INPUT and RESTART directories under the run directory.
 #-----------------------------------------------------------------------
 #
-
 mkdir -p ${DATA}/INPUT
 mkdir -p ${DATA}/RESTART
 
@@ -83,15 +90,15 @@ export INPUT_DATA="${INPUT_DATA:-${COMIN}/${cyc}}"
 #-----------------------------------------------------------------------
 #
 ${HOMEaqm}/scripts/exaqm_forecast.sh
-export err=$?; err_chk
+export err=$?
+err_chk
 #
-#======================================================================
+#=======================================================================
 msg="JOB ${job} HAS COMPLETED NORMALLY."
 postmsg "${msg}"
-
-if [ "${KEEPDATA}" != "YES" ]; then
-   rm -rf ${DATA}
-fi
+# 
+#=======================================================================
+# Note:  $DATA for FORECAST will be deleted by JAQM_OUTPUT
 #=======================================================================
 # Print exit message
 print_info_msg "

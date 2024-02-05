@@ -1,14 +1,14 @@
 suite nco_aqm
   family primary
     edit aqm_ver 'v7.0.1'
-    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/%EMC_USER%/para/packages/aqm.%aqm_ver%'
+    edit PACKAGEHOME '/lfs/h2/emc/physics/noscrub/%EMC_USER%/nwdev/packages/aqm.%aqm_ver%'
     edit NET 'aqm'
     edit RUN 'aqm'
     edit PROJ 'AQM'
     edit PROJENVIR 'DEV'
     edit MACHINE_SITE 'development' 
     edit ENVIR 'prod'
-    edit QUEUE 'dev'
+    edit QUEUE 'devhigh'
     edit QUEUE_ARCH 'dev_transfer'
     edit OUTPUTDIR '/lfs/h2/emc/ptmp/%EMC_USER%/ecflow_aqm/para/output/prod/today'
     family 00
@@ -49,7 +49,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -60,6 +60,17 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+              event 1 release_manager
+            task jaqm_forecast_manager
+              trigger ./jaqm_forecast:release_manager
+              event 1 restart_gp1_rdy
+              event 2 000_rdy
+              event 3 001_rdy
+              event 4 002_rdy
+              event 5 003_rdy
+              event 6 004_rdy
+              event 7 005_rdy
+              event 8 006_rdy
           endfamily
           family post
             task jaqm_post_f000
@@ -137,7 +148,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -148,6 +159,93 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+              event 1 release_manager
+            task jaqm_forecast_manager
+              trigger ./jaqm_forecast:release_manager
+              event 1 restart_gp1_rdy
+              event 2 restart_gp2_rdy
+              event 3 restart_gp3_rdy
+              event 4 restart_gp4_rdy
+              event 5 restart_gp5_rdy
+              event 6 restart_gp6_rdy
+              event 7 restart_gp7_rdy
+              event 8 restart_gp8_rdy
+              event 9 restart_gp9_rdy
+              event 10 restart_gp10_rdy
+              event 11 restart_gp11_rdy
+              event 12 000_rdy
+              event 13 001_rdy
+              event 14 002_rdy
+              event 15 003_rdy
+              event 16 004_rdy
+              event 17 005_rdy
+              event 18 006_rdy
+              event 19 007_rdy
+              event 20 008_rdy
+              event 21 009_rdy
+              event 22 010_rdy
+              event 23 011_rdy
+              event 24 012_rdy
+              event 25 013_rdy
+              event 26 014_rdy
+              event 27 015_rdy
+              event 28 016_rdy
+              event 29 017_rdy
+              event 30 018_rdy
+              event 31 019_rdy
+              event 32 020_rdy
+              event 33 021_rdy
+              event 34 022_rdy
+              event 35 023_rdy
+              event 36 024_rdy
+              event 37 025_rdy
+              event 38 026_rdy
+              event 39 027_rdy
+              event 40 028_rdy
+              event 41 029_rdy
+              event 42 030_rdy
+              event 43 031_rdy
+              event 44 032_rdy
+              event 45 033_rdy
+              event 46 034_rdy
+              event 47 035_rdy
+              event 48 036_rdy
+              event 49 037_rdy
+              event 50 038_rdy
+              event 51 039_rdy
+              event 52 040_rdy
+              event 53 041_rdy
+              event 54 042_rdy
+              event 55 043_rdy
+              event 56 044_rdy
+              event 57 045_rdy
+              event 58 046_rdy
+              event 59 047_rdy
+              event 60 048_rdy
+              event 61 049_rdy
+              event 62 050_rdy
+              event 63 051_rdy
+              event 64 052_rdy
+              event 65 053_rdy
+              event 66 054_rdy
+              event 67 055_rdy
+              event 68 056_rdy
+              event 69 057_rdy
+              event 70 058_rdy
+              event 71 059_rdy
+              event 72 060_rdy
+              event 73 061_rdy
+              event 74 062_rdy
+              event 75 063_rdy
+              event 76 064_rdy
+              event 77 065_rdy
+              event 78 066_rdy
+              event 79 067_rdy
+              event 80 068_rdy
+              event 81 069_rdy
+              event 82 070_rdy
+              event 83 071_rdy
+              event 84 072_rdy
           endfamily
           family post
             task jaqm_post_f000
@@ -423,7 +521,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_ics==complete and ./jaqm_make_lbcs==complete 
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -434,6 +532,93 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+              event 1 release_manager
+            task jaqm_forecast_manager
+              trigger ./jaqm_forecast:release_manager
+              event 1 restart_gp1_rdy
+              event 2 restart_gp2_rdy
+              event 3 restart_gp3_rdy
+              event 4 restart_gp4_rdy
+              event 5 restart_gp5_rdy
+              event 6 restart_gp6_rdy
+              event 7 restart_gp7_rdy
+              event 8 restart_gp8_rdy
+              event 9 restart_gp9_rdy
+              event 10 restart_gp10_rdy
+              event 11 restart_gp11_rdy
+              event 12 000_rdy
+              event 13 001_rdy
+              event 14 002_rdy
+              event 15 003_rdy
+              event 16 004_rdy
+              event 17 005_rdy
+              event 18 006_rdy
+              event 19 007_rdy
+              event 20 008_rdy
+              event 21 009_rdy
+              event 22 010_rdy
+              event 23 011_rdy
+              event 24 012_rdy
+              event 25 013_rdy
+              event 26 014_rdy
+              event 27 015_rdy
+              event 28 016_rdy
+              event 29 017_rdy
+              event 30 018_rdy
+              event 31 019_rdy
+              event 32 020_rdy
+              event 33 021_rdy
+              event 34 022_rdy
+              event 35 023_rdy
+              event 36 024_rdy
+              event 37 025_rdy
+              event 38 026_rdy
+              event 39 027_rdy
+              event 40 028_rdy
+              event 41 029_rdy
+              event 42 030_rdy
+              event 43 031_rdy
+              event 44 032_rdy
+              event 45 033_rdy
+              event 46 034_rdy
+              event 47 035_rdy
+              event 48 036_rdy
+              event 49 037_rdy
+              event 50 038_rdy
+              event 51 039_rdy
+              event 52 040_rdy
+              event 53 041_rdy
+              event 54 042_rdy
+              event 55 043_rdy
+              event 56 044_rdy
+              event 57 045_rdy
+              event 58 046_rdy
+              event 59 047_rdy
+              event 60 048_rdy
+              event 61 049_rdy
+              event 62 050_rdy
+              event 63 051_rdy
+              event 64 052_rdy
+              event 65 053_rdy
+              event 66 054_rdy
+              event 67 055_rdy
+              event 68 056_rdy
+              event 69 057_rdy
+              event 70 058_rdy
+              event 71 059_rdy
+              event 72 060_rdy
+              event 73 061_rdy
+              event 74 062_rdy
+              event 75 063_rdy
+              event 76 064_rdy
+              event 77 065_rdy
+              event 78 066_rdy
+              event 79 067_rdy
+              event 80 068_rdy
+              event 81 069_rdy
+              event 82 070_rdy
+              event 83 071_rdy
+              event 84 072_rdy
           endfamily
           family post
             task jaqm_post_f000
@@ -709,7 +894,7 @@ suite nco_aqm
             task jaqm_ics
               trigger ./jaqm_make_ics==complete
             task jaqm_lbcs
-              trigger ./jaqm_make_lbcs==complete
+              trigger ./jaqm_make_lbcs==complete and ./jaqm_make_ics==complete
           endfamily
           family pts_fire_emis
             task jaqm_point_source
@@ -720,6 +905,17 @@ suite nco_aqm
           family forecast
             task jaqm_forecast
               trigger ../nexus==complete and ../prep==complete and ../pts_fire_emis==complete
+              event 1 release_manager
+            task jaqm_forecast_manager
+              trigger ./jaqm_forecast:release_manager
+              event 1 restart_gp1_rdy
+              event 2 000_rdy
+              event 3 001_rdy
+              event 4 002_rdy
+              event 5 003_rdy
+              event 6 004_rdy
+              event 7 005_rdy
+              event 8 006_rdy
           endfamily
           family post
             task jaqm_post_f000

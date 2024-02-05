@@ -13,7 +13,7 @@ export pgm=aqm_make_ics
 #-----------------------------------------------------------------------
 #
 . $USHaqm/source_util_funcs.sh
-source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
+ source_config_for_task "task_make_ics|task_get_extrn_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -626,7 +626,7 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
   case ${cyc} in
    00) rst_dir1=${COMINm1}/18/RESTART
        rst_file1=fv_tracer.res.tile1.nc
-       fv_tracer_file1=${rst_dir1}/${rst_file1}
+       fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
        rst_dir2=${COMINm1}/12/RESTART
        rst_file2=fv_tracer.res.tile1.nc
        fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
@@ -634,7 +634,7 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
    06)
        rst_dir1=${COMIN}/00/RESTART
        rst_file1=fv_tracer.res.tile1.nc
-       fv_tracer_file1=${rst_dir1}/${rst_file1}
+       fv_tracer_file1=${rst_dir1}/${PDY}.${cyc}0000.${rst_file1}
        rst_dir2=${COMINm1}/12/RESTART
        rst_file2=fv_tracer.res.tile1.nc
        fv_tracer_file2=${rst_dir2}/${PDY}.${cyc}0000.${rst_file2}
@@ -674,7 +674,8 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
       print_info_msg "
       Instead using tracer file: \"${fv_tracer_file2}\""
       cp ${fv_tracer_file2} ${fv_tracer_file1}
-      cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+      #cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+      cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     else
       print_info_msg "
       Both tracer files: \"${fv_tracer_file1}\" and
@@ -687,11 +688,13 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
       sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
       sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
       sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
+      mv ${rst_dir1}/coupler.res ${rst_dir1}/${PDY}.${cyc}0000.coupler.res
     fi 
   elif [ -s ${fv_tracer_file2} ]; then
     mkdir -p ${rst_dir1}
     cp ${fv_tracer_file2} ${fv_tracer_file1} 
-    cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+    #cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+    cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     print_info_msg "
     Tracer file: \"${fv_tracer_file1}\" not found."
     print_info_msg "
@@ -709,6 +712,7 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
     sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
     sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
     sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
+    mv  ${rst_dir1}/coupler.res ${rst_dir1}/${PDY}.${cyc}0000.coupler.res
   fi
 
 fi
