@@ -233,7 +233,7 @@ intersphinx_mapping = {
    'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
    'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
-   'uw': ('https://uwtools.readthedocs.io/en/develop', None),
+   'uw': ('https://uwtools.readthedocs.io/en/main', None),
 }
 
 # -- Options for todo extension ----------------------------------------------
