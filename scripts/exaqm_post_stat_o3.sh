@@ -132,6 +132,16 @@ while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
   (( fhr=fhr+1 ))
 done
 
+cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 ${COMOUT}
+
+if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+  cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 ${COMOUT}
+#  if [ "$SENDDBN" = "YES" ]; then
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2
+#  fi
+fi
+
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
 grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
@@ -161,10 +171,20 @@ for grid in 227 196 198;do
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
 
-    cp ${DATA}/${NET}.${cycle}.ave_1hr_o3*grib2 ${COMOUT}
-    cp ${DATA}/${NET}.${cycle}.ave_8hr_o3*grib2 ${COMOUT}
-    cp ${DATA}/awpaqm.${cycle}.1ho3*grib2 ${PCOM}
-    cp ${DATA}/awpaqm.${cycle}.8ho3*grib2 ${PCOM}
+    cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2 ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${grid}.grib2 ${COMOUT}
+    cp ${DATA}/awpaqm.${cycle}.1ho3.${grid}.grib2 ${PCOM}
+    cp ${DATA}/awpaqm.${cycle}.8ho3.${grid}.grib2 ${PCOM}
+
+    if [ "$SENDDBN" = "YES" ]; then
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_8hr_o3.${grid}.grib2
+    fi
+
+    if [ "$SENDDBN_NTC" = "YES" ]; then
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3.${grid}.grib2
+    fi
 
     for var in awpozcon;do
       cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
@@ -243,6 +263,12 @@ EOF1
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX8" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2
 
+  cp ${DATA}/${NET}.${cycle}.max_*hr_o3.${id_domain}.grib2  ${COMOUT}
+#  if [ "$SENDDBN" = "YES" ]; then
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2
+#  fi
+
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
   grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
   grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
@@ -252,7 +278,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
-    cp ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.max_*hr_o3.${grid}.grib2  ${COMOUT}
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2

@@ -15,6 +15,7 @@ export RUN="${RUN:-${RUN_dfv}}"
 export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 # exception handling for retro case
 if [ -d ${umbrella_forecast_data}/RESTART_ORG ]; then
+  [[ -d ${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}-BAK ]] && rm -rf ${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}-BAK
   mv ${umbrella_forecast_data} ${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}-BAK
 fi
 
