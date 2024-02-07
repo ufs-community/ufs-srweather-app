@@ -117,6 +117,13 @@ if [ -e "${pgmout}" ]; then
 fi
 cat ${NET}.${cycle}.pm25.*.${id_domain}.grib2 >> ${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2
 
+cp ${DATA}/${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 ${COMOUT}
+#if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+#  if [ "$SENDDBN" = "YES" ]; then
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2
+#  fi
+#fi
+
 export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 #export grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
 export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
@@ -128,7 +135,7 @@ for grid in 227 196 198; do
 done
 
 cp ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
-  
+
 # Create AWIPS GRIB2 data for Bias-Corrected PM2.5
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   for grid in 227 198 196; do
@@ -140,7 +147,8 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 				
-    echo `ls -l ${NET}.${cycle}.grib2_pm25.${grid}.temp  | awk '{print $5} '` > filesize
+    #echo `ls -l ${NET}.${cycle}.grib2_pm25.${grid}.temp  | awk '{print $5} '` > filesize
+    echo `ls -l ${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp  | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
@@ -148,8 +156,16 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
+    if [ "$SENDDBN" = "YES" ]; then
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
+    fi
+
     # Post Files to PCOM
     cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${PCOM}
+
+    if [ "$SENDDBN_NTC" = "YES" ]; then
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2
+    fi
 
   done
 fi
@@ -219,6 +235,14 @@ EOF1
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PMTF" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2
   wgrib2 ${NET}_pm25_24h_ave.${id_domain}.grib2 |grep "PDMAX1" | wgrib2 -i ${NET}_pm25_24h_ave.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2
 
+  cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 ${COMOUT}
+  cp ${DATA}/${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 ${COMOUT}
+
+#  if [ "$SENDDBN" = "YES" ]; then
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2
+#    ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2
+#  fi
+
   export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
   export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
   export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
@@ -230,6 +254,12 @@ EOF1
 
     cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2 ${COMOUT}
     cp ${DATA}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2 ${COMOUT}
+
+    if [ "$SENDDBN" = "YES" ]; then
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
+    fi   
+			
     # Add WMO header for daily 1h PM2.5 and 24hr_ave PM2.5
     rm -f filesize
     echo 0 > filesize
@@ -265,8 +295,6 @@ EOF1
     export FORT51=awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
     
-    cp ${DATA}/${NET}.${cycle}.ave_24hr_pm25*.grib2 ${COMOUT}
-    cp ${DATA}/${NET}.${cycle}.max_1hr_pm25*.grib2 ${COMOUT}
     cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${PCOM}
     cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${PCOM}
 
@@ -275,13 +303,8 @@ EOF1
     ##############################
 
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2 
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
-    fi
-
-    if [ "$SENDDBN" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
   done
 fi
