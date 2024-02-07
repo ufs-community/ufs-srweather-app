@@ -133,7 +133,6 @@ while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
 done
 
 cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 ${COMOUT}
-#cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 ${COMOUT}
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 ${COMOUT}

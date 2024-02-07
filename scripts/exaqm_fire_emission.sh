@@ -13,8 +13,11 @@ export pgm=aqm_fire_emission
 #
 #-----------------------------------------------------------------------
 #
+
 . $USHaqm/source_util_funcs.sh
+
 source_config_for_task "cpl_aqm_parm|task_fire_emission" ${GLOBAL_VAR_DEFNS_FP}
+
 #
 #-----------------------------------------------------------------------
 #

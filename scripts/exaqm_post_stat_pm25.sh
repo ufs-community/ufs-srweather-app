@@ -147,7 +147,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export FORT51=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 				
-    #echo `ls -l ${NET}.${cycle}.grib2_pm25.${grid}.temp  | awk '{print $5} '` > filesize
     echo `ls -l ${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp  | awk '{print $5} '` > filesize
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
