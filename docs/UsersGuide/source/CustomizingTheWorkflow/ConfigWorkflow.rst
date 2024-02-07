@@ -320,20 +320,14 @@ Directory Parameters
 ``EXPT_BASEDIR``: (Default: "")
    The full path to the base directory in which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ufs-srweather-app`` directory. If set to a relative path, the provided path will be appended to the default value ``${HOMEdir}/../expt_dirs``. For example, if ``EXPT_BASEDIR=some/relative/path`` (i.e. a path that does not begin with ``/``), the value of ``EXPT_BASEDIR`` used by the workflow will be ``EXPT_BASEDIR=${HOMEdir}/../expt_dirs/some/relative/path``.
 
-``EXPT_SUBDIR``: (Default: "")
-   The user-designated name of the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
-
-   .. code-block:: console
-
-      EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-
-   This parameter must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
+``EXPT_SUBDIR``: (Default: 'experiment')
+   If ``EXPTDIR`` is not specified, ``EXPT_SUBDIR`` represents the name of the experiment directory (*not* the full path). 
 
 ``EXEC_SUBDIR``: (Default: "exec")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
 
 ``EXPTDIR``: (Default: ``'{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'``)
-   The full path to the experiment directory. By default, this value is equivalent to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
+   The full path to the experiment directory. By default, this value will point to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
 
 Pre-Processing File Separator Parameters
 --------------------------------------------
@@ -490,7 +484,7 @@ Experiment Fix File Paths
 
 These parameters are associated with the fixed (i.e., static) files. Unlike the file path parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
 
-``FIXdir``: (Default: ``'{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}'``)
+``FIXdir``: (Default: ``'{{ EXPTDIR }}'``)
    Location where fix files will be stored for a given experiment.
 
 ``FIXam``: (Default: ``'{{ [FIXdir, "fix_am"]|path_join }}'``)
@@ -655,8 +649,8 @@ Forecast Parameters
 
 Pre-Existing Directory Parameter
 ------------------------------------
-``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, ``"reuse"``, or ``"quit"``.  The behavior for each of these values is as follows:
+``PREEXISTING_DIR_METHOD``: (Default: "quit")
+   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of four valid values: ``"delete"``, ``"rename"``, ``"reuse"``, or ``"quit"``.  The behavior for each of these values is as follows:
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
@@ -1628,16 +1622,19 @@ Verification Parameters
 
 Non-default parameters for verification tasks are set in the ``verification:`` section of the ``config.yaml`` file.
 
+General Verification Parameters
+---------------------------------
+
+``METPLUS_VERBOSITY_LEVEL``: (Default: ``2``)
+   Logging verbosity level used by METplus verification tools. Valid values: 0 to 5, with 0 quiet and 5 loud. 
+
 Templates for Observation Files
 ---------------------------------
 
 This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` observation files.
 
-``OBS_CCPA_APCP01h_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'``)
-   File name template used to obtain the input observation files (in the ``PcpCombine_obs`` tasks) that contain the 1-hour accumulated precipitation (APCP) from which APCP for longer accumulations will be generated.
-
-``OBS_CCPA_APCPgt01h_FN_TEMPLATE``: (Default: ``'${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'``)
-   File name template used to generate the observation files (in the ``PcpCombine_obs`` tasks) containing accumulated precipitation for accumulation periods longer than 1-hour.
+``OBS_CCPA_APCP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'``)
+   File name template for CCPA accumulated precipitation (APCP) observations. This template is used by the workflow tasks that call the METplus *PcpCombine* tool on CCPA obs to find the input observation files containing 1-hour APCP and then generate NetCDF files containing either 1-hour or greater than 1-hour APCP.
 
 ``OBS_NOHRSC_ASNOW_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'``)
    File name template for NOHRSC snow observations.
@@ -1648,11 +1645,19 @@ This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`
 ``OBS_MRMS_RETOP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
    File name template for MRMS echo top observations.
 
-``OBS_NDAS_SFCorUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
-   File name template for :term:`NDAS` surface and upper air observations.
+``OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
+   File name template for :term:`NDAS` surface and upper air observations. This template is used by the workflow tasks that call the METplus *Pb2nc* tool on NDAS obs to find the input observation files containing ADP surface (ADPSFC) or ADP upper air (ADPUPA) fields and then generate NetCDF versions of these files.
 
 ``OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE``: (Default: ``'${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'``)
-   File name template for NDAS surface and upper air observations after processing by MET's ``pb2nc`` tool (to change format to NetCDF).
+   File name template for NDAS surface and upper air observations after processing by MET's *pb2nc* tool (to change format to NetCDF).
+
+``OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT``: (Default: ``'${OBS_CCPA_APCP_FN_TEMPLATE}_a${ACCUM_HH}h.nc'``)
+   Template used to specify the names of the output NetCDF observation files generated by the workflow verification tasks that call the METplus *PcpCombine* tool on CCPA observations. (These files will contain observations of accumulated precipitation [APCP], both for 1 hour and for > 1 hour accumulation periods, in NetCDF format.)
+
+``OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}.nc'``)
+   Template used to specify the names of the output NetCDF observation files generated by the workflow verification tasks that call the METplus Pb2nc tool on NDAS observations.  (These files will contain obs ADPSFC or ADPUPA fields in NetCDF format.)
+
+
 
 VX Forecast Model Name
 ------------------------
