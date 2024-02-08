@@ -36,7 +36,7 @@ must be staged by the user unless the user is running on a `Level 1/pre-configur
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP input files can be found in the :doc:`UPP User's Guide <upp:InputsOutputs>`.
+Documentation for the UPP input files can be found in the :ref:`UPP User's Guide <upp:input-output>`.
 
 .. _WorkflowTemplates:
 
