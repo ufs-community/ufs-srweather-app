@@ -1,33 +1,28 @@
 #!/usr/bin/env python3
 
+"""
+Updates stochastic physics parameters in the namelist based on user configuration settings.
+"""
+
 import argparse
+import datetime as dt
 import os
 import sys
-import tempfile
-from datetime import datetime
-from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
+
+from uwtools.api.config import get_sh_config, realize
 
 from python_utils import (
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
-    date_to_str,
-    mkdir_vrfy,
-    cp_vrfy,
-    cd_vrfy,
-    str_to_type,
     import_vars,
-    set_env_var,
-    define_macos_utilities,
     cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
 
+VERBOSE = os.environ.get("VERBOSE", "true")
 
 
-def set_FV3nml_ens_stoch_seeds(cdate):
+def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     """
     This function, for an ensemble-enabled experiment
     (i.e. for an experiment for which the workflow configuration variable
@@ -40,15 +35,17 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     called as part of the TN_RUN_FCST task.
 
     Args:
-        cdate
+        cdate        the cycle
+        expt_config  the in-memory dict representing the experiment configuration
     Returns:
         None
     """
 
     print_input_args(locals())
 
-    # import all environment variables
-    import_vars()
+    # set variables important to this function from the experiment definition
+    import_vars(dictionary=expt_config["global"])
+    # pylint: disable=undefined-variable
 
     #
     # -----------------------------------------------------------------------
@@ -60,7 +57,7 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
 
-    ensmem_num = int(ENSMEM_INDX)
+    ensmem_num = int(os.environ["ENSMEM_INDX"])
 
     cdate_i = int(cdate.strftime("%Y%m%d%H"))
 
@@ -96,50 +93,25 @@ def set_FV3nml_ens_stoch_seeds(cdate):
 
         settings["nam_sfcperts"] = {"iseed_lndp": [iseed_lsm_spp]}
 
-    settings_str = cfg_to_yaml_str(settings)
-
     print_info_msg(
         dedent(
             f"""
             The variable 'settings' specifying seeds in '{fv3_nml_ensmem_fp}'
             has been set as follows:
 
-            settings =\n\n"""
-        )
-        + settings_str,
+            settings =\n\n
+
+            {cfg_to_yaml_str(settings)}"""
+        ),
         verbose=VERBOSE,
     )
-
-    with tempfile.NamedTemporaryFile(
-        dir="./",
-        mode="w+t",
-        prefix="namelist_settings",
-        suffix=".yaml") as tmpfile:
-        tmpfile.write(cfg_to_yaml_str(settings))
-        tmpfile.seek(0)
-        cmd = " ".join(["uw config realize",
-            "-i", fv3_nml_ensmem_fp,
-            "-o", fv3_nml_ensmem_fp,
-            "-v",
-            "--values-file", tmpfile.name,
-            ]
+    realize(
+        input_config=fv3_nml_ensmem_fp,
+        input_format="nml",
+        output_file=fv3_nml_ensmem_fp,
+        output_format="nml",
+        supplemental_configs=settings,
         )
-        indent = "  "
-        try:
-            logfunc = logging.info
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            logfunc = logging.error
-            output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
-            sys.exit(1)
-        finally:
-            logfunc("Output:")
-            for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)
-
-
 
 def parse_args(argv):
     """Parse command line arguments"""
@@ -147,7 +119,13 @@ def parse_args(argv):
         description="Creates stochastic seeds for an ensemble experiment."
     )
 
-    parser.add_argument("-c", "--cdate", dest="cdate", required=True, help="Date.")
+    parser.add_argument(
+        "-c", "--cdate",
+        dest="cdate",
+        required=True,
+        type=lambda d: dt.datetime.strptime(d, '%Y%m%d%H'),
+        help="Date.",
+    )
 
     parser.add_argument(
         "-p",
@@ -162,7 +140,5 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
-    set_FV3nml_ens_stoch_seeds(str_to_type(args.cdate))
+    config = get_sh_config(args.path_to_defns)
+    set_fv3nml_ens_stoch_seeds(args.cdate, config)
