@@ -11,9 +11,10 @@ import argparse
 import logging
 import os
 import sys
-import tempfile
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
+
+from uwtools.api.config import get_yaml_config, realize
 
 from python_utils import (
     log_info,
@@ -21,7 +22,6 @@ from python_utils import (
     export_vars,
     cp_vrfy,
     ln_vrfy,
-    load_config_file,
     mkdir_vrfy,
     mv_vrfy,
     create_symlink_to_file,
@@ -29,11 +29,10 @@ from python_utils import (
     cfg_to_yaml_str,
     find_pattern_in_str,
     flatten_dict,
-    update_dict,
 )
 
 from setup import setup
-from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
+from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
 from check_python_version import check_python_version
 
@@ -513,38 +512,14 @@ def generate_FV3LAM_wflow(
     # -----------------------------------------------------------------------
     #
 
-    physics_cfg = load_config_file(FV3_NML_YAML_CONFIG_FP)[CCPP_PHYS_SUITE]
-    update_dict(settings, physics_cfg)
-
-    with tempfile.NamedTemporaryFile(
-        dir="./",
-        mode="w+t",
-        prefix="namelist_settings",
-        suffix=".yaml") as tmpfile:
-        tmpfile.write(cfg_to_yaml_str(physics_cfg))
-        tmpfile.seek(0)
-        cmd = " ".join(["uw config realize",
-            "-i", FV3_NML_BASE_SUITE_FP,
-            "-o", FV3_NML_FP,
-            "-v",
-            "--values-file", tmpfile.name,
-            ])
-
-        indent = "  "
-        output = ""
-        try:
-            logfunc = logging.info
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            logfunc = logging.error
-            output = e.output
-            logging.exception("Failed with status: %s", indent, e.returncode)
-            sys.exit(1)
-        finally:
-            logfunc("Output:")
-            for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)
+    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
+    realize(
+        input_config=FV3_NML_BASE_SUITE_FP,
+        input_format="nml",
+        output_file=FV3_NML_FP,
+        output_format="nml",
+        supplemental_configs=physics_cfg[CCPP_PHYS_SUITE],
+        )
 
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
@@ -560,7 +535,7 @@ def generate_FV3LAM_wflow(
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
-        set_FV3nml_sfc_climo_filenames(debug)
+        set_fv3nml_sfc_climo_filenames(debug)
 
     #
     # -----------------------------------------------------------------------
@@ -674,35 +649,13 @@ def generate_FV3LAM_wflow(
     #-----------------------------------------------------------------------
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
-
-        with tempfile.NamedTemporaryFile(
-            dir="./",
-            mode="w+t",
-            prefix="namelist_settings",
-            suffix=".yaml") as tmpfile:
-            tmpfile.write(cfg_to_yaml_str(settings))
-            tmpfile.seek(0)
-            cmd = " ".join(["uw config realize",
-                "-i", FV3_NML_FP,
-                "-o", FV3_NML_STOCH_FP,
-                "-v",
-                "--values-file", tmpfile.name,
-                ])
-
-            indent = "  "
-            try:
-                logfunc = logging.info
-                output = check_output(cmd, encoding="utf=8", shell=True,
-                        stderr=STDOUT, text=True)
-            except CalledProcessError as e:
-                logfunc = logging.error
-                output = e.output
-                logging.exception("Failed with status: %s", indent, e.returncode)
-                sys.exit(1)
-            finally:
-                logfunc("Output:")
-                for line in output.split("\n"):
-                    logfunc("%s%s", indent * 2, line)
+        realize(
+            input_config=FV3_NML_FP,
+            input_format="nml",
+            output_file=FV3_NML_STOCH_FP,
+            output_format="nml",
+            supplemental_configs=settings,
+            )
 
     #
     # -----------------------------------------------------------------------
