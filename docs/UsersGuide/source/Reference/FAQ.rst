@@ -11,6 +11,45 @@ FAQ
    :depth: 2
    :local:
 
+=====================
+Building the SRW App
+=====================
+
+.. _CleanUp:
+
+How can I clean up the SRW App code if something went wrong during the build?
+===============================================================================
+
+The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals or building the application. To view usage instructions and to get help, run with the ``-h`` flag:
+
+.. code-block:: console
+   
+   ./devclean.sh -h
+
+To remove the ``build`` directory, run:
+
+.. code-block:: console
+   
+   ./devclean.sh --remove
+
+To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``share``), run: 
+
+.. code-block:: console
+   
+   ./devclean.sh --clean
+   OR
+   ./devclean.sh -a
+
+To remove external submodules, run: 
+
+.. code-block:: console
+   
+   ./devclean.sh --sub-modules
+
+Users will need to check out the external submodules again before building the application. 
+
+In addition to the options above, many standard terminal commands can be run to remove unwanted files and directories (e.g., ``rm -rf expt_dirs``). A complete explanation of these options is beyond the scope of this User's Guide. 
+
 ===========================
 Configuring an Experiment
 ===========================
@@ -136,7 +175,7 @@ Once you verify that the task you want to modify is included in your workflow, y
 .. figure:: https://raw.githubusercontent.com/wiki/ufs-community/ufs-srweather-app/OtherImages/FAQpostyaml.png
    :alt: Excerpt of post.yaml file 
 
-*Excerpt of post.yaml*
+   *Excerpt of post.yaml*
 
 Since the ``run_post_mem###_f###`` task in ``post.yaml`` comes under ``metatask_run_ens_post`` and ``metatask_run_post_mem#mem#_all_fhrs``, all of these tasks and metatasks must be included under ``rocoto: tasks:`` before defining the ``walltime`` variable. Therefore, to change the ``walltime`` from 15 to 20 minutes, the ``rocoto: tasks:`` section should look like this:
 
@@ -155,8 +194,8 @@ See `SRW Discussion #990 <https://github.com/ufs-community/ufs-srweather-app/dis
 
 .. _AddPhys:
 
-How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
-====================================================================
+:bolditalic:`Advanced:` How can I add a physics scheme (e.g., YSU PBL) to the UFS SRW App?
+===============================================================================================
 
 At this time, there are ten physics suites available in the SRW App, :ref:`five of which are fully supported <CCPP_Params>`. However, several additional physics schemes are available in the UFS Weather Model (WM) and can be enabled in the SRW App. The CCPP Scientific Documentation details the various `namelist options <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/_c_c_p_psuite_nml_desp.html>`__ available in the UFS WM, including physics schemes, and also includes an `overview of schemes and suites <https://dtcenter.ucar.edu/GMTB/v6.0.0/sci_doc/allscheme_page.html>`__. 
 
@@ -208,6 +247,19 @@ where ``-c`` specifies the cycle date (first column of ``rocotostat`` output) an
 (second column of ``rocotostat`` output). After using ``rocotorewind``, the next time ``rocotorun`` is used to
 advance the workflow, the job will be resubmitted.
 
+.. _TweakExpt:
+
+I ran an experiment, and now I want to tweak one minor detail and rerun the task(s) without regenerating the experiment. How can I do this?
+==============================================================================================================================================
+
+In almost every case, it is best to regenerate the experiment from scratch, even if most of the experiment ran successfully and the modification seems minor. Some variable checks are performed in the workflow generation step, while others are done at runtime. Some settings are changed based on the cycle, and some changes may be incompatible with the output of a previous task. At this time, there is no general way to partially rerun an experiment with different settings, so it is almost always better just to regenerate the experiment from scratch.
+
+The exception to this rule is tasks that failed due to platform reasons (e.g., disk space, incorrect file paths). In these cases, users can refer to the :ref:`FAQ on how to restart a DEAD task <RestartTask>`.
+
+Users who are insistent on modifying and rerunning an experiment that fails for non-platform reasons would need to modify variables in ``config.yaml`` and ``var_defns.sh`` at a minimum. Modifications to ``rocoto_defns.yaml`` and ``FV3LAM_wflow.xml`` may also be necessary. However, even with modifications to all appropriate variables, the task may not run successfully due to task dependencies or other factors mentioned above. If there is a compelling need to make such changes in place (e.g., resource shortage for expensive experiments), users are encouraged to reach out via `GitHub Discussions <https://github.com/ufs-community/ufs-srweather-app/discussions/categories/q-a>`__ for advice.
+
+See `SRW Discussion #995 <https://github.com/ufs-community/ufs-srweather-app/discussions/995>`__ for the question that inspired this FAQ.
+
 .. _NewExpt:
 
 How can I run a new experiment?
@@ -239,42 +291,3 @@ If you encounter issues while generating ICS and LBCS for a predefined 3-km grid
 Additionally, users can try increasing the number of processors or the wallclock time requested for the jobs. Sometimes jobs may fail without errors because the process is cut short. These settings can be adusted in one of the ``ufs-srweather-app/parm/wflow`` files. For ICs/LBCs tasks, these parameters are set in the ``coldstart.yaml`` file. 
 
 Users can also update the hash of UFS_UTILS in the ``Externals.cfg`` file to the HEAD of that repository. There was a known memory issue with how ``chgres_cube`` was handling regridding of the 3-D wind field for large domains at high resolutions (see `UFS_UTILS PR #766 <https://github.com/ufs-community/UFS_UTILS/pull/766>`__ and the associated issue for more information). If changing the hash in ``Externals.cfg``, users will need to rerun ``manage_externals`` and rebuild the code (see :numref:`Section %s <BuildSRW>`). 
-
-=========
-General
-=========
-
-.. _CleanUp:
-
-How can I clean up the SRW App code if something went wrong?
-===============================================================
-
-The ``ufs-srweather-app`` repository contains a ``devclean.sh`` convenience script. This script can be used to clean up code if something goes wrong when checking out externals or building the application. To view usage instructions and to get help, run with the ``-h`` flag:
-
-.. code-block:: console
-   
-   ./devclean.sh -h
-
-To remove the ``build`` directory, run:
-
-.. code-block:: console
-   
-   ./devclean.sh --remove
-
-To remove all build artifacts (including ``build``, ``exec``, ``lib``, and ``share``), run: 
-
-.. code-block:: console
-   
-   ./devclean.sh --clean
-   OR
-   ./devclean.sh -a
-
-To remove external submodules, run: 
-
-.. code-block:: console
-   
-   ./devclean.sh --sub-modules
-
-Users will need to check out the external submodules again before building the application. 
-
-In addition to the options above, many standard terminal commands can be run to remove unwanted files and directories (e.g., ``rm -rf expt_dirs``). A complete explanation of these options is beyond the scope of this User's Guide. 
