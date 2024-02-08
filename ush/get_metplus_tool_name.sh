@@ -1,17 +1,21 @@
 #
 #-----------------------------------------------------------------------
 #
-# This file defines a function that uses the given generic name of a MET/
-# METplus tool (generic_tool_name; this is a name that does not contain
-# any separators like underscores and that may be in upper or lower case)
-# to set its name in MET (met_tool_name) and in METplus (metplus_tool_name).
-# Note that the tool name in MET is in "snake case" (i.e. uses underscores
-# as separators with all lower case) while that in METplus is in "pascal
-# case" (i.e. no separators and with first letter of each word capitalized).
+# This file defines a function that takes as input the name of a MET/METplus
+# tool spelled in upper flat case, i.e. all-caps and without separators
+# (e.g. METPLUSTOOLNAME) and returns that name converted to the following
+# cases:
+#
+# 1) Snake case, i.e. in all lower-case with underscores as word separators,
+#    e.g. metplus_tool_name.
+# 2) Pascal case, i.e. without separators and with the first letter of
+#    each word capitalized, e.g. MetplusToolName.
+# 3) Screaming snake case, i.e. in all upper-case with underscores as
+#    word separators, e.g. METPLUS_TOOL_NAME.
 #
 #-----------------------------------------------------------------------
 #
-function get_met_metplus_tool_name() {
+function get_metplus_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
@@ -31,9 +35,10 @@ function get_met_metplus_tool_name() {
 #-----------------------------------------------------------------------
 #
   local valid_args=( \
-        "generic_tool_name" \
-        "outvarname_met_tool_name" \
+        "METPLUSTOOLNAME" \
         "outvarname_metplus_tool_name" \
+        "outvarname_MetplusToolName" \
+        "outvarname_METPLUS_TOOL_NAME" \
         )
   process_args valid_args "$@"
 #
@@ -53,8 +58,9 @@ function get_met_metplus_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
-  local _generic_tool_name_name_ \
-        _metplus_tool_name_
+  local _metplus_tool_name_ \
+        _MetplusToolName_ \
+        _METPLUS_TOOL_NAME_
 #
 #-----------------------------------------------------------------------
 #
@@ -63,45 +69,45 @@ function get_met_metplus_tool_name() {
 #
 #-----------------------------------------------------------------------
 #
-  generic_tool_name=${generic_tool_name,,}
-  valid_vals_generic_tool_name=( \
+  valid_vals_METPLUSTOOLNAME=( \
     "PB2NC" "PCPCOMBINE" "GRIDSTAT" "POINTSTAT" "GENENSPROD" "ENSEMBLESTAT" \
-    "pb2nc" "pcpcombine" "gridstat" "pointstat" "genensprod" "ensemblestat" \
     )
-  check_var_valid_value "generic_tool_name" "valid_vals_generic_tool_name"
+  check_var_valid_value "METPLUSTOOLNAME" "valid_vals_METPLUSTOOLNAME"
 
-  case "${generic_tool_name}" in
-    "pb2nc")
-      _met_tool_name_="pb2nc"
-      _metplus_tool_name_="Pb2nc"
+  case "${METPLUSTOOLNAME}" in
+    "PB2NC")
+      _metplus_tool_name_="pb2nc"
+      _MetplusToolName_="Pb2nc"
       ;;
-    "pcpcombine")
-      _met_tool_name_="pcp_combine"
-      _metplus_tool_name_="PcpCombine"
+    "PCPCOMBINE")
+      _metplus_tool_name_="pcp_combine"
+      _MetplusToolName_="PcpCombine"
       ;;
-    "gridstat")
-      _met_tool_name_="grid_stat"
-      _metplus_tool_name_="GridStat"
+    "GRIDSTAT")
+      _metplus_tool_name_="grid_stat"
+      _MetplusToolName_="GridStat"
       ;;
-    "pointstat")
-      _met_tool_name_="point_stat"
-      _metplus_tool_name_="PointStat"
+    "POINTSTAT")
+      _metplus_tool_name_="point_stat"
+      _MetplusToolName_="PointStat"
       ;;
-    "genensprod")
-      _met_tool_name_="gen_ens_prod"
-      _metplus_tool_name_="GenEnsProd"
+    "GENENSPROD")
+      _metplus_tool_name_="gen_ens_prod"
+      _MetplusToolName_="GenEnsProd"
       ;;
-    "ensemblestat")
-      _met_tool_name_="ensemble_stat"
-      _metplus_tool_name_="EnsembleStat"
+    "ENSEMBLESTAT")
+      _metplus_tool_name_="ensemble_stat"
+      _MetplusToolName_="EnsembleStat"
       ;;
     *)
       print_err_msg_exit "\
-Generic name specified for MET/METplus tool (generic_tool_name) is
+Generic name specified for MET/METplus tool (METPLUSTOOLNAME) is
 unupported:
-  generic_tool_name = \"${generic_tool_name}\""
+  METPLUSTOOLNAME = \"${METPLUSTOOLNAME}\""
       ;;
   esac
+
+  _METPLUS_TOOL_NAME_=$(echo_uppercase ${_metplus_tool_name_})
 #
 #-----------------------------------------------------------------------
 #
@@ -109,12 +115,16 @@ unupported:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -z "${outvarname_met_tool_name}" ]; then
-    printf -v ${outvarname_met_tool_name} "%s" "${_met_tool_name_}"
-  fi
-
   if [ ! -z "${outvarname_metplus_tool_name}" ]; then
     printf -v ${outvarname_metplus_tool_name} "%s" "${_metplus_tool_name_}"
+  fi
+
+  if [ ! -z "${outvarname_MetplusToolName}" ]; then
+    printf -v ${outvarname_MetplusToolName} "%s" "${_MetplusToolName_}"
+  fi
+
+  if [ ! -z "${outvarname_METPLUS_TOOL_NAME}" ]; then
+    printf -v ${outvarname_METPLUS_TOOL_NAME} "%s" "${_METPLUS_TOOL_NAME_}"
   fi
 #
 #-----------------------------------------------------------------------

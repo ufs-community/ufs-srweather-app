@@ -106,7 +106,7 @@ function set_vx_fhr_list() {
       fhr_int="${accum_hh}"
       ;;
     "ASNOW")
-      if [ ${accum_hh} = "24" ] ; then
+      if [ "${accum_hh}" = "24" ]; then
         fhr_min="24"
         fhr_int="12"
       else
@@ -122,11 +122,11 @@ function set_vx_fhr_list() {
       fhr_min="00"
       fhr_int="01"
       ;;
-    "SFC")
+    "ADPSFC")
       fhr_min="00"
       fhr_int="01"
       ;;
-    "UPA")
+    "ADPUPA")
       fhr_min="00"
       fhr_int="06"
       ;;
