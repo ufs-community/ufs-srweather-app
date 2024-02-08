@@ -14,7 +14,7 @@ import sys
 from subprocess import STDOUT, CalledProcessError, check_output
 from textwrap import dedent
 
-from uwtools.api.config import get_yaml_config, realize
+from uwtools.api.config import get_nml_config, get_yaml_config, realize
 
 from python_utils import (
     log_info,
@@ -513,14 +513,12 @@ def generate_FV3LAM_wflow(
     #
 
     physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
-    realize(
-        input_config=FV3_NML_BASE_SUITE_FP,
-        input_format="nml",
-        output_file=FV3_NML_FP,
-        output_format="nml",
-        supplemental_configs=physics_cfg[CCPP_PHYS_SUITE],
-        )
-
+    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
+    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
+    for sect, values in base_namelist.copy().items():
+        if not values:
+            del base_namelist[sect]
+    base_namelist.dump(FV3_NML_FP)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -654,7 +652,7 @@ def generate_FV3LAM_wflow(
             input_format="nml",
             output_file=FV3_NML_STOCH_FP,
             output_format="nml",
-            supplemental_configs=settings,
+            supplemental_configs=[settings],
             )
 
     #

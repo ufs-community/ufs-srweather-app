@@ -21,7 +21,7 @@ from python_utils import (
 
 VERBOSE = os.environ.get("VERBOSE", "true")
 
-needed_vars = [
+NEEDED_VARS = [
     "CRES",
     "DO_ENSEMBLE",
     "EXPTDIR",
@@ -31,7 +31,6 @@ needed_vars = [
     "RUN_ENVIR",
     ]
 
-import_vars(env_vars=needed_vars)
 
 # pylint: disable=undefined-variable
 
@@ -52,6 +51,7 @@ def set_fv3nml_sfc_climo_filenames(debug=False):
     """
 
     # import all environment variables
+    import_vars(env_vars=NEEDED_VARS)
 
     fixed_cfg = get_yaml_config(os.path.join(PARMdir, "fixed_files_mapping.yaml"))["fixed_files"]
 
@@ -104,7 +104,7 @@ def set_fv3nml_sfc_climo_filenames(debug=False):
         input_format="nml",
         output_file=FV3_NML_FP,
         output_format="nml",
-        supplemental_configs=settings,
+        supplemental_configs=[settings],
         )
 
 def parse_args(argv):

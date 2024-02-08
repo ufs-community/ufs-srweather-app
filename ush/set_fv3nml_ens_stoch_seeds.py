@@ -110,7 +110,7 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
         input_format="nml",
         output_file=fv3_nml_ensmem_fp,
         output_format="nml",
-        supplemental_configs=settings,
+        supplemental_configs=[settings],
         )
 
 def parse_args(argv):

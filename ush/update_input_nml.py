@@ -74,7 +74,7 @@ def update_input_nml(namelist, restart, aqm_na_13km):
         input_format="nml",
         output_file=namelist,
         output_format="nml",
-        supplemental_configs=settings,
+        supplemental_configs=[settings],
         )
 
 def parse_args(argv):
