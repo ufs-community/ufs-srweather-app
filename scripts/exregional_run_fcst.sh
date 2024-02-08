@@ -492,8 +492,7 @@ fi
 #
 if [ "${CPL_AQM}" = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   python3 $USHdir/update_input_nml.py \
-    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-    --run_dir "${DATA}" \
+    --namelist "${DATA}/${FV3_NML_FN}" \
     --aqm_na_13km || print_err_msg_exit "\
 Call to function to update the FV3 input.nml file for air quality modeling
 using AQM_NA_13km for the current cycle's (cdate) run directory (DATA) failed:
@@ -520,8 +519,7 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
 
   # Update FV3 input.nml for restart
   python3 $USHdir/update_input_nml.py \
-    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-    --run_dir "${DATA}" \
+    --namelist "${DATA}/${FV3_NML_FN}" \
     --restart
   export err=$?
   if [ $err -ne 0 ]; then

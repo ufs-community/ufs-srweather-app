@@ -139,35 +139,6 @@ fixed_files:
   !join_str ["FNSMCC | ",*FNSMCC],
   !join_str ["FNMSKH | ",*FNMSKH]
   ]
-  #"FNZORC | $FNZORC",
-
-  #
-  #-----------------------------------------------------------------------
-  #
-  # FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-  # This array is used to set some of the namelist variables in the forecast 
-  # model's namelist file that represent the relative or absolute paths of 
-  # various fixed files (the first column of the array, where columns are 
-  # delineated by the pipe symbol "|") to the full paths to surface climatology 
-  # files (on the native FV3-LAM grid) in the FIXlam directory derived from 
-  # the corresponding surface climatology fields (the second column of the 
-  # array).
-  #
-  #-----------------------------------------------------------------------
-  #
-  FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING: [
-  "FNALBC  | snowfree_albedo",
-  "FNALBC2 | facsf",
-  "FNTG3C  | substrate_temperature",
-  "FNVEGC  | vegetation_greenness",
-  "FNVETC  | vegetation_type",
-  "FNSOTC  | soil_type",
-  "FNVMNC  | vegetation_greenness",
-  "FNVMXC  | vegetation_greenness",
-  "FNSLPC  | slope_type",
-  "FNABSC  | maximum_snow_albedo"
-  ]
-  
 
   #
   #-----------------------------------------------------------------------
