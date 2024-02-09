@@ -141,7 +141,7 @@ Predefined 25-km Grid
 
 .. _RRFS_CONUS_25km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_25km.sphr.native_wrtcmp.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_25km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write component grid (blue).*

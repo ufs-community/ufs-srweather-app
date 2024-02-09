@@ -136,7 +136,7 @@ A list of available component documentation is shown in :numref:`Table %s <list_
    * - Unified Post Processor Scientific Documentation
      - https://noaa-emc.github.io/UPP/
    * - Unified Workflow User's Guide
-     - https://uwtools.readthedocs.io/en/develop/
+     - https://uwtools.readthedocs.io/en/main/
    * - METplus User's Guide
      - https://metplus.readthedocs.io/en/latest/Users_Guide/index.html
    * - HEMCO User's Guide (a component of the NEXUS AQM system)
