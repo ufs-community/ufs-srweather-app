@@ -330,7 +330,11 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_nexus_gfs_sfc }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine not in ["WCOSS2"] %}
+    {%- if machine in ["HERA"] %}
+    <native>-n 1 &SCHED_NATIVE_CMD;</native>
+    {%- else %}
     <native>&SCHED_NATIVE_CMD;</native>
+    {%- endif %}
   {%- endif %}
     <jobname>&TN_NEXUS_GFS_SFC;</jobname>
     <join>&LOGDIR;/&TN_NEXUS_GFS_SFC;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
@@ -493,7 +497,11 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_get_extrn_ics }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine not in ["WCOSS2"] %}
+    {%- if machine in ["HERA"] %}
+    <native>-n 1 &SCHED_NATIVE_CMD;</native>
+    {%- else %}
     <native>&SCHED_NATIVE_CMD;</native>
+    {%- endif %}
   {%- endif %}
     <jobname>&TN_GET_EXTRN_ICS;</jobname>
     <join>&LOGDIR;/&TN_GET_EXTRN_ICS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
@@ -523,7 +531,11 @@ MODULES_RUN_TASK_FP script.
     <walltime>{{ wtime_get_extrn_lbcs }}</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
   {%- if machine not in ["WCOSS2"] %}
+    {%- if machine in ["HERA"] %}
+    <native>-n 1 &SCHED_NATIVE_CMD;</native>
+    {%- else %}
     <native>&SCHED_NATIVE_CMD;</native>
+    {%- endif %}
   {%- endif %}
     <jobname>&TN_GET_EXTRN_LBCS;</jobname>
     <join>&LOGDIR;/&TN_GET_EXTRN_LBCS;<cyclestr>_@Y@m@d@H</cyclestr>&LOGEXT;</join>
