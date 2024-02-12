@@ -31,10 +31,14 @@ release = 'Develop Branch Documentation'
 
 numfig = True
 
-# Avoid a 403 Forbidden error when accessing NOAA links 
-user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+# Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
+# user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9"
 
-nitpick_ignore_regex = [r"^https://www\.intel\.com/.*", r"^https://software\.intel\.com/.*", r"^https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data"]
+nitpick_regex_ignore = [(r".*:.*", r"https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html"),
+                  r"https\:\/\/www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html", 
+                  r"https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html",
+                  ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
 linkcheck_anchors_ignore = [r"current_srw_release_data/", 
@@ -47,12 +51,13 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": r"https://github\.com/login",
                                r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
                                r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
+                               r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
+                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*"
                                }
 
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
 # needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -155,7 +160,7 @@ def setup(app):
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'UFS-SR-Weather-App'
+htmlhelp_basename = 'UFS-SRWeather-App'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -253,6 +258,8 @@ intersphinx_mapping = {
 # -- Options for extlinks extension ---------------------------------------
 
 extlinks_detect_hardcoded_links = True
+extlinks = {'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
+            }
 
 # -- Options for todo extension ----------------------------------------------
 

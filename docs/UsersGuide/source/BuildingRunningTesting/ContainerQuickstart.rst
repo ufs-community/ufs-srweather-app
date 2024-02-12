@@ -10,7 +10,7 @@ The basic "out-of-the-box" case described in this User's Guide builds a weather 
 
 .. attention::
 
-   * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
+   * The SRW Application has :srw-wiki:`four levels of support <Supported-Platforms-and-Compilers>`. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
    * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Section %s <NCQuickstart>` for a Quick Start Guide or :numref:`Section %s <BuildSRW>` for a detailed guide to building the SRW App **without** a container. 
 
 .. _DownloadCodeC:
@@ -23,7 +23,7 @@ Prerequisites
 
 **Intel Compiler and MPI**
 
-Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is preinstalled. 
+Users must have an **Intel** compiler and :term:`MPI` (`available for free here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is preinstalled. 
 
 **Install Singularity/Apptainer**
 
@@ -55,7 +55,7 @@ where ``/absolute/path/to/writable/directory/`` refers to the absolute path to a
 Build the Container
 ------------------------
 
-* :ref:`On Level 1 Systems <container-L1>` (see `list <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__)
+* :ref:`On Level 1 Systems <container-L1>` (see :srw-wiki:`list <Supported-Platforms-and-Compilers>`)
 * :ref:`On Level 2-4 Systems <container-L2-4>`
 
 .. hint::
@@ -151,7 +151,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
 
 .. code-block:: console
 
@@ -267,7 +267,7 @@ For example, on Hera, the command would be:
 
 .. attention::
 
-   The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
+   The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of the `Intel oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
 
 After this command runs, the working directory should contain ``srw.sh``, a ``ufs-srweather-app`` directory, and an ``ush`` directory.
 

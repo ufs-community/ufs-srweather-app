@@ -30,13 +30,13 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
 
 ``ACCOUNT``: (Default: "")
-   The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
+   The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
 Application Directories
 --------------------------
@@ -114,7 +114,7 @@ If non-default parameters are selected for the variables in this section, they s
 
 Machine-Dependent Parameters
 -------------------------------
-These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
+These parameters vary depending on machine. On :srw-wiki:`Level 1 and 2 <Supported-Platforms-and-Compilers>` systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., when ``SCHED: "slurm"``). This is the default partition to which Slurm submits workflow tasks. If the task's ``PARTITION_HPSS`` or ``PARTITION_FCST`` (see below) parameters are **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet"`` | ``"vjet"`` | ``"kjet"`` | ``"xjet"`` | ``"workq"``
@@ -251,7 +251,7 @@ These parameters are used by the testing script to test the mechanism that allow
 Fixed File Directory Parameters
 ----------------------------------
 
-These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
+These parameters are associated with the fixed (i.e., static) files. On :srw-wiki:`Level 1 & 2 <Supported-Platforms-and-Compilers>` systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
 
 ``FIXgsm``: (Default: "")
    Path to the system directory containing the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model.
@@ -555,7 +555,7 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf.
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at :srw-wiki:`Purser_UIFCW_2023.pdf`.
 
    * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
@@ -1106,7 +1106,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 
       "Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the ``KMP_AFFINITY`` environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: ``"scatter"`` | ``"disabled"`` | ``"balanced"`` | ``"compact"`` | ``"explicit"`` | ``"none"``
 
-      For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
+      For more information, see the `Intel Development Reference Guide <https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-10/thread-affinity-interface.html>`__. 
 
 ``OMP_NUM_THREADS_RUN_FCST``: (Default: 1)
    The number of OpenMP threads to use for parallel regions. Corresponds to the ``ATM_omp_num_threads`` value in ``nems.configure``.

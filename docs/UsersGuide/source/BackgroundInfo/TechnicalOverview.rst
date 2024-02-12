@@ -34,7 +34,7 @@ Additional background knowledge in the following areas could be helpful:
 
 Software/Operating System Requirements
 -----------------------------------------
-The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App `Level 1 & 2 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
+The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App :srw-wiki:`Level 1 & 2 systems <Supported-Platforms-and-Compilers>` already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
 
 **Minimum Platform Requirements:**
 
@@ -132,7 +132,7 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
 The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
 
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are **not** included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack.
+   The prerequisite libraries (including NCEP Libraries and external libraries) are **not** included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on :srw-wiki:`preconfigured (Level 1) platforms <Supported-Platforms-and-Compilers>`. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack.
 
 .. _TopLevelDirStructure:
 
