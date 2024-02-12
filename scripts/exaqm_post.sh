@@ -272,10 +272,6 @@ for fid in "${fids[@]}"; do
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
   mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
   
-  # DBN alert
-  if [ $SENDDBN = "YES" ]; then
-    $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
-  fi
 done
 
 #

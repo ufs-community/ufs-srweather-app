@@ -11,7 +11,7 @@ export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export subcyc=0
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-export RUN="${RUN:-${RUN_dfv}}"
+export RUN="${RUN:-aqm}"
 export umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 # exception handling for retro case
 if [ -d ${umbrella_forecast_data}/RESTART_ORG ]; then
