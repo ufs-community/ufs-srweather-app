@@ -28,6 +28,7 @@ author = ' '
 version = 'develop'
 # The full version, including alpha/beta/rc tags
 release = 'Develop Branch Documentation'
+html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs.png"
 
 numfig = True
 
@@ -35,7 +36,10 @@ numfig = True
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 #user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9"
 
-nitpick_ignore_regex = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
+#nitpicky = True
+
+nitpick_ignore_regex = [(r'std:obj', r'https://www\.intel\.com/.*/.*/.*/.*/.*/.*/.*/.*'),
+                        r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
                         r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
                        ]
 
