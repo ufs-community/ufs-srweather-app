@@ -288,6 +288,8 @@ cp ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 # STEP 6: calculating 24-hr ave PM2.5
 #-----------------------------------------------------------------------------
 
+. prep_step
+
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp ${COMOUT}/ozone.corrected.${PDY}.${cyc}z.nc a.nc 
 
@@ -372,7 +374,6 @@ EOF1
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=${NET}.${cycle}.max_${hr}hr_o3_bc.227.grib2
       export FORT12="filesize"
-      export FORT31=
       export FORT51=${NET}-${hr}hro3-maxi.227.grib2.temp
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
    
@@ -380,7 +381,6 @@ EOF1
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=${NET}-${hr}hro3-maxi.227.grib2.temp
       export FORT12="filesize"
-      export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
     done
@@ -457,7 +457,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_${hr}hr_o3_bc.227.grib2
     export FORT12="filesize"
-    export FORT31=
     export FORT51=grib2.${cycle}.awpcsozcon_aqm_${hr}-bc.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
 
@@ -465,7 +464,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=grib2.${cycle}.awpcsozcon_aqm_${hr}-bc.temp
     export FORT12="filesize"
-    export FORT31=
     export FORT51=awpaqm.${cycle}.${hr}ho3-bc.227.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3_bc-awpozcon.${cycle}.227
 
@@ -474,7 +472,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.max_${hr}hr_o3_bc.227.grib2
     export FORT12="filesize"
-    export FORT31=
     export FORT51=${NET}.${cycle}.max_${hr}hr_o3-bc.227.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 
@@ -482,7 +479,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.max_${hr}hr_o3-bc.227.grib2.temp
     export FORT12="filesize"
-    export FORT31=
     export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3_bc-maxi.${cycle}.227
 

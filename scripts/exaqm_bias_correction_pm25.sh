@@ -266,6 +266,8 @@ cp ${DATA}/${NET}.${cycle}.pm25*bc*.grib2 ${COMOUT}
 # STEP 6: calculating 24-hr ave PM2.5
 #------------------------------------------------------------------------
 
+. prep_step
+
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   cp ${COMOUT}/pm2.5.corrected.${PDY}.${cyc}z.nc  a.nc 
 
@@ -384,7 +386,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.grib2_pm25_bc.227
   export FORT12="filesize"
-  export FORT31=
   export FORT51=${NET}.${cycle}.grib2_pm25_bc.227.temp
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_pm25_bc.${cycle}.227
 
@@ -392,7 +393,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.grib2_pm25_bc.227.temp
   export FORT12="filesize"
-  export FORT31=
   export FORT51=awpaqm.${cycle}.1hpm25-bc.227.grib2
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_pm25_bc.${cycle}.227
 
@@ -402,7 +402,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
   export FORT12="filesize"
-  export FORT31=
   export FORT51=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2.temp
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
 
@@ -410,7 +409,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2.temp
   export FORT12="filesize"
-  export FORT31=
   export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max-bc.227.grib2
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25_bc.${cycle}.227
 
@@ -420,7 +418,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
   export FORT12="filesize"
-  export FORT31=
   export FORT51=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
@@ -428,7 +425,6 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
   export XLFRTEOPTS="unit_vars=yes"
   export FORT11=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2.temp
   export FORT12="filesize"
-  export FORT31=
   export FORT51=awpaqm.${cycle}.24hr-pm25-ave-bc.227.grib2
   tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_bc_awp.${cycle}.227
 
