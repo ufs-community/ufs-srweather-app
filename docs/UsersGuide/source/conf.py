@@ -33,11 +33,11 @@ numfig = True
 
 # Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-#user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9"
 
-nitpick_ignore_regex = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
-                        r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
-                       ]
+# Ignore working links that cause a linkcheck 403 error.
+linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
+                    r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
+                   ]
 
 # Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
 linkcheck_anchors_ignore = [r"current_srw_release_data/", 
