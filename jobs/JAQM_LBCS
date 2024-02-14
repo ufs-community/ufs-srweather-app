@@ -35,11 +35,12 @@ export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 
-export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
-export COMIN="${COMIN:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDY})}"
 export FIXaqmchem_lbcs="${FIXaqmchem_lbcs:-${HOMEaqm}/fix/chem_lbcs}"
 
-export COMOUT="${COMOUT:-$(compath.py -o ${envir}/aqm/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
+export COMINgfs="${COMINgfs:-$(compath.py gfs/${gfs_ver})}"
+export COMINgefs="${COMINgefs:-$(compath.py gefs/${gefs_ver})}"
+export COMIN="${COMIN:-$(compath.py ${NET}/${aqm_ver}/${RUN}.${PDY})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
 
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 

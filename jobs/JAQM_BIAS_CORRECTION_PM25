@@ -36,14 +36,14 @@ export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 
-export COMIN="${COMIN:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDY})}"
-export COMINm1="${COMINm1:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDYm1})}"
-export COMOUT="${COMOUT:-$(compath.py -o ${envir}/aqm/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
+export COMIN="${COMIN:-$(compath.py ${NET}/${aqm_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py ${NET}/${aqm_ver}/${RUN}.${PDYm1})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
 
 export DCOMINairnow="${DCOMINairnow:-${DCOMROOT}}"
 
-export COMINbicor="${COMINbicor:-$(compath.py ${envir}/aqm/${aqm_ver})}"
-export COMOUTbicor="${COMOUTbicor:-$(compath.py -o ${envir}/aqm/${aqm_ver})}"
+export COMINbicor="${COMINbicor:-$(compath.py ${NET}/${aqm_ver})}"
+export COMOUTbicor="${COMOUTbicor:-$(compath.py -o ${NET}/${aqm_ver})}"
 
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 

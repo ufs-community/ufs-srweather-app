@@ -35,10 +35,10 @@ export CDATE=${PDY}${cyc}
 export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
 
-export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMIN="${COMIN:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDY})}"
-export COMINm1="${COMINm1:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDYm1})}"
-export COMOUT="${COMOUT:-$(compath.py -o ${envir}/aqm/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
+export COMINgfs="${COMINgfs:-$(compath.py gfs/${gfs_ver})}"
+export COMIN="${COMIN:-$(compath.py ${NET}/${aqm_ver}/${RUN}.${PDY})}"
+export COMINm1="${COMINm1:-$(compath.py ${NET}/${aqm_ver}/${RUN}.${PDYm1})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
 
 #-----------------------------------------------------------------------
 # Get the full path to the file in which this script/function is located 
