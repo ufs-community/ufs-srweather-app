@@ -7,6 +7,8 @@ postmsg "$msg"
    
 export pgm=aqm_fire_emission
 
+EMAIL_SDM=${EMAIL_SDM:-NO}
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -105,9 +107,17 @@ else
         cp -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
-        if [ ! -z "${maillist_group2}" ]; then
-          echo "${message_warning}" | mail.py $maillist_group2
-        fi
+#        if [ ! -z "${maillist_group2}" ]; then
+#          echo "${message_warning}" | mail.py $maillist_group2
+#        fi
+        if [ "${EMAIL_SDM^^}" = "YES" ] ; then
+	  MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
+          #MAILTO=${MAILTO:-"sdm@noaa.gov"}
+          MAILTO=${MAILTO:-"${maillist}"}
+          subject="${cyc}Z ${RUN^^} Output for ${basinname:-} WILDFIRE EMIS "
+          mail.py -s "${subject}" -v "${MAILTO}" 
+	fi
+
     fi
   done  
 

@@ -23,7 +23,6 @@ export cray_pals_ver=1.2.2
 
 export nemsio_ver=2.5.2
 
-#export python_ver=3.10.4
 export python_ver=3.8.6
 export envvar_ver=1.0
 
@@ -38,7 +37,5 @@ export nco_ver=5.0.6
 export wgrib2_ver=2.0.8_wmo
 export grib_util_ver=1.2.4
 
-export maillist="nco.spa@noaa.gov,jianping.huang@noaa.gov"
-export maillist_group1="nco.spa@noaa.gov,jianping.huang@noaa.gov,youhua.tang@noaa.gov"
-export maillist_group2="nco.spa@noaa.gov,jianping.huang@noaa.gov,kai.wang@noaa.gov"
+export maillist="nco.spa@noaa.gov,jianping.huang@noaa.gov,kai.wang@noaa.gov"
 

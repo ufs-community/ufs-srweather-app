@@ -31,13 +31,9 @@ export CDATE=${PDY}${cyc}
 export EXECaqm=${EXECaqm:-${HOMEaqm}/exec}
 export PARMaqm=${PARMaqm:-${HOMEaqm}/parm}
 export FIXaqm=${FIXaqm:-${HOMEaqm}/fix}
-export UTILaqm=${UTILaqm:-${HOMEaqm}/util}
 
-export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
-export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY})}"
-export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
-export COMINm2="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm2})}"
-export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
+export COMIN="${COMIN:-$(compath.py ${envir}/aqm/${aqm_ver}/${RUN}.${PDY})}"
+export COMOUT="${COMOUT:-$(compath.py -o ${envir}/aqm/${aqm_ver}/${RUN}.${PDY}/${cyc})}"
 
 #-----------------------------------------------------------------------
 # Save current shell options (in a global array).  Then set new options
