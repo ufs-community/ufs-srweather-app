@@ -189,4 +189,4 @@ Users can expect to see incremental improvements and additional capabilities in 
 * Incorporation of additional `Unified Workflow <https://github.com/ufs-community/uwtools>`__ tools.
 
 
-.. bibliography:: ../references.bib
+.. bibliography:: ../../references.bib

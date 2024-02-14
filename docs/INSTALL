@@ -12,7 +12,7 @@ git clone https://github.com/ufs-community/ufs-srweather-app.git
 cd ufs-srweather-app/
 ./manage_externals/checkout_externals
 
-# We can build ufs-sreweather-app binaries in two ways.
+# We can build ufs-srweather-app binaries in two ways.
 
 # Method 1
 # ========
