@@ -30,9 +30,9 @@ jobs:
           cache-downloads: true
           cache-environment: true
 
-      - name: Checkout externals
+      - name: Checkout ufs-weather-model
         run: |
-          ./manage_externals/checkout_externals ufs-weather-model
+          git submodule update --init --recursive ufs-weather-model
 
       - name: Lint the python code
         run: |
