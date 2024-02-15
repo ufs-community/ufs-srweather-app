@@ -10,7 +10,7 @@ Introduction to SSH & Data Transfer
 
    Note that all port numbers, IP addresses, and SSH keys included in this chapter are placeholders and do not refer to known systems. They are used purely for illustrative purposes, and users should modify the commands to correspond to their actual systems. 
 
-A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between two systems. Many HPC platforms, including NOAA `Level 1 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__, are accessed via SSH from the user's own computer. 
+A Secure SHell (SSH) tunnel creates an encrypted connection between two computer systems. This secure connection allows users to access and use a remote system via the command line on their local machine. SSH connections can also be used to transfer data securely between two systems. Many HPC platforms, including NOAA :srw-wiki:`Level 1 systems <Supported-Platforms-and-Compilers>`, are accessed via SSH from the user's own computer. 
 
 .. attention:: 
 
@@ -139,7 +139,7 @@ Download the Data from a Remote System to a Local System
 
 .. note:: 
 
-   Users should transfer data to or from non-`Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS CommonDocs Wiki <https://rdhpcs-common-docs.rdhpcs.noaa.gov/wiki/index.php/Transferring_Data>`__.
+   Users should transfer data to or from non-:srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms using the recommended approach for that platform. This section outlines some basic guidance, but users may need to supplement with research of their own. On Level 1 systems, users may find it helpful to refer to the `RDHPCS CommonDocs Wiki <https://rdhpcs-common-docs.rdhpcs.noaa.gov/wiki/index.php/Transferring_Data>`__.
 
 To download data using ``scp``, users can typically adjust one of the following commands for use on their system:
 
