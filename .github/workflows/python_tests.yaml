@@ -32,7 +32,7 @@ jobs:
 
       - name: Checkout ufs-weather-model
         run: |
-          git submodule update --init --recursive ufs-weather-model
+          git submodule update --init --recursive sorc/ufs-weather-model
 
       - name: Lint the python code
         run: |
