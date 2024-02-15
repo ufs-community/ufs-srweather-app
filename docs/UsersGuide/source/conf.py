@@ -28,7 +28,7 @@ author = ' '
 version = 'develop'
 # The full version, including alpha/beta/rc tags
 release = 'Develop Branch Documentation'
-html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs.png"
+html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
@@ -55,7 +55,7 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
                                r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
                                r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
-                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*"
+                               r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*"
                                }
 
 # -- General configuration ---------------------------------------------------
