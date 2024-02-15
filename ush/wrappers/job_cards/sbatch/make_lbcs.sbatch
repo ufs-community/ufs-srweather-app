@@ -30,11 +30,6 @@ $USHdir/load_modules_run_task.sh "make_lbcs" $JOBSdir/JREGIONAL_MAKE_LBCS
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='48'
 
-# Gaea    differences:
-##SBATCH --qos=windfall
-##SBATCH --clusters=c4 --export=NONE
-#export nprocs='48'
-
 # Jet     differences:
 ##SBATCH --partition=sjet,vjet,kjet,xjet
 #export nprocs='48'
