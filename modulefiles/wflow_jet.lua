@@ -7,7 +7,6 @@ whatis([===[Loads libraries needed for running the UFS SRW App on Jet ]===])
 
 load("rocoto")
 
-
 load("conda")
 
 if mode() == "load" then

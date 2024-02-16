@@ -141,7 +141,7 @@ Predefined 25-km Grid
 
 .. _RRFS_CONUS_25km:
 
-.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/RRFS_CONUS_25km.sphr.native_wrtcmp.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/LAMGrids/RRFS_CONUS_25km.sphr.native_wrtcmp.png
    :alt: Map of the continental United States 25 kilometer domain. The computational grid boundaries appear in red and the write component grid appears just inside the computational grid boundaries in blue. 
 
    *The boundary of the RRFS_CONUS_25km computational grid (red) and corresponding write component grid (blue).*
@@ -165,7 +165,7 @@ scripts that handle the workflow and experiment generation (see :numref:`Figure 
 
 With those caveats in mind, this section provides instructions for adding a new predefined grid to the FV3-LAM
 workflow that will be generated using the "ESGgrid" method (i.e., using the ``regional_esg_grid`` code
-in the `UFS_UTILS <https://github.com/ufs-community/UFS_UTILS>`__ repository, where ESG stands for "Extended Schmidt Gnomonic"). We assume here that the grid to be generated covers a domain that (1) does not contain either of the poles and (2) does not cross the -180 deg --> +180 deg discontinuity in longitude near the international date line. More information on the ESG grid is available `here <https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf>`__. Instructions for domains that do not have these restrictions will be provided in a future release.  
+in the `UFS_UTILS <https://github.com/ufs-community/UFS_UTILS>`__ repository, where ESG stands for "Extended Schmidt Gnomonic"). We assume here that the grid to be generated covers a domain that (1) does not contain either of the poles and (2) does not cross the -180 deg --> +180 deg discontinuity in longitude near the international date line. More information on the ESG grid is available :srw-wiki:`here <Purser_UIFCW_2023.pdf>`. Instructions for domains that do not have these restrictions will be provided in a future release.  
 
 The steps to add such a grid to the workflow are as follows:
 

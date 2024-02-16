@@ -23,6 +23,7 @@ default_aqm_task: &default_aqm
 task_nexus_gfs_sfc:
   <<: *default_aqm
   command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_gfs_sfc" "&JOBSdir;/JREGIONAL_NEXUS_GFS_SFC"'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   memory: 2G

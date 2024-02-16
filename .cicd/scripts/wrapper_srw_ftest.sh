@@ -23,11 +23,6 @@ else
 fi
 
 # Customize wrapper scripts
-if [[ "${SRW_PLATFORM}" == gaea ]]; then
-    sed -i '15i #SBATCH --clusters=c4' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-    sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-fi
-
 if [[ "${SRW_PLATFORM}" == gaea-c5 ]]; then
     sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
     sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
