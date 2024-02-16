@@ -85,7 +85,12 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate srw_app
+# Gaea-C5 special case missing jinja2
+if [ "${platform}" == "gaea-c5" ]; then
+  conda activate workflow_tools
+else
+  conda activate srw_app
+fi
 set -e -u
 
 # Adjust for strict limitation of stack size 

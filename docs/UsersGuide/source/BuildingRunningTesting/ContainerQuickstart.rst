@@ -10,7 +10,7 @@ The basic "out-of-the-box" case described in this User's Guide builds a weather 
 
 .. attention::
 
-   * The SRW Application has `four levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
+   * The SRW Application has :srw-wiki:`four levels of support <Supported-Platforms-and-Compilers>`. The steps described in this chapter will work most smoothly on preconfigured (Level 1) systems. However, this guide can serve as a starting point for running the SRW App on other systems, too. 
    * This chapter of the User's Guide should **only** be used for container builds. For non-container builds, see :numref:`Section %s <NCQuickstart>` for a Quick Start Guide or :numref:`Section %s <BuildSRW>` for a detailed guide to building the SRW App **without** a container. 
 
 .. _DownloadCodeC:
@@ -21,53 +21,47 @@ Download the Container
 Prerequisites 
 -------------------
 
-Users must have an **Intel** compiler and :term:`MPI` (available for free `here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is pre-installed. 
+**Intel Compiler and MPI**
 
-Install Singularity/Apptainer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Users must have an **Intel** compiler and :term:`MPI` (`available for free here <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__) in order to run the SRW App in the container provided using the method described in this chapter. Additionally, it is recommended that users install the `Rocoto workflow manager <https://github.com/christopherwharrop/rocoto>`__ on their system in order to take advantage of automated workflow options. Although it is possible to run an experiment without Rocoto, and some tips are provided, the only fully-supported and tested container option assumes that Rocoto is preinstalled. 
+
+**Install Singularity/Apptainer**
+
+To build and run the SRW App using a Singularity/Apptainer container, first install the software according to the `Apptainer Installation Guide <https://apptainer.org/docs/admin/1.2/installation.html>`__. This will include the installation of all dependencies. 
 
 .. note::
 
    As of November 2021, the Linux-supported version of Singularity has been `renamed <https://apptainer.org/news/community-announcement-20211130/>`__ to *Apptainer*. Apptainer has maintained compatibility with Singularity, so ``singularity`` commands should work with either Singularity or Apptainer (see compatibility details `here <https://apptainer.org/docs/user/1.2/singularity_compatibility.html>`__.)
 
-To build and run the SRW App using a Singularity/Apptainer container, first install the software according to the `Apptainer Installation Guide <https://apptainer.org/docs/admin/1.2/installation.html>`__. This will include the installation of all dependencies.  
-
-.. warning:: 
+.. attention:: 
    Docker containers can only be run with root privileges, and users cannot have root privileges on :term:`HPCs <HPC>`. Therefore, it is not possible to build the SRW App, which uses the spack-stack, inside a Docker container on an HPC system. However, a Singularity/Apptainer image may be built directly from a Docker image for use on the system.
+
+.. _work-on-hpc:
 
 Working in the Cloud or on HPC Systems
 -----------------------------------------
 
-For users working on systems with limited disk space in their ``/home`` directory, it is recommended to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TMPDIR`` environment variables to point to a location with adequate disk space. For example:
+Users working on systems with limited disk space in their ``/home`` directory may need to set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TMPDIR`` environment variables to point to a location with adequate disk space. For example:
 
 .. code-block:: 
 
    export SINGULARITY_CACHEDIR=/absolute/path/to/writable/directory/cache
    export SINGULARITY_TMPDIR=/absolute/path/to/writable/directory/tmp
 
-where ``/absolute/path/to/writable/directory/`` refers to a writable directory (usually a project or user directory within ``/lustre``, ``/work``, ``/scratch``, or ``/glade`` on NOAA Level 1 systems). If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. 
-
-On NOAA Cloud systems, the ``sudo su`` command may also be required. For example:
-   
-.. code-block:: 
-
-   mkdir /lustre/cache
-   mkdir /lustre/tmp
-   sudo su
-   export SINGULARITY_CACHEDIR=/lustre/cache
-   export SINGULARITY_TMPDIR=/lustre/tmp
-   exit
-
-.. note:: 
-   ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
+where ``/absolute/path/to/writable/directory/`` refers to the absolute path to a writable directory with sufficient disk space. If the ``cache`` and ``tmp`` directories do not exist already, they must be created with a ``mkdir`` command. See :numref:`Section %s <work-on-hpc-details>` to view an example of how this can be done. 
 
 .. _BuildC:
 
 Build the Container
 ------------------------
 
+* :ref:`On Level 1 Systems <container-L1>` (see :srw-wiki:`list <Supported-Platforms-and-Compilers>`)
+* :ref:`On Level 2-4 Systems <container-L2-4>`
+
 .. hint::
    If a ``singularity: command not found`` error message appears when working on Level 1 platforms, try running: ``module load singularity`` or (on Derecho) ``module load apptainer``.
+
+.. _container-L1:
 
 Level 1 Systems
 ^^^^^^^^^^^^^^^^^^
@@ -120,6 +114,8 @@ When making a writable sandbox on Level 1 systems, the following warnings common
    WARNING: integrity: signature not found for object group 1
    WARNING: Bootstrap image could not be verified, but build will continue.
 
+.. _container-L2-4:
+
 Level 2-4 Systems
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -132,7 +128,7 @@ On non-Level 1 systems, users should build the container in a writable sandbox:
 Some users may prefer to issue the command without the ``sudo`` prefix. Whether ``sudo`` is required is system-dependent. 
 
 .. note::
-   Users can choose to build a release version of the container (SRW App |version|) using a similar command:
+   Users can choose to build a release version of the container using a similar command:
 
    .. code-block:: console
 
@@ -143,36 +139,6 @@ For easier reference, users can set an environment variable to point to the cont
 .. code-block:: console
 
    export img=/path/to/ubuntu20.04-intel-srwapp
-
-
-.. _WorkOnHPC:
-
-Allocate a Compute Node
---------------------------
-
-Users working on HPC systems that do **not** have Rocoto installed must `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ or allocate a compute node. All other users may skip to the :ref:`next step <RunContainer>`. 
-
-.. note::
-   
-   All NOAA Level 1 systems have Rocoto pre-installed. 
-
-The appropriate commands for allocating a compute node will vary based on the user's system and resource manager (e.g., Slurm, PBS). If the user's system has the Slurm resource manager, the allocation command will follow this pattern:
-
-.. code-block:: console
-
-   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
-
-For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__.
-
-If users have the PBS resource manager installed on their system, the allocation command will follow this pattern:
-
-.. code-block:: console
-
-   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
-
-For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
-
-These commands should output a hostname. Users can then run ``ssh <hostname>``. After "ssh-ing" to the compute node, they can run the container from that node. To run larger experiments, it may be necessary to allocate multiple compute nodes. 
 
 .. _RunContainer:
 
@@ -185,7 +151,7 @@ Copy ``stage-srw.sh`` from the container to the local working directory:
 
    singularity exec -B /<local_base_dir>:/<container_dir> $img cp /opt/ufs-srweather-app/container-scripts/stage-srw.sh .
 
-If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
+If the command worked properly, ``stage-srw.sh`` should appear in the local directory. The command above also binds the local directory to the container so that data can be shared between them. On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, ``<local_base_dir>`` is usually the topmost directory (e.g., ``/lustre``, ``/contrib``, ``/work``, or ``/home``). Additional directories can be bound by adding another ``-B /<local_base_dir>:/<container_dir>`` argument before the name of the container. In general, it is recommended that the local base directory and container directory have the same name. For example, if the host system's top-level directory is ``/user1234``, the user can create a ``user1234`` directory in the writable container sandbox and then bind it:
 
 .. code-block:: console
 
@@ -301,7 +267,7 @@ For example, on Hera, the command would be:
 
 .. attention::
 
-   The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of `Intel's oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
+   The user must have an Intel compiler and MPI on their system because the container uses an Intel compiler and MPI. Intel compilers are now available for free as part of the `Intel oneAPI Toolkit <https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html>`__.
 
 After this command runs, the working directory should contain ``srw.sh``, a ``ufs-srweather-app`` directory, and an ``ush`` directory.
 
@@ -360,7 +326,7 @@ Generate the Workflow
 
 .. attention::
 
-   This section assumes that Rocoto is installed on the user's machine. If it is not, the user will need to allocate a compute node (described in :numref:`Section %s <WorkOnHPC>`) and run the workflow using standalone scripts as described in :numref:`Section %s <RunUsingStandaloneScripts>`. 
+   This section assumes that Rocoto is installed on the user's machine. If it is not, the user will need to allocate a compute node (described in the :ref:`Appendix <allocate-compute-node>`) and run the workflow using standalone scripts as described in :numref:`Section %s <RunUsingStandaloneScripts>`. 
 
 Run the following command to generate the workflow:
 
@@ -421,3 +387,56 @@ New Experiment
 ===============
 
 To run a new experiment in the container at a later time, users will need to rerun the commands in :numref:`Section %s <SetUpPythonEnvC>` to reactivate the workflow. Then, users can configure a new experiment by updating the experiment variables in ``config.yaml`` to reflect the desired experiment configuration. Basic instructions appear in :numref:`Section %s <SetUpConfigFileC>` above, and detailed instructions can be viewed in :numref:`Section %s <UserSpecificConfig>`. After adjusting the configuration file, regenerate the experiment by running ``./generate_FV3LAM_wflow.py``.
+
+.. _appendix:
+
+Appendix
+==========
+
+.. _work-on-hpc-details:
+
+Sample Commands for Working in the Cloud or on HPC Systems
+-----------------------------------------------------------
+
+Users working on systems with limited disk space in their ``/home`` directory may set the ``SINGULARITY_CACHEDIR`` and ``SINGULARITY_TMPDIR`` environment variables to point to a location with adequate disk space. On NOAA Cloud systems, the ``sudo su``/``exit`` commands may also be required; users on other systems may be able to omit these. For example:
+   
+.. code-block:: 
+
+   mkdir /lustre/cache
+   mkdir /lustre/tmp
+   sudo su
+   export SINGULARITY_CACHEDIR=/lustre/cache
+   export SINGULARITY_TMPDIR=/lustre/tmp
+   exit
+
+.. note:: 
+   ``/lustre`` is a fast but non-persistent file system used on NOAA Cloud systems. To retain work completed in this directory, `tar the files <https://www.howtogeek.com/248780/how-to-compress-and-extract-files-using-the-tar-command-on-linux/>`__ and move them to the ``/contrib`` directory, which is much slower but persistent.
+
+.. _allocate-compute-node:
+
+Allocate a Compute Node
+--------------------------
+
+Users working on HPC systems that do **not** have Rocoto installed must `install Rocoto <https://github.com/christopherwharrop/rocoto/blob/develop/INSTALL>`__ or allocate a compute node. All other users may :ref:`continue to start up the container <RunContainer>`. 
+
+.. note::
+   
+   All NOAA Level 1 systems have Rocoto pre-installed. 
+
+The appropriate commands for allocating a compute node will vary based on the user's system and resource manager (e.g., Slurm, PBS). If the user's system has the Slurm resource manager, the allocation command will follow this pattern:
+
+.. code-block:: console
+
+   salloc -N 1 -n <cores-per-node> -A <account> -t <time> -q <queue/qos> --partition=<system> [-M <cluster>]
+
+For more information on the ``salloc`` command options, see Slurm's `documentation <https://slurm.schedmd.com/salloc.html>`__.
+
+If users have the PBS resource manager installed on their system, the allocation command will follow this pattern:
+
+.. code-block:: console
+
+   qsub -I -lwalltime=<time> -A <account> -q <destination> -lselect=1:ncpus=36:mpiprocs=36
+
+For more information on the ``qsub`` command options, see the `PBS Manual §2.59.3 <https://2021.help.altair.com/2021.1/PBSProfessional/PBS2021.1.pdf>`__, (p. 1416).
+
+These commands should output a hostname. Users can then run ``ssh <hostname>``. After "ssh-ing" to the compute node, they can run the container from that node. To run larger experiments, it may be necessary to allocate multiple compute nodes. 

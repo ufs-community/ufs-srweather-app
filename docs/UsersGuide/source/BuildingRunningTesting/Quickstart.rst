@@ -4,17 +4,17 @@
 Quick Start Guide
 ====================
 
-This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`, for additional explanations regarding each step.
+This chapter provides a brief summary of how to build and run the SRW Application. The steps will run most smoothly on :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems. Users should expect to reference other chapters of this User's Guide, particularly :numref:`Section %s: Building the SRW App <BuildSRW>` and :numref:`Section %s: Running the SRW App <RunSRW>`, for additional explanations regarding each step.
 
 
 Install the Prerequisite Software Stack
 =========================================
-SRW App users who are **not** working on a `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform will need to install the prerequisite software stack via :term:`spack-stack` or :term:`HPC-Stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>` or the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`__.
+SRW App users who are **not** working on a :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platform will need to install the prerequisite software stack via :term:`spack-stack` or :term:`HPC-Stack` prior to building the SRW App on a new machine. Users can find installation instructions in the :doc:`spack-stack documentation <spack-stack:index>` or the :doc:`HPC-Stack documentation <hpc-stack:index>`. The steps will vary slightly depending on the user's platform, but detailed instructions for a variety of platforms are available in the documentation. Users may also post questions in the `ufs-community Discussions tab <https://github.com/orgs/ufs-community/discussions/categories/q-a>`__.
 
 Once spack-stack or HPC-Stack has been successfully installed, users can move on to building the SRW Application.
 
 .. attention::
-   Most SRW App `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems have shifted to spack-stack from HPC-Stack (with the exception of Derecho). Spack-stack is a Spack-based method for installing UFS prerequisite software libraries. Currently, spack-stack is the software stack validated by the UFS Weather Model (:term:`WM <Weather Model>`) for running regression tests. UFS applications and components are also shifting to spack-stack from HPC-Stack but are at various stages of this transition. Although users can still build and use HPC-Stack, the UFS WM no longer uses HPC-Stack for validation, and support for this option is being deprecated. 
+   Most SRW App :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems have shifted to spack-stack from HPC-Stack (with the exception of Derecho). Spack-stack is a Spack-based method for installing UFS prerequisite software libraries. Currently, spack-stack is the software stack validated by the UFS Weather Model (:term:`WM <Weather Model>`) for running regression tests. UFS applications and components are also shifting to spack-stack from HPC-Stack but are at various stages of this transition. Although users can still build and use HPC-Stack, the UFS WM no longer uses HPC-Stack for validation, and support for this option is being deprecated. 
 
 .. _QuickBuildRun:
 
@@ -46,7 +46,7 @@ For a detailed explanation of how to build and run the SRW App on any supported 
 
       For additional details, see :numref:`Section %s <DevBuild>`, or view :numref:`Section %s <CMakeApproach>` to try the CMake build approach instead. 
 
-   #. Users on a `Level 2-4 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ system must download and stage data (both the fix files and the :term:`IC/LBC <ICs/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
+   #. Users on a :srw-wiki:`Level 2-4 <Supported-Platforms-and-Compilers>` system must download and stage data (both the fix files and the :term:`IC/LBC <ICs/LBCs>` files) according to the instructions in :numref:`Section %s <DownloadingStagingInput>`. Standard data locations for Level 1 systems appear in :numref:`Table %s <DataLocations>`.
 
    #. Load the python environment for the workflow. Users on Level 2-4 systems will need to use one of the existing ``wflow_<platform>`` modulefiles (e.g., ``wflow_macos``) and adapt it to their system. Then, run:
 
