@@ -30,13 +30,13 @@ If non-default parameters are selected for the variables in this section, they s
    Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
 
 ``MACHINE``: (Default: "BIG_COMPUTER")
-   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the `SRW App Wiki page <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
+   The machine (a.k.a. platform or system) on which the workflow will run. Currently supported platforms are listed on the :srw-wiki:`SRW App Wiki page <Supported-Platforms-and-Compilers>`. When running the SRW App on any ParallelWorks/NOAA Cloud system, use "NOAACLOUD" regardless of the underlying system (AWS, GCP, or Azure). Valid values: ``"HERA"`` | ``"ORION"`` | ``"HERCULES"`` | ``"JET"`` | ``"CHEYENNE"`` | ``"DERECHO"`` | ``"GAEA"`` | ``"GAEA-C5"`` | ``"NOAACLOUD"`` | ``"STAMPEDE"`` | ``"ODIN"`` | ``"MACOS"`` | ``"LINUX"`` | ``"SINGULARITY"`` | ``"WCOSS2"`` (Check ``ufs-srweather-app/ush/valid_param_vals.yaml`` for the most up-to-date list of supported platforms.)
 
    .. hint::
       Users who are NOT on a named, supported Level 1 or 2 platform will need to set the ``MACHINE`` variable to ``LINUX`` or ``MACOS``. To combine use of a Linux or MacOS platform with the Rocoto workflow manager, users will also need to set ``WORKFLOW_MANAGER: "rocoto"`` in the ``platform:`` section of ``config.yaml``. This combination will assume a Slurm batch manager when generating the XML. 
 
 ``ACCOUNT``: (Default: "")
-   The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
+   The account under which users submit jobs to the queue on the specified ``MACHINE``. To determine an appropriate ``ACCOUNT`` field for :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users may run the ``groups`` command, which will return a list of projects that the user has permissions for. Not all of the listed projects/groups have an HPC allocation, but those that do are potentially valid account names. On some systems, the ``saccount_params`` command will display additional account details. 
 
 Application Directories
 --------------------------
@@ -114,7 +114,7 @@ If non-default parameters are selected for the variables in this section, they s
 
 Machine-Dependent Parameters
 -------------------------------
-These parameters vary depending on machine. On `Level 1 and 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
+These parameters vary depending on machine. On :srw-wiki:`Level 1 and 2 <Supported-Platforms-and-Compilers>` systems, the appropriate values for each machine can be viewed in the ``ush/machine/<platform>.sh`` scripts. To specify a value other than the default, add these variables and the desired value in the ``config.yaml`` file so that they override the ``config_defaults.yaml`` and machine default values. 
 
 ``PARTITION_DEFAULT``: (Default: "")
    This variable is only used with the Slurm job scheduler (i.e., when ``SCHED: "slurm"``). This is the default partition to which Slurm submits workflow tasks. If the task's ``PARTITION_HPSS`` or ``PARTITION_FCST`` (see below) parameters are **not** specified, the task will be submitted to the default partition indicated in the ``PARTITION_DEFAULT`` variable. If this value is not set or is set to an empty string, it will be (re)set to a machine-dependent value. Options are machine-dependent and include: ``""`` | ``"hera"`` | ``"normal"`` | ``"orion"`` | ``"sjet"`` | ``"vjet"`` | ``"kjet"`` | ``"xjet"`` | ``"workq"``
@@ -251,7 +251,7 @@ These parameters are used by the testing script to test the mechanism that allow
 Fixed File Directory Parameters
 ----------------------------------
 
-These parameters are associated with the fixed (i.e., static) files. On `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
+These parameters are associated with the fixed (i.e., static) files. On :srw-wiki:`Level 1 & 2 <Supported-Platforms-and-Compilers>` systems, fixed files are pre-staged with paths defined in the ``setup.py`` script. Because the default values are platform-dependent, they are set to a null string in ``config_defaults.yaml``. Then these null values are overwritten in ``setup.py`` with machine-specific values or with a user-specified value from ``config.yaml``.
 
 ``FIXgsm``: (Default: "")
    Path to the system directory containing the majority of fixed (i.e., time-independent) files that are needed to run the FV3-LAM model.
@@ -320,20 +320,14 @@ Directory Parameters
 ``EXPT_BASEDIR``: (Default: "")
    The full path to the base directory in which the experiment directory (``EXPT_SUBDIR``) will be created. If this is not specified or if it is set to an empty string, it will default to ``${HOMEdir}/../expt_dirs``, where ``${HOMEdir}`` contains the full path to the ``ufs-srweather-app`` directory. If set to a relative path, the provided path will be appended to the default value ``${HOMEdir}/../expt_dirs``. For example, if ``EXPT_BASEDIR=some/relative/path`` (i.e. a path that does not begin with ``/``), the value of ``EXPT_BASEDIR`` used by the workflow will be ``EXPT_BASEDIR=${HOMEdir}/../expt_dirs/some/relative/path``.
 
-``EXPT_SUBDIR``: (Default: "")
-   The user-designated name of the experiment directory (*not* its full path). The full path to the experiment directory, which will be contained in the variable ``EXPTDIR``, will be:
-
-   .. code-block:: console
-
-      EXPTDIR="${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-
-   This parameter must be set to a non-null value in the user-defined experiment configuration file (i.e., ``config.yaml``).
+``EXPT_SUBDIR``: (Default: 'experiment')
+   If ``EXPTDIR`` is not specified, ``EXPT_SUBDIR`` represents the name of the experiment directory (*not* the full path). 
 
 ``EXEC_SUBDIR``: (Default: "exec")
    The name of the subdirectory of ``ufs-srweather-app`` where executables are installed.
 
 ``EXPTDIR``: (Default: ``'{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'``)
-   The full path to the experiment directory. By default, this value is equivalent to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
+   The full path to the experiment directory. By default, this value will point to ``"${EXPT_BASEDIR}/${EXPT_SUBDIR}"``, but the user can define it differently in the configuration file if desired. 
 
 Pre-Processing File Separator Parameters
 --------------------------------------------
@@ -490,7 +484,7 @@ Experiment Fix File Paths
 
 These parameters are associated with the fixed (i.e., static) files. Unlike the file path parameters in :numref:`Section %s <SystemFixedFiles>`, which pertain to the locations of system data, the parameters in this section indicate fix file paths within the experiment directory (``$EXPTDIR``).  
 
-``FIXdir``: (Default: ``'{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}'``)
+``FIXdir``: (Default: ``'{{ EXPTDIR }}'``)
    Location where fix files will be stored for a given experiment.
 
 ``FIXam``: (Default: ``'{{ [FIXdir, "fix_am"]|path_join }}'``)
@@ -561,7 +555,7 @@ Grid Generation Parameters
 ``GRID_GEN_METHOD``: (Default: "")
    This variable specifies which method to use to generate a regional grid in the horizontal plane. The values that it can take on are:
 
-   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at https://github.com/ufs-community/ufs-srweather-app/wiki/Purser_UIFCW_2023.pdf.
+   * ``"ESGgrid"``: The "ESGgrid" method will generate a regional version of the Extended Schmidt Gnomonic (ESG) grid using the map projection developed by Jim Purser of EMC (:cite:t:`Purser_2020`). "ESGgrid" is the preferred grid option. More information on the ESG grid is available at :srw-wiki:`Purser_UIFCW_2023.pdf`.
 
    * ``"GFDLgrid"``: The "GFDLgrid" method first generates a "parent" global cubed-sphere grid. Then a portion from tile 6 of the global grid is used as the regional grid. This regional grid is referred to in the grid generation scripts as "tile 7," even though it does not correspond to a complete tile. The forecast is run only on the regional grid (i.e., on tile 7, not on tiles 1 through 6). Note that the "GFDLgrid" method is the legacy grid generation method. It is not supported in *all* predefined domains. 
 
@@ -655,8 +649,8 @@ Forecast Parameters
 
 Pre-Existing Directory Parameter
 ------------------------------------
-``PREEXISTING_DIR_METHOD``: (Default: "delete")
-   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of three valid values: ``"delete"``, ``"rename"``, ``"reuse"``, or ``"quit"``.  The behavior for each of these values is as follows:
+``PREEXISTING_DIR_METHOD``: (Default: "quit")
+   This variable determines how to deal with pre-existing directories (resulting from previous calls to the experiment generation script using the same experiment name [``EXPT_SUBDIR``] as the current experiment). This variable must be set to one of four valid values: ``"delete"``, ``"rename"``, ``"reuse"``, or ``"quit"``.  The behavior for each of these values is as follows:
 
    * **"delete":** The preexisting directory is deleted and a new directory (having the same name as the original preexisting directory) is created.
 
@@ -705,7 +699,7 @@ A standard set of environment variables has been established for *nco* mode to s
    Only *community* mode is fully supported for releases. *nco* mode is used by those at the Environmental Modeling Center (EMC) and Global Systems Laboratory (GSL) who are working on pre-implementation operational testing. Other users should run the SRW App in *community* mode. 
 
 ``envir_default, NET_default, model_ver_default, RUN_default``:
-   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ document (pp. 4-5) as follows: 
+   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__ document (pp. 4-5) as follows: 
 
    ``envir_default``: (Default: "para")
       Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. 
@@ -1112,7 +1106,7 @@ For each workflow task, certain parameter values must be passed to the job sched
 
       "Intel's runtime library can bind OpenMP threads to physical processing units. The interface is controlled using the ``KMP_AFFINITY`` environment variable. Thread affinity restricts execution of certain threads to a subset of the physical processing units in a multiprocessor computer. Depending on the system (machine) topology, application, and operating system, thread affinity can have a dramatic effect on the application speed and on the execution speed of a program." Valid values: ``"scatter"`` | ``"disabled"`` | ``"balanced"`` | ``"compact"`` | ``"explicit"`` | ``"none"``
 
-      For more information, see the `Intel Development Reference Guide <https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/optimization-and-programming-guide/openmp-support/openmp-library-support/thread-affinity-interface-linux-and-windows.html>`__. 
+      For more information, see the `Intel Development Reference Guide <https://www.intel.com/content/www/us/en/docs/cpp-compiler/developer-guide-reference/2021-10/thread-affinity-interface.html>`__. 
 
 ``OMP_NUM_THREADS_RUN_FCST``: (Default: 1)
    The number of OpenMP threads to use for parallel regions. Corresponds to the ``ATM_omp_num_threads`` value in ``nems.configure``.
@@ -1347,7 +1341,7 @@ PLOT_ALLVARS Configuration Parameters
 Typically, the following parameters must be set explicitly by the user in the ``task_plot_allvars:`` section of the configuration file (``config.yaml``) when executing the plotting tasks. 
 
 ``COMOUT_REF``: (Default: "")
-   Path to the reference experiment's COMOUT directory. This is the directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory and end with ``$PDY/$cyc``. For more detail on *nco* standards and directory naming conventions, see `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ (particularly pp. 4-5). 
+   Path to the reference experiment's COMOUT directory. This is the directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory and end with ``$PDY/$cyc``. For more detail on *nco* standards and directory naming conventions, see `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__ (particularly pp. 4-5). 
   
 ``PLOT_FCST_START``: (Default: 0)
    The starting forecast hour for the plotting task. For example, if a forecast starts at 18h/18z, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. If a forecast starts at 18h/18z, but the user only wants plots from the 6th forecast hour on, "starting forecast hour" should be 6.
@@ -1628,16 +1622,19 @@ Verification Parameters
 
 Non-default parameters for verification tasks are set in the ``verification:`` section of the ``config.yaml`` file.
 
+General Verification Parameters
+---------------------------------
+
+``METPLUS_VERBOSITY_LEVEL``: (Default: ``2``)
+   Logging verbosity level used by METplus verification tools. Valid values: 0 to 5, with 0 quiet and 5 loud. 
+
 Templates for Observation Files
 ---------------------------------
 
 This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`NOHRSC`, and :term:`NDAS` observation files.
 
-``OBS_CCPA_APCP01h_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'``)
-   File name template used to obtain the input observation files (in the ``PcpCombine_obs`` tasks) that contain the 1-hour accumulated precipitation (APCP) from which APCP for longer accumulations will be generated.
-
-``OBS_CCPA_APCPgt01h_FN_TEMPLATE``: (Default: ``'${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'``)
-   File name template used to generate the observation files (in the ``PcpCombine_obs`` tasks) containing accumulated precipitation for accumulation periods longer than 1-hour.
+``OBS_CCPA_APCP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'``)
+   File name template for CCPA accumulated precipitation (APCP) observations. This template is used by the workflow tasks that call the METplus *PcpCombine* tool on CCPA obs to find the input observation files containing 1-hour APCP and then generate NetCDF files containing either 1-hour or greater than 1-hour APCP.
 
 ``OBS_NOHRSC_ASNOW_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'``)
    File name template for NOHRSC snow observations.
@@ -1648,11 +1645,19 @@ This section includes template variables for :term:`CCPA`, :term:`MRMS`, :term:`
 ``OBS_MRMS_RETOP_FN_TEMPLATE``: (Default: ``'{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'``)
    File name template for MRMS echo top observations.
 
-``OBS_NDAS_SFCorUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
-   File name template for :term:`NDAS` surface and upper air observations.
+``OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE``: (Default: ``'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'``)
+   File name template for :term:`NDAS` surface and upper air observations. This template is used by the workflow tasks that call the METplus *Pb2nc* tool on NDAS obs to find the input observation files containing ADP surface (ADPSFC) or ADP upper air (ADPUPA) fields and then generate NetCDF versions of these files.
 
 ``OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE``: (Default: ``'${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'``)
-   File name template for NDAS surface and upper air observations after processing by MET's ``pb2nc`` tool (to change format to NetCDF).
+   File name template for NDAS surface and upper air observations after processing by MET's *pb2nc* tool (to change format to NetCDF).
+
+``OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT``: (Default: ``'${OBS_CCPA_APCP_FN_TEMPLATE}_a${ACCUM_HH}h.nc'``)
+   Template used to specify the names of the output NetCDF observation files generated by the workflow verification tasks that call the METplus *PcpCombine* tool on CCPA observations. (These files will contain observations of accumulated precipitation [APCP], both for 1 hour and for > 1 hour accumulation periods, in NetCDF format.)
+
+``OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT``: (Default: ``'${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}.nc'``)
+   Template used to specify the names of the output NetCDF observation files generated by the workflow verification tasks that call the METplus Pb2nc tool on NDAS observations.  (These files will contain obs ADPSFC or ADPUPA fields in NetCDF format.)
+
+
 
 VX Forecast Model Name
 ------------------------
