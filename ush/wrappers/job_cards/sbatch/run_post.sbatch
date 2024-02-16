@@ -30,10 +30,6 @@ done
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 
-# Gaea    differences:
-##SBATCH --qos=windfall
-##SBATCH --clusters=c4 --export=NONE
-
 # Jet     differences:
 ##SBATCH --partition=sjet,vjet,kjet,xjet
 
