@@ -17,5 +17,10 @@
    background: #2779B0;
 }
 
+/* Darken navbar blue background for contrast with logo */
+.wy-side-nav-search, .wy-nav-top {
+   background: #2779B0;
+}
+
 
 
