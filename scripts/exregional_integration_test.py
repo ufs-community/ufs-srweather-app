@@ -3,15 +3,26 @@
 ################################################################################
 ####  Python Script Documentation Block
 #
-# Script name:       	integration_tests.py
+# Script name:       	exregional_integration_test.py
 # Script description:  	Ensures the correct number of netcdf files are generated  
 # 			for each experiment
 #
-# Authors:  Eddie Snyder 	Org: NOAA EPIC		Date: 2024-02-05
+# Author:  Eddie Snyder 	Org: NOAA EPIC		Date: 2024-02-05
 #           
-# Instructions:		Make sure all the necessary modules can be imported.
-#                       The following command line arguments are needed:
-#                       1. Cycle date/time in YYYYMMDDHH format
+# Instructions:		1. Pass the appropriate info for the required arguments:
+#                              --fcst_dir=/path/to/forecast/files
+#                              --fcst_len=<forecast length as Int>
+#                       2. Run script with arguments
+#                       
+# Notes/future work:    - Currently SRW App only accepts netcdf as the UFS WM 
+#                         output file format. If that changes, then additional
+#                         logic is needed to address the other file formats.
+#                       - SRW App doesn't have a variable that updates the 
+#                         forecast increment. The UFS WM does with the 
+#                         output_fh variable, which can be found in the 
+#                         model_configure file. If it becomes available with 
+#                         the SRW App, then logic is needed to account for the 
+#                         forecast increment variable.
 #
 ################################################################################
 
@@ -57,11 +68,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--cycle",
-        help="Cycle date/time in YYYYMMDDHH format.",
-        required=False,
-    )
-    parser.add_argument(
         "--fcst_dir",
         help="Directory to forecast files.",
         required=True,
@@ -91,7 +97,9 @@ if __name__ == "__main__":
     fcst_len = int(args.fcst_len)
     fcst_inc = int(args.fcst_inc)
 
+    # Start logger
     setup_logging()
+
     # Check if model_configure exists
     model_configure_fp = "{0}/model_configure".format(fcst_dir)
 
@@ -109,7 +117,7 @@ if __name__ == "__main__":
             break
     f.close()
 
-    # Create list of filenames
+    # Create list of expected filenames from the experiment
     fcst_len = fcst_len + 1
     filename_list = []
 
