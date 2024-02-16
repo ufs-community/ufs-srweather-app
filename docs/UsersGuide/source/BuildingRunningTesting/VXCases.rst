@@ -16,7 +16,7 @@ Prerequisites
 
 This chapter assumes that users have already (1) built the SRW App |latestr| release successfully and (2) installed MET and METplus on their system (e.g., as part of :term:`spack-stack` installation). For instructions on how to build the |latestr| release, see :numref:`Section %s <BuildSRW>`. Users will have an easier time if they run through the out-of-the-box case described in :numref:`Section %s <RunSRW>` before attempting to run any verification sample cases, but doing so is optional.
 
-For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, and links to installation instructions and documentation for users on other systems. 
+For information on MET and METplus, see :numref:`Section %s <MetplusComponent>`, which contains information on METplus, links to a list of existing MET/METplus builds on :srw-wiki:`Level 1 & 2 <Supported-Platforms-and-Compilers>` systems, and links to installation instructions and documentation for users on other systems. 
 
 Indianapolis Severe Weather Case
 ==========================================
@@ -41,7 +41,7 @@ Follow the instructions below to reproduce a forecast for this event using your 
 Get Data
 ^^^^^^^^^^^
 
-On `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, users can find data for the Indianapolis Severe Weather Forecast in the usual data locations (see :numref:`Section %s <DataLocations>` for a list). 
+On :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` systems, users can find data for the Indianapolis Severe Weather Forecast in the usual data locations (see :numref:`Section %s <DataLocations>` for a list). 
 
 On other systems, users need to download the ``Indy-Severe-Weather.tgz`` file using any of the following methods: 
 
@@ -108,7 +108,7 @@ where ``/path/to/ufs-srweather-app/ush`` is replaced by the actual path to the `
 Then, edit the configuration file (``config.yaml``) to include the variables and values in the sample configuration excerpt below (variables not listed below do not need to be changed or removed). Users must be sure to substitute values in ``<>`` with values appropriate to their system.  
 
 .. note::
-   Users working on a `Level 1 platform <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ do not need to add or update the following variables: ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``.
+   Users working on a :srw-wiki:`Level 1 platform <Supported-Platforms-and-Compilers>` do not need to add or update the following variables: ``CCPA_OBS_DIR``, ``MRMS_OBS_DIR``, and ``NDAS_OBS_DIR``.
 
 .. code-block:: console
 

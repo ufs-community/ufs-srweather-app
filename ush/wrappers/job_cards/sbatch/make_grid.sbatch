@@ -22,11 +22,6 @@ $USHdir/load_modules_run_task.sh "make_grid" $JOBSdir/JREGIONAL_MAKE_GRID
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='24'
 
-# Gaea    differences:
-##SBATCH --qos=windfall
-##SBATCH --clusters=c4 --export=NONE
-#export nprocs='24'
-
 # Jet     differences:
 ##SBATCH --partition=sjet,vjet,kjet,xjet
 #export nprocs='24'
