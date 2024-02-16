@@ -15,6 +15,7 @@ The ``develop`` branch is protected by the code management team:
    #. Pull requests for this branch require approval by at least two code reviewers.
    #. A code manager should perform at least one of the reviews and the merge, but other contributors are welcome to provide comments/suggestions.
 
+.. _rcm-team:
 
 Repository Code Management Team
 ---------------------------------
