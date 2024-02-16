@@ -89,6 +89,8 @@ fi
 #-----------------------------------------------------------------------
 #
 
+. prep_step
+
 if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
@@ -143,7 +145,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
     export FORT12="filesize"
-    export FORT31=
+    #export FORT31=
     export FORT51=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 				
@@ -151,7 +153,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
-    export FORT31=
+    #export FORT31=
     export FORT51=awpaqm.${cycle}.1hpm25.${grid}.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_1hpm25.${cycle}.${grid}
 
@@ -159,11 +161,11 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
     fi
 
-    # Post Files to PCOM
-    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${PCOM}
+    # Post Files to COMOUTwmo
+    cp awpaqm.${cycle}.1hpm25.${grid}.grib2 ${COMOUTwmo}
 
     if [ "$SENDDBN_NTC" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1hpm25.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1hpm25.${grid}.grib2
     fi
 
   done
@@ -265,7 +267,6 @@ EOF1
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
     export FORT12="filesize"
-    export FORT31=
     export FORT51=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
@@ -273,7 +274,6 @@ EOF1
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.max_1hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
-    export FORT31=
     export FORT51=awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_max_1hr_pm25.${cycle}.${grid}
 
@@ -282,7 +282,6 @@ EOF1
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
     export FORT12="filesize"
-    export FORT31=
     export FORT51=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2.temp
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
 
@@ -290,20 +289,19 @@ EOF1
     export XLFRTEOPTS="unit_vars=yes"
     export FORT11=${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2.temp
     export FORT12="filesize"
-    export FORT31=
     export FORT51=awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2
     tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_24hrpm25_awp.${cycle}.${grid}
     
-    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${PCOM}
-    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${PCOM}
+    cp awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 ${COMOUTwmo}
 
     ##############################
     # Distribute Data
     ##############################
 
     if [ "${SENDDBN_NTC}" = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.24hr-pm25-ave.${grid}.grib2 
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.daily-1hr-pm25-max.${grid}.grib2
     fi
   done
 fi

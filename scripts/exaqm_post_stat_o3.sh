@@ -89,6 +89,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+. prep_step
+
 if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
@@ -158,7 +160,6 @@ for grid in 227 196 198;do
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=${NET}.${cycle}.ave_${hr}hr_o3.${grid}.grib2
       export FORT12="filesize"
-      export FORT31=
       export FORT51=grib2.${cycle}.${hr}awpcsozcon.${grid}.temp
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
 
@@ -166,15 +167,14 @@ for grid in 227 196 198;do
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=grib2.${cycle}.${hr}awpcsozcon.${grid}.temp
       export FORT12="filesize"
-      export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
 
     cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2 ${COMOUT}
     cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${grid}.grib2 ${COMOUT}
-    cp ${DATA}/awpaqm.${cycle}.1ho3.${grid}.grib2 ${PCOM}
-    cp ${DATA}/awpaqm.${cycle}.8ho3.${grid}.grib2 ${PCOM}
+    cp ${DATA}/awpaqm.${cycle}.1ho3.${grid}.grib2 ${COMOUTwmo}
+    cp ${DATA}/awpaqm.${cycle}.8ho3.${grid}.grib2 ${COMOUTwmo}
 
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2
@@ -182,8 +182,8 @@ for grid in 227 196 198;do
     fi
 
     if [ "$SENDDBN_NTC" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3.${grid}.grib2
     fi
 
     for var in awpozcon;do
@@ -290,22 +290,20 @@ EOF1
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=${NET}.${cycle}.max_${hr}hr_o3.${grid}.grib2
       export FORT12="filesize"
-      export FORT31=
       export FORT51=aqm-${hr}hro3-maxi.${grid}.grib2.temp
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
       echo `ls -l  aqm-${hr}hro3-maxi.${grid}.grib2.temp | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=aqm-${hr}hro3-maxi.${grid}.grib2.temp
       export FORT12="filesize"
-      export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3-max.${grid}.grib2
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${PCOM}
+    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
     if [ "${SENDDBN_NTC}" = "YES" ]; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${PCOM}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
+      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi

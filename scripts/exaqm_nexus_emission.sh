@@ -130,9 +130,9 @@ if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
  GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
  gfs_sfc_fn = \"${gfs_sfc_fn}\""
        print_info_msg "${message_txt}"
-       if [ ! -z "${maillist_group1}" ]; then
-         echo "${message_txt}" | mail.py $maillist_group1
-       fi
+#       if [ ! -z "${maillist_group1}" ]; then
+#         echo "${message_txt}" | mail.py $maillist_group1
+#       fi
      fi
    done
 

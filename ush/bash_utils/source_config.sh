@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 #-----------------------------------------------------------------------
 # This file defines function that sources a config file (yaml/json etc)

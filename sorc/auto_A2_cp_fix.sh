@@ -1,5 +1,7 @@
 #!/bin/bash 
 #
+set -ax
+#
 export dev_fix=/lfs/h2/emc/physics/noscrub/UFS_SRW_App/aqm.v7/fix
 cd ../
 
