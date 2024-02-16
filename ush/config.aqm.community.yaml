@@ -14,9 +14,6 @@ workflow:
   DATE_LAST_CYCL: '2023111100'
   INCR_CYCL_FREQ: 24
   FCST_LEN_HRS: 24
-  FCST_LEN_CYCL:
-    - 6
-    - 12
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
   DEBUG: false
