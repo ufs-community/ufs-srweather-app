@@ -75,9 +75,9 @@ This is the J-job script for the task that runs BIAS-CORRECTION-O3.
 DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_BIAS_CORRECTION_O3}"
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  export PCOM=${PCOM:-${COMOUT}/wmo}
-  if [ ! -d "${PCOM}" ]; then 
-      mkdir -p "${PCOM}"
+  export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+  if [ ! -d "${COMOUTwmo}" ]; then 
+      mkdir -p "${COMOUTwmo}"
   fi
 fi
 
