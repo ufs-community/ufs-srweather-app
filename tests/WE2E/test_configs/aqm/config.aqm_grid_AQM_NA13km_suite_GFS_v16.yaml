@@ -20,7 +20,7 @@ nco:
   NET_default: aqm
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'
     task_aqm_ics_ext:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
