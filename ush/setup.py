@@ -299,7 +299,7 @@ def set_srw_paths(ushdir, expt_config):
     homedir = expt_config.get("user", {}).get("HOMEdir")
 
     # Read Externals.cfg
-    mng_extrns_cfg_fn = os.path.join(homedir, "Externals.cfg")
+    mng_extrns_cfg_fn = os.path.join(homedir, ".gitmodules")
     try:
         mng_extrns_cfg_fn = os.readlink(mng_extrns_cfg_fn)
     except:
@@ -307,8 +307,9 @@ def set_srw_paths(ushdir, expt_config):
     cfg = load_ini_config(mng_extrns_cfg_fn)
 
     # Get the base directory of the FV3 forecast model code.
-    external_name = expt_config.get("workflow", {}).get("FCST_MODEL")
-    property_name = "local_path"
+    external_name_default = os.path.join("sorc", expt_config.get("workflow", {}).get("FCST_MODEL"))
+    external_name = f'submodule "{external_name_default}"'
+    property_name = "path"
 
     try:
         ufs_wthr_mdl_dir = get_ini_value(cfg, external_name, property_name)
