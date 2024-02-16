@@ -2,19 +2,24 @@
 	path = sorc/UFS_UTILS
 	url = https://github.com/ufs-community/UFS_UTILS
 	branch = develop
+	ignore = dirty
 [submodule "sorc/ufs-weather-model"]
 	path = sorc/ufs-weather-model
 	url = https://github.com/ufs-community/ufs-weather-model
 	branch = develop
+	ignore = dirty
 [submodule "sorc/UPP"]
 	path = sorc/UPP
 	url = https://github.com/NOAA-EMC/UPP
 	branch = develop
+	ignore = dirty
 [submodule "sorc/arl_nexus"]
 	path = sorc/arl_nexus
 	url = https://github.com/noaa-oar-arl/NEXUS
 	branch = develop
+        ignore = dirty
 [submodule "sorc/AQM-utils"]
 	path = sorc/AQM-utils
 	url = https://github.com/NOAA-EMC/AQM-utils
 	branch = develop
+	ignore = dirty
