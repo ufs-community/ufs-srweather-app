@@ -2,22 +2,20 @@
 Fork and PR Model
 =================
 
-.. note:: 
-   
-   Thank you to the UW Tools team for authoring this summary of the Fork and PR Model. It has been adapted slightly for use in the SRW App. The original can be viewed in the :doc:`uwtools documentation <uw:fork_pr_model>`.
-
 Overview
 ========
+
+.. note:: 
+   
+   Thank you to the UW Tools team for authoring this overview of the Fork and PR Model. It has been adapted slightly for use in the SRW App. The original can be viewed in the :uw:`uwtools documentation <sections/contributor_guide/fork_pr_model.html>`.
 
 Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`Fork<pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks>` and :github-docs:`Pull Request (PR)<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>` model. GitHub provides a thorough description of this contribution model in their `Contributing to a project` :github-docs:`Quickstart<get-started/exploring-projects-on-github/contributing-to-a-project>`, but the steps, with respect to ``ufs-srweather-app`` contributions, can be summarized as:
 
 #. :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository>` the :srw:`SRW App repository<>` into your personal GitHub account.
 #. :github-docs:`Clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system.
 #. :github-docs:`Create a branch<get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on>` in your clone for your changes.
-#. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. (Refer to the :doc:`Developer Setup <developer-setup>` page for setting up a development shell, formatting and testing your code, etc.)
+#. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. 
 #. When your work is complete, :github-docs:`create a pull request<get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request>` to merge your changes.
-
-.. COMMENT: Remove parenthetical in 2nd to last bullet?
 
 For future contributions, you may delete and then recreate your fork or configure the official ``ufs-srweather-app`` repository as a :github-docs:`remote repository<pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork>` on your clone and :github-docs:`sync upstream changes<pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>` to stay up-to-date with the official repository.
 
@@ -63,7 +61,7 @@ The steps below should be followed in order to make changes to the `develop` bra
 
 #. **Issue** - Open an issue to document changes. Click :srw:`here <issues/new/choose>` to open a new ``ufs-srweather-app`` issue or see the section on :ref:`Opening an Issue <open-issue>` for detailed instructions. 
 #. **GitFlow** - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model>`__ procedures for development. 
-#. **Fork the repository** - Read more :github-docs:`here <get-started/quickstart/fork-a-repo>` about forking in GitHub.
+#. **Fork the repository** - Read more :github-docs:`here <pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>` about forking in GitHub.
 #. **Create a branch** - Create a branch in your fork of the authoritative repository. Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model>`__ conventions when creating the branch. All development should take place on a branch, *not* on ``develop``. Branches should be named as follows, where [name] is a one-word description of the branch:
    * **bugfix/[name]:** Fixes a demonstrably incorrect portion of code
    * **feature/[name]:** Adds a new feature to the code or improves an existing portion of the code
@@ -87,7 +85,7 @@ To open an issue, click on "New Issue" within the ``ufs-srweather-app`` GitHub r
 
 Choose from three options: 
 
-#. :srw:`Bug Report <issues/new?assignees=&labels=bug&template=bug_report.md&title=>`: Report specific problems ("bugs") in the code using the following template:
+#. :srw:`Bug Report <issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=>`: Report specific problems ("bugs") in the code using the following template:
 
    .. code-block:: console
 
@@ -133,7 +131,7 @@ Choose from three options:
         ## Output (optional)
         <!-- Please include any relevant log files, screenshots or other output here. -->
 
-#. :srw:`Feature Request <issues/new?assignees=&labels=enhancement&template=feature_request.md&title=`: New features and feature enhancements fall under this category. Propose features and enhancements using the following template. Optional sections may be deleted.
+#. :srw:`Feature Request <issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=>`: New features and feature enhancements fall under this category. Propose features and enhancements using the following template. Optional sections may be deleted.
 
    .. code-block:: console
 
@@ -173,7 +171,7 @@ Choose from three options:
         you've considered. -->
 
 
-#. :srw:`Text-Only Changes <issues/new?assignees=&labels=textonly&template=textonly_request.md&title=>`: Propose text-only changes using the "Text-only request" template. Optional sections may be deleted.
+#. :srw:`Text-Only Changes <issues/new?assignees=&labels=textonly&projects=&template=textonly_request.md&title=>`: Propose text-only changes using the "Text-only request" template. Optional sections may be deleted.
 
    .. code-block:: console
 
@@ -191,7 +189,7 @@ Choose from three options:
         <!-- Directly reference any issues or PRs in this or other repositories that this is 
         related to, and describe how they are related. -->
 
-#. :srw:`Other <new>`: Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
+#. :srw:`Other <issues/new>`: Open a blank issue, and use the "Feature Request" template above as a starting point to describe the issue. 
 
 For all issue reports, indicate whether this is an issue that you plan to work on and eventually submit a PR for or whether you are merely making a suggestion. Additionally, please add a priority label to the issue (low, medium, or high priority).  If you are unable to add labels to your issues, please request that a code manager add a priority for you. If the issue you are making is for a bug fix, work related to a failing test configuration, or an update required for a release (either an operational implementation or public release), please add the ``high priority`` label. New features that are not required immediately for either an implementation or release, please add the ``medium priority`` label. Finally, please use the ``low priority`` label for refactoring work or if you feel that the work is low priority. If you are unable to work the issue and require assistance through EPIC, please make sure to include the ``EPIC Support Requested`` label. Unfortunately, if the ``EPIC Support Requested`` label is added to a ``high priority`` issue, it might take some time before EPIC will work on the issue, since EPIC management needs to account for these issues.  However, after seeing that EPIC is required for high priority issues, management will adapt and have the necessary resources in place to assist. After filling out the issue report, click on "Submit new issue."
 

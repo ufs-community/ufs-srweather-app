@@ -34,7 +34,7 @@ Additional background knowledge in the following areas could be helpful:
 
 Software/Operating System Requirements
 -----------------------------------------
-The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App `Level 1 & 2 systems <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
+The UFS SRW Application has been designed so that any sufficiently up-to-date machine with a UNIX-based operating system should be capable of running the application. SRW App :srw-wiki:`Level 1 & 2 systems <Supported-Platforms-and-Compilers>` already have these prerequisites installed. However, users working on other systems must ensure that the following requirements are installed on their system: 
 
 **Minimum Platform Requirements:**
 
@@ -132,13 +132,13 @@ The :term:`umbrella repository` for the SRW Application is named ``ufs-srweather
 The UFS Weather Model contains a number of sub-repositories, which are documented :doc:`here <ufs-wm:CodeOverview>`.
 
 .. note::
-   The prerequisite libraries (including NCEP Libraries and external libraries) are **not** included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on `preconfigured (Level 1) platforms <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack.
+   The prerequisite libraries (including NCEP Libraries and external libraries) are **not** included in the UFS SRW Application repository. The `spack-stack <https://github.com/JCSDA/spack-stack>`__ repository assembles these prerequisite libraries. Spack-stack has already been built on :srw-wiki:`preconfigured (Level 1) platforms <Supported-Platforms-and-Compilers>`. However, it must be built on other systems. See the :doc:`spack-stack Documentation <spack-stack:index>` for details on installing spack-stack.
 
 .. _TopLevelDirStructure:
 
 Repository Structure
 ----------------------
-The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in :term:`NCEP` Central Operations (NCO) WCOSS `Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
+The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant repository. Its structure follows the standards laid out in :term:`NCEP` Central Operations (NCO) WCOSS :nco:`Implementation Standards <ImplementationStandards.v11.0.0.pdf>`. This structure is implemented using the ``local_path`` settings contained within the ``Externals.cfg`` file. After ``manage_externals/checkout_externals`` is run (see :numref:`Section %s <CheckoutExternals>`), the specific GitHub repositories described in :numref:`Table %s <top_level_repos>` are cloned into the target subdirectories shown below. Directories that will be created as part of the build process appear in parentheses and will not be visible until after the build is complete. Some directories have been removed for brevity.
 
 .. code-block:: console
 
@@ -193,7 +193,7 @@ The ``ufs-srweather-app`` :term:`umbrella repository` is an NCO-compliant reposi
 
 SRW App SubDirectories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. Users can reference the `NCO Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf?>`__ (p. 19) for additional details on repository structure in NCO-compliant repositories. 
+:numref:`Table %s <Subdirectories>` describes the contents of the most important SRW App subdirectories. :numref:`Table %s <FilesAndSubDirs>` provides a more comprehensive explanation of the ``ufs-srweather-app`` files and subdirectories. Users can reference the :nco:`NCO Implementation Standards <ImplementationStandards.v11.0.0.pdf>` (p. 19) for additional details on repository structure in NCO-compliant repositories. 
 
 .. _Subdirectories:
 

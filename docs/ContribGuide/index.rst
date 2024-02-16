@@ -5,9 +5,8 @@ Contributor's Guide
    :maxdepth: 3
    
    introduction
-   DeveloperSetup
-   code-configuration-standards
    fork-pr-model
+   code-configuration-standards
    testing
    git-submodules
    
