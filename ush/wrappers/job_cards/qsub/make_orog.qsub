@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env bash
 #PBS -A epic
 #PBS -l select=1:mpiprocs=24:ncpus=24
 #PBS -q main
