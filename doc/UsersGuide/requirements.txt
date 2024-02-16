@@ -48,7 +48,7 @@ six==1.16.0
     #   pybtex
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==6.0.0
+sphinx==7.2.6
     # via
     #   -r requirements.in
     #   sphinx-rtd-theme
