@@ -5,7 +5,7 @@ Contributor's Guide
    :maxdepth: 3
    
    introduction
-   fork-pr-model
+   contributing
    code-configuration-standards
    testing
    git-submodules

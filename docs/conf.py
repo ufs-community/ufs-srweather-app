@@ -49,12 +49,16 @@ linkcheck_anchors_ignore = [r"current_srw_release_data/",
                             r"sample_cases/.*",
                             ]
 
-linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
-                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": r"https://github\.com/login",
+linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
+                                 r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
+                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": 
+                                 r"https://github\.com/login",
                                r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
                                r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
                                r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
-                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*"
+                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
+                               r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
+                                 r"https://github\.com/login\?return\_to\=https.*",
                                }
 
 # -- General configuration ---------------------------------------------------
@@ -133,7 +137,7 @@ html_logo= "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 # html_theme_options = {}
 html_theme_options = {
     "body_max_width": "none", 
-    'navigation_depth': 6,
+    "navigation_depth": 8,
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,
