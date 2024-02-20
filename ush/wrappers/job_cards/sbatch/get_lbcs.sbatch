@@ -28,7 +28,3 @@ $USHdir/load_modules_run_task.sh "get_extrn_lbcs" $JOBSdir/JREGIONAL_GET_EXTRN_M
 # Gaea-c5 differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=es --partition=eslogin_c5 --export=NONE
-
-# Gaea    differences:
-##SBATCH --qos=windfall
-##SBATCH --clusters=es --export=NONE
