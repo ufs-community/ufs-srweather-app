@@ -31,6 +31,7 @@ author = ' '
 version = 'develop'
 # The full version, including alpha/beta/rc tags
 release = 'Develop Branch Documentation'
+html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
