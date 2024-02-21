@@ -285,7 +285,7 @@ fi
 cp ${DATA}/${NET}.${cycle}.awpozcon*bc*.grib2 ${COMOUT}
 
 #-----------------------------------------------------------------------------
-# STEP 6: calculating 24-hr ave PM2.5
+# STEP 6: calculating 1hr and 8hr max O3
 #-----------------------------------------------------------------------------
 
 . prep_step
@@ -368,31 +368,6 @@ EOF1
 #      ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3_bc.793.grib2
     fi
    
-    # Add WMO header for daily 1h and 8h max O3 
-    for hr in 1 8; do
-      echo 0 > filesize
-      export XLFRTEOPTS="unit_vars=yes"
-      export FORT11=${NET}.${cycle}.max_${hr}hr_o3_bc.227.grib2
-      export FORT12="filesize"
-      export FORT51=${NET}-${hr}hro3-maxi.227.grib2.temp
-      tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
-   
-      echo `ls -l ${NET}-${hr}hro3-maxi.227.grib2.temp | awk '{print $5} '` > filesize
-      export XLFRTEOPTS="unit_vars=yes"
-      export FORT11=${NET}-${hr}hro3-maxi.227.grib2.temp
-      export FORT12="filesize"
-      export FORT51=awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
-      tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.227
-    done
-   
-    # Post Files to COMOUTwmo
-    cp awpaqm.${cycle}.*o3-max-bc.227.grib2 ${COMOUTwmo}
-
-    # Distribute Data
-    if [ "${SENDDBN_NTC}" = "YES" ] ; then
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max-bc.227.grib2
-      ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max-bc.227.grib2
-    fi
   fi
 fi
 
@@ -447,7 +422,7 @@ if [ "${SENDDBN}" = "YES" ] ; then
 fi
 
 #################################################
-#    Part III:  Insert WMO header to GRIB files
+# STEP 7:  Insert WMO header to GRIB files
 #################################################
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
@@ -487,7 +462,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
     cp awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2 ${COMOUTwmo}
 
     # Distribute Data
-    if [ "${SENDDBN}" = "YES" ]; then
+    if [ "${SENDDBN_NTC}" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-bc.227.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.${hr}ho3-max-bc.227.grib2
     fi
