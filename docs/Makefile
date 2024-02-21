@@ -12,7 +12,7 @@ LINKCHECKDIR  = $(BUILDDIR)/linkcheck
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-docs:
+doc:
 	make clean
 	$(MAKE) linkcheck
 	$(MAKE) html
