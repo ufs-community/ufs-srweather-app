@@ -8,7 +8,7 @@ Background
 Authoritative Branch
 ----------------------
 
-The ``ufs-srweather-app`` repository maintains a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual subcomponents. Pull requests (PRs) will be merged to ``develop``. 
+The ``ufs-srweather-app`` repository maintains a main branch for development called ``develop``. The HEAD of ``develop`` reflects the latest development changes. It points to regularly updated hashes for individual subcomponents. Pull requests (PRs) are typically merged to ``develop``. 
 
 The ``develop`` branch is protected by the code management team:
 
@@ -20,7 +20,7 @@ The ``develop`` branch is protected by the code management team:
 Repository Code Management Team
 ---------------------------------
 
-Scientists from multiple labs and organizations have volunteered to review pull requests for the ``develop`` branch:
+Scientists and engineers from multiple labs and organizations have volunteered to review pull requests for the ``develop`` branch:
 
 .. csv-table::
    :file: ../tables/code-managers.csv

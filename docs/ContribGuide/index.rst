@@ -9,4 +9,5 @@ Contributor's Guide
    code-configuration-standards
    testing
    git-submodules
+   documentation
    

@@ -7,39 +7,59 @@ Fork and PR Model
 
 .. note:: 
    
-   Thank you to the UW Tools team for authoring an overview of the Fork and PR Model. It has been adapted for use in the SRW App. The original can be viewed in the `uwtools` :uw:`documentation <sections/contributor_guide/fork_pr_model.html>`.
+   Thank you to the UW Tools team for authoring an overview of the Fork and PR Model. Their work has been adapted for use in the SRW App. The original can be viewed in the `uwtools` :uw:`documentation <sections/contributor_guide/fork_pr_model.html>`.
 
 Contributions to the ``ufs-srweather-app`` project are made via a :github-docs:`Fork<pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks>` and :github-docs:`Pull Request (PR)<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>` model. GitHub provides a thorough description of this contribution model in their `Contributing to a project` :github-docs:`Quickstart<get-started/exploring-projects-on-github/contributing-to-a-project>`, but the steps, with respect to ``ufs-srweather-app`` contributions, can be summarized as:
 
-#. Open an :srw:`issue <issues/new/choose>` in the ``ufs-srweather-app`` to document proposed changes. See :ref:`Opening an Issue <open-issue>` for detailed instructions.
+#. :github-docs:`Create an issue <issues/tracking-your-work-with-issues/creating-an-issue>` to document proposed changes.
 #. :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository>` the :srw:`ufs-srweather-app repository<>` into your personal GitHub account.
 #. :github-docs:`Clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system.
-#. :github-docs:`Create a branch<get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on>` in your clone for your changes. All development should take place on a branch, *not* on ``develop``. Branches should be named as follows, where ``[name]`` is a one-word description of the branch:
+#. :github-docs:`Create a branch<get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on>` in your clone for your changes. All development should take place on a branch, *not* on ``develop``. 
+#. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. 
+#. When your work is complete, :github-docs:`create a pull request (PR)<get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request>` to merge your changes. 
+
+For future contributions, you may delete and then recreate your fork or configure the official ``ufs-srweather-app`` repository as a :github-docs:`remote repository<pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork>` on your clone and :github-docs:`sync upstream changes<pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>` to stay up-to-date with the official repository.
+
+
+Specifics for the ``ufs-srweather-app``
+===========================================
+
+Development and Testing
+------------------------
+
+#. **Create issue:** Open an :srw:`issue <issues/new/choose>` in the ``ufs-srweather-app`` to document proposed changes. See :ref:`Opening an Issue <open-issue>` for detailed instructions.
+#. **Fork & Clone the SRW App:** :github-docs:`Fork<get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository>` the :srw:`ufs-srweather-app repository<>` into your personal GitHub account and :github-docs:`clone<get-started/exploring-projects-on-github/contributing-to-a-project>` your fork onto your development system if you have not already done so.
+#. **Create a branch:** in your clone for your changes. All development should take place on a branch, not on ``develop``. Branches should be named as follows, where ``[name]`` is a one-word description of the branch:
 
    * ``bugfix/[name]``: Fixes a demonstrably incorrect portion of code
    * ``feature/[name]``: Adds a new feature to the code or improves an existing portion of the code
    * ``text/[name]``: Changes elements of the repository that do not impact the compiled code in any way (e.g., changes to README, documentation, comments, changing quoted Registry elements, white space alignment). 
 
-#. :github-docs:`Make, commit, and push changes<get-started/exploring-projects-on-github/contributing-to-a-project#making-and-pushing-changes>` in your clone / to your fork. 
-#. When your work is complete, :github-docs:`create a pull request<get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request>` to merge your changes.
+#. **Development:** Perform and test changes in the feature branch (not on ``develop``!). Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Document changes to the workflow and capabilities in the RST files so that the SRW App documentation stays up-to-date. 
+#. **Testing:** Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all Level 1 platforms. The bare minimum testing required before opening a PR is to run the fundamental (:srw:`tests/WE2E/machine_suites/fundamental <blob/develop/tests/WE2E/machine_suites/fundamental>`) tests on at least one supported machine (additional testing from the comprehensive suite might be required, depending on the nature of the change). To manually run the fundamental tests, please use the following command in the ``tests/WE2E`` directory:
 
-For future contributions, you may delete and then recreate your fork or configure the official ``ufs-srweather-app`` repository as a :github-docs:`remote repository<pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork>` on your clone and :github-docs:`sync upstream changes<pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork>` to stay up-to-date with the official repository.
+   .. code-block:: console
+
+      ./run_WE2E_tests.py -t=fundamental -m=your_machine -a=your_account
+
+   where ``your_machine`` is the Tier-1 machine you are running the tests on, and ``your_account`` is the account you charge your computational resources to. See section :numref:`Section %s <WE2E_tests>` for more detail on SRW App testing. 
+
+#. **Pull Request:** When your work is complete, :github-docs:`create a pull request<get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request>` to merge your changes. When a PR is initiated, the :ref:`PR template <pr-template>` autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in the :ref:`Making a Pull Request <make-pr>` section for more details on making a good pull request. 
+#. **Merge** - When review and testing are complete, a code manager will merge the PR into ``develop``. PRs that are not ready for merging should have a "Work in Progress" label on them. Users who lack the permissions required to add the label can request in their PR that a code manager do so.
+#. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue. Feature branches are intended to be short-lived, concentrated on code with one sole purpose, and applicable to a single PR. A new feature branch should be created when subsequent code development continues.
 
 .. note:: 
    
    Communication with code managers and the :ref:`repository code management team <rcm-team>` throughout the process is encouraged.
-
-Specifics for the ``ufs-srweather-app``
-===========================================
 
 .. _open-issue:
 
 Opening an Issue
 ------------------
 
-All changes to ``ufs-srweather-app`` should be associated with a GitHub Issue. Developers should search the existing issues in the ``ufs-srweather-app`` repository before beginning their work. If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request. If an issue does exist, developers should be sure to collaborate to avoid duplicative work. 
+All changes to ``ufs-srweather-app`` should be associated with a :srw:`GitHub Issue <issues>`. Developers should search the existing issues in the ``ufs-srweather-app`` repository before beginning their work. If an issue does not exist for the work they are doing, they should create one prior to opening a new pull request. If an issue does exist, developers should be sure to collaborate to avoid duplicative work. 
 
-To open an issue, click on "New Issue" within the ``ufs-srweather-app`` GitHub repository. 
+To open an issue, click on :srw:`"New Issue"<issues/new/choose>` within the ``ufs-srweather-app`` GitHub repository. 
 
 Choose from four options: 
 
@@ -160,25 +180,20 @@ Making a Pull Request
 
 All changes to the SRW App ``develop`` branch should be handled via GitHub’s "Pull Request" (PR) functionality from a branch in the developer's fork. When creating your PR, please follow these guidelines, specific to the ``ufs-srweather-app`` project:
 
-* **Test your contribution.** The bare minimum testing required before opening a PR is to run the fundamental (:srw:`tests/WE2E/machine_suites/fundamental <blob/develop/tests/WE2E/machine_suites/fundamental>`) tests on at least one supported machine (additional testing from the comprehensive suite might be required, depending on the nature of the change). To manually run the fundamental tests, please use the following command in the ``tests/WE2E`` directory:
-
-   .. code-block:: console
-
-      ./run_WE2E_tests.py -t=fundamental -m=your_machine -a=your_account
-
-   where ``your_machine`` is the Tier-1 machine you are running the tests on, and ``your_account`` is the account you charge your computational resources to. See section :numref:`Section %s <WE2E_tests>` for more detail on SRW App testing. 
 * Ensure that your PR is targeting the base repository ``ufs-community/ufs-srweather-app`` and an appropriate base branch (usually ``develop``).
-* **Complete PR template.** Your PR will appear pre-populated with a :ref:`template <pr-template>` that you should complete. Provide an informative synopsis of your contribution, then mark appropriate checklist items by placing an "X" between their square brackets. You may tidy up the description by removing boilerplate text and non-selected checklist items. View :ref:`useful guidance <additional-pr-guidance>` for completing each section below.  
+* **Complete PR template.** Your PR will appear pre-populated with a :ref:`template <pr-template>` that you should complete. Provide an informative synopsis of your contribution, then mark appropriate checklist items by placing an "X" between their square brackets. You may tidy up the description by removing boilerplate text and non-selected checklist items. View :ref:`useful PR template guidance <pr-template-guidance>` and information on :ref:`best practices <tips-best-practices>` for completing each section below.  
 * **Create draft PR.** Use the pull-down arrow on the green button below the description to initially create a :github-docs:`draft pull request<pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests>`. 
-   * Once your draft PR is open, visit its **Files changed** tab and add comments to any lines of code that you think reviewers will benefit from. Try to save time by proactively answering questions you suspect reviewers will ask.
-* **Open PR.** Once your draft PR is marked up with your comments and ready for review, return to the **Conversation** tab and click the **Ready for review** button.
 
-A default set of reviewers will automatically be added to your PR. You may add or request others, if appropriate. Pull requests will be reviewed and approved by at least two code reviewers, at least one of whom must be a code manager. Reviewers may make comments, ask questions, or request changes on your PR. Respond to these as needed, making commits in your clone and pushing to your fork/branch. Your PR will automatically be updated when commits are pushed to its source branch in your fork, so reviewers will immediately see your updates. When a PR has met the contribution and testing requirements and has been approved by two code reviewers, a code manager will merge the PR.
+   * Once your draft PR is open, visit its *Files changed* tab and add comments to any lines of code where you think reviewers will benefit from more explanation. Try to save time by proactively answering questions you suspect reviewers will ask.
+
+* **Open PR.** Once your draft PR is marked up with your comments and ready for review, return to the *Conversation* tab and click the *Ready for review* button.
+
+   * A default set of reviewers will automatically be added to your PR. You may add or request others, if appropriate. Pull requests will be reviewed and approved by at least two code reviewers, at least one of whom must be a code manager. Reviewers may make comments, ask questions, or request changes on your PR. Respond to these as needed, making commits in your clone and pushing to your fork/branch. Your PR will automatically be updated when commits are pushed to its source branch in your fork, so reviewers will immediately see your updates. When a PR has met the contribution and testing requirements and has been approved by two code reviewers, a code manager will merge the PR.
 
 .. _pr-template:
 
 PR Template
--------------
+^^^^^^^^^^^^
 
 Here is the template that is provided when developers click "Create pull request":
 
@@ -275,10 +290,10 @@ Here is the template that is provided when developers click "Create pull request
    ## CONTRIBUTORS (optional): 
    <!-- If others have contributed to this work aside from the PR author, list them here -->
 
-.. _additional-pr-guidance:
+.. _pr-template-guidance:
 
-Additional Guidance
----------------------
+PR Template Guidance
+^^^^^^^^^^^^^^^^^^^^^
 
 **TITLE:** Titles should start with the branch name in brackets and should give code reviewers a clear idea of what the change will do in approximately 5-10 words. Some good examples:
 
@@ -294,12 +309,12 @@ All of the above examples concisely describe the changes contained in the pull r
 
 **DESCRIPTION OF CHANGES:** The first line of the description should be a single-line "purpose" for this change. Note the type of change (i.e., bug fix, feature/enhancement, text-only). Summarize the problem, proposed solution, and required changes. If this is an enhancement or new feature, describe why the change is important.
 
-**DOCUMENTATION:** Developers should include documentation on new capabilities and enhancements by updating the appropriate `.rst` documentation files in their fork prior to opening the PR. These documentation updates should be noted in the "Documentation" section of the PR message. If necessary, contributors may submit the `.rst` documentation in a subsequent PR. In these cases, the developers should include any existing documentation in the "Documentation" section of the initial PR message or as a file attachment to the PR. Then, the contributor should open an issue reflecting the need for official `.rst` documentation updates and include the issue number and explanation in the "Documentation" section of the initial PR template.
+**DOCUMENTATION:** Developers should include documentation on new capabilities and enhancements by updating the appropriate RST documentation files in their fork prior to opening the PR. These documentation updates should be noted in the "Documentation" section of the PR message. If necessary, contributors may submit the RST documentation in a subsequent PR. In these cases, the developers should include any existing documentation in the "Documentation" section of the initial PR message or as a file attachment to the PR. Then, the contributor should open an issue reflecting the need for official RST documentation updates and include the issue number and explanation in the "Documentation" section of the initial PR template.
 
 .. _tips-best-practices: 
 
 Tips, Best Practices, and Protocols to Follow When Issuing a PR
------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **Label PR status appropriately.** If the PR is not completely ready to be merged, please add a "Work In Progress" label. Urgent PRs should be marked "high priority." All PRs should have a type label (e.g., "bug," "enhancement"). Labels can be added on the right-hand side of a submitted PR request by clicking on the gear icon beside "Labels" (below the list of reviewers). If users do not have the permissions to add a label to their PR, they should request in their PR description that a code manager add the appropriate labels.
 * **Indicate urgency.** If a PR is particularly urgent, this information should be provided in the PR "Description" section, and multiple code management team members should be tagged to draw attention to this PR. After submitting the PR, a "high priority" label should be added to it. 
@@ -309,11 +324,8 @@ Tips, Best Practices, and Protocols to Follow When Issuing a PR
 * **Target subject matter experts (SMEs) among the code management team.** When possible, tag team members who are familiar with the modifications made in the PR so that the code management team can provide effective and streamlined PR reviews and approvals. Developers can tag SMEs by selecting the gear icon next to "Assignees" (under the Reviewers list) and adding the appropriate names. 
 * **Schedule a live code review** if the PR is exceptionally complex in order to brief members of the code management team on the PR either in-person or through a teleconference. Developers should indicate in the PR message that they are interested in a live code review if they believe that it would be beneficial. 
 
-
-
-
 Merging
-========
+--------
 
 Your PR is ready to merge when:
 
@@ -321,33 +333,11 @@ Your PR is ready to merge when:
 #. All conversations have been marked as resolved.
 #. All required checks have passed.
 
-These criteria and their current statuses are detailed in a section at the bottom of your PR's **Conversation** tab. Checks take some time to run, so please be patient.
+These criteria and their current statuses are detailed in a section at the bottom of your PR's *Conversation* tab. Checks take some time to run, so please be patient.
 
 In general, the lead code manager will merge the PR when ready. Developers with write permissions should not merge their code themselves unless instructed otherwise by the lead code manager.
 
 Need Help?
 ===========
 
-Please use comments in the **Conversation** tab of your PR to ask for help with any difficulties you encounter using this process!
-
-
-
-.. COMMENT: Decide what to add/delete/modify of content below: 
-
-
-         
-1. **Development** - Perform and test changes in the feature branch (not on ``develop``!). Document work in the issue and mention the issue number in commit messages to link your work to the issue (e.g., ``commit -m "Issue #23 - <commit message>"``). Test code modifications on as many platforms as possible, and request help with further testing from the code management team when unable to test on all Level 1 platforms. Document changes to the workflow and capabilities in the ``.rst`` files so that the SRW App documentation stays up-to-date. 
-1. **Pull request** - When ready to merge changes back to the ``develop`` branch, the code developer should initiate a pull request (PR) of the feature branch into the ``develop`` branch. Read :github-docs:`here <pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>` about pull requests in GitHub. When a PR is initiated, the PR Template autofills. Developers should use the template to provide information about the PR in the proper fields. See the guidelines in the :ref:`Making a Pull Request <make-pr>` section for more details on making a good pull request. Developers should also tag all relevant reviewers from the code management team on the PR.
-1. **Merge** - When review and testing are complete, a code manager will merge the PR into `develop`. PRs that are not ready for merging should have a "Work in Progress" label on them. Users who lack the permissions required to add the label can request in their PR that a code manager do so.
-1. **Cleanup** - After the PR is merged, the code developer should delete the branch on their fork and close the issue.
-
-**Note:** Feature branches are intended to be short-lived, concentrated on code with one sole purpose, and applicable to a single PR. These branches should be deleted once merged, and a new feature branch should be created when subsequent code development continues.
-
-
-
-
-
-
-.. hint::
-
-   Read more about `GitFlow <https://nvie.com/posts/a-successful-git-branching-model>`__ procedures for development.
+Please use comments in the *Conversation* tab of your PR to ask for help with any difficulties you encounter using this process! 

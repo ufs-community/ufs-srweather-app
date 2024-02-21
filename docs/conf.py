@@ -285,6 +285,8 @@ intersphinx_mapping = {
 extlinks_detect_hardcoded_links = True
 extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
             'nco': ('https://www.nco.ncep.noaa.gov/idsb/implementation_standards/%s', '%s'),
+            "rst": ("https://www.sphinx-doc.org/en/master/usage/restructuredtext/%s", "%s"),
+            "rtd": ("https://readthedocs.org/projects/ufs-srweather-app/%s", "%s"),
             'srw': ('https://github.com/ufs-community/ufs-srweather-app/%s', '%s'),
             'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
             'uw': ('https://uwtools.readthedocs.io/en/main/%s', '%s'),
