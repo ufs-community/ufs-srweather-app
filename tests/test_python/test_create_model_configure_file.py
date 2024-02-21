@@ -47,6 +47,7 @@ class Testing(unittest.TestCase):
         set_env_var("FHROT", 0)
         set_env_var("DT_ATMOS", 1)
         set_env_var("RESTART_INTERVAL", 4)
+        set_env_var("ITASKS", 1)
 
         set_env_var("WRTCMP_write_groups", 1)
         set_env_var("WRTCMP_write_tasks_per_group", 2)
