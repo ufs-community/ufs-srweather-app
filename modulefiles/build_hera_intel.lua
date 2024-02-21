@@ -8,6 +8,9 @@ whatis([===[Loads libraries needed for building the UFS SRW App on Hera ]===])
 prepend_path("MODULEPATH","/contrib/sutils/modulefiles")
 load("sutils")
 
+-- When Hera switces from CentOS to Rocky, replace line withh correct path to spack-stack
+-- If you want to use Rocky OS now, use line below
+--prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-rocky8/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-noavx512/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
 
