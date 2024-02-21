@@ -16,8 +16,6 @@ import os
 import sys
 import sphinx
 from sphinx.util import logging
-sys.path.insert(0, os.path.abspath('../ush'))
-sys.path.insert(0, os.path.abspath('../tests'))
 
 
 
@@ -63,9 +61,6 @@ linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather
                                }
 
 # -- General configuration ---------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.0'
 
 # Sphinx extension module names:
 extensions = [
@@ -151,7 +146,6 @@ html_context = {}
 def setup(app):
     app.add_css_file('custom.css')  # may also be an URL
     app.add_css_file('theme_overrides.css')  # may also be a URL
-    app.connect('autodoc-process-docstring', warn_undocumented_members)
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -244,25 +238,6 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
-
-# -- Options for autodoc extension ---------------------------------------
-
-autodoc_mock_imports = ["f90nml", "cartopy", "mpl_toolkits.basemap",
-   "fill_jinja_template", "utils", "monitor_jobs", "matplotlib", "numpy",]
-
-logger = logging.getLogger(__name__)
-
-members_to_watch = ['function', 'attribute', 'method']
-def warn_undocumented_members(app, what, name, obj, options, lines):
-    if(what in members_to_watch and len(lines)==0):
-        message = what + " is undocumented: " + name + "(%d)"% len(lines)
-        logger.warning(message)
-
-# -- Options for napoleon extension ---------------------------------------
-
-napoleon_numpy_docstring = False
-napoleon_google_docstring = True
-
 
 # -- Options for intersphinx extension ---------------------------------------
 
