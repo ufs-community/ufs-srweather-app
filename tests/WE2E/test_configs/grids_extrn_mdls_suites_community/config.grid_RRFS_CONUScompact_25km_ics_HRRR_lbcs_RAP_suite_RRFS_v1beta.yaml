@@ -3,7 +3,7 @@ metadata:
     This test is to ensure that the workflow running in community mode
     completes successfully on the RRFS_CONUScompact_25km grid using the RRFS_v1beta
     physics suite with ICs derived from the HRRR and LBCs derived from the RAP.
-    Also tests the "DOT_OR_USCORE" option
+    It also tests the "DOT_OR_USCORE" option and enables offline UPP 2D decomposition.
 user:
   RUN_ENVIR: community
 workflow:
@@ -25,3 +25,5 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
   EXTRN_MDL_FILES_LBCS:
     - '{yy}{jjj}{hh}00{fcst_hr:02d}00'
+task_run_post:
+  NUMX: 2
