@@ -1,10 +1,10 @@
-========================
-Git Submodules Tutorial
-========================
+============================
+Working with Git Submodules 
+============================
 
 .. note:: 
    
-   Thank you to Janet Derrico (@j-derrico) for authoring the summary of Git submodules on which this chapter is based. It has been adapted slightly for use in the SRW App. 
+   Thank you to Janet Derrico (@j-derrico) [#f1]_ for authoring the summary of Git submodules on which this chapter is based. [#f2]_ It has been adapted slightly for use in the SRW App. 
 
 What Are Git Submodules?
 =========================
@@ -220,3 +220,6 @@ Here, ``--init`` initializes any submodules that have not yet been initialized, 
    git pull origin <submodule_branch>
 
 When working with submodules, it is best practice to always run ``git submodule update --init --recursive`` after switching branches. Changes to submodules need to be committed and pushed separately within their respective repositories (see sections above).
+
+.. [#f1] of NOAA Global Systems Laboratory (GSL) and Coorperative Institute for Research in Environmental Sciences (CIRES)
+.. [#f2] with the assistance of Grant Firl, Joseph Olson, and ChatGPT 

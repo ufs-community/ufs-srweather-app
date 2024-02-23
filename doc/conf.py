@@ -33,32 +33,6 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
-# Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
-user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-
-# Ignore working links that cause a linkcheck 403 error.
-linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
-                    r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
-                   ]
-
-# Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
-linkcheck_anchors_ignore = [r"current_srw_release_data/", 
-                            r"input_model_data/.*",
-                            r"fix.*",
-                            r"sample_cases/.*",
-                            ]
-
-linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
-                                 r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
-                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": 
-                                 r"https://github\.com/login",
-                               r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
-                               r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
-                               r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
-                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
-                               r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
-                                 r"https://github\.com/login\?return\_to\=https.*",
-                               }
 
 # -- General configuration ---------------------------------------------------
 
@@ -116,6 +90,37 @@ rst_prolog = """
 .. |branch| replace:: ``develop``
 .. |data| replace:: develop
 """
+
+# Linkcheck options
+
+# Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
+user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+
+# Ignore working links that cause a linkcheck 403 error.
+linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
+                    r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
+                    #r'https://glossary.ametsoc.org/.*',
+                   ]
+
+# Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
+linkcheck_anchors_ignore = [r"current_srw_release_data/", 
+                            r"input_model_data/.*",
+                            r"fix.*",
+                            r"sample_cases/.*",
+                            ]
+
+linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
+                                 r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
+                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": 
+                                 r"https://github\.com/login",
+                               r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
+                               r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
+                               r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
+                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
+                               r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
+                                 r"https://github\.com/login\?return\_to\=https.*",
+                               }
+
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -263,7 +268,7 @@ extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
             'nco': ('https://www.nco.ncep.noaa.gov/idsb/implementation_standards/%s', '%s'),
             "rst": ("https://www.sphinx-doc.org/en/master/usage/restructuredtext/%s", "%s"),
             "rtd": ("https://readthedocs.org/projects/ufs-srweather-app/%s", "%s"),
-            'srw': ('https://github.com/ufs-community/ufs-srweather-app/%s', '%s'),
+            'srw-repo': ('https://github.com/ufs-community/ufs-srweather-app/%s', '%s'),
             'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
             'uw': ('https://uwtools.readthedocs.io/en/main/%s', '%s'),
             }
