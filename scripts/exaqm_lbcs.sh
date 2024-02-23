@@ -106,7 +106,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
 
   chem_lbcs_fp=${FIXaqmchem_lbcs}/${chem_lbcs_fn}
-  if [ -f ${chem_lbcs_fp} ]; then
+  if [ -s ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
     cp ${chem_lbcs_fp} .
   else
@@ -117,7 +117,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
 
   # Function to check if the file exists
     function check_file_existence() {
-    if [ -f "$1" ]; then
+    if [ -s "$1" ]; then
       echo "Found netCDF file: $1"
       cp "$1" .
     else
@@ -271,7 +271,7 @@ EOF
 
   exec_fn="gefs2lbc_para"
   exec_fp="$EXECaqm/${exec_fn}"
-  if [ ! -f "${exec_fp}" ]; then
+  if [ ! -s "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for GEFS LBCs does not exist:
   exec_fp = \"${exec_fp}\"
