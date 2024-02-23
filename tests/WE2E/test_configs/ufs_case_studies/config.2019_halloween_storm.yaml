@@ -16,7 +16,7 @@ workflow:
   PREDEF_GRID_NAME: RRFS_CONUS_13km
   DATE_FIRST_CYCL: '2019102812'
   DATE_LAST_CYCL: '2019102812'
-  FCST_LEN_HRS: 90
+  FCST_LEN_HRS: 6
   PREEXISTING_DIR_METHOD: rename
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: UFS-CASE-STUDY
@@ -35,4 +35,4 @@ rocoto:
       task_make_lbcs_mem#mem#:
         walltime: 06:00:00
       task_run_fcst_mem#mem#:
-        walltime: 08:00:00
+        walltime: 06:00:00
