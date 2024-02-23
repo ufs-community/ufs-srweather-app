@@ -364,11 +364,6 @@ Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
-FTP Data Repository (data for SRW Release v1.0.0 & v1.0.1):
-
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
-
 Others: 
 
 * University of Utah HRRR archive: https://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi
