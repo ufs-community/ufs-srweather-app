@@ -488,7 +488,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 #
 exec_fn="chgres_cube"
 exec_fp="$EXECaqm/${exec_fn}"
-if [ ! -f "${exec_fp}" ]; then
+if [ ! -s "${exec_fp}" ]; then
   message_txt="The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
