@@ -7,6 +7,8 @@ postmsg "$msg"
 
 export pgm=aqm_lbcs
 
+EMAIL_SDM=${EMAIL_SDM:-NO}
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -141,7 +143,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
        else
      # File doesn't exist, wait for 5 seconds and decrement the retry count
          sync
-         sleep 60
+         sleep 20
         ((retries--))
        fi
      done
@@ -175,6 +177,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+GEFS_AERO_LBCS_CHECK="TRUE"
+#
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
@@ -196,7 +200,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 check_file_with_recheck() {
   local file_path="$1"
   local max_rechecks=5
-  local wait_time=20
+  local wait_time=5
 
   for recheck_count in $(seq 1 $max_rechecks); do
     if [ -e "$file_path" ]; then
@@ -229,10 +233,17 @@ check_file_with_recheck() {
        else
         # File not found even after rechecks
         echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+        
+	GEFS_AERO_LBCS_CHECK="FALSE"
+	 
+        if [ "${EMAIL_SDM^^}" = "YES" ] ; then
+          MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
+          #MAILTO=${MAILTO:-"sdm@noaa.gov"}
+          MAILTO=${MAILTO:-"${maillist}"}
+          subject="${cyc}Z ${RUN^^} Output for ${basinname:-} GEFS_AERO LBCS "
+          mail.py -s "${subject}" -v "${MAILTO}" 
+        fi
 
-#        if [ ! -z "${maillist_group1}" ]; then
-#          echo "${message_warning}" | mail.py $maillist_group1
-#        fi
        fi
       fi
   done
@@ -284,9 +295,10 @@ Please ensure that you've built this executable."
 #
 #----------------------------------------------------------------------
 #
+ if [ ${GEFS_AERO_LBCS_CHECK} = "TRUE" ]; then    
   startmsg
   sync
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+   eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
   export err=$?; err_chk
   if [ -e "${pgmout}" ]; then
    cat ${pgmout}
@@ -298,6 +310,14 @@ Please ensure that you've built this executable."
 Successfully added GEFS aerosol LBCs !!!
 ========================================================================"
 #
+ else
+  cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
+
+  print_info_msg "
+========================================================================
+ Failed to add GEFS aerosol LBCs due to missing GEFS LBCS ! 
+========================================================================"
+ fi
 fi
 #
 print_info_msg "

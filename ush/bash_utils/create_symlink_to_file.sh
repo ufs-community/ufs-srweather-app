@@ -119,7 +119,7 @@ will create was not specified in the call to this function:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -s "${target}" ]; then
+  if [ ! -f "${target}" ]; then
     print_err_msg_exit "\
 Cannot create symlink to specified target file because the latter does
 not exist or is not a file:
