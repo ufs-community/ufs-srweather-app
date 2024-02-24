@@ -8,6 +8,7 @@ postmsg "$msg"
 export pgm=aqm_lbcs
 
 EMAIL_SDM=${EMAIL_SDM:-NO}
+GEFS_AERO_LBCS_CHECK=${GEFS_AERO_LBCS_CHECK:-YES}
 
 #-----------------------------------------------------------------------
 #
@@ -177,7 +178,6 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-GEFS_AERO_LBCS_CHECK="TRUE"
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
@@ -234,7 +234,7 @@ check_file_with_recheck() {
         # File not found even after rechecks
         echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
         
-	GEFS_AERO_LBCS_CHECK="FALSE"
+	GEFS_AERO_LBCS_CHECK="NO"
 	 
         if [ "${EMAIL_SDM^^}" = "YES" ] ; then
           MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
@@ -295,7 +295,7 @@ Please ensure that you've built this executable."
 #
 #----------------------------------------------------------------------
 #
- if [ ${GEFS_AERO_LBCS_CHECK} = "TRUE" ]; then    
+ if [ ${GEFS_AERO_LBCS_CHECK} = "YES" ]; then    
   startmsg
   sync
    eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
