@@ -49,14 +49,12 @@ Workflow Coding Standards
 
 **Python Coding Standards:** 
 
- * All Python code contributions should come with an appropriate ``environment.yaml`` file for the feature. 
+ * All new Python workflow contributions should come with an appropriate environment YAML file (similar to ``environment.yaml``, ``graphics_environment.yaml``, and ``aqm_environment.yaml``). 
  * Keep the use of external Python packages to a minimum for necessary workflow tasks. Currently, these include ``f90nml``, ``pyyaml``, and ``Jinja2``. 
 
 **Workflow Design:** Follow the :nco:`NCO Guidelines <>` for what is incorporated in each layer of the workflow. This is particularly important in the ``scripts`` directory. 
 
-**Management of the Configuration File:** New configurable options must be consistent with existing configurable options and be documented in :srw-repo:`UsersGuide/CustomizingTheWorkflow/ConfigWorkflow.rst <blob/develop/doc/UsersGuide/source/CustomizingTheWorkflow/ConfigWorkflow.rst>`. Add necessary checks on acceptable options where applicable. Add appropriate default values in ``config_defaults.yaml``.
-
-.. COMMENT: Update link to what it WILL be
+**Management of the Configuration File:** New configurable options must be consistent with existing configurable options and be documented in :srw-repo:`UsersGuide/CustomizingTheWorkflow/ConfigWorkflow.rst <blob/develop/doc/UsersGuide/CustomizingTheWorkflow/ConfigWorkflow.rst>`. Add necessary checks on acceptable options where applicable. Add appropriate default values in ``config_defaults.yaml``.
 
 **Management of Template Files:** If a new configurable option is required in an existing template, it must be handled similarly to its counterparts in the scripts that fill in the template. For example, if a new type of namelist is introduced for a new application component, it should make use of the existing ``jinja`` framework for populating namelist settings.
 
