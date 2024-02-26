@@ -1,7 +1,7 @@
 metadata:
   description: |-
     This test is to ensure that the workflow running in community mode
-    completes successfully on the RRFS_CONUS_13km grid using the GFS_v16
+    completes successfully on the RRFS_CONUS_13km grid using the FV3_GFS_v16
     physics suite with ICs and LBCs derived from the UFS-CASE-STUDIES platforms 
     for 2020 Cold Air Damming case.
     # NOTE: FCST_LEN_HRS is set to 6 because it can take a very long time to
@@ -33,4 +33,6 @@ rocoto:
       walltime: 06:00:00
     metatask_run_ensemble:
       task_make_lbcs_mem#mem#:
+        walltime: 06:00:00
+      task_run_fcst_mem#mem#:
         walltime: 06:00:00
