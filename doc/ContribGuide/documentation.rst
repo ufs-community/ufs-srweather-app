@@ -5,7 +5,7 @@ Documentation
 
 .. note:: 
    
-   Thank you to the UW Tools team for allowing us to adapt their documentation guidance for use in the SRW App. The original can be viewed in the `uwtools` :uw:`documentation <sections/contributor_guide/documentation.html>`.
+   Thank you to the Unified Workflow (UW) team for allowing us to adapt their documentation guidance for use in the SRW App. The original can be viewed in the `uwtools` :uw:`documentation <sections/contributor_guide/documentation.html>`.
 
 
 Locally Building and Previewing Documentation
