@@ -3,6 +3,7 @@ EPIC;**Michael Lueken (@MichaelLueken)**;Lead SRW App code manager
 GSL;Daniel Abdi (@danielabdi-noaa);Workflow generation, testing RRFS on the cloud, environment modules  
 GSL;Jeff Beck (@JeffBeck-NOAA);SRW App configuration/workflow, code management, meteorological evaluation  
 EMC;Ben Blake (@BenjaminBlake-NOAA);Output visualization, Rocoto  
+EMC;Brian Curtis (@BrianCurtis-NOAA);Operational air quality modeling (Online-CMAQ), code management
 GSL;Christopher Harrop (@christopherwharrop-noaa);Rocoto, code management, and testing  
 GSL;Christina Holt (@christinaholtNOAA);Workflow, conda environment support, testing, and code management  
 EPIC;Chan-Hoo Jeon (@chan-hoo);Air quality modeling (Online-CMAQ), Operational platform testing (WCOSS/NCO), Workflow  
