@@ -21,6 +21,8 @@ fi
 declare platform
 if [[ "${SRW_PLATFORM}" =~ ^(az|g|p)clusternoaa ]]; then
     platform='noaacloud'
+elif [[ "${SRW_PLATFORM}" = gaeac5 ]]; then
+    platform='gaea'
 else
     platform="${SRW_PLATFORM}"
 fi
