@@ -112,7 +112,7 @@ The arguments to this function are defined as follows:
 #
 #-----------------------------------------------------------------------
 #
-  if [ ! -f "${externals_cfg_fp}" ]; then
+  if [ ! -s "${externals_cfg_fp}" ]; then
     print_err_msg_exit "\
 The specified manage_externals configuration file (externals_cfg_fp) 
 does not exist:

@@ -371,9 +371,13 @@ input files in the main experiment directory..."
 #
 relative_link_flag="FALSE"
 
-create_symlink_to_file target="${DATA_TABLE_FP}" \
-                       symlink="${DATA}/${DATA_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+#create_symlink_to_file target="${DATA_TABLE_FP}" \
+#                       symlink="${DATA}/${DATA_TABLE_FN}" \
+#                       relative="${relative_link_flag}"
+if [[ ! -s ${DATA}/${DATA_TABLE_FN} ]]; then
+  cat > ${DATA}/${DATA_TABLE_FN} << EOF
+EOF
+fi
 
 create_symlink_to_file target="${FIELD_TABLE_FP}" \
                        symlink="${DATA}/${FIELD_TABLE_FN}" \
