@@ -511,7 +511,7 @@ EOF
     -i ${tmpfile} \
     -o ${nml_fn} \
     -v \
-    --values-file ${tmpfile}
+    ${tmpfile}
 
   export err=$?
   if [ $err -ne 0 ]; then

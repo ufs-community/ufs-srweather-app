@@ -474,7 +474,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if ([ "$STOCH" == "TRUE" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]); then
-  python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
+  python3 $USHdir/set_fv3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current

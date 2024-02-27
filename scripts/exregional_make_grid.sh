@@ -285,7 +285,7 @@ EOF
     -i ${tmpfile} \
     -o ${rgnl_grid_nml_fp} \
     -v \
-    --values-file ${tmpfile}
+    ${tmpfile}
 
   err=$?
   if [ $err -ne 0 ]; then
@@ -617,7 +617,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-# Call a function (set_FV3nml_sfc_climo_filenames) to set the values of
+# Call a function (set_fv3nml_sfc_climo_filenames) to set the values of
 # those variables in the forecast model's namelist file that specify the
 # paths to the surface climatology files.  These files will either already
 # be avaialable in a user-specified directory (SFC_CLIMO_DIR) or will be
@@ -626,7 +626,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/set_FV3nml_sfc_climo_filenames.py \
+python3 $USHdir/set_fv3nml_sfc_climo_filenames.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist
