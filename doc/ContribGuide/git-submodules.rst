@@ -4,7 +4,7 @@ Working with Git Submodules
 
 .. note:: 
    
-   Thank you to Janet Derrico (@jderrico-NOAA) [#f1]_ for authoring the summary of Git submodules on which this chapter is based. [#f2]_ It has been adapted slightly for use in the SRW App. 
+   Thank you to Janet Derrico (@jderrico-noaa) [#f1]_ for authoring the summary of Git submodules on which this chapter is based. [#f2]_ It has been adapted slightly for use in the SRW App. 
 
 What Are Git Submodules?
 =========================
