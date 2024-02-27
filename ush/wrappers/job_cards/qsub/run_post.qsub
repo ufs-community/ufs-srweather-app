@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env bash
 #PBS -A epic
 #PBS -j oe -o run_post.log
 #PBS -l select=2:mpiprocs=24:ncpus=24

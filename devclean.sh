@@ -135,12 +135,13 @@ elif [ "${CLEAN}" = true ]; then
     "${INSTALL_DIR}/include" \
     "${INSTALL_DIR}/lib" \
     "${INSTALL_DIR}/lib64" \
-    "${SRW_DIR}/manage_externals/manic" \
   )
-  for directory in $directories; do
-    [[ -d $directory ]] && rm -rfv $directory
-  done
+  if [ ${#directories[@]} -ge 1 ]; then
+    for dir in ${directories[@]}; do 
+     [[ -d "${dir}" ]] &&  rm -rfv ${dir} 
+    done
   echo " "
+  fi
 fi
 # Clean all the submodules if requested. Note: Need to check out them again before attempting subsequent builds, by sourcing ${SRW_DIR}/manage_externals/checkout_externals
 if [ ${INCLUDE_SUB_MODULES} == true ]; then

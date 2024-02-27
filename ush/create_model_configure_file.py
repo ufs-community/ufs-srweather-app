@@ -79,6 +79,7 @@ def create_model_configure_file(
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
         "restart_interval": RESTART_INTERVAL,
+        "itasks": ITASKS,
         "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
         "quilting": f".{lowercase(str(QUILTING))}.",
         "output_grid": WRTCMP_output_grid,

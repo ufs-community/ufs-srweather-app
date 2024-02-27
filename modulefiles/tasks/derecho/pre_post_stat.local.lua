@@ -1,2 +1,2 @@
-load("nco/4.9.5")
+load("nco/5.0.6")
 load("python_srw_cmaq")

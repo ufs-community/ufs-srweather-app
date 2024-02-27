@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -410,7 +410,7 @@ for (( ii=0; ii<${num_fhrs}; ii=ii+bcgrpnum10 )); do
     fi
     ;;
   "GDAS")
-    fn_atm="${EXTRN_MDL_FNS[0][$i]}"
+    fn_atm="${EXTRN_MDL_FNS[$i]}"
     ;;
   "GEFS")
     fn_grib2="${EXTRN_MDL_FNS[$i]}"

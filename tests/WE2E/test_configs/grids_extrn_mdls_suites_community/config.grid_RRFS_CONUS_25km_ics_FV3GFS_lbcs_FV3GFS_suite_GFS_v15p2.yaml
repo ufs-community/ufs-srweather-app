@@ -4,6 +4,7 @@ metadata:
     completes successfully on the RRFS_CONUS_25km grid using the GFS_v15p2
     physics suite with ICs and LBCs derived from the FV3GFS.
     In addition, this tests the "inline post" option (WRITE_DOPOST: true)
+    and enables UPP inline 2D decomposition.
 user:
   RUN_ENVIR: community
 workflow:
@@ -22,3 +23,4 @@ task_get_extrn_lbcs:
   USE_USER_STAGED_EXTRN_FILES: true
 task_run_fcst:
   WRITE_DOPOST: true
+  ITASKS: 2

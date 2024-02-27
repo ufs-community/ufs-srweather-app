@@ -28,6 +28,7 @@ author = ' '
 version = 'develop'
 # The full version, including alpha/beta/rc tags
 release = 'Develop Branch Documentation'
+html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
@@ -131,7 +132,7 @@ html_theme_path = ["_themes", ]
 # html_theme_options = {}
 html_theme_options = {
     "body_max_width": "none", 
-    'navigation_depth': 6,
+    "navigation_depth": 6,
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,
