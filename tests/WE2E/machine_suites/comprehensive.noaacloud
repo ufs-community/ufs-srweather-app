@@ -59,6 +59,9 @@ pregen_grid_orog_sfc_climo
 specify_EXTRN_MDL_SYSBASEDIR_ICS_LBCS
 specify_template_filenames
 2020_CAD
+2020_CAPE
+2019_hurricane_barry
+2019_halloween_storm
 get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems
 get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS
 long_fcst
