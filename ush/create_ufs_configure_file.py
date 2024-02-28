@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Function to create a NEMS configuration file for the FV3 forecast
+Function to create a UFS configuration file for the FV3 forecast
 model(s) from a template.
 """
 
@@ -21,8 +21,8 @@ from python_utils import (
     print_input_args,
 )
 
-def create_nems_configure_file(run_dir):
-    """ Creates a nems configuration file in the specified
+def create_ufs_configure_file(run_dir):
+    """ Creates a ufs configuration file in the specified
     run directory
 
     Args:
@@ -41,18 +41,18 @@ def create_nems_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    # Create a NEMS configuration file in the specified run directory.
+    # Create a UFS configuration file in the specified run directory.
     #
     #-----------------------------------------------------------------------
     #
     print_info_msg(f'''
-        Creating a nems.configure file (\"{NEMS_CONFIG_FN}\") in the specified 
+        Creating a ufs.configure file (\"{UFS_CONFIG_FN}\") in the specified 
         run directory (run_dir):
           run_dir = \"{run_dir}\"''', verbose=VERBOSE)
     #
     # Set output file path
     #
-    nems_config_fp = os.path.join(run_dir, NEMS_CONFIG_FN)
+    ufs_config_fp = os.path.join(run_dir, UFS_CONFIG_FN)
     pe_member01_m1 = str(int(PE_MEMBER01)-1)
     #
     #-----------------------------------------------------------------------
@@ -75,7 +75,7 @@ def create_nems_configure_file(run_dir):
     print_info_msg(
         dedent(
             f"""
-            The variable \"settings\" specifying values to be used in the \"{NEMS_CONFIG_FN}\"
+            The variable \"settings\" specifying values to be used in the \"{UFS_CONFIG_FN}\"
             file has been set as follows:\n
             settings =\n\n"""
         )
@@ -85,7 +85,7 @@ def create_nems_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    # Call a python script to generate the experiment's actual NEMS_CONFIG_FN
+    # Call a python script to generate the experiment's actual UFS_CONFIG_FN
     # file from the template file.
     #
     #-----------------------------------------------------------------------
@@ -93,14 +93,14 @@ def create_nems_configure_file(run_dir):
     # Store the settings in a temporary file
     with tempfile.NamedTemporaryFile(dir="./",
                                      mode="w+t",
-                                     prefix="nems_config_settings",
+                                     prefix="ufs_config_settings",
                                      suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
 
         cmd = " ".join(["uw template render",
-            "-i", NEMS_CONFIG_TMPL_FP,
-            "-o", nems_config_fp,
+            "-i", UFS_CONFIG_TMPL_FP,
+            "-o", ufs_config_fp,
             "-v",
             "--values-file", tmpfile.name,
             ]
@@ -124,7 +124,7 @@ def create_nems_configure_file(run_dir):
 def parse_args(argv):
     """ Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description='Creates NEMS configuration file.'
+        description='Creates UFS configuration file.'
     )
 
     parser.add_argument("-r", "--run-dir",
@@ -144,6 +144,6 @@ if __name__ == "__main__":
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
     import_vars(dictionary=cfg)
-    create_nems_configure_file(
+    create_ufs_configure_file(
         run_dir=args.run_dir,
     )
