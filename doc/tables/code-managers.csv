@@ -8,7 +8,7 @@ GSL;Christopher Harrop (@christopherwharrop-noaa);Rocoto, code management, and t
 GSL;Christina Holt (@christinaholtNOAA);Workflow, conda environment support, testing, and code management
 EPIC;Chan-Hoo Jeon (@chan-hoo);Air quality modeling (Online-CMAQ), NCO Implementation Standards, Workflow
 EPIC;Jong Kim (@jkbk2004);UFS Weather Model configuration, forecast sensitivity analysis, data assimilation
-NCAR;Mike Kavulich (@mkavulich);Workflow, CCPP/physics, code management, WE2E testing
+NCAR;Mike Kavulich (@mkavulich);Workflow, CCPP/physics, code management, WE2E testing, verification
 GSL;Gerard Ketefian (@gsketefian);Verification/METplus tasks, Jinja templates, and workflow scripts
 NCAR;Will Mayfield (@willmayfield);Verification/METplus tasks
 GSL;Linlin Pan (@panll);Workflow, CCPP/physics, and verification
