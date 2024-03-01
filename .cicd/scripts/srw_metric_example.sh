@@ -46,7 +46,7 @@ module load build_${platform,,}_${SRW_COMPILER}
 module load wflow_${platform,,}
 
 [[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate workflow_tools
+conda activate srw_app
 set -e -u
 
 # build srw
@@ -58,6 +58,7 @@ cd ${workspace}
 [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
 cd ${workspace}/tests/WE2E
 ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${SRW_PROJECT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
+
 cd ${workspace}
 
 # run skill-score check
