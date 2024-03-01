@@ -10,11 +10,10 @@ pipeline {
     parameters {
         // Allow job runner to filter based on platform
         // Use the line below to enable all PW clusters
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaeac5', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'], description: 'Specify the platform(s) to use')
         // Use the line below to enable the PW AWS cluster
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaeac5', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
-        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaeac5', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
-        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
+        // choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'cheyenne', 'gaea', 'hera', 'jet', 'orion', 'hercules', 'pclusternoaav2use1'], description: 'Specify the platform(s) to use')
+        choice(name: 'SRW_PLATFORM_FILTER', choices: ['all', 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules'], description: 'Specify the platform(s) to use')
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'
@@ -87,8 +86,7 @@ pipeline {
                 axes {
                     axis {
                         name 'SRW_PLATFORM'
-                        // values 'derecho', 'gaeac5', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                        values 'derecho', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                        values 'derecho', 'gaea', 'hera', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                     }
 
                     axis {
@@ -102,8 +100,7 @@ pipeline {
                     exclude {
                             axis {
                             name 'SRW_PLATFORM'
-                            // values 'derecho', 'gaeac5', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
-                            values 'derecho', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
+                            values 'derecho', 'gaea', 'jet', 'orion', 'hercules' //, 'pclusternoaav2use1' , 'azclusternoaav2eus1', 'gclusternoaav2usc1'
                         }
 
                         axis {
