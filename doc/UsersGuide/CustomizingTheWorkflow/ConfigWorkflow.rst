@@ -20,7 +20,7 @@ USER Configuration Parameters
 If non-default parameters are selected for the variables in this section, they should be added to the ``user:`` section of the ``config.yaml`` file. 
 
 ``RUN_ENVIR``: (Default: "nco")
-   This variable determines the workflow mode. The user can choose between two options: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which works with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/>`__ document:
+   This variable determines the workflow mode. The user can choose between two options: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which works with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following :nco:`WCOSS Implementation Standards <>` document:
 
    | NCEP Central Operations
    | WCOSS Implementation Standards
@@ -699,7 +699,7 @@ A standard set of environment variables has been established for *nco* mode to s
    Only *community* mode is fully supported for releases. *nco* mode is used by those at the Environmental Modeling Center (EMC) and Global Systems Laboratory (GSL) who are working on pre-implementation operational testing. Other users should run the SRW App in *community* mode. 
 
 ``envir_default, NET_default, model_ver_default, RUN_default``:
-   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__ document (pp. 4-5) as follows: 
+   Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the :nco:`WCOSS Implementation Standards <ImplementationStandards.v11.0.0.pdf>` document (pp. 4-5) as follows: 
 
    ``envir_default``: (Default: "para")
       Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. 
@@ -1349,7 +1349,7 @@ PLOT_ALLVARS Configuration Parameters
 Typically, the following parameters must be set explicitly by the user in the ``task_plot_allvars:`` section of the configuration file (``config.yaml``) when executing the plotting tasks. 
 
 ``COMOUT_REF``: (Default: "")
-   Path to the reference experiment's COMOUT directory. This is the directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory and end with ``$PDY/$cyc``. For more detail on *nco* standards and directory naming conventions, see `WCOSS Implementation Standards <https://www.nco.ncep.noaa.gov/idsb/implementation_standards/ImplementationStandards.v11.0.0.pdf>`__ (particularly pp. 4-5). 
+   Path to the reference experiment's COMOUT directory. This is the directory where the GRIB2 files from post-processing are located. In *community* mode (i.e., when ``RUN_ENVIR: "community"``), this directory will correspond to the location in the experiment directory where the post-processed output can be found (e.g., ``$EXPTDIR/$DATE_FIRST_CYCL/postprd``). In *nco* mode, this directory should be set to the location of the ``COMOUT`` directory and end with ``$PDY/$cyc``. For more detail on *nco* standards and directory naming conventions, see :nco:`WCOSS Implementation Standards <ImplementationStandards.v11.0.0.pdf>` (particularly pp. 4-5). 
   
 ``PLOT_FCST_START``: (Default: 0)
    The starting forecast hour for the plotting task. For example, if a forecast starts at 18h/18z, this is considered the 0th forecast hour, so "starting forecast hour" should be 0, not 18. If a forecast starts at 18h/18z, but the user only wants plots from the 6th forecast hour on, "starting forecast hour" should be 6.
