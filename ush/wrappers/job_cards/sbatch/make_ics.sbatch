@@ -23,7 +23,7 @@ export NWGES_DIR=$PWD'/../../../nco_dirs/nwges/20190615'
 
 $USHdir/load_modules_run_task.sh "make_ics" $JOBSdir/JREGIONAL_MAKE_ICS
 
-# Gaea-c5 differences:
+# Gaea differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='48'

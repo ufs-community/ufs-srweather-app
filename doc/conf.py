@@ -14,7 +14,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+import sphinx
+from sphinx.util import logging
 
 
 
@@ -32,37 +33,10 @@ html_logo = "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 numfig = True
 
-# Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
-user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-
-# Ignore working links that cause a linkcheck 403 error.
-linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
-                    r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
-                   ]
-
-# Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
-linkcheck_anchors_ignore = [r"current_srw_release_data/", 
-                            r"input_model_data/.*",
-                            r"fix.*",
-                            r"sample_cases/.*",
-                            ]
-
-linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
-                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": r"https://github\.com/login",
-                               r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
-                               r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
-                               r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
-                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*"
-                               }
 
 # -- General configuration ---------------------------------------------------
 
-# If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = '1.0'
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
+# Sphinx extension module names:
 extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.autodoc',
@@ -78,7 +52,6 @@ extensions = [
 ]
 
 bibtex_bibfiles = ['references.bib']
-#bibtex_bibfiles = ['refs.bib']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -99,7 +72,8 @@ master_doc = 'index'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build',
+                    '.DS_Store',]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -117,6 +91,37 @@ rst_prolog = """
 .. |data| replace:: develop
 """
 
+# Linkcheck options
+
+# Avoid a 403 Forbidden error when accessing certain links (e.g., noaa.gov)
+user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+
+# Ignore working links that cause a linkcheck 403 error.
+linkcheck_ignore = [r'https://www\.intel\.com/content/www/us/en/docs/cpp\-compiler/developer\-guide\-reference/2021\-10/thread\-affinity\-interface\.html',
+                    r'https://www\.intel\.com/content/www/us/en/developer/tools/oneapi/hpc\-toolkit\-download\.html',
+                    #r'https://glossary.ametsoc.org/.*',
+                   ]
+
+# Ignore anchor tags for SRW App data bucket. Shows Not Found even when they exist.
+linkcheck_anchors_ignore = [r"current_srw_release_data/", 
+                            r"input_model_data/.*",
+                            r"fix.*",
+                            r"sample_cases/.*",
+                            ]
+
+linkcheck_allowed_redirects = {r"https://github\.com/ufs-community/ufs-srweather-app/wiki/.*": 
+                                 r"https://raw\.githubusercontent\.com/wiki/ufs-community/ufs-srweather-app/.*",
+                               r"https://github\.com/ufs-community/ufs-srweather-app/issues/new/choose": 
+                                 r"https://github\.com/login",
+                               r"https://doi\.org/.*/zenodo\..*": r"https://zenodo\.org/records/.*",
+                               r"https://doi\.org/.*": r"https://gmd\.copernicus\.org/.*",
+                               r"https://rdhpcs\-common\-docs\.rdhpcs\.noaa\.gov/wiki/index\.php/Transferring\_Data": 
+                                 r"https://sso\.noaa\.gov\:443/openam/SSORedirect/metaAlias/noaa\-online/idp\?SAMLRequest\=.*",
+                               r"https://github\.com/ufs-community/ufs\-srweather\-app/issues/.*": 
+                                 r"https://github\.com/login\?return\_to\=https.*",
+                               }
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -124,6 +129,7 @@ rst_prolog = """
 #
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["_themes", ]
+html_logo= "https://github.com/ufs-community/ufs/wiki/images/ufs-epic-logo.png"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -132,7 +138,7 @@ html_theme_path = ["_themes", ]
 # html_theme_options = {}
 html_theme_options = {
     "body_max_width": "none", 
-    "navigation_depth": 6,
+    "navigation_depth": 8,
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -191,7 +197,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'UFS-SRWeatherApp.tex', 'UFS Short-Range Weather App Users Guide',
+    (master_doc, 'UFS-SRWeatherApp.tex', 'UFS Short-Range Weather App Documentation',
      ' ', 'manual'),
 ]
 
@@ -201,7 +207,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'UFS-SRWeatherApp', 'UFS Short-Range Weather App Users Guide',
+    (master_doc, 'UFS-SRWeatherApp', 'UFS Short-Range Weather App Documentation',
      [author], 1)
 ]
 
@@ -253,16 +259,16 @@ intersphinx_mapping = {
    'ccpp-techdoc': ('https://ccpp-techdoc.readthedocs.io/en/ufs_srw_app_v2.2.0/', None),
    'stochphys': ('https://stochastic-physics.readthedocs.io/en/latest/', None),
    'srw_v2.2.0': ('https://ufs-srweather-app.readthedocs.io/en/release-public-v2.2.0/', None),
-   'uw': ('https://uwtools.readthedocs.io/en/main', None),
 }
 
 # -- Options for extlinks extension ---------------------------------------
 
 extlinks_detect_hardcoded_links = True
-extlinks = {'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
+extlinks = {'github-docs': ('https://docs.github.com/en/%s', '%s'),
+            'nco': ('https://www.nco.ncep.noaa.gov/idsb/implementation_standards/%s', '%s'),
+            "rst": ("https://www.sphinx-doc.org/en/master/usage/restructuredtext/%s", "%s"),
+            "rtd": ("https://readthedocs.org/projects/ufs-srweather-app/%s", "%s"),
+            'srw-repo': ('https://github.com/ufs-community/ufs-srweather-app/%s', '%s'),
+            'srw-wiki': ('https://github.com/ufs-community/ufs-srweather-app/wiki/%s','%s'),
+            'uw': ('https://uwtools.readthedocs.io/en/main/%s', '%s'),
             }
-
-# -- Options for todo extension ----------------------------------------------
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
