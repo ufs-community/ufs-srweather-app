@@ -2,7 +2,7 @@
 
 SPHINXOPTS    = -a -n #-W
 SPHINXBUILD   = sphinx-build
-SOURCEDIR     = source
+SOURCEDIR     = .
 BUILDDIR      = build
 LINKCHECKDIR  = $(BUILDDIR)/linkcheck
 
@@ -12,12 +12,13 @@ LINKCHECKDIR  = $(BUILDDIR)/linkcheck
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-docs:
+doc:
+	make clean
 	$(MAKE) linkcheck
 	$(MAKE) html
 
 linkcheck:
-	make clean && $(SPHINXBUILD) -b linkcheck $(SPHINXOPTS) $(SOURCEDIR) $(LINKCHECKDIR)
+	$(SPHINXBUILD) -b linkcheck $(SPHINXOPTS) $(SOURCEDIR) $(LINKCHECKDIR)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option. $(O) is meant as a shortcut for $(SPHINXOPTS).

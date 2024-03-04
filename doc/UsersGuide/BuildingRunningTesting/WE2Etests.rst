@@ -32,7 +32,7 @@ WE2E Test Categories
 
 WE2E tests are grouped into two categories that are of interest to code developers: ``fundamental`` and ``comprehensive`` tests. "Fundamental" tests are a lightweight but wide-reaching set of tests designed to function as a cheap "`smoke test <https://en.wikipedia.org/wiki/Smoke_testing_(software)>`__" for changes to the UFS SRW App. The fundamental suite of tests runs common combinations of workflow tasks, physical domains, input data, physics suites, etc.
 The comprehensive suite of tests covers a broader range of combinations of capabilities, configurations, and components, ideally including all capabilities that *can* be run on a given platform. Because some capabilities are not available on all platforms (e.g., retrieving data directly from NOAA HPSS), the suite of comprehensive tests varies from machine to machine.
-The list of fundamental and comprehensive tests can be viewed in the ``ufs-srweather-app/tests/WE2E/machine_suites/`` directory, and the tests are described in more detail in :doc:`this table <../tables/Tests>`.
+The list of fundamental and comprehensive tests can be viewed in the ``ufs-srweather-app/tests/WE2E/machine_suites/`` directory, and the tests are described in more detail in :doc:`this table <../../tables/Tests>`.
 
 .. note::
 
@@ -169,7 +169,7 @@ The script to run the WE2E tests is named ``run_WE2E_tests.py`` and is located i
 
 .. note::
 
-   The full list of WE2E tests is extensive, and some larger, high-resolution tests are computationally expensive. Estimates of walltime and core-hour cost for each test are provided in :doc:`this table <../tables/Tests>`. 
+   The full list of WE2E tests is extensive, and some larger, high-resolution tests are computationally expensive. Estimates of walltime and core-hour cost for each test are provided in :doc:`this table <../../tables/Tests>`. 
 
 Using the Test Script 
 ----------------------
