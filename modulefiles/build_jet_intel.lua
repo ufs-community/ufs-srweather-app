@@ -15,7 +15,6 @@ load("cmake/3.23.1")
 
 load("srw_common")
 
-load("prod-util/1.2.2")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
 
