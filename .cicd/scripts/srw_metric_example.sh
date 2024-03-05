@@ -39,26 +39,27 @@ we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
 
 pwd
 
-# Activate the workflow environment ...
+# Setup the build environment 
 source etc/lmod-setup.sh ${platform,,}
 module use modulefiles
 module load build_${platform,,}_${SRW_COMPILER}
-module load wflow_${platform,,}
 
-[[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but wouldn't necessarily block workflow tests
-conda activate srw_app
-set -e -u
-
-# build srw
+# Build srw
 cd ${workspace}/tests
 ./build.sh ${platform,,} ${SRW_COMPILER}
 cd ${workspace}
+
+# Activate workflow environment
+module load wflow_${platform,,}
+
+[[ ${FORGIVE_CONDA} == true ]] && set +e +u    # Some platforms have incomplete python3 or conda support, but would not necessarily block workflow tests
+conda activate srw_app
+set -e -u
 
 # run test
 [[ -d ${we2e_experiment_base_dir} ]] && rm -rf ${we2e_experiment_base_dir}
 cd ${workspace}/tests/WE2E
 ./run_WE2E_tests.py -t ${we2e_test_name} -m ${platform,,} -a ${SRW_PROJECT} --expt_basedir "metric_test" --exec_subdir=install_intel/exec -q
-
 cd ${workspace}
 
 # run skill-score check
