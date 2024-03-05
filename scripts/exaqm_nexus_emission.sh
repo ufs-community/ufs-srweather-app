@@ -153,7 +153,7 @@ fi
 if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "TRUE" ]; then
   if [ -d "${GFS_SFC_INPUT}" ]; then
     if [ "$(ls -A ${GFS_SFC_INPUT})" ]; then
-      cp -rp "${GFS_SFC_INPUT}" "GFS_SFC"
+      cpreq -rp "${GFS_SFC_INPUT}" "GFS_SFC"
       USE_GFS_SFC="TRUE"
     fi
   fi
@@ -165,14 +165,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp ${EXECaqm}/nexus ${DATA}
+cpreq ${EXECaqm}/nexus ${DATA}
 
-cp ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cpreq ${FIXaqmnexus}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then
-    cp ${PARMaqm}/nexus_config/cmaq_gfs_megan/*.rc ${DATA}
+    cpreq ${PARMaqm}/nexus_config/cmaq_gfs_megan/*.rc ${DATA}
 else
-    cp ${PARMaqm}/nexus_config/cmaq/*.rc ${DATA}
+    cpreq ${PARMaqm}/nexus_config/cmaq/*.rc ${DATA}
 fi
 #
 #-----------------------------------------------------------------------

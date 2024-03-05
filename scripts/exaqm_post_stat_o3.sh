@@ -95,7 +95,7 @@ if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
 
-cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
+cpreq ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
 
 #
 cat >aqm_post.ini <<EOF1
@@ -134,10 +134,10 @@ while [ ${fhr} -le ${FCST_LEN_HRS} ]; do
   (( fhr=fhr+1 ))
 done
 
-cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 ${COMOUT}
+cpreq ${DATA}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 ${COMOUT}
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 ${COMOUT}
+  cpreq ${DATA}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 ${COMOUT}
 #  if [ "$SENDDBN" = "YES" ]; then
 #    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2
 #    ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2
@@ -171,10 +171,10 @@ for grid in 227 196 198;do
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
 
-    cp ${DATA}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2 ${COMOUT}
-    cp ${DATA}/${NET}.${cycle}.ave_8hr_o3.${grid}.grib2 ${COMOUT}
-    cp ${DATA}/awpaqm.${cycle}.1ho3.${grid}.grib2 ${COMOUTwmo}
-    cp ${DATA}/awpaqm.${cycle}.8ho3.${grid}.grib2 ${COMOUTwmo}
+    cpreq ${DATA}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2 ${COMOUT}
+    cpreq ${DATA}/${NET}.${cycle}.ave_8hr_o3.${grid}.grib2 ${COMOUT}
+    cpreq ${DATA}/awpaqm.${cycle}.1ho3.${grid}.grib2 ${COMOUTwmo}
+    cpreq ${DATA}/awpaqm.${cycle}.8ho3.${grid}.grib2 ${COMOUTwmo}
 
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_CONC ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_o3.${grid}.grib2
@@ -187,11 +187,11 @@ for grid in 227 196 198;do
     fi
 
     for var in awpozcon;do
-      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+      cpreq ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   else
     for var in ave_1hr_o3 awpozcon;do
-      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+      cpreq ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   fi
 done
@@ -201,7 +201,7 @@ done
 #------------------------------------------------------------
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 
-  cp ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
+  cpreq ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
 
   export chk=1
   export chk1=1
@@ -221,9 +221,9 @@ EOF1
   ## 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      cp  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cpreq  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      cpreq ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -233,9 +233,9 @@ EOF1
   if [ "${cyc}" = "12" ]; then
     ## 12z needs b.nc to find current day output from 04Z to 06Z 
     if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
-      cp ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
+      cpreq ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      cpreq ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -243,9 +243,9 @@ EOF1
 
     ## 12z needs c.nc to find current day output from 07Z to 12z
     if [ -s ${COMIN}/06/${NET}.t06z.chem_sfc.nc ]; then
-      cp ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
+      cpreq ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      cp ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+      cpreq ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -263,7 +263,7 @@ EOF1
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX1" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX8" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2
 
-  cp ${DATA}/${NET}.${cycle}.max_*hr_o3.${id_domain}.grib2  ${COMOUT}
+  cpreq ${DATA}/${NET}.${cycle}.max_*hr_o3.${id_domain}.grib2  ${COMOUT}
 #  if [ "$SENDDBN" = "YES" ]; then
 #    ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2
 #    ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2
@@ -278,7 +278,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
-    cp ${DATA}/${NET}.${cycle}.max_*hr_o3.${grid}.grib2  ${COMOUT}
+    cpreq ${DATA}/${NET}.${cycle}.max_*hr_o3.${grid}.grib2  ${COMOUT}
     if [ "$SENDDBN" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2
@@ -300,7 +300,7 @@ EOF1
       tocgrib2super < ${PARMaqm}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
+    cpreq awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
     if [ "${SENDDBN_NTC}" = "YES" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2

@@ -111,7 +111,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   chem_lbcs_fp=${FIXaqmchem_lbcs}/${chem_lbcs_fn}
   if [ -s ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
-    cp ${chem_lbcs_fp} .
+    cpreq ${chem_lbcs_fp} .
   else
     message_txt="The chemical LBC files do not exist:
     CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
@@ -122,7 +122,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     function check_file_existence() {
     if [ -s "$1" ]; then
       echo "Found netCDF file: $1"
-      cp "$1" .
+      cpreq "$1" .
     else
       echo "Error: NetCDF file not found: $1"
      return 1
@@ -155,10 +155,10 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
      fi
 
     echo "Checking file: ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
-      cp "$netcdf_file" .
+      cpreq "$netcdf_file" .
 
       ncks -A ${chem_lbcs_fn} ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
-      cp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
+      cpreq ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
       export err=$?
       if [ $err -ne 0 ]; then
         message_txt="Call to NCKS returned with nonzero exit code."
@@ -303,7 +303,7 @@ Please ensure that you've built this executable."
   if [ -e "${pgmout}" ]; then
    cat ${pgmout}
   fi
-  cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
+  cpreq -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "
 ========================================================================
@@ -311,7 +311,7 @@ Successfully added GEFS aerosol LBCs !!!
 ========================================================================"
 #
  else
-  cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
+  cpreq -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "
 ========================================================================

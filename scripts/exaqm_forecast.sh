@@ -693,7 +693,7 @@ if [ -e "$pgmout" ]; then
 fi
 
 
-eval cp -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+eval cpreq -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
 #

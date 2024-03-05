@@ -117,7 +117,7 @@ print_info_msg "
     tracer file: \"${fv_tracer_file}\"
     FV3 IC file: \"${gfs_ic_file}\""
 
-cp ${gfs_ic_file} ${wrk_ic_file}
+cpreq ${gfs_ic_file} ${wrk_ic_file}
 ${USHaqm}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 export err=$?
 if [ $err -ne 0 ]; then

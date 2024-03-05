@@ -88,7 +88,7 @@ fi
 #-----------------------------------------------------------------------
 #
 rm -f fort.*
-cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cpreq ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -112,18 +112,18 @@ temporary work directory (DATA):
   DATA = \"${DATA}\"
 ===================================================================="
 fi
-cp ${post_config_fp} ./postxconfig-NT.txt
-cp ${PARMdir}/upp/params_grib2_tbl_new .
+cpreq ${post_config_fp} ./postxconfig-NT.txt
+cpreq ${PARMdir}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
-  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
-  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
-  cp ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
-  cp ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
-  cp ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
-  cp ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
+  cpreq ${CRTM_DIR}/fix/EmisCoeff/IR_Water/Big_Endian/Nalli.IRwater.EmisCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/EmisCoeff/MW_Water/Big_Endian/FAST*.bin ./
+  cpreq ${CRTM_DIR}/fix/EmisCoeff/IR_Land/SEcategory/Big_Endian/NPOESS.IRland.EmisCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/EmisCoeff/IR_Snow/SEcategory/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/EmisCoeff/IR_Ice/SEcategory/Big_Endian/NPOESS.IRice.EmisCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/AerosolCoeff/Big_Endian/AerosolCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/CloudCoeff/Big_Endian/CloudCoeff.bin ./
+  cpreq ${CRTM_DIR}/fix/SpcCoeff/Big_Endian/*.bin ./
+  cpreq ${CRTM_DIR}/fix/TauCoeff/ODPS/Big_Endian/*.bin ./
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary

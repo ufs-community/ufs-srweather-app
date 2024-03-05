@@ -673,17 +673,16 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
       Tracer file: \"${fv_tracer_file1}\" not found."
       print_info_msg "
       Instead using tracer file: \"${fv_tracer_file2}\""
-      cp ${fv_tracer_file2} ${fv_tracer_file1}
-      #cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
-      cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
+      cpreq ${fv_tracer_file2} ${fv_tracer_file1}
+      cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     else
       print_info_msg "
       Both tracer files: \"${fv_tracer_file1}\" and
       \"${fv_tracer_file2}\" not found."
       print_info_msg "
       Instead using dummy tracer file: \"${fv_tracer_file_fix}\""
-      cp ${fv_tracer_file_fix} ${fv_tracer_file1}
-      cp ${rst_dir_fix}/coupler.res  ${rst_dir1}
+      cpreq ${fv_tracer_file_fix} ${fv_tracer_file1}
+      cpreq ${rst_dir_fix}/coupler.res  ${rst_dir1}
       sed -i "s/yyyy/$yyyy/g" ${rst_dir1}/coupler.res
       sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
       sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
@@ -692,9 +691,9 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
     fi 
   elif [ -s ${fv_tracer_file2} ]; then
     mkdir -p ${rst_dir1}
-    cp ${fv_tracer_file2} ${fv_tracer_file1} 
-    #cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
-    cp ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
+    cpreq ${fv_tracer_file2} ${fv_tracer_file1} 
+    #cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
+    cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     print_info_msg "
     Tracer file: \"${fv_tracer_file1}\" not found."
     print_info_msg "
@@ -706,8 +705,8 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
     \"${fv_tracer_file2}\" not found."
     print_info_msg "
     Instead using dummy tracer file: \"${fv_tracer_file_fix}\""
-    cp ${fv_tracer_file_fix} ${fv_tracer_file1}
-    cp ${rst_dir_fix}/coupler.res  ${rst_dir1}
+    cpreq ${fv_tracer_file_fix} ${fv_tracer_file1}
+    cpreq ${rst_dir_fix}/coupler.res  ${rst_dir1}
     sed -i "s/yyyy/$yyyy/g" ${rst_dir1}/coupler.res
     sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
     sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
