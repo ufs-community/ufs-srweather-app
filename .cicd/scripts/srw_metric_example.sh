@@ -7,6 +7,7 @@
 #    WORKSPACE=</full/path/to/ufs-srweather-app>
 #    SRW_PLATFORM=<supported_platform_host>
 #    SRW_COMPILER=<intel|gnu>
+#    SRW_PROJECT=<platform_account>
 #
 # Optional:
 [[ -n ${SRW_PROJECT} ]] || SRW_PROJECT="no_account"
@@ -18,7 +19,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)
 # Get repository root from Jenkins WORKSPACE variable if set, otherwise, set
 # relative to script directory.
 declare workspace
-if [[ -n "${WORKSPACE}/${SRW_PLATFORM}" ]]; then
+if [[ -d "${WORKSPACE}/${SRW_PLATFORM}" ]]; then
     workspace="${WORKSPACE}/${SRW_PLATFORM}"
 else
     workspace="$(cd -- "${script_dir}/../.." && pwd)"
