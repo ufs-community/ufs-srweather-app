@@ -4,7 +4,7 @@
 valid_vals_RUN_ENVIR: ["nco", "community"]
 valid_vals_VERBOSE: [True, False]
 valid_vals_DEBUG: [True, False]
-valid_vals_MACHINE: ["HERA", "WCOSS2", "ORION", "HERCULES", "JET", "ODIN", "CHEYENNE", "DERECHO", "STAMPEDE", "LINUX", "MACOS", "NOAACLOUD", "SINGULARITY", "GAEA-C5"]
+valid_vals_MACHINE: ["HERA", "WCOSS2", "ORION", "HERCULES", "JET", "ODIN", "CHEYENNE", "DERECHO", "STAMPEDE", "LINUX", "MACOS", "NOAACLOUD", "SINGULARITY", "GAEA"]
 valid_vals_SCHED: ["slurm", "pbspro", "lsf", "lsfcray", "none"]
 valid_vals_FCST_MODEL: ["ufs-weather-model"]
 valid_vals_WORKFLOW_MANAGER: ["rocoto", "ecflow", "none"]

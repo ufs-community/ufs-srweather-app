@@ -168,8 +168,8 @@ If users wish to modify the fields or levels that are output from the UPP, they 
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
 UPP Product Output Tables for the UFS SRW LAM Grid:
-   * :doc:`3D Native Hybrid Level Fields <../tables/SRW_NATLEV_table>`
-   * :doc:`3D Pressure Level Fields <../tables/SRW_PRSLEV_table>`
+   * :doc:`3D Native Hybrid Level Fields <../../tables/SRW_NATLEV_table>`
+   * :doc:`3D Pressure Level Fields <../../tables/SRW_PRSLEV_table>`
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
@@ -363,11 +363,6 @@ NCEI Archive:
 Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
-
-FTP Data Repository (data for SRW Release v1.0.0 & v1.0.1):
-
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
 
 Others: 
 

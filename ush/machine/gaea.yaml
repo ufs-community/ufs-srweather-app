@@ -1,0 +1,55 @@
+platform:
+  WORKFLOW_MANAGER: rocoto
+  NCORES_PER_NODE: 128
+  SCHED: slurm
+  TEST_CCPA_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/ccpa/proc
+  TEST_MRMS_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/mrms/proc
+  TEST_NDAS_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/obs_data/nohrsc/proc
+  DOMAIN_PREGEN_BASEDIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/FV3LAM_pregen
+  QUEUE_DEFAULT: normal
+  QUEUE_FCST: normal
+  QUEUE_HPSS: normal
+  REMOVE_MEMORY: True
+  PARTITION_HPSS: eslogin_c5
+  RUN_CMD_FCST: srun --export=ALL -n ${PE_MEMBER01}
+  RUN_CMD_POST: srun --export=ALL -n $nprocs
+  RUN_CMD_PRDGEN: srun --export=ALL -n $nprocs
+  RUN_CMD_SERIAL: time
+  RUN_CMD_UTILS: srun --export=ALL -n $nprocs
+  SCHED_NATIVE_CMD: --clusters=c5 --partition=batch --export=NONE
+  SCHED_NATIVE_CMD_HPSS: --clusters=es --partition=eslogin_c5 --export=NONE
+  PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
+  TEST_EXTRN_MDL_SOURCE_BASEDIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data
+  TEST_PREGEN_BASEDIR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/FV3LAM_pregen
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_ICS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_ALT_EXTRN_MDL_SYSBASEDIR_LBCS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/dummy_FV3GFS_sys_dir
+  TEST_VX_FCST_INPUT_BASEDIR: '{{ "/gpfs/f5/epic/world-shared/UFS_SRW_data/develop/output_data/fcst_" }}{{ "ens" if (global.NUM_ENS_MEMBERS > 0) else "det" }}{{ "/{{workflow.PREDEF_GRID_NAME}}" }}{% raw %}{% endraw %}'
+  FIXaer: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_aer
+  FIXgsi: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_gsi
+  FIXgsm: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_am
+  FIXlut: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_lut
+  FIXorg: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_orog
+  FIXsfc: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/fix/fix_sfc_climo
+  FIXshp: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/NaturalEarth
+  EXTRN_MDL_DATA_STORES: aws
+data:
+  ics_lbcs:
+    FV3GFS:
+      nemsio: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/nemsio/${yyyymmdd}${hh}
+      grib2: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/grib2/${yyyymmdd}${hh} 
+      netcdf: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/FV3GFS/netcdf/${yyyymmdd}${hh} 
+    RAP: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
+    HRRR: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
+    RAP: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
+    GSMGFS: /gpfs/f5/epic/world-shared/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
+rocoto:
+  tasks:
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        cores: '{{ task_run_fcst.PE_MEMBER01 // 1 }}'
+        native: '--cpus-per-task {{ task_run_fcst.OMP_NUM_THREADS_RUN_FCST|int }} --exclusive {{ platform.SCHED_NATIVE_CMD }}'
+        nodes:
+        nnodes:
+        nodesize:
+        ppn:
