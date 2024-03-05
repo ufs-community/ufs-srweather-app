@@ -26,6 +26,8 @@ cd ../ush
 #-------------------------------------------------------------------
 #=====  Step 3: create symbolic links for source codes  ============
 #-------------------------------------------------------------------
+cd ../sorc
+
 for src in aqm_bias_correct aqm_bias_interpolate aqm_post_bias_cor_grib2 aqm_post_grib2 aqm_post_maxi_bias_cor_grib2 aqm_post_maxi_grib2  convert_airnow_csv gefs2clbcs_para
 do
  ln -s AQM-utils/sorc/${src}.fd .
