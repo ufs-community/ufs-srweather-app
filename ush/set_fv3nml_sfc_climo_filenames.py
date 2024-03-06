@@ -13,10 +13,12 @@ from textwrap import dedent
 from uwtools.api.config import get_yaml_config, realize
 
 from python_utils import (
-    print_info_msg,
-    check_var_valid_value,
-    import_vars,
     cfg_to_yaml_str,
+    check_var_valid_value,
+    flatten_dict,
+    import_vars,
+    load_shell_config,
+    print_info_msg,
 )
 
 VERBOSE = os.environ.get("VERBOSE", "true")
@@ -34,7 +36,7 @@ NEEDED_VARS = [
 
 # pylint: disable=undefined-variable
 
-def set_fv3nml_sfc_climo_filenames(debug=False):
+def set_fv3nml_sfc_climo_filenames(config, debug=False):
     """
     This function sets the values of the variables in
     the forecast model's namelist file that specify the paths to the surface
@@ -50,8 +52,7 @@ def set_fv3nml_sfc_climo_filenames(debug=False):
         None
     """
 
-    # import all environment variables
-    import_vars(env_vars=NEEDED_VARS)
+    import_vars(dictionary=config, env_vars=NEEDED_VARS)
 
     fixed_cfg = get_yaml_config(os.path.join(PARMdir, "fixed_files_mapping.yaml"))["fixed_files"]
 
@@ -126,4 +127,6 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    set_fv3nml_sfc_climo_filenames(args.debug)
+    cfg = load_shell_config(args.path_to_defns)
+    cfg = flatten_dict(cfg)
+    set_fv3nml_sfc_climo_filenames(cfg, args.debug)

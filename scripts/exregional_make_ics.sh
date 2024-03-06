@@ -601,6 +601,7 @@ EOF
   uw config realize \
     -i ${tmpfile} \
     -o ${nml_fn} \
+    --output-format nml\
     -v \
     "${tmpfile}"
 
