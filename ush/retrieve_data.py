@@ -191,7 +191,7 @@ def fill_template(template_str, cycle_date, templates_only=False, **kwargs):
       templates_only: boolean value. When True, this function will only
                       return the templates available.
 
-    Keyword Arguments:
+    Keyword Args:
       ens_group: a number associated with a bin where ensemble
                       members are stored in archive files
       fcst_hr: an integer forecast hour. string formatting should
@@ -350,7 +350,7 @@ def get_requested_files(cla, file_templates, input_locs, method="disk", **kwargs
       input_locs: A string containing a single data location, either a url or disk path, or a list of paths/urls.
       method: Choice of disk or download to indicate protocol for retrieval
 
-    Keyword Arguments:
+    Keyword Args:
       members: a list integers corresponding to the ensemble members
       check_all: boolean flag that indicates all urls should be checked for all files
 
