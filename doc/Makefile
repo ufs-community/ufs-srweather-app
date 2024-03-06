@@ -2,7 +2,7 @@
 
 SPHINXOPTS    = -a -n #-W
 SPHINXBUILD   = sphinx-build
-SOURCEDIR     = doc
+SOURCEDIR     = .
 BUILDDIR      = build
 LINKCHECKDIR  = $(BUILDDIR)/linkcheck
 

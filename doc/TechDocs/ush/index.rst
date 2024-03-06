@@ -5,6 +5,7 @@
 .. toctree::
    calculate_cost
    check_python_version
+   config_defaults
    config_utils
    create_aqm_rc_file
    create_diag_table_file

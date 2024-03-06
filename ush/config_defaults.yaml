@@ -5,33 +5,22 @@ metadata:
   description: >-
     Default configuration for an experiment. The valid values for most of the
     parameters are specified in valid_param_vals.yaml
-#----------------------------
-# USER config parameters
-#----------------------------
+###
+# USER-related configuration parameters
+#
 user:
+
+  ###
+  # (Default: ``"nco"``)
+  # 
+  # This variable determines the workflow mode. The user can choose between two options: "nco" and "community". The "nco" mode uses a directory structure that mimics what is used in operations at NOAA/NCEP Central Operations (NCO) and at the NOAA/NCEP/Environmental Modeling Center (EMC), which works with NCO on pre-implementation testing. Specifics of the conventions used in "nco" mode can be found in the following :nco:`WCOSS Implementation Standards <>` document:
   #
-  #-----------------------------------------------------------------------
+  #   | NCEP Central Operations
+  #   | WCOSS Implementation Standards
+  #   | January 19, 2022
+  #   | Version 11.0.0
   #
-  # Set the RUN_ENVIR variable that is listed and described in the WCOSS
-  # Implementation Standards document:
-  #
-  #   NCEP Central Operations
-  #   WCOSS Implementation Standards
-  #   April 19, 2022
-  #   Version 11.0.0
-  #
-  # RUN_ENVIR is described in this document as follows:
-  #
-  #   Set to "nco" if running in NCO's production environment. Used to 
-  #   distinguish between organizations.
-  #
-  # Valid values are "nco" and "community".  Here, we use it to generate
-  # and run the experiment either in NCO mode (if RUN_ENVIR is set to "nco")
-  # or in community mode (if RUN_ENVIR is set to "community").  This has 
-  # implications on the experiment variables that need to be set and the
-  # the directory structure used.
-  #
-  #-----------------------------------------------------------------------
+  # Setting ``RUN_ENVIR`` to "community" is recommended in most cases for users who are not running in NCO's production environment. Valid values: ``"nco"`` | ``"community"``
   #
   RUN_ENVIR: "nco"
   #
