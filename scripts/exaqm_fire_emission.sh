@@ -170,16 +170,16 @@ else
 
 fi
 #
-# cd ${FIRE_EMISSION_STAGING_DIR}
-# mv ${aqm_fire_file_fn}  temp.nc
-# ncrename -v PM2.5,PM25 temp.nc temp1.nc
-# ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
-# ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
-# ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
-# ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
-# ncrename -v PM25,PM2.5 temp5.nc temp6.nc
-# mv temp6.nc ${aqm_fire_file_fn}
-# rm -rf temp*nc
+ cd ${FIRE_EMISSION_STAGING_DIR}
+ mv ${aqm_fire_file_fn}  temp.nc
+ ncrename -v PM2.5,PM25 temp.nc temp1.nc
+ ncap2 -s 'where(Latitude > 30 && Latitude <=49 && land_cover == 1 ) PM25 = PM25 * 0.44444' temp1.nc temp2.nc
+ ncap2 -s 'where(Latitude <=30 && land_cover == 1 ) PM25 = PM25 * 0.8'       temp2.nc temp3.nc
+ ncap2 -s 'where(Latitude <=49 && land_cover == 3 ) PM25 = PM25 * 1.11111'   temp3.nc temp4.nc
+ ncap2 -s 'where(Latitude <=49 && land_cover == 4 ) PM25 = PM25 * 1.11111'   temp4.nc temp5.nc
+ ncrename -v PM25,PM2.5 temp5.nc temp6.nc
+ mv temp6.nc ${aqm_fire_file_fn}
+ rm -rf temp*nc
      #
 #-----------------------------------------------------------------------
 #
