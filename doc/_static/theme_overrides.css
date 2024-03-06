@@ -1,25 +1,22 @@
+/* !important prevents the common CSS stylesheets from overriding
+this as on RTD they are loaded after this stylesheet */
+
 .wy-table-responsive table td {
-   /* !important prevents the common CSS stylesheets from overriding
-      this as on RTD they are loaded after this stylesheet */
-white-space: normal !important;
+   white-space: normal !important;
 }
 
 .wy-nav-content {
-max-width: 100% !important;
+   max-width: 100% !important;
 }
 
 .wy-table-responsive { 
-overflow: visible !important; 
-}
-
-/* Darken background for contrast with logo */
-.wy-side-nav-search, .wy-nav-top {
-background: #2779B0;
+   overflow: visible !important; 
 }
 
 /* Darken navbar blue background for contrast with logo */
 .wy-side-nav-search, .wy-nav-top {
-background: #2779B0;
+   background: #2779B0;
 }
+
 
 
