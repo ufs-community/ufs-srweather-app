@@ -204,7 +204,7 @@ fixed_files:
   "global_tg3clim.2.6x1.5.grb | global_tg3clim.2.6x1.5.grb",
   "sfc_emissivity_idx.txt     | global_sfc_emissivity_idx.txt",
   "solarconstant_noaa_an.txt  | global_solarconstant_noaa_an.txt",
-  "global_o3prdlos.f77        | "
+  "global_o3prdlos.f77        | ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77"
   ]
 
   #
