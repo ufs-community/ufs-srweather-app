@@ -244,8 +244,10 @@ if [ "${BUILD_CONDA}" = "on" ] ; then
   fi
 
 else
-  source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
-  conda activate
+  if [ -d "${CONDA_BUILD_DIR}" ] ; then
+    source ${CONDA_BUILD_DIR}/etc/profile.d/conda.sh
+    conda activate
+  fi
 fi
 
 # Conda environment should have linux utilities to perform these tasks on macos.
@@ -281,7 +283,7 @@ set -eu
 # automatically determine compiler
 if [ -z "${COMPILER}" ] ; then
   case ${PLATFORM} in
-    jet|hera|gaea|gaea-c5) COMPILER=intel ;;
+    jet|hera|gaea) COMPILER=intel ;;
     orion) COMPILER=intel ;;
     wcoss2) COMPILER=intel ;;
     cheyenne) COMPILER=intel ;;

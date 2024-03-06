@@ -1,19 +1,27 @@
-# Minimal makefile for Sphinx documentation
-#
+# Makefile for Sphinx documentation
 
-# You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -a -n #-W
 SPHINXBUILD   = sphinx-build
-SOURCEDIR     = docs
+SOURCEDIR     = doc
 BUILDDIR      = build
+LINKCHECKDIR  = $(BUILDDIR)/linkcheck
+
+.PHONY: help Makefile linkcheck
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-.PHONY: help Makefile
+doc:
+	make clean
+	$(MAKE) linkcheck
+	$(MAKE) html
+
+linkcheck:
+	$(SPHINXBUILD) -b linkcheck $(SPHINXOPTS) $(SOURCEDIR) $(LINKCHECKDIR)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# "make mode" option. $(O) is meant as a shortcut for $(SPHINXOPTS).
+
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) -w $(BUILDDIR)/warnings.log

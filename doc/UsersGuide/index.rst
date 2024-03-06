@@ -1,8 +1,7 @@
-User's Guide
-===================
-
+User's Guide 
+==============
+   
 .. toctree::
-   :numbered:
    :maxdepth: 3
    
    BackgroundInfo/index

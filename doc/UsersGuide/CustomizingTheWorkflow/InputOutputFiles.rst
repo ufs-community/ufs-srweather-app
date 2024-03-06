@@ -32,11 +32,11 @@ When a user generates the SRW App workflow as described in :numref:`Section %s <
 UFS Weather Model
 -----------------
 The input files for the UFS Weather Model include both static (fixed) files and grid- and date-specific files (terrain, initial conditions, boundary conditions, etc). The static fix(ed) files
-must be staged by the user unless the user is running on a `Level 1/pre-configured <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platform, in which case users can link to the existing copy of the data on their machine. (See :numref:`Section %s <StaticFixFiles>` for instructions on staging the data on a new machine and :numref:`Section %s <Data>` for data locations on Level 1 machines.) The workflow scripts link the static, grid, and date-specific files to the experiment directory. An extensive description of the input files for the Weather Model can be found in the :doc:`UFS Weather Model User's Guide <ufs-wm:InputsOutputs>`. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
+must be staged by the user unless the user is running on a :srw-wiki:`Level 1/pre-configured <Supported-Platforms-and-Compilers>` platform, in which case users can link to the existing copy of the data on their machine. (See :numref:`Section %s <StaticFixFiles>` for instructions on staging the data on a new machine and :numref:`Section %s <Data>` for data locations on Level 1 machines.) The workflow scripts link the static, grid, and date-specific files to the experiment directory. An extensive description of the input files for the Weather Model can be found in the :doc:`UFS Weather Model User's Guide <ufs-wm:InputsOutputs>`. The namelists and configuration files for the SRW Application are created from templates by the workflow generation script, as described in :numref:`Section %s <WorkflowTemplates>`.
 
 Unified Post Processor (UPP)
 ----------------------------
-Documentation for the UPP input files can be found in the :doc:`UPP User's Guide <upp:InputsOutputs>`.
+Documentation for the UPP input files can be found in the :ref:`UPP User's Guide <upp:input-output>`.
 
 .. _WorkflowTemplates:
 
@@ -168,8 +168,8 @@ If users wish to modify the fields or levels that are output from the UPP, they 
    This process requires advanced knowledge of which fields can be output for the UFS Weather Model.
 
 UPP Product Output Tables for the UFS SRW LAM Grid:
-   * :doc:`3D Native Hybrid Level Fields <../tables/SRW_NATLEV_table>`
-   * :doc:`3D Pressure Level Fields <../tables/SRW_PRSLEV_table>`
+   * :doc:`3D Native Hybrid Level Fields <../../tables/SRW_NATLEV_table>`
+   * :doc:`3D Pressure Level Fields <../../tables/SRW_PRSLEV_table>`
 
 Use the instructions in the `UPP User's Guide <https://upp.readthedocs.io/en/latest/InputsOutputs.html#control-file>`__ to make modifications to the ``fv3lam.xml`` file and to remake the flat text file, called ``postxconfig-NT-fv3lam.txt`` (default), that the UPP reads.
 
@@ -218,7 +218,7 @@ By setting ``USE_CRTM`` to true, the workflow will use the path defined in ``CRT
 
 Downloading and Staging Input Data
 ==================================
-A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`ICs/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <RunSRW>` is already preinstalled on `Level 1 & 2 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``ush/setup.sh``. Users on Level 3 & 4 systems can find the most recent SRW App release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__.
+A set of input files, including static (fix) data and raw initial and lateral boundary conditions (:term:`ICs/LBCs`), is required to run the SRW Application. The data required for the "out-of-the-box" SRW App case described in Chapters :numref:`%s <QuickstartC>` and :numref:`%s <RunSRW>` is already preinstalled on :srw-wiki:`Level 1 & 2 <Supported-Platforms-and-Compilers>` systems, along with data required to run the :ref:`WE2E <WE2E_tests>` test cases. Therefore, users on these systems do not need to stage the fixed files manually because they have been prestaged, and the paths are set in ``ush/setup.sh``. Users on Level 3 & 4 systems can find the most recent SRW App release data in the `UFS SRW Application Data Bucket <https://registry.opendata.aws/noaa-ufs-shortrangeweather/>`__ by clicking on `Browse Bucket <https://noaa-ufs-srw-pds.s3.amazonaws.com/index.html>`__.
 
 .. _StaticFixFiles:
 
@@ -364,14 +364,9 @@ Google Cloud:
 
 * HRRR: https://console.cloud.google.com/marketplace/product/noaa-public/hrrr
 
-FTP Data Repository (data for SRW Release v1.0.0 & v1.0.1):
-
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/fix/
-* https://ftp.emc.ncep.noaa.gov/EIB/UFS/SRW/v1p0/simple_test_case/
-
 Others: 
 
-* University of Utah HRRR archive: http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi 
+* University of Utah HRRR archive: https://home.chpc.utah.edu/~u0553130/Brian_Blaylock/cgi-bin/hrrr_download.cgi
 * NAM nest archive: https://www.ready.noaa.gov/archives.php
 * NAM data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=NAM218&subqueryby=STATION&applname=&outdest=FILE
 * RAP isobaric data older than 6 months can be requested through the Archive Information Request System: https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=RAP130&subqueryby=STATION&applname=&outdest=FILE

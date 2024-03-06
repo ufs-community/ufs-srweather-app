@@ -53,7 +53,7 @@ On Hera and WCOSS2, users can build the SRW App AQM binaries with the following 
 
 where ``<machine>`` is ``hera``, or ``wcoss2``. The ``-a`` argument indicates the configuration/version of the application to build. 
 
-Building the SRW App with AQM on other machines, including other `Level 1 <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
+Building the SRW App with AQM on other machines, including other :srw-wiki:`Level 1 <Supported-Platforms-and-Compilers>` platforms, is not currently guaranteed to work, and users may have to make adjustments to the modulefiles for their system. 
 
 If the SRW-AQM builds correctly, users should see the standard executables listed in :numref:`Table %s <ExecDescription>`. Additionally, users should see the AQM-specific executables described in :numref:`Table %s <AQM-exec>` in the ``ufs-srweather-app/exec`` directory.
 
@@ -239,7 +239,7 @@ Structure of SRW-AQM Workflow
 
 .. _FlowProcAQM:
 
-.. figure:: .. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW-AQM_workflow.png
+.. figure:: https://github.com/ufs-community/ufs-srweather-app/wiki/WorkflowImages/SRW-AQM_workflow.png
    :alt: Flowchart of the SRW-AQM tasks.
 
    *Workflow Structure of SRW-AQM (non-DA)*

@@ -1790,12 +1790,21 @@ task_run_fcst:
   # weather model].  If this is set to true, the the run_post task will
   # be deactivated.
   #
+  # ITASKS:
+  # Variable denoting the number of write tasks in the i direction in the
+  # current group.  Used for inline post 2D decomposition.  Setting this
+  # variable to a value greater than 1 will enable 2D decomposition.
+  # Default setting is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
+  #
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
   FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
+  ITASKS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -2070,12 +2079,19 @@ task_run_post:
   # The file that lists grib2 fields to be extracted for testbed files.
   # An empty string means no need to generate testbed files.
   #
+  # NUMX:
+  # The number of i regions in a 2D decomposition.  Each i row is 
+  # distibuted to numx ranks. Default value of numx is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
+  #
   #-----------------------------------------------------------------------
   #
-  USE_CUSTOM_POST_CONFIG_FILE: false
-  CUSTOM_POST_CONFIG_FP: ""
+  USE_CUSTOM_POST_CONFIG_FILE: true
+  CUSTOM_POST_CONFIG_FP: "{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
   TESTBED_FIELDS_FN: ""
+  NUMX: 1
 
 #----------------------------
 # RUN PRDGEN config parameters

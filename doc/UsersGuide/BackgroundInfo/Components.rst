@@ -89,7 +89,7 @@ For more information on NEXUS, visit the GitHub repository at https://github.com
 Unified Workflow Tools
 ========================
 
-The Unified Workflow (UW) is a set of tools intended to unify the workflow for various UFS applications under one framework. The UW toolkit currently includes templater and configuration (config) tools, which have been incorporated into the SRW App workflow and will soon be incorporated into other UFS repositories. Additional tools are under development. More details about UW tools can be found in the `uwtools <https://github.com/ufs-community/uwtools>`__ GitHub repository and in the :doc:`UW Documentation <uw:index>`.
+The Unified Workflow (UW) is a set of tools intended to unify the workflow for various UFS applications under one framework. The UW toolkit currently includes templater and configuration (config) tools, which have been incorporated into the SRW App workflow and will soon be incorporated into other UFS repositories. Additional tools are under development. More details about UW tools can be found in the `uwtools <https://github.com/ufs-community/uwtools>`__ GitHub repository and in the :uw:`UW Documentation <>`.
 
 Build System and Workflow
 =========================
@@ -102,7 +102,7 @@ The SRW Application allows users to configure various elements of the workflow. 
 
 An optional Python plotting task can also be included in the workflow to create basic visualizations of the model output. The task outputs graphics in PNG format for several standard meteorological variables on the pre-defined :term:`CONUS` domain. A difference plotting option is also included to visually compare two runs for the same domain and resolution. These plots may be used to perform a visual check to verify that the application is producing reasonable results. Configuration instructions are provided in :numref:`Section %s <PlotOutput>`.
 
-The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Jet); the National Center for Atmospheric Research (:term:`NCAR`) Derecho system; cloud environments; and generic Linux and MacOS systems using Intel and GNU compilers. Four `levels of support <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__ have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited-test (Level 3), and build-only (Level 4) platforms. 
+The SRW Application has been tested on a variety of platforms widely used by researchers, including NOAA High-Performance Computing (HPC) systems (e.g., Hera, Jet); the National Center for Atmospheric Research (:term:`NCAR`) Derecho system; cloud environments; and generic Linux and MacOS systems using Intel and GNU compilers. Four :srw-wiki:`levels of support <Supported-Platforms-and-Compilers>` have been defined for the SRW Application, including pre-configured (Level 1), configurable (Level 2), limited-test (Level 3), and build-only (Level 4) platforms. 
 
 Preconfigured (Level 1) systems already have the required external libraries available in a central location (via :term:`spack-stack` or :term:`HPC-Stack`). The SRW Application is expected to build and run out-of-the-box on these systems, and users can :ref:`download the SRW App code <DownloadSRWApp>` without first installing prerequisites.
 
@@ -112,5 +112,5 @@ Limited-Test (Level 3) and Build-Only (Level 4) computational platforms are thos
 
 On all platforms, the SRW App can be :ref:`run within a container <QuickstartC>` that includes the prerequisite software.
 
-A complete description of the levels of support, along with a list of preconfigured and configurable platforms can be found in the `SRW Application Wiki <https://github.com/ufs-community/ufs-srweather-app/wiki/Supported-Platforms-and-Compilers>`__.
+A complete description of the levels of support, along with a list of preconfigured and configurable platforms can be found in the :srw-wiki:`SRW Application Wiki <Supported-Platforms-and-Compilers>`.
 
