@@ -121,7 +121,7 @@ will create was not specified in the call to this function:
 #
   if [ ! -s "${target}" ]; then
     if [ -f "${target}" ]; then
-      exho "FATAL ERROR - ZERO sized file found"
+      echo "FATAL ERROR - ZERO sized file found"
       exit 8
     fi
     print_err_msg_exit "\
