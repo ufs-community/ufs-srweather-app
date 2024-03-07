@@ -72,9 +72,18 @@ cd ${workspace}
 # In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
 # temperature, and pressure at lowest level in the atmosphere over 6 hour lead time.
 cp ${we2e_experiment_base_dir}/${we2e_test_name}/2019061500/metprd/PointStat/*.stat ${workspace}/Indy-Severe-Weather/metprd/point_stat/
-# load met and metplus
+# Remove conda for Orion due to conda env conflicts
+if [[ ${platform} =~ "orion" ]]; then
+    sed -i 's|load("conda")|--load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
+fi
+# Load met and metplus
 module use modulefiles/tasks/${platform,,}
 module load run_vx.local 
+# Reset Orion run_vx.local file
+if [[ ${platform} =~ "orion" ]]; then
+    sed -i 's|--load("conda")|load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
+fi
+# Run stat_analysis
 stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.out
 
 # check skill-score.out
