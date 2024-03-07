@@ -100,7 +100,7 @@ else
       echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
       cpreq -p ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
     else
-      message_txt="Fire Emission RAW data does not exist or broken:
+      message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
@@ -124,7 +124,7 @@ else
   ncks -O -h --mk_rec_dmn time Hourly_Emissions_13km_${download_time}00_${download_time}00.nc temp.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCKS returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
@@ -133,7 +133,7 @@ else
   ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCRCAT returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCRCAT returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
@@ -143,14 +143,14 @@ else
   ${USHaqm}/aqm_utils_python/RAVE_remake.allspecies.aqmna13km.g793.py --date "${yyyymmdd}" --cyc "${hh}" --input_fire "${input_fire}" --output_fire "${output_fire}"
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
   ncks --mk_rec_dmn Time Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc -o Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCKS returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
@@ -161,7 +161,7 @@ else
 
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCRCAT returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCRCAT returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 

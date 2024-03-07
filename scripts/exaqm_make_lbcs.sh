@@ -169,7 +169,7 @@ if [ "${RUN_TASK_GET_EXTRN_LBCS}" = "FALSE" ]; then
   $cmd
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+    message_txt="FATAL ERROR Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
@@ -190,8 +190,8 @@ else
    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then
      extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_lbcs_${cyc}.${share_pid}"
      if [ ! -d ${extrn_mdl_staging_dir} ]; then
-       echo "Fatal error extrn_mdl_staging_dir not found in production mode"
-       exit 7
+	 message_txt="FATAL ERROR ${extrn_mdl_staging_dir} not found in production mode"
+	 err_exit "${message_txt}"
      fi
    else
       extrn_mdl_staging_dir="${DATAROOT}/get_extrn_lbcs.${share_pid}"
@@ -234,7 +234,7 @@ case "${CCPP_PHYS_SUITE}" in
     varmap_file="GFSphys_var_map.txt"
     ;;
   *)
-  message_txt="The variable \"varmap_file\" has not yet been specified 
+  message_txt="FATAL ERROR The variable \"varmap_file\" has not yet been specified 
 for this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
   err_exit "${message_txt}"
@@ -389,7 +389,7 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   fn_atm="${EXTRN_MDL_FNS[0]}"
   ;;
 *)
-  message_txt="External-model-dependent namelist variables have not yet been 
+  message_txt="FATAL ERROR External-model-dependent namelist variables have not yet been 
 specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
   err_exit "${message_txt}"
@@ -406,7 +406,7 @@ esac
 exec_fn="chgres_cube"
 exec_fp="$EXECaqm/${exec_fn}"
 if [ ! -s "${exec_fp}" ]; then
-  message_txt="The executable (exec_fp) for generating initial conditions 
+  message_txt="FATAL ERROR The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
@@ -450,7 +450,7 @@ for (( i=0; i<${num_fhrs}; i++ )); do
     fn_grib2="${EXTRN_MDL_FNS[$i]}"
     ;;
   *)
-    message_txt="The external model output file name to use in the chgres_cube 
+    message_txt="FATAL ERROR The external model output file name to use in the chgres_cube 
 FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_NAME_LBCS):
   EXTRN_MDL_NAME_LBCS = \"${EXTRN_MDL_NAME_LBCS}\""
       err_exit "${message_txt}"
@@ -528,7 +528,7 @@ settings="
   ${USHaqm}/set_namelist.py -q -u "$settings" -o ${nml_fn}
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script set_namelist.py to set the variables 
+    message_txt="FATAL ERROR Call to python script set_namelist.py to set the variables 
 in the namelist file read in by the ${exec_fn} executable failed. Parameters 
 passed to this script are:
   Name of output namelist file:

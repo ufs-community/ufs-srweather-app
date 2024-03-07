@@ -220,7 +220,7 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    eval cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+    cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
   done
 
   # NetCDF files
@@ -229,7 +229,7 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    eval cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+    cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
   done
 
   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"

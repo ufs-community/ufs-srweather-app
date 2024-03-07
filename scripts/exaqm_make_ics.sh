@@ -166,8 +166,9 @@ if [ "${RUN_TASK_GET_EXTRN_ICS}" = "FALSE" ]; then
 
   $cmd
   export err=$?
+
   if [ $err -ne 0 ]; then
-    message_txt="Call to retrieve_data.py failed with a non-zero exit status.
+    message_txt="FATAL ERROR Call to retrieve_data.py failed with a non-zero exit status.
 The command was:
 ${cmd}
 "
@@ -188,8 +189,8 @@ else
    if [ "${WORKLFOW_MANAGER}" = "ecflow" ]; then  
      extrn_mdl_staging_dir="${DATAROOT}/${RUN}_get_extrn_ics_${cyc}.${share_pid}"
      if [ ! -d ${extrn_mdl_staging_dir} ]; then
-       echo "Fatal error extrn_mdl_staging_dir not found in production mode"
-       exit 7
+       message_txt="FATAL ERROR ${extrn_mdl_staging_dir} not found in production mode"
+       err_exit "${message_txt}"
      fi
    else
       extrn_mdl_staging_dir="${DATAROOT}/get_extrn_ics.${share_pid}"
@@ -216,7 +217,7 @@ case "${CCPP_PHYS_SUITE}" in
     varmap_file="GFSphys_var_map.txt"
     ;;
   *)
-    message_txt="The variable \"varmap_file\" has not yet been specified for 
+    message_txt="FATAL ERROR The variable \"varmap_file\" has not yet been specified for 
 this physics suite (CCPP_PHYS_SUITE):
   CCPP_PHYS_SUITE = \"${CCPP_PHYS_SUITE}\""
      err_exit "${message_txt}"
@@ -462,7 +463,7 @@ case "${EXTRN_MDL_NAME_ICS}" in
   ;;
 
 *)
-  message_txt="External-model-dependent namelist variables have not yet been specified
+  message_txt="FATAL ERROR external-model-dependent namelist variables have not yet been specified
 for this external IC model (EXTRN_MDL_NAME_ICS):
   EXTRN_MDL_NAME_ICS = \"${EXTRN_MDL_NAME_ICS}\""
     err_exit "${message_txt}"
@@ -489,7 +490,7 @@ hh="${EXTRN_MDL_CDATE:8:2}"
 exec_fn="chgres_cube"
 exec_fp="$EXECaqm/${exec_fn}"
 if [ ! -s "${exec_fp}" ]; then
-  message_txt="The executable (exec_fp) for generating initial conditions 
+  message_txt="FATAL ERROR The executable (exec_fp) for generating initial conditions 
 on the FV3-LAM native grid does not exist:
   exec_fp = \"${exec_fp}\"
 Please ensure that you've built this executable."
@@ -562,7 +563,7 @@ nml_fn="fort.41"
 ${USHaqm}/set_namelist.py -q -u "$settings" -o ${nml_fn}
 err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script set_namelist.py to set the variables 
+  message_txt="FATAL ERROR Call to python script set_namelist.py to set the variables 
 in the namelist file read in by the ${exec_fn} executable failed. Parameters 
 passed to this script are:
   Name of output namelist file:

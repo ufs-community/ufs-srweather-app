@@ -220,7 +220,10 @@ fi
 rm -rf ${DATA}/data/bcdata*
 
 ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
-
+if [ $(find . -xtype l|wc -l) -gt 0 ]; then
+  message_txt="FATAL ERROR broken file or dir link found under ${DATA}"
+  err_exit "${message_txt}"
+fi 
 mkdir -p ${DATA}/data/sites
 
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}

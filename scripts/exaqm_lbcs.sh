@@ -113,7 +113,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
     #Copy the boundary condition file to the current location
     cpreq ${chem_lbcs_fp} .
   else
-    message_txt="The chemical LBC files do not exist:
+    message_txt="WARNING The chemical LBC files do not exist:
     CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
       err_exit "${message_txt}"
   fi
@@ -161,7 +161,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
       cpreq ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
       export err=$?
       if [ $err -ne 0 ]; then
-        message_txt="Call to NCKS returned with nonzero exit code."
+        message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
           err_exit "${message_txt}"
       fi
   done
@@ -232,7 +232,7 @@ check_file_with_recheck() {
 	echo "File exists after recheck: $AQM_MOFILE_FHR_FP"
        else
         # File not found even after rechecks
-        echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+        echo "WARNING File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
         
 	GEFS_AERO_LBCS_CHECK="NO"
 	 

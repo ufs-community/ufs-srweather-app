@@ -93,7 +93,7 @@ else
    cat ${pgmout}
   fi
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
+    message_txt="FATAL ERROR Call to python script \"concatenate_nexus_post_split.py\" failed."
     err_exit "${message_txt}"
   fi
 fi    
@@ -107,7 +107,7 @@ fi
 ${USHaqm}/nexus_utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
+  message_txt="FATAL ERROR Call to python script \"NEXUS_Expt_pretty.py\" failed."
   err_exit "${message_txt}"
 fi
 #

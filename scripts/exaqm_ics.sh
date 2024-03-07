@@ -89,7 +89,7 @@ if [ ! -r ${fv_tracer_file} ]; then
         print_info_msg "
   Tracer file found: \"${fv_tracer_file}\""
       else
-        message_txt="No suitable tracer restart file found."
+        message_txt="FATAL ERROR No suitable tracer restart file ${rst_dir}/${rst_file} found."
           err_exit "${message_txt}"
       fi
     fi
@@ -121,14 +121,14 @@ cpreq ${gfs_ic_file} ${wrk_ic_file}
 ${USHaqm}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"add_aqm_ics.py\" failed."
+  message_txt="FATAL ERROR Call to python script \"add_aqm_ics.py\" failed."
   err_exit "${message_txt}"
 fi
 
 ncatted -a checksum,,d,s, tmp1.nc
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to NCATTED returned with nonzero exit code."
+  message_txt="FATAL ERROR Call to NCATTED returned with nonzero exit code."
   err_exit "${message_txt}"
 fi
 

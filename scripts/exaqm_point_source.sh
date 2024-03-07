@@ -85,7 +85,7 @@ if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then
   ${USHaqm}/aqm_utils_python/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"stack-pt-merge.py\" failed."
+    message_txt="FATAL ERROR Call to python script \"stack-pt-merge.py\" failed."
     err_exit "${message_txt}"
   fi
 fi

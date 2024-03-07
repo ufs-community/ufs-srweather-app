@@ -126,13 +126,8 @@ if [ "${RUN_TASK_NEXUS_GFS_SFC}" = "FALSE" ]; then
        create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
                              relative="${relative_link_flag}"
      else
-       message_txt="WARNING: SFC file for nexus emission for \"${cycle}\" does not exist in the directory:
- GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
- gfs_sfc_fn = \"${gfs_sfc_fn}\""
-       print_info_msg "${message_txt}"
-#       if [ ! -z "${maillist_group1}" ]; then
-#         echo "${message_txt}" | mail.py $maillist_group1
-#       fi
+       message_txt="FATAL ERROR SFC file \"${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}\" for nexus emission for \"${cycle}\" does not exist"
+       err_exit "${message_txt}"
      fi
    done
 
@@ -142,8 +137,8 @@ else
     if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then	    
       GFS_SFC_INPUT="${DATAROOT}/${RUN}_nexus_gfs_sfc_${cyc}.${share_pid}"
       if [ ! -d ${GFS_SFC_INPUT} ]; then
-        echo "Fatal error GFS_SFC_INPUT not found in production mode"
-        exit 7
+        message_txt="FATAL ERROR ${GFS_SFC_INPUT} not found in production mode"
+        err_exit "${message_txt}"
       fi
     else
       GFS_SFC_INPUT="${DATAROOT}/nexus_gfs_sfc.${share_pid}"
@@ -246,7 +241,7 @@ NEXUS_INPUT_BASE_DIR=${FIXemis}
 ${USHaqm}/nexus_utils/python/nexus_time_parser.py -f ${DATA}/HEMCO_sa_Time.rc -s $start_date -e $end_date
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"nexus_time_parser.py\" failed."
+  message_txt="FATAL ERROR Call to python script \"nexus_time_parser.py\" failed."
   err_exit "${message_txt}"
 fi
 #
@@ -257,7 +252,7 @@ fi
 ${USHaqm}/nexus_utils/python/nexus_root_parser.py -f ${DATA}/NEXUS_Config.rc -d ${DATAinput}
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"nexus_root_parser.py\" failed."
+  message_txt="FATAL ERROR Call to python script \"nexus_root_parser.py\" failed."
   err_exit "${message_txt}"
 fi
 #
@@ -271,14 +266,14 @@ if [ "${NEI2016}" = "TRUE" ]; then #NEI2016
   ${USHaqm}/nexus_utils/python/nexus_nei2016_linker.py --src_dir ${NEXUS_INPUT_BASE_DIR} --date ${yyyymmdd} --work_dir ${DATAinput} -v "v2022-07"
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"nexus_nei2016_linker.py\" failed."
+    message_txt="FATAL ERROR Call to python script \"nexus_nei2016_linker.py\" failed."
     err_exit "${message_txt}"
   fi
 
   ${USHaqm}/nexus_utils/python/nexus_nei2016_control_tilefix.py -f ${DATA}/NEXUS_Config.rc -t ${DATA}/HEMCO_sa_Time.rc # -d ${yyyymmdd}
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"nexus_nei2016_control_tilefix.py\" failed."
+    message_txt="FATAL ERROR Call to python script \"nexus_nei2016_control_tilefix.py\" failed."
     err_exit "${message_txt}"
   fi
 fi
@@ -348,7 +343,7 @@ if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   ${USHaqm}/nexus_utils/python/nexus_gfs_bio.py -i ${DATA}/GFS_SFC/gfs.t??z.sfcf???.nc -o ${DATA}/GFS_SFC_MEGAN_INPUT.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"nexus_gfs_bio.py\" failed."
+    message_txt="FATAL ERROR Call to python script \"nexus_gfs_bio.py\" failed."
       err_exit "${message_txt}"
   fi
 fi
@@ -376,7 +371,7 @@ fi
 ${USHaqm}/nexus_utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."
+  message_txt="FATAL ERROR Call to python script \"make_nexus_output_pretty.py\" failed."
   err_exit "${message_txt}"
 fi
 #
