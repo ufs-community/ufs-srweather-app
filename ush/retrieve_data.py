@@ -51,7 +51,7 @@ def clean_up_output_dir(expected_subdir, local_archive, output_path, source_path
     for file_path in source_paths:
         local_file_path = os.path.join(os.getcwd(), file_path.lstrip("/"))
         if not os.path.exists(local_file_path):
-            logging.info(f"File does not exist: {local_file_path}")
+            logging.info(f"FATAL ERROR File does not exist: {local_file_path}")
             unavailable["hpss"] = source_paths
         else:
             file_name = os.path.basename(file_path)
@@ -82,7 +82,7 @@ def copy_file(source, destination, copy_cmd):
     """
 
     if not os.path.exists(source):
-        logging.info(f"File does not exist on disk \n {source} \n try using: --input_file_path <your_path>")
+        logging.info(f"FATAL ERROR file does not exist on disk \n {source} \n try using: --input_file_path <your_path>")
         return False
 
     # Using subprocess here because system copy is much faster than
@@ -444,7 +444,7 @@ def hsi_single_file(file_path, mode="ls"):
             shell=True,
         )
     except subprocess.CalledProcessError:
-        logging.warning(f"{file_path} is not available!")
+        logging.warning(f"WARNING {file_path} is not available!")
         return ""
 
     return file_path
@@ -498,7 +498,7 @@ def hpss_requested_files(cla, file_names, store_specs, members=-1, ens_group=-1)
     logging.debug(f"Found existing archives: {existing_archives}")
 
     if not existing_archives:
-        logging.warning("No archive files were found!")
+        logging.warning("WARNING No archive files were found!")
         unavailable["archive"] = list(zip(archive_paths, archive_file_names))
         return unavailable
 
@@ -856,10 +856,10 @@ def main(argv):
             break
 
         logging.debug(f"Some unavailable files: {unavailable}")
-        logging.warning(f"Requested files are unavailable from {data_store}")
+        logging.warning(f"WARNING Requested files are unavailable from {data_store}")
 
     if unavailable:
-        logging.error("Could not find any of the requested files.")
+        logging.error("FATAL ERROR Could not find any of the requested files.")
         sys.exit(1)
 
 

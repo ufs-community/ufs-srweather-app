@@ -34,6 +34,7 @@ COMINgefs=$(compath.py "gefs/${gefs_ver}") || { echo "Failed to assign COMINgefs
 OPSROOT=$(printf '%q' "$OPSROOT")
 HOMEaqm=$(printf '%q' "$HOMEaqm")
 COMROOT=$(printf '%q' "$COMROOT")
+DCOMROOT=$(printf '%q' "$DCOMROOT")
 COMaqm=$(printf '%q' "$COMaqm")
 COMINgefs=$(printf '%q' "$COMINgefs")
 DATA=$(printf '%q' "$DATA")
@@ -51,6 +52,7 @@ for file_in in ${File_to_modify_source}; do
   sed -i -e "s|@WARMSTART_PDY@|${WARMSTART_PDY}|g" "$file_tmp"
   sed -i -e "s|@OPSROOT@|${OPSROOT}|g"             "$file_tmp"
   sed -i -e "s|@COMINgefs@|${COMINgefs}|g"         "$file_tmp"
+  sed -i -e "s|@DCOMROOT@|${DCOMROOT}|g"         "$file_tmp"
   sed -i -e "s|@DATA@|${DATA}|g"                   "$file_tmp"
 #
   mv "$file_tmp" "$file_in" || { echo "Failed to move $file_tmp to $file_in"; exit 1; }

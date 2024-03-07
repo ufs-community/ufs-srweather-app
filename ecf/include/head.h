@@ -26,6 +26,7 @@ fi
 modelhome=%PACKAGEHOME:%
 eval "export HOME${model:?'model undefined'}=$modelhome"
 eval "versionfile=\$HOME${model}/versions/run.ver"
+if [ -n "%aqm_ver:%" ]; then export aqm_ver=${aqm_ver:-%aqm_ver:%}; fi
 if [ -f "$versionfile" ]; then
   . $versionfile 
 fi

@@ -7,6 +7,9 @@ postmsg "$msg"
 
 export pgm=aqm_lbcs
 
+EMAIL_SDM=${EMAIL_SDM:-NO}
+GEFS_AERO_LBCS_CHECK=${GEFS_AERO_LBCS_CHECK:-YES}
+
 #-----------------------------------------------------------------------
 #
 # Source the variable definitions file and the bash utility functions.
@@ -106,20 +109,20 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${mm}}
 
   chem_lbcs_fp=${FIXaqmchem_lbcs}/${chem_lbcs_fn}
-  if [ -f ${chem_lbcs_fp} ]; then
+  if [ -s ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
-    cp ${chem_lbcs_fp} .
+    cpreq ${chem_lbcs_fp} .
   else
-    message_txt="The chemical LBC files do not exist:
+    message_txt="WARNING The chemical LBC files do not exist:
     CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
       err_exit "${message_txt}"
   fi
 
   # Function to check if the file exists
     function check_file_existence() {
-    if [ -f "$1" ]; then
+    if [ -s "$1" ]; then
       echo "Found netCDF file: $1"
-      cp "$1" .
+      cpreq "$1" .
     else
       echo "Error: NetCDF file not found: $1"
      return 1
@@ -141,7 +144,7 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
        else
      # File doesn't exist, wait for 5 seconds and decrement the retry count
          sync
-         sleep 60
+         sleep 20
         ((retries--))
        fi
      done
@@ -152,13 +155,13 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
      fi
 
     echo "Checking file: ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc"
-      cp "$netcdf_file" .
+      cpreq "$netcdf_file" .
 
       ncks -A ${chem_lbcs_fn} ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
-      cp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
+      cpreq ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${INPUT_DATA} 
       export err=$?
       if [ $err -ne 0 ]; then
-        message_txt="Call to NCKS returned with nonzero exit code."
+        message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
           err_exit "${message_txt}"
       fi
   done
@@ -174,6 +177,7 @@ fi
 # Add GEFS-LBCS
 #
 #-----------------------------------------------------------------------
+#
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
@@ -196,7 +200,7 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
 check_file_with_recheck() {
   local file_path="$1"
   local max_rechecks=5
-  local wait_time=20
+  local wait_time=5
 
   for recheck_count in $(seq 1 $max_rechecks); do
     if [ -e "$file_path" ]; then
@@ -228,11 +232,18 @@ check_file_with_recheck() {
 	echo "File exists after recheck: $AQM_MOFILE_FHR_FP"
        else
         # File not found even after rechecks
-        echo "File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+        echo "WARNING File was not found even after rechecks: $AQM_MOFILE_FHR_FP"
+        
+	GEFS_AERO_LBCS_CHECK="NO"
+	 
+        if [ "${EMAIL_SDM^^}" = "YES" ] ; then
+          MAILFROM=${MAILFROM:-"nco.spa@noaa.gov"}
+          #MAILTO=${MAILTO:-"sdm@noaa.gov"}
+          MAILTO=${MAILTO:-"${maillist}"}
+          subject="${cyc}Z ${RUN^^} Output for ${basinname:-} GEFS_AERO LBCS "
+          mail.py -s "${subject}" -v "${MAILTO}" 
+        fi
 
-#        if [ ! -z "${maillist_group1}" ]; then
-#          echo "${message_warning}" | mail.py $maillist_group1
-#        fi
        fi
       fi
   done
@@ -271,7 +282,7 @@ EOF
 
   exec_fn="gefs2lbc_para"
   exec_fp="$EXECaqm/${exec_fn}"
-  if [ ! -f "${exec_fp}" ]; then
+  if [ ! -s "${exec_fp}" ]; then
     print_err_msg_exit "\
 The executable (exec_fp) for GEFS LBCs does not exist:
   exec_fp = \"${exec_fp}\"
@@ -284,20 +295,29 @@ Please ensure that you've built this executable."
 #
 #----------------------------------------------------------------------
 #
+ if [ ${GEFS_AERO_LBCS_CHECK} = "YES" ]; then    
   startmsg
   sync
-  eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
+   eval ${RUN_CMD_AQMLBC} ${exec_fp} ${REDIRECT_OUT_ERR} >> $pgmout 2>errfile
   export err=$?; err_chk
   if [ -e "${pgmout}" ]; then
    cat ${pgmout}
   fi
-  cp -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
+  cpreq -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
 
   print_info_msg "
 ========================================================================
 Successfully added GEFS aerosol LBCs !!!
 ========================================================================"
 #
+ else
+  cpreq -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc  ${INPUT_DATA}
+
+  print_info_msg "
+========================================================================
+ Failed to add GEFS aerosol LBCs due to missing GEFS LBCS ! 
+========================================================================"
+ fi
 fi
 #
 print_info_msg "

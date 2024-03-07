@@ -82,29 +82,29 @@ aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUF
 
 # Check if the fire file exists in the designated directory
 if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
-  cp "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+  cpreq "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Copy raw data 
   for ihr in {0..23}; do
     download_time=`$NDATE -$ihr ${yyyymmdd_mh1}${hh_mh1}`
     FILE_curr=Hourly_Emissions_13km_${download_time}00_${download_time}00.nc
-    FILE_13km=RAVE-HrlyEmiss-13km_v1r3_blend_s${download_time}00000_e${download_time}59590_c*.nc
+    FILE_13km=RAVE-HrlyEmiss-13km_v*_blend_s${download_time}00000_e${download_time}59590_c*.nc
     yyyymmdd_dn=${download_time:0:8}
     hh_dn=${download_time:8:2}
     missing_download_time=`$NDATE -24 ${yyyymmdd_dn}${hh_dn}`
     yyyymmdd_dn_md1=${missing_download_time:0:8}
-    FILE_13km_md1=RAVE-HrlyEmiss-13km_v1r3_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
+    FILE_13km_md1=RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
     if [ -s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}`) -gt 4000000 ]; then
-      cp -p ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
+      cpreq -p ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
     elif [ -s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}`) -gt 4000000 ]; then
       echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
-      cp -p ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
+      cpreq -p ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
     else
-      message_txt="Fire Emission RAW data does not exist or broken:
+      message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
-        cp -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
+        cpreq -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
 #        if [ ! -z "${maillist_group2}" ]; then
@@ -124,7 +124,7 @@ else
   ncks -O -h --mk_rec_dmn time Hourly_Emissions_13km_${download_time}00_${download_time}00.nc temp.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCKS returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
@@ -133,7 +133,7 @@ else
   ncrcat -h Hourly_Emissions_13km_*.nc Hourly_Emissions_13km_${yyyymmdd}0000_${yyyymmdd}2300.t${cyc}z.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCRCAT returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCRCAT returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
@@ -143,30 +143,30 @@ else
   ${USHaqm}/aqm_utils_python/RAVE_remake.allspecies.aqmna13km.g793.py --date "${yyyymmdd}" --cyc "${hh}" --input_fire "${input_fire}" --output_fire "${output_fire}"
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to python script \"RAVE_remake.allspecies.py\" returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
   ncks --mk_rec_dmn Time Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_new24.t${cyc}z.nc -o Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCKS returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCKS returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
-  cp Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc 
-  cp Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_2.nc
+  cpreq Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc 
+  cpreq Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_2.nc
 
   ncrcat -O -D 2 Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_1.nc Hourly_Emissions_regrid_NA_13km_${yyyymmdd}_t${cyc}z_h24_2.nc ${aqm_fire_file_fn}
 
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to NCRCAT returned with nonzero exit code."
+    message_txt="FATAL ERROR Call to NCRCAT returned with nonzero exit code."
       err_exit "${message_txt}"
   fi
 
   # Copy the final fire emission file to STAGING_DIR 
-  cp "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+  cpreq "${DATA}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 
 fi
 #

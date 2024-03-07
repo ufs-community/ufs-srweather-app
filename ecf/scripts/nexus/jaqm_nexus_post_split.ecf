@@ -3,8 +3,8 @@
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=1:mpiprocs=1:ncpus=1
+#PBS -l walltime=00:15:00
+#PBS -l select=1:mpiprocs=1:ncpus=1:mem=32G:prepost=true
 #PBS -l debug=true
 
 model=aqm

@@ -28,7 +28,7 @@ export envvar_ver=1.0
 
 export gfs_ver=v16.3
 export gefs_ver=v12.3
-export aqm_ver=v7.0.1
+#export aqm_ver=v7.0.1
 
 export udunits_ver=2.2.28
 export gsl_ver=2.7
@@ -37,5 +37,10 @@ export nco_ver=5.0.6
 export wgrib2_ver=2.0.8_wmo
 export grib_util_ver=1.2.4
 
+# for PARA testing
 export maillist="nco.spa@noaa.gov,jianping.huang@noaa.gov,kai.wang@noaa.gov"
+export MAILTO="nco.spa@noaa.gov,jianping.huang@noaa.gov,kai.wang@noaa.gov"
 
+export DBNLOG=YES
+# ONLY for NCO to set operational COMPATH here. Developer should remark it
+# export COMPATH=/lfs/h1/ops/para/com/aqm:/lfs/h1/ops/prod/com/gfs:/lfs/h1/ops/prod/com/gefs

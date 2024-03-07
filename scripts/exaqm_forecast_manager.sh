@@ -45,7 +45,7 @@ This is the ex-script for the task that copy AQM forecast and RESTART file to CO
 umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 shared_output_data=${umbrella_forecast_data}/output
 shared_restart_data=${umbrella_forecast_data}/RESTART
-NCP="cp -p"
+NCP="cpreq -p"
 # Configure scan target
 [ ${cyc} = "00" ] && FCST_LEN_HRS=6
 [ ${cyc} = "06" ] && FCST_LEN_HRS=72
@@ -134,7 +134,7 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
               sleep 60
               time_limit=$(($time_limit+1))
               if [ $time_limit -ge 60 ]; then
-                echo "ABORTING after waiting for forecast output file ${source_log}"
+                echo "FATAL ERROR - ABORTING after waiting for forecast output file ${source_log}"
                 exit 9
               fi
             fi
@@ -145,8 +145,8 @@ if [ $cyc = 06 -o $cyc = 12 ]; then
         if [ $rst_exist = "NO" ]; then
           sleep 60
           (( icnt=icnt+1 ))
-          if [ $icnt -ge 170 ]; then
-            echo "ABORTING after waiting for forecast RESTART file ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.coupler.res"
+          if [ $icnt -ge 210 ]; then
+            echo "FATAL ERROR - ABORTING after waiting for forecast RESTART file ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.coupler.res"
             exit 9
           fi
         fi
@@ -191,8 +191,8 @@ else
     else
       sleep 60
       (( icnt=icnt+1 ))
-      if [ $icnt -ge 40 ]; then
-        echo "ABORTING after waiting for forecast RESTART file ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.coupler.res"
+      if [ $icnt -ge 90 ]; then
+        echo "FATAL ERROR - ABORTING after waiting for forecast RESTART file ${shared_restart_data}/${rst_yyyymmdd}.${rst_hh}0000.coupler.res"
         exit 9
       fi
     fi

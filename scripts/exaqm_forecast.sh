@@ -371,9 +371,13 @@ input files in the main experiment directory..."
 #
 relative_link_flag="FALSE"
 
-create_symlink_to_file target="${DATA_TABLE_FP}" \
-                       symlink="${DATA}/${DATA_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+#create_symlink_to_file target="${DATA_TABLE_FP}" \
+#                       symlink="${DATA}/${DATA_TABLE_FN}" \
+#                       relative="${relative_link_flag}"
+if [[ ! -s ${DATA}/${DATA_TABLE_FN} ]]; then
+  cat > ${DATA}/${DATA_TABLE_FN} << EOF
+EOF
+fi
 
 create_symlink_to_file target="${FIELD_TABLE_FP}" \
                        symlink="${DATA}/${FIELD_TABLE_FN}" \
@@ -434,7 +438,7 @@ if [ "${DO_ENSEMBLE}" = TRUE ] && ([ "${DO_SPP}" = TRUE ] || [ "${DO_SPPT}" = TR
       --cdate "$CDATE"
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to function to create the ensemble-based namelist
+    message_txt="FATAL ERROR Call to function to create the ensemble-based namelist
 for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
@@ -469,7 +473,7 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ $coupler_res_ct -gt 0 ] && [ $FCST_LEN
     --restart
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to function to update the FV3 input.nml file for restart 
+    message_txt="FATAL ERROR Call to function to update the FV3 input.nml file for restart 
 for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
@@ -541,7 +545,7 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     --init_concentrations "${init_concentrations}"
   export err=$?
   if [ $err -ne 0 ]; then
-    message_txt="Call to function to create an aqm.rc file for the current
+    message_txt="FATAL ERROR Call to function to create an aqm.rc file for the current
 cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
@@ -567,7 +571,7 @@ fi
   --dt-atmos "${DT_ATMOS}"
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to function to create a model configuration file 
+  message_txt="FATAL ERROR Call to function to create a model configuration file 
 for the current cycle's (cdate) run directory (DATA) failed:
   cdate = \"${CDATE}\"
   DATA = \"${DATA}\""
@@ -586,7 +590,7 @@ fi
   --run-dir "${DATA}"
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to function to create a diag table file for the current 
+  message_txt="FATAL ERROR Call to function to create a diag table file for the current 
 cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
     err_exit "${message_txt}"
@@ -604,7 +608,7 @@ fi
   --run-dir "${DATA}"
 export err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to function to create a NEMS configuration file for 
+  message_txt="FATAL ERROR Call to function to create a NEMS configuration file for 
 the current cycle's (cdate) run directory (DATA) failed:
   DATA = \"${DATA}\""
   err_exit "${message_txt}"
@@ -689,7 +693,7 @@ if [ -e "$pgmout" ]; then
 fi
 
 
-eval cp -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+eval cpreq -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 #
 #-----------------------------------------------------------------------
 #
