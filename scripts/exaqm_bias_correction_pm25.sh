@@ -144,7 +144,7 @@ mkdir -p "${DATA}/data"
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
     if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
-      cpreq ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+      cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     else
       message_warning="WARNING: airnow data missing. skip this date ${cvt_pdy}"
       print_info_msg "${message_warning}"
