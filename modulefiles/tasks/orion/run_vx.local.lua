@@ -27,4 +27,5 @@ if (mode() == "unload") then
 end
 --load("ufs-pyenv")
 load("stack-python/3.10.8")
+load("conda")
 setenv("SRW_ENV", "srw_app")
