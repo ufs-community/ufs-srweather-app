@@ -791,6 +791,8 @@ The ``FV3LAM_wflow.xml`` file runs the specific j-job scripts (``jobs/JREGIONAL_
      - Run the forecast model (UFS Weather Model)
    * - run_post_*
      - Run the post-processing tool (UPP)
+   * - integration_test_*
+     - Run integration test 
    
 In addition to the baseline tasks described in :numref:`Table %s <WorkflowTasksTable>` above, users may choose to run a variety of optional tasks, including plotting and verification tasks. 
 
@@ -983,6 +985,7 @@ The workflow run is complete when all tasks have "SUCCEEDED". If everything goes
    201906151800   run_post_mem000_f001     4953245       SUCCEEDED         0          1          4.0
    ...
    201906151800   run_post_mem000_f012     4953381       SUCCEEDED         0          1          7.0
+   201906151800   integration_test_mem000     4953237       SUCCEEDED         0          1          7.0
 
 If users choose to run METplus verification tasks as part of their experiment, the output above will include additional lines after ``run_post_mem000_f012``. The output will resemble the following but may be significantly longer when using ensemble verification: 
 
@@ -1058,6 +1061,7 @@ This will output the last 40 lines of the log file, which lists the status of th
    201906151800   run_post_mem000_f004                           -            -             -       -         -
    201906151800   run_post_mem000_f005                           -            -             -       -         -
    201906151800   run_post_mem000_f006                           -            -             -       -         -
+   201906151800   integration_test_mem000
 
    Summary of workflow status:
    ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1168,6 +1172,7 @@ The SRW App workflow can be run using standalone shell scripts in cases where th
       ./run_make_lbcs.sh
       ./run_fcst.sh
       ./run_post.sh
+      ./run_integration_test.sh
 
 Each task should finish with error code 0. For example: 
 
@@ -1184,31 +1189,33 @@ Check the batch script output file in your experiment directory for a “SUCCESS
             processors and wall clock time is a good starting point for NOAA HPC systems
             when running a 48-h forecast on the 25-km CONUS domain. For a brief description of tasks, see :numref:`Table %s <WorkflowTasksTable>`. 
 
-   +------------+------------------------+----------------+----------------------------+
-   | **Stage/** | **Task Run Script**    | **Number of**  | **Wall Clock Time (H:mm)** |
-   |            |                        | **Processors** |                            |             
-   +============+========================+================+============================+
-   | 1          | run_get_ics.sh         | 1              | 0:20 (depends on HPSS vs   |
-   |            |                        |                | FTP vs staged-on-disk)     |
-   +------------+------------------------+----------------+----------------------------+
-   | 1          | run_get_lbcs.sh        | 1              | 0:20 (depends on HPSS vs   |
-   |            |                        |                | FTP vs staged-on-disk)     |
-   +------------+------------------------+----------------+----------------------------+
-   | 1          | run_make_grid.sh       | 24             | 0:20                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 2          | run_make_orog.sh       | 24             | 0:20                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 3          | run_make_sfc_climo.sh  | 48             | 0:20                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 4          | run_make_ics.sh        | 48             | 0:30                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 4          | run_make_lbcs.sh       | 48             | 0:30                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 5          | run_fcst.sh            | 48             | 0:30                       |
-   +------------+------------------------+----------------+----------------------------+
-   | 6          | run_post.sh            | 48             | 0:25 (2 min per output     |
-   |            |                        |                | forecast hour)             |
-   +------------+------------------------+----------------+----------------------------+
+   +------------+--------------------------+----------------+----------------------------+
+   | **Stage/** | **Task Run Script**      | **Number of**  | **Wall Clock Time (H:mm)** |
+   |            |                          | **Processors** |                            |             
+   +============+==========================+================+============================+
+   | 1          | run_get_ics.sh           | 1              | 0:20 (depends on HPSS vs   |
+   |            |                          |                | FTP vs staged-on-disk)     |
+   +------------+--------------------------+----------------+----------------------------+
+   | 1          | run_get_lbcs.sh          | 1              | 0:20 (depends on HPSS vs   |
+   |            |                          |                | FTP vs staged-on-disk)     |
+   +------------+--------------------------+----------------+----------------------------+
+   | 1          | run_make_grid.sh         | 24             | 0:20                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 2          | run_make_orog.sh         | 24             | 0:20                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 3          | run_make_sfc_climo.sh    | 48             | 0:20                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 4          | run_make_ics.sh          | 48             | 0:30                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 4          | run_make_lbcs.sh         | 48             | 0:30                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 5          | run_fcst.sh              | 48             | 0:30                       |
+   +------------+--------------------------+----------------+----------------------------+
+   | 6          | run_post.sh              | 48             | 0:25 (2 min per output     |
+   |            |                          |                | forecast hour)             |
+   +------------+--------------------------+----------------+----------------------------+
+   | 7          | run_integration_test.sh  | 1              | 0:05                       |
+   +------------+--------------------------+----------------+----------------------------+
 
 Users can access log files for specific tasks in the ``$EXPTDIR/log`` directory. To see how the experiment is progressing, users can also check the end of the ``log.launch_FV3LAM_wflow`` file from the command line:
 
