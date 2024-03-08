@@ -374,9 +374,11 @@ wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid
 
 cpreq tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cpreq ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
-if [ "${SENDDBN}" = "YES" ]; then
+if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+ if [ "${SENDDBN}" = "YES" ]; then
   ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
 #  ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.793.grib2
+ fi
 fi
 
 #--------------------------------------------------------------
