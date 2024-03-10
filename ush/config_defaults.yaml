@@ -2574,38 +2574,37 @@ cpl_aqm_parm:
   #
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
-  #
-  # DCOMINbio_default:
-  # Path to the directory containing AQM bio files
   # 
-  # DCOMINdust_default:
-  # Path to the directory containing AQM dust file
-  #
-  # DCOMINcanopy_default:
+  # COMINcanopy_default:
   # Path to the directory containing AQM canopy files
   # 
-  # DCOMINfire_default:
-  # Path to the directory containing AQM fire files
-  # 
-  # DCOMINchem_lbcs_default:
+  # COMINchem_lbcs_default:
   # Path to the directory containing chemical LBC files
   # 
-  # DCOMINgefs_default:
+  # COMINdust_default:
+  # Path to the directory containing AQM dust file
+  #
+  # COMINemis_default:
+  # Parent directory containing emission files
+  #
+  # COMINemispt_default:
+  # Parent directory containing point source emission files
+  #
+  # COMINfire_default:
+  # Path to the directory containing AQM fire files
+  # 
+  # COMINgefs_default:
   # Path to the directory containing GEFS aerosol LBC files
   #
-  # DCOMINpt_src_default:
-  # Parent directory containing point source files
-  #
-  # DCOMINairnow_default:
+  # DCOMINairnow:
   # Path to the directory containing AIRNOW observation data
   #
   # COMINbicor:
   # Path of reading in historical training data for biascorrection 
   #
   # COMOUTbicor:
-  # Path to save the current cycle's model output and AirNow obs as 
-  # training data for future use. $COMINbicor and $COMOUTbicor can be 
-  # distinguished by the ${yyyy}${mm}${dd} under the same location
+  # Path to save the current cycle's model output and AirNow obs as training data for future use
+  # $COMINbicor and $COMOUTbicor can be distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
@@ -2690,14 +2689,15 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
-  DCOMINbio_default: ""
-  DCOMINdust_default: "/path/to/dust/dir"
-  DCOMINcanopy_default: "/path/to/canopy/dir"
-  DCOMINfire_default: ""
-  DCOMINchem_lbcs_default: ""
-  DCOMINgefs_default: ""
-  DCOMINpt_src_default: "/path/to/point/source/base/directory"
-  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINcanopy_default: "/path/to/canopy/dir"
+  COMINchem_lbcs_default: ""
+  COMINdust_default: "/path/to/dust/dir"
+  COMINemis_default: "/path/to/point/source/base/directory"
+  COMINemispt_default: "/path/to/point/source/base/directory"
+  COMINfire_default: ""
+  COMINgefs_default: ""
+
+  DCOMINairnow: "/path/to/airnow/obaservation/data"
   COMINbicor: "/path/to/historical/airnow/data/dir"
   COMOUTbicor: "/path/to/historical/airnow/data/dir"
 
