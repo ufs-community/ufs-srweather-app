@@ -2575,6 +2575,12 @@ cpl_aqm_parm:
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
   # 
+  # COMINairnow_default:
+  # Path to the directory containing AIRNOW observation data
+  #
+  # COMINbicor_default:
+  # Path of reading in historical training data for biascorrection 
+  #
   # COMINcanopy_default:
   # Path to the directory containing AQM canopy files
   # 
@@ -2596,15 +2602,10 @@ cpl_aqm_parm:
   # COMINgefs_default:
   # Path to the directory containing GEFS aerosol LBC files
   #
-  # DCOMINairnow:
-  # Path to the directory containing AIRNOW observation data
-  #
-  # COMINbicor:
-  # Path of reading in historical training data for biascorrection 
-  #
-  # COMOUTbicor:
-  # Path to save the current cycle's model output and AirNow obs as training data for future use
-  # $COMINbicor and $COMOUTbicor can be distuigshed by the ${yyyy}${mm}$dd under the same location
+  # COMOUTbicor_default:
+  # Path to save the current cycle's model output and AirNow obs as
+  # training data for future use $COMINbicor and $COMOUTbicor can be
+  # distuigshed by the ${yyyy}${mm}$dd under the same location
   #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
@@ -2689,17 +2690,16 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
+  COMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINbicor_default: "/path/to/historical/airnow/data/dir"
   COMINcanopy_default: "/path/to/canopy/dir"
   COMINchem_lbcs_default: ""
   COMINdust_default: "/path/to/dust/dir"
-  COMINemis_default: "/path/to/point/source/base/directory"
-  COMINemispt_default: "/path/to/point/source/base/directory"
+  COMINemis_default: "/path/to/emission/base/directory"
+  COMINemispt_default: "/path/to/point/source/emission/base/directory"
   COMINfire_default: ""
   COMINgefs_default: ""
-
-  DCOMINairnow: "/path/to/airnow/obaservation/data"
-  COMINbicor: "/path/to/historical/airnow/data/dir"
-  COMOUTbicor: "/path/to/historical/airnow/data/dir"
+  COMOUTbicor_default: "/path/to/historical/airnow/data/dir"
 
   AQM_CONFIG_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"

@@ -2,7 +2,7 @@ metadata:
   description: config for Online-CMAQ, AQM_NA_13km, community mode
 user:
   RUN_ENVIR: community
-  MACHINE: [hera or wcoss2]
+  MACHINE: hera
   ACCOUNT: [account name]
 workflow:
   USE_CRON_TO_RELAUNCH: true
