@@ -2604,8 +2604,8 @@ cpl_aqm_parm:
   #
   # COMOUTbicor_default:
   # Path to save the current cycle's model output and AirNow obs as
-  # training data for future use $COMINbicor and $COMOUTbicor can be
-  # distuigshed by the ${yyyy}${mm}$dd under the same location
+  # training data for future use. $COMINbicor and $COMOUTbicor can be
+  # distiguished by the YYYYMMDD under the same location
   #
   # AQM_CONFIG_DIR:
   # Configuration directory for AQM
