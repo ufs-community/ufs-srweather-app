@@ -515,9 +515,14 @@ def generate_FV3LAM_wflow(
     physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
     base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
     base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
+    base_namelist.update_values(settings)
     for sect, values in base_namelist.copy().items():
         if not values:
             del base_namelist[sect]
+            continue
+        for k, v in values.copy().items():
+            if v is None:
+                del base_namelist[sect][k]
     base_namelist.dump(FV3_NML_FP)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will

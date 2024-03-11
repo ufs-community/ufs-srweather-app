@@ -310,8 +310,8 @@ EOF
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
-  -v \
-  "${tmpfile}"
+  --verbose \
+  --values-file "${tmpfile}"
 
 err=$?
 rm $tmpfile

@@ -233,46 +233,46 @@ settings="\
 #
 # MET/METplus information.
 #
-  'metplus_tool_name': '${metplus_tool_name}'
-  'MetplusToolName': '${MetplusToolName}'
-  'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
-  'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
+metplus_tool_name: '${metplus_tool_name}'
+MetplusToolName: '${MetplusToolName}'
+METPLUS_TOOL_NAME: '${METPLUS_TOOL_NAME}'
+metplus_verbosity_level: '${METPLUS_VERBOSITY_LEVEL}'
 #
 # Date and forecast hour information.
 #
-  'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+cdate: '$CDATE'
+fhr_list: '${FHR_LIST}'
 #
 # Input and output directory/file information.
 #
-  'metplus_config_fn': '${metplus_config_fn:-}'
-  'metplus_log_fn': '${metplus_log_fn:-}'
-  'obs_input_dir': '${OBS_INPUT_DIR:-}'
-  'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
-  'fcst_input_dir': '${FCST_INPUT_DIR:-}'
-  'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-  'output_base': '${OUTPUT_BASE}'
-  'output_dir': '${OUTPUT_DIR}'
-  'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
-  'staging_dir': '${STAGING_DIR}'
-  'vx_fcst_model_name': '${VX_FCST_MODEL_NAME}'
+metplus_config_fn: '${metplus_config_fn:-}'
+metplus_log_fn: '${metplus_log_fn:-}'
+obs_input_dir: '${OBS_INPUT_DIR:-}'
+obs_input_fn_template: '${OBS_INPUT_FN_TEMPLATE:-}'
+fcst_input_dir: '${FCST_INPUT_DIR:-}'
+fcst_input_fn_template: '${FCST_INPUT_FN_TEMPLATE:-}'
+output_base: '${OUTPUT_BASE}'
+output_dir: '${OUTPUT_DIR}'
+output_fn_template: '${OUTPUT_FN_TEMPLATE:-}'
+staging_dir: '${STAGING_DIR}'
+vx_fcst_model_name: '${VX_FCST_MODEL_NAME}'
 #
 # Ensemble and member-specific information.
 #
-  'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'ensmem_name': '${ensmem_name:-}'
-  'time_lag': '${time_lag:-}'
+num_ens_members: '${NUM_ENS_MEMBERS}'
+ensmem_name: '${ensmem_name:-}'
+time_lag: '${time_lag:-}'
 #
 # Field information.
 #
-  'fieldname_in_obs_input': '${FIELDNAME_IN_OBS_INPUT}'
-  'fieldname_in_fcst_input': '${FIELDNAME_IN_FCST_INPUT}'
-  'fieldname_in_met_output': '${FIELDNAME_IN_MET_OUTPUT}'
-  'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
-  'obtype': '${OBTYPE}'
-  'accum_hh': '${ACCUM_HH:-}'
-  'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
+fieldname_in_obs_input: '${FIELDNAME_IN_OBS_INPUT}'
+fieldname_in_fcst_input: '${FIELDNAME_IN_FCST_INPUT}'
+fieldname_in_met_output: '${FIELDNAME_IN_MET_OUTPUT}'
+fieldname_in_met_filedir_names: '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
+obtype: '${OBTYPE}'
+accum_hh: '${ACCUM_HH:-}'
+accum_no_pad: '${ACCUM_NO_PAD:-}'
+field_thresholds: '${FIELD_THRESHOLDS:-}'
 "
 
 # Render the template to create a METplus configuration file
@@ -284,8 +284,8 @@ EOF
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
-  -v \
-  "${tmpfile}"
+  --verbose \
+  --values-file "${tmpfile}"
 
 err=$?
 rm $tmpfile
