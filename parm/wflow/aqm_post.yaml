@@ -29,7 +29,7 @@ task_pre_post_stat:
       datadep:
         attrs:
           age: 00:00:00:05
-        text: !cycstr '&COMIN_DIR;/post_@Y@m@d@H_task_complete.txt'
+        text: !cycstr '&DATAROOT;/post_@Y@m@d@H_task_complete.txt'
       metataskdep:
         attrs:
           metatask: run_ens_post

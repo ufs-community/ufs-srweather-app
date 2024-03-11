@@ -7,7 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-
+date
+export PS4='+ $SECONDS + '
 #
 #-----------------------------------------------------------------------
 #
@@ -15,9 +16,9 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+export USHdir="${HOMEdir}/ush"  # should be removed later
+. ${HOMEdir}/ush/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh "TRUE"
 #
 #-----------------------------------------------------------------------
 #
@@ -26,7 +27,7 @@ source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -57,6 +58,82 @@ data files from disk, or HPSS.
 #
 #-----------------------------------------------------------------------
 #
+# Set the NCO standard environment variables (Table 1, pp.4)
+#
+#-----------------------------------------------------------------------
+#
+# Define job and jobid by default for rocoto
+WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  if [ "${SCHED}" = "slurm" ]; then
+    job=${SLURM_JOB_NAME}
+    pid=${SLURM_JOB_ID}
+  elif [ "${SCHED}" = "pbspro" ]; then
+    job=${PBS_JOBNAME}
+    pid=${PBS_JOBID}
+  else
+    job="task"
+    pid=$$
+  fi
+  jobid="${job}.${PDY}${cyc}.${pid}"
+fi
+
+# Set environment variables: job card (or rocoto xml)
+export envir="${envir:-${envir_default}}"
+export model_ver="${model_ver:-${model_ver_default}}"
+export KEEPDATA="${KEEPDATA:-${KEEPDATA_default}}"
+export SENDCOM="${SENDCOM:-${SENDCOM_default}}"
+
+# Set environment variables: j-job
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+export USHsrw="${HOMEdir}/ush"
+export EXECsrw="${HOMEdir}/exec"
+export PARMsrw="${HOMEdir}/parm"
+export SCRIPTSsrw="${HOMEdir}/scripts"
+#
+#-----------------------------------------------------------------------
+#
+# Create a temp working directory (DATA) and cd into it.
+#
+#-----------------------------------------------------------------------
+#
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
+mkdir -p $DATA
+cd $DATA
+#
+#-----------------------------------------------------------------------
+#
+# Set other environment variables.
+#
+#-----------------------------------------------------------------------
+#
+export CDATE="${CDATE:-${PDY}${cyc}}"
+#
+#-----------------------------------------------------------------------
+#
+# Set COM type definitions.
+#
+#-----------------------------------------------------------------------
+#
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+else
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+  export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+fi
+
+mkdir -p ${COMOUT}
+
+# Run setpdy to initialize PDYm and PDYp variables
+export cycle="${cycle:-t${cyc}z}"
+setpdy.sh
+. ./PDY
+#
+#-----------------------------------------------------------------------
+#
 # Set the external model start time
 #
 #-----------------------------------------------------------------------
@@ -65,7 +142,6 @@ export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
 yyyymmdd=${PDY}
 hh=${cyc}
 export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
-
 #
 #-----------------------------------------------------------------------
 #
@@ -91,34 +167,27 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Set the run directory
-#
-#-----------------------------------------------------------------------
-#
-if [ "${RUN_ENVIR}" = "community" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_NEXUS_GFS_SFC}"
-  check_for_preexist_dir_file "$DATA" "delete"
-  mkdir_vrfy -p $DATA
-  cd_vrfy $DATA
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Call the ex-script for this J-job and pass to it the necessary variables.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_nexus_gfs_sfc.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+$SCRIPTSdir/exsrw_nexus_gfs_sfc.sh
+export err=$?; err_chk
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
+# Whether or not working directory DATA should be kept.
 #
 #-----------------------------------------------------------------------
 #
-job_postamble "FALSE"
+if [ "${KEEPDATA}" = "NO" ]; then
+  rm -rf ${DATA}
+fi
+date
 #
 #-----------------------------------------------------------------------
 #

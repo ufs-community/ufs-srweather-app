@@ -27,7 +27,7 @@ source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; set -ux; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -80,19 +80,18 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
 fi
 
 # Set environment variables: job card (or rocoto xml)
-export envir="${envir:-test}"
-export model_ver="${model_ver:-v0.0.0}"
-export KEEPDATA="${KEEPDATA:-YES}"
-export SENDCOM="${SENDCOM:-YES}"
+export envir="${envir:-${envir_default}}"
+export model_ver="${model_ver:-${model_ver_default}}"
+export KEEPDATA="${KEEPDATA:-${KEEPDATA_default}}"
+export SENDCOM="${SENDCOM:-${SENDCOM_default}}"
 
 # Set environment variables: j-job
-export NET="${NET:-srw}"
-export RUN="${RUN:-srw}"
+export NET="${NET:-${NEW_default}}"
+export RUN="${RUN:-${RUN_default}}"
 export USHsrw="${HOMEdir}/ush"
 export EXECsrw="${HOMEdir}/exec"
 export PARMsrw="${HOMEdir}/parm"
 export SCRIPTSsrw="${HOMEdir}/scripts"
-export LOGDIR="${COMROOT}/output/logs"
 #
 #-----------------------------------------------------------------------
 #

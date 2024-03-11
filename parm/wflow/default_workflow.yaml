@@ -3,24 +3,17 @@
 #
 rocoto:
   entities:
-    envir: '{{ nco.envir_default }}'
-    NET: '{{ nco.NET_default }}'
-    RUN: '{{ nco.RUN_default }}'
-    COMROOT: '{{ nco.PTMP }}/&envir;/com'
-    DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
-    DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'
-    CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
-    COMINgfs: '{{ platform.get("COMINgfs") }}'
-    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"&DATAROOT;/run_fcst_mem#mem#.{}_@Y@m@d@H".format(workflow.WORKFLOW_ID)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
-    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{ "&COMROOT;/output/logs/@Y@m@d" }}{% else %}{{nco.LOGBASEDIR_default }}{% endif %}'
-
     ACCOUNT: '{{ user.ACCOUNT }}'
+    CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
     COLDSTART: '{{ workflow.COLDSTART }}'
+    COMINgfs: '{{ platform.get("COMINgfs") }}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
     HOMEdir: '{{ user.HOMEdir }}'
     JOBSdir: '{{ user.JOBSdir }}'
+    KEEPDATA: '{{ nco.KEEPDATA_default }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
     LOGEXT: ".log"
+    NET: '{{ nco.NET_default }}'
     MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
@@ -31,11 +24,21 @@ rocoto:
     QUEUE_DEFAULT: '{{ platform.get("QUEUE_DEFAULT") }}'
     QUEUE_FCST: '{{ platform.get("QUEUE_FCST") }}'
     QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
+    RUN: '{{ nco.RUN_default }}'
     SCRIPTSdir: '{{ user.SCRIPTSdir }}'
+    SENDCOM: '{{ nco.SENDCOM_default }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     USHdir: '{{ user.USHdir }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
+
+    envir: '{{ nco.envir_default }}'
+    COMROOT: '{{ nco.PTMP }}/&envir;/com'
+    DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
+    DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'
+    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
+    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
+    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
   attrs:
     cyclethrottle: "200"
     realtime: "F"
