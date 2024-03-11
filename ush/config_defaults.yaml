@@ -1757,8 +1757,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in ufs.configure
-  OMP_STACKSIZE_RUN_FCST: "512m"
+  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
+  OMP_STACKSIZE_RUN_FCST: "1024m"
   #
   #-----------------------------------------------------------------------
   #
