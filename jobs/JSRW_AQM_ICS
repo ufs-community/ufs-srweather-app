@@ -153,6 +153,9 @@ mkdir_vrfy -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
+export pgmout="${DATA}/OUTPUT.$$"
+env
+
 $SCRIPTSsrw/exsrw_aqm_ics.sh
 export err=$?; err_chk
 

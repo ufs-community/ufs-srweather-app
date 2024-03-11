@@ -127,6 +127,10 @@ fi
 
 mkdir -p ${COMOUT}
 
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
+mkdir -p ${DATA_SHARE}
+
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
 setpdy.sh
@@ -139,9 +143,9 @@ setpdy.sh
 #-----------------------------------------------------------------------
 #
 export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
-yyyymmdd=${PDY}
-hh=${cyc}
-export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+YYYYMMDD=${PDY}
+HH=${cyc}
+export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${YYYYMMDD} ${HH} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
 #
 #-----------------------------------------------------------------------
 #
@@ -171,6 +175,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+export pgmout="${DATA}/OUTPUT.$$"
+env
+
 $SCRIPTSdir/exsrw_nexus_gfs_sfc.sh
 export err=$?; err_chk
 
