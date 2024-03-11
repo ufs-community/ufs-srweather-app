@@ -25,10 +25,9 @@ export envir="${envir:-${envir_default}}"
 export NET="${NET:-${NET_default}}"
 export RUN="${RUN:-${RUN_default}}"
 export model_ver="${model_ver:-${model_ver_default}}"
-export COMROOT="${COMROOT:-${COMROOT_default}}"
-export DATAROOT="${DATAROOT:-${DATAROOT_default}}"
-export DCOMROOT="${DCOMROOT:-${DCOMROOT_default}}"
-export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_default}}"
+export COMROOT="${COMROOT:-${PTMP}/${envir}/com}"
+export DATAROOT="${DATAROOT:-${PTMP}/${envir}/tmp}"
+export DCOMROOT="${DCOMROOT:-${PTMP}/${envir}/dcom}"
 
 export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
 export SENDECF="${SENDECF:-${SENDECF_default}}"
@@ -68,21 +67,6 @@ export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_default}}"
 export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_default}}"
 export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_default}}"
 export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_default}}"
-
-#
-#-----------------------------------------------------------------------
-#
-# Change YES/NO (NCO standards; job card) to TRUE/FALSE (workflow standards)
-# for NCO environment variables
-#
-#-----------------------------------------------------------------------
-#
-export KEEPDATA=$(boolify "${KEEPDATA}")
-export SENDCOM=$(boolify "${SENDCOM}")
-export SENDDBN=$(boolify "${SENDDBN}")
-export SENDDBN_NTC=$(boolify "${SENDDBN_NTC}")
-export SENDECF=$(boolify "${SENDECF}")
-export SENDWEB=$(boolify "${SENDWEB}")
 
 #
 #-----------------------------------------------------------------------
