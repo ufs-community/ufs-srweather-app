@@ -1,4 +1,4 @@
-""" Tests for set_FV3nml_sfc_climo_filenames.py """
+""" Tests for set_fv3nml_sfc_climo_filenames.py """
 
 #pylint: disable=invalid-name
 
@@ -16,9 +16,9 @@ from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 
 class Testing(unittest.TestCase):
     """ Define the tests """
-    def test_set_FV3nml_sfc_climo_filenames(self):
+    def test_set_fv3nml_sfc_climo_filenames(self):
         """ Call the function and don't raise an Exception. """
-        set_FV3nml_sfc_climo_filenames()
+        set_fv3nml_sfc_climo_filenames()
 
     def setUp(self):
         define_macos_utilities()

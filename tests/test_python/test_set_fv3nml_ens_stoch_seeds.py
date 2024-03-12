@@ -1,4 +1,4 @@
-""" Tests for set_FV3nml_ens_stoch_seeds.py """
+""" Tests for set_fv3nml_ens_stoch_seeds.py """
 
 #pylint: disable=invalid-name
 
@@ -19,10 +19,10 @@ from set_fv3nml_ens_stoch_seeds import set_fv3nml_ens_stoch_seeds
 
 class Testing(unittest.TestCase):
     """ Define the tests """
-    def test_set_FV3nml_ens_stoch_seeds(self):
+    def test_set_fv3nml_ens_stoch_seeds(self):
         """ Call the function and make sure it doesn't fail"""
         os.chdir(self.mem_dir)
-        set_FV3nml_ens_stoch_seeds(cdate=self.cdate)
+        set_fv3nml_ens_stoch_seeds(cdate=self.cdate)
 
     def setUp(self):
         define_macos_utilities()
