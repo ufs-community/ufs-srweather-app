@@ -22,11 +22,10 @@ class Testing(unittest.TestCase):
     def test_set_fv3nml_ens_stoch_seeds(self):
         """ Call the function and make sure it doesn't fail"""
         os.chdir(self.mem_dir)
-        set_fv3nml_ens_stoch_seeds(cdate=self.cdate)
+        set_fv3nml_ens_stoch_seeds(cdate=self.cdate, expt_config=self.config)
 
     def setUp(self):
         define_macos_utilities()
-        set_env_var("DEBUG", True)
         set_env_var("VERBOSE", True)
         self.cdate = datetime(2021, 1, 1)
         test_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,17 +54,19 @@ class Testing(unittest.TestCase):
         )
 
 
-        set_env_var("USHdir", USHdir)
         set_env_var("ENSMEM_INDX", 2)
         set_env_var("FV3_NML_FN", "input.nml")
-        set_env_var("FV3_NML_FP", os.path.join(self.mem_dir, "input.nml"))
-        set_env_var("DO_SHUM", True)
-        set_env_var("DO_SKEB", True)
-        set_env_var("DO_SPPT", True)
-        set_env_var("DO_SPP", True)
-        set_env_var("DO_LSM_SPP", True)
-        ISEED_SPP = [4, 5, 6, 7, 8]
-        set_env_var("ISEED_SPP", ISEED_SPP)
+
+        self.config = {
+            "global": {
+                "DO_SHUM": True,
+                "DO_SKEB": True,
+                "DO_SPPT": True,
+                "DO_SPP": True,
+                "DO_LSM_SPP": True,
+                "ISEED_SPP": [4, 5, 6, 7, 8],
+            }
+        }
 
     def tearDown(self):
         self.tmp_dir.cleanup()

@@ -20,6 +20,7 @@ from python_utils import (
 )
 
 VERBOSE = os.environ.get("VERBOSE", "true")
+FV3_NML_FN = os.environ.get("FV3_NML_FN", "input.nml")
 
 
 def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
