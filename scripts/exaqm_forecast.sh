@@ -647,6 +647,7 @@ done
 shared_restart_data=${umbrella_forecast_data}/RESTART
 mkdir -p ${shared_restart_data}
 cd ${DATA}/RESTART
+[[ -e ${umbrella_forecast_data}/clean.flag ]] && rm -f ${umbrella_forecast_data}/clean.flag
 file_ids=( "coupler.res" "fv_core.res.nc" "fv_core.res.tile1.nc" "fv_srf_wnd.res.tile1.nc" "fv_tracer.res.tile1.nc" "phy_data.nc" "sfc_data.nc" )
 num_file_ids=${#file_ids[*]}
 read -a restart_hrs <<< "${RESTART_INTERVAL}"
@@ -694,6 +695,7 @@ fi
 
 
 eval cpreq -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+echo "Forecast job is completed" &> ${umbrella_forecast_data}/clean.flag
 #
 #-----------------------------------------------------------------------
 #

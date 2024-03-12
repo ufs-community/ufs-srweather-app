@@ -204,7 +204,22 @@ fi
 #  Deleting DATA and shared RESTART/output directories 
 #-----------------------------------------------------------------------
 if [ "${KEEPDATA}" != "YES" ]; then
-   rm -rf ${umbrella_forecast_data}
+  icnt=0
+  wtm=20
+  while [ $icnt -lt $wtm ]; do
+   if [ -e ${umbrella_forecast_data}/clean.flag ]; then
+     cd ${DATAROOT}
+     rm -rf ${umbrella_forecast_data}
+     icnt=$wtm
+   else
+     sleep 60
+     (( icnt=icnt+1 ))
+     if [ $icnt -eq $wtm ]; then
+       echo "FATAL ERROR Forecast manager is done copy file for over ${wtm} minutes however forecast job is still running."
+       exit 9
+     fi
+   fi
+  done
 fi
 #
 #-----------------------------------------------------------------------
