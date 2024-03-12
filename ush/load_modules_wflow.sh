@@ -31,7 +31,7 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
   usage
   exit 0
 fi
-set -x
+
 # Set machine name to lowercase
 machine=${1,,}
 
@@ -49,10 +49,8 @@ fi
 
 # Source modulefile for this machine
 WFLOW_MOD_FN="wflow_${machine}"
-set +x
 source "${HOMEdir}/etc/lmod-setup.sh" ${machine}
 module use "${HOMEdir}/modulefiles"
-echo MODPATH $MODULEPATH
 module load "${WFLOW_MOD_FN}" > /dev/null 2>&1 || { echo "ERROR:
 Loading of platform-specific module file (WFLOW_MOD_FN) for the workflow 
 task failed:
