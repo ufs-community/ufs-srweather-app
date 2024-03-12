@@ -15,7 +15,7 @@ from python_utils import (
   set_env_var,
 )
 
-from set_FV3nml_ens_stoch_seeds import set_FV3nml_ens_stoch_seeds
+from set_fv3nml_ens_stoch_seeds import set_fv3nml_ens_stoch_seeds
 
 class Testing(unittest.TestCase):
     """ Define the tests """

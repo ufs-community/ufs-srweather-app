@@ -12,7 +12,7 @@ from python_utils import (
     mkdir_vrfy,
     set_env_var,
     )
-from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
+from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 
 class Testing(unittest.TestCase):
     """ Define the tests """
