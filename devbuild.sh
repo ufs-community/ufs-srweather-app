@@ -502,4 +502,26 @@ else
     fi
 fi
 
+# Copy config/python directories from component to main directory (EE2 compliance)
+if [ "${BUILD_UFS_UTILS}" = "on" ]; then
+  rm -rf ${SRW_DIR}/parm/ufs_utils_parm
+  cp -rp ${SRW_DIR}/sorc/UFS_UTILS/parm ${SRW_DIR}/parm/ufs_utils_parm
+fi
+if [ "${BUILD_UPP}" = "on" ]; then
+  rm -rf ${SRW_DIR}/parm/upp_parm
+  cp -rp ${SRW_DIR}/sorc/UPP/parm upp_parm
+fi
+if [ "${BUILD_NEXUS}" = "on" ]; then
+  rm -rf ${SRW_DIR}/parm/nexus_config
+  rm -rf ${SRW_DIR}/ush/nexus_utils
+  cp -rp ${SRW_DIR}/sorc/arl_nexus/config ${SRW_DIR}/parm/nexus_config
+  cp -rp ${SRW_DIR}/sorc/arl_nexus/utils ${SRW_DIR}/ush/nexus_utils
+fi
+if [ "${BUILD_AQM_UTILS}" = "on" ]; then
+  rm -rf ${SRW_DIR}/parm/aqm_utils_parm
+  rm -rf ${SRW_DIR}/ush/aqm_utils_python
+  cp -rp ${SRW_DIR}/sorc/AQM-utils/parm ${SRW_DIR}/parm/aqm_utils_parm
+  cp -rp ${SRW_DIR}/sorc/AQM-utils/python_utils ${SRW_DIR}/ush/aqm_utils_python
+fi
+
 exit 0
