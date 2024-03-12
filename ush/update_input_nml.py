@@ -23,7 +23,10 @@ def update_input_nml(namelist, restart, aqm_na_13km):
     """Update the FV3 input.nml file in the specified run directory
 
     Args:
-        namelist: path to the namelist
+        namelist:    path to the namelist
+        restart:     should forecast start from restart?
+        aqm_na_13km: should the 13km AQM config be used?
+
     Returns:
         Boolean
     """
@@ -85,7 +88,7 @@ def parse_args(argv):
         "-n", "--namelist",
         dest="namelist",
         required=True,
-        help="Run directory.",
+        help="Path to namelist to update.",
     )
 
     parser.add_argument(
