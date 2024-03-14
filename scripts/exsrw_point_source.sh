@@ -59,16 +59,15 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
 nstep=$(( FCST_LEN_HRS+1 ))
-yyyymmddhh="${PDY}${cyc}"
-
+YYYYMMDDHH="${PDY}${cyc}"
 #
 #-----------------------------------------------------------------------
 #
-# Set the directories for CONUS/HI/AK
+# Path to the point source data files
 #
 #-----------------------------------------------------------------------
 #
-PT_SRC_PRECOMB="${DCOMINpt_src}"
+PT_SRC_PRECOMB="${FIXemis}/${PT_SRC_SUBDIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -76,21 +75,18 @@ PT_SRC_PRECOMB="${DCOMINpt_src}"
 #
 #-----------------------------------------------------------------------
 #
-if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
+if [ ! -s "${DATA}/pt-${YYYYMMDDHH}.nc" ]; then 
+  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${YYYYMMDDHH} -n ${nstep} -i ${PT_SRC_PRECOMB}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"stack-pt-merge.py\" failed."
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 fi
 
 # Move to COMIN
-mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
+mv_vrfy ${DATA}/pt-${YYYYMMDDHH}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
 
 #
 #-----------------------------------------------------------------------

@@ -59,15 +59,6 @@ else
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 
-export DCOMINbio="${DCOMINbio:-${DCOMINbio_default}}"
-export DCOMINdust="${DCOMINdust:-${DCOMINdust_default}}"
-export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_default}}"
-export DCOMINfire="${DCOMINfire:-${DCOMINfire_default}}"
-export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_default}}"
-export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_default}}"
-export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_default}}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_default}}"
-
 #
 #-----------------------------------------------------------------------
 #

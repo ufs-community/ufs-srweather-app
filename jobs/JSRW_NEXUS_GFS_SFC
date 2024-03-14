@@ -9,6 +9,18 @@
 #
 date
 export PS4='+ $SECONDS + '
+set -xue
+#
+#-----------------------------------------------------------------------
+#
+# Set the NCO standard environment variables (Table 1, pp.4)
+#
+#-----------------------------------------------------------------------
+#
+export USHsrw="${HOMEdir}/ush"
+export EXECsrw="${HOMEdir}/exec"
+export PARMsrw="${HOMEdir}/parm"
+export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -16,18 +28,9 @@ export PS4='+ $SECONDS + '
 #
 #-----------------------------------------------------------------------
 #
-export USHdir="${HOMEdir}/ush"  # should be removed later
-. ${HOMEdir}/ush/source_util_funcs.sh
+export USHdir="${USHsrw}"  # should be removed later
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -58,11 +61,10 @@ data files from disk, or HPSS.
 #
 #-----------------------------------------------------------------------
 #
-# Set the NCO standard environment variables (Table 1, pp.4)
+# Define job and jobid by default for rocoto
 #
 #-----------------------------------------------------------------------
 #
-# Define job and jobid by default for rocoto
 WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
   if [ "${SCHED}" = "slurm" ]; then
@@ -77,20 +79,6 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
   fi
   jobid="${job}.${PDY}${cyc}.${pid}"
 fi
-
-# Set environment variables: job card (or rocoto xml)
-export envir="${envir:-${envir_default}}"
-export model_ver="${model_ver:-${model_ver_default}}"
-export KEEPDATA="${KEEPDATA:-${KEEPDATA_default}}"
-export SENDCOM="${SENDCOM:-${SENDCOM_default}}"
-
-# Set environment variables: j-job
-export NET="${NET:-${NET_default}}"
-export RUN="${RUN:-${RUN_default}}"
-export USHsrw="${HOMEdir}/ush"
-export EXECsrw="${HOMEdir}/exec"
-export PARMsrw="${HOMEdir}/parm"
-export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -104,18 +92,13 @@ cd $DATA
 #
 #-----------------------------------------------------------------------
 #
-# Set other environment variables.
+# Define NCO environment variables and set COM type definitions.
 #
 #-----------------------------------------------------------------------
 #
-export CDATE="${CDATE:-${PDY}${cyc}}"
-#
-#-----------------------------------------------------------------------
-#
-# Set COM type definitions.
-#
-#-----------------------------------------------------------------------
-#
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
   export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
@@ -143,9 +126,7 @@ setpdy.sh
 #-----------------------------------------------------------------------
 #
 export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
-YYYYMMDD=${PDY}
-HH=${cyc}
-export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${YYYYMMDD} ${HH} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
 #
 #-----------------------------------------------------------------------
 #
@@ -171,14 +152,14 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# Call the ex-script for this J-job.
 #
 #-----------------------------------------------------------------------
 #
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-$SCRIPTSdir/exsrw_nexus_gfs_sfc.sh
+$SCRIPTSsrw/exsrw_nexus_gfs_sfc.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
@@ -195,12 +176,4 @@ if [ "${KEEPDATA}" = "NO" ]; then
   rm -rf ${DATA}
 fi
 date
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ restore_shell_opts; } > /dev/null 2>&1
 

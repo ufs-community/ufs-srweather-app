@@ -6,16 +6,18 @@ default_aqm_task: &default_aqm
   envars: &default_vars
     GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
     HOMEdir: '&HOMEdir;'
+    envir: '&envir;'
+    model_ver: '&model_ver;'
+    KEEPDATA: '&KEEPDATA;'
+    SENDCOM: '&SENDCOM;'
+    COMROOT: '&COMROOT;'
+    DATAROOT: '&DATAROOT;'
+    DCOMROOT: '&DCOMROOT;'
+    LOGDIR: !cycstr "&LOGDIR;"
     PDY: !cycstr "@Y@m@d"
     cyc: !cycstr "@H"
     nprocs: '{{ parent.nnodes * parent.ppn // 1 }}'
     subcyc: !cycstr "@M"
-    COMROOT: '&COMROOT;'
-    DATAROOT: '&DATAROOT;'
-    DCOMROOT: '&DCOMROOT;'
-    KEEPDATA: '&KEEPDATA;'
-    SENDCOM: '&SENDCOM;'
-    LOGDIR: !cycstr "&LOGDIR;"
     SLASH_ENSMEM_SUBDIR: '&SLASH_ENSMEM_SUBDIR;'
   native: '{{ platform.SCHED_NATIVE_CMD }}'
   nnodes: 1
@@ -53,7 +55,7 @@ metatask_nexus_emission:
     <<: *default_aqm
     command: '&LOAD_MODULES_RUN_TASK_FP; "nexus_emission" "&HOMEdir;/jobs/JSRW_NEXUS_EMISSION"'
     join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-    nnodes: 4
+    nnodes: '{{ task_nexus_emission.NNODES_NEXUS_EMISSION }}'
     ppn: '{{ task_nexus_emission.PPN_NEXUS_EMISSION // 1 }}'
     walltime: 01:00:00
     envars:

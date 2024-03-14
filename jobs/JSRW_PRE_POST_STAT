@@ -7,7 +7,20 @@
 #
 #-----------------------------------------------------------------------
 #
-
+date
+export PS4='+ $SECONDS + '
+set -xue
+#
+#-----------------------------------------------------------------------
+#
+# Set the NCO standard environment variables (Table 1, pp.4)
+#
+#-----------------------------------------------------------------------
+#
+export USHsrw="${HOMEdir}/ush"
+export EXECsrw="${HOMEdir}/exec"
+export PARMsrw="${HOMEdir}/parm"
+export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -15,18 +28,9 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+export USHdir="${USHsrw}"  # should be removed later
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_pre_post_stat" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -51,40 +55,84 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs POST-UPP-STAT.
+This is the J-job script for the task that runs PRE-POST-STAT.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Set the run directory.
+# Define job and jobid by default for rocoto
 #
 #-----------------------------------------------------------------------
 #
-if [ "${RUN_ENVIR}" = "community" ]; then
-  DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}/tmp_PRE_POST_STAT}"
-  check_for_preexist_dir_file "$DATA" "delete"
-  mkdir_vrfy -p $DATA
-  cd_vrfy $DATA
+WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
+if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
+  if [ "${SCHED}" = "slurm" ]; then
+    job=${SLURM_JOB_NAME}
+    pid=${SLURM_JOB_ID}
+  elif [ "${SCHED}" = "pbspro" ]; then
+    job=${PBS_JOBNAME}
+    pid=${PBS_JOBID}
+  else
+    job="task"
+    pid=$$
+  fi
+  jobid="${job}.${PDY}${cyc}.${pid}"
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles.
+# Create a temp working directory (DATA) and cd into it.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_pre_post_stat.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
+mkdir -p $DATA
+cd $DATA
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
+# Define NCO environment variables and set COM type definitions.
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+
+[[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
+if [ "${MACHINE}" = "WCOSS2" ]; then
+  export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+  export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
+else
+  export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+  export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}}"
+fi
+
+mkdir -p ${COMOUT}
+
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
+mkdir -p ${DATA_SHARE}
+
+# Run setpdy to initialize PDYm and PDYp variables
+export cycle="${cycle:-t${cyc}z}"
+setpdy.sh
+. ./PDY
+#
+#-----------------------------------------------------------------------
+#
+# Call the ex-script for this J-job.
+#
+#-----------------------------------------------------------------------
+#
+export pgmout="${DATA}/OUTPUT.$$"
+env
+
+${SCRIPTSsrw}/exsrw_pre_post_stat.sh
+export err=$?; err_chk
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -92,17 +140,19 @@ job_postamble
 #
 #-----------------------------------------------------------------------
 #
-post_complete_file="${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+post_complete_file="${DATA_SHARE}/post_${PDY}${cyc}_task_complete.txt"
 if [ -f ${post_complete_file} ] ; then
-  rm_vrfy -f ${post_complete_file}
+  rm -f ${post_complete_file}
 fi
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# Whether or not working directory DATA should be kept.
 #
 #-----------------------------------------------------------------------
 #
-{ restore_shell_opts; } > /dev/null 2>&1
+if [ "${KEEPDATA}" = "NO" ]; then
+  rm -rf ${DATA}
+fi
+date
 

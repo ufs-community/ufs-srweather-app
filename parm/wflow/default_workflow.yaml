@@ -33,6 +33,7 @@ rocoto:
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
 
     envir: '{{ nco.envir_default }}'
+    model_ver: '{{ nco.model_ver_default }}'
     COMROOT: '{{ nco.PTMP }}/&envir;/com'
     DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
     DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'

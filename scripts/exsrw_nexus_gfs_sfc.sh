@@ -86,7 +86,7 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
 
   gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
-  ln -nsf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}
+  ln -sf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}
 
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
     gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
@@ -99,8 +99,7 @@ if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
   gfs_sfc_fn = \"${gfs_sfc_fn}\""
       print_err_msg_exit "${message_txt}"
     fi	    
-  done
- 
+  done 
 # retrieve files from HPSS
 else
   if [ "${YYYYMMDD}" -lt "20220627" ]; then
@@ -157,7 +156,7 @@ else
     fi
   fi
   # Link retrieved files to staging directory
-  ln -nsf ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${DATA_SHARE}
+  ln -sf ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${DATA_SHARE}
 fi
 
 #

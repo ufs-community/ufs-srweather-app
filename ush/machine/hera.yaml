@@ -35,18 +35,14 @@ platform:
   FIXorg: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_aqm
+  FIXemis: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 
 cpl_aqm_parm:
-  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/fix/aqm/epa/data
-  COMINcanopy_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  COMINchem_lbcs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  COMINdust_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
-  COMINemis_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
-  COMINemispt_default: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
-  COMINfire_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
-  COMINgefs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
-  NEXUS_GFS_SFC_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA
+  COMINfire_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
+  COMINgefs_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
+  NEXUS_GFS_SFC_DIR: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
 
 rocoto:
   tasks:

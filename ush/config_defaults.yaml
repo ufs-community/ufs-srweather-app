@@ -2144,6 +2144,10 @@ task_nexus_emission:
   # PPN_NEXUS_EMISSION: 
   # Processes per node for the nexus_emission_* tasks. 
   # 
+  # NNODES_NEXUS_EMISSION:
+  # The number of nodes to request from the job scheduler
+  # for the nexus emission task.
+  #
   # KMP_AFFINITY_NEXUS_EMISSION: 
   # Intel Thread Affinity Interface for the nexus_emission_* tasks. 
   # 
@@ -2154,9 +2158,21 @@ task_nexus_emission:
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  NNODES_NEXUS_EMISSION: 4
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
   OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+#-----------------------------
+# POINT_SOURCE config parameters
+#-----------------------------
+task_point_source:
+  #-------------------------------------------------------------------------------
+  # PT_SRC_SUBDIR:
+  # Sub-directory structure of point source data under FIXemis.
+  # Full path: FIXemis/PT_SRC_SUBDIR
+  #-------------------------------------------------------------------------------
+  PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
 
 #----------------------------
 # BIAS_CORRECTION_O3 config parameters
