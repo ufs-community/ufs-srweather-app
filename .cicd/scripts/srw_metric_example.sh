@@ -3,8 +3,7 @@
 # The goal of this script is to provide an example of performing Indy-Severe-Weather test run and compare results to reference with
 # Skill score index that is calculated by MET Stat-Analysis Tools
 #
-#
-# Required (these options are set in the Jenkins env:
+# Required (these options are set in the Jenkins env):
 #    WORKSPACE=</full/path/to/ufs-srweather-app>
 #    SRW_PLATFORM=<supported_platform_host>
 #    SRW_COMPILER=<intel|gnu>
@@ -21,7 +20,7 @@ RUN_STAT_ANLY_OPT=false
 
 if [[ $# -eq 0 ]]; then
     BUILD_OPT=true
-    RUN_WE2E_OPTi=true
+    RUN_WE2E_OPT=true
     RUN_STAT_ANLY_OPT=true
 elif [[ $# -ge 4 ]]; then 
     echo "Too many arguments, expecting three or less"
@@ -36,9 +35,6 @@ else
         esac
     done
 fi
-echo b=$BUILD_OPT
-echo r=$RUN_WE2E_OPT
-echo s=$RUN_STAT_ANLY_OPT
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
 
@@ -103,7 +99,6 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     rm -rf ${workspace}/Indy-Severe-Weather/
     # Check if metprd data exists locally otherwise get it from S3
     TEST_EXTRN_MDL_SOURCE_BASEDIR=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM}.yaml | awk '{print $NF}')
-    #ls -al $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat
     if [[ ! -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
         mkdir -p Indy-Severe-Weather/metprd/point_stat
         cp -rp $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat Indy-Severe-Weather/metprd
@@ -113,7 +108,6 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
         tar xvfz Indy-Severe-Weather.tgz
     fi
-    #[[ ! -d Indy-Severe-Weather ]] && tar xvfz Indy-Severe-Weather.tgz
     [[ -f skill-score.txt ]] && rm skill-score.txt
     # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
     # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
