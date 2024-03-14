@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -53,31 +53,31 @@ tial or boundary condition files for the FV3 will be generated.
 #
 #-----------------------------------------------------------------------
 #
-rst_dir=${PREV_CYCLE_DIR}/RESTART
-rst_file=fv_tracer.res.tile1.nc
-fv_tracer_file=${rst_dir}/${PDY}.${cyc}0000.${rst_file}
-print_info_msg "
-  Looking for tracer restart file: \"${fv_tracer_file}\""
+rst_dir="${PREV_CYCLE_DIR}/RESTART"
+rst_file="fv_tracer.res.tile1.nc"
+fv_tracer_file="${rst_dir}/${PDY}.${cyc}0000.${rst_file}"
+print_info_msg "Looking for tracer restart file: \"${fv_tracer_file}\""
 if [ ! -r ${fv_tracer_file} ]; then
   if [ -r ${rst_dir}/coupler.res ]; then
     rst_info=( $( tail -n 1 ${rst_dir}/coupler.res ) )
-    rst_date=$( printf "%04d%02d%02d%02d" ${rst_info[@]:0:4} )
+    # Remove leading zeros from ${rst_info[1]}
+    month="${rst_info[1]#"${rst_info[1]%%[!0]*}"}"
+    # Remove leading zeros from ${rst_info[2]}
+    day="${rst_info[2]#"${rst_info[2]%%[!0]*}"}"
+    # Format the date without leading zeros
+    rst_date=$(printf "%04d%02d%02d%02d" ${rst_info[0]} $((10#$month)) $((10#$day)) ${rst_info[3]})
     print_info_msg "
   Tracer file not found. Checking available restart date:
     requested date: \"${PDY}${cyc}\"
     available date: \"${rst_date}\""
     if [ "${rst_date}" = "${PDY}${cyc}" ] ; then
-      fv_tracer_file=${rst_dir}/${rst_file}
+      fv_tracer_file="${rst_dir}/${rst_file}"
       if [ -r ${fv_tracer_file} ]; then
-        print_info_msg "
-  Tracer file found: \"${fv_tracer_file}\""
+        print_info_msg "Tracer file found: \"${fv_tracer_file}\""
       else
-        message_txt="No suitable tracer restart file found."
-        if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2"]; then
-          err_exit "${message_txt}"
-        else
-          print_err_msg_exit "${message_txt}"
-        fi
+        message_txt="FATAL ERROR No suitable tracer restart file ${rst_dir}/${rst_file} found."
+        err_exit "${message_txt}"
+        print_err_msg_exit "${message_txt}"
       fi
     fi
   fi
@@ -88,46 +88,38 @@ fi
 # Add air quality tracer variables from previous cycle's restart output
 # to atmosphere's initial condition file according to the steps below:
 #
-# a. Python script to manipulate the files (see comments inside for
-#    details)
+# a. Python script to manipulate the files (see comments inside for details)
 # b. Remove checksum attribute to prevent overflow
-#
 # c. Rename reulting file as the expected atmospheric IC file
 #
 #-----------------------------------------------------------------------
 #
-gfs_ic_file=${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-wrk_ic_file=${DATA}/gfs.nc
+gfs_ic_file="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+wrk_ic_file="${DATA}/gfs.nc"
 
 print_info_msg "
   Adding air quality tracers to atmospheric initial condition file:
     tracer file: \"${fv_tracer_file}\"
     FV3 IC file: \"${gfs_ic_file}\""
 
-cp_vrfy ${gfs_ic_file} ${wrk_ic_file}
-python3 ${HOMEdir}/sorc/AQM-utils/python_utils/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
+cpreq ${gfs_ic_file} ${wrk_ic_file}
+${USHsrw}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"add_aqm_ics.py\" failed."
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 
 ncatted -a checksum,,d,s, tmp1.nc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to NCATTED returned with nonzero exit code."
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
 
-cp_vrfy tmp1.nc ${gfs_ic_file}
+mv tmp1.nc ${gfs_ic_file}
 
 unset fv_tracer_file
 unset wrk_ic_file
@@ -138,10 +130,9 @@ unset wrk_ic_file
 #
 #-----------------------------------------------------------------------
 #
-    print_info_msg "
+print_info_msg "
 ========================================================================
-Successfully added air quality tracers to atmospheric initial condition
-file!!!
+Successfully added air quality tracers to atmospheric IC file!!!
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
@@ -150,8 +141,7 @@ In directory:    \"${scrfunc_dir}\"
 #
 #-----------------------------------------------------------------------
 #
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
+# Restore the shell options saved at the beginning of this script/function.
 #
 #-----------------------------------------------------------------------
 #

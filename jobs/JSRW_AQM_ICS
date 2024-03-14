@@ -10,6 +10,18 @@
 #
 date
 export PS4='+ $SECONDS + '
+set -xue
+#
+#-----------------------------------------------------------------------
+#
+# Set the NCO standard environment variables (Table 1, pp.4)
+#
+#-----------------------------------------------------------------------
+#
+export USHsrw="${HOMEdir}/ush"
+export EXECsrw="${HOMEdir}/exec"
+export PARMsrw="${HOMEdir}/parm"
+export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -17,17 +29,9 @@ export PS4='+ $SECONDS + '
 #
 #-----------------------------------------------------------------------
 #
-. ${HOMEdir}/ush/source_util_funcs.sh
+export USHdir="${USHsrw}"  # should be removed later
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_aqm_ics" ${GLOBAL_VAR_DEFNS_FP}
-#
-#-----------------------------------------------------------------------
-#
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -59,11 +63,10 @@ which the model needs.
 #
 #-----------------------------------------------------------------------
 #
-# Set the NCO standard environment variables (Table 1, pp.4)
+# Define job and jobid by default for rocoto
 #
 #-----------------------------------------------------------------------
 #
-# Define job and jobid by default for rocoto
 WORKFLOW_MANAGER="${WORKFLOW_MANAGER:-rocoto}"
 if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
   if [ "${SCHED}" = "slurm" ]; then
@@ -78,20 +81,6 @@ if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then
   fi
   jobid="${job}.${PDY}${cyc}.${pid}"
 fi
-
-# Set environment variables: job card (or rocoto xml)
-export envir="${envir:-${envir_default}}"
-export model_ver="${model_ver:-${model_ver_default}}"
-export KEEPDATA="${KEEPDATA:-${KEEPDATA_default}}"
-export SENDCOM="${SENDCOM:-${SENDCOM_default}}"
-
-# Set environment variables: j-job
-export NET="${NET:-${NEW_default}}"
-export RUN="${RUN:-${RUN_default}}"
-export USHsrw="${HOMEdir}/ush"
-export EXECsrw="${HOMEdir}/exec"
-export PARMsrw="${HOMEdir}/parm"
-export SCRIPTSsrw="${HOMEdir}/scripts"
 #
 #-----------------------------------------------------------------------
 #
@@ -105,18 +94,13 @@ cd $DATA
 #
 #-----------------------------------------------------------------------
 #
-# Set other environment variables.
+# Define NCO environment variables and set COM type definitions.
 #
 #-----------------------------------------------------------------------
 #
-export CDATE="${CDATE:-${PDY}${cyc}}"
-#
-#-----------------------------------------------------------------------
-#
-# Set COM type definitions.
-#
-#-----------------------------------------------------------------------
-#
+export NET="${NET:-${NET_default}}"
+export RUN="${RUN:-${RUN_default}}"
+
 [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
 if [ "${MACHINE}" = "WCOSS2" ]; then
   export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR})}"
@@ -127,6 +111,10 @@ else
 fi
 
 mkdir -p ${COMOUT}
+
+# Create a teomporary share directory
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
+mkdir -p ${DATA_SHARE}
 
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
@@ -145,18 +133,18 @@ if [ $RUN_ENVIR = "nco" ]; then
 else
   export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
-mkdir_vrfy -p "${INPUT_DATA}"
+mkdir -p "${INPUT_DATA}"
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary variables.
+# Call the ex-script for this J-job.
 #
 #-----------------------------------------------------------------------
 #
 export pgmout="${DATA}/OUTPUT.$$"
 env
 
-$SCRIPTSsrw/exsrw_aqm_ics.sh
+${SCRIPTSsrw}/exsrw_aqm_ics.sh
 export err=$?; err_chk
 
 if [ -e "$pgmout" ]; then
@@ -173,12 +161,4 @@ if [ "${KEEPDATA}" = "NO" ]; then
   rm -rf ${DATA}
 fi
 date
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/function.
-#
-#-----------------------------------------------------------------------
-#
-{ restore_shell_opts; } > /dev/null 2>&1
 

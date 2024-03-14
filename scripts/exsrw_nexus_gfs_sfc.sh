@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${HOMEdir}/ush/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------

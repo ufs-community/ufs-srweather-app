@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. ${HOMEdir}/ush/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_emission" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs NEXUS.
+This is the ex-script for the task that runs NEXUS EMISSION.
 ========================================================================"
 #
 #-----------------------------------------------------------------------

@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aq
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -77,8 +77,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-CDATE_MOD=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${EXTRN_MDL_LBCS_OFFSET_HRS} hours" "+%Y%m%d%H" )
-YYYYMMDD=${CDATE_MOD:0:8}
+CDATE_MOD=`$NDATE -${EXTRN_MDL_LBCS_OFFSET_HRS} ${PDY}${cyc}`
+YYYYMMDD="${CDATE_MOD:0:8}"
 MM="${CDATE_MOD:4:2}"
 HH="${CDATE_MOD:8:2}"
 
@@ -93,22 +93,17 @@ for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} )
 done
 
 if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
-
   ext_lbcs_file=${AQM_LBCS_FILES}
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${MM}}
-
-  chem_lbcs_fp=${DCOMINchem_lbcs}/${chem_lbcs_fn}
+  chem_lbcs_fp="${FIXaqm}/chemlbc/${chem_lbcs_fn}"
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
-    cp_vrfy ${chem_lbcs_fp} .
+    cpreq ${chem_lbcs_fp} .
   else
     message_txt="The chemical LBC files do not exist:
     CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
@@ -118,11 +113,8 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
       export err=$?
       if [ $err -ne 0 ]; then
         message_txt="Call to NCKS returned with nonzero exit code."
-        if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-          err_exit "${message_txt}"
-        else
-          print_err_msg_exit "${message_txt}"
-        fi
+        err_exit "${message_txt}"
+        print_err_msg_exit "${message_txt}"
       fi
     fi
   done
@@ -140,7 +132,6 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
-	
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
@@ -150,7 +141,6 @@ if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
   else
     tstepdiff=$( printf "%02d" $(( 24 + ${gefs_cyc_diff} )) )
   fi
-
 
   aqm_mofile_fn="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
@@ -226,7 +216,6 @@ EOF
 ========================================================================
 Successfully added GEFS aerosol LBCs !!!
 ========================================================================"
-#
 fi
 #
 print_info_msg "
