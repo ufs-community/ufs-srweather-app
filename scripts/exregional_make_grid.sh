@@ -267,33 +267,28 @@ generation executable (exec_fp):
 #
   settings="
 'regional_grid_nml':
-    'plon': ${LON_CTR}
-    'plat': ${LAT_CTR}
-    'delx': ${DEL_ANGLE_X_SG}
-    'dely': ${DEL_ANGLE_Y_SG}
-    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
-    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
-    'pazi': ${PAZI}
+  'plon': ${LON_CTR}
+  'plat': ${LAT_CTR}
+  'delx': ${DEL_ANGLE_X_SG}
+  'dely': ${DEL_ANGLE_Y_SG}
+  'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
+  'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
+  'pazi': ${PAZI}
 "
 
-  # Store the settings in a temporary file
-  tmpfile=$( $READLINK -f "$(mktemp ./namelist_settings.XXXXXX.yaml)")
-  cat > $tmpfile << EOF
+  (cat << EOF
 $settings
 EOF
-
-  uw config realize \
-    -i ${tmpfile} \
+) | uw config realize \
+    --input-format yaml \
     -o ${rgnl_grid_nml_fp} \
     -v \
-    ${tmpfile}
 
   err=$?
   if [ $err -ne 0 ]; then
-      rm $tmpfile
       print_err_msg_exit "\
   Error creating regional_esg_grid namelist.
-      Contents of input are:
+      Settings for input are:
   $settings"
  fi
 #

@@ -584,33 +584,29 @@ settings="
  'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
 
-  # Store the settings in a temporary file
-  tmpfile=$( $READLINK -f "$(mktemp ./namelist_settings.XXXXXX.yaml)")
-  cat > $tmpfile << EOF
+
+nml_fn="fort.41"
+
+(cat << EOF
 $settings
 EOF
+) |  uw config realize \
+ --input-format yaml \
+ -o ${nml_fn} \
+ --output-format nml\
+ -v \
 
-
-  nml_fn="fort.41"
-  uw config realize \
-    -i ${tmpfile} \
-    -o ${nml_fn} \
-    --output-format nml\
-    -v \
-    "${tmpfile}"
-
-  err=$?
-  if [ $err -ne 0 ]; then
-    message_txt="Error creating namelist read by ${exec_fn} failed.
-       Contents of input are:
-  $settings"
-    rm $tmpfile
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+err=$?
+if [ $err -ne 0 ]; then
+  message_txt="Error creating namelist read by ${exec_fn} failed.
+     Settings for input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
   fi
+fi
 
 #
 #-----------------------------------------------------------------------
