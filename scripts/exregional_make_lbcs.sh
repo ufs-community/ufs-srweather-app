@@ -467,13 +467,7 @@ FORTRAN namelist file has not specified for this external LBC model (EXTRN_MDL_N
 # IMPORTANT:
 # If we want a namelist variable to be removed from the namelist file,
 # in the "settings" variable below, we need to set its value to the
-# string "null".  This is equivalent to setting its value to
-#    !!python/none
-# in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the
-# suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
-#
-# It turns out that setting the variable to an empty string also works
-# to remove it from the namelist!  Which is better to use??
+# string "null".
 #
 settings="
 'config':
