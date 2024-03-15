@@ -117,6 +117,21 @@ mkdir -p ${DATA_SHARE}
 export cycle="${cycle:-t${cyc}z}"
 setpdy.sh
 . ./PDY
+#
+#-----------------------------------------------------------------------
+#
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
 
 TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}

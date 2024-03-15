@@ -106,7 +106,7 @@ fi
 cpreq ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then
-  cpreq ${PARMsrw}/nexus_config/config/cmaq_gfs_megan/*.rc ${DATA}
+  cpreq ${PARMsrw}/nexus_config/cmaq_gfs_megan/*.rc ${DATA}
 else
   cpreq ${PARMsrw}/nexus_config/cmaq/*.rc ${DATA}
 fi
@@ -319,7 +319,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-${USHsrw}/nexus_utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
+${USHsrw}/nexus_utils/python/make_nexus_output_pretty.py --src ${DATA}/NEXUS_Expt_split.nc --grid ${DATA}/grid_spec.nc -o ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc -t ${DATA}/HEMCO_sa_Time.rc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"make_nexus_output_pretty.py\" failed."

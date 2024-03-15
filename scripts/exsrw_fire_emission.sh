@@ -70,7 +70,7 @@ aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${YYYYMMDD}_t${HH}z${AQM_FIRE_FILE_SUF
 
 # Check if the fire file exists in the designated directory
 if [ -e "${COMINfire}/${aqm_fire_file_fn}" ]; then
-  cpreq "${COMINfire}/${aqm_fire_file_fn}" "${DATA_SHARE}/FIRE_EMISSION"
+  cpreq "${COMINfire}/${aqm_fire_file_fn}" ${COMOUT}
 else
   # Copy raw data 
   for ihr in {0..23}; do
@@ -155,7 +155,7 @@ else
   mv temp6.nc ${aqm_fire_file_fn}
 
   # Copy the final fire emission file to data share directory
-  cpreq "${DATA}/${aqm_fire_file_fn}" "${SHARE_DATA}/FIRE_EMISSION"
+  cpreq "${DATA}/${aqm_fire_file_fn}" ${COMOUT}
 fi
 #
 #-----------------------------------------------------------------------

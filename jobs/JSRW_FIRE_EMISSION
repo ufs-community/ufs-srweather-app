@@ -110,9 +110,7 @@ fi
 
 mkdir -p ${COMOUT}
 
-# Create a teomporary share directory
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
-mkdir -p ${DATA_SHARE}
+export COMINfire="${COMINfire:-${COMINfire_default}}"
 
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
@@ -121,14 +119,27 @@ setpdy.sh
 #
 #-----------------------------------------------------------------------
 #
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the external model start time
 #
 #-----------------------------------------------------------------------
 #
 export TIME_OFFSET_HRS=${AQM_FIRE_FILE_OFFSET_HRS:-0}
-yyyymmdd=${PDY}
-hh=${cyc}
-export FIRE_FILE_CDATE=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+export FIRE_FILE_CDATE=`$NDATE -${TIME_OFFSET_HRS} ${PDY}${cyc}`
 #
 #-----------------------------------------------------------------------
 #
@@ -146,14 +157,6 @@ CDATE:  \"${FIRE_FILE_CDATE}\"
 CDATE_min:    \"${CDATE_min}\"
 ========================================================================"
 fi
-#
-#-----------------------------------------------------------------------
-#
-# Create the directory where the RAVE fire emission files should be stored
-#
-#-----------------------------------------------------------------------
-#
-mkdir -p "${DATA_SHARE}/FIRE_EMISSION"
 #
 #-----------------------------------------------------------------------
 #

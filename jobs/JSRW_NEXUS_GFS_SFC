@@ -121,12 +121,42 @@ setpdy.sh
 #
 #-----------------------------------------------------------------------
 #
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
+#
+#-----------------------------------------------------------------------
+#
+# Set sub-cycle and ensemble member names in file/diectory names
+#
+#-----------------------------------------------------------------------
+#
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
+fi
+if [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z ${ENSMEM_INDX} ]; then
+  export dot_ensmem=".mem${ENSMEM_INDX}"
+else
+  export dot_ensmem=
+fi
+#
+#-----------------------------------------------------------------------
+#
 # Set the external model start time
 #
 #-----------------------------------------------------------------------
 #
 export TIME_OFFSET_HRS=${NEXUS_GFS_SFC_OFFSET_HRS:-0}
-export GFS_SFC_CDATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC - ${TIME_OFFSET_HRS} hours" "+%Y%m%d%H" )
+export GFS_SFC_CDATE=`$NDATE -${TIME_OFFSET_HRS} ${PDY}${cyc}`
 #
 #-----------------------------------------------------------------------
 #

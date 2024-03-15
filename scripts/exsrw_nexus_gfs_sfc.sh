@@ -83,13 +83,13 @@ GFS_SFC_DATA_INTVL="3"
 
 # copy files from local directory
 if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
-  gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
+  gfs_sfc_fn="gfs.t${HH}z.sfcanl.nc"
 
   gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
   ln -sf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}
 
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
-    gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
+    gfs_sfc_fn="gfs.t${HH}z.sfcf${fhr}.nc"
     if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
       gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
       ln -nsf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}

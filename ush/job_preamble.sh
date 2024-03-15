@@ -40,22 +40,21 @@ export MAILTO="${MAILTO:-${MAILTO_default}}"
 export MAILCC="${MAILCC:-${MAILCC_default}}"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
+  [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
   if [ "${MACHINE}" = "WCOSS2" ]; then
-    [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
     export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
     export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
     export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
   else
-    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+    export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
+    export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
   fi
 else
-  export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
-  export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-  export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+  export COMIN="${EXPTDIR}/${PDY}${cyc}"
+  export COMOUT="${EXPTDIR}/${PDY}${cyc}"
+  export COMINm1="${EXPTDIR}/${RUN}.${PDYm1}"
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 

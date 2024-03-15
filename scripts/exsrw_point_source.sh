@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -76,7 +76,7 @@ PT_SRC_PRECOMB="${FIXemis}/${PT_SRC_SUBDIR}"
 #-----------------------------------------------------------------------
 #
 if [ ! -s "${DATA}/pt-${YYYYMMDDHH}.nc" ]; then 
-  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${YYYYMMDDHH} -n ${nstep} -i ${PT_SRC_PRECOMB}
+  ${USHsrw}/aqm_utils_python/stack-pt-merge.py -s ${YYYYMMDDHH} -n ${nstep} -i ${PT_SRC_PRECOMB}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"stack-pt-merge.py\" failed."
@@ -84,10 +84,8 @@ if [ ! -s "${DATA}/pt-${YYYYMMDDHH}.nc" ]; then
     print_err_msg_exit "${message_txt}"
   fi
 fi
-
 # Move to COMIN
-mv_vrfy ${DATA}/pt-${YYYYMMDDHH}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
-
+mv ${DATA}/pt-${YYYYMMDDHH}.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.PT.nc 
 #
 #-----------------------------------------------------------------------
 #

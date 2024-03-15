@@ -1156,7 +1156,7 @@ nco:
   RUN_default: "srw"
   model_ver_default: "v1.0.0"
 
-  PTMP: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
+  PTMP: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs' 
 
   DBNROOT_default: ""
   SENDECF_default: "NO"
@@ -2565,37 +2565,11 @@ cpl_aqm_parm:
   # COMINairnow_default:
   # Path to the directory containing AIRNOW observation data
   #
-  # COMINbicor_default:
-  # Path of reading in historical training data for biascorrection 
-  #
-  # COMINcanopy_default:
-  # Path to the directory containing AQM canopy files
-  # 
-  # COMINchem_lbcs_default:
-  # Path to the directory containing chemical LBC files
-  # 
-  # COMINdust_default:
-  # Path to the directory containing AQM dust file
-  #
-  # COMINemis_default:
-  # Parent directory containing emission files
-  #
-  # COMINemispt_default:
-  # Parent directory containing point source emission files
-  #
   # COMINfire_default:
   # Path to the directory containing AQM fire files
   # 
   # COMINgefs_default:
   # Path to the directory containing GEFS aerosol LBC files
-  #
-  # COMOUTbicor_default:
-  # Path to save the current cycle's model output and AirNow obs as
-  # training data for future use. $COMINbicor and $COMOUTbicor can be
-  # distiguished by the YYYYMMDD under the same location
-  #
-  # AQM_CONFIG_DIR:
-  # Configuration directory for AQM
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
@@ -2621,9 +2595,6 @@ cpl_aqm_parm:
   # AQM_FIRE_FILE_OFFSET_HRS: 
   # Time offset when retrieving fire emission data files. 
   # 
-  # AQM_FIRE_ARCHV_DIR:
-  # Path to the archive directory for RAVE emission files on HPSS
-  #
   # AQM_RC_FIRE_FREQUENCY:
   # Fire frequency in aqm.rc
   #
@@ -2641,13 +2612,6 @@ cpl_aqm_parm:
   #
   # AQM_GEFS_FILE_CYC:
   # Cycle of the GEFS aerosol LBC files only if it is fixed
-  # 
-  # NEXUS_INPUT_DIR:
-  # Same as GRID_DIR but for the the air quality emission generation task.
-  # Should be blank for the default value specified in setup.sh
-  # 
-  # NEXUS_FIX_DIR:
-  # Directory containing grid_spec files as the input file of nexus
   # 
   # NEXUS_GRID_FN:
   # File name of the input grid_spec file of nexus
@@ -2678,17 +2642,9 @@ cpl_aqm_parm:
   DO_AQM_SAVE_FIRE: false
 
   COMINairnow_default: "/path/to/airnow/obaservation/data"
-  COMINbicor_default: "/path/to/historical/airnow/data/dir"
-  COMINcanopy_default: "/path/to/canopy/dir"
-  COMINchem_lbcs_default: ""
-  COMINdust_default: "/path/to/dust/dir"
-  COMINemis_default: "/path/to/emission/base/directory"
-  COMINemispt_default: "/path/to/point/source/emission/base/directory"
   COMINfire_default: ""
   COMINgefs_default: ""
-  COMOUTbicor_default: "/path/to/historical/airnow/data/dir"
 
-  AQM_CONFIG_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
@@ -2700,7 +2656,6 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
-  AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
 
   AQM_RC_FIRE_FREQUENCY: "static"
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
@@ -2711,8 +2666,6 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
-  NEXUS_INPUT_DIR: ""
-  NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
   NEXUS_GFS_SFC_OFFSET_HRS: 0

@@ -257,7 +257,7 @@ for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
 done
 
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
   symlink="NEXUS_Expt.nc"
   create_symlink_to_file target="$target" symlink="$symlink" \
                        relative="${relative_link_flag}"

@@ -65,8 +65,8 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-start_date=${yyyymmdd}${hh}
-end_date=`$NDATE +${FCST_LEN_HRS} ${yyyymmdd}${hh}`
+start_date=${YYYYMMDD}${HH}
+end_date=`$NDATE +${FCST_LEN_HRS} ${YYYYMMDD}${HH}`
 #
 #-----------------------------------------------------------------------
 #
@@ -79,9 +79,9 @@ cpreq ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cpreq ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  cpreq ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
-  ${USHsrw}/nexus_utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+  ${USHsrw}/nexus_utils/python/concatenate_nexus_post_split.py "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
@@ -103,7 +103,6 @@ if [ $err -ne 0 ]; then
   err_exit "${message_txt}"
   print_err_msg_exit "${message_txt}"
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -111,7 +110,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-mv ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+mv ${DATA}/NEXUS_Expt.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
 #
 # Print message indicating successful completion of script.
 #

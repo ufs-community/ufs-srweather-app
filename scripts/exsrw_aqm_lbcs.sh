@@ -132,7 +132,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
-  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${hh}"}
+  AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${HH}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
   gefs_cyc_diff=$(( cyc - AQM_GEFS_FILE_CYC ))
