@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "task_pre_post|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "task_pre_post|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -63,11 +63,11 @@ ist=1
 while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
   hst=$( printf "%03d" "${ist}" )
 
-  rm_vrfy -f ${DATA}/tmp*nc
-  rm_vrfy -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
-  rm_vrfy -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
+  rm -f ${DATA}/tmp*nc
+  rm -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
+  rm -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
 
-  ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${COMIN}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
+  ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${DATA_SHARE}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
 
   ncks -C -O -x -v pfull ${DATA}/tmp2a.nc ${DATA}/tmp2b.nc
 
@@ -75,11 +75,11 @@ while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
 
   ncrename -v o3_ave,o3 -v no_ave,no -v no2_ave,no2 -v pm25_ave,PM25_TOT ${DATA}/tmp2c.nc
 
-  mv_vrfy ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
+  mv ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
 
-  ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
+  ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${DATA_SHARE}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
 
-  ncks -v aod ${COMIN}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
+  ncks -v aod ${DATA_SHARE}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
 
   (( ist=ist+1 ))
 done
@@ -101,7 +101,6 @@ while [ "${ist}" -le "${FCST_LEN_HRS}" ]; do
 done
 
 ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.nc
-
 #
 #-----------------------------------------------------------------------
 #
@@ -109,10 +108,10 @@ ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMIN}
-mv_vrfy ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMIN}
+mv ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMOUT}
 #
 #-----------------------------------------------------------------------
 #
