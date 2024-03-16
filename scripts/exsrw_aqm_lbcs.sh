@@ -92,8 +92,8 @@ for i_lbc in $(seq ${LBC_SPEC_INTVL_HRS} ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS} )
   LBC_SPEC_FCST_HRS+=("$i_lbc")
 done
 
-if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
-  ext_lbcs_file=${AQM_LBCS_FILES}
+if [ "${DO_AQM_CHEM_LBCS}" = "TRUE" ]; then
+  ext_lbcs_file="${AQM_LBCS_FILES}"
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${MM}}
   chem_lbcs_fp="${FIXaqm}/chemlbc/${chem_lbcs_fn}"
   if [ -f ${chem_lbcs_fp} ]; then
@@ -108,14 +108,16 @@ if [ ${DO_AQM_CHEM_LBCS} = "TRUE" ]; then
 
   for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
     fhr=$( printf "%03d" "${hr}" )
-    if [ -r ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
-      ncks -A ${chem_lbcs_fn} ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
+    cpreq "${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc" .
+    if [ -r ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ]; then
+      ncks -A ${chem_lbcs_fn} ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc
       export err=$?
       if [ $err -ne 0 ]; then
         message_txt="Call to NCKS returned with nonzero exit code."
         err_exit "${message_txt}"
         print_err_msg_exit "${message_txt}"
       fi
+      mv ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fhr}.nc ${DATA_SHARE}
     fi
   done
 
@@ -131,7 +133,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ ${DO_AQM_GEFS_LBCS} = "TRUE" ]; then
+if [ "${DO_AQM_GEFS_LBCS}" = "TRUE" ]; then
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${HH}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
@@ -173,7 +175,7 @@ cat > gefs2lbc-nemsio.ini <<EOF
  dtstep=${LBC_SPEC_INTVL_HRS}
  bndname='aothrj','aecj','aorgcj','asoil','numacc','numcor'
  mofile='${aqm_mofile_fp}','.nemsio'
- lbcfile='${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
+ lbcfile='${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f','.nc'
  topofile='${OROG_DIR}/${CRES}_oro_data.tile7.halo4.nc'
 &end
 
@@ -210,13 +212,13 @@ EOF
   eval ${RUN_CMD_AQMLBC} ${EXECdir}/$pgm >>$pgmout 2>errfile
   export err=$?; err_chk
 
-  cpreq -rp ${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc ${INPUT_DATA}
-
   print_info_msg "
 ========================================================================
 Successfully added GEFS aerosol LBCs !!!
 ========================================================================"
 fi
+
+cpreq -rp ${DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f*.nc ${INPUT_DATA}
 #
 print_info_msg "
 ========================================================================

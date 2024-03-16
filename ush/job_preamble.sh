@@ -28,6 +28,7 @@ export model_ver="${model_ver:-${model_ver_default}}"
 export COMROOT="${COMROOT:-${PTMP}/${envir}/com}"
 export DATAROOT="${DATAROOT:-${PTMP}/${envir}/tmp}"
 export DCOMROOT="${DCOMROOT:-${PTMP}/${envir}/dcom}"
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
 
 export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
 export SENDECF="${SENDECF:-${SENDECF_default}}"
@@ -50,11 +51,12 @@ if [ "${RUN_ENVIR}" = "nco" ]; then
   else
     export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
     export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
+    export COMINm1="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDYm1}/${cyc}}"
   fi
 else
   export COMIN="${EXPTDIR}/${PDY}${cyc}"
   export COMOUT="${EXPTDIR}/${PDY}${cyc}"
-  export COMINm1="${EXPTDIR}/${RUN}.${PDYm1}"
+  export COMINm1="${EXPTDIR}/${PDYm1}${cyc}"
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 

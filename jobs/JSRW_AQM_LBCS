@@ -146,7 +146,7 @@ fi
 if [ $RUN_ENVIR = "nco" ]; then
   export INPUT_DATA="${COMIN}"
 else
-  export INPUT_DATA="${COMIN}${SLASH_ENSMEM_SUBDIR}/INPUT"
+  export INPUT_DATA="${EXPDIR}/${PDY}${cyc}${SLASH_ENSMEM_SUBDIR}/INPUT"
 fi
 mkdir -p "${INPUT_DATA}"
 #
