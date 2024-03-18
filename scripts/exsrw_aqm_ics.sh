@@ -94,16 +94,17 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-gfs_ic_file="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-wrk_ic_file="${DATA}/gfs.nc"
+gfs_ic_fn="${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+gfs_ic_fp="${DATA_SHARE}/${gfs_ic_fn}"
+wrk_ic_fp="${DATA}/gfs.nc"
 
 print_info_msg "
   Adding air quality tracers to atmospheric initial condition file:
     tracer file: \"${fv_tracer_file}\"
-    FV3 IC file: \"${gfs_ic_file}\""
+    FV3 IC file: \"${gfs_ic_orgi_fp}\""
 
-cpreq ${gfs_ic_file} ${wrk_ic_file}
-${USHsrw}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_file}"
+cpreq ${gfs_ic_fp} ${wrk_ic_fp}
+${USHsrw}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_fp}"
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"add_aqm_ics.py\" failed."
@@ -119,7 +120,12 @@ if [ $err -ne 0 ]; then
   print_err_msg_exit "${message_txt}"
 fi
 
-mv tmp1.nc ${gfs_ic_file}
+mv tmp1.nc ${gfs_ic_fn}
+
+cpreq -p ${gfs_ic_fn} ${COMOUT}
+cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc" ${COMOUT}
+cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc" ${COMOUT}
+cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc" ${COMOUT}
 
 unset fv_tracer_file
 unset wrk_ic_file
@@ -137,7 +143,6 @@ Successfully added air quality tracers to atmospheric IC file!!!
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"
 ========================================================================"
-
 #
 #-----------------------------------------------------------------------
 #
