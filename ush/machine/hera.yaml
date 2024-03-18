@@ -38,8 +38,8 @@ platform:
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 
 cpl_aqm_parm:
-  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
-  DCOMINbio_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
+  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/fix/aqm/epa/data
+  DCOMINbio_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/fix/aqm/bio
   DCOMINdust_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
   DCOMINcanopy_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
   DCOMINfire_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire

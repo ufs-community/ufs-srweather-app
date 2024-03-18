@@ -10,16 +10,13 @@ workflow:
   EXPT_SUBDIR: aqm_community_aqmna13
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
-  DATE_FIRST_CYCL: '2023021700'
-  DATE_LAST_CYCL: '2023021706'
-  INCR_CYCL_FREQ: 6
-  FCST_LEN_HRS: -1
-  FCST_LEN_CYCL:
-    - 6
-    - 12
+  DATE_FIRST_CYCL: '2023111000'
+  DATE_LAST_CYCL: '2023111100'
+  INCR_CYCL_FREQ: 24
+  FCST_LEN_HRS: 24
   PREEXISTING_DIR_METHOD: rename
   VERBOSE: true
-  DEBUG: true
+  DEBUG: false
   COMPILER: intel
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
@@ -32,7 +29,7 @@ rocoto:
     task_aqm_ics_ext:
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
-        walltime: 02:00:00
+        walltime: 01:00:00
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: FV3GFS
   FV3GFS_FILE_FMT_ICS: netcdf
@@ -47,7 +44,7 @@ task_run_fcst:
   LAYOUT_X: 50
   LAYOUT_Y: 34
   BLOCKSIZE: 16
-  RESTART_INTERVAL: 6
+  RESTART_INTERVAL: 12 24
   QUILTING: true
   PRINT_ESMF: false
   DO_FCST_RESTART: false

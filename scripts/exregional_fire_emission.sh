@@ -70,8 +70,8 @@ hh_mh1=${CDATE_mh1:8:2}
 aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${yyyymmdd}_t${hh}z${AQM_FIRE_FILE_SUFFIX}"
 
 # Check if the fire file exists in the designated directory
-if [ -e "${DCOMINfire}/${yyyymmdd}/${aqm_fire_file_fn}" ]; then
-  cp_vrfy "${DCOMINfire}/${yyyymmdd}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
+if [ -e "${DCOMINfire}/${aqm_fire_file_fn}" ]; then
+  cp_vrfy "${DCOMINfire}/${aqm_fire_file_fn}" "${FIRE_EMISSION_STAGING_DIR}"
 else
   # Copy raw data 
   for ihr in {0..23}; do
