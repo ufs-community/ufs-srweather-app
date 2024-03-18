@@ -153,9 +153,9 @@ if [ "${DO_AQM_GEFS_LBCS}" = "TRUE" ]; then
 
   aqm_mofile_fn="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
   if [ "${DO_REAL_TIME}" = "TRUE" ]; then
-    aqm_mofile_fp="${COMINgefs}/gefs.${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${AQM_MOFILE_FN}"
+    aqm_mofile_fp="${COMINgefs}/gefs.${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${aqm_mofile_fn}"
   else
-    aqm_mofile_fp="${COMINgefs}/${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/${AQM_MOFILE_FN}"
+    aqm_mofile_fp="${COMINgefs}/${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/${aqm_mofile_fn}"
   fi  
 
   # Check if GEFS aerosol files exist

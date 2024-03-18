@@ -89,7 +89,7 @@ mkdir -p "$DATAinput"
 #-----------------------------------------------------------------------
 #
 USE_GFS_SFC="FALSE"
-GFS_SFC_INPUT="${DATAROOT}/DATA_SHARE"
+GFS_SFC_INPUT="${DATA_SHARE}"
 if [ -d "${GFS_SFC_INPUT}" ]; then
   if [ "$(ls -A ${GFS_SFC_INPUT}/gfs*.nc)" ]; then
     ln -sf "${GFS_SFC_INPUT}" "GFS_SFC"

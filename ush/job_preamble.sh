@@ -28,7 +28,7 @@ export model_ver="${model_ver:-${model_ver_default}}"
 export COMROOT="${COMROOT:-${PTMP}/${envir}/com}"
 export DATAROOT="${DATAROOT:-${PTMP}/${envir}/tmp}"
 export DCOMROOT="${DCOMROOT:-${PTMP}/${envir}/dcom}"
-export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE}"
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 
 export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
 export SENDECF="${SENDECF:-${SENDECF_default}}"
