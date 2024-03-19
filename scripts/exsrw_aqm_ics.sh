@@ -101,7 +101,7 @@ wrk_ic_fp="${DATA}/gfs.nc"
 print_info_msg "
   Adding air quality tracers to atmospheric initial condition file:
     tracer file: \"${fv_tracer_file}\"
-    FV3 IC file: \"${gfs_ic_orgi_fp}\""
+    FV3 IC file: \"${gfs_ic_fp}\""
 
 cpreq ${gfs_ic_fp} ${wrk_ic_fp}
 ${USHsrw}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_fp}"

@@ -67,11 +67,12 @@ export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
 #
 #-----------------------------------------------------------------------
 #
-if [ $subcyc -eq 0 ]; then
-    export cycle="t${cyc}z"
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
 else
-    export cycle="t${cyc}${subcyc}z"
+  export cycle="t${cyc}z"
 fi
+
 if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else
