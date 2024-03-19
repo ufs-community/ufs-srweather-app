@@ -13,14 +13,13 @@ from textwrap import dedent
 from uwtools.api.config import get_sh_config, realize
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict,
+    import_vars,
+    load_shell_config,
     print_input_args,
     print_info_msg,
-    import_vars,
-    cfg_to_yaml_str,
 )
-
-VERBOSE = os.environ.get("VERBOSE", "true")
-FV3_NML_FN = os.environ.get("FV3_NML_FN", "input.nml")
 
 
 def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
@@ -43,6 +42,9 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     """
 
     print_input_args(locals())
+
+    FV3_NML_FN = expt_config["workflow"]["FV3_NML_FN"]
+    VERBOSE = expt_config["workflow"]["VERBOSE"]
 
     # set variables important to this function from the experiment definition
     import_vars(dictionary=expt_config["global"])
@@ -141,5 +143,5 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    config = get_sh_config(args.path_to_defns)
-    set_fv3nml_ens_stoch_seeds(args.cdate, config)
+    cfg = load_shell_config(args.path_to_defns)
+    set_fv3nml_ens_stoch_seeds(args.cdate, cfg)
