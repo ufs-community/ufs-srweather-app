@@ -77,8 +77,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
 
     # Canopy config
     aqm_rc_canopy_file_fp=os.path.join(
-        FIXaqm,"canopy",
-        PREDEF_GRID_NAME,
+        FIXaqm,"canopy",PREDEF_GRID_NAME,
         f"{AQM_CANOPY_FILE_PREFIX}.{mm}{AQM_CANOPY_FILE_SUFFIX}",
         )
     #
