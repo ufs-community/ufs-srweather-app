@@ -10,11 +10,10 @@ import os
 import sys
 from textwrap import dedent
 
-from uwtools.api.config import get_sh_config, realize
+from uwtools.api.config import realize
 
 from python_utils import (
     cfg_to_yaml_str,
-    flatten_dict,
     import_vars,
     load_shell_config,
     print_input_args,
@@ -43,8 +42,8 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
 
     print_input_args(locals())
 
-    FV3_NML_FN = expt_config["workflow"]["FV3_NML_FN"]
-    VERBOSE = expt_config["workflow"]["VERBOSE"]
+    fv3_nml_fn = expt_config["workflow"]["FV3_NML_FN"]
+    verbose = expt_config["workflow"]["VERBOSE"]
 
     # set variables important to this function from the experiment definition
     import_vars(dictionary=expt_config["global"])
@@ -58,7 +57,7 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{fv3_nml_fn}"
 
     ensmem_num = int(os.environ["ENSMEM_INDX"])
 
@@ -106,7 +105,7 @@ def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
 
             {cfg_to_yaml_str(settings)}"""
         ),
-        verbose=VERBOSE,
+        verbose=verbose,
     )
     realize(
         input_config=fv3_nml_ensmem_fp,

@@ -55,9 +55,12 @@ class Testing(unittest.TestCase):
 
 
         set_env_var("ENSMEM_INDX", 2)
-        set_env_var("FV3_NML_FN", "input.nml")
 
         self.config = {
+            "workflow": {
+                "VERBOSE": True,
+                "FV3_NML_FN": "input.nml",
+            },
             "global": {
                 "DO_SHUM": True,
                 "DO_SKEB": True,
@@ -65,7 +68,7 @@ class Testing(unittest.TestCase):
                 "DO_SPP": True,
                 "DO_LSM_SPP": True,
                 "ISEED_SPP": [4, 5, 6, 7, 8],
-            }
+            },
         }
 
     def tearDown(self):
