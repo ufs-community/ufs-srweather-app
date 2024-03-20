@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
 
+"""
+Updates stochastic physics parameters in the namelist based on user configuration settings.
+"""
+
+import argparse
+import datetime as dt
 import os
 import sys
-import argparse
 from textwrap import dedent
-from datetime import datetime
+
+from uwtools.api.config import realize
 
 from python_utils import (
+    cfg_to_yaml_str,
+    import_vars,
+    load_shell_config,
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
-    date_to_str,
-    mkdir_vrfy,
-    cp_vrfy,
-    cd_vrfy,
-    str_to_type,
-    import_vars,
-    set_env_var,
-    define_macos_utilities,
-    cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
 
-from set_namelist import set_namelist
 
-
-def set_FV3nml_ens_stoch_seeds(cdate):
+def set_fv3nml_ens_stoch_seeds(cdate, expt_config):
     """
     This function, for an ensemble-enabled experiment
     (i.e. for an experiment for which the workflow configuration variable
@@ -39,15 +34,20 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     called as part of the TN_RUN_FCST task.
 
     Args:
-        cdate
+        cdate        the cycle
+        expt_config  the in-memory dict representing the experiment configuration
     Returns:
         None
     """
 
     print_input_args(locals())
 
-    # import all environment variables
-    import_vars()
+    fv3_nml_fn = expt_config["workflow"]["FV3_NML_FN"]
+    verbose = expt_config["workflow"]["VERBOSE"]
+
+    # set variables important to this function from the experiment definition
+    import_vars(dictionary=expt_config["global"])
+    # pylint: disable=undefined-variable
 
     #
     # -----------------------------------------------------------------------
@@ -57,9 +57,9 @@ def set_FV3nml_ens_stoch_seeds(cdate):
     #
     # -----------------------------------------------------------------------
     #
-    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{FV3_NML_FN}"
+    fv3_nml_ensmem_fp = f"{os.getcwd()}{os.sep}{fv3_nml_fn}"
 
-    ensmem_num = int(ENSMEM_INDX)
+    ensmem_num = int(os.environ["ENSMEM_INDX"])
 
     cdate_i = int(cdate.strftime("%Y%m%d%H"))
 
@@ -95,41 +95,25 @@ def set_FV3nml_ens_stoch_seeds(cdate):
 
         settings["nam_sfcperts"] = {"iseed_lndp": [iseed_lsm_spp]}
 
-    settings_str = cfg_to_yaml_str(settings)
-
     print_info_msg(
         dedent(
             f"""
             The variable 'settings' specifying seeds in '{fv3_nml_ensmem_fp}'
             has been set as follows:
 
-            settings =\n\n"""
-        )
-        + settings_str,
-        verbose=VERBOSE,
+            settings =\n\n
+
+            {cfg_to_yaml_str(settings)}"""
+        ),
+        verbose=verbose,
     )
-
-    try:
-        set_namelist(
-            ["-q", "-n", fv3_nml_ensmem_fp, "-u", settings_str, "-o", fv3_nml_ensmem_fp]
+    realize(
+        input_config=fv3_nml_ensmem_fp,
+        input_format="nml",
+        output_file=fv3_nml_ensmem_fp,
+        output_format="nml",
+        supplemental_configs=[settings],
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to set the variables in the FV3
-                namelist file that specify the paths to the surface climatology files
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Full path to output namelist file:
-                    fv3_nml_ensmem_fp = '{fv3_nml_ensmem_fp}'
-                  Namelist settings specified on command line (these have highest precedence):\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-
 
 def parse_args(argv):
     """Parse command line arguments"""
@@ -137,7 +121,13 @@ def parse_args(argv):
         description="Creates stochastic seeds for an ensemble experiment."
     )
 
-    parser.add_argument("-c", "--cdate", dest="cdate", required=True, help="Date.")
+    parser.add_argument(
+        "-c", "--cdate",
+        dest="cdate",
+        required=True,
+        type=lambda d: dt.datetime.strptime(d, '%Y%m%d%H'),
+        help="Date.",
+    )
 
     parser.add_argument(
         "-p",
@@ -153,6 +143,4 @@ def parse_args(argv):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
-    set_FV3nml_ens_stoch_seeds(str_to_type(args.cdate))
+    set_fv3nml_ens_stoch_seeds(args.cdate, cfg)
