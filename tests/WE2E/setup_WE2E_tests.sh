@@ -80,6 +80,7 @@ export HOME=$homedir
 source ../../ush/load_modules_wflow.sh ${machine}
 
 # Run the E2E Workflow tests
+[[ ${tests} = none ]] && echo "none" || \
 ./run_WE2E_tests.py \
   --machine=${machine} \
   --account=${account} \

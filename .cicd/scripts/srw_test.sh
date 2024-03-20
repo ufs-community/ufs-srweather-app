@@ -30,17 +30,25 @@ we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
 nco_dir="${workspace}/nco_dirs"
 
+# Clean any stale test logs
+rm -f ${workspace}/tests/WE2E/log.*
+rm -f ${we2e_experiment_base_dir}/*/log.generate_FV3LAM_wflow ${we2e_experiment_base_dir}/*/log/* WE2E_summary*txt
+
 # Run the end-to-end tests.
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
     test_type="comprehensive"
 else
-    test_type="coverage"
+    test_type=${SRW_WE2E_SINGLE_TEST:-"coverage"}
+    if [[ "${SRW_WE2E_SINGLE_TEST}" = skill-score ]]; then
+        test_type="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
+    fi
 fi
 
 cd ${we2e_test_dir}
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
-./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
+/usr/bin/time -p -f '{\n  "cpu": "%P"\n, "memMax": "%M"\n, "mem": {"text": "%X", "data": "%D", "swaps": "%W", "context": "%c", "waits": "%w"}\n, "pagefaults": {"major": "%F", "minor": "%R"}\n, "filesystem": {"inputs": "%I", "outputs": "%O"}\n, "time": {"real": "%e", "user": "%U", "sys": "%S"}\n}' -o ${WORKSPACE}/${SRW_PLATFORM}-${SRW_COMPILER}-time-srw_test.json \
+    ./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
     --expt_basedir=${we2e_experiment_base_dir} \
     --opsroot=${nco_dir} | tee ${progress_file}
 
