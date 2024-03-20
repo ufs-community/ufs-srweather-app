@@ -266,29 +266,31 @@ generation executable (exec_fp):
 # namelist file.
 #
   settings="
-'regional_grid_nml': {
-    'plon': ${LON_CTR},
-    'plat': ${LAT_CTR},
-    'delx': ${DEL_ANGLE_X_SG},
-    'dely': ${DEL_ANGLE_Y_SG},
-    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
-    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
-    'pazi': ${PAZI},
- }
+'regional_grid_nml':
+  'plon': ${LON_CTR}
+  'plat': ${LAT_CTR}
+  'delx': ${DEL_ANGLE_X_SG}
+  'dely': ${DEL_ANGLE_Y_SG}
+  'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
+  'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
+  'pazi': ${PAZI}
 "
-#
-# Call the python script to create the namelist file.
-#
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
-    print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the
-regional_esg_grid namelist file failed.  Parameters passed to this script
-are:
-  Full path to output namelist file:
-    rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
-$settings"
+
+  (cat << EOF
+$settings
+EOF
+) | uw config realize \
+    --input-format yaml \
+    -o ${rgnl_grid_nml_fp} \
+    -v \
+
+  err=$?
+  if [ $err -ne 0 ]; then
+      print_err_msg_exit "\
+  Error creating regional_esg_grid namelist.
+      Settings for input are:
+  $settings"
+ fi
 #
 # Call the executable that generates the grid file.
 #
@@ -611,7 +613,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-# Call a function (set_FV3nml_sfc_climo_filenames) to set the values of
+# Call a function (set_fv3nml_sfc_climo_filenames) to set the values of
 # those variables in the forecast model's namelist file that specify the
 # paths to the surface climatology files.  These files will either already
 # be avaialable in a user-specified directory (SFC_CLIMO_DIR) or will be
@@ -620,7 +622,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/set_FV3nml_sfc_climo_filenames.py \
+python3 $USHdir/set_fv3nml_sfc_climo_filenames.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist

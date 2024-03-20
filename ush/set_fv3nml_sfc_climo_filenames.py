@@ -1,33 +1,42 @@
 #!/usr/bin/env python3
 
-import os
-import sys
+"""
+Update filenames for surface climotology files in the namelist.
+"""
+
 import argparse
+import os
+import re
+import sys
 from textwrap import dedent
 
+from uwtools.api.config import get_yaml_config, realize
+
 from python_utils import (
-    print_input_args,
-    print_info_msg,
-    print_err_msg_exit,
-    check_var_valid_value,
-    mv_vrfy,
-    mkdir_vrfy,
-    cp_vrfy,
-    rm_vrfy,
-    import_vars,
-    set_env_var,
-    load_config_file,
-    load_shell_config,
-    flatten_dict,
-    define_macos_utilities,
-    find_pattern_in_str,
     cfg_to_yaml_str,
+    check_var_valid_value,
+    flatten_dict,
+    import_vars,
+    load_shell_config,
+    print_info_msg,
 )
 
-from set_namelist import set_namelist
+VERBOSE = os.environ.get("VERBOSE", "true")
+
+NEEDED_VARS = [
+    "CRES",
+    "DO_ENSEMBLE",
+    "EXPTDIR",
+    "FIXlam",
+    "FV3_NML_FP",
+    "PARMdir",
+    "RUN_ENVIR",
+    ]
 
 
-def set_FV3nml_sfc_climo_filenames(debug=False):
+# pylint: disable=undefined-variable
+
+def set_fv3nml_sfc_climo_filenames(config, debug=False):
     """
     This function sets the values of the variables in
     the forecast model's namelist file that specify the paths to the surface
@@ -43,13 +52,9 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
         None
     """
 
-    # import all environment variables
-    import_vars()
+    import_vars(dictionary=config, env_vars=NEEDED_VARS)
 
-    # fixed file mapping variables
-    fixed_cfg = load_config_file(os.path.join(PARMdir, "fixed_files_mapping.yaml"))
-    IMPORTS = ["SFC_CLIMO_FIELDS", "FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]
-    import_vars(dictionary=flatten_dict(fixed_cfg), env_vars=IMPORTS)
+    fixed_cfg = get_yaml_config(os.path.join(PARMdir, "fixed_files_mapping.yaml"))["fixed_files"]
 
     # The regular expression regex_search set below will be used to extract
     # from the elements of the array FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING
@@ -68,18 +73,16 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
         dummy_run_dir += os.sep + "any_ensmem"
 
     namsfc_dict = {}
-    for mapping in FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING:
-        tup = find_pattern_in_str(regex_search, mapping)
-        nml_var_name = tup[0]
-        sfc_climo_field_name = tup[1]
+    for mapping in fixed_cfg["FV3_NML_VARNAME_TO_SFC_CLIMO_FIELD_MAPPING"]:
+        nml_var_name, sfc_climo_field_name = re.search(regex_search, mapping).groups()
 
-        check_var_valid_value(sfc_climo_field_name, SFC_CLIMO_FIELDS)
+        check_var_valid_value(sfc_climo_field_name, fixed_cfg["SFC_CLIMO_FIELDS"])
 
-        fp = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
+        file_path = os.path.join(FIXlam, f"{CRES}.{sfc_climo_field_name}.{suffix}")
         if RUN_ENVIR != "nco":
-            fp = os.path.relpath(os.path.realpath(fp), start=dummy_run_dir)
+            file_path = os.path.relpath(os.path.realpath(file_path), start=dummy_run_dir)
 
-        namsfc_dict[nml_var_name] = fp
+        namsfc_dict[nml_var_name] = file_path
 
     settings["namsfc_dict"] = namsfc_dict
     settings_str = cfg_to_yaml_str(settings)
@@ -89,39 +92,21 @@ def set_FV3nml_sfc_climo_filenames(debug=False):
             f"""
             The variable 'settings' specifying values of the namelist variables
             has been set as follows:\n
-            settings =\n\n"""
-        )
-        + settings_str,
+            settings =
+
+            {settings_str}
+            """
+        ),
         verbose=debug,
     )
 
-    # Rename the FV3 namelist and call set_namelist
-    fv3_nml_base_fp = f"{FV3_NML_FP}.base"
-    mv_vrfy(f"{FV3_NML_FP} {fv3_nml_base_fp}")
-
-    try:
-        set_namelist(
-            ["-q", "-n", fv3_nml_base_fp, "-u", settings_str, "-o", FV3_NML_FP]
+    realize(
+        input_config=FV3_NML_FP,
+        input_format="nml",
+        output_file=FV3_NML_FP,
+        output_format="nml",
+        supplemental_configs=[settings],
         )
-    except:
-        print_err_msg_exit(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to set the variables in the FV3
-                namelist file that specify the paths to the surface climatology files
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    fv3_nml_base_fp = '{fv3_nml_base_fp}'
-                  Full path to output namelist file:
-                    FV3_NML_FP = '{FV3_NML_FP}'
-                  Namelist settings specified on command line (these have highest precedence):\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-
-    rm_vrfy(f"{fv3_nml_base_fp}")
-
 
 def parse_args(argv):
     """Parse command line arguments"""
@@ -144,5 +129,4 @@ if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     cfg = load_shell_config(args.path_to_defns)
     cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
-    set_FV3nml_sfc_climo_filenames(args.debug)
+    set_fv3nml_sfc_climo_filenames(cfg, args.debug)
