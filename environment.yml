@@ -5,4 +5,4 @@ channels:
 dependencies:
   - pylint=2.17*
   - pytest=7.2*
-  - uwtools=1.0.0
+  - uwtools=2.1*
