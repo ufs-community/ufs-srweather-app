@@ -12,7 +12,7 @@ load(pathJoin("stack-intel", "2021.5.0"))
 load(pathJoin("stack-intel-oneapi-mpi", "2021.5.1"))
 load(pathJoin("stack-python", "3.10.8"))
 
-load(pathJoin("cmake", "3.20.1"))
+load(pathJoin("cmake", "3.28.1"))
 
 load(pathJoin("hdf5", "1.14.0"))
 load(pathJoin("netcdf-c", "4.9.2"))
