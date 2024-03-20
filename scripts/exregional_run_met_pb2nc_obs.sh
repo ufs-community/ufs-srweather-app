@@ -277,13 +277,6 @@ settings="\
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 printf "%s" "$settings" > "$tmpfile"
-
-#use_new_uwtools="FALSE"
-##use_new_uwtools="TRUE"
-#
-#if [ "${use_new_uwtools}" = "TRUE" ]; then
-
-echo "AAAAAAAAAAAAAAAAAA"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
@@ -303,7 +296,6 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #

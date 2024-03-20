@@ -366,13 +366,6 @@ settings="\
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 printf "%s" "$settings" > "$tmpfile"
-
-use_new_uwtools="FALSE"
-use_new_uwtools="TRUE"
-
-if [ "${use_new_uwtools}" = "TRUE" ]; then
-
-echo "AAAAAAAAAAAAAAA"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
@@ -391,29 +384,6 @@ $settings"
   else
     print_err_msg_exit "${message_txt}"
   fi
-fi
-
-else
-#
-# Call the python script to generate the METplus configuration file from
-# the jinja template.
-#
-python3 ${METPLUS_CONF}/uw_tools/templater.py \
-  -c "${tmpfile}" \
-  -i "${metplus_config_tmpl_fp}" \
-  -o "${metplus_config_fp}" || \
-print_err_msg_exit "\
-Call to workflow-tools templater.py to generate a METplus configuration
-file from a jinja template failed.  Parameters passed to this script are:
-  Full path to template METplus configuration file:
-    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
-  Full path to output METplus configuration file:
-    metplus_config_fp = \"${metplus_config_fp}\"
-  Full path to configuration file:
-    ${tmpfile}
-"
-rm $tmpfile
-
 fi
 #
 #-----------------------------------------------------------------------
