@@ -224,9 +224,14 @@ def run_we2e_tests(homedir, args) -> None:
                     logging.debug(f'Setting {obvar} = {mach_path} from machine file')
                     test_cfg['platform'][obvar] = mach_path
 
-        if 'cpl_aqm_parm' in test_cfg:
-            test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
-            test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
+        if args.compiler == "gnu":
+            # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
+            if 'task_run_post' in test_cfg:
+                test_cfg['task_run_post'].update({"NUMX": 1})
+                logging.info(f"NUMX has been reset to 1 due to issues encountered with GNU compilers")
+            if 'task_run_fcst' in test_cfg:
+                test_cfg['task_run_fcst'].update({"ITASKS": 1})
+                logging.info(f"ITASKS has been reset to 1 due to issues encountered with GNU compilers")
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")

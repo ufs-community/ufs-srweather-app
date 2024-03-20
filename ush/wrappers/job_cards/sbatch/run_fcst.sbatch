@@ -21,7 +21,7 @@ export SLASH_ENSMEM_SUBDIR='/'
 
 $USHdir/load_modules_run_task.sh "run_fcst" $JOBSdir/JREGIONAL_RUN_FCST
 
-# Gaea-c5 differences:
+# Gaea differences:
 ##SBATCH --qos=normal
 ##SBATCH --clusters=c5 --partition=batch --export=NONE
 #export nprocs='48'

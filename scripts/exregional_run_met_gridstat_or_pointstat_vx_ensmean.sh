@@ -322,24 +322,31 @@ settings="\
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 printf "%s" "$settings" > "$tmpfile"
 
-#uw template render \
-#  -i ${metplus_config_tmpl_fp} \
-#  -o ${metplus_config_fp} \
-#  -v \
-#  --values-file "${tmpfile}"
-#
-#err=$?
-#rm $tmpfile
-#if [ $err -ne 0 ]; then
-#  message_txt="Error rendering template for METplus config.
-#     Contents of input are:
-#$settings"
-#  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-#    err_exit "${message_txt}"
-#  else
-#    print_err_msg_exit "${message_txt}"
-#  fi
-#fi
+use_new_uwtools="FALSE"
+#use_new_uwtools="TRUE"
+
+if [ "${use_new_uwtools}" = "TRUE" ]; then
+
+uw template render \
+  -i ${metplus_config_tmpl_fp} \
+  -o ${metplus_config_fp} \
+  --verbose \
+  --values-file "${tmpfile}"
+
+err=$?
+rm $tmpfile
+if [ $err -ne 0 ]; then
+  message_txt="Error rendering template for METplus config.
+     Contents of input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
+
+else
 #
 # Call the python script to generate the METplus configuration file from
 # the jinja template.
@@ -359,6 +366,8 @@ file from a jinja template failed.  Parameters passed to this script are:
     ${tmpfile}
 "
 rm $tmpfile
+
+fi
 #
 #-----------------------------------------------------------------------
 #

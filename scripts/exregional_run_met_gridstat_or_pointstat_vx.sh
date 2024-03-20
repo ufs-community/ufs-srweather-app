@@ -372,7 +372,7 @@ if [ "${use_new_uwtools}" = "TRUE" ]; then
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
-  -v \
+  --verbose \
   --values-file "${tmpfile}"
 
 err=$?

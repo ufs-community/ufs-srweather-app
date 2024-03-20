@@ -21,7 +21,7 @@ function usage() {
   exit 1
 }
  
-machines=( hera jet cheyenne derecho orion hercules wcoss2 gaea-c5 odin singularity macos noaacloud )
+machines=( hera jet cheyenne derecho orion hercules wcoss2 gaea odin singularity macos noaacloud )
 
 [[ $# -gt 4 ]] && usage
 
