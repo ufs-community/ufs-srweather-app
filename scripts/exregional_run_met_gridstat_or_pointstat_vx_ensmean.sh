@@ -323,15 +323,17 @@ tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 printf "%s" "$settings" > "$tmpfile"
 
 use_new_uwtools="FALSE"
-#use_new_uwtools="TRUE"
+use_new_uwtools="TRUE"
 
 if [ "${use_new_uwtools}" = "TRUE" ]; then
 
+echo "AAAAAAAAAAAAAAAAAA"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
   --verbose \
-  --values-file "${tmpfile}"
+  --values-file "${tmpfile}" \
+  --search-path "/" 
 
 err=$?
 rm $tmpfile

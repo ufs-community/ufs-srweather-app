@@ -283,11 +283,13 @@ printf "%s" "$settings" > "$tmpfile"
 #
 #if [ "${use_new_uwtools}" = "TRUE" ]; then
 
+echo "AAAAAAAAAAAAAAAAAA"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
   --verbose \
-  --values-file "${tmpfile}"
+  --values-file "${tmpfile}" \
+  --search-path "/" 
 
 err=$?
 rm $tmpfile
