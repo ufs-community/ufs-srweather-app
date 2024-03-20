@@ -5,7 +5,7 @@ the NOAA RDHPC machine Hera using Intel-2022.1.2
 
 whatis([===[Loads libraries needed for building the SRW workflow on Hera ]===])
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-noavx512/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.0/envs/unified-env-rocky8/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
 
 load(pathJoin("stack-intel", "2021.5.0"))
@@ -39,7 +39,6 @@ load(pathJoin("g2tmpl", "1.10.2"))
 load(pathJoin("ip", "4.3.0"))
 load(pathJoin("sp", "2.3.3"))
 load(pathJoin("gftl-shared", "1.5.0"))
-load(pathJoin("yafyaml", "0.5.1"))
 load(pathJoin("bufr", "12.0.0"))
 load(pathJoin("gfsio", "1.4.1"))
 load(pathJoin("landsfcutil", "2.4.1"))
