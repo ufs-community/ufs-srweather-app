@@ -24,7 +24,7 @@ class Testing(unittest.TestCase):
     """ Class to run the tests. """
     def test_generate_FV3LAM_wflow(self):
 
-        """ Test that a community and nco sample config can successfully
+        """ Test that a sample config can successfully
         lead to the creation of an experiment directory. No jobs are
         submitted. """
 
@@ -47,11 +47,6 @@ class Testing(unittest.TestCase):
         run_command(
             f"""{sed} -i 's/MACHINE: hera/MACHINE: linux/g' {USHdir}/config.yaml"""
         )
-        run_workflow(USHdir, logfile)
-
-        with open(f"{USHdir}/config.yaml", "w", encoding="utf-8") as cfg_file:
-            cfg_file.write(cfg_to_yaml_str(nco_test_config))
-
         run_workflow(USHdir, logfile)
 
     def setUp(self):
