@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -145,7 +145,7 @@ mkdir -p "${DATA}/data"
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
 
-    if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
+    if [ -s ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}00.dat ]; then
       cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     else
       message_warning="WARNING: airnow data missing. skip this date ${cvt_pdy}"
@@ -208,28 +208,51 @@ export err=$?; err_chk
 if [ -e "${pgmout}" ]; then
    cat ${pgmout}
 fi
-cpreq ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cpreq ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
   # CSV files
-  mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/airnow/csv/${yyyy}/${PDY}
   for i in {1..3}; do
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+
+    target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+        
+    if [ ! -d "$target_dir" ]; then
+         mkdir -p "$target_dir"
+    fi
+
+    # Check if the file exists before attempting to copy it
+    if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat ]; then
+     cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+    else
+     message_warning="WARNING: File not found: HourlyAQObs_${!PDYm}*.dat"
+     print_info_msg "${message_warning}"
+    fi
   done
 
   # NetCDF files
-  mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/airnow/netcdf/${yyyy}/${PDY}
   for i in {1..3}; do
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+
+    target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+        
+    if [ ! -d "$target_dir" ]; then
+         mkdir -p "$target_dir"
+    fi
+
+    # Check if the file exists before attempting to copy it
+    if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" ]; then
+     cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+    else
+     message_warning="WARNING: File not found: HourlyAQObs.${!PDYm}.nc"
+     print_info_msg "${message_warning}"
+    fi 
   done
 
   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
@@ -242,7 +265,14 @@ fi
 
 rm -rf ${DATA}/data/bcdata*
 
-ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
+if [ -f "${COMINbicor}/bcdata".?????? ]; then
+    ln -sf "${COMINbicor}"/bcdata* "${DATA}/data"
+else
+   echo "Error: bcdata files not found."
+   print_err_msg_exit "FATAL ERROR - All bcdata files not found "
+fi
+
+#ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}

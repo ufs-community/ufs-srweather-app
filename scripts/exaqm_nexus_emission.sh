@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -337,6 +337,8 @@ fi
 if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
   ln -sf ${NEXUS_INPUT_BASE_DIR}/OFFLINE_SOILNOX ${DATAinput}
 fi
+
+check_dead_link ${DATA}
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   mkdir -p ${DATAinput}/GFS_SFC
