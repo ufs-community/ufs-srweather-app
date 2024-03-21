@@ -265,14 +265,13 @@ fi
 
 rm -rf ${DATA}/data/bcdata*
 
-if [ -f "${COMINbicor}/bcdata".?????? ]; then
-    ln -sf "${COMINbicor}"/bcdata* "${DATA}/data"
+# Check if any bcdata files exist
+if ls "${COMINbicor}"/bcdata.* > /dev/null 2>&1; then
+     # Create symbolic links
+      ln -sf "${COMINbicor}"/bcdata* "${DATA}/data"
 else
-   echo "Error: bcdata files not found."
    print_err_msg_exit "FATAL ERROR - All bcdata files not found "
 fi
-
-#ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
 
 mkdir -p ${DATA}/data/sites
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
