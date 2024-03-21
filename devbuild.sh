@@ -513,7 +513,7 @@ if [ "${BUILD_UPP}" = "on" ]; then
   if [ -d "${SRW_DIR}/parm/upp_parm" ]; then
     rm -rf ${SRW_DIR}/parm/upp_parm
   fi
-  cp -rp ${SRW_DIR}/sorc/UPP/parm upp_parm
+  cp -rp ${SRW_DIR}/sorc/UPP/parm ${SRW_DIR}/parm/upp_parm
 fi
 if [ "${BUILD_NEXUS}" = "on" ]; then
   if [ -d "${SRW_DIR}/parm/nexus_config" ]; then
