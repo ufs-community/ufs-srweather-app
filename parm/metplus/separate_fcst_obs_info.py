@@ -218,7 +218,6 @@ def separate_fcst_obs_info(det_or_ens):
     # function.
     filename = ''.join(['tmp.vx_config_', det_or_ens, '_dict.split_fcst_obs.txt'])
     filepath = Path(os.path.join(metplus_conf_dir, filename)).resolve()
-    print(f'==>> filepath = {filepath}')
     with open(f'{filepath}', 'w') as fn:
         #yaml_vars = yaml.dump(vx_config_dict, fn)
         #pprint.pformat(vx_config_dict, fn, sort_dicts=False)
