@@ -8,12 +8,9 @@ import unittest
 from multiprocessing import Process
 
 from python_utils import (
-    load_config_file,
-    update_dict,
     cp_vrfy,
     run_command,
     define_macos_utilities,
-    cfg_to_yaml_str,
     set_env_var,
     get_env_var,
 )
