@@ -49,25 +49,6 @@ class Testing(unittest.TestCase):
         )
         run_workflow(USHdir, logfile)
 
-        # nco test case
-        nco_test_config = load_config_file(f"{USHdir}/config.nco.yaml")
-        # Since we don't have a pre-gen grid dir on a generic linux
-        # platform, turn the make_* tasks on for this test.
-        cfg_updates = {
-            "user": {
-                "MACHINE": "linux",
-            },
-            "rocoto": {
-                "tasks": {
-                    "taskgroups": \
-                        """'{{ ["parm/wflow/prep.yaml",
-                                "parm/wflow/coldstart.yaml",
-                                "parm/wflow/post.yaml"]|include }}'"""
-                },
-            },
-        }
-        update_dict(cfg_updates, nco_test_config)
-
         with open(f"{USHdir}/config.yaml", "w", encoding="utf-8") as cfg_file:
             cfg_file.write(cfg_to_yaml_str(nco_test_config))
 
