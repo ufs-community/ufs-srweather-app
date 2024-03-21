@@ -17,7 +17,7 @@ pipeline {
         // Allow job runner to filter based on compiler
         choice(name: 'SRW_COMPILER_FILTER', choices: ['all', 'gnu', 'intel'], description: 'Specify the compiler(s) to use to build')
         // Workflow Wrapper test depth {0..9}, 0=none, 1=simple, 9=all [default]
-        choice(name: 'SRW_WRAPPER_TASK_DEPTH', choices: ['0', '1', '4', '9'], description: '0=none, 1=simple, 9=all [default]')
+        choice(name: 'SRW_WRAPPER_TASK_DEPTH', choices: ['9', '1', '0'], description: '0=none, 1=simple, 9=all [default]')
         // WE2E Tests ?
         choice(name: 'SRW_WE2E_SINGLE_TEST', choices: ['coverage', 'none', 'skill-score', 'grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0'], description: 'Specify the WE2E test to use')
         booleanParam name: 'SRW_WE2E_COMPREHENSIVE_TESTS', defaultValue: false, description: 'Whether to execute the comprehensive end-to-end tests'

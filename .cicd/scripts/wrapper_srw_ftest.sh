@@ -34,7 +34,7 @@ if [[ "${SRW_PLATFORM}" == hera ]]; then
     fi
 fi
 
-if [[ "$TASK_DEPTH" = 0 ]] ; then
+if [[ "${TASK_DEPTH}" == 0 ]] ; then
     exit 0
 fi
 
