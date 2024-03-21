@@ -287,6 +287,10 @@ if [ "${MODIS_XLAI}" = "TRUE" ]; then #MODIS_XLAI
   ln -sf ${FIXemis}/MODIS_XLAI ${DATAinput}
 fi
 
+if [ "${OFFLINE_SOILNOX}" = "TRUE" ]; then #OFFLINE_SOILNOX
+  ln -sf ${FIXemis}/OFFLINE_SOILNOX ${DATAinput}
+fi
+
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then # GFS INPUT
   mkdir -p ${DATAinput}/GFS_SFC
   ${USHsrw}/nexus_utils/python/nexus_gfs_bio.py -i ${DATA}/GFS_SFC/gfs.t??z.sfcf???.nc -o ${DATA}/GFS_SFC_MEGAN_INPUT.nc
