@@ -526,7 +526,7 @@ fi
 #
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ] && [ "${flag_fcst_restart}" = "FALSE" ]; then
-    init_concentrations="true"
+    init_concentrations="false"
   else
     init_concentrations="false"
   fi
