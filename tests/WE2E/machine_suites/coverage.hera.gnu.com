@@ -8,3 +8,4 @@ long_fcst
 MET_verification_only_vx
 MET_ensemble_verification_only_vx_time_lag
 nco_grid_RRFS_CONUS_13km_ics_FV3GFS_lbcs_FV3GFS_suite_GFS_v16
+2019_halloween_storm

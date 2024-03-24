@@ -31,4 +31,4 @@ global:
   NUM_ENS_MEMBERS: 2
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'

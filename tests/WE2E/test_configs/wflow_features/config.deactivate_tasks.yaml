@@ -31,3 +31,4 @@ rocoto:
     task_get_extrn_lbcs:
     metatask_run_ensemble:
     metatask_run_ens_post:
+    metatask_integration_test:

@@ -14,7 +14,7 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/plot.yaml", "parm/wflow/test.yaml"]|include }}'
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: RAP
   EXTRN_MDL_ICS_OFFSET_HRS: 6
