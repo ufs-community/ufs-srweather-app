@@ -11,8 +11,9 @@ import argparse
 import logging
 import os
 import sys
-from subprocess import STDOUT, CalledProcessError, check_output
+
 from textwrap import dedent
+from uwtools.api import template
 
 from python_utils import (
     log_info,
@@ -111,29 +112,11 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        cmd = " ".join(["uw template render",
-            "-i", template_xml_fp,
-            "-o", wflow_xml_fp,
-            "-v",
-            "--values-file", rocoto_yaml_fp,
-            ]
+        template.render(
+            input_file = template_xml_fp,
+            output_file = wflow_xml_fp,
+            values = rocoto_yaml_fp,
         )
-
-        indent = "  "
-        output = ""
-        logfunc = logging.info
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            logfunc = logging.error
-            output = e.output
-            logging.exception(("Failed with status: %s", e.returncode))
-            raise
-        finally:
-            logfunc("Output:")
-            for line in output.split("\n"):
-                logfunc("%s%s", indent * 2, line)
     #
     # -----------------------------------------------------------------------
     #

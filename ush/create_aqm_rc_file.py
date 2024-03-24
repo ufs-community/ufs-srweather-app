@@ -7,8 +7,9 @@ import argparse
 import os
 import sys
 import tempfile
-from subprocess import STDOUT, CalledProcessError, check_output
+
 from textwrap import dedent
+from uwtools.api import tempalte
 
 from python_utils import (
     cfg_to_yaml_str,
@@ -134,29 +135,11 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
             suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        cmd = " ".join(["uw template render",
-                "-i",
-                AQM_RC_TMPL_FP,
-                "-o",
-                aqm_rc_fp,
-                "-v",
-                "--values-file",
-                tmpfile.name,
-            ]
+        template.render(
+            input_file = AQM_RC_TMPL_FP,
+            output_file = aqm_rc_fp,
+            values = tmpfile.name,
         )
-        indent = "  "
-        output = ""
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            output = e.output
-            print(f"Failed with status: {e.returncode}")
-            sys.exit(1)
-        finally:
-            print("Output:")
-            for line in output.split("\n"):
-                print(f"{indent * 2}{line}")
     return True
 
 def parse_args(argv):
