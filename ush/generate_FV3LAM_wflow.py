@@ -13,7 +13,7 @@ import os
 import sys
 
 from textwrap import dedent
-from uwtools.api import template
+from uwtools.api.template import render
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
 
@@ -113,7 +113,7 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        template.render(
+        render(
             input_file = template_xml_fp,
             output_file = wflow_xml_fp,
             values = rocoto_yaml_fp,

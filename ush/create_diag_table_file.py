@@ -10,7 +10,7 @@ import sys
 import tempfile
 
 from textwrap import dedent
-from uwtools.api import template
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
@@ -81,7 +81,7 @@ def create_diag_table_file(run_dir):
                                      suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        template.render(
+        render(
             input_file = DIAG_TABLE_TMPL_FP, 
             output_file = diag_table_fp,
             values = tmpfile.name,

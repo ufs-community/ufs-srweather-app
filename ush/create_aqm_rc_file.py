@@ -9,7 +9,7 @@ import sys
 import tempfile
 
 from textwrap import dedent
-from uwtools.api import tempalte
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
@@ -135,7 +135,7 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
             suffix=".yaml") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        template.render(
+        render(
             input_file = AQM_RC_TMPL_FP,
             output_file = aqm_rc_fp,
             values = tmpfile.name,
