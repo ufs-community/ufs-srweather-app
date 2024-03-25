@@ -28,7 +28,6 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
-nco_dir="${workspace}/nco_dirs"
 
 # Run the end-to-end tests.
 if "${SRW_WE2E_COMPREHENSIVE_TESTS}"; then
@@ -41,8 +40,7 @@ cd ${we2e_test_dir}
 # Progress file
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
 ./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
-    --expt_basedir=${we2e_experiment_base_dir} \
-    --opsroot=${nco_dir} | tee ${progress_file}
+    --expt_basedir=${we2e_experiment_base_dir} | tee ${progress_file}
 
 # Set exit code to number of failures
 set +e
