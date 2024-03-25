@@ -78,6 +78,9 @@ sed "s|^task_get_extrn_lbcs:|task_get_extrn_lbcs:\n  EXTRN_MDL_SOURCE_BASEDIR_LB
 # Use staged data for HPSS supported machines
 sed 's|^platform:|platform:\n  EXTRN_MDL_DATA_STORES: disk|g' -i ush/config.yaml
 
+# Set OMP_NUM_THREADS_RUN_FCST to 1 in config.yaml
+sed 's|^task_run_fcst:|task_run_fcst:\n  OMP_NUM_THREADS_RUN_FCST: 1|1' -i ush/config.yaml
+
 # Activate the workflow environment ...
 source etc/lmod-setup.sh ${platform,,}
 module use modulefiles
@@ -106,7 +109,7 @@ cp ${workspace}/ush/wrappers/*.sh .
 export JOBSdir=${workspace}/jobs
 export USHdir=${workspace}/ush
 export OMP_NUM_THREADS=1
-export nprocs=24
+export nprocs=12
 
 [[ -n ${TASKS} ]] || TASKS=(
                 run_make_grid
