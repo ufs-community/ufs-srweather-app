@@ -11,11 +11,10 @@ import argparse
 import logging
 import os
 import sys
-
 from textwrap import dedent
-from uwtools.api.template import render
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
+from uwtools.api.template import render
 
 from python_utils import (
     log_info,

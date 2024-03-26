@@ -9,7 +9,6 @@ import argparse
 import os
 import sys
 import tempfile
-
 from textwrap import dedent
 from uwtools.api.template import render
 
