@@ -81,7 +81,7 @@ def create_diag_table_file(run_dir):
         tmpfile.write(settings_str)
         tmpfile.seek(0)
         render(
-            input_file = DIAG_TABLE_TMPL_FP, 
+            input_file = DIAG_TABLE_TMPL_FP,
             output_file = diag_table_fp,
             values_src = tmpfile.name,
         )
