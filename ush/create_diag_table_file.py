@@ -83,7 +83,7 @@ def create_diag_table_file(run_dir):
         render(
             input_file = DIAG_TABLE_TMPL_FP, 
             output_file = diag_table_fp,
-            values = tmpfile.name,
+            values_src = tmpfile.name,
         )
     return True
 

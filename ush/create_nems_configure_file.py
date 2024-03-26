@@ -100,7 +100,7 @@ def create_nems_configure_file(run_dir):
         render(
             input_file = NEMS_CONFIG_TMPL_FP,
             output_file = nems_config_fp,
-            values = tmpfile.name,
+            values_src = tmpfile.name,
         )
     return True
 

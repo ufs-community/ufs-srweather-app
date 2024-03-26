@@ -115,7 +115,7 @@ def generate_FV3LAM_wflow(
         render(
             input_file = template_xml_fp,
             output_file = wflow_xml_fp,
-            values = rocoto_yaml_fp,
+            values_src = rocoto_yaml_fp,
         )
     #
     # -----------------------------------------------------------------------

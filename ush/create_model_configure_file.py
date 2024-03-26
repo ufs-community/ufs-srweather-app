@@ -227,7 +227,7 @@ def create_model_configure_file(
         render(
             input_file = MODEL_CONFIG_TMPL_FP,
             output_file = model_config_fp,
-            values = tmpfile.name,
+            values_src = tmpfile.name,
         )
     return True
 
