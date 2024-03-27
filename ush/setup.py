@@ -1160,49 +1160,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
-    # These NCO variables need to be set based on the user's specified
-    # run environment. The default is set in config_defaults for nco. If
-    # running in community mode, we set these paths to the experiment
-    # directory.
-    nco_vars = [
-        "opsroot_default",
-        "comroot_default",
-        "dataroot_default",
-        "dcomroot_default",
-        "comin_basedir",
-        "comout_basedir",
-    ]
-
-    nco_config = expt_config["nco"]
-    if run_envir != "nco":
-        # Put the variables in config dict.
-        for nco_var in nco_vars:
-            nco_config[nco_var.upper()] = exptdir
-
     # Use env variables for NCO variables and create NCO directories
     workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
     if run_envir == "nco" and workflow_manager == "rocoto":
-        for nco_var in nco_vars:
-            envar = os.environ.get(nco_var)
-            if envar is not None:
-                nco_config[nco_var.upper()] = envar
-
-        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_default")}"')
-
         # Update the rocoto string for the fcst output location if
         # running an ensemble in nco mode
         if global_sect["DO_ENSEMBLE"]:
             rocoto_config["entities"]["FCST_DIR"] = \
-                "{{ nco.DATAROOT_default }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
+                "{{ nco.PTMP }}/{{ nco.envir_default }}/tmp/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
 
-    if nco_config["DBNROOT_default"] and workflow_manager == "rocoto":
-        mkdir_vrfy(f' -p "{nco_config["DBNROOT_default"]}"')
-
-    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_default")}"')
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 

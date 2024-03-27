@@ -233,42 +233,59 @@ cd_vrfy ${DATA}/INPUT
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="gfs_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="sfc_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-symlink="gfs_ctrl.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-
-for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
-done
-
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
-  symlink="NEXUS_Expt.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
 
-  # create symlink to PT for point source in Online-CMAQ
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink"  relative="${relative_link_flag}"
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  done
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  # create symlink to PT for point source in SRW-AQM
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
   if [ -f ${target} ]; then
     symlink="PT.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-	                       relative="${relative_link_flag}"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   fi
+
+else
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  done
 fi
 #
 #-----------------------------------------------------------------------

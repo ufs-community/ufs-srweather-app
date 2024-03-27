@@ -1,2 +1,2 @@
-load("python_srw_cmaq")
-load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
+load("python_srw_aqm")
+load(pathJoin("nco", os.getenv("nco_ver") or "5.1.6"))

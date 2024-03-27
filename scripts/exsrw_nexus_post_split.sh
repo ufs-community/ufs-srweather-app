@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_post_split" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "cpl_aqm_parm|task_nexus_post_split" ${GLOBAL_VAR_DEFNS_F
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; sex -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs NEXUS.
+This is the ex-script for the task that runs NEXUS POST SPLIT.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -53,10 +53,10 @@ This is the ex-script for the task that runs NEXUS.
 #
 eval ${PRE_TASK_CMDS}
 
-mm="${PDY:4:2}"
-dd="${PDY:6:2}"
-hh="${cyc}"
-yyyymmdd="${PDY}"
+YYYYMMDD="${PDY}"
+MM="${PDY:4:2}"
+DD="${PDY:6:2}"
+HH="${cyc}"
 
 NUM_SPLIT_NEXUS=$( printf "%02d" ${NUM_SPLIT_NEXUS} )
 
@@ -65,9 +65,8 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-start_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC" "+%Y%m%d%H" )
-end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H" )
-
+start_date=${YYYYMMDD}${HH}
+end_date=`$NDATE +${FCST_LEN_HRS} ${YYYYMMDD}${HH}`
 #
 #-----------------------------------------------------------------------
 #
@@ -75,25 +74,21 @@ end_date=$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${FCST_LEN_HRS} hou
 #
 #-----------------------------------------------------------------------
 #
-cp_vrfy ${ARL_NEXUS_DIR}/config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
+cpreq ${PARMsrw}/nexus_config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
+cpreq ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
-cp_vrfy ${NEXUS_FIX_DIR}/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cp_vrfy ${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  cpreq ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
-  python3 ${ARL_NEXUS_DIR}/utils/python/concatenate_nexus_post_split.py "${COMIN}/NEXUS/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
+  ${USHsrw}/nexus_utils/python/concatenate_nexus_post_split.py "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="Call to python script \"concatenate_nexus_post_split.py\" failed."
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -101,17 +96,13 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 ${ARL_NEXUS_DIR}/utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
+${USHsrw}/nexus_utils/combine_ant_bio.py "${DATA}/NEXUS_Expt_combined.nc" ${DATA}/NEXUS_Expt.nc
 export err=$?
 if [ $err -ne 0 ]; then
   message_txt="Call to python script \"NEXUS_Expt_pretty.py\" failed."
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-    err_exit "${message_txt}"
-  else
-    print_err_msg_exit "${message_txt}"
-  fi
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
 fi
-
 #
 #-----------------------------------------------------------------------
 #
@@ -119,7 +110,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy ${DATA}/NEXUS_Expt.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+mv ${DATA}/NEXUS_Expt.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
 #
 # Print message indicating successful completion of script.
 #

@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "cpl_aqm_parm|task_nexus_gfs_sfc" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -52,10 +52,10 @@ data files from disk or HPSS.
 #
 #-----------------------------------------------------------------------
 #
-yyyymmdd=${GFS_SFC_CDATE:0:8}
-yyyymm=${GFS_SFC_CDATE:0:6}
-yyyy=${GFS_SFC_CDATE:0:4}
-hh=${GFS_SFC_CDATE:8:2}
+YYYYMMDD=${GFS_SFC_CDATE:0:8}
+YYYYMM=${GFS_SFC_CDATE:0:6}
+YYYY=${GFS_SFC_CDATE:0:4}
+HH=${GFS_SFC_CDATE:8:2}
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   cyc_mod=$(( ${cyc} - ${DATE_FIRST_CYCL:8:2} ))
@@ -70,8 +70,8 @@ fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
 #
 #-----------------------------------------------------------------------
 #
-GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${yyyy}/${yyyymm}/${yyyymmdd}"
-GFS_SFC_TAR_SUB_DIR="gfs.${yyyymmdd}/${hh}/atmos"
+GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${YYYY}/${YYYYMM}/${YYYYMMDD}"
+GFS_SFC_TAR_SUB_DIR="gfs.${YYYYMMDD}/${HH}/atmos"
 
 if [ "${DO_REAL_TIME}" = "TRUE" ]; then
   GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
@@ -83,40 +83,28 @@ GFS_SFC_DATA_INTVL="3"
 
 # copy files from local directory
 if [ -d ${GFS_SFC_LOCAL_DIR} ]; then
-  gfs_sfc_fn="gfs.t${hh}z.sfcanl.nc"
+  gfs_sfc_fn="gfs.t${HH}z.sfcanl.nc"
 
-  relative_link_flag="FALSE"
   gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
-  create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
-	                   relative="${relative_link_flag}"
+  ln -sf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}
 
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
-    gfs_sfc_fn="gfs.t${hh}z.sfcf${fhr}.nc"
+    gfs_sfc_fn="gfs.t${HH}z.sfcf${fhr}.nc"
     if [ -e "${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}" ]; then
       gfs_sfc_fp="${GFS_SFC_LOCAL_DIR}/${gfs_sfc_fn}"
-      create_symlink_to_file target="${gfs_sfc_fp}" symlink="${gfs_sfc_fn}" \
-	                     relative="${relative_link_flag}"
+      ln -nsf ${gfs_sfc_fp} ${DATA_SHARE}/${gfs_sfc_fn}
     else
       message_txt="SFC file for nexus emission for \"${cycle}\" does not exist in the directory:
   GFS_SFC_LOCAL_DIR = \"${GFS_SFC_LOCAL_DIR}\"
   gfs_sfc_fn = \"${gfs_sfc_fn}\""
-      if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-        message_warning="WARNING: ${message_txt}"
-        print_info_msg "${message_warning}"
-        if [ ! -z "${maillist}" ]; then
-          echo "${message_warning}" | mail.py $maillist
-        fi
-      else
-        print_err_msg_exit "${message_txt}"
-      fi
+      print_err_msg_exit "${message_txt}"
     fi	    
-  done
- 
+  done 
 # retrieve files from HPSS
 else
-  if [ "${yyyymmdd}" -lt "20220627" ]; then
+  if [ "${YYYYMMDD}" -lt "20220627" ]; then
     GFS_SFC_TAR_FN_VER="prod"
-  elif [ "${yyyymmdd}" -lt "20221129" ]; then
+  elif [ "${YYYYMMDD}" -lt "20221129" ]; then
     GFS_SFC_TAR_FN_VER="v16.2"
   else
     GFS_SFC_TAR_FN_VER="v16.3"
@@ -126,63 +114,51 @@ else
   GFS_SFC_TAR_FN_SUFFIX_B="gfs_ncb.tar"
 
   # Check if the sfcanl file exists in the staging directory
-  gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_A}"
+  gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${YYYYMMDD}_${HH}.${GFS_SFC_TAR_FN_SUFFIX_A}"
   gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
-  gfs_sfc_fns=("gfs.t${hh}z.sfcanl.nc")
-  gfs_sfc_fps="./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcanl.nc"
+  gfs_sfc_fns=("gfs.t${HH}z.sfcanl.nc")
+  gfs_sfc_fps="./${GFS_SFC_TAR_SUB_DIR}/gfs.t${HH}z.sfcanl.nc"
   if [ "${fcst_len_hrs_offset}" -lt "40" ]; then
     ARCHV_LEN_HRS="${fcst_len_hrs_offset}"
   else
     ARCHV_LEN_HRS="39"
   fi
   for fhr in $(seq -f "%03g" 0 ${GFS_SFC_DATA_INTVL} ${ARCHV_LEN_HRS}); do
-    gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
-    gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"
+    gfs_sfc_fns+="gfs.t${HH}z.sfcf${fhr}.nc"
+    gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${HH}z.sfcf${fhr}.nc"
   done
 
   # Retrieve data from A file up to fcst_len_hrs_offset=39
   htar -tvf ${gfs_sfc_tar_fp}
-  PREP_STEP
-  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR}
+  htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps}
   export err=$?
   if [ $err -ne 0 ]; then
     message_txt="htar file reading operation (\"htar -xvf ...\") failed."
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
-    else
-      print_err_msg_exit "${message_txt}"
-    fi
+    print_err_msg_exit "${message_txt}"
   fi
-  POST_STEP
 
   # Retireve data from B file when fcst_len_hrs_offset>=40
   if [ "${fcst_len_hrs_offset}" -ge "40" ]; then
-    gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${yyyymmdd}_${hh}.${GFS_SFC_TAR_FN_SUFFIX_B}"
+    gfs_sfc_tar_fn="${GFS_SFC_TAR_FN_PREFIX}.${YYYYMMDD}_${HH}.${GFS_SFC_TAR_FN_SUFFIX_B}"
     gfs_sfc_tar_fp="${GFS_SFC_TAR_DIR}/${gfs_sfc_tar_fn}"
     gfs_sfc_fns=()
     gfs_sfc_fps=""
     for fhr in $(seq -f "%03g" 42 ${GFS_SFC_DATA_INTVL} ${fcst_len_hrs_offset}); do
-      gfs_sfc_fns+="gfs.t${hh}z.sfcf${fhr}.nc"
-      gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${hh}z.sfcf${fhr}.nc"  
+      gfs_sfc_fns+="gfs.t${HH}z.sfcf${fhr}.nc"
+      gfs_sfc_fps+=" ./${GFS_SFC_TAR_SUB_DIR}/gfs.t${HH}z.sfcf${fhr}.nc"  
     done
     htar -tvf ${gfs_sfc_tar_fp}
-    PREP_STEP
-    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps} ${REDIRECT_OUT_ERR}
+    htar -xvf ${gfs_sfc_tar_fp} ${gfs_sfc_fps}
     export err=$?
     if [ $err -ne 0 ]; then
       message_txt="htar file reading operation (\"htar -xvf ...\") failed."
-      if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-        err_exit "${message_txt}"
-      else
-        print_err_msg_exit "${message_txt}"
-      fi
+      print_err_msg_exit "${message_txt}"
     fi
-    POST_STEP
   fi
   # Link retrieved files to staging directory
-  ln_vrfy -sf ${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc .
+  ln -sf ${DATA}/${GFS_SFC_TAR_SUB_DIR}/gfs.*.nc ${DATA_SHARE}
+fi
 
-fi  
 #
 #-----------------------------------------------------------------------
 #

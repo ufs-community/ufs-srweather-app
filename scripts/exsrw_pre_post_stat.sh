@@ -7,8 +7,8 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_VAR_DEFNS_FP}
+. ${USHsrw}/source_util_funcs.sh
+source_config_for_task "task_pre_post|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +17,7 @@ source_config_for_task "task_run_fcst|cpl_aqm_parm|task_point_source" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -42,7 +42,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs PT_SOURCE.
+This is the ex-script for the task that runs POST-UPP-STAT.
 ========================================================================"
 #
 #-----------------------------------------------------------------------
@@ -58,40 +58,60 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-nstep=$(( FCST_LEN_HRS+1 ))
-yyyymmddhh="${PDY}${cyc}"
 
-#
-#-----------------------------------------------------------------------
-#
-# Set the directories for CONUS/HI/AK
-#
-#-----------------------------------------------------------------------
-#
-PT_SRC_PRECOMB="${DCOMINpt_src}"
-#
-#-----------------------------------------------------------------------
-#
-# Run stack-pt-mergy.py if file does not exist.
-#
-#-----------------------------------------------------------------------
-#
-if [ ! -s "${DATA}/pt-${yyyymmddhh}.nc" ]; then 
-  python3 ${HOMEdir}/sorc/AQM-utils/python_utils/stack-pt-merge.py -s ${yyyymmddhh} -n ${nstep} -i ${PT_SRC_PRECOMB}
-  export err=$?
-  if [ $err -ne 0 ]; then
-    message_txt="Call to python script \"stack-pt-merge.py\" failed."
-    if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-      err_exit "${message_txt}"
+ist=1
+while [ "$ist" -le "${FCST_LEN_HRS}" ]; do
+  hst=$( printf "%03d" "${ist}" )
+
+  rm -f ${DATA}/tmp*nc
+  rm -f ${DATA}/${NET}.${cycle}.chem_sfc_f${hst}*nc
+  rm -f ${DATA}/${NET}.${cycle}.met_sfc_f${hst}*nc
+
+  ncks -v lat,lon,o3_ave,no_ave,no2_ave,pm25_ave -d pfull,63,63 ${DATA_SHARE}/${NET}.${cycle}.dyn.f${hst}.nc ${DATA}/tmp2a.nc
+
+  ncks -C -O -x -v pfull ${DATA}/tmp2a.nc ${DATA}/tmp2b.nc
+
+  ncwa -a pfull ${DATA}/tmp2b.nc ${DATA}/tmp2c.nc
+
+  ncrename -v o3_ave,o3 -v no_ave,no -v no2_ave,no2 -v pm25_ave,PM25_TOT ${DATA}/tmp2c.nc
+
+  mv ${DATA}/tmp2c.nc ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc
+
+  ncks -v dswrf,hpbl,tmp2m,ugrd10m,vgrd10m,spfh2m ${DATA_SHARE}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.met_sfc.f${hst}.nc
+
+  ncks -v aod ${DATA_SHARE}/${NET}.${cycle}.phy.f${hst}.nc ${DATA}/${NET}.${cycle}.aod.f${hst}.nc
+
+  (( ist=ist+1 ))
+done
+
+ist=1
+while [ "${ist}" -le "${FCST_LEN_HRS}" ]; do
+  hst=$( printf "%03d" "${ist}" )
+  ic=0
+  while [ $ic -lt 900 ]; do
+    if [ -s ${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc ]; then
+      echo "${DATA}/${NET}.${cycle}.chem_sfc.f${hst}.nc" "exist!"
+      break
     else
-      print_err_msg_exit "${message_txt}"
+      sleep 10
+      (( ic=ic+1 ))
     fi
-  fi
-fi
+  done
+  (( ist=ist+1 ))
+done
 
-# Move to COMIN
-mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc 
-
+ncecat ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc  ${DATA}/${NET}.${cycle}.chem_sfc.nc
+#
+#-----------------------------------------------------------------------
+#
+# Move output to COMIN directory.
+#
+#-----------------------------------------------------------------------
+#
+mv ${DATA}/${NET}.${cycle}.met_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.f*.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.chem_sfc.nc ${COMOUT}
+mv ${DATA}/${NET}.${cycle}.aod.f*.nc ${COMOUT}
 #
 #-----------------------------------------------------------------------
 #
@@ -101,7 +121,7 @@ mv_vrfy ${DATA}/pt-${yyyymmddhh}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.P
 #
 print_info_msg "
 ========================================================================
-PT_SOURCE has successfully generated output files !!!!
+PRE-POST-STAT completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

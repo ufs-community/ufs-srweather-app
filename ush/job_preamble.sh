@@ -25,10 +25,10 @@ export envir="${envir:-${envir_default}}"
 export NET="${NET:-${NET_default}}"
 export RUN="${RUN:-${RUN_default}}"
 export model_ver="${model_ver:-${model_ver_default}}"
-export COMROOT="${COMROOT:-${COMROOT_default}}"
-export DATAROOT="${DATAROOT:-${DATAROOT_default}}"
-export DCOMROOT="${DCOMROOT:-${DCOMROOT_default}}"
-export LOGBASEDIR="${LOGBASEDIR:-${LOGBASEDIR_default}}"
+export COMROOT="${COMROOT:-${PTMP}/${envir}/com}"
+export DATAROOT="${DATAROOT:-${PTMP}/${envir}/tmp}"
+export DCOMROOT="${DCOMROOT:-${PTMP}/${envir}/dcom}"
+export DATA_SHARE="${DATA_SHARE:-${DATAROOT}/DATA_SHARE/${PDY}${cyc}}"
 
 export DBNROOT="${DBNROOT:-${DBNROOT_default}}"
 export SENDECF="${SENDECF:-${SENDECF_default}}"
@@ -41,48 +41,24 @@ export MAILTO="${MAILTO:-${MAILTO_default}}"
 export MAILCC="${MAILCC:-${MAILCC_default}}"
 
 if [ "${RUN_ENVIR}" = "nco" ]; then
+  [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
   if [ "${MACHINE}" = "WCOSS2" ]; then
-    [[ "$WORKFLOW_MANAGER" = "rocoto" ]] && export COMROOT=$COMROOT
     export COMIN="${COMIN:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMOUT="${COMOUT:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDY}/${cyc})}"
     export COMINm1="${COMINm1:-$(compath.py -o ${NET}/${model_ver}/${RUN}.${PDYm1})}"
     export COMINgfs="${COMINgfs:-$(compath.py ${envir}/gfs/${gfs_ver})}"
     export COMINgefs="${COMINgefs:-$(compath.py ${envir}/gefs/${gefs_ver})}"
   else
-    export COMIN="${COMIN_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMOUT="${COMOUT_BASEDIR}/${RUN}.${PDY}/${cyc}"
-    export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+    export COMIN="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
+    export COMOUT="${COMOUT:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}}"
+    export COMINm1="${COMIN:-${COMROOT}/${NET}/${model_ver}/${RUN}.${PDYm1}/${cyc}}"
   fi
 else
-  export COMIN="${COMIN_BASEDIR}/${PDY}${cyc}"
-  export COMOUT="${COMOUT_BASEDIR}/${PDY}${cyc}"
-  export COMINm1="${COMIN_BASEDIR}/${RUN}.${PDYm1}"
+  export COMIN="${EXPTDIR}/${PDY}${cyc}"
+  export COMOUT="${EXPTDIR}/${PDY}${cyc}"
+  export COMINm1="${EXPTDIR}/${PDYm1}${cyc}"
 fi
 export COMOUTwmo="${COMOUTwmo:-${COMOUT}/wmo}"
-
-export DCOMINbio="${DCOMINbio:-${DCOMINbio_default}}"
-export DCOMINdust="${DCOMINdust:-${DCOMINdust_default}}"
-export DCOMINcanopy="${DCOMINcanopy:-${DCOMINcanopy_default}}"
-export DCOMINfire="${DCOMINfire:-${DCOMINfire_default}}"
-export DCOMINchem_lbcs="${DCOMINchem_lbcs:-${DCOMINchem_lbcs_default}}"
-export DCOMINgefs="${DCOMINgefs:-${DCOMINgefs_default}}"
-export DCOMINpt_src="${DCOMINpt_src:-${DCOMINpt_src_default}}"
-export DCOMINairnow="${DCOMINairnow:-${DCOMINairnow_default}}"
-
-#
-#-----------------------------------------------------------------------
-#
-# Change YES/NO (NCO standards; job card) to TRUE/FALSE (workflow standards)
-# for NCO environment variables
-#
-#-----------------------------------------------------------------------
-#
-export KEEPDATA=$(boolify "${KEEPDATA}")
-export SENDCOM=$(boolify "${SENDCOM}")
-export SENDDBN=$(boolify "${SENDDBN}")
-export SENDDBN_NTC=$(boolify "${SENDDBN_NTC}")
-export SENDECF=$(boolify "${SENDECF}")
-export SENDWEB=$(boolify "${SENDWEB}")
 
 #
 #-----------------------------------------------------------------------
@@ -91,11 +67,12 @@ export SENDWEB=$(boolify "${SENDWEB}")
 #
 #-----------------------------------------------------------------------
 #
-if [ $subcyc -eq 0 ]; then
-    export cycle="t${cyc}z"
+if [ ${subcyc} -ne 0 ]; then
+  export cycle="t${cyc}${subcyc}z"
 else
-    export cycle="t${cyc}${subcyc}z"
+  export cycle="t${cyc}z"
 fi
+
 if [ "${RUN_ENVIR}" = "nco" ] && [ "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else

@@ -46,7 +46,6 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
-nco_dir="${workspace}/nco_dirs"
 
 pwd
 

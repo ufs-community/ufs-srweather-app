@@ -7,7 +7,7 @@
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/source_util_funcs.sh
+. ${USHsrw}/source_util_funcs.sh
 source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ source_config_for_task "cpl_aqm_parm|task_run_post|task_post_stat_o3" ${GLOBAL_V
 #
 #-----------------------------------------------------------------------
 #
-{ save_shell_opts; . $USHdir/preamble.sh; } > /dev/null 2>&1
+{ save_shell_opts; set -xue; } > /dev/null 2>&1
 #
 #-----------------------------------------------------------------------
 #
@@ -74,7 +74,7 @@ if [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   id_domain=793
 fi
 
-ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc .
+ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc .
 
 #
 cat >aqm_post.ini <<EOF1
@@ -90,13 +90,7 @@ EOF1
 PREP_STEP
 eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_grib2 ${PDY} ${cyc} ${REDIRECT_OUT_ERR}
 export err=$?
-if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
-  err_chk
-else
-  if [ $err -ne 0 ]; then
-    print_err_msg_exit "Call to executable to run AQM_POST_GRIB2 returned with nonzero exit code."
-  fi
-fi
+ err_chk
 POST_STEP
 
 if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
@@ -137,7 +131,7 @@ for grid in 227 196 198;do
       export FORT12="filesize"
       export FORT31=
       export FORT51=grib2.${cycle}.${hr}awpcsozcon.${grid}.temp
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
 
       echo `ls -l grib2.${cycle}.${hr}awpcsozcon.${grid}.temp  | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
@@ -145,18 +139,18 @@ for grid in 227 196 198;do
       export FORT12="filesize"
       export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3.${grid}.grib2
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm_ave_${hr}hr_o3-awpozcon.${cycle}.${grid}
     done
     for var in 1ho3 8ho3;do
-      cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
-      cp_vrfy ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
+      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+      cp ${DATA}/awpaqm.${cycle}.${var}*grib2 ${COMOUTwmo}
     done
     for var in awpozcon;do
-      cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   else
     for var in 1ho3 awpozcon;do
-      cp_vrfy ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
+      cp ${DATA}/${NET}.${cycle}.${var}*grib2 ${COMOUT}
     done
   fi
 done
@@ -166,7 +160,7 @@ done
 #------------------------------------------------------------
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 
-  ln_vrfy -sf ${COMIN}/${NET}.${cycle}.chem_sfc.nc a.nc
+  ln -sf ${COMIN}/${cyc}/${NET}.${cycle}.chem_sfc.nc a.nc
 
   export chk=1
   export chk1=1
@@ -185,10 +179,10 @@ EOF1
 
   ## 06z needs b.nc to find current day output from 04Z to 06Z
   if [ "${cyc}" = "06" ]; then
-    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -s  ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -s  ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
@@ -197,20 +191,20 @@ EOF1
 
   if [ "${cyc}" = "12" ]; then
     ## 12z needs b.nc to find current day output from 04Z to 06Z 
-    if [ -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN}/../00/${NET}.t00z.chem_sfc.nc b.nc
+    if [ -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc ]; then
+      ln -s ${COMIN}/00/${NET}.t00z.chem_sfc.nc b.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc b.nc
       chk=0
     else
       flag_run_bicor_max=no
     fi
 
     ## 12z needs c.nc to find current day output from 07Z to 12z
-    if [ -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMIN}/../06/${NET}.t06z.chem_sfc.nc c.nc
+    if [ -s ${COMIN}/06/${NET}.t06z.chem_sfc.nc ]; then
+      ln -s ${COMIN}/06/${NET}.t06z.chem_sfc.nc c.nc
     elif [ -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc ]; then
-      ln_vrfy -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
+      ln -s ${COMINm1}/12/${NET}.t12z.chem_sfc.nc c.nc
       chk1=0
     else
       flag_run_bicor_max=no
@@ -220,13 +214,7 @@ EOF1
   PREP_STEP
   eval ${RUN_CMD_SERIAL} ${EXECdir}/aqm_post_maxi_grib2 ${PDY} ${cyc} ${chk} ${chk1} ${REDIRECT_OUT_ERR}
   export err=$?
-  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
     err_chk
-  else
-    if [ $err -ne 0 ]; then
-      print_err_msg_exit "Call to executable to run AQM_POST_MAXI_GRIB2 returned with nonzero exit code."
-    fi
-  fi
   POST_STEP
 
   # split into max_1h and max_8h files and copy to grib227
@@ -234,7 +222,6 @@ EOF1
   wgrib2 aqm-maxi.${id_domain}.grib2 |grep "OZMAX8" | wgrib2 -i aqm-maxi.${id_domain}.grib2 -grib ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2
 
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  #export grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
   grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
   grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
@@ -243,7 +230,7 @@ EOF1
     wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
     wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
 
-    cp_vrfy ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
+    cp ${DATA}/${NET}.${cycle}.max_*hr_o3.*.grib2  ${COMOUT}
     if [ "$SENDDBN" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_1hr_o3.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert MODEL AQM_MAX ${job} ${COMOUT}/${NET}.${cycle}.max_8hr_o3.${grid}.grib2
@@ -257,24 +244,23 @@ EOF1
       export FORT12="filesize"
       export FORT31=
       export FORT51=aqm-${hr}hro3-maxi.${grid}.grib2.temp
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
       echo `ls -l  aqm-${hr}hro3-maxi.${grid}.grib2.temp | awk '{print $5} '` > filesize
       export XLFRTEOPTS="unit_vars=yes"
       export FORT11=aqm-${hr}hro3-maxi.${grid}.grib2.temp
       export FORT12="filesize"
       export FORT31=
       export FORT51=awpaqm.${cycle}.${hr}ho3-max.${grid}.grib2
-      tocgrib2super < ${PARMaqm_utils}/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
+      tocgrib2super < ${PARMdir}/aqm_utils/wmo/grib2_aqm-${hr}hro3-maxi.${cycle}.${grid}
     done
 
-    cp_vrfy awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
+    cp awpaqm.${cycle}.*o3-max.${grid}.grib2 ${COMOUTwmo}
     if [ "${SENDDBN_NTC}" = "TRUE" ]; then
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.1ho3-max.${grid}.grib2
       ${DBNROOT}/bin/dbn_alert ${DBNALERT_TYPE} ${NET} ${job} ${COMOUTwmo}/awpaqm.${cycle}.8ho3-max.${grid}.grib2
     fi
   done
 fi
-
 #
 #-----------------------------------------------------------------------
 #
