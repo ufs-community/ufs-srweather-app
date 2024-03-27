@@ -5,7 +5,7 @@ the MSU machine Hercules using intel-oneapi-compilers/2022.2.1
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Hercules ]===])
 
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.5.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/hercules/spack-stack-1.5.1/envs/unified-env/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
 load("stack-intel/2021.9.0")

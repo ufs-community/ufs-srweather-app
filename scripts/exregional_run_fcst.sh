@@ -696,7 +696,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_nems_configure_file.py \
+python3 $USHdir/create_ufs_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?

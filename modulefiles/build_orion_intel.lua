@@ -5,7 +5,7 @@ the MSU machine Orion using Intel-2022.1.2
 
 whatis([===[Loads libraries needed for building the UFS SRW App on Orion ]===])
 
-prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/unified-env/install/modulefiles/Core")
 prepend_path("MODULEPATH", "/work/noaa/da/role-da/spack-stack/modulefiles")
 
 load("stack-intel/2022.0.2")

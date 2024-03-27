@@ -610,9 +610,9 @@ workflow:
   # NUOPC/ESMF main component (ufs-weather-model: model_config). Its default 
   # value is the name of the file that the ufs weather model expects to read in.
   #
-  # NEMS_CONFIG_FN:
-  # Name of a template file that contains information about the various NEMS 
-  # components and their run sequence (ufs-weather-model: nems.configure). 
+  # UFS_CONFIG_FN:
+  # Name of a template file that contains information about the various UFS 
+  # components and their run sequence (ufs-weather-model: ufs.configure). 
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
@@ -641,7 +641,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
   FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
-  NEMS_CONFIG_FN: "nems.configure"
+  UFS_CONFIG_FN: "ufs.configure"
   AQM_RC_FN: "aqm.rc"
   AQM_RC_TMPL_FN: "aqm.rc"
 
@@ -668,8 +668,8 @@ workflow:
   # MODEL_CONFIG_TMPL_FP: 
   # Path to the MODEL_CONFIG_FN file.
   # 
-  # NEMS_CONFIG_TMPL_FP: 
-  # Path to the NEMS_CONFIG_FN file. 
+  # UFS_CONFIG_TMPL_FP: 
+  # Path to the UFS_CONFIG_FN file. 
   # 
   # AQM_RC_TMPL_FP: 
   # Path to the AQM_RC_TMPL_FN file. 
@@ -684,7 +684,7 @@ workflow:
   DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
   FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+  UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
   AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
 
   # 
@@ -697,8 +697,8 @@ workflow:
   # FIELD_TABLE_FP: 
   # Path to the field table in the experiment directory. 
   # 
-  # NEMS_CONFIG_FP: 
-  # Path to the NEMS_CONFIG_FN file in the experiment directory. 
+  # UFS_CONFIG_FP: 
+  # Path to the UFS_CONFIG_FN file in the experiment directory. 
   # 
   # FV3_NML_FP: 
   # Path to the FV3_NML_FN file in the experiment directory.
@@ -759,7 +759,7 @@ workflow:
   #
   DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
-  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
+  UFS_CONFIG_FP: '{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
   FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
 
@@ -846,7 +846,7 @@ workflow:
   CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
   CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
   CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
-  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics"] |path_join }}'
+  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -866,7 +866,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIELD_DICT_FN: "fd_nems.yaml"
+  FIELD_DICT_FN: "fd_ufs.yaml"
   FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
   FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
   #
@@ -1728,8 +1728,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in nems.configure
-  OMP_STACKSIZE_RUN_FCST: "512m"
+  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
+  OMP_STACKSIZE_RUN_FCST: "1024m"
   #
   #-----------------------------------------------------------------------
   #
