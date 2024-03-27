@@ -643,15 +643,23 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-
-mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
-
-mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-
-mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+    data_trans_path="${COMOUT}"
+  else
+    data_trans_path="${DATA_SHARE}"
+  fi
+  cpreq -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cpreq -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cpreq -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  cpreq -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+else
+  mv_vrfy out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv_vrfy out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+fi
 #
 #-----------------------------------------------------------------------
 #

@@ -559,7 +559,11 @@ located in the following directory:
   lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
   fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  if [ "${CPL_AQM}" = "TRUE" ]; then
+    cpreq -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  else
+    mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
+  fi
 
   fi
 done
