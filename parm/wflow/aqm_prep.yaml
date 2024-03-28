@@ -115,11 +115,11 @@ task_aqm_ics_ext:
         datadep_date_tag_tracer:
           attrs:
             age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/@Y@m@d.@H@M@S.fv_tracer.res.tile1.nc'
         datadep_tracer:
           attrs:
             age: 00:00:00:05
-          text: !cycstr '&WARMSTART_CYCLE_DIR;/RESTART/fv_tracer.res.tile1.nc'
+          text: !cycstr '&WARMSTART_CYCLE_DIR;/fv_tracer.res.tile1.nc'
 
 task_aqm_ics:
   <<: *default_aqm

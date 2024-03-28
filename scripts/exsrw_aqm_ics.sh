@@ -55,31 +55,41 @@ tial or boundary condition files for the FV3 will be generated.
 #
 rst_dir="${PREV_CYCLE_DIR}/RESTART"
 rst_file="fv_tracer.res.tile1.nc"
-fv_tracer_file="${rst_dir}/${PDY}.${cyc}0000.${rst_file}"
-print_info_msg "Looking for tracer restart file: \"${fv_tracer_file}\""
-if [ ! -r ${fv_tracer_file} ]; then
-  if [ -r ${rst_dir}/coupler.res ]; then
-    rst_info=( $( tail -n 1 ${rst_dir}/coupler.res ) )
-    # Remove leading zeros from ${rst_info[1]}
-    month="${rst_info[1]#"${rst_info[1]%%[!0]*}"}"
-    # Remove leading zeros from ${rst_info[2]}
-    day="${rst_info[2]#"${rst_info[2]%%[!0]*}"}"
-    # Format the date without leading zeros
-    rst_date=$(printf "%04d%02d%02d%02d" ${rst_info[0]} $((10#$month)) $((10#$day)) ${rst_info[3]})
-    print_info_msg "
-  Tracer file not found. Checking available restart date:
-    requested date: \"${PDY}${cyc}\"
-    available date: \"${rst_date}\""
-    if [ "${rst_date}" = "${PDY}${cyc}" ] ; then
-      fv_tracer_file="${rst_dir}/${rst_file}"
-      if [ -r ${fv_tracer_file} ]; then
-        print_info_msg "Tracer file found: \"${fv_tracer_file}\""
-      else
-        message_txt="FATAL ERROR No suitable tracer restart file ${rst_dir}/${rst_file} found."
-        err_exit "${message_txt}"
-        print_err_msg_exit "${message_txt}"
-      fi
+rst_file_with_date="${PDY}.${cyc}0000.${rst_file}"
+if [ -e "${rst_dir}/${rst_file_with_date}" ]; then
+  fv_tracer_file="${rst_dir}/${rst_file_with_date}"
+elif [ -e "${rst_dir}/${rst_file}" ]; then
+  fv_tracer_file="${rst_dir}/${rst_file}"
+else
+  message_txt="Tracer restart file: \"${fv_tracer_file}\" is NOT found"
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
+fi
+print_info_msg "Tracer restart file: \"${fv_tracer_file}\""
+
+if [ -r ${rst_dir}/coupler.res ]; then
+  rst_info=( $( tail -n 1 ${rst_dir}/coupler.res ) )
+  # Remove leading zeros from ${rst_info[1]}
+  month="${rst_info[1]#"${rst_info[1]%%[!0]*}"}"
+  # Remove leading zeros from ${rst_info[2]}
+  day="${rst_info[2]#"${rst_info[2]%%[!0]*}"}"
+  # Format the date without leading zeros
+  rst_date=$(printf "%04d%02d%02d%02d" ${rst_info[0]} $((10#$month)) $((10#$day)) ${rst_info[3]})
+  if [ "${rst_date}" = "${PDY}${cyc}" ]; then
+    if [ -r ${fv_tracer_file} ]; then
+      print_info_msg "Tracer restart file is for ${PDY}${cyc}"
+    else
+      message_txt="Tracer restart file \"${fv_tracer_file}\" is NOT readable."
+      err_exit "${message_txt}"
+      print_err_msg_exit "${message_txt}"
     fi
+  else
+    message_txt="Tracer restart file is NOT for ${PDY}${cyc}. 
+Checking available restart date:
+  requested date: \"${PDY}${cyc}\"
+  available date: \"${rst_date}\""
+    err_exit "${message_txt}"
+    print_err_msg_exit "${message_txt}"
   fi
 fi
 #
