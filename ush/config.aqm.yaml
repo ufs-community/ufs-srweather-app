@@ -7,7 +7,7 @@ user:
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
-  EXPT_SUBDIR: aqm_community_aqmna13
+  EXPT_SUBDIR: aqm_AQMNA13km_warmstart
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023111000'
@@ -24,6 +24,7 @@ workflow:
   COLDSTART: false
   WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000'
 nco:
+  envir_default: test_aqm_warmstart
   NET_default: aqm
   RUN_default: aqm
 rocoto:
