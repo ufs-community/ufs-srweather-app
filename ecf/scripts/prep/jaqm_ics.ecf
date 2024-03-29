@@ -9,6 +9,7 @@
 
 model=aqm
 export cyc="%CYC%"
+export COLDSTART=%COLDSTART:NO%
 %include <head.h>
 %include <envir-p1.h>
 

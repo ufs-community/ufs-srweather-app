@@ -65,9 +65,17 @@ if [ "${WORKFLOW_MANAGER}" = "ecflow" ]; then
   cycs_p1=$(echo $SDATE | cut -c9-10)
   export PREV_CYCLE_DIR=$(compath.py ${NET}/${model_ver}/${RUN}.${PDYS_P1}/${cycs_p1})
 fi
-rst_dir=${PREV_CYCLE_DIR}/RESTART
-rst_file=fv_tracer.res.tile1.nc
-fv_tracer_file=${rst_dir}/${PDY}.${cyc}0000.${rst_file}
+
+#Handle COLDSTART condition by using fix file
+COLDSTART=${CSMI}
+if [ "${COLDSTART}" = "YES" ]; then
+  fv_tracer_file=${HOMEaqm}/fix/restart/fv_tracer.res.tile1.nc
+else
+  rst_dir=${PREV_CYCLE_DIR}/RESTART
+  rst_file=fv_tracer.res.tile1.nc
+  fv_tracer_file=${rst_dir}/${PDY}.${cyc}0000.${rst_file}
+fi
+
 print_info_msg "
   Looking for tracer restart file: \"${fv_tracer_file}\""
 if [ ! -r ${fv_tracer_file} ]; then
