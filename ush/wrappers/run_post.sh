@@ -12,5 +12,5 @@ export ENSMEM_INDX=""
 num_fcst_hrs=${FCST_LEN_HRS}
 for (( i=0; i<=$((num_fcst_hrs)); i++ )); do
   export fhr=`printf "%03i" ${i}`
-  ${JOBSdir}/JREGIONAL_RUN_POST
+  $USHdir/load_modules_run_task.sh "run_post" ${JOBSdir}/JREGIONAL_RUN_POST
 done
