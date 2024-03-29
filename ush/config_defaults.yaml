@@ -510,22 +510,22 @@ workflow:
   # path will be appended to the default value ${HOMEdir}/../expt_dirs 
   #
   # EXPT_SUBDIR:
-  # The name that the experiment directory (without the full path) will
-  # have.  The full path to the experiment directory, which will be contained
-  # in the variable EXPTDIR, will be:
-  #
-  #   EXPTDIR: "${EXPT_BASEDIR}/${EXPT_SUBDIR}"
-  #
-  # This cannot be empty.  If set to a null string here, it must be set to
-  # a (non-empty) value in the user-defined experiment configuration file.
+  # If EXPTDIR is not specified, this represents the experiment directory 
+  # (not the full path)
   #
   # EXEC_SUBDIR:
   # The name of the subdirectory of ufs-srweather-app where executables are
   # installed.
+  #
+  # EXPTDIR:
+  # The full path to the experiment directory. Can be user-specified, but by
+  # default will point to:
+  #
+  #   EXPTDIR: "${EXPT_BASEDIR}/${EXPT_SUBDIR}"
   #-----------------------------------------------------------------------
   #
   EXPT_BASEDIR: '' # This will be set in setup.py prior to extend_yaml() being called
-  EXPT_SUBDIR: '{{ EXPT_SUBDIR }}'
+  EXPT_SUBDIR: 'experiment'
   EXEC_SUBDIR: "exec"
   EXPTDIR: '{{ [workflow.EXPT_BASEDIR, workflow.EXPT_SUBDIR]|path_join }}'
   #
@@ -607,9 +607,9 @@ workflow:
   # NUOPC/ESMF main component (ufs-weather-model: model_config). Its default 
   # value is the name of the file that the ufs weather model expects to read in.
   #
-  # NEMS_CONFIG_FN:
-  # Name of a template file that contains information about the various NEMS 
-  # components and their run sequence (ufs-weather-model: nems.configure). 
+  # UFS_CONFIG_FN:
+  # Name of a template file that contains information about the various UFS 
+  # components and their run sequence (ufs-weather-model: ufs.configure). 
   # Its default value is the name of the file that the ufs weather model expects 
   # to read in.
   #
@@ -639,7 +639,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: 'diag_table.{{ CCPP_PHYS_SUITE }}'
   FIELD_TABLE_TMPL_FN: 'field_table.{{ CCPP_PHYS_SUITE }}'
   MODEL_CONFIG_FN: "model_configure"
-  NEMS_CONFIG_FN: "nems.configure"
+  UFS_CONFIG_FN: "ufs.configure"
   AQM_RC_FN: "aqm.rc"
   AQM_RC_TMPL_FN: "aqm.rc"
   FIRE_NML_FN: "namelist.fire"
@@ -667,8 +667,8 @@ workflow:
   # MODEL_CONFIG_TMPL_FP: 
   # Path to the MODEL_CONFIG_FN file.
   # 
-  # NEMS_CONFIG_TMPL_FP: 
-  # Path to the NEMS_CONFIG_FN file. 
+  # UFS_CONFIG_TMPL_FP: 
+  # Path to the UFS_CONFIG_FN file. 
   # 
   # AQM_RC_TMPL_FP: 
   # Path to the AQM_RC_TMPL_FN file. 
@@ -683,7 +683,7 @@ workflow:
   DIAG_TABLE_TMPL_FP: '{{ [user.PARMdir, DIAG_TABLE_TMPL_FN]|path_join }}'
   FIELD_TABLE_TMPL_FP: '{{ [user.PARMdir, FIELD_TABLE_TMPL_FN]|path_join }}'
   MODEL_CONFIG_TMPL_FP: '{{ [user.PARMdir, MODEL_CONFIG_FN]|path_join }}'
-  NEMS_CONFIG_TMPL_FP: '{{ [user.PARMdir, NEMS_CONFIG_FN]|path_join }}'
+  UFS_CONFIG_TMPL_FP: '{{ [user.PARMdir, UFS_CONFIG_FN]|path_join }}'
   AQM_RC_TMPL_FP: '{{ [user.PARMdir, AQM_RC_TMPL_FN]|path_join }}'
   FIRE_NML_BASE_FP: '{{ [user.PARMdir, FIRE_NML_FN]|path_join }}'
 
@@ -697,8 +697,8 @@ workflow:
   # FIELD_TABLE_FP: 
   # Path to the field table in the experiment directory. 
   # 
-  # NEMS_CONFIG_FP: 
-  # Path to the NEMS_CONFIG_FN file in the experiment directory. 
+  # UFS_CONFIG_FP: 
+  # Path to the UFS_CONFIG_FN file in the experiment directory. 
   # 
   # FV3_NML_FP: 
   # Path to the FV3_NML_FN file in the experiment directory.
@@ -759,7 +759,7 @@ workflow:
   #
   DATA_TABLE_FP: '{{ [EXPTDIR, DATA_TABLE_FN]|path_join }}'
   FIELD_TABLE_FP: '{{ [EXPTDIR, FIELD_TABLE_FN]|path_join }}'
-  NEMS_CONFIG_FP: '{{ [EXPTDIR, NEMS_CONFIG_FN]|path_join }}'
+  UFS_CONFIG_FP: '{{ [EXPTDIR, UFS_CONFIG_FN]|path_join }}'
   FV3_NML_FP: '{{ [EXPTDIR, FV3_NML_FN]|path_join }}'
   FV3_NML_STOCH_FP: '{{ [EXPTDIR, [FV3_NML_FN, "_stoch"]|join ]|path_join }}'
   FIRE_NML_FP: '{{ [EXPTDIR, FIRE_NML_FN]|path_join }}'
@@ -806,7 +806,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIXdir: '{{ EXPTDIR if rocoto.tasks.get("task_make_grid") else [user.HOMEdir, "fix"]|path_join }}'
+  FIXdir: '{{ EXPTDIR }}'
   FIXam: '{{ [FIXdir, "fix_am"]|path_join }}'
   FIXclim: '{{ [FIXdir, "fix_clim"]|path_join }}'
   FIXlam: '{{ [FIXdir, "fix_lam"]|path_join }}'
@@ -847,7 +847,7 @@ workflow:
   CCPP_PHYS_SUITE_FN: 'suite_{{ CCPP_PHYS_SUITE }}.xml'
   CCPP_PHYS_SUITE_IN_CCPP_FP: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "suites", CCPP_PHYS_SUITE_FN] |path_join }}'
   CCPP_PHYS_SUITE_FP: '{{ [workflow.EXPTDIR, CCPP_PHYS_SUITE_FN]|path_join }}'
-  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics"] |path_join }}'
+  CCPP_PHYS_DIR: '{{ [user.UFS_WTHR_MDL_DIR, "FV3", "ccpp", "physics", "physics", "SFC_Models", "Land", "Noahmp"] |path_join }}'
   #
   #-----------------------------------------------------------------------
   #
@@ -867,7 +867,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  FIELD_DICT_FN: "fd_nems.yaml"
+  FIELD_DICT_FN: "fd_ufs.yaml"
   FIELD_DICT_IN_UWM_FP: '{{ [user.UFS_WTHR_MDL_DIR, "tests", "parm", FIELD_DICT_FN]|path_join }}'
   FIELD_DICT_FP: '{{ [workflow.EXPTDIR, FIELD_DICT_FN]|path_join }}'
   #
@@ -1028,7 +1028,7 @@ workflow:
   #
   #-----------------------------------------------------------------------
   #
-  PREEXISTING_DIR_METHOD: "delete"
+  PREEXISTING_DIR_METHOD: "quit"
   #
   #-----------------------------------------------------------------------
   #
@@ -1117,31 +1117,8 @@ nco:
   #   Name of model run (third level of com directory structure).
   #   In general, same as ${NET_default}.
   #
-  # OPSROOT_default:
-  # The operations root directory in NCO mode.
-  #
-  # COMROOT_default: 
-  # The com root directory for input/output data that is located on 
-  # the current system.
-  #
-  # DATAROOT_default: 
-  # Directory containing the (temporary) working directory for running
-  # jobs.
-  #
-  # DCOMROOT_default: 
-  # dcom root directory, which contains input/incoming data that is
-  # retrieved from outside WCOSS.
-  #
-  # LOGBASEDIR_default:
-  # Directory in which the log files from the workflow tasks will be placed.
-  #
-  # COMIN_BASEDIR: 
-  # com directory for current model's input data, typically 
-  # $COMROOT/$NET/$model_ver/$RUN.$PDY
-  #
-  # COMOUT_BASEDIR: 
-  # com directory for current model's output data, typically 
-  # $COMROOT/$NET/$model_ver/$RUN.$PDY
+  # PTMP:
+  # User-defined path to the com type directories (OPSROOT=$PTMP/$envir).
   #
   # DBNROOT_default: 
   # Root directory for the data-alerting utilities.
@@ -1175,26 +1152,20 @@ nco:
   #
   #-----------------------------------------------------------------------
   #
-  envir_default: "para"
+  envir_default: "test"
   NET_default: "srw"
   RUN_default: "srw"
   model_ver_default: "v1.0.0"
 
-  OPSROOT_default: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs'
-  COMROOT_default: '{{ OPSROOT_default }}/com'
-  DATAROOT_default: '{{ OPSROOT_default }}/tmp'
-  DCOMROOT_default: '{{ OPSROOT_default }}/dcom'
-  LOGBASEDIR_default: '{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'
-  COMIN_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
-  COMOUT_BASEDIR: '{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'
+  PTMP: '{{ workflow.EXPT_BASEDIR }}/../nco_dirs' 
 
   DBNROOT_default: ""
-  SENDECF_default: false
-  SENDDBN_default: false
-  SENDDBN_NTC_default: false
-  SENDCOM_default: false
-  SENDWEB_default: false
-  KEEPDATA_default: true
+  SENDECF_default: "NO"
+  SENDDBN_default: "NO"
+  SENDDBN_NTC_default: "NO"
+  SENDCOM_default: "YES"
+  SENDWEB_default: "NO"
+  KEEPDATA_default: "YES"
   MAILTO_default: ""
   MAILCC_default: ""
 
@@ -1767,8 +1738,8 @@ task_run_fcst:
   #-----------------------------------------------------------------------
   #
   KMP_AFFINITY_RUN_FCST: "scatter"
-  OMP_NUM_THREADS_RUN_FCST: 1    # ATM_omp_num_threads in nems.configure
-  OMP_STACKSIZE_RUN_FCST: "512m"
+  OMP_NUM_THREADS_RUN_FCST: 2    # atmos_nthreads in model_configure
+  OMP_STACKSIZE_RUN_FCST: "1024m"
   #
   #-----------------------------------------------------------------------
   #
@@ -1797,12 +1768,21 @@ task_run_fcst:
   # weather model].  If this is set to true, the the run_post task will
   # be deactivated.
   #
+  # ITASKS:
+  # Variable denoting the number of write tasks in the i direction in the
+  # current group.  Used for inline post 2D decomposition.  Setting this
+  # variable to a value greater than 1 will enable 2D decomposition.
+  # Default setting is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
+  #
   #-----------------------------------------------------------------------
   #
   DT_ATMOS: ""
   FHROT: 0
   RESTART_INTERVAL: 0
   WRITE_DOPOST: false
+  ITASKS: 1
   #
   #-----------------------------------------------------------------------
   #
@@ -2077,12 +2057,19 @@ task_run_post:
   # The file that lists grib2 fields to be extracted for testbed files.
   # An empty string means no need to generate testbed files.
   #
+  # NUMX:
+  # The number of i regions in a 2D decomposition.  Each i row is 
+  # distibuted to numx ranks. Default value of numx is 1.
+  # Note that 2D decomposition does not yet work with GNU compilers, so this value 
+  # will be reset to 1 automatically when using GNU compilers (i.e., when COMPILER: gnu).
+  #
   #-----------------------------------------------------------------------
   #
-  USE_CUSTOM_POST_CONFIG_FILE: false
-  CUSTOM_POST_CONFIG_FP: ""
+  USE_CUSTOM_POST_CONFIG_FILE: true
+  CUSTOM_POST_CONFIG_FP: "{{ user.SORCdir }}/ufs-weather-model/tests/parm/postxconfig-NT-fv3lam.txt"
   POST_OUTPUT_DOMAIN_NAME: '{{ workflow.PREDEF_GRID_NAME }}'
   TESTBED_FIELDS_FN: ""
+  NUMX: 1
 
 #----------------------------
 # RUN PRDGEN config parameters
@@ -2167,6 +2154,10 @@ task_nexus_emission:
   # PPN_NEXUS_EMISSION: 
   # Processes per node for the nexus_emission_* tasks. 
   # 
+  # NNODES_NEXUS_EMISSION:
+  # The number of nodes to request from the job scheduler
+  # for the nexus emission task.
+  #
   # KMP_AFFINITY_NEXUS_EMISSION: 
   # Intel Thread Affinity Interface for the nexus_emission_* tasks. 
   # 
@@ -2177,9 +2168,21 @@ task_nexus_emission:
   # Controls the size of the stack for threads created by the OpenMP implementation.
   #-------------------------------------------------------------------------------
   PPN_NEXUS_EMISSION: '{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'
+  NNODES_NEXUS_EMISSION: 4
   KMP_AFFINITY_NEXUS_EMISSION: "scatter"
   OMP_NUM_THREADS_NEXUS_EMISSION: 2
   OMP_STACKSIZE_NEXUS_EMISSION: "1024m"
+
+#-----------------------------
+# POINT_SOURCE config parameters
+#-----------------------------
+task_point_source:
+  #-------------------------------------------------------------------------------
+  # PT_SRC_SUBDIR:
+  # Sub-directory structure of point source data under FIXemis.
+  # Full path: FIXemis/PT_SRC_SUBDIR
+  #-------------------------------------------------------------------------------
+  PT_SRC_SUBDIR: "NEI2016v1/v2023-01-PT"  
 
 #----------------------------
 # BIAS_CORRECTION_O3 config parameters
@@ -2395,20 +2398,21 @@ global:
 # verification (vx) parameters
 #-----------------------------
 verification:
-  #-----------------------------------------------------------------------
+  #
+  # METPLUS_VERBOSITY_LEVEL: 
+  # Logging verbosity level used by METplus verification tools.  0 to 5,
+  # with 0 quiet and 5 loud.  
+  # 
+  METPLUS_VERBOSITY_LEVEL: 2
   #
   # Templates for CCPA, MRMS, and NDAS observation files.
   # 
-  # OBS_CCPA_APCP01h_FN_TEMPLATE: 
-  # File name template used to obtain the input observation files (in 
-  # the PcpCombine_obs tasks) that contain the 1-hour accumulated 
-  # precipitation (APCP) from which APCP for longer accumulations will 
-  # be generated.
-  # 
-  # OBS_CCPA_APCPgt01h_FN_TEMPLATE: 
-  # File name template used to generate the observation files (in the 
-  # PcpCombine_obs tasks) containing accumulated precipitation for 
-  # accumulation periods longer than 1-hour.
+  # OBS_CCPA_APCP_FN_TEMPLATE:
+  # File name template for CCPA accumulated precipitation (APCP) observations.
+  # This template is used by the workflow tasks that call the METplus PcpCombine
+  # tool on CCPA obs to find the input observation files containing 1-hour
+  # APCP and then generate NetCDF files containing either 1-hour or greater
+  # than 1-hour APCP.
   # 
   # OBS_NOHRSC_ASNOW_FN_TEMPLATE: 
   # File name template for NOHRSC snow observations.
@@ -2418,22 +2422,35 @@ verification:
   # 
   # OBS_MRMS_RETOP_FN_TEMPLATE: 
   # File name template for MRMS echo top observations.
-  # 
-  # OBS_NDAS_SFCorUPA_FN_TEMPLATE: 
-  # File name template for NDAS surface and upper air observations.
-  # 
-  # OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: 
-  # File name template for NDAS surface and upper air observations 
-  # after processing by MET's pb2nc tool (to change format to NetCDF).
   #
- 
-  OBS_CCPA_APCP01h_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
-  OBS_CCPA_APCPgt01h_FN_TEMPLATE: '${OBS_CCPA_APCP01h_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  # OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE: 
+  # File name template for NDAS surface and upper air observations.
+  # This template is used by the workflow tasks that call the METplus Pb2nc
+  # tool on NDAS obs to find the input observation files containing ADP
+  # surface (ADPSFC) or ADP upper air (ADPUPA) fields and then generate
+  # NetCDF versions of these files.
+  #
+  OBS_CCPA_APCP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/ccpa.t{valid?fmt=%H}z.01h.hrap.conus.gb2'
   OBS_NOHRSC_ASNOW_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/sfav2_CONUS_${ACCUM_HH}h_{valid?fmt=%Y%m%d%H}_grid184.grb2'
   OBS_MRMS_REFC_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/MergedReflectivityQCComposite_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
   OBS_MRMS_RETOP_FN_TEMPLATE: '{valid?fmt=%Y%m%d}/EchoTop_18_00.50_{valid?fmt=%Y%m%d}-{valid?fmt=%H%M%S}.grib2'
-  OBS_NDAS_SFCorUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
-  OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE: '${OBS_NDAS_SFCorUPA_FN_TEMPLATE}.nc'
+  OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE: 'prepbufr.ndas.{valid?fmt=%Y%m%d%H}'
+  # 
+  # OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: 
+  # Template used to specify the names of the output NetCDF observation
+  # files generated by the worfklow verification tasks that call the METplus
+  # PcpCombine tool on CCPA observations.  (These files will contain obs
+  # APCP, both for 1 hour and for > 1 hour accumulation periods, in NetCDF
+  # format.)
+  #
+  # OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT: 
+  # Template used to specify the names of the output NetCDF observation
+  # files generated by the worfklow verification tasks that call the
+  # METplus Pb2nc tool on NDAS observations.  (These files will contain
+  # obs ADPSFC or ADPUPA fields in NetCDF format.)
+  #
+  OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${OBS_CCPA_APCP_FN_TEMPLATE}_a${ACCUM_HH}h.nc'
+  OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT: '${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE}.nc'
   #
   # VX_FCST_MODEL_NAME:
   # String that specifies a descriptive name for the model being verified.
@@ -2442,11 +2459,11 @@ verification:
   #
   # VX_FIELDS:
   # The fields or groups of fields on which to run verification. Because
-  # ASNOW is often not of interest in cases outside of winter, and 
-  # because observation files are not located for retrospective
-  # cases on NOAA HPSS before March 2020, ASNOW is not included by default.
-  # "ASNOW" may be added to this list in order to include
-  # the related verification tasks in the workflow. 
+  # accumulated snow (ASNOW) is often not of interest in non-winter cases
+  # and because observation files for ASNOW are not available on NOAA
+  # HPSS for retrospective cases before March 2020, by default ASNOW is
+  # not included VX_FIELDS, but it may be added to this list in order to
+  # include the verification tasks for ASNOW in the workflow. 
   #
   # VX_APCP_ACCUMS_HRS:
   # The 2-digit accumulation periods (in units of hours) to consider for
@@ -2461,7 +2478,7 @@ verification:
   # VX_ASNOW_ACCUMS_HRS will be ignored.
   #
   VX_FCST_MODEL_NAME: '{{ nco.NET_default }}.{{ task_run_post.POST_OUTPUT_DOMAIN_NAME }}'
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA" ]
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]
   VX_APCP_ACCUMS_HRS: [ 1, 3, 6, 24 ]
   VX_ASNOW_ACCUMS_HRS: [ 6, 24 ]
   #
@@ -2485,20 +2502,24 @@ verification:
   #
   # File name and path templates used in the verification tasks.
   #
-  # FCST_SUBDIR_TEMPLATE: A template for the subdirectory containing 
-  # input forecast files for vx tasks.
+  # FCST_SUBDIR_TEMPLATE:
+  # Template for the subdirectory containing forecast files that are
+  # inputs to the verification tasks.
   # 
-  # FCST_FN_TEMPLATE: A template for the forecast file names used as 
-  # input to verification tasks.
+  # FCST_FN_TEMPLATE:
+  # Template for the names of the forecast files that are inputs to the
+  # verification tasks.
   # 
-  # FCST_FN_METPROC_TEMPLATE: A template for how to name the forecast 
-  # files for accumulated precipitation (APCP) with greater than 1-hour 
-  # accumulation (i.e., 3-, 6-, and 24-hour accumulations) after 
-  # processing by PcpCombine.
+  # FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT:
+  # Template used to specify the names of the output NetCDF forecast files
+  # generated by the worfklow verification tasks that call the METplus
+  # PcpCombine tool on forecasts.  (These files will contain forecast APCP,
+  # both for 1 hour and for > 1 hour accumulation periods, in NetCDF
+  # format.)
   #
   FCST_SUBDIR_TEMPLATE: '{% if user.RUN_ENVIR == "nco" %}${NET_default}.{init?fmt=%Y%m%d?shift=-${time_lag}}/{init?fmt=%H?shift=-${time_lag}}{% else %}{init?fmt=%Y%m%d%H?shift=-${time_lag}}{% if global.DO_ENSEMBLE %}/${ensmem_name}{% endif %}/postprd{% endif %}'
   FCST_FN_TEMPLATE: '${NET_default}.t{init?fmt=%H?shift=-${time_lag}}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH?shift=${time_lag}}.${POST_OUTPUT_DOMAIN_NAME}.grib2'
-  FCST_FN_METPROC_TEMPLATE: '${NET_default}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc'
+  FCST_FN_TEMPLATE_PCPCOMBINE_OUTPUT: '${NET_default}.t{init?fmt=%H}z{% if user.RUN_ENVIR == "nco" and global.DO_ENSEMBLE %}.${ensmem_name}{% endif %}.prslev.f{lead?fmt=%HHH}.${POST_OUTPUT_DOMAIN_NAME}_${VAR}_a${ACCUM_HH}h.nc'
   #
   # For verification tasks that need observational data, this specifies
   # the maximum number of observation files that may be missing.  If more
@@ -2550,41 +2571,15 @@ cpl_aqm_parm:
   #
   # DO_AQM_SAVE_FIRE:
   # Archive fire emission file to HPSS
-  #
-  # DCOMINbio_default:
-  # Path to the directory containing AQM bio files
   # 
-  # DCOMINdust_default:
-  # Path to the directory containing AQM dust file
-  #
-  # DCOMINcanopy_default:
-  # Path to the directory containing AQM canopy files
-  # 
-  # DCOMINfire_default:
-  # Path to the directory containing AQM fire files
-  # 
-  # DCOMINchem_lbcs_default:
-  # Path to the directory containing chemical LBC files
-  # 
-  # DCOMINgefs_default:
-  # Path to the directory containing GEFS aerosol LBC files
-  #
-  # DCOMINpt_src_default:
-  # Parent directory containing point source files
-  #
-  # DCOMINairnow_default:
+  # COMINairnow_default:
   # Path to the directory containing AIRNOW observation data
   #
-  # COMINbicor:
-  # Path of reading in historical training data for biascorrection 
-  #
-  # COMOUTbicor:
-  # Path to save the current cycle's model output and AirNow obs as 
-  # training data for future use. $COMINbicor and $COMOUTbicor can be 
-  # distinguished by the ${yyyy}${mm}${dd} under the same location
-  #
-  # AQM_CONFIG_DIR:
-  # Configuration directory for AQM
+  # COMINfire_default:
+  # Path to the directory containing AQM fire files
+  # 
+  # COMINgefs_default:
+  # Path to the directory containing GEFS aerosol LBC files
   # 
   # AQM_BIO_FILE:
   # File name of AQM BIO file
@@ -2610,9 +2605,6 @@ cpl_aqm_parm:
   # AQM_FIRE_FILE_OFFSET_HRS: 
   # Time offset when retrieving fire emission data files. 
   # 
-  # AQM_FIRE_ARCHV_DIR:
-  # Path to the archive directory for RAVE emission files on HPSS
-  #
   # AQM_RC_FIRE_FREQUENCY:
   # Fire frequency in aqm.rc
   #
@@ -2630,13 +2622,6 @@ cpl_aqm_parm:
   #
   # AQM_GEFS_FILE_CYC:
   # Cycle of the GEFS aerosol LBC files only if it is fixed
-  # 
-  # NEXUS_INPUT_DIR:
-  # Same as GRID_DIR but for the the air quality emission generation task.
-  # Should be blank for the default value specified in setup.sh
-  # 
-  # NEXUS_FIX_DIR:
-  # Directory containing grid_spec files as the input file of nexus
   # 
   # NEXUS_GRID_FN:
   # File name of the input grid_spec file of nexus
@@ -2666,18 +2651,10 @@ cpl_aqm_parm:
   DO_AQM_SAVE_AIRNOW_HIST: false
   DO_AQM_SAVE_FIRE: false
 
-  DCOMINbio_default: ""
-  DCOMINdust_default: "/path/to/dust/dir"
-  DCOMINcanopy_default: "/path/to/canopy/dir"
-  DCOMINfire_default: ""
-  DCOMINchem_lbcs_default: ""
-  DCOMINgefs_default: ""
-  DCOMINpt_src_default: "/path/to/point/source/base/directory"
-  DCOMINairnow_default: "/path/to/airnow/obaservation/data"
-  COMINbicor: "/path/to/historical/airnow/data/dir"
-  COMOUTbicor: "/path/to/historical/airnow/data/dir"
+  COMINairnow_default: "/path/to/airnow/obaservation/data"
+  COMINfire_default: ""
+  COMINgefs_default: ""
 
-  AQM_CONFIG_DIR: ""
   AQM_BIO_FILE: "BEIS_SARC401.ncf"
 
   AQM_DUST_FILE_PREFIX: "FENGSHA_p8_10km_inputs"
@@ -2689,7 +2666,6 @@ cpl_aqm_parm:
   AQM_FIRE_FILE_PREFIX: "GBBEPx_C401GRID.emissions_v003"
   AQM_FIRE_FILE_SUFFIX: ".nc"
   AQM_FIRE_FILE_OFFSET_HRS: 0
-  AQM_FIRE_ARCHV_DIR: "/path/to/archive/dir/for/RAVE/on/HPSS"
 
   AQM_RC_FIRE_FREQUENCY: "static"
   AQM_RC_PRODUCT_FN: "aqm.prod.nc"
@@ -2700,8 +2676,6 @@ cpl_aqm_parm:
   AQM_GEFS_FILE_PREFIX: "geaer"
   AQM_GEFS_FILE_CYC: ""
 
-  NEXUS_INPUT_DIR: ""
-  NEXUS_FIX_DIR: ""
   NEXUS_GRID_FN: "grid_spec_GSD_HRRR_25km.nc"
   NUM_SPLIT_NEXUS: 3
   NEXUS_GFS_SFC_OFFSET_HRS: 0

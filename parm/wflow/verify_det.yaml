@@ -37,7 +37,7 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBS_DIR: '&CCPA_OBS_DIR;'
         VAR: APCP
         ACCUM_HH: '#ACCUM_HH#'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
@@ -67,12 +67,16 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBS_DIR: '&NOHRSC_OBS_DIR;'
         VAR: ASNOW
         ACCUM_HH: '#ACCUM_HH#'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
+        and:
+          taskdep:
+            attrs:
+              task: get_obs_mrms
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#
@@ -91,21 +95,16 @@ metatask_GridStat_MRMS_all_mems:
         OBS_DIR: '&MRMS_OBS_DIR;'
         VAR: '#VAR#'
         ACCUM_HH: '01'
-        MET_TOOL: 'GRIDSTAT'
+        METPLUSTOOLNAME: 'GRIDSTAT'
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
       walltime: 02:00:00
       dependency:
         and:
-          or_get_obs: # Ensure get_obs task is complete if it's turned on
-            not:
-              taskvalid:
-                attrs:
-                  task: get_obs_mrms
-            taskdep:
-              attrs:
-                task: get_obs_mrms
+          taskdep:
+            attrs:
+              task: get_obs_mrms
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
@@ -116,7 +115,7 @@ metatask_PointStat_NDAS_all_mems:
     mem: '{% if global.DO_ENSEMBLE %}{% for m in range(1, global.NUM_ENS_MEMBERS+1) %}{{ "%03d "%m }}{%- endfor -%} {% else %}{{ "000"|string }}{% endif %}'
   metatask_PointStat_NDAS_mem#mem#:
     var:
-      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["SFC", "UPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
+      VAR: '{% for var in verification.VX_FIELDS %}{% if var in ["ADPSFC", "ADPUPA"] %}{{ "%s " % var }}{% endif %}{% endfor %}'
     task_run_MET_PointStat_vx_#VAR#_mem#mem#:
       <<: *default_task_verify_det
       command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_GRIDSTAT_OR_POINTSTAT_VX"'
@@ -124,7 +123,7 @@ metatask_PointStat_NDAS_all_mems:
         <<: *default_vars
         OBS_DIR: '&NDAS_OBS_DIR;'
         VAR: '#VAR#'
-        MET_TOOL: 'POINTSTAT'
+        METPLUSTOOLNAME: 'POINTSTAT'
         OBTYPE: 'NDAS'
         ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"

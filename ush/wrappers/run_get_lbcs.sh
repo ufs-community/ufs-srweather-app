@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 export GLOBAL_VAR_DEFNS_FP="${EXPTDIR}/var_defns.sh"
 set -xa
 source ${GLOBAL_VAR_DEFNS_FP}

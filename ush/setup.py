@@ -39,7 +39,6 @@ from python_utils import (
 
 from set_cycle_dates import set_cycle_dates
 from set_predef_grid_params import set_predef_grid_params
-from set_ozone_param import set_ozone_param
 from set_gridparams_ESGgrid import set_gridparams_ESGgrid
 from set_gridparams_GFDLgrid import set_gridparams_GFDLgrid
 from link_fix import link_fix
@@ -238,7 +237,6 @@ def load_config_for_setup(ushdir, default_config, user_config):
 
     # Mandatory variables *must* be set in the user's config or the machine file; the default value is invalid
     mandatory = [
-        "EXPT_SUBDIR",
         "NCORES_PER_NODE",
         "FIXgsm",
         "FIXaer",
@@ -569,7 +567,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
                                 "metatask_GenEnsProd_EnsembleStat_MRMS",
                                 "metatask_GridStat_MRMS_ensprob"]
 
-    vx_fields_all["NDAS"] = ["SFC", "UPA"]
+    vx_fields_all["NDAS"] = ["ADPSFC", "ADPUPA"]
     vx_metatasks_all["NDAS"] = ["task_run_MET_Pb2nc_obs",
                                 "metatask_PointStat_NDAS_all_mems",
                                 "metatask_GenEnsProd_EnsembleStat_NDAS",
@@ -1175,49 +1173,15 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     #
     # -----------------------------------------------------------------------
     #
-
-    # These NCO variables need to be set based on the user's specified
-    # run environment. The default is set in config_defaults for nco. If
-    # running in community mode, we set these paths to the experiment
-    # directory.
-    nco_vars = [
-        "opsroot_default",
-        "comroot_default",
-        "dataroot_default",
-        "dcomroot_default",
-        "comin_basedir",
-        "comout_basedir",
-    ]
-
-    nco_config = expt_config["nco"]
-    if run_envir != "nco":
-        # Put the variables in config dict.
-        for nco_var in nco_vars:
-            nco_config[nco_var.upper()] = exptdir
-
     # Use env variables for NCO variables and create NCO directories
     workflow_manager = expt_config["platform"].get("WORKFLOW_MANAGER")
     if run_envir == "nco" and workflow_manager == "rocoto":
-        for nco_var in nco_vars:
-            envar = os.environ.get(nco_var)
-            if envar is not None:
-                nco_config[nco_var.upper()] = envar
-
-        mkdir_vrfy(f' -p "{nco_config.get("OPSROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("COMROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DATAROOT_default")}"')
-        mkdir_vrfy(f' -p "{nco_config.get("DCOMROOT_default")}"')
-
         # Update the rocoto string for the fcst output location if
         # running an ensemble in nco mode
         if global_sect["DO_ENSEMBLE"]:
             rocoto_config["entities"]["FCST_DIR"] = \
-                "{{ nco.DATAROOT_default }}/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
+                "{{ nco.PTMP }}/{{ nco.envir_default }}/tmp/run_fcst_mem#mem#.{{ workflow.WORKFLOW_ID }}_@Y@m@d@H"
 
-    if nco_config["DBNROOT_default"] and workflow_manager == "rocoto":
-        mkdir_vrfy(f' -p "{nco_config["DBNROOT_default"]}"')
-
-    mkdir_vrfy(f' -p "{nco_config.get("LOGBASEDIR_default")}"')
     # create experiment dir
     mkdir_vrfy(f' -p "{exptdir}"')
 
@@ -1277,43 +1241,6 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
             in the local clone of the ufs-weather-model:
               FIELD_DICT_IN_UWM_FP = '{field_dict_in_uwm_fp}'"""
         )
-
-    fixed_files = expt_config["fixed_files"]
-    # Set the appropriate ozone production/loss file paths and symlinks
-    ozone_param, fixgsm_ozone_fn, ozone_link_mappings = set_ozone_param(
-        ccpp_phys_suite_in_ccpp_fp,
-        fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"],
-    )
-
-    # Reset the dummy value saved in the last list item to the ozone
-    # file name
-    fixed_files["FIXgsm_FILES_TO_COPY_TO_FIXam"][-1] = fixgsm_ozone_fn
-
-    # Reset the experiment config list with the update list
-    fixed_files["CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING"] = ozone_link_mappings
-
-    log_info(
-        f"""
-        The ozone parameter used for this experiment is {ozone_param}.
-        """
-    )
-
-    log_info(
-        f"""
-        The list that sets the mapping between symlinks in the cycle
-        directory, and the files in the FIXam directory has been updated
-        to include the ozone production/loss file.
-        """,
-        verbose=verbose,
-    )
-
-    log_info(
-        f"""
-        CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING = {list_to_str(ozone_link_mappings)}
-        """,
-        verbose=verbose,
-        dedent_=False,
-    )
 
     #
     # -----------------------------------------------------------------------
@@ -1401,6 +1328,8 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
       "SFC_CLIMO": (not run_make_sfc_climo) and \
                    (run_make_ics or run_make_lbcs),
     }
+
+    fixed_files = expt_config["fixed_files"]
 
     prep_tasks = ["GRID", "OROG", "SFC_CLIMO"]
     res_in_fixlam_filenames = None

@@ -5,6 +5,7 @@ platform:
   TEST_CCPA_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/obs_data/nohrsc/proc
   DOMAIN_PREGEN_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: hera
   QUEUE_DEFAULT: batch
@@ -18,8 +19,9 @@ platform:
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL
   RUN_CMD_NEXUS: srun -n ${nprocs} --export=ALL
-  RUN_CMD_AQMLBC: srun --export=ALL -n ${NUMTS}
+  RUN_CMD_AQMLBC: srun --export=ALL -n ${numts}
   SCHED_NATIVE_CMD: --export=NONE
+  SCHED_NATIVE_CMD_HPSS: -n 1 --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/input_model_data
   TEST_AQM_INPUT_BASEDIR: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/aqm_data
@@ -33,21 +35,14 @@ platform:
   FIXorg: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /scratch1/NCEPDEV/nems/role.epic/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /scratch2/NAGAPE/epic/SRW-AQM_DATA/fix_aqm
+  FIXemis: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus
   EXTRN_MDL_DATA_STORES: hpss aws nomads
 
 cpl_aqm_parm:
-  AQM_CONFIG_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/epa/data
-  DCOMINbio_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/aqm/bio
-  DCOMINdust_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/FENGSHA
-  DCOMINcanopy_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/canopy
-  DCOMINfire_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/RAVE_fire
-  DCOMINchem_lbcs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/LBCS/AQM_NA13km_AM4_v1
-  DCOMINgefs_default: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GEFS_DATA
-  DCOMINpt_src_default: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
-  NEXUS_INPUT_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/emissions/nexus
-  NEXUS_FIX_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/nexus/fix
-  NEXUS_GFS_SFC_DIR: /scratch2/NCEPDEV/naqfc/RRFS_CMAQ/GFS_DATA
-  PT_SRC_BASEDIR: /scratch1/RDARCH/rda-arl-gpu/Barry.Baker/emissions/nexus/NEI2016v1/v2023-01-PT
+  COMINfire_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
+  COMINgefs_default: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
+  NEXUS_GFS_SFC_DIR: /scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
 
 rocoto:
   tasks:

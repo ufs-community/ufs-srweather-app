@@ -56,7 +56,6 @@ function set_vx_params() {
         "field" \
         "accum_hh" \
         "outvarname_grid_or_point" \
-        "outvarname_field_is_APCPgt01h" \
         "outvarname_fieldname_in_obs_input" \
         "outvarname_fieldname_in_fcst_input" \
         "outvarname_fieldname_in_MET_output" \
@@ -81,7 +80,6 @@ function set_vx_params() {
 #-----------------------------------------------------------------------
 #
   local _grid_or_point_ \
-        _field_is_APCPgt01h_ \
         fieldname_in_obs_input \
         fieldname_in_fcst_input \
         fieldname_in_MET_output \
@@ -107,11 +105,6 @@ The accumulation (accum_hh) must be a 2-digit integer:
 # String that is set to either "grid" or "point" depending on whether
 # the field in consideration has obs that are gridded or point-based.
 #
-# field_is_APCPgt01h:
-# Flag that specifies whether the input field and accumulation together
-# represent accumulated precipitation with accumulation period greater
-# than 1 hour.
-#
 # fieldname_in_obs_input:
 # String used to search for the field in the input observation files
 # read in by MET.
@@ -131,8 +124,7 @@ The accumulation (accum_hh) must be a 2-digit integer:
 #
 #-----------------------------------------------------------------------
 #
-  _grid_or_point_="FALSE"
-  _field_is_APCPgt01h_="FALSE"
+  _grid_or_point_=""
   fieldname_in_obs_input=""
   fieldname_in_fcst_input=""
   fieldname_in_MET_output=""
@@ -148,11 +140,8 @@ The accumulation (accum_hh) must be a 2-digit integer:
         "APCP")
           fieldname_in_obs_input="${field}"
           fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}_${accum_hh}"
+          fieldname_in_MET_output="${field}"
           fieldname_in_MET_filedir_names="${field}${accum_hh}h"
-          if [ "${accum_hh}" -gt "01" ]; then
-            _field_is_APCPgt01h_="TRUE"
-          fi
           ;;
 
         *)
@@ -174,8 +163,8 @@ this observation type (obtype) and field (field) combination:
         "ASNOW")
           fieldname_in_obs_input="${field}"
           fieldname_in_fcst_input="${field}"
-          fieldname_in_MET_output="${field}_${accum_hh}"
-          fieldname_in_MET_filedir_names="${field}"
+          fieldname_in_MET_output="${field}"
+          fieldname_in_MET_filedir_names="${field}${accum_hh}h"
           ;;
 
         *)
@@ -224,14 +213,14 @@ this observation type (obtype) and field (field) combination:
       _grid_or_point_="point"
       case "${field}" in
 
-        "SFC")
+        "ADPSFC")
           fieldname_in_obs_input=""
           fieldname_in_fcst_input=""
           fieldname_in_MET_output="${field}"
           fieldname_in_MET_filedir_names="${field}"
           ;;
 
-        "UPA")
+        "ADPUPA")
           fieldname_in_obs_input=""
           fieldname_in_fcst_input=""
           fieldname_in_MET_output="${field}"
@@ -266,10 +255,6 @@ this observation type (obtype):
 #
   if [ ! -z "${outvarname_grid_or_point}" ]; then
     printf -v ${outvarname_grid_or_point} "%s" "${_grid_or_point_}"
-  fi
-
-  if [ ! -z "${outvarname_field_is_APCPgt01h}" ]; then
-    printf -v ${outvarname_field_is_APCPgt01h} "%s" "${_field_is_APCPgt01h_}"
   fi
 
   if [ ! -z "${outvarname_fieldname_in_obs_input}" ]; then

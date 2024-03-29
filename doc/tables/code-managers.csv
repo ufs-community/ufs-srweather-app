@@ -1,0 +1,21 @@
+Affiliation;Code Manager;Areas of Expertise
+EPIC;**Michael Lueken (@MichaelLueken)**;Lead SRW App code manager
+GSL;Daniel Abdi (@danielabdi-noaa);Workflow generation, testing RRFS on the cloud, environment modules
+GSL;Jeff Beck (@JeffBeck-NOAA);SRW App configuration/workflow, code management, meteorological evaluation
+EMC;Ben Blake (@BenjaminBlake-NOAA);Output visualization, Rocoto
+EMC;Brian Curtis (@BrianCurtis-NOAA);Operational air quality modeling (Online-CMAQ), code management
+GSL;Christopher Harrop (@christopherwharrop-noaa);Rocoto, code management, and testing
+GSL;Christina Holt (@christinaholtNOAA);Workflow, conda environment support, testing, and code management
+EPIC;Chan-Hoo Jeon (@chan-hoo);Air quality modeling (Online-CMAQ), NCO Implementation Standards, Workflow
+EPIC;Jong Kim (@jkbk2004);UFS Weather Model configuration, forecast sensitivity analysis, data assimilation
+NCAR;Mike Kavulich (@mkavulich);Workflow, CCPP/physics, code management, WE2E testing, verification
+GSL;Gerard Ketefian (@gsketefian);Verification/METplus tasks, Jinja templates, and workflow scripts
+NCAR;Will Mayfield (@willmayfield);Verification/METplus tasks
+GSL;Linlin Pan (@panll);Workflow, CCPP/physics, and verification
+EPIC;Natalie Perlin (@natalie-perlin);Generic Linux/Mac installations, hpc-stack/spack-stack
+EPIC;Gillian Petro (@gspetro-NOAA);Documentation, User Support
+EPIC;Mark Potts (@mark-a-potts);HPC systems
+EPIC;Edward Snyder (@EdwardSnyder-NOAA);WE2E testing, input data
+GLERL;David Wright (@dmwright526);FVCOM integration, output visualization, preprocessing tasks
+EPIC;Ratko Vasic (@RatkoVasic-NOAA);Workflow, testing, and spack-stack maintenance
+NSSL;Yunheng Wang (@ywangwof);HPC systems, code management, and regional workflow (especially on Stampede, Jet and NSSL computers)

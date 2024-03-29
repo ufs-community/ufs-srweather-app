@@ -3,25 +3,23 @@
 Create a model_configure file for the FV3 forecast model from a
 template.
 """
+import argparse
 import os
 import sys
-import argparse
-from textwrap import dedent
 import tempfile
+from textwrap import dedent
+from subprocess import STDOUT, CalledProcessError, check_output
 
 from python_utils import (
+    cfg_to_yaml_str,
+    flatten_dict,
     import_vars,
+    load_shell_config,
+    lowercase,
+    print_info_msg,
     print_input_args,
     str_to_type,
-    print_info_msg,
-    lowercase,
-    cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
-
-# These come from ush/python_utils/workflow-tools
-from scripts.templater import set_template
 
 
 def create_model_configure_file(
@@ -73,6 +71,7 @@ def create_model_configure_file(
     # -----------------------------------------------------------------------
     #
     settings = {
+        "PE_MEMBER01": PE_MEMBER01,
         "start_year": cdate.year,
         "start_month": cdate.month,
         "start_day": cdate.day,
@@ -80,7 +79,9 @@ def create_model_configure_file(
         "nhours_fcst": fcst_len_hrs,
         "fhrot": fhrot,
         "dt_atmos": DT_ATMOS,
+        "atmos_nthreads": OMP_NUM_THREADS_RUN_FCST,
         "restart_interval": RESTART_INTERVAL,
+        "itasks": ITASKS,
         "write_dopost": f".{lowercase(str(WRITE_DOPOST))}.",
         "quilting": f".{lowercase(str(QUILTING))}.",
         "output_grid": WRTCMP_output_grid,
@@ -136,10 +137,7 @@ def create_model_configure_file(
             )
     #
     # If not using the write-component (aka quilting), set those variables
-    # needed for quilting in the jinja template for the model configuration
-    # file (MODEL_CONFIG_TMPL_FP) to "None".  This is necessary because
-    # otherwise, the run_fcst task will fail in the call to set_template()
-    # below with a "variables are not provided" message.
+    # needed for quilting to None so that it gets rendered in the template appropriately.
     #
     else:
         settings.update(
@@ -228,18 +226,26 @@ def create_model_configure_file(
                                      prefix="model_config_settings.") as tmpfile:
         tmpfile.write(settings_str)
         tmpfile.seek(0)
-        # set_template does its own error handling
-        set_template(
-            [
-                "-c",
-                tmpfile.name,
-                "-i",
-                MODEL_CONFIG_TMPL_FP,
-                "-o",
-                model_config_fp,
+        cmd = " ".join(["uw template render",
+            "-i", MODEL_CONFIG_TMPL_FP,
+            "-o", model_config_fp,
+            "-v",
+            "--values-file", tmpfile.name,
             ]
         )
-
+        indent = "  "
+        output = ""
+        try:
+            output = check_output(cmd, encoding="utf=8", shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            output = e.output
+            print(f"Failed with status: {e.returncode}")
+            sys.exit(1)
+        finally:
+            print("Output:")
+            for line in output.split("\n"):
+                print(f"{indent * 2}{line}")
     return True
 
 

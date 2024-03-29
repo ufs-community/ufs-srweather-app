@@ -1,0 +1,34 @@
+metadata:
+  description: |-
+    This test checks the capability of the workflow to run ensemble verification
+    tasks with 10 members. This also serves as a winter snowstorm case for
+    checking ensemble snowfall verification statistics.
+user:
+  RUN_ENVIR: community
+workflow:
+  CCPP_PHYS_SUITE: FV3_GFS_v17_p8
+  PREDEF_GRID_NAME: RRFS_CONUScompact_25km
+  DATE_FIRST_CYCL: '2022020300'
+  DATE_LAST_CYCL: '2022020300'
+  FCST_LEN_HRS: 6
+  PREEXISTING_DIR_METHOD: rename
+rocoto:
+  tasks:
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/verify_ens.yaml", "parm/wflow/test.yaml"]|include }}'
+    metatask_run_ensemble:
+      task_run_fcst_mem#mem#:
+        walltime: 01:00:00
+task_get_extrn_ics:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_NAME_ICS: FV3GFS
+  FV3GFS_FILE_FMT_ICS: netcdf
+task_get_extrn_lbcs:
+  USE_USER_STAGED_EXTRN_FILES: true
+  EXTRN_MDL_NAME_LBCS: FV3GFS
+  FV3GFS_FILE_FMT_LBCS: netcdf
+  LBC_SPEC_INTVL_HRS: 3
+global:
+  DO_ENSEMBLE: true
+  NUM_ENS_MEMBERS: 10
+verification:
+  VX_FIELDS: [ "APCP", "ASNOW", "REFC", "RETOP", "ADPSFC", "ADPUPA" ]

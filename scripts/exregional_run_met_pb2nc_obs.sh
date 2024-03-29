@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -16,7 +16,7 @@ source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/get_met_metplus_tool_name.sh
+. $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -44,14 +44,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Get the name of the MET/METplus tool in different formats that may be
-# needed from the global variable MET_TOOL.
+# needed from the global variable METPLUSTOOLNAME.
 #
 #-----------------------------------------------------------------------
 #
-get_met_metplus_tool_name \
-  generic_tool_name="${MET_TOOL}" \
-  outvarname_met_tool_name="met_tool_name" \
-  outvarname_metplus_tool_name="metplus_tool_name"
+get_metplus_tool_name \
+  METPLUSTOOLNAME="${METPLUSTOOLNAME}" \
+  outvarname_metplus_tool_name="metplus_tool_name" \
+  outvarname_MetplusToolName="MetplusToolName" \
+  outvarname_METPLUS_TOOL_NAME="METPLUS_TOOL_NAME"
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +65,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus tool ${metplus_tool_name}
+This is the ex-script for the task that runs the METplus tool ${MetplusToolName}
 to convert NDAS prep buffer observation files to NetCDF format.
 ========================================================================"
 #
@@ -94,7 +95,6 @@ set_vx_params \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
-  outvarname_field_is_APCPgt01h="field_is_APCPgt01h" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
   outvarname_fieldname_in_fcst_input="FIELDNAME_IN_FCST_INPUT" \
   outvarname_fieldname_in_MET_output="FIELDNAME_IN_MET_OUTPUT" \
@@ -110,12 +110,12 @@ set_vx_params \
 vx_output_basedir=$( eval echo "${VX_OUTPUT_BASEDIR}" )
 
 OBS_INPUT_DIR="${OBS_DIR}"
-OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_TEMPLATE} )
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE} )
 
 OUTPUT_BASE="${vx_output_basedir}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_obs"
-OUTPUT_FN_TEMPLATE="${OBS_INPUT_FN_TEMPLATE}.nc"
-STAGING_DIR="${OUTPUT_BASE}/stage/${metplus_tool_name}_obs"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_obs"
+OUTPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT} )
+STAGING_DIR="${OUTPUT_BASE}/stage/${MetplusToolName}_obs"
 #
 #-----------------------------------------------------------------------
 #
@@ -187,7 +187,7 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${metplus_tool_name}_obs"
+metplus_config_tmpl_fn="${MetplusToolName}_obs"
 #
 # Note that we append the cycle date to the name of the configuration
 # file because we are considering only observations when using Pb2NC, so
@@ -231,6 +231,13 @@ metplus_config_fp="${OUTPUT_DIR}/${metplus_config_fn}"
 #
 settings="\
 #
+# MET/METplus information.
+#
+  'metplus_tool_name': '${metplus_tool_name}'
+  'MetplusToolName': '${MetplusToolName}'
+  'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
+  'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
+#
 # Date and forecast hour information.
 #
   'cdate': '$CDATE'
@@ -267,31 +274,32 @@ settings="\
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
-# Store the settings in a temporary file
+
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-#
-# Call the python script to generate the METplus configuration file from
-# the jinja template.
-#
-python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
-  -c ${tmpfile} \
+
+uw template render \
   -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} || \
-print_err_msg_exit "\
-Call to workflow-tools templater.py to generate a METplus
-configuration file from a jinja template failed.  Parameters passed
-to this script are:
-  Full path to template METplus configuration file:
-    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
-  Full path to output METplus configuration file:
-    metplus_config_fp = \"${metplus_config_fp}\"
-  Full path to configuration file:
-    ${tmpfile}
-"
+  -o ${metplus_config_fp} \
+  --verbose \
+  --values-file "${tmpfile}"
+
+err=$?
 rm $tmpfile
+if [ $err -ne 0 ]; then
+  message_txt="Error rendering template for METplus config.
+     Contents of input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -300,7 +308,7 @@ rm $tmpfile
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_name} tool on observations of type: ${OBTYPE}"
+Calling METplus to run MET's ${metplus_tool_name} tool on observations of type: ${OBTYPE}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -317,7 +325,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${metplus_tool_name} tool completed successfully.
+METplus ${MetplusToolName} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

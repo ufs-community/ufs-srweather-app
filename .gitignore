@@ -1,9 +1,13 @@
 bin/
+conda/
 exec/
 build/
 fix/
 include/
 lib/
+parm/aqm_utils_parm/
+parm/nexus_config/
+parm/ufs_utils_parm/
 share/
 sorc/*/
 tests/WE2E/WE2E_tests_*.yaml
@@ -11,10 +15,13 @@ tests/WE2E/*.txt
 tests/WE2E/*.log
 tests/WE2E/log.*
 ush/__pycache__/
+ush/aqm_utils_python/
+ush/nexus_utils/
 ush/config.yaml
 ush/python_utils/__pycache__/
 ush/python_utils/workflow-tools/
 ush/*.swp
+conda_loc
 
 *.swp
 __pycache__

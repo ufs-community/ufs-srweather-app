@@ -36,9 +36,6 @@ def get_crontab_contents(called_from_cron, machine, debug):
     # call the system version of crontab at /usr/bin/crontab.
     #
     crontab_cmd = "crontab"
-    if machine == "CHEYENNE" or machine == "DERECHO":
-        if called_from_cron:
-            crontab_cmd = "/usr/bin/crontab"
 
     print_info_msg(
         f"""

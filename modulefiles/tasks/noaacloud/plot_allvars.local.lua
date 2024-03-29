@@ -1,1 +1,5 @@
-prepend_path("PATH", "/contrib/EPIC/miniconda3/4.12.0/envs/regional_workflow/bin")
+unload("python")
+append_path("MODULEPATH","/contrib/EPIC/miniconda3/modulefiles")
+load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+
+setenv("SRW_ENV", "regional_workflow")

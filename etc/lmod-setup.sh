@@ -45,13 +45,10 @@ elif [ "$L_MACHINE" = singularity ]; then
    module purge
 
 elif [ "$L_MACHINE" = gaea ]; then
-   source /lustre/f2/dev/role.epic/contrib/Lmod_init.sh
-
-elif [ "$L_MACHINE" = gaea-c5 ]; then
-   source /lustre/f2/dev/role.epic/contrib/Lmod_init_C5.sh
+   module reset 
 
 elif [ "$L_MACHINE" = derecho ]; then
-   module reset
+   module purge
 
 elif [ "$L_MACHINE" = odin ]; then
    module unload modules

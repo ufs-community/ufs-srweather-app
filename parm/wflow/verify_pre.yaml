@@ -30,6 +30,7 @@ task_get_obs_ccpa:
     OBS_DIR: '&CCPA_OBS_DIR;'
     OBTYPE: 'CCPA'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
   walltime: 00:45:00
@@ -42,6 +43,7 @@ task_get_obs_nohrsc:
     OBS_DIR: '&NOHRSC_OBS_DIR;'
     OBTYPE: 'NOHRSC'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
   walltime: 00:45:00
@@ -55,6 +57,7 @@ task_get_obs_mrms:
     OBTYPE: 'MRMS'
     VAR: 'REFC RETOP'
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   queue: "&QUEUE_HPSS;"
   walltime: 00:45:00
@@ -68,6 +71,7 @@ task_get_obs_ndas:
     FHR: '{% for h in range(0, workflow.FCST_LEN_HRS+1) %}{{ " %02d" % h  }}{% endfor %}'
   command: '&LOAD_MODULES_RUN_TASK_FP; "get_obs" "&JOBSdir;/JREGIONAL_GET_VERIF_OBS"'
   queue: "&QUEUE_HPSS;"
+  native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
   walltime: 02:00:00
 
@@ -79,12 +83,12 @@ task_run_MET_Pb2nc_obs:
   command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_RUN_MET_PB2NC_OBS"'
   envars:
     <<: *default_vars
-    VAR: SFC
+    VAR: ADPSFC
     ACCUM_HH: '01'
     obs_or_fcst: obs
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
-    MET_TOOL: 'PB2NC'
+    METPLUSTOOLNAME: 'PB2NC'
   dependency:
     and:
       datadep:
@@ -114,8 +118,7 @@ metatask_PcpCombine_obs:
       obs_or_fcst: obs
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
-      MET_TOOL: 'PCPCOMBINE'
-      ENSMEM_INDX: ''
+      METPLUSTOOLNAME: 'PCPCOMBINE'
     dependency:
       and:
         datadep:
@@ -226,14 +229,14 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
         obs_or_fcst: fcst
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
-        MET_TOOL: 'PCPCOMBINE'
+        METPLUSTOOLNAME: 'PCPCOMBINE'
         ENSMEM_INDX: "#mem#"
       dependency:
         datadep:
           attrs:
             age: 00:00:00:30
           text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
-      walltime: 00:05:00
+      walltime: 00:10:00
 
 metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
   var:
@@ -254,7 +257,7 @@ metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
         obs_or_fcst: fcst
         OBTYPE: NOHRSC
         OBS_DIR: '&NOHRSC_OBS_DIR;'
-        MET_TOOL: 'PCPCOMBINE'
+        METPLUSTOOLNAME: 'PCPCOMBINE'
         ENSMEM_INDX: "#mem#"
       dependency:
         datadep:

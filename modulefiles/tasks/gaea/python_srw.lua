@@ -1,4 +1,7 @@
-prepend_path("MODULEPATH","/lustre/f2/dev/role.epic/contrib/miniconda3/modulefiles")
-load(pathJoin("miniconda3", os.getenv("miniconda3_ver") or "4.12.0"))
+load("darshan-runtime/3.4.0")
+unload("python")
+load("conda")
 
-setenv("SRW_ENV", "workflow_tools")
+setenv("SRW_ENV", "srw_app")
+setenv("LD_PRELOAD", "/opt/cray/pe/gcc/12.2.0/snos/lib64/libstdc++.so.6")
+

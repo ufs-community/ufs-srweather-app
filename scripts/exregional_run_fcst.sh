@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -233,42 +233,59 @@ cd_vrfy ${DATA}/INPUT
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="gfs_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="sfc_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-symlink="gfs_ctrl.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-
-for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
-done
-
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
-  symlink="NEXUS_Expt.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
 
-  # create symlink to PT for point source in Online-CMAQ
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink"  relative="${relative_link_flag}"
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+  done
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+
+  # create symlink to PT for point source in SRW-AQM
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
   if [ -f ${target} ]; then
     symlink="PT.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-	                       relative="${relative_link_flag}"
+    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
   fi
+
+else
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file target="$target" symlink="$symlink" \
+                       relative="${relative_link_flag}"
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file target="$target" symlink="$symlink" \
+                         relative="${relative_link_flag}"
+  done
 fi
 #
 #-----------------------------------------------------------------------
@@ -474,7 +491,7 @@ fi
 #-----------------------------------------------------------------------
 #
 if ([ "$STOCH" == "TRUE" ] && [ "${DO_ENSEMBLE}" = "TRUE" ]); then
-  python3 $USHdir/set_FV3nml_ens_stoch_seeds.py \
+  python3 $USHdir/set_fv3nml_ens_stoch_seeds.py \
       --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
       --cdate "$CDATE" || print_err_msg_exit "\
 Call to function to create the ensemble-based namelist for the current
@@ -492,8 +509,7 @@ fi
 #
 if [ "${CPL_AQM}" = "TRUE" ] && [ "${PREDEF_GRID_NAME}" = "AQM_NA_13km" ]; then
   python3 $USHdir/update_input_nml.py \
-    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-    --run_dir "${DATA}" \
+    --namelist "${DATA}/${FV3_NML_FN}" \
     --aqm_na_13km || print_err_msg_exit "\
 Call to function to update the FV3 input.nml file for air quality modeling
 using AQM_NA_13km for the current cycle's (cdate) run directory (DATA) failed:
@@ -520,8 +536,7 @@ if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
 
   # Update FV3 input.nml for restart
   python3 $USHdir/update_input_nml.py \
-    --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
-    --run_dir "${DATA}" \
+    --namelist "${DATA}/${FV3_NML_FN}" \
     --restart
   export err=$?
   if [ $err -ne 0 ]; then
@@ -723,7 +738,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_nems_configure_file.py \
+python3 $USHdir/create_ufs_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?

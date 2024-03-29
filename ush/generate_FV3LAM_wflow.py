@@ -8,10 +8,13 @@ user-defined YAML configuration file.
 # pylint: disable=invalid-name
 
 import argparse
-import os
 import logging
-from textwrap import dedent
+import os
 import sys
+from subprocess import STDOUT, CalledProcessError, check_output
+from textwrap import dedent
+
+from uwtools.api.config import get_nml_config, get_yaml_config, realize
 
 from python_utils import (
     log_info,
@@ -29,13 +32,9 @@ from python_utils import (
 )
 
 from setup import setup
-from set_FV3nml_sfc_climo_filenames import set_FV3nml_sfc_climo_filenames
+from set_fv3nml_sfc_climo_filenames import set_fv3nml_sfc_climo_filenames
 from get_crontab_contents import add_crontab_line
-from set_namelist import set_namelist
 from check_python_version import check_python_version
-
-# These come from ush/python_utils/workflow-tools
-from scripts.templater import set_template
 
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def generate_FV3LAM_wflow(
@@ -114,13 +113,29 @@ def generate_FV3LAM_wflow(
         # Call the python script to generate the experiment's XML file
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
-        args = ["-o", wflow_xml_fp,
-                "-i", template_xml_fp,
-                "-c", rocoto_yaml_fp,
-                ]
-        if not debug:
-            args.append("-q")
-        set_template(args)
+        cmd = " ".join(["uw template render",
+            "-i", template_xml_fp,
+            "-o", wflow_xml_fp,
+            "-v",
+            "--values-file", rocoto_yaml_fp,
+            ]
+        )
+
+        indent = "  "
+        output = ""
+        logfunc = logging.info
+        try:
+            output = check_output(cmd, encoding="utf=8", shell=True,
+                    stderr=STDOUT, text=True)
+        except CalledProcessError as e:
+            logfunc = logging.error
+            output = e.output
+            logging.exception(("Failed with status: %s", e.returncode))
+            raise
+        finally:
+            logfunc("Output:")
+            for line in output.split("\n"):
+                logfunc("%s%s", indent * 2, line)
     #
     # -----------------------------------------------------------------------
     #
@@ -371,10 +386,7 @@ def generate_FV3LAM_wflow(
         "bc_update_interval": LBC_SPEC_INTVL_HRS,
         "npz": npz,
     })
-    if CCPP_PHYS_SUITE in ("FV3_GFS_2017_gfdl_mp",
-                           "FV3_GFS_2017_gfdlmp_regional",
-                           "FV3_GFS_v15p2",
-                           ):
+    if CCPP_PHYS_SUITE == "FV3_GFS_v15p2":
         if CPL_AQM:
             fv_core_nml_dict.update({
                 "dnats": 5
@@ -519,24 +531,23 @@ def generate_FV3LAM_wflow(
     #
     # -----------------------------------------------------------------------
     #
-    # Call the set_namelist.py script to create a new FV3 namelist file (full
-    # path specified by FV3_NML_FP) using the file FV3_NML_BASE_SUITE_FP as
-    # the base (i.e. starting) namelist file, with physics-suite-dependent
-    # modifications to the base file specified in the yaml configuration file
-    # FV3_NML_YAML_CONFIG_FP (for the physics suite specified by CCPP_PHYS_SUITE),
-    # and with additional physics-suite-independent modifications specified
-    # in the variable "settings" set above.
+    # Create a new FV3 namelist file
     #
     # -----------------------------------------------------------------------
     #
-    args=[ "-n", FV3_NML_BASE_SUITE_FP,
-           "-c", FV3_NML_YAML_CONFIG_FP, CCPP_PHYS_SUITE,
-           "-u", settings_str,
-           "-o", FV3_NML_FP,
-          ]
-    if not debug:
-        args.append("-q")
-    set_namelist(args)
+
+    physics_cfg = get_yaml_config(FV3_NML_YAML_CONFIG_FP)
+    base_namelist = get_nml_config(FV3_NML_BASE_SUITE_FP)
+    base_namelist.update_values(physics_cfg[CCPP_PHYS_SUITE])
+    base_namelist.update_values(settings)
+    for sect, values in base_namelist.copy().items():
+        if not values:
+            del base_namelist[sect]
+            continue
+        for k, v in values.copy().items():
+            if v is None:
+                del base_namelist[sect][k]
+    base_namelist.dump(FV3_NML_FP)
     #
     # If not running the TN_MAKE_GRID task (which implies the workflow will
     # use pregenerated grid files), set the namelist variables specifying
@@ -551,7 +562,7 @@ def generate_FV3LAM_wflow(
     #
     if not expt_config['rocoto']['tasks'].get('task_make_grid'):
 
-        set_FV3nml_sfc_climo_filenames(debug)
+        set_fv3nml_sfc_climo_filenames(flatten_dict(expt_config), debug)
 
     #
     # -----------------------------------------------------------------------
@@ -665,14 +676,13 @@ def generate_FV3LAM_wflow(
     #-----------------------------------------------------------------------
     #
     if any((DO_SPP, DO_SPPT, DO_SHUM, DO_SKEB, DO_LSM_SPP)):
-
-        args=[ "-n", FV3_NML_FP,
-               "-u", settings_str,
-               "-o", FV3_NML_STOCH_FP,
-              ]
-        if not debug:
-            args.append("-q")
-        set_namelist(args)
+        realize(
+            input_config=FV3_NML_FP,
+            input_format="nml",
+            output_file=FV3_NML_STOCH_FP,
+            output_format="nml",
+            supplemental_configs=[settings],
+            )
     #
     #-----------------------------------------------------------------------
     #
@@ -703,15 +713,13 @@ def generate_FV3LAM_wflow(
                 # and enter into namelist.fire's &fire section
                 fire_nml_dict['fire'][setting.lower()] = expt_config['fire'][setting]
 
-        settings_str = cfg_to_yaml_str(fire_nml_dict)
-
-        args=[ "-n", expt_config['workflow']['FIRE_NML_BASE_FP'],
-               "-u", settings_str,
-               "-o", expt_config['workflow']['FIRE_NML_FP'],
-              ]
-        if not debug:
-            args.append("-q")
-        set_namelist(args)
+        realize(
+            input_config=expt_config['workflow']['FIRE_NML_BASE_FP'],
+            input_format="nml",
+            output_file=expt_config['workflow']['FIRE_NML_FP'],
+            output_format="nml",
+            supplemental_configs=[fire_nml_dict],
+            )
 
     #
     # -----------------------------------------------------------------------

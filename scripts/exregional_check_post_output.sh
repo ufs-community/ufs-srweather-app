@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -82,7 +82,7 @@ time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #
-ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" "${ENSMEM_INDX}")
+ensmem_indx=$(printf "%0${VX_NDIGITS_ENSMEM_NAMES}d" $(( 10#${ENSMEM_INDX})))
 ensmem_name="mem${ensmem_indx}"
 FCST_INPUT_FN_TEMPLATE=$( eval echo ${FCST_SUBDIR_TEMPLATE:+${FCST_SUBDIR_TEMPLATE}/}${FCST_FN_TEMPLATE} )
 set_vx_fhr_list \

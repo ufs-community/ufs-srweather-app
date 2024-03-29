@@ -161,7 +161,8 @@
 "gfs_phys",  "v-gwd_ave",     "v-gwd_ave",   "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "dusfc",         "uflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "dvsfc",         "vflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
-#"gfs_phys",  "refl_10cm",     "refl10cm",    "fv3_history2d",         "all",  .false.,  "none",  2
+# Reflectivity from Thompson microphysics
+"gfs_phys",  "refl_10cm",     "refl_10cm",    "fv3_history2d",         "all",  .false.,  "none",  2
 
 "gfs_phys",    "psurf",       "pressfc",   "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "u10m",        "ugrd10m",   "fv3_history2d",  "all",  .false.,  "none",  2

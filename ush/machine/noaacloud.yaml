@@ -5,6 +5,8 @@ platform:
   TEST_CCPA_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ccpa/proc
   TEST_MRMS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/mrms/proc
   TEST_NDAS_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/ndas/proc
+  TEST_NOHRSC_OBS_DIR: /contrib/EPIC/UFS_SRW_data/develop/obs_data/nohrsc/proc
+  DOMAIN_PREGEN_BASEDIR: /contrib/EPIC/UFS_SRW_data/develop/FV3LAM_pregen
   REMOVE_MEMORY: True
   RUN_CMD_FCST: mpiexec -np ${PE_MEMBER01}
   RUN_CMD_POST: mpiexec -np $nprocs

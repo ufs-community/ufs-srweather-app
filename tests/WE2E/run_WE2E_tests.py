@@ -96,12 +96,6 @@ def run_we2e_tests(homedir, args) -> None:
                             logging.debug(f'{testfilename} exists for this platform and run_envir'\
                                            'has not been specified\n'\
                                            'Setting run_envir = {run_envir} for all tests')
-                else:
-                    if not run_envir:
-                        run_envir = 'nco'
-                        logging.debug(f'{testfilename} exists for this platform and run_envir has'\
-                                       'not been specified\n'\
-                                       'Setting run_envir = {run_envir} for all tests')
                 logging.debug(f"Reading test file: {testfilename}")
                 with open(testfilename, encoding="utf-8") as f:
                     tests_to_check = [x.rstrip() for x in f]
@@ -175,14 +169,6 @@ def run_we2e_tests(homedir, args) -> None:
         test_cfg['user'].update({"ACCOUNT": args.account})
         if run_envir:
             test_cfg['user'].update({"RUN_ENVIR": run_envir})
-            if run_envir == "nco":
-                if 'nco' not in test_cfg:
-                    test_cfg['nco'] = dict()
-                test_cfg['nco'].update({"model_ver_default": "we2e"})
-        if args.opsroot:
-            if 'nco' not in test_cfg:
-                test_cfg['nco'] = dict()
-            test_cfg['nco'].update({"OPSROOT_default": args.opsroot})
         # if platform section was not in input config, initialize as empty dict
         if 'platform' not in test_cfg:
             test_cfg['platform'] = dict()
@@ -215,7 +201,7 @@ def run_we2e_tests(homedir, args) -> None:
             # This section checks if we are doing verification on a machine with staged verification
             # obs. If so, and if the config file does not explicitly set the observation locations,
             # fill these in with defaults from the machine files
-            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR']
+            obs_vars = ['CCPA_OBS_DIR','MRMS_OBS_DIR','NDAS_OBS_DIR','NOHRSC_OBS_DIR']
             if 'platform' not in test_cfg:
                 test_cfg['platform'] = {}
             for obvar in obs_vars:
@@ -224,9 +210,14 @@ def run_we2e_tests(homedir, args) -> None:
                     logging.debug(f'Setting {obvar} = {mach_path} from machine file')
                     test_cfg['platform'][obvar] = mach_path
 
-        if 'cpl_aqm_parm' in test_cfg:
-            test_aqm_input_basedir = machine_defaults['platform']['TEST_AQM_INPUT_BASEDIR']
-            test_cfg['cpl_aqm_parm']['DCOMINfire_default'] = f"{test_aqm_input_basedir}/RAVE_fire"
+        if args.compiler == "gnu":
+            # 2D decomposition doesn't work with GNU compilers.  Deactivate 2D decomposition for GNU
+            if 'task_run_post' in test_cfg:
+                test_cfg['task_run_post'].update({"NUMX": 1})
+                logging.info(f"NUMX has been reset to 1 due to issues encountered with GNU compilers")
+            if 'task_run_fcst' in test_cfg:
+                test_cfg['task_run_fcst'].update({"ITASKS": 1})
+                logging.info(f"ITASKS has been reset to 1 due to issues encountered with GNU compilers")
 
         logging.debug(f"Writing updated config.yaml for test {test_name}\n"\
                        "based on specified command-line arguments:\n")
@@ -251,10 +242,13 @@ def run_we2e_tests(homedir, args) -> None:
             test_cfg['workflow'].update({"USE_CRON_TO_RELAUNCH": False})
         if not test_cfg['workflow']['USE_CRON_TO_RELAUNCH']:
             logging.debug(f'Creating entry for job {test_name} in job monitoring dict')
-            monitor_yaml[test_name] = dict()
-            monitor_yaml[test_name].update({"expt_dir": expt_dir})
-            monitor_yaml[test_name].update({"status": "CREATED"})
-            monitor_yaml[test_name].update({"start_time": starttime_string})
+            workflow_id = f'{test_name}_{starttime_string}'
+            monitor_yaml[workflow_id] = dict()
+            monitor_yaml[workflow_id].update({"expt_dir": expt_dir})
+            monitor_yaml[workflow_id].update({"status": "CREATED"})
+            monitor_yaml[workflow_id].update({"start_time": starttime_string})
+            # Make WORKFLOW_ID actually mean something
+            test_cfg['workflow'].update({"WORKFLOW_ID": workflow_id})
 
     if args.launch != "cron":
         monitor_file = f'WE2E_tests_{starttime_string}.yaml'
@@ -521,9 +515,6 @@ if __name__ == "__main__":
                     help='DEPRECATED; DO NOT USE. See "launch" option.')
     ap.add_argument('--cron_relaunch_intvl_mnts', type=int,
                     help='Overrides CRON_RELAUNCH_INTVL_MNTS for all experiments')
-    ap.add_argument('--opsroot', type=str,
-                    help='If test is for NCO mode, sets OPSROOT_default (see config_defaults.yaml'\
-                         'for more details on this variable)')
     ap.add_argument('--print_test_info', action='store_true',
                     help='Create a "WE2E_test_info.txt" file summarizing each test prior to'\
                          'starting experiment')

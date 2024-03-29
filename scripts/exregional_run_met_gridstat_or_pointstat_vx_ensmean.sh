@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -16,7 +16,7 @@ source_config_for_task "task_run_vx_ensgrid_mean|task_run_vx_enspoint_mean|task_
 #
 #-----------------------------------------------------------------------
 #
-. $USHdir/get_met_metplus_tool_name.sh
+. $USHdir/get_metplus_tool_name.sh
 . $USHdir/set_vx_params.sh
 . $USHdir/set_vx_fhr_list.sh
 #
@@ -44,14 +44,15 @@ scrfunc_dir=$( dirname "${scrfunc_fp}" )
 #-----------------------------------------------------------------------
 #
 # Get the name of the MET/METplus tool in different formats that may be
-# needed from the global variable MET_TOOL.
+# needed from the global variable METPLUSTOOLNAME.
 #
 #-----------------------------------------------------------------------
 #
-get_met_metplus_tool_name \
-  generic_tool_name="${MET_TOOL}" \
-  outvarname_met_tool_name="met_tool_name" \
-  outvarname_metplus_tool_name="metplus_tool_name"
+get_metplus_tool_name \
+  METPLUSTOOLNAME="${METPLUSTOOLNAME}" \
+  outvarname_metplus_tool_name="metplus_tool_name" \
+  outvarname_MetplusToolName="MetplusToolName" \
+  outvarname_METPLUS_TOOL_NAME="METPLUS_TOOL_NAME"
 #
 #-----------------------------------------------------------------------
 #
@@ -64,7 +65,7 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the ex-script for the task that runs the METplus ${metplus_tool_name}
+This is the ex-script for the task that runs the METplus ${MetplusToolName}
 tool to perform verification of the specified field (VAR) on the ensemble
 mean.
 ========================================================================"
@@ -95,7 +96,6 @@ set_vx_params \
   field="$VAR" \
   accum_hh="${ACCUM_HH}" \
   outvarname_grid_or_point="grid_or_point" \
-  outvarname_field_is_APCPgt01h="field_is_APCPgt01h" \
   outvarname_fieldname_in_obs_input="FIELDNAME_IN_OBS_INPUT" \
   outvarname_fieldname_in_fcst_input="FIELDNAME_IN_FCST_INPUT" \
   outvarname_fieldname_in_MET_output="FIELDNAME_IN_MET_OUTPUT" \
@@ -122,9 +122,12 @@ if [ "${grid_or_point}" = "grid" ]; then
     "APCP24h")
       FIELD_THRESHOLDS="gt0.0, ge6.350, ge12.700, ge25.400"
       ;;
-    "ASNOW")                                                                                                                                          
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"                                                                                      
-      ;;   
+    "ASNOW06h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
+    "ASNOW24h")
+      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
+      ;;
     "REFC")
       FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
       ;;
@@ -161,46 +164,38 @@ fi
 
 if [ "${grid_or_point}" = "grid" ]; then
 
-  OBS_INPUT_FN_TEMPLATE=""
-  if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-    OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
-    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_CCPA_APCPgt01h_FN_TEMPLATE} )
-    FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-  else
-    OBS_INPUT_DIR="${OBS_DIR}"
-    case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
-      "APCP01h")
-        OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP01h_FN_TEMPLATE}"
-        FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-        ;;
-      "ASNOW")
-        OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
-        FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ACCUM_HH}h_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-        ;;
-      "REFC")
-        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
-        FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-        ;;
-      "RETOP")
-        OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
-        FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
-        ;;
-    esac
-    OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
-  fi
+  case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
+    "APCP"*)
+      OBS_INPUT_DIR="${vx_output_basedir}/metprd/PcpCombine_obs"
+      OBS_INPUT_FN_TEMPLATE="${OBS_CCPA_APCP_FN_TEMPLATE_PCPCOMBINE_OUTPUT}"
+      ;;
+    "ASNOW"*)
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_NOHRSC_ASNOW_FN_TEMPLATE}"
+      ;;
+    "REFC")
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_REFC_FN_TEMPLATE}"
+      ;;
+    "RETOP")
+      OBS_INPUT_DIR="${OBS_DIR}"
+      OBS_INPUT_FN_TEMPLATE="${OBS_MRMS_RETOP_FN_TEMPLATE}"
+      ;;
+  esac
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
 
 elif [ "${grid_or_point}" = "point" ]; then
 
   OBS_INPUT_DIR="${vx_output_basedir}/metprd/Pb2nc_obs"
-  OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_NDAS_SFCorUPA_FN_METPROC_TEMPLATE} )
+  OBS_INPUT_FN_TEMPLATE="${OBS_NDAS_ADPSFCorADPUPA_FN_TEMPLATE_PB2NC_OUTPUT}"
   FCST_INPUT_DIR="${vx_output_basedir}${slash_cdate_or_null}/metprd/GenEnsProd"
-  FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_ADP${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 
 fi
+OBS_INPUT_FN_TEMPLATE=$( eval echo ${OBS_INPUT_FN_TEMPLATE} )
+FCST_INPUT_FN_TEMPLATE=$( eval echo 'gen_ens_prod_${VX_FCST_MODEL_NAME}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${OBTYPE}_{lead?fmt=%H%M%S}L_{valid?fmt=%Y%m%d}_{valid?fmt=%H%M%S}V.nc' )
 
 OUTPUT_BASE="${vx_output_basedir}${slash_cdate_or_null}"
-OUTPUT_DIR="${OUTPUT_BASE}/metprd/${metplus_tool_name}_ensmean"
+OUTPUT_DIR="${OUTPUT_BASE}/metprd/${MetplusToolName}_ensmean"
 STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}_ensmean"
 #
 #-----------------------------------------------------------------------
@@ -282,13 +277,9 @@ fi
 #
 # First, set the base file names.
 #
-if [ "${field_is_APCPgt01h}" = "TRUE" ]; then
-  metplus_config_tmpl_fn="APCPgt01h"
-else
-  metplus_config_tmpl_fn="${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-fi
-metplus_config_tmpl_fn="${metplus_tool_name}_ensmean_${metplus_config_tmpl_fn}"
-metplus_config_fn="${metplus_tool_name}_ensmean_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+metplus_config_tmpl_fn="${VAR}"
+metplus_config_tmpl_fn="${MetplusToolName}_ensmean_${metplus_config_tmpl_fn}"
+metplus_config_fn="${MetplusToolName}_ensmean_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 metplus_log_fn="${metplus_config_fn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
@@ -313,6 +304,13 @@ metplus_config_fp="${OUTPUT_DIR}/${metplus_config_fn}"
 # Define variables that appear in the jinja template.
 #
 settings="\
+#
+# MET/METplus information.
+#
+  'metplus_tool_name': '${metplus_tool_name}'
+  'MetplusToolName': '${MetplusToolName}'
+  'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
+  'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
 #
 # Date and forecast hour information.
 #
@@ -351,32 +349,31 @@ settings="\
   'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 
-# Store the settings in a temporary file
+# Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
 cat > $tmpfile << EOF
 $settings
 EOF
-#
-# Call the python script to generate the METplus configuration file from
-# the jinja template.
-#
 
-python3 $USHdir/python_utils/workflow-tools/scripts/templater.py \
-  -c "${tmpfile}" \
+uw template render \
   -i ${metplus_config_tmpl_fp} \
-  -o ${metplus_config_fp} || \
-print_err_msg_exit "\
-Call to workflow-tools templater to generate a METplus
-configuration file from a jinja template failed.  Parameters passed
-to this script are:
-  Full path to template METplus configuration file:
-    metplus_config_tmpl_fp = \"${metplus_config_tmpl_fp}\"
-  Full path to output METplus configuration file:
-    metplus_config_fp = \"${metplus_config_fp}\"
-  Full path to configuration file:
-    ${tmpfile}
-"
+  -o ${metplus_config_fp} \
+  --verbose \
+  --values-file "${tmpfile}"
+
+err=$?
 rm $tmpfile
+if [ $err -ne 0 ]; then
+  message_txt="Error rendering template for METplus config.
+     Contents of input are:
+$settings"
+  if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
+    err_exit "${message_txt}"
+  else
+    print_err_msg_exit "${message_txt}"
+  fi
+fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -385,7 +382,7 @@ rm $tmpfile
 #-----------------------------------------------------------------------
 #
 print_info_msg "$VERBOSE" "
-Calling METplus to run MET's ${met_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+Calling METplus to run MET's ${metplus_tool_name} tool for field(s): ${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 ${METPLUS_PATH}/ush/run_metplus.py \
   -c ${METPLUS_CONF}/common.conf \
   -c ${metplus_config_fp} || \
@@ -402,7 +399,7 @@ METplus configuration file used is:
 #
 print_info_msg "
 ========================================================================
-METplus ${metplus_tool_name} tool completed successfully.
+METplus ${MetplusToolName} tool completed successfully.
 
 Exiting script:  \"${scrfunc_fn}\"
 In directory:    \"${scrfunc_dir}\"

@@ -24,18 +24,23 @@ fi
 
 # Customize wrapper scripts
 if [[ "${SRW_PLATFORM}" == gaea ]]; then
-    sed -i '15i #SBATCH --clusters=c4' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-    sed -i 's|qos=batch|qos=windfall|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
-if [[ "${SRW_PLATFORM}" == gaea-c5 ]]; then
-    sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
-    sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+if [[ "${SRW_PLATFORM}" == hera ]]; then
+    if [[ "${SRW_COMPILER}" == gnu ]]; then
+        sed -i 's|00:30:00|00:45:00|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    fi
+fi
+
+if [[ "${SRW_PLATFORM}" == jet ]]; then
+    sed -i '15i #SBATCH --partition=xjet' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
 fi
 
 # Call job card and return job_id
-echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
-job_id=$(${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh)
+echo "Running: ${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh"
+job_id=$(${workflow_cmd} -A ${SRW_PROJECT} ${arg_1} ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh)
 
 echo "Waiting ten seconds for node to initialize"
 sleep 10
@@ -51,7 +56,7 @@ do
         echo "Job has completed."
 
         # Return exit code and check for results file first
-        results_file="${WORKSPACE}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
+        results_file="${WORKSPACE}/${SRW_PLATFORM}/functional_test_results_${SRW_PLATFORM}_${SRW_COMPILER}.txt"
         if [ ! -f "$results_file" ]; then
             echo "Missing results file! \nexit 1"
             exit 1

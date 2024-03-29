@@ -2,8 +2,8 @@ metadata:
   description: |-
     This test checks the capability of the workflow to run verification tasks
     on a user-specified grid. This also serves as a winter snowstorm case for
-    checking snowfall verification statistics, and a test for custom domains
-    with staged netCDF data.
+    checking snowfall verification statistics using observations retrieved from
+    HPSS, and a test for custom domains with RAP data retrieved from HPSS
 user:
   RUN_ENVIR: community
 workflow:
@@ -15,7 +15,7 @@ workflow:
   PREEXISTING_DIR_METHOD: rename
 rocoto:
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/verify_pre.yaml", "parm/wflow/verify_det.yaml", "parm/wflow/test.yaml"]|include }}'
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00
@@ -56,7 +56,7 @@ task_run_post:
   POST_OUTPUT_DOMAIN_NAME: custom_ESGgrid_Michigan_Ontario
 verification:
   VX_FCST_MODEL_NAME: Michigan_Ontario_snow_8km
-  VX_FIELDS: [ "APCP", "REFC", "RETOP", "SFC", "UPA", "ASNOW" ]
+  VX_FIELDS: [ "APCP", "REFC", "RETOP", "ADPSFC", "ADPUPA", "ASNOW" ]
 platform:
   CCPA_OBS_DIR: '{{ workflow.EXPTDIR }}/CCPA_obs'
   MRMS_OBS_DIR: '{{ workflow.EXPTDIR }}/MRMS_obs'

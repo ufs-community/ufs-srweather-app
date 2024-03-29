@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 #-----------------------------------------------------------------------
@@ -139,7 +139,7 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   if [ "${WORKFLOW_MANAGER}" = "rocoto" ]; then 
     fcst_len_hrs=$( printf "%03d" "${FCST_LEN_HRS}" ) 
     if [ "${fhr}" = "${fcst_len_hrs}" ]; then
-      touch "${COMIN}/post_${PDY}${cyc}_task_complete.txt"
+      touch "${DATAROOT}/DATA_SHARE/${PDY}${cyc}/post_${PDY}${cyc}_task_complete.txt"
     fi
   fi
 fi

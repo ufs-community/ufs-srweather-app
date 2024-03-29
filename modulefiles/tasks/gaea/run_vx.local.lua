@@ -1,8 +1,8 @@
 --[[
 Compiler-specific modules are used for met and metplus libraries
 --]]
-local met_ver = (os.getenv("met_ver") or "10.1.1")
-local metplus_ver = (os.getenv("metplus_ver") or "4.1.1")
+local met_ver = (os.getenv("met_ver") or "11.1.0")
+local metplus_ver = (os.getenv("metplus_ver") or "5.1.0")
 if (mode() == "load") then
   load(pathJoin("met", met_ver))
   load(pathJoin("metplus",metplus_ver))
@@ -22,4 +22,6 @@ if (mode() == "unload") then
   unload(pathJoin("met", met_ver))
   unload(pathJoin("metplus",metplus_ver))
 end
-load("python_srw")
+load("conda")
+setenv("SRW_ENV", "srw_app")
+setenv("LD_PRELOAD", "/opt/cray/pe/gcc/12.2.0/snos/lib64/libstdc++.so.6")
