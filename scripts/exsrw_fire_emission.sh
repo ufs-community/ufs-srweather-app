@@ -70,7 +70,7 @@ aqm_fire_file_fn="${AQM_FIRE_FILE_PREFIX}_${YYYYMMDD}_t${HH}z${AQM_FIRE_FILE_SUF
 
 # Check if the fire file exists in the designated directory
 if [ -e "${COMINfire}/${aqm_fire_file_fn}" ]; then
-  cpreq "${COMINfire}/${aqm_fire_file_fn}" ${COMOUT}
+  cp -p "${COMINfire}/${aqm_fire_file_fn}" ${COMOUT}
 else
   # Copy raw data 
   for ihr in {0..23}; do
@@ -83,16 +83,16 @@ else
     yyyymmdd_dn_md1="${missing_download_time:0:8}"
     FILE_13km_md1="RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc"
     if [ -s `ls ${COMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}` ] && [ $(stat -c %s `ls ${COMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}`) -gt 4000000 ]; then
-      cpreq -p ${COMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
+      cp -p ${COMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
     elif [ -s `ls ${COMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}` ] && [ $(stat -c %s `ls ${COMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}`) -gt 4000000 ]; then
       echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
-      cpreq -p ${COMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
+      cp -p ${COMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
     else
       message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
-      cpreq -p ${FIXaqm}/fire/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
+      cp -p ${FIXaqm}/fire/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
       print_info_msg "WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
     fi
   done  
@@ -134,8 +134,8 @@ else
     print_err_msg_exit "${message_txt}"
   fi
 
-  cpreq Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_1.nc
-  cpreq Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_2.nc
+  cp -p Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_1.nc
+  cp -p Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_2.nc
 
   ncrcat -O -D 2 Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_1.nc Hourly_Emissions_regrid_NA_13km_${YYYYMMDD}_t${HH}z_h24_2.nc ${aqm_fire_file_fn}
   export err=$?
@@ -155,7 +155,7 @@ else
   mv temp6.nc ${aqm_fire_file_fn}
 
   # Copy the final fire emission file to data share directory
-  cpreq "${DATA}/${aqm_fire_file_fn}" ${COMOUT}
+  cp -p "${DATA}/${aqm_fire_file_fn}" ${COMOUT}
 fi
 #
 #-----------------------------------------------------------------------

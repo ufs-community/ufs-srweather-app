@@ -74,12 +74,12 @@ end_date=`$NDATE +${FCST_LEN_HRS} ${YYYYMMDD}${HH}`
 #
 #-----------------------------------------------------------------------
 #
-cpreq ${PARMsrw}/nexus_config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
-cpreq ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp -p ${PARMsrw}/nexus_config/cmaq/HEMCO_sa_Time.rc ${DATA}/HEMCO_sa_Time.rc
+cp -p ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${NUM_SPLIT_NEXUS}" = "01" ]; then
   nspt="00"
-  cpreq ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
+  cp -p ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.${nspt}.nc ${DATA}/NEXUS_Expt_combined.nc
 else
   ${USHsrw}/nexus_utils/python/concatenate_nexus_post_split.py "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt_split.*.nc" "${DATA}/NEXUS_Expt_combined.nc"
   export err=$?
@@ -110,7 +110,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-mv ${DATA}/NEXUS_Expt.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
+cp -p ${DATA}/NEXUS_Expt.nc ${COMOUT}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc
 #
 # Print message indicating successful completion of script.
 #

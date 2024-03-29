@@ -126,7 +126,7 @@ print_info_msg "
     tracer file: \"${fv_tracer_file}\"
     FV3 IC file: \"${gfs_ic_fp}\""
 
-cpreq ${gfs_ic_fp} ${wrk_ic_fp}
+cp -p ${gfs_ic_fp} ${wrk_ic_fp}
 ${USHsrw}/aqm_utils_python/add_aqm_ics.py --fv_tracer_file "${fv_tracer_file}" --wrk_ic_file "${wrk_ic_fp}"
 export err=$?
 if [ $err -ne 0 ]; then
@@ -145,7 +145,7 @@ fi
 
 mv tmp1.nc ${gfs_ic_fn}
 
-cpreq -p ${gfs_ic_fn} ${COMOUT}
+cp -p ${gfs_ic_fn} ${COMOUT}
 
 unset fv_tracer_file
 unset wrk_ic_file
