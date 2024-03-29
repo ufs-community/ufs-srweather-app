@@ -665,16 +665,7 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
   print_info_msg "
   Looking for tracer restart file: \"${fv_tracer_file1}\""
 
-  if [ "${COLDSTART}" = "YES" ]; then
-    cpreq ${fv_tracer_file_fix} ${fv_tracer_file1}
-    cpreq ${rst_dir_fix}/coupler.res  ${rst_dir1}
-    sed -i "s/yyyy/$yyyy/g" ${rst_dir1}/coupler.res
-    sed -i "s/mm/$mm/g" ${rst_dir1}/coupler.res
-    sed -i "s/dd/$dd/g" ${rst_dir1}/coupler.res
-    sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
-    mv ${rst_dir1}/coupler.res ${rst_dir1}/${PDY}.${cyc}0000.coupler.res
-
-  elif [ -d ${rst_dir1} ]; then
+  if [ -d ${rst_dir1} ]; then
     if [ -s ${fv_tracer_file1} ]; then
       print_info_msg "
       Tracer file found: \"${fv_tracer_file1}\""
@@ -702,7 +693,6 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
   elif [ -s ${fv_tracer_file2} ]; then
     mkdir -p ${rst_dir1}
     cpreq ${fv_tracer_file2} ${fv_tracer_file1} 
-    #cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
     cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     print_info_msg "
     Tracer file: \"${fv_tracer_file1}\" not found."
