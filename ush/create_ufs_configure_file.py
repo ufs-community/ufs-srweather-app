@@ -109,10 +109,10 @@ def create_ufs_configure_file(run_dir,cfg):
       "ATM_omp_num_threads_line": ATM_omp_num_threads_line,
       "ATM_diag_line": ATM_diag_line,
       "runseq": runseq,
-      "FIRE_pb": ""
-      "dt_atmos": DT_ATMOS,
-      "print_esmf": PRINT_ESMF,
-      "cpl_aqm": CPL_AQM
+      "FIRE_pb": "",
+      "dt_atmos": cfg["DT_ATMOS"],
+      "print_esmf": cfg["PRINT_ESMF"],
+      "cpl_aqm": cfg["CPL_AQM"]
     }
     if cfg["UFS_FIRE"]:
         settings["FIRE_pb"] = FIRE_petlist_bounds

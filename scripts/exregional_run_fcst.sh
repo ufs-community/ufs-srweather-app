@@ -84,7 +84,7 @@ if [ ${#FCST_LEN_CYCL[@]} -gt 1 ]; then
   CYCLE_IDX=$(( ${cyc_mod} / ${INCR_CYCL_FREQ} ))
   FCST_LEN_HRS=${FCST_LEN_CYCL[$CYCLE_IDX]}
 fi
-
+set -x
 #
 #-----------------------------------------------------------------------
 #
@@ -661,35 +661,40 @@ fi
 #
 #-----------------------------------------------------------------------
 #
+cp ${FIRE_NML_FP} fire.nml
 if [ "${UFS_FIRE}" = "TRUE" ]; then
   FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
   # This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
   # trying to octal all up in our business
   settings="
-  'time': {
-    'start_year': $((10#${CDATE:0:4})),
-    'start_month': $((10#${CDATE:4:2})),
-    'start_day': $((10#${CDATE:6:2})),
-    'start_hour': $((10#${CDATE:8:2})),
-    'start_minute': 00,
-    'start_second': 00,
-    'end_year': $((10#${FCST_END_DATE:0:4})),
-    'end_month': $((10#${FCST_END_DATE:4:2})),
-    'end_day': $((10#${FCST_END_DATE:6:2})),
-    'end_hour': $((10#${FCST_END_DATE:8:2})),
-    'end_minute': $((10#${FCST_END_DATE:10:2})),
-    'end_second': $((10#${FCST_END_DATE:12:2})),
-   }
+  &time
+    start_year   = $((10#${CDATE:0:4})),
+    start_month  = $((10#${CDATE:4:2})),
+    start_day    = $((10#${CDATE:6:2})),
+    start_hour   = $((10#${CDATE:8:2})),
+    start_minute = 00,
+    start_second = 00,
+    end_year     = $((10#${FCST_END_DATE:0:4})),
+    end_month    = $((10#${FCST_END_DATE:4:2})),
+    end_day      = $((10#${FCST_END_DATE:6:2})),
+    end_hour     = $((10#${FCST_END_DATE:8:2})),
+    end_minute   = $((10#${FCST_END_DATE:10:2})),
+    end_second   = $((10#${FCST_END_DATE:12:2})),
+  /
 "
-  ${USHdir}/set_namelist.py -n "${FIRE_NML_FP}" -u "$settings" -o "${FIRE_NML_FN}" || \
+
+  echo "$settings" | uw config realize --input-format nml --output-format nml -o "${FIRE_NML_FN}" fire.nml
+  err=$?
+  if [ $err -ne 0 ]; then
     print_err_msg_exit "\
-  Call to python script set_namelist.py to update ${FIRE_NML_FN} failed.
+  Call to uw config realize to update ${FIRE_NML_FN} failed.
   Parameters passed to this script are:
     FIRE_NML_FN = \"${FIRE_NML_FN}\"
     FIRE_NML_FP = \"${FIRE_NML_FP}\"
   Namelist settings specified on command line:
     settings =
 $settings"
+  fi
 
   # Link fire input file
   create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
