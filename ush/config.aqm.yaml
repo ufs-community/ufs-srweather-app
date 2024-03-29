@@ -21,7 +21,7 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
-  COLDSTART: false
+  COLDSTART: false      # set to true for cold start
   WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000'
 nco:
   envir_default: test_aqm_warmstart

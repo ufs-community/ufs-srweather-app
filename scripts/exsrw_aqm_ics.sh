@@ -67,8 +67,21 @@ else
 fi
 print_info_msg "Tracer restart file: \"${fv_tracer_file}\""
 
-if [ -r ${rst_dir}/coupler.res ]; then
-  rst_info=( $( tail -n 1 ${rst_dir}/coupler.res ) )
+cplr_file="coupler.res"
+cplr_file_with_date="${PDY}.${cyc}0000.${cplr_file}"
+if [ -e "${rst_dir}/${cplr_file_with_date}" ]; then
+  coupler_file="${rst_dir}/${cplr_file_with_date}"
+elif [ -e "${rst_dir}/${cplr_file}" ]; then
+  coupler_file="${rst_dir}/${cplr_file}"
+else
+  message_txt="Coupler file: \"${coupler_file}\" is NOT found"
+  err_exit "${message_txt}"
+  print_err_msg_exit "${message_txt}"
+fi
+print_info_msg "Coupler file: \"${coupler_file}\""
+
+if [ -r ${coupler_file} ]; then
+  rst_info=( $( tail -n 1 ${coupler_file} ) )
   # Remove leading zeros from ${rst_info[1]}
   month="${rst_info[1]#"${rst_info[1]%%[!0]*}"}"
   # Remove leading zeros from ${rst_info[2]}
@@ -133,9 +146,6 @@ fi
 mv tmp1.nc ${gfs_ic_fn}
 
 cpreq -p ${gfs_ic_fn} ${COMOUT}
-cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc" ${COMOUT}
-cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc" ${COMOUT}
-cpreq -p "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc" ${COMOUT}
 
 unset fv_tracer_file
 unset wrk_ic_file
