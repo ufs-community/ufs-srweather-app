@@ -170,6 +170,7 @@ while [ $ic -lt 120 ]; do
     echo "cycle ${cyc} post1 is done!"
     break
   else  
+    sleep 10
     (( ic=ic+1 ))
   fi    
 done    
@@ -210,8 +211,50 @@ fi
 cpreq ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
- mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
- cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+
+   # NetCDF files
+   for i in {1..3}; do
+      yyyymm_m="yyyymm_m${i}"
+      yyyy_m="yyyy_m${i}"
+      PDYm="PDYm${i}"
+
+      target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+
+      if [ ! -d "$target_dir" ]; then
+           mkdir -p "$target_dir"
+      fi
+
+      # Check if the file exists before attempting to copy it
+      if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" ]; then
+          cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+       else
+           message_warning="WARNING: File not found: HourlyAQObs.${!PDYm}.nc"
+           print_info_msg "${message_warning}"
+       fi
+    done
+
+   mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+   cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+
+
+   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+   cpreq ${COMIN}/${cyc}/${NET}.${cycle}.*_sfc.f*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+
+   # Check if the directory exists before creating it
+   if [ ! -d "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}" ]; then
+       mkdir -p "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+   fi
+   
+   # Loop through files and copy each one individually if it exists
+    for file in ${COMIN}/${cyc}/${NET}.${cycle}.*_sfc.f*.nc; do
+      if [ -f "$file" ]; then
+          cpreq "$file" "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+      else
+          message_warning="WARNING: File not found: ${NET}.${cycle}.*_sfc.f*.nc"
+          print_info_msg "${message_warning}"
+      fi
+    done
+
 fi
 
 #-----------------------------------------------------------------------
@@ -221,10 +264,13 @@ fi
 rm -rf ${DATA}/data/bcdata*
 
 ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
-if [ $(find . -xtype l|wc -l) -gt 0 ]; then
+#if [ $(find . -xtype l|wc -l) -gt 0 ]; then
+if [ $(find "${DATA}/data" -xtype l | wc -l) -gt 0 ]; then
   message_txt="FATAL ERROR broken file or dir link found under ${DATA}"
   err_exit "${message_txt}"
 fi 
+
+
 mkdir -p ${DATA}/data/sites
 
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}

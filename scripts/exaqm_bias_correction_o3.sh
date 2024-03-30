@@ -225,13 +225,15 @@ if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
          mkdir -p "$target_dir"
     fi
 
-    # Check if the file exists before attempting to copy it
-    if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat ]; then
-     cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
-    else
-     message_warning="WARNING: File not found: HourlyAQObs_${!PDYm}*.dat"
-     print_info_msg "${message_warning}"
-    fi
+    # Loop over each file individually
+    for file in "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat; do
+        if [ -s "$file" ]; then
+           cp "$file" "$target_dir"
+        else
+           message_warning="WARNING: File not found: $file"
+           print_info_msg "${message_warning}"
+        fi
+   done
   done
 
   # NetCDF files
