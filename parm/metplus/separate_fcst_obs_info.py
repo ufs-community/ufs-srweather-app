@@ -51,7 +51,7 @@ def get_pprint_str(x, indent_str):
     return x_str
 
 #def separate_fcst_obs_info(field_group):
-def separate_fcst_obs_info(det_or_ens):
+def separate_fcst_obs_info(det_or_ens, outfile):
     """
     This macro extracts from the input dictionary fields_levels_threshes that
     contains information on field names, levels, and thresholds for both the
@@ -216,9 +216,10 @@ def separate_fcst_obs_info(det_or_ens):
     # Convert the dictionary of jinja variable settings above to yaml format
     # and write it to a temporary yaml file for reading by the set_template
     # function.
-    filename = ''.join(['tmp.vx_config_', det_or_ens, '_dict.split_fcst_obs.txt'])
-    filepath = Path(os.path.join(metplus_conf_dir, filename)).resolve()
-    with open(f'{filepath}', 'w') as fn:
+    #filename = ''.join(['tmp.vx_config_', det_or_ens, '_dict.split_fcst_obs.txt'])
+    #filepath = Path(os.path.join(metplus_conf_dir, filename)).resolve()
+    #with open(f'{filepath}', 'w') as fn:
+    with open(f'{outfile}', 'w') as fn:
         #yaml_vars = yaml.dump(vx_config_dict, fn)
         #pprint.pformat(vx_config_dict, fn, sort_dicts=False)
         fn.write(dict_to_str)
@@ -239,11 +240,27 @@ if __name__ == "__main__":
     parser.add_argument('--det_or_ens',
                         type=str,
                         required=True, default='det',
-                        help=dedent(f'''String that determines whether to read in the deterministic
-                                        or ensemble verification configuration file.'''))
+                        help=dedent(f"""
+                            String that determines whether to read in the deterministic or ensemble
+                            verification configuration file.
+                        """))
+
+    parser.add_argument('--outfile',
+                        type=str,
+                        required=True, default='det',
+                        help=dedent(f"""
+                            Path to output file in which to write the vx configuration separated into
+                            two parts -- one for forecasts and another for observations.  Note that
+                            this output file is not in yaml format; it is a text file containing the
+                            forecast and observation vx configuration dictionaries saved in a form 
+                            that can be read in by the SRW App's ex-scripts for the verification
+                            tasks.  In particular, this form contains the curly braces and brackets
+                            that define dictionaries and lists in python code but that would normally
+                            not appear in a yaml file.
+                            """))
 
     args = parser.parse_args()
 
-    separate_fcst_obs_info(det_or_ens=args.det_or_ens)
+    separate_fcst_obs_info(det_or_ens=args.det_or_ens, outfile=args.outfile)
 
 

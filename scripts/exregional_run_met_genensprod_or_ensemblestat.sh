@@ -278,15 +278,15 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${MetplusToolName}"
-metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
-metplus_log_fn="${metplus_config_fn}"
+metplus_config_tmpl_bn="${MetplusToolName}"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}"
+metplus_log_bn="${metplus_config_bn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
-metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
-metplus_config_fn="${metplus_config_fn}.conf"
-metplus_log_fn="metplus.log.${metplus_log_fn}"
+metplus_config_tmpl_fn="${metplus_config_tmpl_bn}.conf"
+metplus_config_fn="${metplus_config_bn}.conf"
+metplus_log_fn="metplus.log.${metplus_log_bn}"
 #
 #-----------------------------------------------------------------------
 #
@@ -295,8 +295,15 @@ metplus_log_fn="metplus.log.${metplus_log_fn}"
 #
 #-----------------------------------------------------------------------
 #
-python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens ens
-vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_ens_dict.split_fcst_obs.txt")
+#python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens ens
+#vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_ens_dict.split_fcst_obs.txt")
+det_or_ens="ens"
+vx_config_output_fn="vx_config_${det_or_ens}.split_fcst_obs.${metplus_config_bn}.txt"
+vx_config_output_fp="${OUTPUT_DIR}/${vx_config_output_fn}"
+python3 ${METPLUS_CONF}/separate_fcst_obs_info.py \
+  --det_or_ens "${det_or_ens}" \
+  --outfile "${vx_config_output_fp}"
+vx_config_dict=$(<"${vx_config_output_fp}")
 #
 #-----------------------------------------------------------------------
 #
