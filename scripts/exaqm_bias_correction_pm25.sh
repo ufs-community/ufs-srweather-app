@@ -387,14 +387,18 @@ EOF1
 
   # interpolate to grid 227
   oldgrib2file1=${NET}.${cycle}.ave_24hr_pm25_bc.${id_domain}.grib2
-  newgrib2file1=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
+  newgrib2file1=${NET}.${cycle}.tmp.ave_24hr_pm25_bc.227.grib2
 
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  wgrib2 ${oldgrib2file1} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file1} 
+  wgrib2 ${oldgrib2file1} -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227}  ${newgrib2file1} 
 
   oldgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2
-  newgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
-  wgrib2 ${oldgrib2file2} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file2}
+  newgrib2file2=${NET}.${cycle}.tmp.max_1hr_pm25_bc.227.grib2
+  wgrib2 ${oldgrib2file2} -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227}  ${newgrib2file2}
+
+  # fix res flags
+  wgrib2 -set_flag_table_3.3 8 "${newgrib2file1}" -grib "${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2"
+  wgrib2 -set_flag_table_3.3 8 "${newgrib2file2}" -grib "${NET}.${cycle}.max_1hr_pm25_bc.227.grib2"
 
   cpreq ${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2   ${COMOUT}
   cpreq ${NET}.${cycle}.ave_24hr_pm25_bc.${id_domain}.grib2  ${COMOUT}
@@ -417,7 +421,10 @@ while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
 done
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.grib2_pm25_bc.227
+wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${NET}.${cycle}.tmp.grib2_pm25_bc.227
+
+# fix res flags
+wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.grib2_pm25_bc.227" -grib "${NET}.${cycle}.grib2_pm25_bc.227"
 
 cpreq tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cpreq ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2

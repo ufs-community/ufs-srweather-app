@@ -127,16 +127,22 @@ cpreq ${DATA}/${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 ${COMOUT}
 #fi
 
 export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-#export grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
 export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
 export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198; do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2
+
+  # fix res flags
+  if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then
+     wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" -grib "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
+  else
+     cpreq "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
+  fi
 done
 
-cpreq ${DATA}/${NET}.${cycle}*pm25*.grib2 ${COMOUT}
+cpreq ${DATA}/${NET}.${cycle}.ave*pm25*.grib2 ${COMOUT}
 
 # Create AWIPS GRIB2 data for Bias-Corrected PM2.5
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
@@ -250,8 +256,17 @@ EOF1
 
   for grid in 227 196 198; do
     gg="grid${grid}"
-    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_pm25.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.ave_24hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.ave_24hr_pm25.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_pm25.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.max_1hr_pm25.${grid}.grib2
+
+    # fix res flags
+    if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then 
+       wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_24hr_pm25.${grid}.grib2" -grib "${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2"
+       wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_1hr_pm25.${grid}.grib2" -grib "${NET}.${cycle}.max_1hr_pm25.${grid}.grib2"
+    else
+       cp "${NET}.${cycle}.tmp.ave_24hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2"
+       cp "${NET}.${cycle}.tmp.max_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.max_1hr_pm25.${grid}.grib2"
+    fi  
 
     cpreq ${DATA}/${NET}.${cycle}.ave_24hr_pm25.${grid}.grib2 ${COMOUT}
     cpreq ${DATA}/${NET}.${cycle}.max_1hr_pm25.${grid}.grib2 ${COMOUT}

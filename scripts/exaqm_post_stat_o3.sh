@@ -150,10 +150,24 @@ grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198;do
   gg="grid${grid}"
-  wgrib2 ${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_1hr_o3.${grid}.grib2
+  wgrib2 ${NET}.${cycle}.ave_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.ave_1hr_o3.${grid}.grib2
+
+  # fix res flags
+  if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then 
+     wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_1hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.ave_1hr_o3.${grid}.grib2"
+  else
+     cp "${NET}.${cycle}.tmp.ave_1hr_o3.${grid}.grib2" "${NET}.${cycle}.ave_1hr_o3.${grid}.grib2"
+  fi  
 
   if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-    wgrib2 ${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.ave_8hr_o3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.ave_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.ave_8hr_o3.${grid}.grib2
+
+    # fix res flags
+    if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then 
+        wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_8hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.ave_8hr_o3.${grid}.grib2"
+    else
+        cp "${NET}.${cycle}.tmp.ave_8hr_o3.${grid}.grib2" "${NET}.${cycle}.ave_8hr_o3.${grid}.grib2"
+    fi  
 
     for hr in 1 8; do
       echo 0 > filesize
@@ -275,8 +289,17 @@ EOF1
 
   for grid in 227 196 198; do
     gg="grid${grid}"
-    wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_8hr_o3.${grid}.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${!gg} ${NET}.${cycle}.max_1hr_o3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_8hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_o3.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${!gg} ${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2
+
+  # fix res flags
+  if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then 
+     wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.max_8hr_o3.${grid}.grib2"
+     wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.max_1hr_o3.${grid}.grib2"
+  else
+     cpreq "${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2" "${NET}.${cycle}.max_8hr_o3.${grid}.grib2"
+     cpreq "${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2" "${NET}.${cycle}.max_1hr_o3.${grid}.grib2"
+  fi  
 
     cpreq ${DATA}/${NET}.${cycle}.max_*hr_o3.${grid}.grib2  ${COMOUT}
     if [ "$SENDDBN" = "YES" ]; then
