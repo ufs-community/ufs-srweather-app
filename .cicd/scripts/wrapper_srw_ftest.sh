@@ -15,11 +15,9 @@ declare arg_1
 if [[ "${SRW_PLATFORM}" == cheyenne ]] || [[ "${SRW_PLATFORM}" == derecho ]]; then
     workflow_cmd=qsub
     arg_1=""
-    check_job="qstat -u ${USER} -r ${job_id}"
 else
     workflow_cmd=sbatch
     arg_1="--parsable"
-    check_job="squeue -u ${USER} -j ${job_id} --noheader"
 fi
 
 # Customize wrapper scripts
@@ -48,6 +46,11 @@ sleep 10
 # Check for job and exit when done
 while true
 do
+    if [[ "${SRW_PLATFORM}" == derecho ]]; then
+        check_job="qstat -u ${USER} -r ${job_id}"
+    else
+	check_job="squeue -u ${USER} -j ${job_id} --noheader"
+    fi
     job_id_info=$($check_job)
     if [ ! -z "$job_id_info" ]; then
         echo "Job is still running. Check again in two minutes"
