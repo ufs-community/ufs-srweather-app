@@ -145,7 +145,7 @@ if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
 fi
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
+grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:225:2500.000:23.0880"
 grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198;do
@@ -284,7 +284,7 @@ EOF1
 #  fi
 
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
+  grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:225:2500.000:23.0880"
   grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
   for grid in 227 196 198; do
@@ -297,8 +297,8 @@ EOF1
      wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.max_8hr_o3.${grid}.grib2"
      wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2" -grib "${NET}.${cycle}.max_1hr_o3.${grid}.grib2"
   else
-     cpreq "${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2" "${NET}.${cycle}.max_8hr_o3.${grid}.grib2"
-     cpreq "${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2" "${NET}.${cycle}.max_1hr_o3.${grid}.grib2"
+     cp "${NET}.${cycle}.tmp.max_8hr_o3.${grid}.grib2" "${NET}.${cycle}.max_8hr_o3.${grid}.grib2"
+     cp "${NET}.${cycle}.tmp.max_1hr_o3.${grid}.grib2" "${NET}.${cycle}.max_1hr_o3.${grid}.grib2"
   fi  
 
     cpreq ${DATA}/${NET}.${cycle}.max_*hr_o3.${grid}.grib2  ${COMOUT}

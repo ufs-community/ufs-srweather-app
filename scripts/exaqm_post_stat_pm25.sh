@@ -127,7 +127,8 @@ cpreq ${DATA}/${NET}.${cycle}.ave_1hr_pm25.${id_domain}.grib2 ${COMOUT}
 #fi
 
 export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
+#export grid148="lambert:263.0000:33.0000:45.0000 239.3720:442:12000.000 21.8210:265:12000.000"
+export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:225:2500.000:23.0880"
 export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
 for grid in 227 196 198; do
@@ -138,7 +139,7 @@ for grid in 227 196 198; do
   if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then
      wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" -grib "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
   else
-     cpreq "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
+     cp "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
   fi
 done
 
@@ -251,7 +252,7 @@ EOF1
 #  fi
 
   export grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:255:2500.000:23.0880"
+  export grid196="mercator:20.0000 198.4750:321:2500.000:206.1310 18.0730:225:2500.000:23.0880"
   export grid198="nps:210.0000:60.0000 181.4290:825:5953.000 40.5300:553:5953.000"
 
   for grid in 227 196 198; do
