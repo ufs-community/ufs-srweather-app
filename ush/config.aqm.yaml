@@ -1,8 +1,8 @@
 metadata:
-  description: config for Online-CMAQ, AQM_NA_13km, warm-start
+  description: config for SRW-AQM, AQM_NA_13km, warm-start
 user:
   RUN_ENVIR: community
-  MACHINE: hera
+  MACHINE: [hera/orion/hercules/derecho]
   ACCOUNT: [account name]
 workflow:
   USE_CRON_TO_RELAUNCH: true
@@ -22,7 +22,9 @@ workflow:
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
   COLDSTART: false      # set to true for cold start
-  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000'
+  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
+#  WARMSTART_CYCLE_DIR: '/work/noaa/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for orion/hercules
+#  WARMSTART_CYCLE_DIR: '' # for derecho
 nco:
   envir_default: test_aqm_warmstart
   NET_default: aqm
