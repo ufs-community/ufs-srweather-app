@@ -650,10 +650,10 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   else
     data_trans_path="${DATA_SHARE}"
   fi
-  cpreq -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  cpreq -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-  cpreq -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-  cpreq -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+  cp -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
 else
   mv_vrfy out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
   mv_vrfy out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc

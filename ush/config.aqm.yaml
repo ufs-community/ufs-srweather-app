@@ -1,5 +1,5 @@
 metadata:
-  description: config for Online-CMAQ, AQM_NA_13km, community mode
+  description: config for Online-CMAQ, AQM_NA_13km, warm-start
 user:
   RUN_ENVIR: community
   MACHINE: hera
@@ -7,7 +7,7 @@ user:
 workflow:
   USE_CRON_TO_RELAUNCH: true
   CRON_RELAUNCH_INTVL_MNTS: 3
-  EXPT_SUBDIR: aqm_community_aqmna13
+  EXPT_SUBDIR: aqm_AQMNA13km_warmstart
   PREDEF_GRID_NAME: AQM_NA_13km
   CCPP_PHYS_SUITE: FV3_GFS_v16
   DATE_FIRST_CYCL: '2023111000'
@@ -21,12 +21,16 @@ workflow:
   DIAG_TABLE_TMPL_FN: diag_table_aqm.FV3_GFS_v16
   FIELD_TABLE_TMPL_FN: field_table_aqm.FV3_GFS_v16
   DO_REAL_TIME: false
+  COLDSTART: false      # set to true for cold start
+  WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000'
 nco:
+  envir_default: test_aqm_warmstart
   NET_default: aqm
+  RUN_default: aqm
 rocoto:
   tasks:
     taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/aqm_prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
-    task_aqm_ics_ext:
+#    task_aqm_ics_ext:    # uncomment this in case of COLDSTART: true
     metatask_run_ensemble:
       task_run_fcst_mem#mem#:
         walltime: 01:00:00

@@ -103,12 +103,12 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cpreq ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
+cp -p ${FIXaqm}/nexus/${NEXUS_GRID_FN} ${DATA}/grid_spec.nc
 
 if [ "${USE_GFS_SFC}" = "TRUE" ]; then
-  cpreq ${PARMsrw}/nexus_config/cmaq_gfs_megan/*.rc ${DATA}
+  cp -p ${PARMsrw}/nexus_config/cmaq_gfs_megan/*.rc ${DATA}
 else
-  cpreq ${PARMsrw}/nexus_config/cmaq/*.rc ${DATA}
+  cp -p ${PARMsrw}/nexus_config/cmaq/*.rc ${DATA}
 fi
 #
 #-----------------------------------------------------------------------
