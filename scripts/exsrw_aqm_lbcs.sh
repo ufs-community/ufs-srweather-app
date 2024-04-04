@@ -97,7 +97,7 @@ aqm_lbcs_fn_prefix="${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f"
 for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
   fhr=$( printf "%03d" "${hr}" )
   aqm_lbcs_fn="${aqm_lbcs_fn_prefix}${fhr}.nc"
-  cpreq "${DATA_SHARE}/${aqm_lbcs_fn}" ${DATA}
+  cp -p "${DATA_SHARE}/${aqm_lbcs_fn}" ${DATA}
 done
 
 if [ "${DO_AQM_CHEM_LBCS}" = "TRUE" ]; then
@@ -106,7 +106,7 @@ if [ "${DO_AQM_CHEM_LBCS}" = "TRUE" ]; then
   chem_lbcs_fp="${FIXaqm}/chemlbc/${chem_lbcs_fn}"
   if [ -f ${chem_lbcs_fp} ]; then
     #Copy the boundary condition file to the current location
-    cpreq ${chem_lbcs_fp} .
+    cp -p ${chem_lbcs_fp} .
   else
     message_txt="The chemical LBC files do not exist:
     CHEM_BOUNDARY_CONDITION_FILE = \"${chem_lbcs_fp}\""
@@ -125,7 +125,7 @@ if [ "${DO_AQM_CHEM_LBCS}" = "TRUE" ]; then
         err_exit "${message_txt}"
         print_err_msg_exit "${message_txt}"
       fi
-      cpreq ${aqm_lbcs_fn} "${aqm_lbcs_fn}_chemlbc"
+      cp -p ${aqm_lbcs_fn} "${aqm_lbcs_fn}_chemlbc"
     fi
   done
 
@@ -229,7 +229,7 @@ fi
 for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
   fhr=$( printf "%03d" "${hr}" )
   aqm_lbcs_fn="${aqm_lbcs_fn_prefix}${fhr}.nc"
-  cpreq -p "${DATA}/${aqm_lbcs_fn}" ${COMOUT}
+  cp -p "${DATA}/${aqm_lbcs_fn}" ${COMOUT}
 done
 #
 print_info_msg "
