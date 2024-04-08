@@ -422,10 +422,10 @@ platform:
   # System directory where the graphics shapefiles are located.
   # 
   # FIXaqm:
-  # System directory where AQM data are located
+  # System directory where AQM data files are located
   #
   # FIXemis:
-  # System directory where AQM emission are located.
+  # System directory where AQM emission data files are located.
   #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
