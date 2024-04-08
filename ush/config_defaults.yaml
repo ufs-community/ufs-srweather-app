@@ -421,6 +421,12 @@ platform:
   # FIXshp:
   # System directory where the graphics shapefiles are located.
   # 
+  # FIXaqm:
+  # System directory where AQM data are located
+  #
+  # FIXemis:
+  # System directory where AQM emission are located.
+  #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -435,6 +441,8 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
+  FIXaqm: ""
+  FIXemis: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #
