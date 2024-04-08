@@ -18,6 +18,7 @@ load("srw_common")
 load("nccmp/1.9.0.1")
 load("nco/5.0.6")
 load("wget")
+load(pathJoin("prod_util", os.getenv("prod_util_ver") or "1.2.2"))
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")
