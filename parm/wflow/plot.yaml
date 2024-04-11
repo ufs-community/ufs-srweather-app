@@ -26,7 +26,7 @@ default_task_plot: &default_task
 
 task_plot_allvars:
   <<: *default_task
-  command: '&LOAD_MODULES_RUN_TASK_FP; "plot_allvars" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"'
+  command: '&LOAD_MODULES_RUN_TASK; "plot_allvars" "&JOBSdir;/JREGIONAL_PLOT_ALLVARS"'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
   dependency:
     or_do_post: &post_files_exist

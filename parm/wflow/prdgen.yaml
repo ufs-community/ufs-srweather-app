@@ -10,7 +10,7 @@ metatask_run_prdgen:
       attrs:
         cycledefs: '#cycledef#'
         maxtries: 1
-      command: '&LOAD_MODULES_RUN_TASK_FP; "run_prdgen" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"'
+      command: '&LOAD_MODULES_RUN_TASK; "run_prdgen" "&JOBSdir;/JREGIONAL_RUN_PRDGEN"'
       envars:
         GLOBAL_VAR_DEFNS_FP: '&GLOBAL_VAR_DEFNS_FP;'
         USHdir: '&USHdir;'
