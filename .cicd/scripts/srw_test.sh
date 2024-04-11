@@ -28,7 +28,6 @@ fi
 # Test directories
 we2e_experiment_base_dir="${workspace}/expt_dirs"
 we2e_test_dir="${workspace}/tests/WE2E"
-nco_dir="${workspace}/nco_dirs"
 
 # Clean any stale test logs
 rm -f ${workspace}/tests/WE2E/log.*
@@ -49,8 +48,7 @@ cd ${we2e_test_dir}
 progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
 /usr/bin/time -p -f '{\n  "cpu": "%P"\n, "memMax": "%M"\n, "mem": {"text": "%X", "data": "%D", "swaps": "%W", "context": "%c", "waits": "%w"}\n, "pagefaults": {"major": "%F", "minor": "%R"}\n, "filesystem": {"inputs": "%I", "outputs": "%O"}\n, "time": {"real": "%e", "user": "%U", "sys": "%S"}\n}' -o ${WORKSPACE}/${SRW_PLATFORM}-${SRW_COMPILER}-time-srw_test.json \
     ./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
-    --expt_basedir=${we2e_experiment_base_dir} \
-    --opsroot=${nco_dir} | tee ${progress_file}
+    --expt_basedir=${we2e_experiment_base_dir} | tee ${progress_file}
 
 # Set exit code to number of failures
 set +e

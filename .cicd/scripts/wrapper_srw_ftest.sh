@@ -34,6 +34,10 @@ if [[ "${SRW_PLATFORM}" == hera ]]; then
     fi
 fi
 
+if [[ "${SRW_PLATFORM}" == jet ]]; then
+    sed -i '15i #SBATCH --partition=xjet' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+fi
+
 if [[ "${TASK_DEPTH}" == 0 ]] ; then
     exit 0
 fi
