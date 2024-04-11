@@ -1,5 +1,49 @@
 #!/bin/bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# This J-Job script runs a set of tests at the end of WE2E tests.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    CDATE
+#    FCST_DIR
+#    SLASH_ENSMEM_SUBDIR
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#    RUN_ENV
+#  workflow:
+#    FCST_LEN_HRS
+#
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
+# Source the variable definitions file and the bash utility functions.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/source_util_funcs.sh
+for sect in (user workflow) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
+. $USHdir/job_preamble.sh
+
+
+
 #
 #-----------------------------------------------------------------------
 #

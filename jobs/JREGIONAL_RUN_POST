@@ -3,8 +3,37 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the post-processor (UPP) on the NetCDF output files
-# of the write component of the FV3-LAM model.
+# The J-Job that runs the Unified Post-processor (UPP) on the NetCDF
+# output from FV3.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    DATA
+#    COMIN
+#    SLASH_ENSMEM_SUBDIR
+#    COMOUT
+#    DATAROOT
+#    PDY
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    RUN_ENVIR
+#    DATE_FIRST_CYCL
+#    INCR_CYCL_FREQ
+#    FCST_LEN_CYCL
+#    FCST_LEN_HRS
+#
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  task_run_post:
+#    SUB_HOURLY_POST
 #
 #-----------------------------------------------------------------------
 #
@@ -17,7 +46,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_post|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow platform task_run_post task_run_fcst) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

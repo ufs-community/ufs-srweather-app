@@ -3,12 +3,41 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-job to run chgres_cube for preparing lateral boundary conditions
+# for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    CDATE
+#    COMIN
+#    SLASH_ENSMEM_SUBDIR
+#    DATA
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#    RUN_ENVIR
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

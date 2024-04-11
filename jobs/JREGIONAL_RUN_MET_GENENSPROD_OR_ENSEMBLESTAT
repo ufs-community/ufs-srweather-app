@@ -3,7 +3,18 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-Job that runs that runs either METplus's gen_ens_prod tool or its
+# ensemble_stat tool for ensemble verification.
 #
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +27,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid|task_run_vx_enspoint" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

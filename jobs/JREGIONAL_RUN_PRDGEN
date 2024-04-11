@@ -3,9 +3,32 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs wgrib2 to create various subdomain GRIB2 files from
-# the raw UPP-generated GRIB2 output from the run_post task of the
+# The J-Job that runs wgrib2 to create various subdomain GRIB2 files
+# from the raw UPP-generated GRIB2 output from the run_post task of the
 # FV3-LAM model.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    DATA
+#    COMIN
+#    SLASH_ENSMEM_SUBDIR
+#    COMOUT
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    RUN_ENVIR
+#
+#  platform:
+#    WORKFLOW_MANAGER
+#
+#  task_run_post:
+#    SUB_HOURLY_POST
 #
 #-----------------------------------------------------------------------
 #
@@ -18,7 +41,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_prdgen|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow platform task_run_post) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

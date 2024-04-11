@@ -3,8 +3,18 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script runs the METplus GridStat or PointStat tool for deterministic
-# verification.
+# This script runs the METplus GridStat or PointStat tool for
+# deterministic verification.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #

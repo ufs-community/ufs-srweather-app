@@ -3,7 +3,19 @@
 #
 #-----------------------------------------------------------------------
 #
-# This script checks, pulls, and stages observation data for model verification.
+# The J-Job script that checks, pulls, and stages observation data for
+# model verification.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    CDATE
+#
+# Experiment variables
+#
+#   user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #
@@ -16,7 +28,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 . $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------

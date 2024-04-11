@@ -3,7 +3,19 @@
 #
 #-----------------------------------------------------------------------
 #
+# The J-Job that runs MET/METplus's GridStat or PointStat tool to
+# perform verification on the ensemble mean of a specified field (or
+# group of fields).
 #
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#
+# Experiment variables
+#
+#  user:
+#    SCRIPTSdir
+#    USHdir
 #
 #-----------------------------------------------------------------------
 #

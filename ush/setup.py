@@ -1502,7 +1502,7 @@ def setup(USHdir, user_config_fn="config.yaml", debug: bool = False):
     var_defns_cfg = copy.deepcopy(expt_config)
     del var_defns_cfg["rocoto"]
     with open(global_var_defns_fp, "a") as f:
-        f.write(cfg_to_shell_str(var_defns_cfg))
+        f.write(cfg_to_yaml_str(var_defns_cfg))
 
 
     #
