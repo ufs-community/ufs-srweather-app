@@ -24,6 +24,7 @@ fi
 if [[ "${SRW_PLATFORM}" == gaea ]]; then
     sed -i '15i #SBATCH --clusters=c5' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
     sed -i 's|qos=batch|qos=normal|g' ${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/${workflow_cmd}_srw_ftest.sh
+    sed -i 's|${JOBSdir}/JREGIONAL_RUN_POST|$USHdir/load_modules_run_task.sh "run_post" ${JOBSdir}/JREGIONAL_RUN_POST|g' ${WORKSPACE}/${SRW_PLATFORM}/ush/wrapper/run_post.sh
 fi
 
 if [[ "${SRW_PLATFORM}" == hera ]]; then
