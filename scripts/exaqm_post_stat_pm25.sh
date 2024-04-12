@@ -143,7 +143,9 @@ for grid in 227 196 198; do
   fi
 done
 
-cpreq ${DATA}/${NET}.${cycle}.ave*pm25*.grib2 ${COMOUT}
+rm -rf ${DATA}/${NET}.${cycle}.tmp.ave_1hr_pm25*grib2
+
+cpreq ${DATA}/${NET}.${cycle}.*pm25*.grib2 ${COMOUT}
 
 # Create AWIPS GRIB2 data for Bias-Corrected PM2.5
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
