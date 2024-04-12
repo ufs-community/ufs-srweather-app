@@ -30,12 +30,12 @@ function link_master_to_cyc_3d(){
 }
 
 # AQM post
-cd $ECF_DIR/scripts/post
+cd $ECF_DIR/post
 echo "Linking AQM post ..."
 cyc=$(seq 0 72)
 link_master_to_cyc_3d "jaqm_post" "$cyc"
 # AQM nexus_emission
-cd $ECF_DIR/scripts/nexus
+cd $ECF_DIR/nexus
 echo "Linking AQM nexus_emission ..."
 cyc=$(seq 0 5)
 link_master_to_cyc_2d "jaqm_nexus_emission" "$cyc"

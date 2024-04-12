@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe 
+set -x 
 
 msg="JOB COPYING MODEL OUTPUTS HAS BEGUN"
 postmsg "$msg"
@@ -45,7 +45,7 @@ This is the ex-script for the task that copy AQM forecast and RESTART file to CO
 umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 shared_output_data=${umbrella_forecast_data}/output
 shared_restart_data=${umbrella_forecast_data}/RESTART
-NCP="cpreq -p"
+NCP="cpreq"
 # Configure scan target
 [ ${cyc} = "00" ] && FCST_LEN_HRS=6
 [ ${cyc} = "06" ] && FCST_LEN_HRS=72

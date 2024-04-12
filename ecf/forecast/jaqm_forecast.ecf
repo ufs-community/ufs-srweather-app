@@ -1,10 +1,10 @@
-#PBS -N aqm_pre_post_stat_%CYC%
+#PBS -N aqm_forecast_%CYC%
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:10:00
-#PBS -l select=1:mpiprocs=1:ncpus=1:mem=4G
+#PBS -l walltime=%WALLTIME:03:15:00%
+#PBS -l place=vscatter:exclhost,select=14:mpiprocs=128:ompthreads=1:ncpus=128
 #PBS -l debug=true
 
 model=aqm
@@ -19,11 +19,19 @@ module load intel/${intel_ver}
 module load craype/${craype_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
+module load jasper/${jasper_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load udunits/${udunits_ver}
-module load gsl/${gsl_ver}
-module load nco/${nco_ver}
+module load fms/${fms_ver}
+module load crtm/${crtm_ver}
+module load g2/${g2_ver}
+module load g2tmpl/${g2tmpl_ver}
+module load ip/${ip_ver}
+module load sp/${sp_ver}
+module load w3emc/${w3emc_ver}
+module load pio/${pio_ver}
+module load esmf/${esmf_ver}
+module load libjpeg/${libjpeg_ver}
 module load python/${python_ver}
 
 module list
@@ -31,7 +39,7 @@ module list
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_PRE_POST_STAT
+${HOMEaqm}/jobs/JAQM_FORECAST
 
 %include <tail.h>
 

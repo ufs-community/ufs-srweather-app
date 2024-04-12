@@ -1,7 +1,7 @@
 #!/bin/bash
 
 date
-export PS4=' $SECONDS + '
+export PS4='+ $SECONDS + '
 set -xue
 
 #-----------------------------------------------------------------------
@@ -85,7 +85,7 @@ export PARMaqm_utils="${PARMaqm_utils:-${HOMEaqm}/parm/aqm_utils}"
 TMP_STDAY=`${NDATE} -8760 ${PDY}${cyc} | cut -c1-8`  # 1 year back
 export BC_STDAY=${BC_STDAY:-${TMP_STDAY}}
 
-env
+#env
 #-----------------------------------------------------------------------
 # Call the ex-script for this J-job and pass to it the necessary varia-
 # bles.

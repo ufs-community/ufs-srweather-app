@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -139,7 +139,7 @@ for grid in 227 196 198; do
   if [ "$grid" == "198" ] || [ "$grid" == "227" ]; then
      wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" -grib "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
   else
-     cp "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
+     cpreq "${NET}.${cycle}.tmp.ave_1hr_pm25.${grid}.grib2" "${NET}.${cycle}.ave_1hr_pm25.${grid}.grib2"
   fi
 done
 

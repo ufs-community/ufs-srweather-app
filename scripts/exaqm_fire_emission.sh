@@ -1,13 +1,13 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
    
 export pgm=aqm_fire_emission
 
-EMAIL_SDM=${EMAIL_SDM:-NO}
+EMAIL_SDM=${EMAIL_SDM:-YES}
 
 #-----------------------------------------------------------------------
 #
@@ -95,16 +95,16 @@ else
     yyyymmdd_dn_md1=${missing_download_time:0:8}
     FILE_13km_md1=RAVE-HrlyEmiss-13km_v*_blend_s${missing_download_time}00000_e${missing_download_time}59590_c*.nc
     if [ -s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km}`) -gt 4000000 ]; then
-      cpreq -p ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
+      cpreq ${DCOMINfire}/${yyyymmdd_dn}/rave/${FILE_13km} ${FILE_curr}
     elif [ -s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}` ] && [ $(stat -c %s `ls ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1}`) -gt 4000000 ]; then
       echo "WARNING: ${FILE_13km} does not exist or broken. Replacing with the file of previous date ..."
-      cpreq -p ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
+      cpreq ${DCOMINfire}/${yyyymmdd_dn_md1}/rave/${FILE_13km_md1} ${FILE_curr}
     else
       message_txt="WARNING Fire Emission RAW data does not exist or broken:
   FILE_13km_md1 = \"${FILE_13km_md1}\"
   DCOMINfire = \"${DCOMINfire}\""
 
-        cpreq -p ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
+        cpreq ${FIXaqmfire}/Hourly_Emissions_13km_dummy.nc ${FILE_curr}
         message_warning="WARNING: ${message_txt}. Replacing with the dummy file :: AQM RUN SOFT FAILED."
         print_info_msg "${message_warning}"
 #        if [ ! -z "${maillist_group2}" ]; then

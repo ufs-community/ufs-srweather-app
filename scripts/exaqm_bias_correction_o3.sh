@@ -171,6 +171,7 @@ while [ $ic -lt 120 ]; do
     echo "cycle ${cyc} post1 is done!"
     break
   else
+    sleep 10
     (( ic=ic+1 ))
   fi
 done

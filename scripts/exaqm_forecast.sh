@@ -694,7 +694,7 @@ if [ -e "$pgmout" ]; then
 fi
 
 
-eval cpreq -p ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+eval cpreq ${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 echo "Forecast job is completed" &> ${umbrella_forecast_data}/clean.flag
 #
 #-----------------------------------------------------------------------
