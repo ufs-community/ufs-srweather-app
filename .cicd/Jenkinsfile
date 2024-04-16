@@ -237,23 +237,25 @@ pipeline {
                           }
                         }
                     }
+                    
+                }
+            }
+        }
 
-                    stage('Metrics') {
-                        steps {
-                            script {
-                                CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
-                                echo "Triggering job for branch ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
-                                build job: '/ufs-srweather-app/ufs-srw-metrics', parameters: [
-                                    string(name: 'CI_JOB_NAME', value: "ufs-srweather-app/metrics"),
-                                    string(name: 'CI_BUILD_NUMBER', value: "${CI_BRANCH_NAME}/${env.BUILD_NUMBER}")
-                                ], wait: false
-                            }
-                        }
-                    }
+        stage('Metrics') {
+            steps {
+                script {
+                    CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
+                    echo "Triggering ufs-srweather-app/ufs-srw-metrics job for ${env.JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
+                    build job: '/ufs-srweather-app/ufs-srw-metrics', parameters: [
+                        string(name: 'CI_JOB_NAME', value: "${env.JOB_NAME}"),
+                        string(name: 'CI_BUILD_NUMBER', value: "${CI_BRANCH_NAME}/${env.BUILD_NUMBER}")
+                    ], wait: false
                 }
             }
         }
     }
+    // end of stages{}
 
     // Uncomment the following block to re-enable PW clusters
     /*
