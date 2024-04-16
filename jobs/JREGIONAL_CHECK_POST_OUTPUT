@@ -78,7 +78,7 @@ Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
 #
 ensmem_name="mem${ENSMEM_INDX}"
 cycle_dir="$EXPTDIR/$CDATE"
-mkdir_vrfy -p "${cycle_dir}"
+mkdir -p "${cycle_dir}"
 touch "${cycle_dir}/post_files_exist_${ensmem_name}.txt"
 #
 #-----------------------------------------------------------------------
