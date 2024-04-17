@@ -1,15 +1,3 @@
-import hudson.model.*
-def onlineNodes () {
-    def axis = []
-    for (node in  jenkins.model.Jenkins.instance.getNodes()) {
-        if (node.getComputer().isOnline()) {
-            axis += node.name
-        }
-    }
-    // use list of nodes with onlineNodes().join(', ')
-    return axis
-}
-
 pipeline {
     agent none
 
@@ -87,6 +75,11 @@ pipeline {
                 // Run on all platform/compiler combinations by default or build and test only on the platform(s) and
                 // compiler(s) specified by SRW_PLATFORM_FILTER and SRW_COMPILER_FILTER
                 when {
+                    beforeAgent true
+                    expression {
+                        return nodesByLabel(env.SRW_PLATFORM).size() > 0
+                    }
+
                     allOf {
                         anyOf {
                             expression { params.SRW_PLATFORM_FILTER == 'all' }
@@ -250,7 +243,6 @@ pipeline {
                           }
                         }
                     }
-                    
                 }
             }
         }
