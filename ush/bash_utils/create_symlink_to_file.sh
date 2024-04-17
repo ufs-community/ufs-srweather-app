@@ -16,78 +16,20 @@ function create_symlink_to_file() {
 #
 #-----------------------------------------------------------------------
 #
-# Save current shell options (in a global array).  Then set new options
-# for this script/function.
-#
-#-----------------------------------------------------------------------
-#
-  { save_shell_opts; . ${USHdir}/preamble.sh; } > /dev/null 2>&1
-#
-#-----------------------------------------------------------------------
-#
-# Get the full path to the file in which this script/function is located 
-# (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
-# which the file is located (scrfunc_dir).
-#
-#-----------------------------------------------------------------------
-#
-  local scrfunc_fp=$( $READLINK -f "${BASH_SOURCE[0]}" )
-  local scrfunc_fn=$( basename "${scrfunc_fp}" )
-  local scrfunc_dir=$( dirname "${scrfunc_fp}" )
-#
-#-----------------------------------------------------------------------
-#
-# Get the name of this function.
-#
-#-----------------------------------------------------------------------
-#
-  local func_name="${FUNCNAME[0]}"
-#
-#-----------------------------------------------------------------------
-#
 # Specify the set of valid argument names for this script/function.  Then
 # process the arguments provided to this script/function (which should
 # consist of a set of name-value pairs of the form arg1="value1", etc).
 #
 #-----------------------------------------------------------------------
 #
-  local valid_args=( \
-"target" \
-"symlink" \
-"relative" \
-  )
-  process_args valid_args "$@"
-#
-#-----------------------------------------------------------------------
-#
-# For debugging purposes, print out values of arguments passed to this
-# script.  Note that these will be printed out only if VERBOSE is set to
-# TRUE.
-#
-#-----------------------------------------------------------------------
-#
-  print_input_args valid_args
-#
-#-----------------------------------------------------------------------
-#
-# Verify that the required arguments to this function have been specified.
-# If not, print out an error message and exit.
-#
-#-----------------------------------------------------------------------
-#
-  if [ -z "${target}" ]; then
-    print_err_msg_exit "\
-The argument \"target\" specifying the target of the symbolic link that
-this function will create was not specified in the call to this function:
-  target = \"$target\""
-  fi
+if [[ $# -lt 2 ]]; then
+  usage
+  print_err_msg_exit "Function create_symlink_to_file() requires at least two arguments"
+fi
 
-  if [ -z "${symlink}" ]; then
-    print_err_msg_exit "\
-The argument \"symlink\" specifying the symbolic link that this function
-will create was not specified in the call to this function:
-  symlink = \"$symlink\""
-  fi
+target=$1
+symlink=$2
+relative=${3:-TRUE}
 #
 #-----------------------------------------------------------------------
 #
@@ -106,8 +48,6 @@ will create was not specified in the call to this function:
 #
 #-----------------------------------------------------------------------
 #
-  relative=${relative:-"TRUE"}
-
   valid_vals_relative=("TRUE" "true" "YES" "yes" "FALSE" "false" "NO" "no")
   check_var_valid_value "relative" "valid_vals_relative"
 #
@@ -148,16 +88,7 @@ not exist or is not a file:
 #
 #-----------------------------------------------------------------------
 #
-  ln_vrfy -sf ${relative_flag} "$target" "$symlink"
-#
-#-----------------------------------------------------------------------
-#
-# Restore the shell options saved at the beginning of this script/func-
-# tion.
-#
-#-----------------------------------------------------------------------
-#
-  { restore_shell_opts; } > /dev/null 2>&1
+ln -sf ${relative_flag} "$target" "$symlink"
 
 }
 

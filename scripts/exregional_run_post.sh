@@ -284,9 +284,7 @@ for fid in "${fids[@]}"; do
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
   mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   if [ $RUN_ENVIR != "nco" ]; then
-    create_symlink_to_file target="${post_renamed_fn}" \
-                         symlink="${FID}${symlink_suffix}" \
-                         relative="TRUE"
+    create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
   fi
   # DBN alert
   if [ $SENDDBN = "TRUE" ]; then
