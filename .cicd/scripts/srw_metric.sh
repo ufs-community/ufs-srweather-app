@@ -108,7 +108,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
         tar xvfz Indy-Severe-Weather.tgz
     fi
-    [[ -f skill-score.txt ]] && rm skill-score.txt
+    [[ -f ${platform,,}-skill-score.txt ]] && rm ${platform,,}-skill-score.txt
     # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
     # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
     # In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
@@ -129,12 +129,12 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out ${platform,,}-skill-score.txt
 
     # check skill-score.txt
-    cat skill-score.txt
+    cat ${platform,,}-skill-score.txt
 
     # get skill-score (SS_INDEX) and check if it is significantly smaller than 1.0
     # A value greater than 1.0 indicates that the forecast model outperforms the reference, 
     # while a value less than 1.0 indicates that the reference outperforms the forecast.
-    tmp_string=$( tail -2 skill-score.txt | head -1 )
+    tmp_string=$( tail -2 ${platform,,}-skill-score.txt | head -1 )
     SS_INDEX=$(echo $tmp_string | awk -F " " '{print $NF}')
     echo "Skill Score: ${SS_INDEX}"
     if [[ ${SS_INDEX} < "0.700" ]]; then
