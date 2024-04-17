@@ -1,3 +1,15 @@
+import hudson.model.*
+def onlineNodes () {
+    def axis = []
+    for (node in  jenkins.model.Jenkins.instance.getNodes()) {
+        if (node.getComputer().isOnline()) {
+            axis += node.name
+        }
+    }
+    // use list of nodes with onlineNodes().join(', ')
+    return axis
+}
+
 pipeline {
     agent none
 
@@ -5,6 +17,7 @@ pipeline {
         disableConcurrentBuilds()
         overrideIndexTriggers(false)
         skipDefaultCheckout(true)
+        timeout(time: 6, unit: 'HOURS')
     }
 
     parameters {
