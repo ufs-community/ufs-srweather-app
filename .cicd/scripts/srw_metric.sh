@@ -126,7 +126,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
        sed -i 's|--load("conda")|load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
     fi
     # Run stat_analysis
-    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.txt
+    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out ${platform,,}-skill-score.txt
 
     # check skill-score.txt
     cat skill-score.txt
