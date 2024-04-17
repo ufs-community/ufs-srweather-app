@@ -1,0 +1,10 @@
+#!/bin/bash -l
+
+model=aqm
+%include <head.h>
+%include <envir-p1.h>
+set -x
+cyc=%CYC%
+ecflow_client --requeue=force /nco_aqm/primary/${cyc}/aqm
+%include <tail.h>
+exit 0
