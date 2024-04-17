@@ -65,8 +65,8 @@ pwd
 # Setup the build environment
 declare srw_compiler
 srw_compiler=${SRW_COMPILER} 
-source etc/lmod-setup.sh ${platform,,}
-module use modulefiles
+source ${workspace}/etc/lmod-setup.sh ${platform,,}
+module use ${workspace}/modulefiles
 module load build_${platform,,}_${srw_compiler}
 
 # Build srw
