@@ -1,5 +1,99 @@
 #!/usr/bin/env bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# This script generates NetCDF-formatted grid files required as input
+# the FV3 model configured for the regional domain.
+#
+# The output of this script is placed in a directory defined by GRID_DIR.
+#
+# More about the grid for regional configurations of FV3:
+#
+#    a) This script creates grid files for tile 7 (reserved for the
+#       regional grid located soewhere within tile 6 of the 6 global
+#       tiles.
+#
+#    b) Regional configurations of FV3 need two grid files, one with 3
+#       halo cells and one with 4 halo cells. The width of the halo is
+#       the number of cells in the direction perpendicular to the
+#       boundary.
+#
+#    c) The tile 7 grid file that this script creates includes a halo,
+#       with at least 4 cells to accommodate this requirement. The halo
+#       is made thinner in a subsequent step called "shave".
+#
+#    d) We will let NHW denote the width of the wide halo that is wider
+#       than the required 3- or 4-cell halos. (NHW; N=number of cells,
+#       H=halo, W=wide halo)
+#
+#    e) T7 indicates the cell count on tile 7.
+#
+#
+# This script does the following:
+#
+#   - Create the grid, either an ESGgrid with the regional_esg_grid
+#     executable or a GFDL-type grid with the hgrid executable
+#   - Calculate the regional grid's global uniform cubed-sphere grid
+#     equivalent resolution with the global_equiv_resol executable
+#   - Use the shave executable to reduce the halo to 3 and 4 cells
+#   - Call an ush script that runs the make_solo_mosaic executable
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    DATA
+#    REDIRECT_OUT_ERR
+#
+# Experiment variables
+#
+#  user:
+#    USHdir
+#    EXECdir
+#
+#  workflow:
+#    VERBOSE
+#    GRID_GEN_METHOD
+#    RGNL_GRID_NML_FN
+#    DOT_OR_USCORE
+#    RES_IN_FIXLAM_FILENAMES
+#
+#  platform:
+#    PRE_TASK_CMDS
+#    RUN_CMD_SERIAL
+#
+#  constants:
+#    NH3
+#    NH4
+#    TILE_RGNL
+#
+#  grid_params:
+#    ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    STRETCH_FAC
+#    LON_CTR
+#    LAT_CTR
+#    GFDLgrid_REFINE_RATIO
+#    DEL_ANGLE_X_SG
+#    DEL_ANGLE_Y_SG
+#    NEG_NX_OF_DOM_WITH_WIDE_HALO
+#    NEG_NY_OF_DOM_WITH_WIDE_HALO
+#    PAZI
+#    NHW
+#    NX
+#    NY
+#
+#  task_make_grid:
+#    GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
+#    GFDLgrid_NUM_CELLS
+#    GRID_DIR
+#
+#-----------------------------------------------------------------------
+#
+
 #
 #-----------------------------------------------------------------------
 #
@@ -8,7 +102,12 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_make_grid" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow platform constants grid_params task_make_grid) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #

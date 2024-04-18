@@ -1,5 +1,68 @@
 #!/usr/bin/env bash
 
+
+#
+#-----------------------------------------------------------------------
+#
+# The ex-script for getting the model files that will be used for either
+# initial conditions or lateral boundary conditions for the experiment.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    ICS_OR_LBCS
+#    PDY
+#    cyc
+#    CDATE
+#    DATA
+#    COMIN
+#    EXTRN_MDL_STAGING_DIR
+#    TIME_OFFSET_HRS
+#    EXTRN_MDL_NAME
+#    EXTRN_MDL_CDATE
+#    NET
+#
+# Experiment variables
+#
+#  user:
+#    USHdir
+#    RUN_ENVIR
+#    PARMdir
+#    MACHINE
+#
+#  workflow:
+#    DATE_FIRST_CYCL
+#    INCR_CYCL_FREQ
+#    FCST_LEN_CYCL
+#    SYMLINK_FIX_FILES
+#    EXTRN_MDL_VAR_DEFNS_FN
+#
+#  global:
+#    DO_ENSEMBLE
+#    NUM_ENS_MEMBERS
+#
+#  platform:
+#    EXTRN_MDL_DATA_STORES
+#
+#  task_get_extrn_ics:
+#    EXTRN_MDL_FILES_ICS
+#    FV3GFS_FILE_FMT_ICS
+#    EXTRN_MDL_SOURCE_BASEDIR_ICS
+#    EXTRN_MDL_SYSBASEDIR_ICS
+#
+#  task_get_extrn_lbcs:
+#    LBC_SPEC_INTVL_HRS
+#    EXTRN_MDL_FILES_LBCS
+#    FV3GFS_FILE_FMT_LBCS
+#    EXTRN_MDL_SOURCE_BASEDIR_LBCS
+#    EXTRN_MDL_SYSBASEDIR_LBCS
+#
+#-----------------------------------------------------------------------
+#
+
+
+
+
 #
 #-----------------------------------------------------------------------
 #
@@ -8,7 +71,13 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_get_extrn_ics|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow global platform task_get_extrn_ics \
+  task_get_extrn_lbcs) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #
@@ -222,7 +291,7 @@ if [ "${EXTRN_MDL_NAME}" = "GEFS" ]; then
     for num in $(seq -f "%02g" ${NUM_ENS_MEMBERS}); do
         sorted_fn=( )
         for fcst_hr in "${all_fcst_hrs_array[@]}"; do
-            # Read in filenames from $EXTRN_MDL_FNS and sort them
+            # Read in filenames from EXTRN_MDL_FNS and sort them
             base_path="${EXTRN_MDL_STAGING_DIR}/mem`printf %03d $num`"
             filenames_array=`awk -F= '/EXTRN_MDL_FNS/{print $2}' $base_path/${EXTRN_DEFNS}`
             for filename in ${filenames_array[@]}; do

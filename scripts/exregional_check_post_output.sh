@@ -3,12 +3,55 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script for checking the post output.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    ENSMEM_INDX
+#    CDATE
+#    VAR
+#    ACCUM_HH
+#
+# Experiment variables
+#
+#  user:
+#    USHdir
+#
+#  workflow:
+#    FCST_LEN_HRS
+#
+#  global:
+#    DO_ENSEMBLE
+#    ENS_TIME_LAG_HRS
+#
+#  constants:
+#    SECS_PER_HOUR
+#
+#  verification:
+#    VX_NDIGITS_ENSMEM_NAMES
+#    FCST_SUBDIR_TEMPLATE
+#    FCST_FN_TEMPLATE
+#    VX_FCST_INPUT_BASEDIR
+#    NUM_MISSING_FCST_FILES_MAX
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow global constants verification) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #

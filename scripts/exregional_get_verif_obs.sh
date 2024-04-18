@@ -3,12 +3,40 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script that checks, pulls, and stages observation data for
+# model verification.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    OBS_DIR
+#    PDY
+#    FHR
+#    OBTYPE
+#    VAR
+#
+# Experiment variables
+#
+#   user:
+#    USHdir
+#    PARMdir
+#
+#-----------------------------------------------------------------------
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task " " ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #

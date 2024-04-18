@@ -3,12 +3,97 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-scrtipt that sets up and runs chgres_cube for preparing lateral
+# boundary conditions for the FV3 forecast
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    COMIN
+#    SLASH_ENSMEM_SUBDIR
+#    DATA
+#    DATAROOT
+#    NET
+#    COMIN
+#    COMROOT
+#    COMOUT
+#    DATA_SHARE
+#    INPUT_DATA
+#    PDY
+#    EXTRN_MDL_CDATE
+#    REDIRECT_OUT_ERR
+#
+# Experiment variables
+#
+#  user:
+#    USHdir
+#    RUN_ENVIR
+#    MACHINE
+#    EXECdir
+#    PARMdir
+#
+#  workflow:
+#    VERBOSE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    CCPP_PHYS_SUITE
+#    SDF_USES_RUC_LSM
+#    SDF_USES_THOMPSON_MP
+#    THOMPSON_MP_CLIMO_FP
+#    FIXlam
+#    CRES
+#    DOT_OR_USCORE
+#    COLDSTART
+#    DATE_FIRST_CYCL
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#  platform:
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
+#    FIXgsm
+#
+#  global:
+#    HALO_BLEND
+#
+#  cpl_aqm_parm:
+#    CPL_AQM
+#
+#  task_make_lbcs:
+#    KMP_AFFINITY_MAKE_LBCS
+#    OMP_NUM_THREADS_MAKE_LBCS
+#    OMP_STACKSIZE_MAKE_LBCS
+#    VCOORD_FILE
+#    USE_FVCOM
+#    FVCOM_WCSTART
+#    FVCOM_DIR
+#    FVCOM_FILE
+#
+#  task_get_extrn_lbcs:
+#    EXTRN_MDL_NAME_LBCS
+#    FV3GFS_FILE_FMT_LBCS
+#
+#-----------------------------------------------------------------------
+#
+
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_make_lbcs|task_get_extrn_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user workflow constants platform global cpl_aqm_parm task_make_ics task_get_extrn_ics) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #
