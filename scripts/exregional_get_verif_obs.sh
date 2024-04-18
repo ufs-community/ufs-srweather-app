@@ -8,11 +8,11 @@
 #
 # Run-time environment variables:
 #
+#    FHR
 #    GLOBAL_VAR_DEFNS_FP
 #    OBS_DIR
-#    PDY
-#    FHR
 #    OBTYPE
+#    PDY
 #    VAR
 #
 # Experiment variables

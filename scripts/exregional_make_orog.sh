@@ -31,41 +31,30 @@
 #
 # Run-time environment variables:
 #
-#   GLOBAL_VAR_DEFNS_FP
 #   DATA
+#   GLOBAL_VAR_DEFNS_FP
 #   REDIRECT_OUT_ERR
 #
 # Experiment variables
 #
 #  user:
-#    USHdir
 #    EXECdir
-#
-#  workflow:
-#    VERBOSE
-#    PREEXISTING_DIR_METHOD
-#    CRES
-#    DOT_OR_USCORE
-#    FIXlam
-#    FIXam
-#    CCPP_PHYS_SUITE
-#    GRID_GEN_METHOD
-#
-#  grid_params:
-#    NHW
-#    STRETCH_FAC
-#    NX
-#    NY
-#
-#  constants:
-#    TILE_RGNL
-#    NH0
-#    NH4
+#    USHdir
 #
 #  platform:
+#    FIXorg
 #    PRE_TASK_CMDS
 #    RUN_CMD_SERIAL
-#    FIXorg
+#
+#  workflow:
+#    CCPP_PHYS_SUITE
+#    CRES
+#    DOT_OR_USCORE
+#    FIXam
+#    FIXlam
+#    GRID_GEN_METHOD
+#    PREEXISTING_DIR_METHOD
+#    VERBOSE
 #
 #  task_make_orog:
 #    KMP_AFFINITY_MAKE_OROG
@@ -77,6 +66,17 @@
 #    GFDLgrid_NUM_CELLS
 #    GFDLgrid_STRETCH_FAC
 #    GFDLgrid_REFINE_RATIO
+#
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
+#
+#  grid_params:
+#    NHW
+#    NX
+#    NY
+#    STRETCH_FAC
 #
 #-----------------------------------------------------------------------
 #

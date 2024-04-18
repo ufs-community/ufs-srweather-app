@@ -11,38 +11,38 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    DATA
+#    GLOBAL_VAR_DEFNS_FP
 #    REDIRECT_OUT_ERR
 #
 # Experiment variables
 #
 #   user:
-#     USHdir
 #     EXECdir
-#
-#   workflow:
-#     FIXlam
-#     CRES
-#     DOT_OR_USCORE
-#     VERBOSE
-#
-#   constants:
-#     NH0
-#     NH4
-#     TILE_RGNL
-#     GTYPE
+#     USHdir
 #
 #   platform:
 #     FIXsfc
 #     PRE_TASK_CMDS
 #     RUN_CMD_UTILS
 #
+#   workflow:
+#     CRES
+#     DOT_OR_USCORE
+#     FIXlam
+#     VERBOSE
+#
 #   task_make_sfc_climo:
 #     KMP_AFFINITY_MAKE_SFC_CLIMO
 #     OMP_NUM_THREADS_MAKE_SFC_CLIMO
 #     OMP_STACKSIZE_MAKE_SFC_CLIMO
 #     SFC_CLIMO_DIR
+#
+#   constants:
+#     GTYPE
+#     NH0
+#     NH4
+#     TILE_RGNL
 #
 #-----------------------------------------------------------------------
 #

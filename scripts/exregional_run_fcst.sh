@@ -8,102 +8,102 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    CDATE
-#    DATA
-#    COMROOT
-#    NET
-#    RUN
-#    PDY
-#    SLASH_ENSMEM_SUBDIR
 #    COMIN
-#    INPUT_DATA
-#    REDIRECT_OUT_ERR
 #    COMOUT
-#    SENDDBN
+#    COMROOT
+#    DATA
 #    DBNROOT
+#    GLOBAL_VAR_DEFNS_FP
+#    INPUT_DATA
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    RUN
+#    SENDDBN
+#    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables
 #
 #  user:
-#    USHdir
+#    MACHINE
 #    PARMdir
 #    RUN_ENVIR
-#    MACHINE
-#
-#  workflow:
-#    VERBOSE
-#    DATE_FIRST_CYCL
-#    COLDSTART
-#    INCR_CYCL_FREQ
-#    FCST_LEN_CYCL
-#    EXPTDIR
-#    FIXlam
-#    FIXam
-#    CRES
-#    DOT_OR_USCORE
-#    CCPP_PHYS_SUITE
-#    FCST_LEN_HRS
-#    SYMLINK_FIX_FILES
-#    FIXclim
-#    DATA_TABLE_FP
-#    DATA_TABLE_FN
-#    FIELD_TABLE_FN
-#    FIELD_TABLE_FP
-#    FIELD_DICT_FP
-#    FIELD_DICT_FN
-#    FV3_NML_FN
-#    FV3_NML_FP
-#    CCPP_PHYS_DIR
-#    FV3_NML_STOCH_FP
-#    PREDEF_GRID_NAME
-#
-#  global:
-#    DO_SPP
-#    DO_SPPT
-#    DO_SHUM
-#    DO_SKEB
-#    DO_LSM_SPP
-#    DO_ENSEMBLE
-#
-#  fixed_files:
-#    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
-#
-#  constants:
-#    NH0
-#    NH4
-#    NH3
-#    TILE_RGNL
+#    USHdir
 #
 #  platform:
 #    PRE_TASK_CMDS
 #    RUN_CMD_FCST
 #
-#  cpl_aqm_parm:
-#    CPL_AQM
-#    AQM_RC_PRODUCT_FN
-#
-#  task_run_fcst:
-#    KMP_AFFINITY_RUN_FCST
-#    OMP_NUM_THREADS_RUN_FCST
-#    OMP_STACKSIZE_RUN_FCST
-#    PRINT_ESMF
-#    USE_MERRA_CLIMO
-#    WRITE_DOPOST
-#    DO_FCST_RESTART
-#    RESTART_INTERVAL
-#    DT_ATMOS
-#    FV3_EXEC_FP
+#  workflow:
+#    CCPP_PHYS_DIR
+#    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATA_TABLE_FN
+#    DATA_TABLE_FP
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXPTDIR
+#    FCST_LEN_CYCL
+#    FCST_LEN_HRS
+#    FIELD_DICT_FP
+#    FIELD_DICT_FN
+#    FIELD_TABLE_FN
+#    FIELD_TABLE_FP
+#    FIXam
+#    FIXclim
+#    FIXlam
+#    FV3_NML_FN
+#    FV3_NML_FP
+#    FV3_NML_STOCH_FP
+#    INCR_CYCL_FREQ
+#    PREDEF_GRID_NAME
+#    SYMLINK_FIX_FILES
+#    VERBOSE
 #
 #  task_get_extrn_lbcs:
 #    LBC_SPEC_INTVL_HRS
 #
+#  task_run_fcst:
+#    DO_FCST_RESTART
+#    DT_ATMOS
+#    FV3_EXEC_FP
+#    KMP_AFFINITY_RUN_FCST
+#    OMP_NUM_THREADS_RUN_FCST
+#    OMP_STACKSIZE_RUN_FCST
+#    PRINT_ESMF
+#    RESTART_INTERVAL
+#    USE_MERRA_CLIMO
+#    WRITE_DOPOST
+#
 #  task_run_post:
-#    USE_CUSTOM_POST_CONFIG_FILE
 #    CUSTOM_POST_CONFIG_FP
-#    SUB_HOURLY_POST
 #    DT_SUBHOURLY_POST_MNTS
 #    POST_OUTPUT_DOMAIN_NAME
+#    SUB_HOURLY_POST
+#    USE_CUSTOM_POST_CONFIG_FILE
+#
+#  global:
+#    DO_ENSEMBLE
+#    DO_LSM_SPP
+#    DO_SHUM
+#    DO_SKEB
+#    DO_SPP
+#    DO_SPPT
+#
+#  cpl_aqm_parm:
+#    AQM_RC_PRODUCT_FN
+#    CPL_AQM
+#
+#  constants:
+#    NH0
+#    NH3
+#    NH4
+#    TILE_RGNL
+#
+#  fixed_files:
+#    CYCLEDIR_LINKS_TO_FIXam_FILES_MAPPING
 #
 #-----------------------------------------------------------------------
 #

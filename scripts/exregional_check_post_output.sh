@@ -7,11 +7,11 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
-#    ENSMEM_INDX
-#    CDATE
-#    VAR
 #    ACCUM_HH
+#    CDATE
+#    ENSMEM_INDX
+#    GLOBAL_VAR_DEFNS_FP
+#    VAR
 #
 # Experiment variables
 #
@@ -25,15 +25,15 @@
 #    DO_ENSEMBLE
 #    ENS_TIME_LAG_HRS
 #
+#  verification:
+#    FCST_FN_TEMPLATE
+#    FCST_SUBDIR_TEMPLATE
+#    NUM_MISSING_FCST_FILES_MAX
+#    VX_FCST_INPUT_BASEDIR
+#    VX_NDIGITS_ENSMEM_NAMES
+#
 #  constants:
 #    SECS_PER_HOUR
-#
-#  verification:
-#    VX_NDIGITS_ENSMEM_NAMES
-#    FCST_SUBDIR_TEMPLATE
-#    FCST_FN_TEMPLATE
-#    VX_FCST_INPUT_BASEDIR
-#    NUM_MISSING_FCST_FILES_MAX
 #
 #-----------------------------------------------------------------------
 #

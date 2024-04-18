@@ -8,52 +8,60 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    COMIN
-#    SLASH_ENSMEM_SUBDIR
+#    COMOUT
+#    COMROOT
 #    DATA
 #    DATAROOT
-#    NET
-#    COMIN
-#    COMROOT
-#    COMOUT
 #    DATA_SHARE
-#    INPUT_DATA
-#    PDY
 #    EXTRN_MDL_CDATE
+#    INPUT_DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    NET
+#    PDY
 #    REDIRECT_OUT_ERR
+#    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables
 #
 #  user:
-#    USHdir
-#    RUN_ENVIR
-#    MACHINE
 #    EXECdir
+#    MACHINE
 #    PARMdir
+#    RUN_ENVIR
+#    USHdir
+#
+#  platform:
+#    FIXgsm
+#    PRE_TASK_CMDS
+#    RUN_CMD_UTILS
 #
 #  workflow:
-#    VERBOSE
-#    EXTRN_MDL_VAR_DEFNS_FN
 #    CCPP_PHYS_SUITE
+#    COLDSTART
+#    CRES
+#    DATE_FIRST_CYCL
+#    DOT_OR_USCORE
+#    EXTRN_MDL_VAR_DEFNS_FN
+#    FIXlam
 #    SDF_USES_RUC_LSM
 #    SDF_USES_THOMPSON_MP
 #    THOMPSON_MP_CLIMO_FP
-#    FIXlam
-#    CRES
-#    DOT_OR_USCORE
-#    COLDSTART
-#    DATE_FIRST_CYCL
+#    VERBOSE
 #
-#  constants:
-#    NH0
-#    NH4
-#    TILE_RGNL
+#  task_get_extrn_lbcs:
+#    EXTRN_MDL_NAME_LBCS
+#    FV3GFS_FILE_FMT_LBCS
 #
-#  platform:
-#    PRE_TASK_CMDS
-#    RUN_CMD_UTILS
-#    FIXgsm
+#  task_make_lbcs:
+#    FVCOM_DIR
+#    FVCOM_FILE
+#    FVCOM_WCSTART
+#    KMP_AFFINITY_MAKE_LBCS
+#    OMP_NUM_THREADS_MAKE_LBCS
+#    OMP_STACKSIZE_MAKE_LBCS
+#    USE_FVCOM
+#    VCOORD_FILE
 #
 #  global:
 #    HALO_BLEND
@@ -61,19 +69,10 @@
 #  cpl_aqm_parm:
 #    CPL_AQM
 #
-#  task_make_lbcs:
-#    KMP_AFFINITY_MAKE_LBCS
-#    OMP_NUM_THREADS_MAKE_LBCS
-#    OMP_STACKSIZE_MAKE_LBCS
-#    VCOORD_FILE
-#    USE_FVCOM
-#    FVCOM_WCSTART
-#    FVCOM_DIR
-#    FVCOM_FILE
-#
-#  task_get_extrn_lbcs:
-#    EXTRN_MDL_NAME_LBCS
-#    FV3GFS_FILE_FMT_LBCS
+#  constants:
+#    NH0
+#    NH4
+#    TILE_RGNL
 #
 #-----------------------------------------------------------------------
 #

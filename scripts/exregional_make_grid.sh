@@ -42,26 +42,31 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    DATA
+#    GLOBAL_VAR_DEFNS_FP
 #    REDIRECT_OUT_ERR
 #
 # Experiment variables
 #
 #  user:
-#    USHdir
 #    EXECdir
-#
-#  workflow:
-#    VERBOSE
-#    GRID_GEN_METHOD
-#    RGNL_GRID_NML_FN
-#    DOT_OR_USCORE
-#    RES_IN_FIXLAM_FILENAMES
+#    USHdir
 #
 #  platform:
 #    PRE_TASK_CMDS
 #    RUN_CMD_SERIAL
+
+#  workflow:
+#    DOT_OR_USCORE
+#    GRID_GEN_METHOD
+#    RES_IN_FIXLAM_FILENAMES
+#    RGNL_GRID_NML_FN
+#    VERBOSE
+#
+#  task_make_grid:
+#    GFDLgrid_NUM_CELLS
+#    GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
+#    GRID_DIR
 #
 #  constants:
 #    NH3
@@ -69,27 +74,22 @@
 #    TILE_RGNL
 #
 #  grid_params:
-#    ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
-#    STRETCH_FAC
-#    LON_CTR
-#    LAT_CTR
-#    GFDLgrid_REFINE_RATIO
 #    DEL_ANGLE_X_SG
 #    DEL_ANGLE_Y_SG
+#    GFDLgrid_REFINE_RATIO
+#    IEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    ISTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    JEND_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    JSTART_OF_RGNL_DOM_WITH_WIDE_HALO_ON_T6SG
+#    LAT_CTR
+#    LON_CTR
 #    NEG_NX_OF_DOM_WITH_WIDE_HALO
 #    NEG_NY_OF_DOM_WITH_WIDE_HALO
-#    PAZI
 #    NHW
 #    NX
 #    NY
-#
-#  task_make_grid:
-#    GFDLgrid_USE_NUM_CELLS_IN_FILENAMES
-#    GFDLgrid_NUM_CELLS
-#    GRID_DIR
+#    PAZI
+#    STRETCH_FAC
 #
 #-----------------------------------------------------------------------
 #

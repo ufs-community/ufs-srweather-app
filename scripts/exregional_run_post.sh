@@ -7,53 +7,52 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    CDATE
+#    COMOUT
 #    DATA_FHR
-#    PDY
-#    ENSMEM_INDX
-#    REDIRECT_OUT_ERR
-#    COMOUT
-#    NET
-#    SENDDBN
 #    DBNROOT
-#    COMOUT
+#    ENSMEM_INDX
+#    GLOBAL_VAR_DEFNS_FP
+#    NET
+#    PDY
+#    REDIRECT_OUT_ERR
+#    SENDDBN
 #
 # Experiment variables
 #
 #   user:
-#     USHdir
-#     PARMdir
 #     EXECdir
-#     RUN_ENVIR
 #     MACHINE
-#
-#   workflow:
-#     VERBOSE
+#     PARMdir
+#     RUN_ENVIR
+#     USHdir
 #
 #   platform:
 #     PRE_TASK_CMDS
 #     RUN_CMD_POST
 #
-#   global:
-#     USE_CRTM
-#     CRTM_DIR
-#
-#   cpl_aqm_parm:
-#     CPL_AQM
+#   workflow:
+#     VERBOSE
 #
 #   task_run_post:
+#     CUSTOM_POST_CONFIG_FP
 #     KMP_AFFINITY_RUN_POST
 #     OMP_NUM_THREADS_RUN_POST
 #     OMP_STACKSIZE_RUN_POST
-#     USE_CUSTOM_POST_CONFIG_FILE
-#     CUSTOM_POST_CONFIG_FP
-#     SUB_HOURLY_POST
 #     NUMX
 #     POST_OUTPUT_DOMAIN_NAME
+#     SUB_HOURLY_POST
+#     USE_CUSTOM_POST_CONFIG_FILE
 #
 #   task_run_fcst:
 #     DT_ATMOS
+#
+#   global:
+#     CRTM_DIR
+#     USE_CRTM
+#
+#   cpl_aqm_parm:
+#     CPL_AQM
 #
 #-----------------------------------------------------------------------
 #
