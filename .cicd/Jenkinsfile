@@ -133,7 +133,7 @@ pipeline {
 
                 stages {
                     // Clean the workspace, checkout the repository, and run checkout_externals
-                    stage("Initialize ${env.SRW_PLATFORM}") {
+                    stage('Initialize') {
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "${env.STAGE_NAME} SRW (${env.SRW_COMPILER}) build environment on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
