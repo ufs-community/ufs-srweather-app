@@ -42,18 +42,6 @@ for sect in (user workflow) ; do
 done
 . $USHdir/job_preamble.sh
 
-
-
-#
-#-----------------------------------------------------------------------
-#
-# Source the variable definitions file and the bash utility functions.
-#
-#-----------------------------------------------------------------------
-#
-. $USHdir/source_util_funcs.sh
-source_config_for_task "task_integration_test|task_run_fcst" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
 #
 #-----------------------------------------------------------------------
 #

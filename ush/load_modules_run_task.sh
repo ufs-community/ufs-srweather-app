@@ -12,9 +12,12 @@
 #
 # And uses these variables from the GLOBAL_VAR_DEFNS_FP file
 #
-#    platform.BUILD_MOD_FN
-#    platform.RUN_VER_FN
-#    workflow.VERBOSE
+#  platform:
+#    BUILD_MOD_FN
+#    RUN_VER_FN
+#
+#  workflow:
+#    VERBOSE
 #
 #-----------------------------------------------------------------------
 #

@@ -230,15 +230,6 @@ function source_util_funcs() {
 #-----------------------------------------------------------------------
 #
   . ${bashutils_dir}/eval_METplus_timestr_tmpl.sh
-#
-#-----------------------------------------------------------------------
-#
-# Source the file containing the function that sources config files.
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/source_config.sh
-
 }
 source_util_funcs
 
