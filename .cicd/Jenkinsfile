@@ -260,11 +260,11 @@ pipeline {
             }
             post {
                 success {
-                    echo "ufs-srweather-app/ufs-srw-metrics SUCCESS!"
+                    echo "stage: ufs-srweather-app/ufs-srw-metrics SUCCESS!"
                 }
                 always {
                     script {
-                        echo "ufs-srweather-app/ufs-srw-metrics COMPLETE."
+                        echo "stage: ufs-srweather-app/ufs-srw-metrics COMPLETE."
                     }
                 }
             }
@@ -272,12 +272,15 @@ pipeline {
     }
     // end of stages{}
 
-    // Uncomment the following block to re-enable PW clusters
-    /*
     post {
         always {
-            // Stop any Parallel Works clusters that were started during the pipeline execution
             script {
+                CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
+                echo "post: Triggering ufs-srweather-app/ufs-srw-metrics job for ${env.JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
+                echo "post: ufs-srweather-app/ufs-srw-metrics COMPLETE."
+    // Uncomment the following block to re-enable PW clusters
+    /*
+            // Stop any Parallel Works clusters that were started during the pipeline execution
                 // def pw_clusters = ['pclusternoaav2use1', 'azclusternoaav2eus1', 'gclusternoaav2usc1']
                 def pw_clusters = ['pclusternoaav2use1']
                 def clusters = []
@@ -296,8 +299,8 @@ pipeline {
                     // PW_CLUSTER_NAME parameter
                     build job: 'parallel-works-jenkins-client/stop-cluster', parameters: [string(name: 'PW_CLUSTER_NAME', value: clusters[i])]
                 }
+    */          
             }
         }
     }
-    */
 }
