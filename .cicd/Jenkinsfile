@@ -253,10 +253,11 @@ pipeline {
         always {
             script {
                 // Trigger another job to collect all build statistics
+                CI_JOB_NAME=env.JOB_NAME.replace("/${env.JOB_BASE_NAME}","")
                 CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
-                echo "post: Triggering ufs-srweather-app/ufs-srw-metrics job for ${env.JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
+                echo "post: Triggering ufs-srweather-app/ufs-srw-metrics job for ${CI_JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
                 build job: '/ufs-srweather-app/ufs-srw-metrics', parameters: [
-                        string(name: 'CI_JOB_NAME', value: "${env.JOB_NAME}"),
+                        string(name: 'CI_JOB_NAME', value: "${CI_JOB_NAME}"),
                         string(name: 'CI_BUILD_NUMBER', value: "${CI_BRANCH_NAME}/${env.BUILD_NUMBER}")
                 ], wait: false
 
