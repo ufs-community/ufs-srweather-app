@@ -246,38 +246,20 @@ pipeline {
                 }
             }
         }
-
-        stage('Metrics') {
-            steps {
-                script {
-                    CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
-                    echo "Triggering ufs-srweather-app/ufs-srw-metrics job for ${env.JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
-                    build job: '/ufs-srweather-app/ufs-srw-metrics', parameters: [
-                        string(name: 'CI_JOB_NAME', value: "${env.JOB_NAME}"),
-                        string(name: 'CI_BUILD_NUMBER', value: "${CI_BRANCH_NAME}/${env.BUILD_NUMBER}")
-                    ], wait: false
-                }
-            }
-            post {
-                success {
-                    echo "stage: ufs-srweather-app/ufs-srw-metrics SUCCESS!"
-                }
-                always {
-                    script {
-                        echo "stage: ufs-srweather-app/ufs-srw-metrics COMPLETE."
-                    }
-                }
-            }
-        }
     }
     // end of stages{}
 
     post {
         always {
             script {
+                // Trigger another job to collect all build statistics
                 CI_BRANCH_NAME=env.JOB_BASE_NAME.replace("%2F","%252F")
                 echo "post: Triggering ufs-srweather-app/ufs-srw-metrics job for ${env.JOB_NAME} on branch build ${CI_BRANCH_NAME}/${env.BUILD_NUMBER} ..."
-                echo "post: ufs-srweather-app/ufs-srw-metrics COMPLETE."
+                build job: '/ufs-srweather-app/ufs-srw-metrics', parameters: [
+                        string(name: 'CI_JOB_NAME', value: "${env.JOB_NAME}"),
+                        string(name: 'CI_BUILD_NUMBER', value: "${CI_BRANCH_NAME}/${env.BUILD_NUMBER}")
+                ], wait: false
+
     // Uncomment the following block to re-enable PW clusters
     /*
             // Stop any Parallel Works clusters that were started during the pipeline execution
