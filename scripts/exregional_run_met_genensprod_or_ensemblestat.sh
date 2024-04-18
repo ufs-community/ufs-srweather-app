@@ -8,7 +8,13 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_vx_ensgrid|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user platform workflow nco global verification cpl_aqm_parm \
+   constants fixed_files grid_params task_run_vx_ensgrid task_run_post) ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #

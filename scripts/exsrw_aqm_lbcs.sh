@@ -8,7 +8,14 @@
 #-----------------------------------------------------------------------
 #
 . ${USHsrw}/source_util_funcs.sh
-source_config_for_task "task_get_extrn_lbcs|task_make_orog|task_make_lbcs|cpl_aqm_parm|task_aqm_lbcs" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user platform workflow nco global verification cpl_aqm_parm \
+   constants fixed_files grid_params \
+   task_get_extrn_lbcs task_make_orog task_make_lbcs task_aqm_lbcs ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #

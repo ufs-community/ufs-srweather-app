@@ -3,12 +3,77 @@
 #
 #-----------------------------------------------------------------------
 #
+# The ex-script that runs UPP.
+#
+# Run-time environment variables:
+#
+#    GLOBAL_VAR_DEFNS_FP
+#    CDATE
+#    DATA_FHR
+#    PDY
+#    ENSMEM_INDX
+#    REDIRECT_OUT_ERR
+#    COMOUT
+#    NET
+#    SENDDBN
+#    DBNROOT
+#    COMOUT
+#
+# Experiment variables
+#
+#   user:
+#     USHdir
+#     PARMdir
+#     EXECdir
+#     RUN_ENVIR
+#     MACHINE
+#
+#   workflow:
+#     VERBOSE
+#
+#   platform:
+#     PRE_TASK_CMDS
+#     RUN_CMD_POST
+#
+#   global:
+#     USE_CRTM
+#     CRTM_DIR
+#
+#   cpl_aqm_parm:
+#     CPL_AQM
+#
+#   task_run_post:
+#     KMP_AFFINITY_RUN_POST
+#     OMP_NUM_THREADS_RUN_POST
+#     OMP_STACKSIZE_RUN_POST
+#     USE_CUSTOM_POST_CONFIG_FILE
+#     CUSTOM_POST_CONFIG_FP
+#     SUB_HOURLY_POST
+#     NUMX
+#     POST_OUTPUT_DOMAIN_NAME
+#
+#   task_run_fcst:
+#     DT_ATMOS
+#
+#-----------------------------------------------------------------------
+#
+
+#
+#-----------------------------------------------------------------------
+#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
 source_config_for_task "task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+for sect in (user platform workflow global cpl_aqm_parm \
+   task_run_post task_run_fcst ; do
+  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect}) ; do
+    export $var
+  done
+done
 #
 #-----------------------------------------------------------------------
 #
