@@ -48,7 +48,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user platform workflow task_plot_allvars task_run_fcst) ; do
+for sect in user platform workflow task_plot_allvars task_run_fcst ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var

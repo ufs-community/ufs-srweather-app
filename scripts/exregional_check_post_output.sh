@@ -46,11 +46,11 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow global verification constants) ; do
-  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect}) ; do
-    export $var
-  done
+for sect in user workflow global verification constants ; do
+  while read -r line ; do
+    source <( echo "${line}" )
+  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect})
 done
 #
 #-----------------------------------------------------------------------

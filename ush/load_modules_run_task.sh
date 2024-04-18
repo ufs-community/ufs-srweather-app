@@ -103,7 +103,7 @@ else
     export pid=${pid:-$$}
 fi
 export jobid=${job}.${pid}
-set -u
+#set -u
 #
 #-----------------------------------------------------------------------
 #
@@ -140,12 +140,13 @@ if [ -n "${SRW_ENV:-}" ] ; then
   set -u
 fi
 
+set -x +u
 # Source the necessary blocks of the experiment config YAML
-for sect in (platform workflow) ; do
-  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect} ) ; do
-    export $var
-  done
+for sect in platform ; do
+  while read -r line ; do
+    source <( echo "${line}" )
+  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+    --output-block ${sect})
 done
 
 if [ "${machine}" != "wcoss2" ]; then
