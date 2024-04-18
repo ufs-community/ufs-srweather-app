@@ -7,10 +7,10 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    CDATE
-#    DATA
 #    COMIN
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
 #    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables

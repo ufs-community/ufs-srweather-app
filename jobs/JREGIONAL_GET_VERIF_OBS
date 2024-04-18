@@ -8,12 +8,12 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    CDATE
+#    GLOBAL_VAR_DEFNS_FP
 #
 # Experiment variables
 #
-#   user:
+#  user:
 #    SCRIPTSdir
 #    USHdir
 #

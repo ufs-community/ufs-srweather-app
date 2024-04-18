@@ -9,11 +9,11 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
-#    DATA
 #    COMIN
-#    SLASH_ENSMEM_SUBDIR
 #    COMOUT
+#    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables
 #

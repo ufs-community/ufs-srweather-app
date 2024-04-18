@@ -8,18 +8,18 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
 #    CDATE
 #    COMIN
-#    SLASH_ENSMEM_SUBDIR
 #    DATA
+#    GLOBAL_VAR_DEFNS_FP
+#    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables
 #
 #  user:
+#    RUN_ENVIR
 #    SCRIPTSdir
 #    USHdir
-#    RUN_ENVIR
 #
 #-----------------------------------------------------------------------
 #

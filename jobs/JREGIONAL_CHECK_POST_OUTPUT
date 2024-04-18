@@ -7,15 +7,18 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
-#    ENSMEM_INDX
 #    CDATE
+#    ENSMEM_INDX
+#    GLOBAL_VAR_DEFNS_FP
 #
 # Experiment variables
 #
-#    user.SCRIPTSdir
-#    user.USHdir
-#    workflow.EXPTDIR
+#  user:
+#    SCRIPTSdir
+#    USHdir
+#
+#  workflow:
+#    EXPTDIR
 #
 #-----------------------------------------------------------------------
 #

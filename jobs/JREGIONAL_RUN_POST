@@ -8,13 +8,14 @@
 #
 # Run-time environment variables:
 #
-#    GLOBAL_VAR_DEFNS_FP
-#    DATA
 #    COMIN
-#    SLASH_ENSMEM_SUBDIR
 #    COMOUT
+#    cyc
+#    DATA
 #    DATAROOT
+#    GLOBAL_VAR_DEFNS_FP
 #    PDY
+#    SLASH_ENSMEM_SUBDIR
 #
 # Experiment variables
 #
@@ -22,15 +23,15 @@
 #    SCRIPTSdir
 #    USHdir
 #
-#  workflow:
-#    RUN_ENVIR
-#    DATE_FIRST_CYCL
-#    INCR_CYCL_FREQ
-#    FCST_LEN_CYCL
-#    FCST_LEN_HRS
-#
 #  platform:
 #    WORKFLOW_MANAGER
+#
+#  workflow:
+#    DATE_FIRST_CYCL
+#    FCST_LEN_CYCL
+#    FCST_LEN_HRS
+#    INCR_CYCL_FREQ
+#    RUN_ENVIR
 #
 #  task_run_post:
 #    SUB_HOURLY_POST

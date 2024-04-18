@@ -9,43 +9,42 @@
 #
 # Run-time environment variables:
 #
+#    CDATE
+#    COMIN
+#    cyc
+#    DATA
+#    EXTRN_MDL_STAGING_DIR
 #    GLOBAL_VAR_DEFNS_FP
 #    ICS_OR_LBCS
 #    PDY
-#    cyc
-#    CDATE
-#    DATA
-#    COMIN
-#    EXTRN_MDL_STAGING_DIR (optional; default is DATA)
 #
 # Experiment variables
 #
 #  user:
 #    SCRIPTSdir
 #    USHdir
+#
 #  workflow:
 #    EXPTDIR
 #
-# Depending on ICS_or_LBCS:
+#  task_get_extrn_lbcs:
+#    EXTRN_MDL_FILES_LBCS
+#    EXTRN_MDL_LBCS_OFFSET_HRS
+#    EXTRN_MDL_NAME_LBCS
+#    EXTRN_MDL_SOURCE_BASEDIR_LBCS
+#    EXTRN_MDL_SYSBASEDIR_LBCS
+#    FV3GFS_FILE_FMT_LBCS
+#    LBC_SPEC_INTVL_HRS
+#    USE_USER_STAGED_EXTRN_FILES
 #
 #  task_get_extrn_ics:
-#    EXTRN_MDL_NAME_ICS
-#    EXTRN_MDL_ICS_OFFSET_HRS
-#    FV3GFS_FILE_FMT_ICS
-#    EXTRN_MDL_SYSBASEDIR_ICS
-#    USE_USER_STAGED_EXTRN_FILES
-#    EXTRN_MDL_SOURCE_BASEDIR_ICS
 #    EXTRN_MDL_FILES_ICS
-#
-#  task_get_extrn_lbcs:
-#    EXTRN_MDL_NAME_LBCS
-#    LBC_SPEC_INTVL_HRS
-#    EXTRN_MDL_LBCS_OFFSET_HRS
-#    FV3GFS_FILE_FMT_LBCS
-#    EXTRN_MDL_SYSBASEDIR_LBCS
+#    EXTRN_MDL_ICS_OFFSET_HRS
+#    EXTRN_MDL_NAME_ICS
+#    EXTRN_MDL_SOURCE_BASEDIR_ICS
+#    EXTRN_MDL_SYSBASEDIR_ICS
+#    FV3GFS_FILE_FMT_ICS
 #    USE_USER_STAGED_EXTRN_FILES
-#    EXTRN_MDL_SOURCE_BASEDIR_LBCS
-#    EXTRN_MDL_FILES_LBCS
 #
 #-----------------------------------------------------------------------
 #
@@ -58,7 +57,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow task_get_extrn_ics task_get_extrn_lbcs) ; do
+for sect in (user workflow task_get_extrn_lbcs task_get_extrn_ics) ; do
     --output-block ${sect}) ; do
     export $var
   done

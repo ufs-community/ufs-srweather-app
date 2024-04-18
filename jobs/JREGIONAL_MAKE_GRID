@@ -14,8 +14,8 @@
 # Experiment variables
 #
 #  user:
-#    SCRIPTSdir
 #    USHdir
+#    SCRIPTSdir
 #
 #  workflow:
 #    PREEXISTING_DIR_METHOD

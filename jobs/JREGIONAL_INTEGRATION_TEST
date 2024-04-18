@@ -16,12 +16,12 @@
 # Experiment variables
 #
 #  user:
+#    RUN_ENV
 #    SCRIPTSdir
 #    USHdir
-#    RUN_ENV
+#
 #  workflow:
 #    FCST_LEN_HRS
-#
 #
 #-----------------------------------------------------------------------
 #
