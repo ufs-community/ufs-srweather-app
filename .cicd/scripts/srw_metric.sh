@@ -99,7 +99,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     rm -rf ${workspace}/Indy-Severe-Weather/
     # Check if metprd data exists locally otherwise get it from S3
     TEST_EXTRN_MDL_SOURCE_BASEDIR=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM}.yaml | awk '{print $NF}')
-    if [[ ! -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
+    if [[ -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
         mkdir -p Indy-Severe-Weather/metprd/point_stat
         cp -rp $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat Indy-Severe-Weather/metprd
     elif [[ -f Indy-Severe-Weather.tgz ]]; then
