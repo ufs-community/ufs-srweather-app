@@ -49,7 +49,7 @@ progress_file="${workspace}/we2e_test_results-${platform}-${SRW_COMPILER}.txt"
 /usr/bin/time -p -f '{\n  "cpu": "%P"\n, "memMax": "%M"\n, "mem": {"text": "%X", "data": "%D", "swaps": "%W", "context": "%c", "waits": "%w"}\n, "pagefaults": {"major": "%F", "minor": "%R"}\n, "filesystem": {"inputs": "%I", "outputs": "%O"}\n, "time": {"real": "%e", "user": "%U", "sys": "%S"}\n}' -o ${WORKSPACE}/${SRW_PLATFORM}-${SRW_COMPILER}-time-srw_test.json \
     ./setup_WE2E_tests.sh ${platform} ${SRW_PROJECT} ${SRW_COMPILER} ${test_type} \
     --expt_basedir=${we2e_experiment_base_dir} | tee ${progress_file}; \
-    ${workspace}/.cicd/scripts/srw_metric.sh run_stat_anly
+    [[ -f ${we2e_experiment_base_dir}/grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0/log.generate_FV3LAM_wflow ]] && ${workspace}/.cicd/scripts/srw_metric.sh run_stat_anly
 
 # Set exit code to number of failures
 set +e
