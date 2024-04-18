@@ -86,7 +86,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow constants platform global cpl_aqm_parm task_make_ics task_get_extrn_ics) ; do
+for sect in (user platform workflow global cpl_aqm_parm constants task_get_extrn_ics task_make_ics) ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var

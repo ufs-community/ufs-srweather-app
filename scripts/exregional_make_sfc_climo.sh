@@ -55,7 +55,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow constants platform task_make_sfc_climo) ; do
+for sect in (user platform workflow constants task_make_sfc_climo) ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var

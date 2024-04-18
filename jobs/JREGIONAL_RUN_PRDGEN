@@ -21,11 +21,11 @@
 #    SCRIPTSdir
 #    USHdir
 #
-#  workflow:
-#    RUN_ENVIR
-#
 #  platform:
 #    WORKFLOW_MANAGER
+#
+#  workflow:
+#    RUN_ENVIR
 #
 #  task_run_post:
 #    SUB_HOURLY_POST
@@ -41,7 +41,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow platform task_run_post) ; do
+for sect in (user platform workflow task_run_post) ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var

@@ -102,7 +102,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in (user workflow platform constants grid_params task_make_grid) ; do
+for sect in (user platform workflow constants grid_params task_make_grid) ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var

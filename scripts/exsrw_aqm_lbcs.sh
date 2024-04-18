@@ -9,8 +9,8 @@
 #
 . ${USHsrw}/source_util_funcs.sh
 for sect in (user platform workflow nco global verification cpl_aqm_parm \
-   constants fixed_files grid_params \
-   task_get_extrn_lbcs task_make_orog task_make_lbcs task_aqm_lbcs ; do
+  constants fixed_files grid_params \
+  task_aqm_lbcs task_get_extrn_lbcs task_make_lbcs task_make_orog) ; do
   for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect}) ; do
     export $var
