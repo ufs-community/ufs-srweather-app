@@ -93,7 +93,7 @@ for sect in user platform workflow constants grid_params task_make_grid task_mak
   while read -r line ; do
     source <( echo "${line}" )
     done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-  done
+    --output-block ${sect})
 done
 
 #

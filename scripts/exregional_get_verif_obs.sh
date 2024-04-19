@@ -35,7 +35,7 @@ for sect in user ; do
   while read -r line ; do
     source <( echo "${line}" )
     done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-  done
+    --output-block ${sect})
 done
 #
 #-----------------------------------------------------------------------
