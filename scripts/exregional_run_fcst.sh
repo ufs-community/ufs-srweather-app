@@ -661,8 +661,9 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cp ${FIRE_NML_FP} fire.nml
 if [ "${UFS_FIRE}" = "TRUE" ]; then
+  # Due to limitation in uwtools, can only manipulate namelists that end in ".nml" for now, so copy to temp name
+  cp ${FIRE_NML_FP} fire.nml
   FCST_END_DATE=$( $DATE_UTIL --utc --date "${PDY} ${cyc} UTC + ${FCST_LEN_HRS} hours" "+%Y%m%d%H%M%S" )
   # This horrible syntax $((10#$VARNAME)) is to force bash to treat numbers as decimal instead of
   # trying to octal all up in our business
@@ -696,6 +697,8 @@ if [ "${UFS_FIRE}" = "TRUE" ]; then
 $settings"
   fi
 
+  # Move updated namelist back to original name.
+  mv fire.nml ${FIRE_NML_FP}
   # Link fire input file
   create_symlink_to_file target="${FIRE_INPUT_DIR}/geo_em.d01.nc" \
                          symlink="geo_em.d01.nc" \
