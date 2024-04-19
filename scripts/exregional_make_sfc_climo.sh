@@ -58,7 +58,7 @@
 for sect in user platform workflow constants task_make_sfc_climo ; do
   while read -r line ; do
     source <( echo "${line}" )
-    done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect})
 done
 #

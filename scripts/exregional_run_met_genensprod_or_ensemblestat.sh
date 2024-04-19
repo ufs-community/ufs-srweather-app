@@ -13,7 +13,7 @@ for sect in user platform workflow nco global verification cpl_aqm_parm \
   task_run_post task_run_vx_ensgrid ; do
   while read -r line ; do
     source <( echo "${line}" )
-    done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
+  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
     --output-block ${sect})
 done
 #
