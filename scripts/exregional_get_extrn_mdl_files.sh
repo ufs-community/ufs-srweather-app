@@ -73,9 +73,9 @@
 . $USHdir/source_util_funcs.sh
 for sect in user platform workflow global task_get_extrn_lbcs \
   task_get_extrn_ics ; do
-  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect}) ; do
-    export $var
+  while read -r line ; do
+    source <( echo "${line}" )
+    done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
   done
 done
 #

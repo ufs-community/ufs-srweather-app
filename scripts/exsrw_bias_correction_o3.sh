@@ -11,9 +11,9 @@
 for sect in user platform workflow nco global verification cpl_aqm_parm \
   constants fixed_files grid_params \
   task_bias_correction_o3 ; do
-  for var in $(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect}) ; do
-    export $var
+  while read -r line ; do
+    source <( echo "${line}" )
+    done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
   done
 done
 #
