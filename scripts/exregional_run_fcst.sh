@@ -121,8 +121,7 @@ fi
 #target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH4}.nc"   # Should this point to this halo4 file or a halo3 file???
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo${NH3}.nc"   # Should this point to this halo4 file or a halo3 file???
 symlink="grid_spec.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 # Symlink to halo-3 grid file with "halo3" stripped from name.
 mosaic_fn="grid_spec.nc"
@@ -130,8 +129,7 @@ grid_fn=$( get_charvar_from_netcdf "${mosaic_fn}" "gridfiles" )
 
 target="${FIXlam}/${grid_fn}"
 symlink="${grid_fn}"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 # Symlink to halo-4 grid file with "${CRES}_" stripped from name.
 #
@@ -147,8 +145,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="grid.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 
 
 #
@@ -165,8 +162,7 @@ fi
 # Symlink to halo-0 orography file with "${CRES}_" and "halo0" stripped from name.
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH0}.nc"
 symlink="oro_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 #
 # Symlink to halo-4 orography file with "${CRES}_" stripped from name.
 #
@@ -182,8 +178,7 @@ create_symlink_to_file target="$target" symlink="$symlink" \
 #
 target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
 symlink="oro_data.tile${TILE_RGNL}.halo${NH4}.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file $target $symlink ${relative_link_flag}
 #
 # If using the FV3_HRRR physics suite, there are two files (that contain 
 # statistics of the orography) that are needed by the gravity wave drag 
@@ -198,8 +193,7 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   for file_id in "${file_ids[@]}"; do
     target="${FIXlam}/${CRES}${DOT_OR_USCORE}oro_data_${file_id}.tile${TILE_RGNL}.halo${NH0}.nc"
     symlink="oro_data_${file_id}.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                           relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
 #
@@ -233,42 +227,55 @@ cd_vrfy ${DATA}/INPUT
 #
 relative_link_flag="FALSE"
 
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="gfs_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
-symlink="sfc_data.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
-symlink="gfs_ctrl.nc"
-create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
-
-
-for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
-  symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
-done
-
 if [ "${CPL_AQM}" = "TRUE" ]; then
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
-  symlink="NEXUS_Expt.nc"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                       relative="${relative_link_flag}"
+  COMIN="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
 
-  # create symlink to PT for point source in Online-CMAQ
-  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.PT.nc"
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${COMIN}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
+  done
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.NEXUS_Expt.nc"
+  symlink="NEXUS_Expt.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  # create symlink to PT for point source in SRW-AQM
+  target="${COMIN}/${NET}.${cycle}${dot_ensmem}.PT.nc"
   if [ -f ${target} ]; then
     symlink="PT.nc"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-	                       relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   fi
+
+else
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="gfs_data.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  symlink="sfc_data.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  symlink="gfs_ctrl.nc"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
+
+  for fhr in $(seq -f "%03g" 0 ${LBC_SPEC_INTVL_HRS} ${FCST_LEN_HRS}); do
+    target="${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f${fhr}.nc"
+    symlink="gfs_bndy.tile${TILE_RGNL}.${fhr}.nc"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
+  done
 fi
 #
 #-----------------------------------------------------------------------
@@ -318,8 +325,7 @@ for (( i=0; i<${num_symlinks}; i++ )); do
 
   symlink="${DATA}/$symlink"
   target="$FIXam/$target"
-  create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
+  create_symlink_to_file $target $symlink ${relative_link_flag}
 
 done
 #
@@ -342,8 +348,7 @@ if [ "${USE_MERRA_CLIMO}" = "TRUE" ]; then
       symlink="${DATA}/${pre_f}.dat"
     fi
     target="${f_nm_path}"
-    create_symlink_to_file target="$target" symlink="$symlink" \
-                         relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
 fi
 #
@@ -386,17 +391,11 @@ else
   relative_link_flag="FALSE"
 fi
 
-create_symlink_to_file target="${DATA_TABLE_FP}" \
-                       symlink="${DATA}/${DATA_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${DATA_TABLE_FP} ${DATA}/${DATA_TABLE_FN} ${relative_link_flag}
 
-create_symlink_to_file target="${FIELD_TABLE_FP}" \
-                       symlink="${DATA}/${FIELD_TABLE_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN} ${relative_link_flag}
 
-create_symlink_to_file target="${FIELD_DICT_FP}" \
-                       symlink="${DATA}/${FIELD_DICT_FN}" \
-                       relative="${relative_link_flag}"
+create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link_flag}
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
   cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
@@ -564,7 +563,7 @@ for the current cycle's (cdate) run directory (DATA) failed:
     rm_vrfy "${file_id}"
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
-    create_symlink_to_file target="$target" symlink="$symlink" relative="${relative_link_flag}"
+    create_symlink_to_file $target $symlink ${relative_link_flag}
   done
   cd_vrfy ${DATA}   
 fi
@@ -679,7 +678,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/create_nems_configure_file.py \
+python3 $USHdir/create_ufs_configure_file.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
   --run-dir "${DATA}"
 export err=$?
@@ -801,9 +800,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       if [ $RUN_ENVIR != "nco" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
-        create_symlink_to_file target="${post_renamed_fn}" \
-                         symlink="${FID}${symlink_suffix}" \
-	                 relative="TRUE"
+	create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
       fi
       # DBN alert
       if [ $SENDDBN = "TRUE" ]; then

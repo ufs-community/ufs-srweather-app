@@ -19,7 +19,7 @@ platform:
   RUN_CMD_SERIAL: time
   RUN_CMD_UTILS: srun --export=ALL -n $nprocs
   RUN_CMD_NEXUS: srun --export=ALL
-  RUN_CMD_AQMLBC: srun --export=ALL -n ${NUMTS}
+  RUN_CMD_AQMLBC: srun --export=ALL -n ${numts}
   SCHED_NATIVE_CMD: --export=NONE
   PRE_TASK_CMDS: '{ ulimit -s unlimited; ulimit -a; }'
   TEST_EXTRN_MDL_SOURCE_BASEDIR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data
@@ -33,6 +33,8 @@ platform:
   FIXorg: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_orog
   FIXsfc: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/fix/fix_sfc_climo
   FIXshp: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/NaturalEarth
+  FIXaqm: /work/noaa/epic/SRW-AQM_DATA/fix_aqm
+  FIXemis: /work/noaa/epic/SRW-AQM_DATA/fix_emis
   EXTRN_MDL_DATA_STORES: aws
 data:
   ics_lbcs:
@@ -44,3 +46,8 @@ data:
     HRRR: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/HRRR/${yyyymmdd}${hh}
     RAP: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/RAP/${yyyymmdd}${hh}
     GSMGFS: /work/noaa/epic/role-epic/contrib/UFS_SRW_data/develop/input_model_data/GSMGFS/${yyyymmdd}${hh}
+
+cpl_aqm_parm:
+  COMINfire_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/RAVE_fire
+  COMINgefs_default: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GEFS_DATA
+  NEXUS_GFS_SFC_DIR: /work/noaa/epic/SRW-AQM_DATA/aqm_data/GFS_SFC_DATA
