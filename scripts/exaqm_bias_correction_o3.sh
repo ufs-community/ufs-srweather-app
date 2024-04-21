@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -145,8 +145,8 @@ mkdir -p "${DATA}/data"
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
 
-    if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
-      cpreq ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    if [ -s ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}00.dat ]; then
+      cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     else
       message_warning="WARNING: airnow data missing. skip this date ${cvt_pdy}"
       print_info_msg "${message_warning}"
@@ -171,6 +171,7 @@ while [ $ic -lt 120 ]; do
     echo "cycle ${cyc} post1 is done!"
     break
   else
+    sleep 10
     (( ic=ic+1 ))
   fi
 done
@@ -208,28 +209,53 @@ export err=$?; err_chk
 if [ -e "${pgmout}" ]; then
    cat ${pgmout}
 fi
-cpreq ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
   mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cpreq ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
   # CSV files
-  mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/airnow/csv/${yyyy}/${PDY}
   for i in {1..3}; do
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+
+    target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}"
+        
+    if [ ! -d "$target_dir" ]; then
+         mkdir -p "$target_dir"
+    fi
+
+    # Loop over each file individually
+    for file in "${DATA}/data/bcdata.${!yyyymm_m}/airnow/csv/${!yyyy_m}/${!PDYm}/HourlyAQObs_${!PDYm}"*.dat; do
+        if [ -s "$file" ]; then
+           cp "$file" "$target_dir"
+        else
+           message_warning="WARNING: File not found: $file"
+           print_info_msg "${message_warning}"
+        fi
+   done
   done
 
   # NetCDF files
-  mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/airnow/netcdf/${yyyy}/${PDY}
   for i in {1..3}; do
     yyyymm_m="yyyymm_m${i}"
     yyyy_m="yyyy_m${i}"
     PDYm="PDYm${i}"
-    cpreq "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+
+    target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+        
+    if [ ! -d "$target_dir" ]; then
+         mkdir -p "$target_dir"
+    fi
+
+    # Check if the file exists before attempting to copy it
+    if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" ]; then
+     cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+    else
+     message_warning="WARNING: File not found: HourlyAQObs.${!PDYm}.nc"
+     print_info_msg "${message_warning}"
+    fi 
   done
 
   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
@@ -242,7 +268,13 @@ fi
 
 rm -rf ${DATA}/data/bcdata*
 
-ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
+# Check if any bcdata files exist
+if ls "${COMINbicor}"/bcdata.* > /dev/null 2>&1; then
+     # Create symbolic links
+      ln -sf "${COMINbicor}"/bcdata* "${DATA}/data"
+else
+   print_err_msg_exit "FATAL ERROR - All bcdata files not found "
+fi
 
 mkdir -p ${DATA}/data/sites
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.ozone.bias_corr_${id_domain}.${cyc}z ${DATA}
@@ -356,8 +388,12 @@ EOF1
 
     grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
    
-    wgrib2 ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_8hr_o3_bc.227.grib2
-    wgrib2 ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.max_1hr_o3_bc.227.grib2
+    wgrib2 ${NET}.${cycle}.max_8hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${NET}.${cycle}.tmp.max_8hr_o3_bc.227.grib2
+    wgrib2 ${NET}.${cycle}.max_1hr_o3_bc.${id_domain}.grib2 -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${NET}.${cycle}.tmp.max_1hr_o3_bc.227.grib2
+
+    # fix the res flags
+    wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_8hr_o3_bc.227.grib2" -grib "${NET}.${cycle}.max_8hr_o3_bc.227.grib2"
+    wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.max_1hr_o3_bc.227.grib2" -grib "${NET}.${cycle}.max_1hr_o3_bc.227.grib2"
 
     cpreq ${DATA}/${NET}.${cycle}.max_*hr_o3_bc.*.grib2 ${COMOUT}
    
@@ -396,18 +432,26 @@ done
 ###############
 echo ' &NLCOPYGB IDS(180)=1, /' > ozcon_scale
 
-newgrib2file1=${NET}.${cycle}.ave_1hr_o3_bc.227.grib2
-newgrib2file2=${NET}.${cycle}.ave_8hr_o3_bc.227.grib2
+newgrib2file1=${NET}.${cycle}.tmp.ave_1hr_o3_bc.227.grib2
+newgrib2file2=${NET}.${cycle}.tmp.ave_8hr_o3_bc.227.grib2
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
 
-wgrib2 tmpfile.1hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file1} 
+wgrib2 tmpfile.1hr -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${newgrib2file1} 
 cpreq tmpfile.1hr ${COMOUT}/${NET}.${cycle}.ave_1hr_o3_bc.${id_domain}.grib2
+
+#fix res flag
+wgrib2 -set_flag_table_3.3 8 "${newgrib2file1}" -grib "${NET}.${cycle}.ave_1hr_o3_bc.227.grib2"
+
 cpreq ${NET}.${cycle}.ave_1hr_o3_bc.227.grib2 ${COMOUT}
 
 if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
-  wgrib2 tmpfile.8hr -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${newgrib2file2} 
+  wgrib2 tmpfile.8hr -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${newgrib2file2} 
   cpreq tmpfile.8hr ${COMOUT}/${NET}.${cycle}.ave_8hr_o3_bc.${id_domain}.grib2
+
+  #fix res flag
+  wgrib2 -set_flag_table_3.3 8 "${newgrib2file2}" -grib "${NET}.${cycle}.ave_8hr_o3_bc.227.grib2"
+
   cpreq ${NET}.${cycle}.ave_8hr_o3_bc.227.grib2 ${COMOUT}
 fi
 

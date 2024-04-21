@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -556,9 +556,9 @@ $settings"
   startmsg
   eval ${RUN_CMD_UTILS} ${exec_fp} ${REDIRECT_OUT_ERR}  >> $pgmout 2>errfile
   export err=$?; err_chk
-  if [ -e "${pgmout}" ]; then
-   cat ${pgmout}
-  fi
+  #if [ -e "${pgmout}" ]; then
+  # cat ${pgmout}
+  #fi
 #
 # Move LBCs file for the current lateral boundary update time to the LBCs
 # work directory.  Note that we rename the file by including in its name

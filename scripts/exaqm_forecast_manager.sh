@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe 
+set -x 
 
 msg="JOB COPYING MODEL OUTPUTS HAS BEGUN"
 postmsg "$msg"
@@ -45,7 +45,7 @@ This is the ex-script for the task that copy AQM forecast and RESTART file to CO
 umbrella_forecast_data=${DATAROOT}/${RUN}_forecast_${cyc}_${aqm_ver}
 shared_output_data=${umbrella_forecast_data}/output
 shared_restart_data=${umbrella_forecast_data}/RESTART
-NCP="cpreq -p"
+NCP="cpreq"
 # Configure scan target
 [ ${cyc} = "00" ] && FCST_LEN_HRS=6
 [ ${cyc} = "06" ] && FCST_LEN_HRS=72
@@ -204,7 +204,22 @@ fi
 #  Deleting DATA and shared RESTART/output directories 
 #-----------------------------------------------------------------------
 if [ "${KEEPDATA}" != "YES" ]; then
-   rm -rf ${umbrella_forecast_data}
+  icnt=0
+  wtm=20
+  while [ $icnt -lt $wtm ]; do
+   if [ -e ${umbrella_forecast_data}/clean.flag ]; then
+     cd ${DATAROOT}
+     rm -rf ${umbrella_forecast_data}
+     icnt=$wtm
+   else
+     sleep 60
+     (( icnt=icnt+1 ))
+     if [ $icnt -eq $wtm ]; then
+       echo "FATAL ERROR Forecast manager is done copy file for over ${wtm} minutes however forecast job is still running."
+       exit 9
+     fi
+   fi
+  done
 fi
 #
 #-----------------------------------------------------------------------
