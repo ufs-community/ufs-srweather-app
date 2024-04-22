@@ -8,9 +8,9 @@ model(s) from a template.
 import argparse
 import os
 import sys
-import tempfile
-from subprocess import STDOUT, CalledProcessError, check_output
+from pathlib import Path
 from textwrap import dedent
+from uwtools.api.template import render
 
 from python_utils import (
     cfg_to_yaml_str,
@@ -87,35 +87,11 @@ def create_ufs_configure_file(run_dir):
     #
     #-----------------------------------------------------------------------
     #
-    # Store the settings in a temporary file
-    with tempfile.NamedTemporaryFile(dir="./",
-                                     mode="w+t",
-                                     prefix="ufs_config_settings",
-                                     suffix=".yaml") as tmpfile:
-        tmpfile.write(settings_str)
-        tmpfile.seek(0)
-
-        cmd = " ".join(["uw template render",
-            "-i", UFS_CONFIG_TMPL_FP,
-            "-o", ufs_config_fp,
-            "-v",
-            "--values-file", tmpfile.name,
-            ]
+    render(
+        input_file = Path(UFS_CONFIG_TMPL_FP),
+        output_file = Path(ufs_config_fp),
+        values_src = settings,
         )
-
-        indent = "  "
-        output = ""
-        try:
-            output = check_output(cmd, encoding="utf=8", shell=True,
-                    stderr=STDOUT, text=True)
-        except CalledProcessError as e:
-            output = e.output
-            print(f"Failed with status: {e.returncode}")
-            sys.exit(1)
-        finally:
-            print("Output:")
-            for line in output.split("\n"):
-                print(f"{indent * 2}{line}")
     return True
 
 def parse_args(argv):
