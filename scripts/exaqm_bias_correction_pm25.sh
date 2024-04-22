@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -143,8 +143,9 @@ mkdir -p "${DATA}/data"
 
     mkdir -p "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     mkdir -p "${cvt_output_dir}/${cvt_yyyy}/${cvt_pdy}"
-    if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
-      cpreq ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
+    #jp if [ "$(ls -A ${DCOMINairnow}/${cvt_pdy}/airnow)" ]; then
+    if [ -s ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}00.dat ]; then
+      cp ${DCOMINairnow}/${cvt_pdy}/airnow/HourlyAQObs_${cvt_pdy}*.dat "${cvt_input_dir}/${cvt_yyyy}/${cvt_pdy}"
     else
       message_warning="WARNING: airnow data missing. skip this date ${cvt_pdy}"
       print_info_msg "${message_warning}"
@@ -169,6 +170,7 @@ while [ $ic -lt 120 ]; do
     echo "cycle ${cyc} post1 is done!"
     break
   else  
+    sleep 10
     (( ic=ic+1 ))
   fi    
 done    
@@ -209,8 +211,50 @@ fi
 cpreq ${DATA}/out/pm25/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
 if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
-mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
-cpreq ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+
+   # NetCDF files
+   for i in {1..3}; do
+      yyyymm_m="yyyymm_m${i}"
+      yyyy_m="yyyy_m${i}"
+      PDYm="PDYm${i}"
+
+      target_dir="${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+
+      if [ ! -d "$target_dir" ]; then
+           mkdir -p "$target_dir"
+      fi
+
+      # Check if the file exists before attempting to copy it
+      if [ -s "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" ]; then
+          cp "${DATA}/data/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}/HourlyAQObs.${!PDYm}.nc" "${COMOUTbicor}/bcdata.${!yyyymm_m}/airnow/netcdf/${!yyyy_m}/${!PDYm}"
+       else
+           message_warning="WARNING: File not found: HourlyAQObs.${!PDYm}.nc"
+           print_info_msg "${message_warning}"
+       fi
+    done
+
+   mkdir -p  ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+   cp ${DATA}/out/pm25/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
+
+
+   mkdir -p  "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+   cpreq ${COMIN}/${cyc}/${NET}.${cycle}.*_sfc.f*.nc ${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}
+
+   # Check if the directory exists before creating it
+   if [ ! -d "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}" ]; then
+       mkdir -p "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+   fi
+   
+   # Loop through files and copy each one individually if it exists
+    for file in ${COMIN}/${cyc}/${NET}.${cycle}.*_sfc.f*.nc; do
+      if [ -f "$file" ]; then
+          cpreq "$file" "${COMOUTbicor}/bcdata.${yyyymm}/grid/${cyc}z/${PDY}"
+      else
+          message_warning="WARNING: File not found: ${NET}.${cycle}.*_sfc.f*.nc"
+          print_info_msg "${message_warning}"
+      fi
+    done
+
 fi
 
 #-----------------------------------------------------------------------
@@ -220,10 +264,13 @@ fi
 rm -rf ${DATA}/data/bcdata*
 
 ln -sf ${COMINbicor}/bcdata* "${DATA}/data"
-if [ $(find . -xtype l|wc -l) -gt 0 ]; then
+#if [ $(find . -xtype l|wc -l) -gt 0 ]; then
+if [ $(find "${DATA}/data" -xtype l | wc -l) -gt 0 ]; then
   message_txt="FATAL ERROR broken file or dir link found under ${DATA}"
   err_exit "${message_txt}"
 fi 
+
+
 mkdir -p ${DATA}/data/sites
 
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.pm2.5.bias_corr_${id_domain}.${cyc}z ${DATA}
@@ -340,14 +387,18 @@ EOF1
 
   # interpolate to grid 227
   oldgrib2file1=${NET}.${cycle}.ave_24hr_pm25_bc.${id_domain}.grib2
-  newgrib2file1=${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2
+  newgrib2file1=${NET}.${cycle}.tmp.ave_24hr_pm25_bc.227.grib2
 
   grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-  wgrib2 ${oldgrib2file1} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file1} 
+  wgrib2 ${oldgrib2file1} -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227}  ${newgrib2file1} 
 
   oldgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2
-  newgrib2file2=${NET}.${cycle}.max_1hr_pm25_bc.227.grib2
-  wgrib2 ${oldgrib2file2} -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227}  ${newgrib2file2}
+  newgrib2file2=${NET}.${cycle}.tmp.max_1hr_pm25_bc.227.grib2
+  wgrib2 ${oldgrib2file2} -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227}  ${newgrib2file2}
+
+  # fix res flags
+  wgrib2 -set_flag_table_3.3 8 "${newgrib2file1}" -grib "${NET}.${cycle}.ave_24hr_pm25_bc.227.grib2"
+  wgrib2 -set_flag_table_3.3 8 "${newgrib2file2}" -grib "${NET}.${cycle}.max_1hr_pm25_bc.227.grib2"
 
   cpreq ${NET}.${cycle}.max_1hr_pm25_bc.${id_domain}.grib2   ${COMOUT}
   cpreq ${NET}.${cycle}.ave_24hr_pm25_bc.${id_domain}.grib2  ${COMOUT}
@@ -370,13 +421,18 @@ while [ "${fhr}" -le "${FCST_LEN_HRS}" ]; do
 done
 
 grid227="lambert:265.0000:25.0000:25.0000 226.5410:1473:5079.000 12.1900:1025:5079.000"
-wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds earth -new_grid ${grid227} ${NET}.${cycle}.grib2_pm25_bc.227
+wgrib2 tmpfile_pm25_bc -set_grib_type c3b -new_grid_winds grid -new_grid ${grid227} ${NET}.${cycle}.tmp.grib2_pm25_bc.227
+
+# fix res flags
+wgrib2 -set_flag_table_3.3 8 "${NET}.${cycle}.tmp.grib2_pm25_bc.227" -grib "${NET}.${cycle}.grib2_pm25_bc.227"
 
 cpreq tmpfile_pm25_bc ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.${id_domain}.grib2
 cpreq ${NET}.${cycle}.grib2_pm25_bc.227 ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
-if [ "${SENDDBN}" = "YES" ]; then
+if [ "${cyc}" = "06" ] || [ "${cyc}" = "12" ]; then
+ if [ "${SENDDBN}" = "YES" ]; then
   ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.227.grib2
 #  ${DBNROOT}/bin/dbn_alert MODEL AQM_PM ${job} ${COMOUT}/${NET}.${cycle}.ave_1hr_pm25_bc.793.grib2
+ fi
 fi
 
 #--------------------------------------------------------------

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
 
 export pgm=aqm_lbcs
 
-EMAIL_SDM=${EMAIL_SDM:-NO}
+EMAIL_SDM=${EMAIL_SDM:-YES}
 GEFS_AERO_LBCS_CHECK=${GEFS_AERO_LBCS_CHECK:-YES}
 
 #-----------------------------------------------------------------------

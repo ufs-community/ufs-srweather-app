@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -x
 
 msg="JOB $job HAS BEGUN"
 postmsg "$msg"
@@ -693,7 +693,6 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
   elif [ -s ${fv_tracer_file2} ]; then
     mkdir -p ${rst_dir1}
     cpreq ${fv_tracer_file2} ${fv_tracer_file1} 
-    #cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/coupler.res
     cpreq ${rst_dir2}/${PDY}.${cyc}0000.coupler.res  ${rst_dir1}/
     print_info_msg "
     Tracer file: \"${fv_tracer_file1}\" not found."
@@ -714,7 +713,6 @@ if [ "${DO_REAL_TIME}" == "TRUE" ] && [ "${CPL_AQM}" == "TRUE" ]; then
     sed -i "s/hh/${cyc}/g" ${rst_dir1}/coupler.res
     mv  ${rst_dir1}/coupler.res ${rst_dir1}/${PDY}.${cyc}0000.coupler.res
   fi
-
 fi
 
 #

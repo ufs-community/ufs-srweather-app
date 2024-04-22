@@ -1,11 +1,11 @@
-#PBS -N aqm_nexus_emission_%NSPT%_%CYC%
+#PBS -N aqm_post_%FHR%_%CYC%
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=01:00:00
-#PBS -l select=4:mpiprocs=64:ompthreads=2:ncpus=128
-#PBS -l place=vscatter:exclhost
+#PBS -l walltime=00:10:00
+#PBS -l select=1:mpiprocs=48:ncpus=48:mem=192G
+#PBS -l place=vscatter
 #PBS -l debug=true
 
 model=aqm
@@ -18,19 +18,21 @@ export cyc="%CYC%"
 ############################################################
 module load intel/${intel_ver}
 module load craype/${craype_ver}
+module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
+module load libjpeg/${libjpeg_ver}
 module load python/${python_ver}
 
 module list
 
-export nspt="%NSPT%"
+export fhr="%FHR%"
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEaqm}/jobs/JAQM_NEXUS_EMISSION
+${HOMEaqm}/jobs/JAQM_POST
 
 %include <tail.h>
 

@@ -228,6 +228,15 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
+# Source the file containing the function that check for dead link
+# and do exception handling
+#
+#-----------------------------------------------------------------------
+#
+  . ${bashutils_dir}/check_dead_link.sh
+#
+#-----------------------------------------------------------------------
+#
 # Source the file containing the function that evaluates a METplus time
 # string template.
 #

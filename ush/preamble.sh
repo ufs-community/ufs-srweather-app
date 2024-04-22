@@ -86,7 +86,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-STRICT=${STRICT:-"TRUE"}
+STRICT=${STRICT:-"FALSE"}
 TRACE=${DEBUG:-"FALSE"}
 
 if [[ $STRICT == "TRUE" ]]; then
