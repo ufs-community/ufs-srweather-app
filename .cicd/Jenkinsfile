@@ -5,7 +5,7 @@ pipeline {
         disableConcurrentBuilds()
         overrideIndexTriggers(false)
         skipDefaultCheckout(true)
-        timeout(time: 6, unit: 'HOURS')
+        timeout(time: 12, unit: 'HOURS')
     }
 
     parameters {
@@ -143,6 +143,7 @@ pipeline {
                             sh "STAGE_NAME=${env.STAGE_NAME} " + 'bash --login "${WORKSPACE}/${SRW_PLATFORM}/.cicd/scripts/disk_usage.sh"'
                             }
                         }
+                        
                         post {
                             always {
                                 s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'noaa-epic-prod-jenkins-artifacts', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: true, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: "${env.SRW_PLATFORM}-*-time-srw_init.json", storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
@@ -153,6 +154,10 @@ pipeline {
 
                     // Run the unified build script; if successful create a tarball of the build and upload to S3
                     stage('Build') {
+                        options {
+                            timeout(time: 4, unit: 'HOURS')
+                        }
+                        
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "${env.STAGE_NAME} SRW (${env.SRW_COMPILER}) on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
@@ -189,6 +194,7 @@ pipeline {
                         environment {
                             TASK_DEPTH = "${env.SRW_WRAPPER_TASK_DEPTH}"
                         }
+                        
                         steps {
                             dir ("${env.SRW_PLATFORM}") {
                             echo "Running ${TASK_DEPTH} simple workflow script task tests on ${env.SRW_PLATFORM} (using ${env.WORKSPACE}/${env.SRW_PLATFORM})"
@@ -199,6 +205,10 @@ pipeline {
 
                     // Run the unified test script
                     stage('Test') {
+                        options {
+                            timeout(time: 8, unit: 'HOURS')
+                        }
+                        
                         environment {
                             SRW_WE2E_EXPERIMENT_BASE_DIR = "${env.WORKSPACE}/${env.SRW_PLATFORM}/expt_dirs"
                         }
