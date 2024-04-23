@@ -106,6 +106,7 @@ task_aqm_ics_ext:
     <<: *default_vars
     PREV_CYCLE_DIR: '&WARMSTART_CYCLE_DIR;'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 64G
   dependency:
     and:
       taskdep:
@@ -131,6 +132,7 @@ task_aqm_ics:
     <<: *default_vars
     PREV_CYCLE_DIR: '<cyclestr offset="-{{ workflow.INCR_CYCL_FREQ }}:00:00">&COMIN_DIR;</cyclestr>'
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
+  memory: 64G
   dependency:
     and:
       taskdep:

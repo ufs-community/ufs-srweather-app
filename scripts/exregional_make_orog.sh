@@ -300,12 +300,9 @@ if [[ ${suites[@]} =~ "${CCPP_PHYS_SUITE}" ]] ; then
   grid_fp_gwd="${FIXlam}/${grid_fn_gwd}"
   ls_fn="geo_em.d01.lat-lon.2.5m.HGT_M.nc"
   ss_fn="HGT.Beljaars_filtered.lat-lon.30s_res.nc"
-  create_symlink_to_file target="${grid_fp_gwd}" symlink="${DATA}/${grid_fn_gwd}" \
-                         relative="TRUE"
-  create_symlink_to_file target="${FIXam}/${ls_fn}" symlink="${DATA}/${ls_fn}" \
-                         relative="TRUE"
-  create_symlink_to_file target="${FIXam}/${ss_fn}" symlink="${DATA}/${ss_fn}" \
-                         relative="TRUE"
+  create_symlink_to_file ${grid_fp_gwd} ${DATA}/${grid_fn_gwd} TRUE
+  create_symlink_to_file ${FIXam}/${ls_fn} ${DATA}/${ls_fn} TRUE
+  create_symlink_to_file ${FIXam}/${ss_fn} ${DATA}/${ss_fn} TRUE
 
   input_redirect_fn="grid_info.dat"
   cat > "${input_redirect_fn}" <<EOF
@@ -435,8 +432,7 @@ cp_vrfy "${raw_orog_fp}" "${filtered_orog_fp}"
 # variable in the mosaic file) in its own run directory. Make a symlink
 # to it.
 #
-create_symlink_to_file target="${grid_fp}" symlink="${filter_dir}/${grid_fn}" \
-                       relative="TRUE"
+create_symlink_to_file ${grid_fp} ${filter_dir}/${grid_fn} TRUE
 #
 # Create the namelist file (in the filter_dir directory) that the orography
 # filtering executable will read in.

@@ -14,5 +14,7 @@ load(pathJoin("cmake", os.getenv("cmake_ver") or "3.26.3"))
 
 load("srw_common")
 
+load(pathJoin("prod_util", os.getenv("prod_util_ver") or "1.2.2"))
+
 setenv("CMAKE_Platform","derecho.intel")
 
