@@ -7,7 +7,6 @@ template.
 import argparse
 import os
 import sys
-from pathlib import Path
 from textwrap import dedent
 from uwtools.api.template import render
 
@@ -75,8 +74,8 @@ def create_diag_table_file(run_dir):
     )
 
     render(
-        input_file = Path(DIAG_TABLE_TMPL_FP),
-        output_file = Path(diag_table_fp),
+        input_file = DIAG_TABLE_TMPL_FP,
+        output_file = diag_table_fp,
         values_src = settings,
         )
     return True

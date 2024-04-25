@@ -124,8 +124,8 @@ def create_aqm_rc_file(cdate, run_dir, init_concentrations):
     #-----------------------------------------------------------------------
     #
     render(
-        input_file = Path(AQM_RC_TMPL_FP),
-        output_file = Path(aqm_rc_fp),
+        input_file = AQM_RC_TMPL_FP,
+        output_file = aqm_rc_fp,
         values_src = settings,
     )
     return True

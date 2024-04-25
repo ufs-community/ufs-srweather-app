@@ -8,7 +8,6 @@ model(s) from a template.
 import argparse
 import os
 import sys
-from pathlib import Path
 from textwrap import dedent
 from uwtools.api.template import render
 
@@ -88,8 +87,8 @@ def create_ufs_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     render(
-        input_file = Path(UFS_CONFIG_TMPL_FP),
-        output_file = Path(ufs_config_fp),
+        input_file = UFS_CONFIG_TMPL_FP,
+        output_file = ufs_config_fp,
         values_src = settings,
         )
     return True

@@ -11,7 +11,6 @@ import argparse
 import logging
 import os
 import sys
-from pathlib import Path
 from textwrap import dedent
 
 from uwtools.api.config import get_nml_config, get_yaml_config, realize
@@ -114,9 +113,9 @@ def generate_FV3LAM_wflow(
         #
         rocoto_yaml_fp = expt_config["workflow"]["ROCOTO_YAML_FP"]
         render(
-            input_file = Path(template_xml_fp),
-            output_file = Path(wflow_xml_fp),
-            values_src = Path(rocoto_yaml_fp),
+            input_file = template_xml_fp,
+            output_file = wflow_xml_fp,
+            values_src = rocoto_yaml_fp,
             )
     #
     # -----------------------------------------------------------------------

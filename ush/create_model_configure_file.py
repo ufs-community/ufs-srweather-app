@@ -6,7 +6,6 @@ template.
 import argparse
 import os
 import sys
-from pathlib import Path
 from textwrap import dedent
 from uwtools.api.template import render
 
@@ -221,8 +220,8 @@ def create_model_configure_file(
     model_config_fp = os.path.join(run_dir, MODEL_CONFIG_FN)
 
     render(
-        input_file = Path(MODEL_CONFIG_TMPL_FP),
-        output_file = Path(model_config_fp),
+        input_file = MODEL_CONFIG_TMPL_FP,
+        output_file = model_config_fp,
         values_src = settings
         )
     return True
