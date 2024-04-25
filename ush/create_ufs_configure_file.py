@@ -45,7 +45,7 @@ def create_ufs_configure_file(run_dir):
     #-----------------------------------------------------------------------
     #
     print_info_msg(f'''
-        Creating a ufs.configure file (\"{UFS_CONFIG_FN}\") in the specified 
+        Creating a ufs.configure file (\"{UFS_CONFIG_FN}\") in the specified
         run directory (run_dir):
           run_dir = \"{run_dir}\"''', verbose=VERBOSE)
     #
