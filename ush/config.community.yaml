@@ -3,8 +3,8 @@ metadata:
     Sample community config
 user:
   RUN_ENVIR: community
-  MACHINE: jet
-  ACCOUNT: wrfruc
+  MACHINE: hera
+  ACCOUNT: an_account
 platform:
   CCPA_OBS_DIR: ""
   MRMS_OBS_DIR: ""
