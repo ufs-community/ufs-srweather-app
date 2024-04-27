@@ -115,7 +115,7 @@ fi
 mkdir_vrfy -p "${COMOUT}"
 
 # subhourly post
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}" = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"

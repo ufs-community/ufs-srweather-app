@@ -145,7 +145,7 @@ fi
 #
 rm_vrfy -f fort.*
 cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
-if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
 ====================================================================
@@ -155,7 +155,7 @@ to the temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 else
-  if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     post_config_fp="${PARMdir}/upp/postxconfig-NT-AQM.txt"
   else
     post_config_fp="${PARMdir}/upp/postxconfig-NT-fv3lam.txt"
@@ -170,7 +170,7 @@ temporary work directory (DATA_FHR):
 fi
 cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
 cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
-if [ ${USE_CRTM} = "TRUE" ]; then
+if [ $(boolify ${USE_CRTM}) = "TRUE" ]; then
   cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
   cp_vrfy ${CRTM_DIR}/FAST*.bin ./
   cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
@@ -218,7 +218,7 @@ hh=${cyc}
 # must be set to a null string.
 #
 mnts_secs_str=""
-if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   if [ ${fhr}${fmn} = "00000" ]; then
     mnts_secs_str=":"$( $DATE_UTIL --utc --date "${yyyymmdd} ${hh} UTC + ${DT_ATMOS} seconds" "+%M:%S" )
   else
@@ -248,7 +248,7 @@ post_mn=${post_time:10:2}
 #
 # Create the input namelist file to the post-processor executable.
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   post_itag_add="aqf_on=.true.,"
 else
   post_itag_add=""
@@ -336,7 +336,7 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 cd_vrfy "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   fids=( "cmaq" )
 else
   fids=( "prslev" "natlev" )

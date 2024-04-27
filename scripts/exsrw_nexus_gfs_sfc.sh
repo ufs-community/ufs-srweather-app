@@ -80,7 +80,7 @@ fcst_len_hrs_offset=$(( FCST_LEN_HRS + TIME_OFFSET_HRS ))
 GFS_SFC_TAR_DIR="${NEXUS_GFS_SFC_ARCHV_DIR}/rh${YYYY}/${YYYYMM}/${YYYYMMDD}"
 GFS_SFC_TAR_SUB_DIR="gfs.${YYYYMMDD}/${HH}/atmos"
 
-if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+if [ $(boolify "${DO_REAL_TIME}") = "TRUE" ]; then
   GFS_SFC_LOCAL_DIR="${COMINgfs}/${GFS_SFC_TAR_SUB_DIR}"
 else
   GFS_SFC_LOCAL_DIR="${NEXUS_GFS_SFC_DIR}/${GFS_SFC_TAR_SUB_DIR}"

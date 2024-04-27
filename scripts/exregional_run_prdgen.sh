@@ -182,7 +182,7 @@ done
 # Remap to additional output grids if requested
 #-----------------------------------------------
 
-if [ ${DO_PARALLEL_PRDGEN} == "TRUE" ]; then
+if [ $(boolify ${DO_PARALLEL_PRDGEN}) = "TRUE" ]; then
 #
 #  parallel run wgrib2 for product generation
 #

@@ -206,7 +206,7 @@ POST_STEP
 
 cp ${DATA}/out/ozone/${yyyy}/*nc ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 
-if [ "${DO_AQM_SAVE_AIRNOW_HIST}" = "TRUE" ]; then
+if [ $(boolify "${DO_AQM_SAVE_AIRNOW_HIST}") = "TRUE" ]; then
   mkdir -p ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
   cp ${DATA}/out/ozone/${yyyy}/*nc ${COMOUTbicor}/bcdata.${yyyymm}/interpolated/ozone/${yyyy}
 

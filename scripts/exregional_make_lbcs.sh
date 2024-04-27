@@ -333,7 +333,7 @@ tracers="\"\""
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_LBCS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_LBCS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -642,7 +642,7 @@ located in the following directory:
   lbc_spec_fhrs=( "${EXTRN_MDL_FHRS[$i]}" )
   fcst_hhh=$(( ${lbc_spec_fhrs} - ${EXTRN_MDL_LBCS_OFFSET_HRS} ))
   fcst_hhh_FV3LAM=$( printf "%03d" "$fcst_hhh" )
-  if [ "${CPL_AQM}" = "TRUE" ]; then
+  if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
     cp -p gfs.bndy.nc ${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc
   else
     mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile7.f${fcst_hhh_FV3LAM}.nc

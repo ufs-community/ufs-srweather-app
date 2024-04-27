@@ -471,7 +471,7 @@ res_equiv=${res_equiv//$'\n'/}
 #-----------------------------------------------------------------------
 #
 if [ "${GRID_GEN_METHOD}" = "GFDLgrid" ]; then
-  if [ "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}" = "TRUE" ]; then
+  if [ $(boolify "${GFDLgrid_USE_NUM_CELLS_IN_FILENAMES}") = "TRUE" ]; then
     CRES="C${GFDLgrid_NUM_CELLS}"
   else
     CRES="C${res_equiv}"

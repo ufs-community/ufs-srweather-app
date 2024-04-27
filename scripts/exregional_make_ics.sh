@@ -389,7 +389,7 @@ convert_nst=""
 nsoill_out="4"
 if [ "${EXTRN_MDL_NAME_ICS}" = "HRRR" -o \
      "${EXTRN_MDL_NAME_ICS}" = "RAP" ] && \
-   [ "${SDF_USES_RUC_LSM}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_RUC_LSM}") = "TRUE" ]; then
   nsoill_out="9"
 fi
 #
@@ -409,7 +409,7 @@ fi
 thomp_mp_climo_file=""
 if [ "${EXTRN_MDL_NAME_ICS}" != "HRRR" -a \
      "${EXTRN_MDL_NAME_ICS}" != "RAP" ] && \
-   [ "${SDF_USES_THOMPSON_MP}" = "TRUE" ]; then
+     [ $(boolify "${SDF_USES_THOMPSON_MP}") = "TRUE" ]; then
   thomp_mp_climo_file="${THOMPSON_MP_CLIMO_FP}"
 fi
 #
@@ -726,9 +726,9 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-if [ "${CPL_AQM}" = "TRUE" ]; then
+if [ $(boolify "${CPL_AQM}") = "TRUE" ]; then
   COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
-  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+  if [ $(boolify "${COLDSTART}") = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
     data_trans_path="${COMOUT}"
   else
     data_trans_path="${DATA_SHARE}"
@@ -750,7 +750,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${USE_FVCOM}" = "TRUE" ]; then
+if [ $(boolify "${USE_FVCOM}") = "TRUE" ]; then
 
 #Format for fvcom_time: YYYY-MM-DDTHH:00:00.000000
   fvcom_exec_fn="fvcom_to_FV3"

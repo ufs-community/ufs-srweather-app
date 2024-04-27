@@ -216,12 +216,12 @@ if [ -n "${input_file_path:-}" ] ; then
   --input_file_path ${input_file_path}"
 fi
 
-if [ $SYMLINK_FIX_FILES = "TRUE" ]; then
+if [ $(boolify $SYMLINK_FIX_FILES) = "TRUE" ]; then
   additional_flags="$additional_flags \
   --symlink"
 fi
 
-if [ $DO_ENSEMBLE == "TRUE" ] ; then
+if [ $(boolify $DO_ENSEMBLE) = "TRUE" ] ; then
   mem_dir="/mem{mem:03d}"
   member_list=(1 ${NUM_ENS_MEMBERS})
   additional_flags="$additional_flags \

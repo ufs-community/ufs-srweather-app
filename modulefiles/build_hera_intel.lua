@@ -26,8 +26,7 @@ load(pathJoin("cmake", cmake_ver))
 load("srw_common")
 
 load(pathJoin("nccmp", os.getenv("nccmp_ver") or "1.9.0.1"))
-load(pathJoin("nco", os.getenv("nco_ver") or "4.9.3"))
-load(pathJoin("prod_util", os.getenv("prod_util_ver") or "1.2.2"))
+load(pathJoin("nco", os.getenv("nco_ver") or "5.0.6"))
 
 setenv("CMAKE_C_COMPILER","mpiicc")
 setenv("CMAKE_CXX_COMPILER","mpiicpc")

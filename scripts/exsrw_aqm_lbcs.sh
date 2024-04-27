@@ -107,7 +107,7 @@ for hr in 0 ${LBC_SPEC_FCST_HRS[@]}; do
   cp -p "${DATA_SHARE}/${aqm_lbcs_fn}" ${DATA}
 done
 
-if [ "${DO_AQM_CHEM_LBCS}" = "TRUE" ]; then
+if [ $(boolify "${DO_AQM_CHEM_LBCS}") = "TRUE" ]; then
   ext_lbcs_file="${AQM_LBCS_FILES}"
   chem_lbcs_fn=${ext_lbcs_file//<MM>/${MM}}
   chem_lbcs_fp="${FIXaqm}/chemlbc/${chem_lbcs_fn}"
@@ -148,7 +148,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-if [ "${DO_AQM_GEFS_LBCS}" = "TRUE" ]; then
+if [ $(boolify "${DO_AQM_GEFS_LBCS}") = "TRUE" ]; then
   AQM_GEFS_FILE_CYC=${AQM_GEFS_FILE_CYC:-"${HH}"}
   AQM_GEFS_FILE_CYC=$( printf "%02d" "${AQM_GEFS_FILE_CYC}" )
 
@@ -160,7 +160,7 @@ if [ "${DO_AQM_GEFS_LBCS}" = "TRUE" ]; then
   fi
 
   aqm_mofile_fn="${AQM_GEFS_FILE_PREFIX}.t${AQM_GEFS_FILE_CYC}z.atmf"
-  if [ "${DO_REAL_TIME}" = "TRUE" ]; then
+  if [ $(boolify "${DO_REAL_TIME}") = "TRUE" ]; then
     aqm_mofile_fp="${COMINgefs}/gefs.${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/chem/sfcsig/${aqm_mofile_fn}"
   else
     aqm_mofile_fp="${COMINgefs}/${YYYYMMDD}/${AQM_GEFS_FILE_CYC}/${aqm_mofile_fn}"

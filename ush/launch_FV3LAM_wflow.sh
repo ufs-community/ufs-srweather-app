@@ -369,7 +369,7 @@ by expt_name has completed with the following workflow status (wflow_status):
 # Thus, there is no need to try to relaunch it.  We also append a message 
 # to the completion message above to indicate this.
 #
-  if [ "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
+  if [ $(boolify "${USE_CRON_TO_RELAUNCH}" = "TRUE" ]; then
 
     msg="${msg}\
 Thus, there is no need to relaunch the workflow via a cron job.  Removing 
