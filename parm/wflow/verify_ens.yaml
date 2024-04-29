@@ -112,13 +112,9 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
       FCST_LEVEL: 'L0'
       FCST_THRESH: 'all'
     dependency:
-      and:
-        taskdep:
-          attrs:
-            task: get_obs_mrms
-        metataskdep_post_files_exist: &post_files_exist
-          attrs:
-            metatask: check_post_output_all_mems
+      metataskdep_check_post_output: &check_post_output
+        attrs:
+          metatask: check_post_output_all_mems
 
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_MRMS
@@ -128,9 +124,13 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
       FCST_LEVEL: 'L0'
       FCST_THRESH: 'none'
     dependency:
-      taskdep:
-        attrs:
-          task: run_MET_GenEnsProd_vx_#VAR#
+      and:
+        taskdep_get_obs_mrms:
+          attrs:
+            task: get_obs_mrms
+        taskdep_genensprod:
+          attrs:
+            task: run_MET_GenEnsProd_vx_#VAR#
 
 metatask_GenEnsProd_EnsembleStat_NDAS:
   var:
@@ -156,8 +156,8 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
         taskdep_pb2nc:
           attrs:
             task: run_MET_Pb2nc_obs
-        metataskdep_post_files_exist:
-          <<: *post_files_exist
+        metataskdep_check_post_output:
+          <<: *check_post_output
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
