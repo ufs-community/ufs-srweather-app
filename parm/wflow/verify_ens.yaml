@@ -62,7 +62,6 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
         taskdep_parse_vx_config_ens:
           attrs:
             task: parse_vx_config_ens
-
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -100,7 +99,6 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
         taskdep_parse_vx_config_ens:
           attrs:
             task: parse_vx_config_ens
-
   task_run_MET_EnsembleStat_vx_ASNOW#ACCUM_HH#h:
     <<: *task_GenEnsProd_NOHRSC
     envars:
@@ -139,7 +137,6 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
         taskdep_parse_vx_config_ens:
           attrs:
             task: parse_vx_config_ens
-
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_MRMS
     envars:
@@ -185,7 +182,6 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
         taskdep_parse_vx_config_ens:
           attrs:
             task: parse_vx_config_ens
-
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
