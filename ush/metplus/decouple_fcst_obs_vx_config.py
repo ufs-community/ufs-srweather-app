@@ -45,7 +45,7 @@ def get_pprint_str(var, indent_str=''):
       Formatted string containing contents of variable.
     """
 
-    var_str = pprint.pformat(var, compact=True)
+    var_str = pprint.pformat(var, compact=True, sort_dicts=False)
     var_str = var_str.splitlines(True)
     var_str = [indent_str + s for s in var_str]
     var_str = ''.join(var_str)
