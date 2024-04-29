@@ -249,15 +249,9 @@ metplus_log_fn="metplus.log.${metplus_log_bn}"
 #
 #-----------------------------------------------------------------------
 #
-#python3 ${METPLUS_CONF}/separate_fcst_obs_info.py --det_or_ens ens
-#vx_config_dict=$(<"${METPLUS_CONF}/tmp.vx_config_ens_dict.split_fcst_obs.txt")
 det_or_ens="ens"
-vx_config_output_fn="vx_config_${det_or_ens}.split_fcst_obs.${metplus_config_bn}.txt"
-vx_config_output_fp="${OUTPUT_DIR}/${vx_config_output_fn}"
-#python3 ${METPLUS_CONF}/separate_fcst_obs_info.py \
-python3 ${USHdir}/metplus/separate_fcst_obs_info.py \
-  --det_or_ens "${det_or_ens}" \
-  --outfile "${vx_config_output_fp}"
+vx_config_output_fn="vx_config_${det_or_ens}.txt"
+vx_config_output_fp="${EXPTDIR}/${vx_config_output_fn}"
 vx_config_dict=$(<"${vx_config_output_fp}")
 #
 #-----------------------------------------------------------------------
