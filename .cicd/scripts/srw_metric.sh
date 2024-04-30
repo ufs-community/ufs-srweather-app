@@ -58,7 +58,7 @@ fi
 # Test directories
 we2e_experiment_base_dir="${we2e_experiment_base_dir:=${workspace}/../expt_dirs/metric_test}"
 we2e_test_dir="${we2e_test_dir:=${workspace}/tests/WE2E}"
-we2e_test_name="${test_type:=grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0}"
+we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
 
 pwd
 

@@ -70,7 +70,7 @@ ulimit -s unlimited
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy $DATA
+cd $DATA
 #
 #-----------------------------------------------------------------------
 #
@@ -162,7 +162,7 @@ case "$GTYPE" in
 #
   for fn in *.nc; do
     if [[ -f $fn ]]; then
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}_${fn}
+      mv $fn ${SFC_CLIMO_DIR}/${CRES}_${fn}
     fi
   done
   ;;
@@ -181,7 +181,7 @@ case "$GTYPE" in
   for fn in *.halo.nc; do
     if [ -f $fn ]; then
       bn="${fn%.halo.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4}.nc
+      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH4}.nc
     fi
   done
 #
@@ -194,7 +194,7 @@ case "$GTYPE" in
   for fn in *.nc; do
     if [ -f $fn ]; then
       bn="${fn%.nc}"
-      mv_vrfy $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
+      mv $fn ${SFC_CLIMO_DIR}/${CRES}.${bn}.halo${NH0}.nc
     fi
   done
   ;;

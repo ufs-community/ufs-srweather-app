@@ -80,8 +80,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-rm_vrfy -f fort.*
-cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+rm -f fort.*
+cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
 if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
   post_config_fp="${CUSTOM_POST_CONFIG_FP}"
   print_info_msg "
@@ -105,18 +105,18 @@ temporary work directory (DATA_FHR):
   DATA_FHR = \"${DATA_FHR}\"
 ===================================================================="
 fi
-cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+cp ${post_config_fp} ./postxconfig-NT.txt
+cp ${PARMdir}/upp/params_grib2_tbl_new .
 if [ ${USE_CRTM} = "TRUE" ]; then
-  cp_vrfy ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/FAST*.bin ./
-  cp_vrfy ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/AerosolCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/CloudCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/*.SpcCoeff.bin ./
-  cp_vrfy ${CRTM_DIR}/*.TauCoeff.bin ./
+  cp ${CRTM_DIR}/Nalli.IRwater.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/FAST*.bin ./
+  cp ${CRTM_DIR}/NPOESS.IRland.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/NPOESS.IRsnow.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/NPOESS.IRice.EmisCoeff.bin ./
+  cp ${CRTM_DIR}/AerosolCoeff.bin ./
+  cp ${CRTM_DIR}/CloudCoeff.bin ./
+  cp ${CRTM_DIR}/*.SpcCoeff.bin ./
+  cp ${CRTM_DIR}/*.TauCoeff.bin ./
   print_info_msg "
 ====================================================================
 Copying the external CRTM fix files from CRTM_DIR to the temporary
@@ -270,7 +270,7 @@ post_renamed_fn_suffix="f${fhr}${post_mn_or_null}.${POST_OUTPUT_DOMAIN_NAME}.gri
 # generates (i.e. "...prslev..." and "...natlev..." files) and move, 
 # rename, and create symlinks to them.
 #
-cd_vrfy "${COMOUT}"
+cd "${COMOUT}"
 basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
 symlink_suffix="${dot_ensmem}.${basetime}f${fhr}${post_mn}"
 if [ "${CPL_AQM}" = "TRUE" ]; then
@@ -282,7 +282,7 @@ for fid in "${fids[@]}"; do
   FID=$(echo_uppercase $fid)
   post_orig_fn="${FID}.${post_fn_suffix}"
   post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
-  mv_vrfy ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
+  mv ${DATA_FHR}/${post_orig_fn} ${post_renamed_fn}
   if [ $RUN_ENVIR != "nco" ]; then
     create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
   fi
@@ -292,7 +292,7 @@ for fid in "${fids[@]}"; do
   fi
 done
 
-rm_vrfy -rf ${DATA_FHR}
+rm -rf ${DATA_FHR}
 
 #
 #-----------------------------------------------------------------------
