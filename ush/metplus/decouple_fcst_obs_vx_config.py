@@ -164,9 +164,9 @@ def extract_fcst_obs_vals_from_cpld(item_cpld):
 
     # Parse the string containing the coupled value of the item to extract
     # its forecast and observation values.
-    if delim_str in field_both:
-        if field_both.count(delim_str) == 1:
-            field_fcst, field_obs = field_both.split(delim_str)
+    if delim_str in item_cpld:
+        if item_cpld.count(delim_str) == 1:
+            item_fcst, item_obs = item_cpld.split(delim_str)
         else:
             msg = dedent(f"""
                 The delimiter string (delim_str) appears more than once in the current
@@ -178,7 +178,8 @@ def extract_fcst_obs_vals_from_cpld(item_cpld):
             logging.error(msg)
             raise ValueError(msg)
     else:
-        field_obs = field_fcst
+        item_fcst = item_cpld
+        item_obs = item_cpld
 
     return item_fcst, item_obs
 
