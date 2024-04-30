@@ -115,16 +115,6 @@ function source_util_funcs() {
 #
 #-----------------------------------------------------------------------
 #
-# Source the file containing functions that execute filesystem commands
-# (e.g. "cp", "mv") with verification (i.e. verifying that the commands
-# completed successfully).
-#
-#-----------------------------------------------------------------------
-#
-  . ${bashutils_dir}/filesys_cmds_vrfy.sh
-#
-#-----------------------------------------------------------------------
-#
 # Source the file containing the function that searches an array for a
 # specified string.
 #
