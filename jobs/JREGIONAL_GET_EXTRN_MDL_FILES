@@ -222,8 +222,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export EXTRN_MDL_STAGING_DIR="${EXTRN_MDL_STAGING_DIR:-${DATA}}"
 else
     export EXTRN_MDL_STAGING_DIR="${COMIN}/${EXTRN_MDL_NAME}/for_${ICS_OR_LBCS}"
-    mkdir_vrfy -p "${EXTRN_MDL_STAGING_DIR}"
-    cd_vrfy "${EXTRN_MDL_STAGING_DIR}"
+    mkdir -p "${EXTRN_MDL_STAGING_DIR}"
+    cd "${EXTRN_MDL_STAGING_DIR}"
 fi
 #
 #-----------------------------------------------------------------------

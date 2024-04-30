@@ -98,7 +98,7 @@ Creating links in the INPUT subdirectory of the current run directory to
 the grid and (filtered) orography files ..."
 
 # Create links to fix files in the FIXlam directory.
-cd_vrfy ${DATA}/INPUT
+cd ${DATA}/INPUT
 
 #
 # For experiments in which the TN_MAKE_GRID task is run, we make the 
@@ -219,7 +219,7 @@ of the current run directory (DATA), where
   DATA = \"${DATA}\"
 ..."
 
-cd_vrfy ${DATA}/INPUT
+cd ${DATA}/INPUT
 
 #
 # The symlinks to be created point to files in the same directory (INPUT),
@@ -288,7 +288,7 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${DATA}
+cd ${DATA}
 
 print_info_msg "$VERBOSE" "
 Creating links in the current run directory (DATA) to fixed (i.e.
@@ -360,8 +360,8 @@ fi
 #
 #-----------------------------------------------------------------------
 #
-cd_vrfy ${DATA}
-rm_vrfy -f time_stamp.out
+cd ${DATA}
+rm -f time_stamp.out
 #
 #-----------------------------------------------------------------------
 #
@@ -398,7 +398,7 @@ create_symlink_to_file ${FIELD_TABLE_FP} ${DATA}/${FIELD_TABLE_FN} ${relative_li
 create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link_flag}
 
 if [ ${WRITE_DOPOST} = "TRUE" ]; then
-  cp_vrfy ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
+  cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
   if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
@@ -416,9 +416,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   post_config_fp = \"${post_config_fp}\"
 ===================================================================="
   fi
-  cp_vrfy ${post_config_fp} ./postxconfig-NT_FH00.txt
-  cp_vrfy ${post_config_fp} ./postxconfig-NT.txt
-  cp_vrfy ${PARMdir}/upp/params_grib2_tbl_new .
+  cp ${post_config_fp} ./postxconfig-NT_FH00.txt
+  cp ${post_config_fp} ./postxconfig-NT.txt
+  cp ${PARMdir}/upp/params_grib2_tbl_new .
   # Set itag for inline-post:
   if [ "${CPL_AQM}" = "TRUE" ]; then
     post_itag_add="aqf_on=.true.,"
@@ -445,7 +445,7 @@ fi
 #----------------------------------------------------------------------
 #
 
-cp_vrfy ${CCPP_PHYS_DIR}/noahmptable.tbl .
+cp ${CCPP_PHYS_DIR}/noahmptable.tbl .
 
 #
 #-----------------------------------------------------------------------
@@ -460,9 +460,9 @@ if ([ "${DO_SPP}" = "TRUE" ] || [ "${DO_SPPT}" = "TRUE" ] || [ "${DO_SHUM}" = "T
      STOCH="TRUE"
 fi
 if [ "${STOCH}" == "TRUE" ]; then
-  cp_vrfy ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
+  cp ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
-  ln_vrfy -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
+  ln -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
 fi
 
 #
@@ -508,10 +508,10 @@ fi
 #
 flag_fcst_restart="FALSE"
 if [ "${DO_FCST_RESTART}" = "TRUE" ] && [ "$(ls -A ${DATA}/RESTART )" ]; then
-  cp_vrfy input.nml input.nml_orig
-  cp_vrfy model_configure model_configure_orig
+  cp input.nml input.nml_orig
+  cp model_configure model_configure_orig
   if [ "${CPL_AQM}" = "TRUE" ]; then
-    cp_vrfy aqm.rc aqm.rc_orig
+    cp aqm.rc aqm.rc_orig
   fi
   relative_link_flag="FALSE"
   flag_fcst_restart="TRUE"
@@ -558,14 +558,14 @@ for the current cycle's (cdate) run directory (DATA) failed:
   done
 
   # Create soft-link of restart files in INPUT directory
-  cd_vrfy ${DATA}/INPUT
+  cd ${DATA}/INPUT
   for file_id in "${file_ids[@]}"; do
-    rm_vrfy "${file_id}"
+    rm "${file_id}"
     target="${DATA}/RESTART/${rst_yyyymmdd}.${rst_hh}0000.${file_id}"
     symlink="${file_id}"
     create_symlink_to_file $target $symlink ${relative_link_flag}
   done
-  cd_vrfy ${DATA}   
+  cd ${DATA}   
 fi
 #
 #-----------------------------------------------------------------------
@@ -668,7 +668,7 @@ fi
 #
 if [ "${RUN_ENVIR}" = "nco" ] && [ "${CPL_AQM}" = "TRUE" ]; then
   # create an intermediate symlink to RESTART
-  ln_vrfy -sf "${DATA}/RESTART" "${COMIN}/RESTART"
+  ln -sf "${DATA}/RESTART" "${COMIN}/RESTART"
 fi
 #
 #-----------------------------------------------------------------------
@@ -728,14 +728,14 @@ POST_STEP
 if [ "${CPL_AQM}" = "TRUE" ]; then
   if [ "${RUN_ENVIR}" = "nco" ]; then
     if [ -d "${COMIN}/RESTART" ] && [ "$(ls -A ${DATA}/RESTART)" ]; then
-      rm_vrfy -rf "${COMIN}/RESTART"
+      rm -rf "${COMIN}/RESTART"
     fi
     if [ "$(ls -A ${DATA}/RESTART)" ]; then
-      cp_vrfy -Rp ${DATA}/RESTART ${COMIN}
+      cp -Rp ${DATA}/RESTART ${COMIN}
     fi
   fi
 
-  cp_vrfy -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
+  cp -p ${DATA}/${AQM_RC_PRODUCT_FN} ${COMOUT}/${NET}.${cycle}${dot_ensmem}.${AQM_RC_PRODUCT_FN}
 
   fhr_ct=0
   fhr=0
@@ -745,8 +745,8 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
     source_phy="${DATA}/phyf${fhr_ct}.nc"
     target_dyn="${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr_ct}.nc"
     target_phy="${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr_ct}.nc"
-    [ -f ${source_dyn} ] && cp_vrfy -p ${source_dyn} ${target_dyn}
-    [ -f ${source_phy} ] && cp_vrfy -p ${source_phy} ${target_phy}
+    [ -f ${source_dyn} ] && cp -p ${source_dyn} ${target_dyn}
+    [ -f ${source_phy} ] && cp -p ${source_phy} ${target_phy}
     (( fhr=fhr+1 ))
   done                 
 fi
@@ -767,9 +767,9 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
   if [ "${RUN_ENVIR}" != "nco" ]; then
     export COMOUT="${DATA}/postprd"
   fi
-  mkdir_vrfy -p "${COMOUT}"
+  mkdir -p "${COMOUT}"
 
-  cd_vrfy ${COMOUT}
+  cd ${COMOUT}
 
   for fhr in $(seq -f "%03g" 0 ${FCST_LEN_HRS}); do
 
@@ -796,7 +796,7 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
       post_orig_fn="${FID}.${post_fn_suffix}"
       post_renamed_fn="${NET}.${cycle}${dot_ensmem}.${fid}.${post_renamed_fn_suffix}"
  
-      mv_vrfy ${DATA}/${post_orig_fn} ${post_renamed_fn}
+      mv ${DATA}/${post_orig_fn} ${post_renamed_fn}
       if [ $RUN_ENVIR != "nco" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
@@ -809,8 +809,8 @@ if [ ${WRITE_DOPOST} = "TRUE" ]; then
     done
 
     if [ "${CPL_AQM}" = "TRUE" ]; then	
-      mv_vrfy ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
-      mv_vrfy ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
+      mv ${DATA}/dynf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.dyn.f${fhr}.nc
+      mv ${DATA}/phyf${fhr}.nc ${COMIN}/${NET}.${cycle}${dot_ensmem}.phy.f${fhr}.nc
     fi
   done
 

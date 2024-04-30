@@ -55,7 +55,7 @@ climatology.
 #-----------------------------------------------------------------------
 #
 check_for_preexist_dir_file "${SFC_CLIMO_DIR}" "${PREEXISTING_DIR_METHOD}"
-mkdir_vrfy -p "${SFC_CLIMO_DIR}"
+mkdir -p "${SFC_CLIMO_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -66,7 +66,7 @@ mkdir_vrfy -p "${SFC_CLIMO_DIR}"
 DATA="${DATA:-${SFC_CLIMO_DIR}/tmp}"
 if [ $RUN_ENVIR != "nco" ]; then
     check_for_preexist_dir_file "$DATA" "delete"
-    mkdir_vrfy $DATA
+    mkdir $DATA
 fi
 #
 #-----------------------------------------------------------------------

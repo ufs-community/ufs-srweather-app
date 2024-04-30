@@ -54,7 +54,7 @@ function get_mrms_files () {
 
         # 10 represents a significant number of vertical levels of data
         if [ ${numgrib2} -ge 10 ] && [ ! -e filelist_mrms ]; then
-          cp_vrfy ${nsslfile1} ${output_path}
+          cp ${nsslfile1} ${output_path}
           ls ${output_path}/${file_matches} > ${output_path}/filelist_mrms
           echo "Copying mrms files for ${YYYY}${MM}${DD}-${cyc}${min}"
         fi
