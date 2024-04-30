@@ -164,24 +164,21 @@ def extract_fcst_obs_vals_from_cpld(item_cpld):
 
     # Parse the string containing the coupled value of the item to extract
     # its forecast and observation values.
-    tmp = item_cpld.split(delim_str)
-    num_delim_strs = len(tmp) - 1
-    item_fcst = tmp[0].strip()
-    if num_delim_strs == 0:
-        item_obs = item_fcst
-    elif num_delim_strs == 1:
-        item_obs = tmp[1].strip()
+    if delim_str in field_both:
+        if field_both.count(delim_str) == 1:
+            field_fcst, field_obs = field_both.split(delim_str)
+        else:
+            msg = dedent(f"""
+                The delimiter string (delim_str) appears more than once in the current
+                coupled item value (item_cpld):
+                  delim_str = {get_pprint_str(delim_str)}
+                  item_cpld = {get_pprint_str(item_cpld)}
+                Stopping.
+                """)
+            logging.error(msg)
+            raise ValueError(msg)
     else:
-        msg = dedent(f"""
-            The delimiter string (delim_str) appears more than once in the current
-            coupled item value (item_cpld):
-              delim_str = {get_pprint_str(delim_str)}
-              item_cpld = {get_pprint_str(item_cpld)}
-              num_delim_strs = {get_pprint_str(num_delim_strs)}
-            Stopping.
-            """)
-        logging.error(msg)
-        raise ValueError(msg)
+        field_obs = field_fcst
 
     return item_fcst, item_obs
 
@@ -225,12 +222,11 @@ def decouple_fcst_obs_vx_config(vx_type, outfile_type, outdir='./', log_lvl='inf
 
     # Set up logging.
     log_level = str.upper(log_lvl)
-    log_level = str.upper('debug')
-    FORMAT = "[%(levelname)s:%(name)s:  %(filename)s, line %(lineno)s: %(funcName)s()] %(message)s"
+    fmt = "[%(levelname)s:%(name)s:  %(filename)s, line %(lineno)s: %(funcName)s()] %(message)s"
     if log_fp:
-        logging.basicConfig(level=log_level, format=FORMAT, filename=log_fp, filemode='w')
+        logging.basicConfig(level=log_level, format=fmt, filename=log_fp, filemode='w')
     else:
-        logging.basicConfig(level=log_level, format=FORMAT)
+        logging.basicConfig(level=log_level, format=fmt)
     logging.basicConfig(level=log_level)
 
     # Load the yaml file containing the coupled forecast-and-observations
