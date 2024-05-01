@@ -3,21 +3,20 @@
 #
 #-----------------------------------------------------------------------
 #
-#
-#
-#-----------------------------------------------------------------------
-#
-
-#
-#-----------------------------------------------------------------------
-#
 # Source the variable definitions file and the bash utility functions.
 #
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
-. $USHdir/job_preamble.sh
+source_config_for_task "task_run_met_pcpcombine|task_run_post" ${GLOBAL_VAR_DEFNS_FP}
+#
+#-----------------------------------------------------------------------
+#
+# Source files defining auxiliary functions for verification.
+#
+#-----------------------------------------------------------------------
+#
+. $USHdir/set_vx_fhr_list.sh
 #
 #-----------------------------------------------------------------------
 #
@@ -30,7 +29,7 @@ source_config_for_task "task_run_met_pb2nc_obs" ${GLOBAL_VAR_DEFNS_FP}
 #
 #-----------------------------------------------------------------------
 #
-# Get the full path to the file in which this script/function is located 
+# Get the full path to the file in which this script/function is located
 # (scrfunc_fp), the name of that file (scrfunc_fn), and the directory in
 # which the file is located (scrfunc_dir).
 #
@@ -51,28 +50,39 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs METplus for pb2nc on
-NDAS observations.
+This is the ex-script for the task that reads in the \"coupled\" yaml 
+verification (vx) configuration file (python dictionary) and generates   
+from it two \"decoupled\" vx configuration dictionaries, one for forecasts
+and another for observations.  The task then writes these two decoupled  
+dictionaries to a new configuration file in the experiment directory     
+that can be read by downstream vx tasks.                                 
 ========================================================================"
 #
 #-----------------------------------------------------------------------
 #
-# Call the ex-script for this J-job and pass to it the necessary varia-
-# bles. 
+# Call python script to generate vx configuration file containing
+# separate vx configuration dictionaries for forecasts and observations.
 #
 #-----------------------------------------------------------------------
 #
-$SCRIPTSdir/exregional_run_met_pb2nc_obs.sh || \
-print_err_msg_exit "\
-Call to ex-script corresponding to J-job \"${scrfunc_fn}\" failed."
+python3 ${USHdir}/metplus/decouple_fcst_obs_vx_config.py \
+  --vx_type "${DET_OR_ENS}" \
+  --outfile_type "txt" \
+  --outdir "${EXPTDIR}"
 #
 #-----------------------------------------------------------------------
 #
-# Run job postamble.
+# Print message indicating successful completion of script.
 #
 #-----------------------------------------------------------------------
 #
-job_postamble
+print_info_msg "
+========================================================================
+Done extracting vx configuration.
+
+Exiting script:  \"${scrfunc_fn}\"
+In directory:    \"${scrfunc_dir}\"
+========================================================================"
 #
 #-----------------------------------------------------------------------
 #
@@ -82,4 +92,3 @@ job_postamble
 #-----------------------------------------------------------------------
 #
 { restore_shell_opts; } > /dev/null 2>&1
-

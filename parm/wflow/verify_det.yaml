@@ -21,6 +21,18 @@ default_task_verify_det: &default_task_verify_det
   queue: '&QUEUE_DEFAULT;'
   walltime: 00:30:00
 
+task_parse_vx_config_det:
+  <<: *default_task_verify_det
+  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_PARSE_VX_CONFIG"'
+  envars:
+    <<: *default_vars
+    DET_OR_ENS: 'det'
+  join: !cycstr '&LOGDIR;/{{ jobname }}&LOGEXT;'
+  walltime: 00:05:00
+  # No dependencies are needed for this task because as long as any deterministic
+  # verification tasks are going to be run (i.e. as long as this configuration
+  # file is included in the workflow), then this task must be launched.
+
 metatask_GridStat_CCPA_all_accums_all_mems:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
@@ -41,6 +53,8 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
@@ -50,6 +64,9 @@ metatask_GridStat_CCPA_all_accums_all_mems:
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_APCP#ACCUM_HH#h_mem#mem#
+          taskdep_parse_vx_config_det:
+            attrs:
+              task: parse_vx_config_det
 
 metatask_GridStat_NOHRSC_all_accums_all_mems:
   var:
@@ -71,15 +88,20 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep:
+          taskdep_get_obs_nohrsc:
             attrs:
-              task: get_obs_mrms
+              task: get_obs_nohrsc
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#
+          taskdep_parse_vx_config_det:
+            attrs:
+              task: parse_vx_config_det
 
 metatask_GridStat_MRMS_all_mems:
   var:
@@ -99,16 +121,21 @@ metatask_GridStat_MRMS_all_mems:
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'L0'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep:
+          taskdep_get_obs_mrms:
             attrs:
               task: get_obs_mrms
           datadep_post_files_exist:
             attrs:
               age: 00:00:00:30
             text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+          taskdep_parse_vx_config_det:
+            attrs:
+              task: parse_vx_config_det
 
 metatask_PointStat_NDAS_all_mems:
   var:
@@ -128,6 +155,8 @@ metatask_PointStat_NDAS_all_mems:
         ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'all'
+        FCST_THRESH: 'all'
       walltime: 01:00:00
       dependency:
         and:
@@ -138,3 +167,6 @@ metatask_PointStat_NDAS_all_mems:
             attrs:
               age: 00:00:00:30
             text: !cycstr '{{ workflow.EXPTDIR }}/@Y@m@d@H/post_files_exist_mem#mem#.txt'
+          taskdep_parse_vx_config_det:
+            attrs:
+              task: parse_vx_config_det
