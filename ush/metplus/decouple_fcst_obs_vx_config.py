@@ -104,11 +104,7 @@ def extract_fcst_obs_vals_from_cpld(item_cpld):
     verification (vx) configuration dictionary) to extract from it the item's
     value for forecasts and its value for observations.  The coupled item
     (item_cpld) is a string that may correspond to a field name, a level, or
-    a threshold.  It can be the name of a key in a key-value pair in the
-    coupled vx configuration dictionary, or it can be the value (or, if the
-    value is a list of strings, one of the elements in that list).
-
-    If item_cpld has the form
+    a threshold.  If item_cpld has the form
 
         item_cpld = str1 + delim_str + str2
 
@@ -127,24 +123,8 @@ def extract_fcst_obs_vals_from_cpld(item_cpld):
         item_fcst = 'ABCD'
         item_obs = 'EFGH'
 
-    Alternatively, if delim_str is not be a substring within item_cpld so that
-    item_cpld has the form
-
-        item_cpld = str1
-
-    then item_fcst and item_obs are given by
-
-        item_fcst = str1
-        item_obs = str1
-
-    For example, if
-
-        item_cpld = 'ABCD'
-
-    then
-
-        item_fcst = 'ABCD'
-        item_obs = 'ABCD'
+    Alternatively, if delim_str is not be a substring within item_cpld, both
+    return values will be identical to the input.
 
     Arguments:
     ---------
