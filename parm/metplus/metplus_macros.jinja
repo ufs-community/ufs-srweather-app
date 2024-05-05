@@ -61,6 +61,21 @@ that the level must be valid for all such fields.
 {%- endmacro %}
 {#-
 This macro checks whether the specified threshold (input_thresh) has a
+#}
+{%- macro check_field_group(valid_field_groups, input_field_group) %}
+  {%- if input_field_group not in valid_field_groups %}
+    {%- set error_msg = '\n' ~
+          'The specified input field group (input_field_group) is not in the list of\n' ~
+          'valid field groups (valid_field_groups):\n' ~
+          '  input_field_group = \'' ~ input_field_group ~ '\'\n' ~
+          '  valid_field_groups = ' ~ valid_field_groups ~ '\n' ~
+          'Reset input_field_group to one of the elements in valid_field_groups and\n' ~
+          'rerun.' %}
+    {{print_err_and_quit(error_msg)}}
+  {%- endif %}
+{%- endmacro %}
+{#-
+This macro checks whether the specified threshold (input_thresh) has a
 valid value.  input_thresh may be set to 'none', 'all', or a specific
 threshold.  If set to 'none', input_thresh is not checked for a valid 
 value since threshold information will not be included in the METplus
@@ -124,9 +139,9 @@ for all levels are identical.  If not, it prints out an error message
 and errors out.
 #}
 {%- macro check_for_identical_threshes_by_level(field, levels_threshes) %}
-  {%- set avail_levels = levels_threshes[field].keys()|list %}
+  {%- set avail_levels = levels_threshes.keys()|list %}
   {%- set num_avail_levels = avail_levels|length %}
-  {%- set threshes_by_avail_level = levels_threshes[field].values()|list %}
+  {%- set threshes_by_avail_level = levels_threshes.values()|list %}
   {%- for i in range(1,num_avail_levels) %}
     {%- set level = avail_levels[i-1] %}
     {%- set threshes = threshes_by_avail_level[i-1] %}
@@ -135,8 +150,8 @@ and errors out.
     {%- if (threshes_next != threshes) %}
       {%- set error_msg = '\n\n' ~
 'For the given field (field), the set of thresholds for the next level\n' ~
-'(threshes_next, level_next) is not equal to that of the current level\n' ~
-'(threshes, level) (note that order of thresholds matters here):\n' ~
+'(level_next, threshes_next) is not equal to that of the current level\n' ~
+'(level, threshes) (note that order of thresholds matters here):\n' ~
 '  field = \'' ~ field ~ '\'\n' ~
 '  num_avail_levels = ' ~ num_avail_levels ~ '\n' ~
 '  level = \'' ~ level ~ '\'\n' ~
