@@ -383,7 +383,7 @@ uw template render \
   --search-path "/" 
 
 err=$?
-#rm $tmpfile
+rm $tmpfile
 if [ $err -ne 0 ]; then
   message_txt="Error rendering template for METplus config.
      Contents of input are:
