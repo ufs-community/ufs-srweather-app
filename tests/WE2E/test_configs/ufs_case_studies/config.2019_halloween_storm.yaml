@@ -30,6 +30,8 @@ rocoto:
     task_get_extrn_ics:
       walltime: 06:00:00
     task_get_extrn_lbcs:
+      nnodes: 2
+      ppn: 24
       walltime: 06:00:00
     metatask_run_ensemble:
       task_make_lbcs_mem#mem#:
