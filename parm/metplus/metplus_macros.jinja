@@ -20,46 +20,6 @@ prints out 'A3'.
   {%- endif %}
 {%- endmacro %}
 {#-
-This macro checks whether the specified level (input_level) has a valid
-value.  input_level may be set to 'all' or to a specific level.  If set
-to 'all', input_level is not checked because in this case, whatever valid/
-available levels are found will be included in the METplus configuration
-file for all specified fields.  input_level IS checked if it is set to
-any other value because in this case, all the specified fields will use
-only that specific level in the METplus configuration file, which implies
-that the level must be valid for all such fields.
-#}
-{%- macro check_level(fields_levels_threshes, input_level) %}
-
-  {%- if input_level != 'all' %}
-
-    {%- set num_valid_fields = fields_levels_threshes|length %}
-    {%- set valid_fields = [] %}
-    {%- for i in range(0,num_valid_fields) %}
-      {%- set field = fields_levels_threshes[i].keys()|list|join('') %}
-      {%- set tmp = valid_fields.append(field) %}
-    {%- endfor %}
-
-    {%- for i in range(0,num_valid_fields) %}
-      {%- set field = valid_fields[i] %}
-      {%- set valid_levels = fields_levels_threshes[i][field].keys()|list %}
-      {%- if input_level not in valid_levels %}
-        {%- set error_msg = '\n' ~
-              'The specified level (input_level) is not in the list of valid levels\n' ~
-              '(valid_levels) for the current field (field):\n' ~
-              '  field = \'' ~ field ~ '\'\n' ~
-              '  valid_levels = ' ~ valid_levels ~ '\n'
-              '  input_level = \'' ~ input_level ~ '\'\n'
-              'input_level must either be set to the string \'all\' (to include all valid\n' ~
-              'values in the verification) or to one of the elements in valid_levels.' %}
-        {{print_err_and_quit(error_msg)}}
-      {%- endif %}
-    {%- endfor %}
-
-  {%- endif %}
-
-{%- endmacro %}
-{#-
 This macro checks whether the specified threshold (input_thresh) has a
 #}
 {%- macro check_field_group(valid_field_groups, input_field_group) %}
@@ -73,65 +33,6 @@ This macro checks whether the specified threshold (input_thresh) has a
           'rerun.' %}
     {{print_err_and_quit(error_msg)}}
   {%- endif %}
-{%- endmacro %}
-{#-
-This macro checks whether the specified threshold (input_thresh) has a
-valid value.  input_thresh may be set to 'none', 'all', or a specific
-threshold.  If set to 'none', input_thresh is not checked for a valid 
-value since threshold information will not be included in the METplus
-configuration file.  input_thresh is also not checked for a valid value
-if it set to 'all' because in this case, whatever valid/available thresholds
-are found will be included in the METplus configuration file for all
-specified field and level combination.  Finally, input_thresh IS checked
-for a valid value if it is set to something other than 'none' and 'all'
-because in this case, all specified field and level combinations (where
-the latter, depending on the value of input_level, may be either all
-valid/available levels or a single one) will use only that specific 
-threshold in the METplus configuration file, which implies that the
-threshold must be valid for all such field and level combinations.
-#}
-{%- macro check_thresh(fields_levels_threshes, input_level, input_thresh) %}
-
-  {%- if (input_thresh != 'none') and (input_thresh != 'all') %}
-
-    {%- set num_valid_fields = fields_levels_threshes|length %}
-    {%- set valid_fields = [] %}
-    {%- for i in range(0,num_valid_fields) %}
-      {%- set field = fields_levels_threshes[i].keys()|list|join('') %}
-      {%- set tmp = valid_fields.append(field) %}
-    {%- endfor %}
-
-    {%- for i in range(0,num_valid_fields) %}
-      {%- set field = valid_fields[i] %}
-      {%- set valid_levels = fields_levels_threshes[i][field].keys()|list %}
-      {%- set valid_levels_threshes = fields_levels_threshes[i][field] %}
-
-      {%- for level, valid_threshes in valid_levels_threshes.items() %}
-        {%- if (input_level == 'all') or (input_level == level) %}
-          {%- if input_thresh not in valid_threshes %}
-            {%- set error_msg = '\n' ~
-'The specified threshold (input_thresh) is not in the list of valid\n' ~
-'thresholds (valid_threshes) for the current field (field) and level\n' ~
-'(level) combination:\n' ~
-'  field = \'' ~ field ~ '\'\n' ~
-'  level = \'' ~ level ~ '\'\n' ~
-'  valid_threshes = ' ~ valid_threshes ~ '\n'
-'  input_thresh = \'' ~ input_thresh ~ '\'' %}
-'input_thresh must be set to the string \'all\' (to include in the METplus\n' ~
-'configuration file all thresholds for each valid combination of field and\n' ~
-'level), to the string \'none\' (to include no threshold information in the\n' ~
-'METplus configuration file), or to one of the elements in valid_threshes\n' ~
-'(to include only that specific threshold in the METplus configuration file).' %}
-            {{print_err_and_quit(error_msg)}}
-          {%- endif %}
-        {%- endif %}
-
-      {%- endfor %}
-
-    {%- endfor %}
-
-  {%- endif %}
-
 {%- endmacro %}
 {#-
 This macro checks whether, for the given field, the list of thresholds 
