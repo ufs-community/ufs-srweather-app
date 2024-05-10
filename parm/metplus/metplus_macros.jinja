@@ -1,4 +1,14 @@
 {#-
+Set the string delimiter that separates the forecast value of an item
+(e.g. a field name, level, or threshold) from its observation value in the
+various items in the deterministic and ensemble verification configuration
+files.
+#}
+{%- macro set_delim_str() %}
+  {{-'%%'}}
+{%- endmacro %}
+
+{#-
 This macro prints out an error message and quits the jinja templater.
 #}
 {%- macro print_err_and_quit(error_msg) %}
@@ -19,6 +29,7 @@ prints out 'A3'.
     {{- level }}
   {%- endif %}
 {%- endmacro %}
+
 {#-
 This macro checks whether the specified threshold (input_thresh) has a
 #}
@@ -34,6 +45,7 @@ This macro checks whether the specified threshold (input_thresh) has a
     {{print_err_and_quit(error_msg)}}
   {%- endif %}
 {%- endmacro %}
+
 {#-
 This macro checks whether, for the given field, the list of thresholds 
 for all levels are identical.  If not, it prints out an error message
