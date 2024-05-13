@@ -21,18 +21,6 @@ default_task_verify_ens: &default_task_verify_ens
   queue: '&QUEUE_DEFAULT;'
   walltime: 01:00:00
 
-task_parse_vx_config_ens:
-  <<: *default_task_verify_ens
-  command: '&LOAD_MODULES_RUN_TASK_FP; "run_vx" "&JOBSdir;/JREGIONAL_PARSE_VX_CONFIG"'
-  envars:
-    <<: *default_vars
-    DET_OR_ENS: 'ens'
-  join: !cycstr '&LOGDIR;/{{ jobname }}&LOGEXT;'
-  walltime: 00:05:00
-  # No dependencies are needed for this task because as long as any ensemble
-  # verification tasks are going to be run (i.e. as long as this configuration
-  # file is included in the workflow), then this task must be launched.
-
 metatask_GenEnsProd_EnsembleStat_CCPA:
   var:
     ACCUM_HH: '{% for ah in verification.VX_APCP_ACCUMS_HRS %}{% if workflow.FCST_LEN_HRS >= ah %}{{ "%02d " % ah }}{% endif %}{% endfor %}'
@@ -59,9 +47,6 @@ metatask_GenEnsProd_EnsembleStat_CCPA:
         metataskdep_pcpcombine_fcst:
           attrs:
             metatask: PcpCombine_fcst_APCP#ACCUM_HH#h_all_mems
-        taskdep_parse_vx_config_ens:
-          attrs:
-            task: parse_vx_config_ens
   task_run_MET_EnsembleStat_vx_APCP#ACCUM_HH#h:
     <<: *task_GenEnsProd_CCPA
     envars:
@@ -96,9 +81,6 @@ metatask_GenEnsProd_EnsembleStat_NOHRSC:
         metataskdep_pcpcombine_fcst:
           attrs:
             metatask: PcpCombine_fcst_ASNOW#ACCUM_HH#h_all_mems
-        taskdep_parse_vx_config_ens:
-          attrs:
-            task: parse_vx_config_ens
   task_run_MET_EnsembleStat_vx_ASNOW#ACCUM_HH#h:
     <<: *task_GenEnsProd_NOHRSC
     envars:
@@ -134,9 +116,6 @@ metatask_GenEnsProd_EnsembleStat_MRMS:
         metataskdep_check_post_output: &check_post_output
           attrs:
             metatask: check_post_output_all_mems
-        taskdep_parse_vx_config_ens:
-          attrs:
-            task: parse_vx_config_ens
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_MRMS
     envars:
@@ -179,9 +158,6 @@ metatask_GenEnsProd_EnsembleStat_NDAS:
             task: run_MET_Pb2nc_obs
         metataskdep_check_post_output:
           <<: *check_post_output
-        taskdep_parse_vx_config_ens:
-          attrs:
-            task: parse_vx_config_ens
   task_run_MET_EnsembleStat_vx_#VAR#:
     <<: *task_GenEnsProd_NDAS
     envars:
