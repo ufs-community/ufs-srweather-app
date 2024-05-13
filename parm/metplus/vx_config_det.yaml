@@ -91,114 +91,118 @@ ADPSFC:
         L0%%Z0: ['ge1.0%%ge174&&le176']
 ADPUPA:
     TMP:
-        P1000: []
-        P925: []
-        P850: []
-        P700: []
-        P500: []
-        P400: []
-        P300: []
-        P250: []
-        P200: []
-        P150: []
-        P100: []
-        P50: []
-        P20: []
-        P10: []
+        P1000: &adpupa_tmp_threshes
+               []
+        P925: *adpupa_tmp_threshes
+        P850: *adpupa_tmp_threshes
+        P700: *adpupa_tmp_threshes
+        P500: *adpupa_tmp_threshes
+        P400: *adpupa_tmp_threshes
+        P300: *adpupa_tmp_threshes
+        P250: *adpupa_tmp_threshes
+        P200: *adpupa_tmp_threshes
+        P150: *adpupa_tmp_threshes
+        P100: *adpupa_tmp_threshes
+        P50: *adpupa_tmp_threshes
+        P20: *adpupa_tmp_threshes
+        P10: *adpupa_tmp_threshes
     RH:
-        P1000: []
-        P925: []
-        P850: []
-        P700: []
-        P500: []
-        P400: []
-        P300: []
-        P250: []
+        P1000: &adpupa_rh_threshes
+               []
+        P925: *adpupa_rh_threshes
+        P850: *adpupa_rh_threshes
+        P700: *adpupa_rh_threshes
+        P500: *adpupa_rh_threshes
+        P400: *adpupa_rh_threshes
+        P300: *adpupa_rh_threshes
+        P250: *adpupa_rh_threshes
     DPT:
-        P1000: []
-        P925: []
-        P850: []
-        P700: []
-        P500: []
-        P400: []
-        P300: []
+        P1000: &adpupa_dpt_threshes
+               []
+        P925: *adpupa_dpt_threshes
+        P850: *adpupa_dpt_threshes
+        P700: *adpupa_dpt_threshes
+        P500: *adpupa_dpt_threshes
+        P400: *adpupa_dpt_threshes
+        P300: *adpupa_dpt_threshes
     UGRD:
-        P1000: ['ge2.572']
-        P925: ['ge2.572']
-        P850: ['ge2.572']
-        P700: ['ge2.572']
-        P500: ['ge2.572']
-        P400: ['ge2.572']
-        P300: ['ge2.572']
-        P250: ['ge2.572']
-        P200: ['ge2.572']
-        P150: ['ge2.572']
-        P100: ['ge2.572']
-        P50: ['ge2.572']
-        P20: ['ge2.572']
-        P10: ['ge2.572']
+        P1000: &adpupa_ugrd_threshes
+               ['ge2.572']
+        P925: *adpupa_ugrd_threshes
+        P850: *adpupa_ugrd_threshes
+        P700: *adpupa_ugrd_threshes
+        P500: *adpupa_ugrd_threshes
+        P400: *adpupa_ugrd_threshes
+        P300: *adpupa_ugrd_threshes
+        P250: *adpupa_ugrd_threshes
+        P200: *adpupa_ugrd_threshes
+        P150: *adpupa_ugrd_threshes
+        P100: *adpupa_ugrd_threshes
+        P50: *adpupa_ugrd_threshes
+        P20: *adpupa_ugrd_threshes
+        P10: *adpupa_ugrd_threshes
     VGRD:
-        P1000: ['ge2.572']
-        P925: ['ge2.572']
-        P850: ['ge2.572']
-        P700: ['ge2.572']
-        P500: ['ge2.572']
-        P400: ['ge2.572']
-        P300: ['ge2.572']
-        P250: ['ge2.572']
-        P200: ['ge2.572']
-        P150: ['ge2.572']
-        P100: ['ge2.572']
-        P50: ['ge2.572']
-        P20: ['ge2.572']
-        P10: ['ge2.572']
+        P1000: &adpupa_vgrd_threshes
+               ['ge2.572']
+        P925: *adpupa_vgrd_threshes
+        P850: *adpupa_vgrd_threshes
+        P700: *adpupa_vgrd_threshes
+        P500: *adpupa_vgrd_threshes
+        P400: *adpupa_vgrd_threshes
+        P300: *adpupa_vgrd_threshes
+        P250: *adpupa_vgrd_threshes
+        P200: *adpupa_vgrd_threshes
+        P150: *adpupa_vgrd_threshes
+        P100: *adpupa_vgrd_threshes
+        P50: *adpupa_vgrd_threshes
+        P20: *adpupa_vgrd_threshes
+        P10: *adpupa_vgrd_threshes
     WIND:
-        P1000: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P925: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P850: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P700: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P500: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P400: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P300: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P250: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P200: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P150: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P100: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P50: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P20: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
-        P10: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
+        P1000: &adpupa_wind_threshes
+               ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
+        P925: *adpupa_wind_threshes
+        P850: *adpupa_wind_threshes
+        P700: *adpupa_wind_threshes
+        P500: *adpupa_wind_threshes
+        P400: *adpupa_wind_threshes
+        P300: *adpupa_wind_threshes
+        P250: *adpupa_wind_threshes
+        P200: *adpupa_wind_threshes
+        P150: *adpupa_wind_threshes
+        P100: *adpupa_wind_threshes
+        P50: *adpupa_wind_threshes
+        P20: *adpupa_wind_threshes
+        P10: *adpupa_wind_threshes
     HGT:
-        P1000: []
-        P950: []
-        P925: []
-        P850: []
-        P700: []
-        P500: []
-        P400: []
-        P300: []
-        P250: []
-        P200: []
-        P150: []
-        P100: []
-        P50: []
-        P20: []
-        P10: []
+        P1000: &adpupa_hgt_threshes
+               []
+        P950: *adpupa_hgt_threshes
+        P925: *adpupa_hgt_threshes
+        P850: *adpupa_hgt_threshes
+        P700: *adpupa_hgt_threshes
+        P500: *adpupa_hgt_threshes
+        P400: *adpupa_hgt_threshes
+        P300: *adpupa_hgt_threshes
+        P250: *adpupa_hgt_threshes
+        P200: *adpupa_hgt_threshes
+        P150: *adpupa_hgt_threshes
+        P100: *adpupa_hgt_threshes
+        P50: *adpupa_hgt_threshes
+        P20: *adpupa_hgt_threshes
+        P10: *adpupa_hgt_threshes
     SPFH:
-        P1000: []
-        P850: []
-        P700: []
-        P500: []
-        P400: []
-        P300: []
+        P1000: &adpupa_spfh_threshes
+               []
+        P850: *adpupa_spfh_threshes
+        P700: *adpupa_spfh_threshes
+        P500: *adpupa_spfh_threshes
+        P400: *adpupa_spfh_threshes
+        P300: *adpupa_spfh_threshes
     CAPE:
-        L0%%L0-100000:
-            ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']
+        L0%%L0-100000: ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']
     HPBL%%PBL:
-        Z0%%L0:
-            []
+        Z0%%L0: []
     HGT%%PBL:
-        L0:
-            []
+        L0: []
     CAPE%%MLCAPE:
-        L0-90%%L0:
-            ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']
+        L0-90%%L0: ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']
