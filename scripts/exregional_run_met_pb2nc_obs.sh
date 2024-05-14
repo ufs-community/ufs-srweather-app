@@ -140,7 +140,7 @@ set_vx_fhr_list \
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "${OUTPUT_DIR}"
+mkdir -p "${OUTPUT_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -272,20 +272,17 @@ settings="\
   'obtype': '${OBTYPE}'
   'accum_hh': '${ACCUM_HH:-}'
   'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
 "
 
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
-cat > $tmpfile << EOF
-$settings
-EOF
-
+printf "%s" "$settings" > "$tmpfile"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
   --verbose \
-  --values-file "${tmpfile}"
+  --values-file "${tmpfile}" \
+  --search-path "/" 
 
 err=$?
 rm $tmpfile
@@ -299,7 +296,6 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #

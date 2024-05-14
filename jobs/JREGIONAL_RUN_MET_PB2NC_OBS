@@ -51,8 +51,8 @@ print_info_msg "
 Entering script:  \"${scrfunc_fn}\"
 In directory:     \"${scrfunc_dir}\"
 
-This is the J-job script for the task that runs METplus for point-stat
-by initialization time for all forecast hours.
+This is the J-job script for the task that runs METplus for pb2nc on
+NDAS observations.
 ========================================================================"
 #
 #-----------------------------------------------------------------------

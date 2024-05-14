@@ -125,53 +125,6 @@ time_lag=$( bc -l <<< "${ENS_TIME_LAG_HRS[$i]}*${SECS_PER_HOUR}" )
 #
 #-----------------------------------------------------------------------
 #
-# Set additional field-dependent verification parameters.
-#
-#-----------------------------------------------------------------------
-#
-if [ "${grid_or_point}" = "grid" ]; then
-
-  case "${FIELDNAME_IN_MET_FILEDIR_NAMES}" in
-    "APCP01h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54"
-      ;;
-    "APCP03h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350"
-      ;;
-    "APCP06h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700"
-      ;;
-    "APCP24h")
-      FIELD_THRESHOLDS="gt0.0, ge0.254, ge0.508, ge1.27, ge2.54, ge3.810, ge6.350, ge8.890, ge12.700, ge25.400"
-      ;;
-    "ASNOW06h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "ASNOW24h")
-      FIELD_THRESHOLDS="gt0.0, ge2.54, ge5.08, ge10.16, ge20.32"
-      ;;
-    "REFC")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    "RETOP")
-      FIELD_THRESHOLDS="ge20, ge30, ge40, ge50"
-      ;;
-    *)
-      print_err_msg_exit "\
-Verification parameters have not been defined for this field
-(FIELDNAME_IN_MET_FILEDIR_NAMES):
-  FIELDNAME_IN_MET_FILEDIR_NAMES = \"${FIELDNAME_IN_MET_FILEDIR_NAMES}\""
-      ;;
-  esac
-
-elif [ "${grid_or_point}" = "point" ]; then
-
-  FIELD_THRESHOLDS=""
-
-fi
-#
-#-----------------------------------------------------------------------
-#
 # Set paths and file templates for input to and output from the MET/
 # METplus tool to be run as well as other file/directory parameters.
 #
@@ -252,6 +205,9 @@ STAGING_DIR="${OUTPUT_BASE}/stage/${FIELDNAME_IN_MET_FILEDIR_NAMES}"
 #-----------------------------------------------------------------------
 #
 # Set the array of forecast hours for which to run the MET/METplus tool.
+# This is done by starting with the full list of forecast hours for which
+# there is forecast output and then removing from that list any forecast
+# hours for which there is no corresponding observation data.
 #
 #-----------------------------------------------------------------------
 #
@@ -272,7 +228,7 @@ set_vx_fhr_list \
 #
 #-----------------------------------------------------------------------
 #
-mkdir_vrfy -p "${OUTPUT_DIR}"
+mkdir -p "${OUTPUT_DIR}"
 #
 #-----------------------------------------------------------------------
 #
@@ -319,16 +275,30 @@ fi
 #
 # First, set the base file names.
 #
-metplus_config_tmpl_fn="${VAR}"
-metplus_config_tmpl_fn="${MetplusToolName}_${metplus_config_tmpl_fn}"
-metplus_config_fn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
-metplus_log_fn="${metplus_config_fn}"
+metplus_config_tmpl_bn="GridStat_or_PointStat"
+metplus_config_bn="${MetplusToolName}_${FIELDNAME_IN_MET_FILEDIR_NAMES}_${ensmem_name}"
+metplus_log_bn="${metplus_config_bn}"
 #
 # Add prefixes and suffixes (extensions) to the base file names.
 #
-metplus_config_tmpl_fn="${metplus_config_tmpl_fn}.conf"
-metplus_config_fn="${metplus_config_fn}.conf"
-metplus_log_fn="metplus.log.${metplus_log_fn}"
+metplus_config_tmpl_fn="${metplus_config_tmpl_bn}.conf"
+metplus_config_fn="${metplus_config_bn}.conf"
+metplus_log_fn="metplus.log.${metplus_log_bn}"
+#
+#-----------------------------------------------------------------------
+#
+# Load the yaml-like file containing the configuration for deterministic
+# verification.
+#
+#-----------------------------------------------------------------------
+#
+det_or_ens="det"
+vx_config_fn="vx_config_${det_or_ens}.yaml"
+vx_config_fp="${METPLUS_CONF}/${vx_config_fn}"
+vx_config_dict=$(<"${vx_config_fp}")
+# Indent each line of vx_config_dict so that it is aligned properly when
+# included in the yaml-formatted variable "settings" below.
+vx_config_dict=$( printf "%s\n" "${vx_config_dict}" | sed 's/^/    /' )
 #
 #-----------------------------------------------------------------------
 #
@@ -349,59 +319,65 @@ settings="\
 #
 # MET/METplus information.
 #
-  'metplus_tool_name': '${metplus_tool_name}'
-  'MetplusToolName': '${MetplusToolName}'
-  'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
-  'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
+'metplus_tool_name': '${metplus_tool_name}'
+'MetplusToolName': '${MetplusToolName}'
+'METPLUS_TOOL_NAME': '${METPLUS_TOOL_NAME}'
+'metplus_verbosity_level': '${METPLUS_VERBOSITY_LEVEL}'
 #
 # Date and forecast hour information.
 #
-  'cdate': '$CDATE'
-  'fhr_list': '${FHR_LIST}'
+'cdate': '$CDATE'
+'fhr_list': '${FHR_LIST}'
 #
 # Input and output directory/file information.
 #
-  'metplus_config_fn': '${metplus_config_fn:-}'
-  'metplus_log_fn': '${metplus_log_fn:-}'
-  'obs_input_dir': '${OBS_INPUT_DIR:-}'
-  'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
-  'fcst_input_dir': '${FCST_INPUT_DIR:-}'
-  'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
-  'output_base': '${OUTPUT_BASE}'
-  'output_dir': '${OUTPUT_DIR}'
-  'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
-  'staging_dir': '${STAGING_DIR}'
-  'vx_fcst_model_name': '${VX_FCST_MODEL_NAME}'
+'metplus_config_fn': '${metplus_config_fn:-}'
+'metplus_log_fn': '${metplus_log_fn:-}'
+'obs_input_dir': '${OBS_INPUT_DIR:-}'
+'obs_input_fn_template': '${OBS_INPUT_FN_TEMPLATE:-}'
+'fcst_input_dir': '${FCST_INPUT_DIR:-}'
+'fcst_input_fn_template': '${FCST_INPUT_FN_TEMPLATE:-}'
+'output_base': '${OUTPUT_BASE}'
+'output_dir': '${OUTPUT_DIR}'
+'output_fn_template': '${OUTPUT_FN_TEMPLATE:-}'
+'staging_dir': '${STAGING_DIR}'
+'vx_fcst_model_name': '${VX_FCST_MODEL_NAME}'
 #
 # Ensemble and member-specific information.
 #
-  'num_ens_members': '${NUM_ENS_MEMBERS}'
-  'ensmem_name': '${ensmem_name:-}'
-  'time_lag': '${time_lag:-}'
+'num_ens_members': '${NUM_ENS_MEMBERS}'
+'ensmem_name': '${ensmem_name:-}'
+'time_lag': '${time_lag:-}'
 #
 # Field information.
 #
-  'fieldname_in_obs_input': '${FIELDNAME_IN_OBS_INPUT}'
-  'fieldname_in_fcst_input': '${FIELDNAME_IN_FCST_INPUT}'
-  'fieldname_in_met_output': '${FIELDNAME_IN_MET_OUTPUT}'
-  'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
-  'obtype': '${OBTYPE}'
-  'accum_hh': '${ACCUM_HH:-}'
-  'accum_no_pad': '${ACCUM_NO_PAD:-}'
-  'field_thresholds': '${FIELD_THRESHOLDS:-}'
+'fieldname_in_obs_input': '${FIELDNAME_IN_OBS_INPUT}'
+'fieldname_in_fcst_input': '${FIELDNAME_IN_FCST_INPUT}'
+'fieldname_in_met_output': '${FIELDNAME_IN_MET_OUTPUT}'
+'fieldname_in_met_filedir_names': '${FIELDNAME_IN_MET_FILEDIR_NAMES}'
+'obtype': '${OBTYPE}'
+'accum_hh': '${ACCUM_HH:-}'
+'accum_no_pad': '${ACCUM_NO_PAD:-}'
+'metplus_templates_dir': '${METPLUS_CONF:-}'
+'input_field_group': '${VAR:-}'
+'input_level_fcst': '${FCST_LEVEL:-}'
+'input_thresh_fcst': '${FCST_THRESH:-}'
+#
+# Verification configuration dictionary.
+#
+'vx_config_dict': 
+${vx_config_dict:-}
 "
 
 # Render the template to create a METplus configuration file
 tmpfile=$( $READLINK -f "$(mktemp ./met_plus_settings.XXXXXX.yaml)")
-cat > $tmpfile << EOF
-$settings
-EOF
-
+printf "%s" "$settings" > "$tmpfile"
 uw template render \
   -i ${metplus_config_tmpl_fp} \
   -o ${metplus_config_fp} \
   --verbose \
-  --values-file "${tmpfile}"
+  --values-file "${tmpfile}" \
+  --search-path "/" 
 
 err=$?
 rm $tmpfile
@@ -415,7 +391,6 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
-
 #
 #-----------------------------------------------------------------------
 #

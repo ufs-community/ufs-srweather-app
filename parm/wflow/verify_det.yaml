@@ -41,6 +41,8 @@ metatask_GridStat_CCPA_all_accums_all_mems:
         OBTYPE: 'CCPA'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
@@ -71,12 +73,14 @@ metatask_GridStat_NOHRSC_all_accums_all_mems:
         OBTYPE: 'NOHRSC'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'A#ACCUM_HH#'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep:
+          taskdep_get_obs_nohrsc:
             attrs:
-              task: get_obs_mrms
+              task: get_obs_nohrsc
           taskdep_pcpcombine_fcst:
             attrs:
               task: run_MET_PcpCombine_fcst_ASNOW#ACCUM_HH#h_mem#mem#
@@ -99,10 +103,12 @@ metatask_GridStat_MRMS_all_mems:
         OBTYPE: 'MRMS'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'L0'
+        FCST_THRESH: 'all'
       walltime: 02:00:00
       dependency:
         and:
-          taskdep:
+          taskdep_get_obs_mrms:
             attrs:
               task: get_obs_mrms
           datadep_post_files_exist:
@@ -128,6 +134,8 @@ metatask_PointStat_NDAS_all_mems:
         ACCUM_HH: '01'
         ENSMEM_INDX: "#mem#"
         SLASH_ENSMEM_SUBDIR_OR_NULL: '{% if global.DO_ENSEMBLE %}{{ "/mem#mem#" }}{% endif %}'
+        FCST_LEVEL: 'all'
+        FCST_THRESH: 'all'
       walltime: 01:00:00
       dependency:
         and:

@@ -196,7 +196,7 @@ fi
 #
 # Change location to the temporary (work) directory.
 #
-cd_vrfy "$DATA"
+cd "$DATA"
 
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
@@ -313,7 +313,7 @@ fi
 # to the original directory.
 #
 grid_fp="$DATA/${grid_fn}"
-cd_vrfy -
+cd -
 
 print_info_msg "$VERBOSE" "
 Grid file generation completed successfully."
@@ -392,7 +392,7 @@ set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "'$CRES'"
 grid_fp_orig="${grid_fp}"
 grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc"
 grid_fp="${GRID_DIR}/${grid_fn}"
-mv_vrfy "${grid_fp_orig}" "${grid_fp}"
+mv "${grid_fp_orig}" "${grid_fp}"
 #
 #-----------------------------------------------------------------------
 #
@@ -449,7 +449,7 @@ unshaved_fp="${grid_fp}"
 # Once it is complete, we will move the resultant file from DATA to
 # GRID_DIR.
 #
-cd_vrfy "$DATA"
+cd "$DATA"
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then
@@ -477,7 +477,7 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 4-cell-wide halo from the one with a wide halo.  Then
@@ -505,7 +505,7 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file without halo from the one with a wide halo.  Then
@@ -532,11 +532,11 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Change location to the original directory.
 #
-cd_vrfy -
+cd -
 #
 #-----------------------------------------------------------------------
 #

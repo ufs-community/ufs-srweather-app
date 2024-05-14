@@ -655,10 +655,10 @@ if [ "${CPL_AQM}" = "TRUE" ]; then
   cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
   cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
 else
-  mv_vrfy out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv_vrfy out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
-  mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-  mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+  mv out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+  mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
 fi
 #
 #-----------------------------------------------------------------------
@@ -684,7 +684,7 @@ Please ensure that you've built this executable."
       print_err_msg_exit "${message_txt}"
     fi
   fi
-  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
+  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     message_txt="The file or path (fvcom_data_fp) does not exist:
@@ -699,8 +699,8 @@ Please check the following user defined variables:
     fi
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd_vrfy ${INPUT_DATA}
+  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd ${INPUT_DATA}
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
        ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
