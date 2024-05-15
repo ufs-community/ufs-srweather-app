@@ -7,3 +7,5 @@ grid_SUBCONUS_Ind_3km_ics_HRRR_lbcs_HRRR_suite_HRRR
 pregen_grid_orog_sfc_climo
 specify_template_filenames
 2019_hurricane_barry
+2019_memorial_day_heat_wave
+2020_denver_radiation_inversion
