@@ -1,62 +1,41 @@
 #!/usr/bin/env python3
 
+"""
+Update the model namelist for a variety of different settings.
+"""
+
+import argparse
 import os
 import sys
-import argparse
-import logging
 from textwrap import dedent
 
+from uwtools.api.config import realize
+
 from python_utils import (
-    import_vars,
     print_input_args,
     print_info_msg,
-    print_err_msg_exit,
     cfg_to_yaml_str,
-    load_shell_config,
-    flatten_dict,
 )
 
-from set_namelist import set_namelist
+VERBOSE = os.environ.get("VERBOSE", "true")
 
-
-def update_input_nml(run_dir):
+def update_input_nml(namelist, restart, aqm_na_13km):
     """Update the FV3 input.nml file in the specified run directory
 
     Args:
-        run_dir: run directory
+        namelist:    path to the namelist
+        restart:     should forecast start from restart?
+        aqm_na_13km: should the 13km AQM config be used?
+
     Returns:
         Boolean
     """
 
     print_input_args(locals())
-
-    # import all environment variables
-    import_vars()
-
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Update the FV3 input.nml file in the specified run directory.
-    #
-    # -----------------------------------------------------------------------
-    #
-    print_info_msg(
-        f"""
-        Updating the FV3 input.nml file in the specified run directory (run_dir):
-          run_dir = '{run_dir}'""",
-        verbose=VERBOSE,
-    )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Set new values of the specific parameters to be updated.
-    #
-    # -----------------------------------------------------------------------
-    #
     settings = {}
 
     # For restart run
-    if args.restart:
+    if restart:
         settings["fv_core_nml"] = {
             "external_ic": False,
             "make_nh": False,
@@ -69,105 +48,68 @@ def update_input_nml(run_dir):
         settings["gfs_physics_nml"] = {
             "nstf_name": [2, 0, 0, 0, 0],
         }
-    
+
     # For AQM_NA_13km domain for air quality modeling
-    if args.aqm_na_13km:
+    if aqm_na_13km:
         settings["fv_core_nml"] = {
             "k_split": 1,
             "n_split": 8,
         }
 
 
-    settings_str = cfg_to_yaml_str(settings)
-
     print_info_msg(
         dedent(
             f"""
-            The variable 'settings' specifying values to be used in the FV3 'input.nml'
-            file for restart has been set as follows:\n
-            settings =\n\n"""
-        )
-        + settings_str,
+            Updating {namelist}
+
+            The updated values are:
+
+            {cfg_to_yaml_str(settings)}
+
+            """
+        ),
         verbose=VERBOSE,
     )
-    #
-    # -----------------------------------------------------------------------
-    #
-    # Call a python script to update the experiment's actual FV3 INPUT.NML
-    # file for restart.
-    #
-    # -----------------------------------------------------------------------
-    #
-    fv3_input_nml_fp = os.path.join(run_dir, FV3_NML_FN)
 
-    try:
-        set_namelist(
-            [
-                "-q",
-                "-n",
-                fv3_input_nml_fp,
-                "-u",
-                settings_str,
-                "-o",
-                fv3_input_nml_fp,
-            ]
+    # Update the experiment's FV3 INPUT.NML file
+    realize(
+        input_config=namelist,
+        input_format="nml",
+        output_file=namelist,
+        output_format="nml",
+        supplemental_configs=[settings],
         )
-    except:
-        logging.exception(
-            dedent(
-                f"""
-                Call to python script set_namelist.py to generate an FV3 namelist file
-                failed.  Parameters passed to this script are:
-                  Full path to base namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Full path to output namelist file:
-                    fv3_input_nml_fp = '{fv3_input_nml_fp}'
-                  Namelist settings specified on command line:\n
-                    settings =\n\n"""
-            )
-            + settings_str
-        )
-        return False
-
-    return True
-
 
 def parse_args(argv):
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Update FV3 input.nml file for restart.")
 
     parser.add_argument(
-        "-r", "--run_dir",
-        dest="run_dir",
+        "-n", "--namelist",
+        dest="namelist",
         required=True,
-        help="Run directory."
-    )
-
-    parser.add_argument(
-        "-p", "--path-to-defns",
-        dest="path_to_defns",
-        required=True,
-        help="Path to var_defns file.",
+        help="Path to namelist to update.",
     )
 
     parser.add_argument(
         "--restart", 
         action='store_true',
-        help='Update for restart')
+        help='Update for restart',
+    )
 
     parser.add_argument(
         "--aqm_na_13km", 
         action='store_true',
-        help='Update for AQM_NA_13km in air quality modeling')
+        help='Update for AQM_NA_13km in air quality modeling',
+    )
 
     return parser.parse_args(argv)
 
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
-    cfg = flatten_dict(cfg)
-    import_vars(dictionary=cfg)
     update_input_nml(
-        run_dir=args.run_dir,
+        namelist=args.namelist,
+        restart=args.restart,
+        aqm_na_13km=args.aqm_na_13km,
     )

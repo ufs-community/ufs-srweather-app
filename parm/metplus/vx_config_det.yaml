@@ -1,0 +1,208 @@
+#
+# This configuration file specifies the field groups, fields, levels,
+# and thresholds to use for DETERMINISTIC verification.  The format is
+# as follows:
+#
+# FIELD_GROUP1:
+#     FIELD1:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     FIELD2:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     ...
+#             
+# FIELD_GROUP2:
+#     FIELD1:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     FIELD2:
+#         LEVEL1: list_of_thresholds
+#         LEVEL2: list_of_thresholds
+#         ...
+#     ...
+#
+#  ...
+#
+# If the threshold list for a given combination of field group, field,
+# and level is set to the empty string ([]), then all values of that
+# field will be included in the verification.
+#
+# Both the keys that represent field groups, fields, and levels and the
+# strings in the list of thresholds may contain the separator string "%%"
+# that separates the value of the quantity for the forecast from that for
+# the observations.  For example, if a field is set to
+#
+#   RETOP%%EchoTop18
+#
+# it means the name of the field in the forecast data is RETOP while its
+# name in the observations is EchoTop18.
+#
+APCP:
+    APCP:
+        A1: ['gt0.0', 'ge0.254', 'ge0.508', 'ge1.27', 'ge2.54']
+        A3: ['gt0.0', 'ge0.254', 'ge0.508', 'ge1.27', 'ge2.54', 'ge3.810', 'ge6.350']
+        A6: ['gt0.0', 'ge0.254', 'ge0.508', 'ge1.27', 'ge2.54', 'ge3.810', 'ge6.350', 'ge8.890', 'ge12.700']
+        A24: ['gt0.0', 'ge0.254', 'ge0.508', 'ge1.27', 'ge2.54', 'ge3.810', 'ge6.350', 'ge8.890', 'ge12.700', 'ge25.400']
+ASNOW:
+    ASNOW:
+        A6: ['gt0.0', 'ge2.54', 'ge5.08', 'ge10.16', 'ge20.32']
+REFC:
+    REFC%%MergedReflectivityQCComposite:
+        L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
+RETOP:
+    RETOP%%EchoTop18:
+        L0%%Z500: ['ge20', 'ge30', 'ge40', 'ge50']
+ADPSFC:
+    TMP:
+        Z2: []
+    DPT:
+        Z2: []
+    RH:
+        Z2: []
+    UGRD:
+        Z10: ['ge2.572']
+    VGRD:
+        Z10: ['ge2.572']
+    WIND:
+        Z10: ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433']
+    PRMSL:
+        Z0: []
+    TCDC:
+        L0: []
+    VIS:
+        L0: ['lt805', 'lt1609', 'lt4828', 'lt8045', 'ge8045', 'lt16090']
+    GUST:
+        Z0: []
+    HGT%%CEILING:
+        L0: ['lt152', 'lt305', 'lt914', 'lt1520', 'lt3040', 'ge914']
+    SPFH:
+        Z2: []
+    CRAIN%%PRWE:
+        L0%%Z0: ['ge1.0%%ge161&&le163']
+    CSNOW%%PRWE:
+        L0%%Z0: ['ge1.0%%ge171&&le173']
+    CFRZR%%PRWE:
+        L0%%Z0: ['ge1.0%%ge164&&le166']
+    CICEP%%PRWE:
+        L0%%Z0: ['ge1.0%%ge174&&le176']
+ADPUPA:
+    TMP:
+        P1000: &adpupa_tmp_threshes
+               []
+        P925: *adpupa_tmp_threshes
+        P850: *adpupa_tmp_threshes
+        P700: *adpupa_tmp_threshes
+        P500: *adpupa_tmp_threshes
+        P400: *adpupa_tmp_threshes
+        P300: *adpupa_tmp_threshes
+        P250: *adpupa_tmp_threshes
+        P200: *adpupa_tmp_threshes
+        P150: *adpupa_tmp_threshes
+        P100: *adpupa_tmp_threshes
+        P50: *adpupa_tmp_threshes
+        P20: *adpupa_tmp_threshes
+        P10: *adpupa_tmp_threshes
+    RH:
+        P1000: &adpupa_rh_threshes
+               []
+        P925: *adpupa_rh_threshes
+        P850: *adpupa_rh_threshes
+        P700: *adpupa_rh_threshes
+        P500: *adpupa_rh_threshes
+        P400: *adpupa_rh_threshes
+        P300: *adpupa_rh_threshes
+        P250: *adpupa_rh_threshes
+    DPT:
+        P1000: &adpupa_dpt_threshes
+               []
+        P925: *adpupa_dpt_threshes
+        P850: *adpupa_dpt_threshes
+        P700: *adpupa_dpt_threshes
+        P500: *adpupa_dpt_threshes
+        P400: *adpupa_dpt_threshes
+        P300: *adpupa_dpt_threshes
+    UGRD:
+        P1000: &adpupa_ugrd_threshes
+               ['ge2.572']
+        P925: *adpupa_ugrd_threshes
+        P850: *adpupa_ugrd_threshes
+        P700: *adpupa_ugrd_threshes
+        P500: *adpupa_ugrd_threshes
+        P400: *adpupa_ugrd_threshes
+        P300: *adpupa_ugrd_threshes
+        P250: *adpupa_ugrd_threshes
+        P200: *adpupa_ugrd_threshes
+        P150: *adpupa_ugrd_threshes
+        P100: *adpupa_ugrd_threshes
+        P50: *adpupa_ugrd_threshes
+        P20: *adpupa_ugrd_threshes
+        P10: *adpupa_ugrd_threshes
+    VGRD:
+        P1000: &adpupa_vgrd_threshes
+               ['ge2.572']
+        P925: *adpupa_vgrd_threshes
+        P850: *adpupa_vgrd_threshes
+        P700: *adpupa_vgrd_threshes
+        P500: *adpupa_vgrd_threshes
+        P400: *adpupa_vgrd_threshes
+        P300: *adpupa_vgrd_threshes
+        P250: *adpupa_vgrd_threshes
+        P200: *adpupa_vgrd_threshes
+        P150: *adpupa_vgrd_threshes
+        P100: *adpupa_vgrd_threshes
+        P50: *adpupa_vgrd_threshes
+        P20: *adpupa_vgrd_threshes
+        P10: *adpupa_vgrd_threshes
+    WIND:
+        P1000: &adpupa_wind_threshes
+               ['ge2.572', 'ge2.572&&lt5.144', 'ge5.144', 'ge10.288', 'ge15.433', 'ge20.577', 'ge25.722']
+        P925: *adpupa_wind_threshes
+        P850: *adpupa_wind_threshes
+        P700: *adpupa_wind_threshes
+        P500: *adpupa_wind_threshes
+        P400: *adpupa_wind_threshes
+        P300: *adpupa_wind_threshes
+        P250: *adpupa_wind_threshes
+        P200: *adpupa_wind_threshes
+        P150: *adpupa_wind_threshes
+        P100: *adpupa_wind_threshes
+        P50: *adpupa_wind_threshes
+        P20: *adpupa_wind_threshes
+        P10: *adpupa_wind_threshes
+    HGT:
+        P1000: &adpupa_hgt_threshes
+               []
+        P950: *adpupa_hgt_threshes
+        P925: *adpupa_hgt_threshes
+        P850: *adpupa_hgt_threshes
+        P700: *adpupa_hgt_threshes
+        P500: *adpupa_hgt_threshes
+        P400: *adpupa_hgt_threshes
+        P300: *adpupa_hgt_threshes
+        P250: *adpupa_hgt_threshes
+        P200: *adpupa_hgt_threshes
+        P150: *adpupa_hgt_threshes
+        P100: *adpupa_hgt_threshes
+        P50: *adpupa_hgt_threshes
+        P20: *adpupa_hgt_threshes
+        P10: *adpupa_hgt_threshes
+    SPFH:
+        P1000: &adpupa_spfh_threshes
+               []
+        P850: *adpupa_spfh_threshes
+        P700: *adpupa_spfh_threshes
+        P500: *adpupa_spfh_threshes
+        P400: *adpupa_spfh_threshes
+        P300: *adpupa_spfh_threshes
+    CAPE:
+        L0%%L0-100000: ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']
+    HPBL%%PBL:
+        Z0%%L0: []
+    HGT%%PBL:
+        L0: []
+    CAPE%%MLCAPE:
+        L0-90%%L0: ['gt500', 'gt1000', 'gt1500', 'gt2000', 'gt3000', 'gt4000']

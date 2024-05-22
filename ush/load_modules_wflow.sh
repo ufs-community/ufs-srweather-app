@@ -62,12 +62,7 @@ task failed:
 $has_mu && set +u
 
 if [ ! -z $(command -v conda) ]; then
-# Gaea-C5 special case missing jinja2
-  if [ "${machine}" == "gaea-c5" ]; then
-    conda activate workflow_tools
-  else
-    conda activate srw_app
-  fi
+  conda activate srw_app
 fi
 
 $has_mu && set -u

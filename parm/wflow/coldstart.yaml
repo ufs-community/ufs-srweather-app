@@ -28,7 +28,7 @@ task_get_extrn_ics:
     <<: *default_vars
     ICS_OR_LBCS: ICS
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
+  memory: 4G
   nnodes: 1
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -59,7 +59,7 @@ task_get_extrn_lbcs:
     <<: *default_vars
     ICS_OR_LBCS: LBCS
   join: !cycstr '&LOGDIR;/{{ jobname }}_@Y@m@d@H&LOGEXT;'
-  memory: 2G
+  memory: 4G
   nnodes: 1
   native: '{% if platform.get("SCHED_NATIVE_CMD_HPSS") %}{{ platform.SCHED_NATIVE_CMD_HPSS }}{% else %}{{ platform.SCHED_NATIVE_CMD}}{% endif %}'
   partition: '{% if platform.get("PARTITION_HPSS") %}&PARTITION_HPSS;{% else %}None{% endif %}'
@@ -186,29 +186,21 @@ metatask_run_ensemble:
             attrs:
               task: point_source
         or_aqm_ics:
-          and_no_aqm_ics:
-            not:
-              taskvalid:
-                attrs:
-                  task: aqm_ics_ext
-            not:
-              taskvalid:
-                attrs:
-                  task: aqm_ics
-          and_aqm_atstart:
-            taskvalid:
-              attrs:
-                task: aqm_ics_ext
-            taskdep:
-              attrs:
-                task: aqm_ics_ext
-          and_aqm_cycled:
+          not:
             taskvalid:
               attrs:
                 task: aqm_ics
-            taskdep:
+          taskdep:
+            attrs:
+              task: aqm_ics
+        or_aqm_ics_ext:
+          not:
+            taskvalid:
               attrs:
-                task: aqm_ics
+                task: aqm_ics_ext
+          taskdep:
+            attrs:
+              task: aqm_ics_ext
         or_aqm_lbcs:
           not:
             taskvalid:

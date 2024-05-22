@@ -27,7 +27,8 @@ fi
 # Build and install
 cd ${workspace}/tests
 set +e
-./build.sh ${platform} ${SRW_COMPILER}
+/usr/bin/time -p -f '{\n  "cpu": "%P"\n, "memMax": "%M"\n, "mem": {"text": "%X", "data": "%D", "swaps": "%W", "context": "%c", "waits": "%w"}\n, "pagefaults": {"major": "%F", "minor": "%R"}\n, "filesystem": {"inputs": "%I", "outputs": "%O"}\n, "time": {"real": "%e", "user": "%U", "sys": "%S"}\n}' -o ${WORKSPACE}/${SRW_PLATFORM}-${SRW_COMPILER}-time-srw_build.json \
+    ./build.sh ${platform} ${SRW_COMPILER}
 build_exit=$?
 set -e
 cd -
