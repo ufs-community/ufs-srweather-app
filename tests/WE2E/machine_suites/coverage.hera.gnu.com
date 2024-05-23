@@ -8,3 +8,4 @@ long_fcst
 MET_verification_only_vx
 MET_ensemble_verification_only_vx_time_lag
 2019_halloween_storm
+2020_jan_cold_blast

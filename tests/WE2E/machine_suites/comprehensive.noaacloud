@@ -56,6 +56,11 @@ specify_template_filenames
 2020_CAPE
 2019_hurricane_barry
 2019_halloween_storm
+2019_hurricane_lorenzo
+2019_memorial_day_heat_wave
+2020_denver_radiation_inversion
+2020_easter_storm
+2020_jan_cold_blast
 get_from_AWS_ics_GEFS_lbcs_GEFS_fmt_grib2_2022040400_ensemble_2mems
 get_from_NOMADS_ics_FV3GFS_lbcs_FV3GFS
 long_fcst
