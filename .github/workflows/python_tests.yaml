@@ -41,6 +41,8 @@ jobs:
           pylint --ignore-imports=yes tests/test_python/
           pylint ush/create_*.py
           pylint ush/generate_FV3LAM_wflow.py
+          pylint ush/set_fv3nml*.py
+          pylint ush/update_input_nml.py
 
       - name: Run python unittests
         run: |

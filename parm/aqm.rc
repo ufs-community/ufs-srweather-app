@@ -7,14 +7,14 @@
 #
 #  General settings
 #
-ae_matrix_nml: {{ aqm_config_dir }}/AE_cb6r3_ae6_aq.nml
-gc_matrix_nml: {{ aqm_config_dir }}/GC_cb6r3_ae6_aq.nml
-nr_matrix_nml: {{ aqm_config_dir }}/NR_cb6r3_ae6_aq.nml
-tr_matrix_nml: {{ aqm_config_dir }}/Species_Table_TR_0.nml
+ae_matrix_nml: {{ fixaqm }}/epa/AE_cb6r3_ae6_aq.nml
+gc_matrix_nml: {{ fixaqm }}/epa/GC_cb6r3_ae6_aq.nml
+nr_matrix_nml: {{ fixaqm }}/epa/NR_cb6r3_ae6_aq.nml
+tr_matrix_nml: {{ fixaqm }}/epa/Species_Table_TR_0.nml
 
-csqy_data:   {{ aqm_config_dir }}/CSQY_DATA_cb6r3_ae6_aq
-optics_data: {{ aqm_config_dir }}/PHOT_OPTICS.dat
-omi_data:    {{ aqm_config_dir }}/omi_cmaq_2015_361X179.dat
+csqy_data:   {{ fixaqm }}/epa/CSQY_DATA_cb6r3_ae6_aq
+optics_data: {{ fixaqm }}/epa/PHOT_OPTICS.dat
+omi_data:    {{ fixaqm }}/epa/omi_cmaq_2015_361X179.dat
 
 init_concentrations: {{ init_concentrations | lower }}
 
@@ -172,7 +172,7 @@ bio_format: netcdf
 bio_file: {{ aqm_rc_bio_file_fp }}
 bio_frequency: static
 bio_period: summer
-bio_speciation_file: {{ dcominbio }}/gspro_biogenics_1mar2017.txt
+bio_speciation_file: {{ fixaqm }}/bio/gspro_biogenics_1mar2017.txt
 bio_speciation_profile: B10C6
 bio_species::
     AVG_NOAG_GROW        1.00000  AVG_NOAG_GROW     gmN/hr

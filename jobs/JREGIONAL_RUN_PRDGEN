@@ -84,7 +84,7 @@ DATA="${DATA:-${COMIN}${SLASH_ENSMEM_SUBDIR}}"
 if [ "${RUN_ENVIR}" = "community" ]; then
   export COMOUT="${DATA}/postprd"
 fi
-mkdir_vrfy -p "${COMOUT}"
+mkdir -p "${COMOUT}"
 
 # subhourly post
 if [ "${SUB_HOURLY_POST}" = "TRUE" ]; then
@@ -93,9 +93,9 @@ else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"
 fi
 check_for_preexist_dir_file "${DATA_FHR}" "delete"
-mkdir_vrfy -p "${DATA_FHR}"
+mkdir -p "${DATA_FHR}"
 
-cd_vrfy "${DATA_FHR}"
+cd "${DATA_FHR}"
 #
 #-----------------------------------------------------------------------
 #

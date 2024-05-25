@@ -196,7 +196,7 @@ fi
 #
 # Change location to the temporary (work) directory.
 #
-cd_vrfy "$DATA"
+cd "$DATA"
 
 print_info_msg "$VERBOSE" "
 Starting grid file generation..."
@@ -266,29 +266,31 @@ generation executable (exec_fp):
 # namelist file.
 #
   settings="
-'regional_grid_nml': {
-    'plon': ${LON_CTR},
-    'plat': ${LAT_CTR},
-    'delx': ${DEL_ANGLE_X_SG},
-    'dely': ${DEL_ANGLE_Y_SG},
-    'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO},
-    'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO},
-    'pazi': ${PAZI},
- }
+'regional_grid_nml':
+  'plon': ${LON_CTR}
+  'plat': ${LAT_CTR}
+  'delx': ${DEL_ANGLE_X_SG}
+  'dely': ${DEL_ANGLE_Y_SG}
+  'lx': ${NEG_NX_OF_DOM_WITH_WIDE_HALO}
+  'ly': ${NEG_NY_OF_DOM_WITH_WIDE_HALO}
+  'pazi': ${PAZI}
 "
-#
-# Call the python script to create the namelist file.
-#
-  ${USHdir}/set_namelist.py -q -u "$settings" -o ${rgnl_grid_nml_fp} || \
-    print_err_msg_exit "\
-Call to python script set_namelist.py to set the variables in the
-regional_esg_grid namelist file failed.  Parameters passed to this script
-are:
-  Full path to output namelist file:
-    rgnl_grid_nml_fp = \"${rgnl_grid_nml_fp}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
-$settings"
+
+  (cat << EOF
+$settings
+EOF
+) | uw config realize \
+    --input-format yaml \
+    -o ${rgnl_grid_nml_fp} \
+    -v \
+
+  err=$?
+  if [ $err -ne 0 ]; then
+      print_err_msg_exit "\
+  Error creating regional_esg_grid namelist.
+      Settings for input are:
+  $settings"
+ fi
 #
 # Call the executable that generates the grid file.
 #
@@ -311,7 +313,7 @@ fi
 # to the original directory.
 #
 grid_fp="$DATA/${grid_fn}"
-cd_vrfy -
+cd -
 
 print_info_msg "$VERBOSE" "
 Grid file generation completed successfully."
@@ -390,7 +392,7 @@ set_file_param "${GLOBAL_VAR_DEFNS_FP}" "CRES" "'$CRES'"
 grid_fp_orig="${grid_fp}"
 grid_fn="${CRES}${DOT_OR_USCORE}grid.tile${TILE_RGNL}.halo${NHW}.nc"
 grid_fp="${GRID_DIR}/${grid_fn}"
-mv_vrfy "${grid_fp_orig}" "${grid_fp}"
+mv "${grid_fp_orig}" "${grid_fp}"
 #
 #-----------------------------------------------------------------------
 #
@@ -447,7 +449,7 @@ unshaved_fp="${grid_fp}"
 # Once it is complete, we will move the resultant file from DATA to
 # GRID_DIR.
 #
-cd_vrfy "$DATA"
+cd "$DATA"
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 3-cell-wide halo from the one with a wide halo.  Then
@@ -475,7 +477,7 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file with a 4-cell-wide halo from the one with a wide halo.  Then
@@ -503,7 +505,7 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Create an input namelist file for the shave executable to generate a
 # grid file without halo from the one with a wide halo.  Then
@@ -530,11 +532,11 @@ The namelist file (nml_fn) used in this call is in directory DATA:
   nml_fn = \"${nml_fn}\"
   DATA = \"${DATA}\""
 POST_STEP
-mv_vrfy ${shaved_fp} ${GRID_DIR}
+mv ${shaved_fp} ${GRID_DIR}
 #
 # Change location to the original directory.
 #
-cd_vrfy -
+cd -
 #
 #-----------------------------------------------------------------------
 #
@@ -611,7 +613,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-# Call a function (set_FV3nml_sfc_climo_filenames) to set the values of
+# Call a function (set_fv3nml_sfc_climo_filenames) to set the values of
 # those variables in the forecast model's namelist file that specify the
 # paths to the surface climatology files.  These files will either already
 # be avaialable in a user-specified directory (SFC_CLIMO_DIR) or will be
@@ -620,7 +622,7 @@ failed."
 #
 #-----------------------------------------------------------------------
 #
-python3 $USHdir/set_FV3nml_sfc_climo_filenames.py \
+python3 $USHdir/set_fv3nml_sfc_climo_filenames.py \
   --path-to-defns ${GLOBAL_VAR_DEFNS_FP} \
     || print_err_msg_exit "\
 Call to function to set surface climatology file names in the FV3 namelist

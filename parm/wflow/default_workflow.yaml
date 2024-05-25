@@ -5,18 +5,18 @@ rocoto:
   entities:
     ACCOUNT: '{{ user.ACCOUNT }}'
     CCPA_OBS_DIR: '{{ platform.CCPA_OBS_DIR }}'
-    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/{}.@Y@m@d/@H".format(nco.COMIN_BASEDIR,nco.RUN_default)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
+    COLDSTART: '{{ workflow.COLDSTART }}'
     COMINgfs: '{{ platform.get("COMINgfs") }}'
-    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/run_fcst_mem#mem#.{}_@Y@m@d@H".format(nco.DATAROOT_default,workflow.WORKFLOW_ID)}}{% else %}{{"{}/@Y@m@d@H".format(workflow.EXPTDIR)}}{% endif %}'
     GLOBAL_VAR_DEFNS_FP: '{{ workflow.GLOBAL_VAR_DEFNS_FP }}'
+    HOMEdir: '{{ user.HOMEdir }}'
     JOBSdir: '{{ user.JOBSdir }}'
+    KEEPDATA: '{{ nco.KEEPDATA_default }}'
     LOAD_MODULES_RUN_TASK_FP: '{{ workflow.LOAD_MODULES_RUN_TASK_FP }}'
-    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}{{"{}/@Y@m@d".format(nco.LOGBASEDIR_default)}}{% else %}{{nco.LOGBASEDIR_default }}{% endif %}'
-    LOGEXT: '{% if user.RUN_ENVIR == "nco" %}{{".{}.log".format(workflow.WORKFLOW_ID)}}{% else %}{{".log"}}{% endif %}'
+    LOGEXT: ".log"
+    NET: '{{ nco.NET_default }}'
     MRMS_OBS_DIR: '{{ platform.MRMS_OBS_DIR }}'
     NCORES_PER_NODE: '{{ platform.NCORES_PER_NODE }}'
     NDAS_OBS_DIR: '{{ platform.NDAS_OBS_DIR }}'
-    NET: '{{ nco.NET_default }}'
     NOHRSC_OBS_DIR: '{{ platform.NOHRSC_OBS_DIR }}'
     PARTITION_DEFAULT: '{{ platform.get("PARTITION_DEFAULT") }}'
     PARTITION_FCST: '{{ platform.get("PARTITION_FCST") }}'
@@ -26,11 +26,20 @@ rocoto:
     QUEUE_HPSS: '{{ platform.get("QUEUE_HPSS") }}'
     RUN: '{{ nco.RUN_default }}'
     SCRIPTSdir: '{{ user.SCRIPTSdir }}'
+    SENDCOM: '{{ nco.SENDCOM_default }}'
     SLASH_ENSMEM_SUBDIR: '{% if global.DO_ENSEMBLE  %}{{ "/mem#mem#" }}{% else %}{{ "/" }}{% endif %}'
     USHdir: '{{ user.USHdir }}'
-    COLDSTART: '{{ workflow.COLDSTART }}'
     WARMSTART_CYCLE_DIR: '{{ workflow.WARMSTART_CYCLE_DIR }}'
     WORKFLOW_ID: '{{ workflow.WORKFLOW_ID }}'
+
+    envir: '{{ nco.envir_default }}'
+    model_ver: '{{ nco.model_ver_default }}'
+    COMROOT: '{{ nco.PTMP }}/&envir;/com'
+    DATAROOT: '{{ nco.PTMP }}/&envir;/tmp'
+    DCOMROOT: '{{ nco.PTMP }}/&envir;/dcom'
+    COMIN_DIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/&NET;/&model_ver;/&RUN;.@Y@m@d/@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
+    FCST_DIR: '{% if user.RUN_ENVIR == "nco" %}&DATAROOT;/run_fcst_mem#mem#_@Y@m@d@H{% else %}{{ workflow.EXPTDIR }}/@Y@m@d@H{% endif %}'
+    LOGDIR: '{% if user.RUN_ENVIR == "nco" %}&COMROOT;/output/logs/@Y@m@d{% else %}{{ workflow.EXPTDIR }}/log{% endif %}'
   attrs:
     cyclethrottle: "200"
     realtime: "F"
@@ -45,4 +54,4 @@ rocoto:
       - !startstopfreq ['{%- if workflow.DATE_FIRST_CYCL != workflow.DATE_LAST_CYCL %}{{ [workflow.DATE_FIRST_CYCL[0:8], "{:02d}".format(workflow.INCR_CYCL_FREQ)]|join }}{%- else %}{{workflow.DATE_FIRST_CYCL}}{%- endif %}', '{{workflow.DATE_LAST_CYCL}}', '{{workflow.INCR_CYCL_FREQ}}']
   log: !cycstr '&LOGDIR;/FV3LAM_wflow.{% if user.RUN_ENVIR == "nco" %}{{ workflow.WORKFLOW_ID + "." }}{% endif %}log'
   tasks:
-    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml"]|include }}'
+    taskgroups: '{{ ["parm/wflow/prep.yaml", "parm/wflow/coldstart.yaml", "parm/wflow/post.yaml", "parm/wflow/test.yaml"]|include }}'

@@ -9,7 +9,7 @@ platform:
   DOMAIN_PREGEN_BASEDIR: /mnt/lfs4/HFIP/hfv3gfs/role.epic/UFS_SRW_data/develop/FV3LAM_pregen
   PARTITION_DEFAULT: sjet,vjet,kjet,xjet
   QUEUE_DEFAULT: batch
-  PARTITION_FCST: vjet
+  PARTITION_FCST: xjet
   QUEUE_FCST: batch
   PARTITION_HPSS: service
   QUEUE_HPSS: batch

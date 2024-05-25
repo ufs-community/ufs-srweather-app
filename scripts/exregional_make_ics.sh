@@ -546,64 +546,60 @@ fi
 # IMPORTANT:
 # If we want a namelist variable to be removed from the namelist file,
 # in the "settings" variable below, we need to set its value to the
-# string "null".  This is equivalent to setting its value to
-#    !!python/none
-# in the base namelist file specified by FV3_NML_BASE_SUITE_FP or the
-# suite-specific yaml settings file specified by FV3_NML_YAML_CONFIG_FP.
-#
-# It turns out that setting the variable to an empty string also works
-# to remove it from the namelist!  Which is better to use??
+# string "null".
 #
 settings="
-'config': {
- 'fix_dir_target_grid': ${FIXlam},
- 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc,
- 'orog_dir_target_grid': ${FIXlam},
- 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc,
- 'vcoord_file_target_grid': ${VCOORD_FILE},
- 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file},
- 'data_dir_input_grid': ${extrn_mdl_staging_dir},
- 'atm_files_input_grid': ${fn_atm},
- 'sfc_files_input_grid': ${fn_sfc},
- 'grib2_file_input_grid': \"${fn_grib2}\",
- 'cycle_mon': $((10#${mm})),
- 'cycle_day': $((10#${dd})),
- 'cycle_hour': $((10#${hh})),
- 'convert_atm': True,
- 'convert_sfc': True,
- 'convert_nst': ${convert_nst},
- 'regional': 1,
- 'halo_bndy': $((10#${NH4})),
- 'halo_blend': $((10#${HALO_BLEND})),
- 'input_type': ${input_type},
- 'external_model': ${external_model},
- 'tracers_input': ${tracers_input},
- 'tracers': ${tracers},
- 'nsoill_out': $((10#${nsoill_out})),
- 'geogrid_file_input_grid': ${geogrid_file_input_grid},
- 'vgtyp_from_climo': ${vgtyp_from_climo},
- 'sotyp_from_climo': ${sotyp_from_climo},
- 'vgfrc_from_climo': ${vgfrc_from_climo},
- 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo},
- 'lai_from_climo': ${lai_from_climo},
- 'tg3_from_soil': ${tg3_from_soil},
- 'thomp_mp_climo_file': ${thomp_mp_climo_file},
-}
+'config':
+ 'fix_dir_target_grid': ${FIXlam}
+ 'mosaic_file_target_grid': ${FIXlam}/${CRES}${DOT_OR_USCORE}mosaic.halo$((10#${NH4})).nc
+ 'orog_dir_target_grid': ${FIXlam}
+ 'orog_files_target_grid': ${CRES}${DOT_OR_USCORE}oro_data.tile${TILE_RGNL}.halo$((10#${NH4})).nc
+ 'vcoord_file_target_grid': ${VCOORD_FILE}
+ 'varmap_file': ${PARMdir}/ufs_utils/varmap_tables/${varmap_file}
+ 'data_dir_input_grid': ${extrn_mdl_staging_dir}
+ 'atm_files_input_grid': ${fn_atm}
+ 'sfc_files_input_grid': ${fn_sfc}
+ 'grib2_file_input_grid': \"${fn_grib2}\"
+ 'cycle_mon': $((10#${mm}))
+ 'cycle_day': $((10#${dd}))
+ 'cycle_hour': $((10#${hh}))
+ 'convert_atm': True
+ 'convert_sfc': True
+ 'convert_nst': ${convert_nst}
+ 'regional': 1
+ 'halo_bndy': $((10#${NH4}))
+ 'halo_blend': $((10#${HALO_BLEND}))
+ 'input_type': ${input_type}
+ 'external_model': ${external_model}
+ 'tracers_input': ${tracers_input}
+ 'tracers': ${tracers}
+ 'nsoill_out': $((10#${nsoill_out}))
+ 'geogrid_file_input_grid': ${geogrid_file_input_grid}
+ 'vgtyp_from_climo': ${vgtyp_from_climo}
+ 'sotyp_from_climo': ${sotyp_from_climo}
+ 'vgfrc_from_climo': ${vgfrc_from_climo}
+ 'minmax_vgfrc_from_climo': ${minmax_vgfrc_from_climo}
+ 'lai_from_climo': ${lai_from_climo}
+ 'tg3_from_soil': ${tg3_from_soil}
+ 'thomp_mp_climo_file': ${thomp_mp_climo_file}
 "
-#
-# Call the python script to create the namelist file.
-#
+
+
 nml_fn="fort.41"
-${USHdir}/set_namelist.py -q -u "$settings" -o ${nml_fn}
+
+(cat << EOF
+$settings
+EOF
+) |  uw config realize \
+ --input-format yaml \
+ -o ${nml_fn} \
+ --output-format nml\
+ -v \
+
 err=$?
 if [ $err -ne 0 ]; then
-  message_txt="Call to python script set_namelist.py to set the variables 
-in the namelist file read in by the ${exec_fn} executable failed. Parameters 
-passed to this script are:
-  Name of output namelist file:
-    nml_fn = \"${nml_fn}\"
-  Namelist settings specified on command line (these have highest precedence):
-    settings =
+  message_txt="Error creating namelist read by ${exec_fn} failed.
+     Settings for input are:
 $settings"
   if [ "${RUN_ENVIR}" = "nco" ] && [ "${MACHINE}" = "WCOSS2" ]; then
     err_exit "${message_txt}"
@@ -611,6 +607,7 @@ $settings"
     print_err_msg_exit "${message_txt}"
   fi
 fi
+
 #
 #-----------------------------------------------------------------------
 #
@@ -646,15 +643,23 @@ POST_STEP
 #
 #-----------------------------------------------------------------------
 #
-mv_vrfy out.atm.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
-
-mv_vrfy out.sfc.tile${TILE_RGNL}.nc \
-        ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
-
-mv_vrfy gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
-
-mv_vrfy gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+if [ "${CPL_AQM}" = "TRUE" ]; then
+  COMOUT="${COMROOT}/${NET}/${model_ver}/${RUN}.${PDY}/${cyc}${SLASH_ENSMEM_SUBDIR}" #temporary path, should be removed later
+  if [ "${COLDSTART}" = "TRUE" ] && [ "${PDY}${cyc}" = "${DATE_FIRST_CYCL:0:10}" ]; then
+    data_trans_path="${COMOUT}"
+  else
+    data_trans_path="${DATA_SHARE}"
+  fi
+  cp -p out.atm.tile${TILE_RGNL}.nc "${data_trans_path}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p out.sfc.tile${TILE_RGNL}.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc"
+  cp -p gfs_ctrl.nc "${COMOUT}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc"
+  cp -p gfs.bndy.nc "${DATA_SHARE}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc"
+else
+  mv out.atm.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv out.sfc.tile${TILE_RGNL}.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc
+  mv gfs_ctrl.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_ctrl.nc
+  mv gfs.bndy.nc ${INPUT_DATA}/${NET}.${cycle}${dot_ensmem}.gfs_bndy.tile${TILE_RGNL}.f000.nc
+fi
 #
 #-----------------------------------------------------------------------
 #
@@ -679,7 +684,7 @@ Please ensure that you've built this executable."
       print_err_msg_exit "${message_txt}"
     fi
   fi
-  cp_vrfy ${fvcom_exec_fp} ${INPUT_DATA}/.
+  cp ${fvcom_exec_fp} ${INPUT_DATA}/.
   fvcom_data_fp="${FVCOM_DIR}/${FVCOM_FILE}"
   if [ ! -f "${fvcom_data_fp}" ]; then
     message_txt="The file or path (fvcom_data_fp) does not exist:
@@ -694,8 +699,8 @@ Please check the following user defined variables:
     fi
   fi
 
-  cp_vrfy ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
-  cd_vrfy ${INPUT_DATA}
+  cp ${fvcom_data_fp} ${INPUT_DATA}/fvcom.nc
+  cd ${INPUT_DATA}
   PREP_STEP
   eval ${RUN_CMD_UTILS} ${fvcom_exec_fn} \
        ${NET}.${cycle}${dot_ensmem}.sfc_data.tile${TILE_RGNL}.halo${NH0}.nc fvcom.nc ${FVCOM_WCSTART} ${fvcom_time} \
