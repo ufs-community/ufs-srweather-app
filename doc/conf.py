@@ -248,7 +248,7 @@ epub_exclude_files = ['search.html']
 # -- Options for autodoc extension ---------------------------------------
 
 autodoc_mock_imports = ["f90nml", "cartopy", "mpl_toolkits.basemap",
-   "fill_jinja_template", "utils", "monitor_jobs", "matplotlib", "numpy",]
+   "fill_jinja_template", "utils", "monitor_jobs", "matplotlib", "numpy","uwtools"]
 
 logger = logging.getLogger(__name__)
 
