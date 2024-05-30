@@ -542,7 +542,6 @@ case "${EXTRN_MDL_NAME_ICS}" in
   convert_nst=False
   ;;
 
-
 "RAP")
   external_model="RAP"
   fn_grib2="${EXTRN_MDL_FNS[0]}"

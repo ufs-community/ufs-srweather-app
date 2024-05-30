@@ -408,6 +408,11 @@ case "${EXTRN_MDL_NAME_LBCS}" in
   input_type="grib2"
   ;;
 
+"RRFS")
+  external_model="RRFS"
+  input_type="grib2"
+  ;;
+
 "NAM")
   external_model="NAM"
   input_type="grib2"
