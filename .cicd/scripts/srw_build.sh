@@ -36,6 +36,6 @@ cd -
 # Create combined log file for upload to s3
 build_dir="${workspace}/build_${SRW_COMPILER}"
 cat ${build_dir}/log.cmake ${build_dir}/log.make \
-    >${build_dir}/srw_build-${platform}-${SRW_COMPILER}.txt
+    >${build_dir}/srw_build-${SRW_PLATFORM}-${SRW_COMPILER}.txt
 
 exit $build_exit
