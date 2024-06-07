@@ -5,7 +5,7 @@ load("libpng/1.6.37")
 load("netcdf-c/4.9.2")
 load("netcdf-fortran/4.6.1")
 load("parallelio/2.5.10")
-load_any("esmf/8.6.0","esmf/8.6.1")
+load("esmf/8.6.0")
 load("fms/2023.04")
 
 load("bacio/2.4.1")
@@ -17,7 +17,7 @@ load("sp/2.5.0")
 load("w3emc/2.10.0")
 
 load("gftl-shared/1.6.1")
-load_any("mapl/2.40.3-esmf-8.6.0","mapl/2.46.0-esmf-8.6.1")
+load("mapl/2.40.3-esmf-8.6.0")
 
 load("nemsio/2.5.4")
 load("sfcio/1.4.1")
