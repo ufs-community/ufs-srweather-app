@@ -1,4 +1,2 @@
-load("nco/5.0.6")
-
-load("ncarenv")
+load("nco/5.1.9")
 load("python_srw_aqm")
