@@ -26,6 +26,6 @@ if (mode() == "unload") then
   unload(pathJoin("metplus",metplus_ver))
 end
 --load("ufs-pyenv")
-load("stack-python/3.10.8")
+load("stack-python/3.10.13")
 load("conda")
 setenv("SRW_ENV", "srw_app")
