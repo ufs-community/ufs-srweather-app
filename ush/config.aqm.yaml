@@ -24,7 +24,7 @@ workflow:
   COLDSTART: false      # set to true for cold start
   WARMSTART_CYCLE_DIR: '/scratch2/NAGAPE/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for hera
 #  WARMSTART_CYCLE_DIR: '/work/noaa/epic/SRW-AQM_DATA/aqm_data/restart/2023111000' # for orion/hercules
-#  WARMSTART_CYCLE_DIR: '' # for derecho
+#  WARMSTART_CYCLE_DIR: '/glade/work/chanhooj/SRW-AQM_DATA/aqm_data/restart/2023111000' # for derecho
 nco:
   envir_default: test_aqm_warmstart
   NET_default: aqm
