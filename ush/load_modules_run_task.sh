@@ -142,7 +142,7 @@ fi
 
 set -x +u
 # Source the necessary blocks of the experiment config YAML
-for sect in platform ; do
+for sect in platform workflow ; do
   while read -r line ; do
     source <( echo "${line}" )
   done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \

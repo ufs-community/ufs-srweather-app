@@ -73,7 +73,7 @@ else
   export cycle="t${cyc}z"
 fi
 
-if [ "${RUN_ENVIR}" = "nco" ] && [ $(boolify "${DO_ENSEMBLE}" = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
+if [ "${RUN_ENVIR}" = "nco" ] && [ $(boolify "${DO_ENSEMBLE}") = "TRUE" ] && [ ! -z $ENSMEM_INDX ]; then
     export dot_ensmem=".mem${ENSMEM_INDX}"
 else
     export dot_ensmem=
