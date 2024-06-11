@@ -56,8 +56,8 @@ else
 fi
 
 # Test directories
-we2e_experiment_base_dir="${workspace}/../expt_dirs/metric_test"
-we2e_test_dir="${workspace}/tests/WE2E"
+we2e_experiment_base_dir="${we2e_experiment_base_dir:=${workspace}/../expt_dirs/metric_test}"
+we2e_test_dir="${we2e_test_dir:=${workspace}/tests/WE2E}"
 we2e_test_name="grid_SUBCONUS_Ind_3km_ics_FV3GFS_lbcs_FV3GFS_suite_WoFS_v0"
 
 pwd
@@ -65,8 +65,8 @@ pwd
 # Setup the build environment
 declare srw_compiler
 srw_compiler=${SRW_COMPILER} 
-source etc/lmod-setup.sh ${platform,,}
-module use modulefiles
+source ${workspace}/etc/lmod-setup.sh ${platform,,}
+module use ${workspace}/modulefiles
 module load build_${platform,,}_${srw_compiler}
 
 # Build srw
@@ -99,7 +99,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
     rm -rf ${workspace}/Indy-Severe-Weather/
     # Check if metprd data exists locally otherwise get it from S3
     TEST_EXTRN_MDL_SOURCE_BASEDIR=$(grep TEST_EXTRN_MDL_SOURCE_BASEDIR ${workspace}/ush/machine/${SRW_PLATFORM}.yaml | awk '{print $NF}')
-    if [[ ! -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
+    if [[ -d $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat ]] ; then
         mkdir -p Indy-Severe-Weather/metprd/point_stat
         cp -rp $(dirname ${TEST_EXTRN_MDL_SOURCE_BASEDIR})/metprd/point_stat Indy-Severe-Weather/metprd
     elif [[ -f Indy-Severe-Weather.tgz ]]; then
@@ -108,7 +108,7 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
         wget https://noaa-ufs-srw-pds.s3.amazonaws.com/sample_cases/release-public-v2.1.0/Indy-Severe-Weather.tgz
         tar xvfz Indy-Severe-Weather.tgz
     fi
-    [[ -f skill-score.txt ]] && rm skill-score.txt
+    [[ -f ${platform,,}-${srw_compiler}-skill-score.txt ]] && rm ${platform,,}-${srw_compiler}-skill-score.txt
     # Skill score index is computed over several terms that are defined in parm/metplus/STATAnalysisConfig_skill_score. 
     # It is computed by aggregating the output from earlier runs of the Point-Stat and/or Grid-Stat tools over one or more cases.
     # In this example, skill score index is a weighted average of 4 skill scores of RMSE statistics for wind speed, dew point temperature, 
@@ -126,15 +126,15 @@ if [[ ${RUN_STAT_ANLY_OPT} == true ]]; then
        sed -i 's|--load("conda")|load("conda")|g' ${workspace}/modulefiles/tasks/${platform,,}/run_vx.local.lua
     fi
     # Run stat_analysis
-    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out skill-score.txt
+    stat_analysis -config parm/metplus/STATAnalysisConfig_skill_score -lookin ${workspace}/Indy-Severe-Weather/metprd/point_stat -v 2 -out ${platform,,}-${srw_compiler}-skill-score.txt
 
     # check skill-score.txt
-    cat skill-score.txt
+    cat ${platform,,}-${srw_compiler}-skill-score.txt
 
     # get skill-score (SS_INDEX) and check if it is significantly smaller than 1.0
     # A value greater than 1.0 indicates that the forecast model outperforms the reference, 
     # while a value less than 1.0 indicates that the reference outperforms the forecast.
-    tmp_string=$( tail -2 skill-score.txt | head -1 )
+    tmp_string=$( tail -2 ${platform,,}-${srw_compiler}-skill-score.txt | head -1 )
     SS_INDEX=$(echo $tmp_string | awk -F " " '{print $NF}')
     echo "Skill Score: ${SS_INDEX}"
     if [[ ${SS_INDEX} < "0.700" ]]; then

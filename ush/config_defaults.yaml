@@ -245,8 +245,8 @@ platform:
   # RUN_CMD_SERIAL:
   # The run command for some serial jobs 
   #
-  # RUN_CMD_AQM:
-  # The run command for some AQM tasks.
+  # RUN_CMD_NEXUS:
+  # The run command for the AQM NEXUS tasks.
   #
   # RUN_CMD_AQMLBC:
   # The run command for the AQM_LBCS task.
@@ -258,9 +258,8 @@ platform:
   RUN_CMD_FCST: ""
   RUN_CMD_POST: ""
   RUN_CMD_PRDGEN: ""
-  RUN_CMD_AQM: ""
+  RUN_CMD_NEXUS: ""
   RUN_CMD_AQMLBC: ""
-
   #
   #-----------------------------------------------------------------------
   #
@@ -421,6 +420,12 @@ platform:
   # FIXshp:
   # System directory where the graphics shapefiles are located.
   # 
+  # FIXaqm:
+  # System directory where AQM data files are located
+  #
+  # FIXemis:
+  # System directory where AQM emission data files are located.
+  #
   # FIXcrtm:
   # System directory where CRTM fixed files are located
   #
@@ -435,6 +440,8 @@ platform:
   FIXorg: ""
   FIXsfc: ""
   FIXshp: ""
+  FIXaqm: ""
+  FIXemis: ""
   FIXcrtm: ""
   FIXcrtmupp: ""
   #

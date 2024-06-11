@@ -253,7 +253,7 @@ METplus configuration file.
 #
   fhr_list=$( echo "${fhr_list}" | $SED "s/^,//g" )
   print_info_msg "$VERBOSE" "\
-Final (i.e. after filtering for missing files) set of foreast hours is
+Final (i.e. after filtering for missing files) set of forecast hours is
 (written as a single string):
   fhr_list = \"${fhr_list}\"
 "

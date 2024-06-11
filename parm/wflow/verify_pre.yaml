@@ -85,7 +85,7 @@ task_run_MET_Pb2nc_obs:
     <<: *default_vars
     VAR: ADPSFC
     ACCUM_HH: '01'
-    obs_or_fcst: obs
+    FCST_OR_OBS: OBS
     OBTYPE: NDAS
     OBS_DIR: '&NDAS_OBS_DIR;'
     METPLUSTOOLNAME: 'PB2NC'
@@ -115,7 +115,7 @@ metatask_PcpCombine_obs:
       <<: *default_vars
       VAR: APCP
       ACCUM_HH: '#ACCUM_HH#'
-      obs_or_fcst: obs
+      FCST_OR_OBS: OBS
       OBTYPE: CCPA
       OBS_DIR: '&CCPA_OBS_DIR;'
       METPLUSTOOLNAME: 'PCPCOMBINE'
@@ -226,7 +226,7 @@ metatask_PcpCombine_fcst_APCP_all_accums_all_mems:
         <<: *default_vars
         VAR: APCP
         ACCUM_HH: '#ACCUM_HH#'
-        obs_or_fcst: fcst
+        FCST_OR_OBS: FCST
         OBTYPE: CCPA
         OBS_DIR: '&CCPA_OBS_DIR;'
         METPLUSTOOLNAME: 'PCPCOMBINE'
@@ -254,7 +254,7 @@ metatask_PcpCombine_fcst_ASNOW_all_accums_all_mems:
         <<: *default_vars
         VAR: ASNOW
         ACCUM_HH: '#ACCUM_HH#'
-        obs_or_fcst: fcst
+        FCST_OR_OBS: FCST
         OBTYPE: NOHRSC
         OBS_DIR: '&NOHRSC_OBS_DIR;'
         METPLUSTOOLNAME: 'PCPCOMBINE'

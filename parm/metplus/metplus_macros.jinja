@@ -1,0 +1,78 @@
+{#-
+Set the string delimiter that separates the forecast value of an item
+(e.g. a field name, level, or threshold) from its observation value in the
+various items in the deterministic and ensemble verification configuration
+files.
+#}
+{%- macro set_delim_str() %}
+  {{-'%%'}}
+{%- endmacro %}
+
+{#-
+This macro prints out an error message and quits the jinja templater.
+#}
+{%- macro print_err_and_quit(error_msg) %}
+  {%- include 'ERROR: ' ~ error_msg %}
+{%- endmacro %}
+{#-
+Given a specified field level that is really an accumulation period, this
+macro prints out an "A" followed by the accumulation period (an integer)
+with any leading zeros removed.  For example, if the level is 'A03', it
+prints out 'A3'.
+#}
+{%- macro get_accumulation_no_zero_pad(level) %}
+  {%- set first_char = level[0] %}
+  {%- set the_rest = level[1:] %}
+  {%- if (first_char == 'A') %}
+    {{- first_char ~ '%d'%the_rest|int }}
+  {%- else %}
+    {{- level }}
+  {%- endif %}
+{%- endmacro %}
+
+{#-
+This macro checks whether the specified threshold (input_thresh) has a
+#}
+{%- macro check_field_group(valid_field_groups, input_field_group) %}
+  {%- if input_field_group not in valid_field_groups %}
+    {%- set error_msg = '\n' ~
+          'The specified input field group (input_field_group) is not in the list of\n' ~
+          'valid field groups (valid_field_groups):\n' ~
+          '  input_field_group = \'' ~ input_field_group ~ '\'\n' ~
+          '  valid_field_groups = ' ~ valid_field_groups ~ '\n' ~
+          'Reset input_field_group to one of the elements in valid_field_groups and\n' ~
+          'rerun.' %}
+    {{print_err_and_quit(error_msg)}}
+  {%- endif %}
+{%- endmacro %}
+
+{#-
+This macro checks whether, for the given field, the list of thresholds 
+for all levels are identical.  If not, it prints out an error message
+and errors out.
+#}
+{%- macro check_for_identical_threshes_by_level(field, levels_threshes) %}
+  {%- set avail_levels = levels_threshes.keys()|list %}
+  {%- set num_avail_levels = avail_levels|length %}
+  {%- set threshes_by_avail_level = levels_threshes.values()|list %}
+  {%- for i in range(1,num_avail_levels) %}
+    {%- set level = avail_levels[i-1] %}
+    {%- set threshes = threshes_by_avail_level[i-1] %}
+    {%- set level_next = avail_levels[i] %}
+    {%- set threshes_next = threshes_by_avail_level[i] %}
+    {%- if (threshes_next != threshes) %}
+      {%- set error_msg = '\n\n' ~
+'For the given field (field), the set of thresholds for the next level\n' ~
+'(level_next, threshes_next) is not equal to that of the current level\n' ~
+'(level, threshes) (note that order of thresholds matters here):\n' ~
+'  field = \'' ~ field ~ '\'\n' ~
+'  num_avail_levels = ' ~ num_avail_levels ~ '\n' ~
+'  level = \'' ~ level ~ '\'\n' ~
+'  threshes = ' ~ threshes ~ '\n' ~
+'  level_next = \'' ~ level_next ~ '\'\n' ~
+'  threshes_next = ' ~ threshes_next ~ '\n'
+      %}
+      {{print_err_and_quit(error_msg)}}
+    {%- endif %}
+  {%- endfor %}
+{%- endmacro %}
