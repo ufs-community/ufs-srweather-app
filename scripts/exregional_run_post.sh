@@ -67,10 +67,7 @@
 . $USHdir/source_util_funcs.sh
 for sect in user platform workflow global cpl_aqm_parm \
   task_run_fcst task_run_post ; do
-  while read -r line ; do
-    source <( echo "${line}" )
-  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect})
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
 #-----------------------------------------------------------------------

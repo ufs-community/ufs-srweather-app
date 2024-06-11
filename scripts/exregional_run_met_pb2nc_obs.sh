@@ -11,10 +11,7 @@
 for sect in user platform workflow nco global verification cpl_aqm_parm \
   constants fixed_files grid_params \
   task_run_met_pb2nc_obs ; do
-  while read -r line ; do
-    source <( echo "${line}" )
-  done < <(uw config realize -i ${GLOBAL_VAR_DEFNS_FP} --output-format sh \
-    --output-block ${sect})
+  source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 #
 #-----------------------------------------------------------------------
