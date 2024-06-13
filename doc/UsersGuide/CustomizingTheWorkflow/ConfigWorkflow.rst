@@ -156,8 +156,8 @@ These settings define platform-specific run commands. Users should set run comma
 ``RUN_CMD_SERIAL``: (Default: "")
   The run command for some serial jobs.
 
-``RUN_CMD_AQM``: (Default: "")
-  The run command for some AQM tasks.
+``RUN_CMD_NEXUS``: (Default: "")
+  The run command for the AQM NEXUS tasks.
 
 ``RUN_CMD_AQMLBC``: (Default: "")
   The run command for the ``aqm_lbcs`` task.
@@ -270,6 +270,12 @@ These parameters are associated with the fixed (i.e., static) files. On :srw-wik
 
 ``FIXshp``: (Default: "")
    System directory containing the graphics shapefiles. On Level 1 systems, these are set within the machine files. Users on other systems will need to provide the path to the directory that contains the *Natural Earth* shapefiles.
+
+``FIXaqm``: (Default: "")
+   Path to system directory containing AQM fixed files.
+
+``FIXemis``: (Default: "")
+   Path to system directory containing AQM emission data files.
 
 ``FIXcrtm``: (Default: "")
    Path to system directory containing CRTM fixed files. 
