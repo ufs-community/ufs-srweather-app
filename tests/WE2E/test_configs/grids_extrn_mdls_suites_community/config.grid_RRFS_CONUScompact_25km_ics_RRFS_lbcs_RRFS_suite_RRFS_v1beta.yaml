@@ -6,6 +6,8 @@ metadata:
     ICs and LBCs. This test uses old v1 sfc_data, not the v2 fractional grid sfc_data.
 user:
   RUN_ENVIR: community
+platform:
+  EXTRN_MDL_DATA_STORES: aws
 workflow:
   CCPP_PHYS_SUITE: FV3_RRFS_v1beta
   PREDEF_GRID_NAME: RRFS_CONUScompact_25km
@@ -16,12 +18,12 @@ workflow:
 task_get_extrn_ics:
   EXTRN_MDL_NAME_ICS: RRFS
   FV3GFS_FILE_FMT_ICS: grib2
-  USE_USER_STAGED_EXTRN_FILES: true
+  USE_USER_STAGED_EXTRN_FILES: false
 task_get_extrn_lbcs:
   EXTRN_MDL_NAME_LBCS: RRFS
   LBC_SPEC_INTVL_HRS: 1
   FV3GFS_FILE_FMT_LBCS: grib2
-  USE_USER_STAGED_EXTRN_FILES: true
+  USE_USER_STAGED_EXTRN_FILES: false
 task_plot_allvars:
   COMOUT_REF: ""
 global:
