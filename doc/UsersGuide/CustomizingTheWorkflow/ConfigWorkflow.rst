@@ -707,7 +707,7 @@ A standard set of environment variables has been established for *nco* mode to s
 ``envir_default, NET_default, model_ver_default, RUN_default``:
    Standard environment variables defined in the NCEP Central Operations WCOSS Implementation Standards document. These variables are used in forming the path to various directories containing input, output, and workflow files. The variables are defined in the :nco:`WCOSS Implementation Standards <ImplementationStandards.v11.0.0.pdf>` document (pp. 4-5) as follows: 
 
-   ``envir_default``: (Default: "para")
+   ``envir_default``: (Default: "test")
       Set to "test" during the initial testing phase, "para" when running in parallel (on a schedule), and "prod" in production. 
 
    ``NET_default``: (Default: "srw")
@@ -719,46 +719,28 @@ A standard set of environment variables has been established for *nco* mode to s
    ``RUN_default``: (Default: "srw")
       Name of model run (third level of ``com`` directory structure). In general, same as ``${NET_default}``.
 
-``OPSROOT_default``: (Default: ``'{{ workflow.EXPT_BASEDIR }}/../nco_dirs'``)
-  The operations root directory in *nco* mode.
-
-``COMROOT_default``: (Default: ``'{{ OPSROOT_default }}/com'``)
-   The ``com`` root directory for input/output data that is located on the current system (typically ``$OPSROOT_default/com``). 
-
-``DATAROOT_default``: (Default: ``'{{OPSROOT_default }}/tmp'``)
-   Directory containing the (temporary) working directory for running jobs; typically named ``$OPSROOT_default/tmp`` in production. 
-
-``DCOMROOT_default``: (Default: ``'{{OPSROOT_default }}/dcom'``)
-   ``dcom`` root directory, typically ``$OPSROOT_default/dcom``. This directory contains input/incoming data that is retrieved from outside WCOSS.
-
-``LOGBASEDIR_default``: (Default: ``'{% if user.RUN_ENVIR == "nco" %}{{ [OPSROOT_default, "output"]|path_join }}{% else %}{{ [workflow.EXPTDIR, "log"]|path_join }}{% endif %}'``)
-   Directory in which the log files from the workflow tasks will be placed.
-
-``COMIN_BASEDIR``: (Default: ``'{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'``)
-   ``com`` directory for current model's input data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``.
-
-``COMOUT_BASEDIR``: (Default: ``'{{ COMROOT_default }}/{{ NET_default }}/{{ model_ver_default }}'``)
-   ``com`` directory for current model's output data, typically ``$COMROOT/$NET/$model_ver/$RUN.$PDY``.
+``PTMP_default``: (Default "")
+   User-defined path to the com type directories (OPSROOT=$PTMP/$envir).
 
 ``DBNROOT_default``: (Default: "")
    Root directory for the data-alerting utilities.
    
-``SENDECF_default``: (Default: false)
+``SENDECF_default``: (Default: NO)
    Boolean variable used to control ``ecflow_client`` child commands.
 
-``SENDDBN_default``: (Default: false)
+``SENDDBN_default``: (Default: NO)
    Boolean variable used to control sending products off WCOSS2.
 
-``SENDDBN_NTC_default``: (Default: false)
+``SENDDBN_NTC_default``: (Default: NO)
    Boolean variable used to control sending products with WMO headers off WCOSS2.
 
-``SENDCOM_default``: (Default: false)
+``SENDCOM_default``: (Default: YES)
    Boolean variable to control data copies to ``$COMOUT``.
 
-``SENDWEB_default``: (Default: false)
+``SENDWEB_default``: (Default: NO)
    Boolean variable used to control sending products to a web server, often ``ncorzdm``.
 
-``KEEPDATA_default``: (Default: true)
+``KEEPDATA_default``: (Default: YES)
    Boolean variable used to specify whether or not the working directory should be kept upon successful job completion.
 
 ``MAILTO_default``: (Default: "")
@@ -1382,6 +1364,9 @@ Non-default parameters for the ``nexus_emission_*`` tasks are set in the ``task_
 ``PPN_NEXUS_EMISSION``: (Default: ``'{{ platform.NCORES_PER_NODE // OMP_NUM_THREADS_NEXUS_EMISSION }}'``)
    Processes per node for the ``nexus_emission_*`` tasks. 
 
+``NNODES_NEXUS_EMISSION``: (Default: 4)
+   The number of nodes to request from the job scheduler for the nexus emission task.
+
 ``KMP_AFFINITY_NEXUS_EMISSION``: (Default: "scatter")
    Intel Thread Affinity Interface for the ``nexus_emission_*`` tasks. See :ref:`this note <thread-affinity>` for more information on thread affinity.
 
@@ -1390,6 +1375,14 @@ Non-default parameters for the ``nexus_emission_*`` tasks are set in the ``task_
 
 ``OMP_STACKSIZE_NEXUS_EMISSION``: (Default: "1024m")
    Controls the size of the stack for threads created by the OpenMP implementation.
+
+POINT_SOURCE Configuration Parameters
+------------------------------------------------
+Non-default parameters for the ``task_point_source`` tasks are set in the ``task_point_source:`` section of the ``config.yaml`` file.
+
+``PT_SRC_SUBDIR``: (Default: ``NEI2016v1/v2023-01-PT``)
+   Sub-directory structure of point source data under FIXemis.
+   Full path: ``FIXemis/PT_SRC_SUBDIR``
 
 BIAS_CORRECTION_O3 Configuration Parameters
 -------------------------------------------------
@@ -1750,38 +1743,14 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``DO_AQM_SAVE_FIRE``: (Default: false)
    Archive fire emission file to HPSS.
    
-``DCOMINbio_default``: (Default: "")
-   Path to the directory containing AQM bio files.
-
-``DCOMINdust_default``: (Default: "/path/to/dust/dir")
-   Path to the directory containing AQM dust file.
-
-``DCOMINcanopy_default``: (Default: "/path/to/canopy/dir")
-   Path to the directory containing AQM canopy files.
-
-``DCOMINfire_default``: (Default: "")
-   Path to the directory containing AQM fire files.
-
-``DCOMINchem_lbcs_default``: (Default: "")
-   Path to the directory containing chemical LBC files.
-   
-``DCOMINgefs_default``: (Default: "")
-   Path to the directory containing GEFS aerosol LBC files.
-
-``DCOMINpt_src_default``: (Default: "/path/to/point/source/base/directory")
-   Parent directory containing point source files.
-
-``DCOMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
+``COMINairnow_default``: (Default: "/path/to/airnow/obaservation/data")
    Path to the directory containing AIRNOW observation data.
 
-``COMINbicor``: (Default: "/path/to/historical/airnow/data/dir")
-   Path of reading in historical training data for bias correction. 
+``COMINfire_default``:(Default: "")
+   Path to the directory containing AQM fire files.
 
-``COMOUTbicor``: (Default: "/path/to/historical/airnow/data/dir")
-   Path to save the current cycle's model output and AirNow observations as training data for future use. ``$COMINbicor`` and ``$COMOUTbicor`` can be distinguished by the ``${yyyy}${mm}${dd}`` under the same location.
-
-``AQM_CONFIG_DIR``: (Default: "")
-   Configuration directory for AQM.
+``COMINgefs_default``:(Default: "")
+   Path to the directory containing GEFS aerosol LBC files. 
 
 ``AQM_BIO_FILE``: (Default: "BEIS_SARC401.ncf")
    File name of AQM BIO file.
@@ -1807,9 +1776,6 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 ``AQM_FIRE_FILE_OFFSET_HRS``: (Default: 0)
    Time offset when retrieving fire emission data files. In a real-time run, the data files for :term:`ICs/LBCs` are not ready for use until the case starts. To resolve this issue, a real-time run uses the input data files in the previous cycle. For example, if the experiment run cycle starts at 12z, and ``AQM_FIRE_FILE_OFFSET_HRS: 6``, the fire emission data file from the previous cycle (06z) is used.
 
-``AQM_FIRE_ARCHV_DIR``: (Default: "/path/to/archive/dir/for/RAVE/on/HPSS")
-   Path to the archive directory for RAVE emission files on :term:`HPSS`.
-
 ``AQM_RC_FIRE_FREQUENCY``: (Default: "static")
    Fire frequency in ``aqm.rc``.
 
@@ -1827,12 +1793,6 @@ Non-default parameters for coupled Air Quality Modeling (AQM) tasks are set in t
 
 ``AQM_GEFS_FILE_CYC``: (Default: "")
    Cycle of the GEFS aerosol LBC files only if it is fixed.
-
-``NEXUS_INPUT_DIR``: (Default: "")
-   Same as ``GRID_DIR`` but for the the air quality emission generation task. Should be blank for the default value specified in ``setup.sh``.
-
-``NEXUS_FIX_DIR``: (Default: "")
-   Directory containing ``grid_spec`` files as the input file of NEXUS.
 
 ``NEXUS_GRID_FN``: (Default: "grid_spec_GSD_HRRR_25km.nc")
    File name of the input ``grid_spec`` file of NEXUS.
