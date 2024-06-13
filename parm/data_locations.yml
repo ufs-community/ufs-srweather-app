@@ -241,9 +241,9 @@ RRFS:
     protocol: htar
     file_names: &rrfs_file_names
       anl:
-        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus_3km.grib2
+        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus.grib2
       fcst:
-        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus_3km.grib2
+        - rrfs.t{hh}z.prslev.f{fcst_hr:03d}.conus.grib2
   aws:
     protocol: download
     url: https://noaa-rrfs-pds.s3.amazonaws.com/rrfs_a/rrfs_a.{yyyymmdd}/{hh}/control/
