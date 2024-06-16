@@ -199,7 +199,7 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/ozone/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/ozone/${yyyy} 
 
-cpreq ${PARMaqm}/aqm_utils/bias_correction/sites.valid.ozone.20230331.12z.list ${DATA}/data/site-lists.interp
+cpreq ${PARMaqm}/aqm_utils/bias_correction/sites.valid.ozone.20240610.12z.list ${DATA}/data/site-lists.interp
 cpreq ${PARMaqm}/aqm_utils/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.interp.ozone.7-vars_${id_domain}.${cyc}z ${DATA}
 

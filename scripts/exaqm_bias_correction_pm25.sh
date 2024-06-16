@@ -198,7 +198,7 @@ mkdir -p ${DATA}/data/site-lists.interp
 mkdir -p ${DATA}/out/pm25/${yyyy}
 mkdir -p ${DATA}/data/bcdata.${yyyymm}/interpolated/pm25/${yyyy}
 
-cpreq ${PARMaqm}/aqm_utils/bias_correction/sites.valid.pm25.20230331.12z.list ${DATA}/data/site-lists.interp
+cpreq ${PARMaqm}/aqm_utils/bias_correction/sites.valid.pm25.20240610.12z.list ${DATA}/data/site-lists.interp
 cpreq ${PARMaqm}/aqm_utils/bias_correction/aqm.t12z.chem_sfc.f000.nc ${DATA}/data/coords
 cpreq ${PARMaqm}/aqm_utils/bias_correction/config.interp.pm2.5.5-vars_${id_domain}.${cyc}z ${DATA}
 
