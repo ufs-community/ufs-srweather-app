@@ -132,7 +132,6 @@ fi
 # SRW_ENV variable to the name of the environment to be activated. That
 # must be done within the script, and not inside the module. Do that
 # now.
-SRW_ENV="DEV-uwtools"
 if [ -n "${SRW_ENV:-}" ] ; then
   set +u
   conda deactivate

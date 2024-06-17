@@ -27,14 +27,10 @@ Usage:
 
 
     # A regex to match list representations
-    list_regex="^[a-zA-Z_][a-zA-Z0-9_]*='[^']*'$"
-    if [[ $line =~ $list_regex ]] ; then
-      line=$(echo "$line" | sed -E "s/='\[(.*)\]'/=(\1)/")
-      line=${line/,/}
-    fi
-    if [[ $line =~ "None" ]] ; then
-      line=${line/None/}
-    fi
+    line=$(echo "$line" | sed -E "s/='\[(.*)\]'/=(\1)/")
+    line=${line//,/}
+    line=${line//\"/}
+    line=${line/None/}
     source <( echo "${line}" )
-  done < <(uw config realize -i "${yaml_file} --output-format sh --key-path $section)
+  done < <(uw config realize -i "${yaml_file}" --output-format sh --key-path $section)
 }

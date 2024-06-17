@@ -347,7 +347,7 @@ for fid in "${fids[@]}"; do
     create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
   fi
   # DBN alert
-  if [ $SENDDBN = "TRUE" ]; then
+  if [ "$SENDDBN" = "TRUE" ]; then
     $DBNROOT/bin/dbn_alert MODEL rrfs_post ${job} ${COMOUT}/${post_renamed_fn}
   fi
 done

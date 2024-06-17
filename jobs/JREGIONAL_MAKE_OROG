@@ -30,7 +30,7 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user task_make_orog ; do
+for sect in user workflow task_make_orog ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh

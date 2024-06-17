@@ -68,7 +68,7 @@ function print_info_msg() {
     
   elif [ "$#" -eq 2 ]; then
 
-    verbose="$1"
+    verbose=$(boolify "$1")
     info_msg="$2"
 #
 #-----------------------------------------------------------------------

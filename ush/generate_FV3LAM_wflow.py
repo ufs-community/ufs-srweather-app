@@ -639,7 +639,7 @@ def generate_FV3LAM_wflow(
             input_format="nml",
             output_file=FV3_NML_STOCH_FP,
             output_format="nml",
-            supplemental_configs=[settings],
+            update_config=get_nml_config(settings),
             )
 
     #

@@ -511,7 +511,7 @@ create_symlink_to_file ${FIELD_DICT_FP} ${DATA}/${FIELD_DICT_FN} ${relative_link
 
 if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
   cp ${PARMdir}/upp/nam_micro_lookup.dat ./eta_micro_lookup.dat
-  if [ ${USE_CUSTOM_POST_CONFIG_FILE} = "TRUE" ]; then
+  if [ $(boolify ${USE_CUSTOM_POST_CONFIG_FILE}) = "TRUE" ]; then
     post_config_fp="${CUSTOM_POST_CONFIG_FP}"
     print_info_msg "
 ====================================================================

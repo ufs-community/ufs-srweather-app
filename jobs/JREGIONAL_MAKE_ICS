@@ -20,6 +20,9 @@
 #    SCRIPTSdir
 #    USHdir
 #
+#  workflow:
+#    EXPTDIR
+#
 #-----------------------------------------------------------------------
 #
 
@@ -31,7 +34,8 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-for sect in user ; do
+set -x
+for sect in user workflow ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
 . $USHdir/job_preamble.sh
@@ -80,6 +84,7 @@ for the FV3 (in NetCDF format).
 #
 #-----------------------------------------------------------------------
 #
+set -x
 if [ $RUN_ENVIR = "nco" ]; then
   export INPUT_DATA="${COMIN}"
 else

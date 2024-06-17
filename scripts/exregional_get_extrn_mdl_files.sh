@@ -71,6 +71,8 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
+
+set -x
 for sect in user platform workflow global task_get_extrn_lbcs \
   task_get_extrn_ics ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}

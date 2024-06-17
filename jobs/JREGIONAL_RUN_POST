@@ -92,7 +92,7 @@ on the output files corresponding to a specified forecast hour.
 # minutes (fmn) are set to "00".  This is necessary in order to pass
 # "fmn" into the post ex-script for the calculation of post_time.
 #
-if [ $(boolify "${SUB_HOURLY_POST}" != "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") != "TRUE" ]; then
   export fmn="00"
 fi
 #
@@ -120,7 +120,7 @@ if [ "${RUN_ENVIR}" = "community" ]; then
   mkdir -p "${COMOUT}"
 fi
 
-if [ $(boolify "${SUB_HOURLY_POST}" = "TRUE" ]; then
+if [ $(boolify "${SUB_HOURLY_POST}") = "TRUE" ]; then
   export DATA_FHR="${DATA:-$COMOUT}/$fhr$fmn"
 else
   export DATA_FHR="${DATA:-$COMOUT}/$fhr"

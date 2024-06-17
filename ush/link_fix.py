@@ -18,7 +18,7 @@ from python_utils import (
     cd_vrfy,
     mkdir_vrfy,
     find_pattern_in_str,
-    load_shell_config,
+    load_yaml_config,
 )
 
 
@@ -403,7 +403,7 @@ def parse_args(argv):
 
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
-    cfg = load_shell_config(args.path_to_defns)
+    cfg = load_yaml_config(args.path_to_defns)
     link_fix(
         verbose=cfg["workflow"]["VERBOSE"],
         file_group=args.file_group,
