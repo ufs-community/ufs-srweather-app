@@ -34,7 +34,6 @@
 #-----------------------------------------------------------------------
 #
 . $USHdir/source_util_funcs.sh
-set -x
 for sect in user nco workflow ; do
   source_yaml ${GLOBAL_VAR_DEFNS_FP} ${sect}
 done
@@ -84,7 +83,6 @@ for the FV3 (in NetCDF format).
 #
 #-----------------------------------------------------------------------
 #
-set -x
 if [ $RUN_ENVIR = "nco" ]; then
   export INPUT_DATA="${COMIN}"
 else

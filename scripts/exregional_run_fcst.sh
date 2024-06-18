@@ -574,7 +574,7 @@ if ([ $(boolify "${DO_SPP}") = "TRUE" ] || \
     [ $(boolify "${DO_LSM_SPP}") =  "TRUE" ]); then
      STOCH="TRUE"
 fi
-if [ $(boolify "${STOCH}") = "TRUE" ]; then
+if [ "${STOCH}" = "TRUE" ]; then
   cp ${FV3_NML_STOCH_FP} ${DATA}/${FV3_NML_FN}
  else
   ln -sf ${FV3_NML_FP} ${DATA}/${FV3_NML_FN}
@@ -917,7 +917,7 @@ if [ $(boolify ${WRITE_DOPOST}) = "TRUE" ]; then
       if [ $RUN_ENVIR != "nco" ]; then
         basetime=$( $DATE_UTIL --date "$yyyymmdd $hh" +%y%j%H%M )
         symlink_suffix="_${basetime}f${fhr}${post_mn}"
-      create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
+        create_symlink_to_file ${post_renamed_fn} ${FID}${symlink_suffix} TRUE
       fi
       # DBN alert
       if [ "$SENDDBN" = "TRUE" ]; then

@@ -390,7 +390,6 @@ EOF
 #
 # Call the executable that generates the grid file.
 #
-set -x
   PREP_STEP
   eval $RUN_CMD_SERIAL ${exec_fp} ${rgnl_grid_nml_fp} ${REDIRECT_OUT_ERR} || \
     print_err_msg_exit "\
